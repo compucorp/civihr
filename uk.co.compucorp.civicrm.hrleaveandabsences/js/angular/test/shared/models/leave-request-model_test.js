@@ -29,16 +29,20 @@ define([
       spyOn(LeaveRequestAPI, 'balanceChangeByAbsenceType').and.callThrough();
     }));
 
+    afterEach(function () {
+      $rootScope.$apply();
+    });
+
     describe('all()', function () {
       var leaveRequestPromise;
 
       beforeEach(function () {
-        leaveRequestPromise = LeaveRequest.all("filters", "pagination", "sort", "params");
+        leaveRequestPromise = LeaveRequest.all();
       });
 
       it('calls equivalent API method', function () {
         leaveRequestPromise.then(function () {
-          expect(LeaveRequestAPI.all).toHaveBeenCalledWith("filters", "pagination", "sort", "params");
+          expect(LeaveRequestAPI.all).toHaveBeenCalled();
         });
       });
 
@@ -51,16 +55,12 @@ define([
       });
     });
 
-
     it('balanceChangeByAbsenceType() calls equivalent API method', function () {
-      var leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType("contactId", "periodId", "statuses", "isPublicHoliday");
+      var leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType();
 
       leaveRequestPromise.then(function () {
-        expect(LeaveRequestAPI.balanceChangeByAbsenceType).toHaveBeenCalledWith("contactId", "periodId", "statuses", "isPublicHoliday");
+        expect(LeaveRequestAPI.balanceChangeByAbsenceType).toHaveBeenCalled();
       });
-
-      $rootScope.$apply();
     });
-
   });
 });

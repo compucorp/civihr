@@ -24,7 +24,7 @@ define([
          *   `page` for the current page, `size` for number of items per page
          * @param {string} sort - The field and direction to order by
          * @param  {Object} params
-         * @return {Promise}
+         * @return {Promise} Resolved with {Array} Array of leave request instances
          */
         all: function (filters, pagination, sort, params) {
           return leaveRequestAPI.all(filters, pagination, sort, params)
@@ -44,7 +44,7 @@ define([
          * @param statuses {array} An array of OptionValue values which the list will be filtered by
          * @param isPublicHoliday {boolean} Based on the value of this param,
          * the calculation will include only the leave requests that aren't/are public holidays
-         * @return {Promise}
+         * @return {Promise} Resolved with {Object} Balance Change data
          */
         balanceChangeByAbsenceType: function (contactId, periodId, statuses, isPublicHoliday) {
           return leaveRequestAPI.balanceChangeByAbsenceType(contactId, periodId, statuses, isPublicHoliday);

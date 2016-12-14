@@ -33,6 +33,7 @@ define([
              *   `page` for the current page, `size` for number of items per page
              * @param {string} sort - The field and direction to order by
              * @param {object} additionalParams - Additional params to pass to the api
+             * @param {string} action - Action type to pass to the api
              * @return {Promise} resolves to an object with `list` and `total`
              */
             getAll: function (entity, filters, pagination, sort, additionalParams, action) {

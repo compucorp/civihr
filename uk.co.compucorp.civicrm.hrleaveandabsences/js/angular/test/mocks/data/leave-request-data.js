@@ -67,6 +67,27 @@ define(function () {
         }
       ]
     },
+    singleDataSuccess: {
+      "is_error": 0,
+      "version": 3,
+      "count": 1,
+      "values": [
+        {
+          "id": "17",
+          "type_id": "1",
+          "contact_id": "202",
+          "status_id": "1",
+          "from_date": "2016-02-01",
+          "from_date_type": "1",
+          "to_date": "2016-02-03",
+          "to_date_type": "1"
+        }
+      ]
+    },
+    singleDataError: {
+      "is_error": 1,
+      "error_message": jasmine.any(String)
+    },
     balanceChangeByAbsenceTypeData: {
       "is_error": 0,
       "version": 3,
@@ -81,6 +102,12 @@ define(function () {
   return {
     all: function () {
       return mockData.allData;
+    },
+    singleDataSuccess: function () {
+      return mockData.singleDataSuccess;
+    },
+    singleDataError: function () {
+      return mockData.singleDataError;
     },
     balanceChangeByAbsenceType: function () {
       return mockData.balanceChangeByAbsenceTypeData;

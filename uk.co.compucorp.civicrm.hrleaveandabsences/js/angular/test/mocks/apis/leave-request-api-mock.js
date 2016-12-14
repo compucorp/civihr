@@ -10,17 +10,17 @@ define([
     '$q',
     function ($q) {
 
-    return {
-      all: function (filters, pagination, sort, params) {
-        return $q(function (resolve, reject) {
-          resolve(mockData.all().values);
-        });
-      },
-      balanceChangeByAbsenceType: function (contactId, periodId, statuses, isPublicHoliday) {
-        return $q(function (resolve, reject) {
-          resolve(mockData.balanceChangeByAbsenceType().values);
-        });
-      }
-    }
-  }]);
+      return {
+        all: function (filters, pagination, sort, params) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.all().values);
+          });
+        },
+        balanceChangeByAbsenceType: function (contactId, periodId, statuses, isPublicHoliday) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.balanceChangeByAbsenceType().values);
+          });
+        }
+      };
+    }]);
 });
