@@ -25,7 +25,7 @@ define([
 
         return this.getAll('LeaveRequest', filters, pagination, sort, params, 'getFull')
           .then(function (data) {
-            return data.values;
+            return data;
           });
       },
 
@@ -44,7 +44,7 @@ define([
         $log.debug('LeaveRequestAPI.balanceChangeByAbsenceType');
 
         if(!contactId || !periodId) {
-          throw "contact_id and period_id should have truthy value";
+          throw new Error("contact_id and period_id should have truthy value");
         }
 
         var params = {

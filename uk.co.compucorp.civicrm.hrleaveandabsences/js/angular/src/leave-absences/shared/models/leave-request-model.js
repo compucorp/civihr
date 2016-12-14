@@ -1,5 +1,7 @@
 define([
   'leave-absences/shared/modules/models',
+  'leave-absences/shared/models/instances/leave-request-instance',
+  'leave-absences/shared/apis/leave-request-api',
   'common/models/model'
 ], function (models) {
   'use strict';

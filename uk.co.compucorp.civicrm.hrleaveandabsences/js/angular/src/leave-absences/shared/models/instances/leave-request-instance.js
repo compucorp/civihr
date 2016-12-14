@@ -19,7 +19,7 @@ define([
          */
         cancel: function () {
           var leaveRequest = this;
-          LeaveStatusID.getOptionIDByName("cancelled")
+          return LeaveStatusID.getOptionIDByName("cancelled")
             .then(function (cancelledStatusId) {
               return leaveRequest.update({
                 'status_id': cancelledStatusId
