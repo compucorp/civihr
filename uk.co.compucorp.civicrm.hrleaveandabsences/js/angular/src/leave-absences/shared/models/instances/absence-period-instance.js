@@ -2,44 +2,51 @@ define([
   'leave-absences/shared/modules/models-instances',
   'common/moment',
   'common/models/instances/instance',
+  'common/services/hr-settings',
 ], function (instances, moment) {
   'use strict';
 
-  instances.factory('AbsencePeriodInstance', ['$log', 'ModelInstance',
-    function ($log, ModelInstance) {
+  instances.factory('AbsencePeriodInstance', ['$log', 'ModelInstance', 'HR_settings',
+    function ($log, ModelInstance, HR_settings) {
       $log.debug('AbsencePeriodInstance');
 
       return ModelInstance.extend({
         /**
-         * Sets the current property of this absence period on instantiation
-         * and then creates a new instance.
-         * As its overriding the ModelInstance.init method it needs to include isInPeriod
-         * function as part of its object definition.
+         * Returns the default custom data (as in, not given by the API)
+         * with its default values
          *
-         * @param {object} attributes - The instance data
-         * @param {boolean} fromAPI - If the data comes from the API and needs to be normalized
          * @return {object}
          */
-        init: function (attributes, fromAPI) {
-          var currentDate = moment();
-
+        defaultCustomData: function () {
+          return {
+            current: false
+          };
+        },
+        /**
+         * Sets the current property of this absence period on instantiation.
+         *
+         * @return {object} updated attributes object
+         */
+        customInit: function (attributes) {
+          var today = moment();
           attributes.current = false;
-          if (moment(attributes.start_date).isSameOrBefore(currentDate) &&
-            moment(attributes.end_date).isSameOrAfter(currentDate)) {
+
+          if (moment(attributes.start_date).isSameOrBefore(today) &&
+            moment(attributes.end_date).isSameOrAfter(today)) {
             attributes.current = true;
           }
-          attributes.isInPeriod = this.isInPeriod;
 
-          return ModelInstance.init(attributes, fromAPI);
+          return attributes;
         },
         /**
          *  Finds out if given date is in this object's absence period.
          *
-         * @param  {String} whichDate given date
+         * @param  {Date} whichDate given date either as Date object or its string representation
          * @return true if whichDate is in this instance's period range, else false
          */
         isInPeriod: function (whichDate) {
-          var checkDate = moment(whichDate);
+          var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
+          var checkDate = moment(whichDate, dateFormat);
 
           return moment(this.start_date).isSameOrBefore(checkDate) &&
             moment(this.end_date).isSameOrAfter(checkDate);

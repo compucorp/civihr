@@ -8,7 +8,7 @@ define([
     describe('ModelInstance', function () {
         var ModelInstance;
         var instanceInterface = ['attributes', 'defaultCustomData', 'extend',
-            'fromAPI', 'fromAPIFilter', 'init', 'toAPI', 'toAPIFilter'];
+            'fromAPI', 'fromAPIFilter', 'init', 'customInit', 'toAPI', 'toAPIFilter'];
 
         beforeEach(module('common.models.instances'));
         beforeEach(inject(function (_ModelInstance_) {

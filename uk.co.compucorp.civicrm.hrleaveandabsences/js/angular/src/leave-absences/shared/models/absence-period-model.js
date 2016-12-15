@@ -3,7 +3,7 @@ define([
   'common/moment',
   'leave-absences/shared/models/instances/absence-period-instance',
   'leave-absences/shared/apis/absence-period-api',
-  'common/models/model',
+  'common/models/model', 
   'common/services/hr-settings',
 ], function (models, moment) {
   'use strict';
@@ -33,26 +33,27 @@ define([
          *  Finds out if current date is in any absence period.
          *  If found then return absence period instance of it.
          *
-         * @return Absence period instance or null if not found
+         * @return {Object} Absence period instance or null if not found
          */
         current: function () {
           var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
-          var checkDate = moment().format(dateFormat);
+          var today = moment().format(dateFormat);
 
           var params = {
             "start_date": {
-              '<=': checkDate
+              '<=': today
             },
             "end_date": {
-              '>=': checkDate
+              '>=': today
             }
-          }
+          };
 
           return absencePeriodAPI.all(params)
             .then(function (absencePeriods) {
               if (absencePeriods.length) {
                 return instance.init(absencePeriods[0], true);
               }
+
               return null;
             });
         }

@@ -61,6 +61,10 @@ define([
       var promise;
 
       beforeEach(function () {
+        //shift current date to precede mock periods
+        var currentDate = new Date(2016, 6, 6);
+
+        jasmine.clock().mockDate(currentDate);
         promise = AbsencePeriod.current();
       });
 
@@ -85,10 +89,10 @@ define([
         var promise;
 
         beforeEach(function () {
-          //override earlier created spy with another to return past periods
-          AbsencePeriodAPI.all = jasmine.createSpy().and.callFake(function (params) {
-            return AbsencePeriodAPI.past_all(params);
-          });
+          //shift current date to precede mock periods
+          var pastDate = new Date(2013, 1, 1);
+
+          jasmine.clock().mockDate(pastDate);
           promise = AbsencePeriod.current();
         });
 
