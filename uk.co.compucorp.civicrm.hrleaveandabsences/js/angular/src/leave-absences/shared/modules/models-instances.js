@@ -5,6 +5,6 @@ define([
   'use strict';
 
   return angular.module('leave-absences.models.instances', [
-    'common.models.instances'
+    'common.models.instances',
   ]);
 });
