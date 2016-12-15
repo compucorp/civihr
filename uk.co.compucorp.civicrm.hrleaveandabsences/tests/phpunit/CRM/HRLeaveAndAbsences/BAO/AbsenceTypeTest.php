@@ -624,4 +624,61 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     ]);
     $this->assertEquals(1, $absenceType->is_sick);
   }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   * @expectedExceptionMessage This Absence Type does not allow Accruals Request
+   */
+  public function testCalculateToilExpiryDateWhenAbsenceTypeDoesNotAllowAccrualsRequest() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Title 1',
+      'allow_accruals_request' => false,
+      'is_active' => 1,
+    ]);
+    //date to calculate TOIL expiry for
+    $date = new DateTime('2016-11-10');
+    $absenceType->calculateToilExpiryDate($date);
+  }
+
+  public function testCalculateToilExpiryDateWhenAbsenceTypeAllowsAccrualsRequestAndNeverExpires() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Title 1',
+      'allow_accruals_request' => true,
+      'accrual_expiration_unit' => null,
+      'accrual_expiration_duration' => null,
+      'is_active' => 1,
+    ]);
+    //date to calculate TOIL expiry for
+    $date = new DateTime('2016-11-10');
+    $expiry = $absenceType->calculateToilExpiryDate($date);
+    $this->assertNull($expiry);
+  }
+
+  public function testCalculateToilExpiryDateWhenAbsenceTypeAllowsAccrualsRequestAndExpiryDurationSet() {
+    //Duration set in days
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Title 1',
+      'allow_accruals_request' => true,
+      'accrual_expiration_duration' => 10,
+      'accrual_expiration_unit' => AbsenceType::EXPIRATION_UNIT_DAYS,
+      'is_active' => 1,
+    ]);
+    //date to calculate TOIL expiry for
+    $date = new DateTime('2016-11-10');
+    $expiry = $absenceType->calculateToilExpiryDate($date);
+    $this->assertEquals('2016-11-20', $expiry->format('Y-m-d'));
+
+    //Duration set in months
+    $absenceType2 = AbsenceTypeFabricator::fabricate([
+      'title' => 'Title 2',
+      'allow_accruals_request' => true,
+      'accrual_expiration_duration' => 10,
+      'accrual_expiration_unit' => AbsenceType::EXPIRATION_UNIT_MONTHS,
+      'is_active' => 1,
+    ]);
+    //date to calculate TOIL expiry for
+    $date = new DateTime('2016-11-10');
+    $expiry = $absenceType2->calculateToilExpiryDate($date);
+    $this->assertEquals('2017-09-10', $expiry->format('Y-m-d'));
+  }
 }
