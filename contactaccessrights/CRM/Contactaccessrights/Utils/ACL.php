@@ -106,8 +106,8 @@ class CRM_Contactaccessrights_Utils_ACL {
    * @throws \CRM_Extension_Exception
    */
   private function addJobRolesClause() {
-    $locationIds = implode(', ', array_column($this->getLocations(), 'entity_id') ?: [0]);
-    $regionIds = implode(', ', array_column($this->getRegions(), 'entity_id') ?: [0]);
+    $locationIds = "'" . implode("', '", array_column($this->getLocations(), 'value') ?: [0]) . "'";
+    $regionIds = "'" . implode("', '", array_column($this->getRegions(), 'value') ?: [0]) . "'";
 
     $this->addWhereTable(
       'car_3_jr',
