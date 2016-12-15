@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+  <OptionGroups>
+
+    <OptionGroup>
+      <name>hrleaveandabsences_toil_amounts</name>
+      <title>Toil Amounts</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+
+  </OptionGroups>
+
+  <OptionValues>
+
+    <OptionValue>
+      <label>0 Days</label>
+      <value>0</value>
+      <name>zero_days</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>1/4 Days</label>
+      <value>0.25</value>
+      <name>quarter_day</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>1/2 Days</label>
+      <value>0.5</value>
+      <name>half_day</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>3/4 Days</label>
+      <value>0.75</value>
+      <name>three_quarters_day</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>1 Day</label>
+      <value>1</value>
+      <name>one_day</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>1 1/4 Days</label>
+      <value>1.25</value>
+      <name>one_and_a_quarter_days</name>
+      <is_default>0</is_default>
+      <weight>6</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>1 1/2 Days</label>
+      <value>1.5</value>
+      <name>one_and_a_half_days</name>
+      <is_default>0</is_default>
+      <weight>7</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>1 3/4 Days</label>
+      <value>1.75</value>
+      <name>one_and_three_quarters_days</name>
+      <is_default>0</is_default>
+      <weight>8</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>2 Days</label>
+      <value>2</value>
+      <name>two_days</name>
+      <is_default>0</is_default>
+      <weight>9</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>2 1/4 Days</label>
+      <value>2.25</value>
+      <name>two_and_a_quarter_days</name>
+      <is_default>0</is_default>
+      <weight>10</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>2 1/2 Days</label>
+      <value>2.5</value>
+      <name>two_and_a_half_days</name>
+      <is_default>0</is_default>
+      <weight>11</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>2 3/4 Days</label>
+      <value>2.75</value>
+      <name>two_and_three_quarters_days</name>
+      <is_default>0</is_default>
+      <weight>12</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>3 Days</label>
+      <value>3</value>
+      <name>three_days</name>
+      <is_default>0</is_default>
+      <weight>13</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
+    </OptionValue>
+
+  </OptionValues>
+</CustomData>

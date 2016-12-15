@@ -154,5 +154,12 @@
     <type>int unsigned</type>
     <comment>The unit (months or days) of carry_forward_expiration_duration of this type default expiry</comment>
   </field>
+  <field>
+    <name>is_sick</name>
+    <label>Is Sick?</label>
+    <type>boolean</type>
+    <default>0</default>
+    <comment>A flag which is used to determine if this Absence Type can be used for a Sickness Request</comment>
+  </field>
 
 </table>

@@ -28,6 +28,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `max_number_of_days_to_carry_forward` int unsigned    ,
      `carry_forward_expiration_duration` int unsigned    COMMENT 'An amount of carry_forward_expiration_unit',
      `carry_forward_expiration_unit` int unsigned    COMMENT 'The unit (months or days) of carry_forward_expiration_duration of this type default expiry',
+     `is_sick` tinyint   DEFAULT 0 COMMENT 'A flag which is used to determine if this Absence Type can be used for a Sickness Request',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 
@@ -111,7 +112,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   allow_request_cancelation,
   allow_overuse,
   is_reserved,
-  weight
+  weight,
+  is_sick
 ) VALUES (
   3,
   'Sick',
@@ -121,7 +123,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   1, -- no
   1,
   1,
-  3
+  3,
+  1
 );
 
 -- /*******************************************************

@@ -601,4 +601,27 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
     return null;
   }
+
+  public function testAbsenceTypeHasIsSickFlagAsFalseByDefault() {
+    $absenceType = AbsenceType::create([
+      'title' => 'Title 1',
+      'color' => '#000101',
+      'default_entitlement' => 21,
+      'allow_request_cancelation' => 1,
+      'is_active' => 1,
+    ]);
+    $this->assertEquals(0, $absenceType->is_sick);
+  }
+
+  public function testSetIsSickFlagForAbsenceType() {
+    $absenceType = AbsenceType::create([
+      'title' => 'Title 1',
+      'color' => '#000101',
+      'default_entitlement' => 21,
+      'allow_request_cancelation' => 1,
+      'is_active' => 1,
+      'is_sick' => 1
+    ]);
+    $this->assertEquals(1, $absenceType->is_sick);
+  }
 }
