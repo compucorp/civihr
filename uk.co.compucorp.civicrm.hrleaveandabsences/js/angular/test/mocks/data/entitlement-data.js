@@ -233,7 +233,7 @@ define(function () {
         }
       }]
     }
-  }
+  };
   return {
     all: function (params, withBalance) {
       if (withBalance) {

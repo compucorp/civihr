@@ -58,7 +58,7 @@ define(function () {
       "allow_accrue_in_the_past": "0",
       "allow_carry_forward": "0"
     }]
-  }
+  };
   return {
     all: function () {
       return all_data;
