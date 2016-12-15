@@ -32,6 +32,7 @@ define([
         /**
          *  Finds out if given date is a public holiday.
          *
+         * @param  {Date} whichDate given date either as Date object or its string representation
          * @return {Bool} returns true if date is a public holday else false
          */
         isPublicHoliday: function (whichDate) {
@@ -39,13 +40,12 @@ define([
           var checkDate = moment(whichDate).format(dateFormat);
 
           var params = {
-            'sequential': 1,
             'date': checkDate
           };
 
           return publicHolidayAPI.all(params)
             .then(function (publicHolidays) {
-              if (publicHolidays.length) {
+              if (!!publicHolidays.length) {
                 return true;
               }
 

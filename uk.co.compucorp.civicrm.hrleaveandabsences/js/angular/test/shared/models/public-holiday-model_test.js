@@ -95,12 +95,6 @@ define([
           $rootScope.$apply();
         });
 
-        it('calls equivalent API method', function () {
-          promise.then(function (response) {
-            expect(PublicHolidayAPI.all).toHaveBeenCalled();
-          });
-        });
-
         it('returns false', function () {
           promise.then(function (response) {
             expect(response).toBe(false);
