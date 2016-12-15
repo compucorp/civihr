@@ -27,7 +27,7 @@ define([
          *
          * @return {object} updated attributes object
          */
-        customInit: function (attributes) {
+        transformAttributes: function (attributes) {
           var today = moment();
           attributes.current = false;
 

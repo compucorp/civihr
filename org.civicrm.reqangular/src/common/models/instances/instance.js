@@ -71,7 +71,7 @@ define([
       /**
        * Creates a new instance, optionally with its data normalized.
        * Also, it will allow children to add/remove/update current attributes of
-       * the instance using customInit method
+       * the instance using transformAttributes method
        *
        * @param {object} attributes - The instance data
        * @param {boolean} fromAPI - If the data comes from the API and needs to be normalized
@@ -82,7 +82,7 @@ define([
           attributes = this.fromAPI(attributes);
         }
         attributes = _.assign(this.defaultCustomData(), attributes);
-        attributes = this.customInit(attributes);
+        attributes = this.transformAttributes(attributes);
 
         return _.assign(Object.create(this), attributes);
       },
@@ -94,7 +94,7 @@ define([
        * @param {object} attributes - The instance data
        * @return {object} updated instance attributes object
        */
-      customInit: function (attributes) {
+      transformAttributes: function (attributes) {
         return attributes
       },
 
