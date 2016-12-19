@@ -83,40 +83,28 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
     ]);
   }
 
-  public function testCreateTOILRequestWithPastDatesAndAbsenceTypeAllowsIt() {
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   * @expectedExceptionMessage You cannot request TOIL for past days
+   */
+  public function testValidateParamsIsCalledOnCreate() {
     $absenceType = AbsenceTypeFabricator::fabricate([
       'title' => 'Title 1',
       'allow_accruals_request' => true,
       'max_leave_accrual' => 4,
       'is_active' => 1,
-      'allow_accrue_in_the_past' => true
+      'allow_accrue_in_the_past' => false
     ]);
 
-    $fromDate = new DateTime('2016-11-14');
-    $toDate = new DateTime('2016-11-18');
-
-    // If this throws an exception, The test will fail
-    TOILRequest::validateParams([
+    TOILRequest::create([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
-      'to_date' => $toDate->format('YmdHis'),
+      'from_date' => '2016-11-14',
+      'to_date' => '2016-11-18',
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
-    ]);
-
-    $toilRequest = TOILRequest::create([
-      'type_id' => $absenceType->id,
-      'contact_id' => 1,
-      'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
-      'to_date' => $toDate->format('YmdHis'),
-      'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
-      'duration' => 120
-    ], false);
-
-    $this->assertInstanceOf(TOILRequest::class, $toilRequest);
+    ], true);
   }
 
   public function testCreateTOILRequestCreatesLeaveRequest() {

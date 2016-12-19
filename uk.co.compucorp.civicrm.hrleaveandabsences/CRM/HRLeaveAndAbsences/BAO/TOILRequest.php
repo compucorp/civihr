@@ -139,10 +139,10 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
    *
    * @param CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *   The Leave Request created by this TOIL Request
-   * @param float $toil_to_accrue
+   * @param float $toilToAccrue
    *   The amount of TOIL to be accrued.
    */
-  private function saveBalanceChange(LeaveRequest $leaveRequest, $toil_to_accrue) {
+  private function saveBalanceChange(LeaveRequest $leaveRequest, $toilToAccrue) {
     $this->deleteBalanceChange();
 
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
@@ -156,7 +156,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
 
     LeaveBalanceChange::create([
       'type_id' => $balanceChangeTypes['Credit'],
-      'amount' => $toil_to_accrue,
+      'amount' => $toilToAccrue,
       'expiry_date' => $expiryDate,
       'source_id' => $this->id,
       'source_type' => LeaveBalanceChange::SOURCE_TOIL_REQUEST
