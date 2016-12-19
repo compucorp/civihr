@@ -25,6 +25,10 @@
         expect($log.debug).toHaveBeenCalled();
       });
 
+      it('has the legend expanded', function () {
+        expect(controller.legendCollapsed).toBe(false);
+      });
+
       function compileComponent() {
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;

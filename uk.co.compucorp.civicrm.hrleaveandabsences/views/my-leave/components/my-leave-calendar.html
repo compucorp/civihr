@@ -197,14 +197,17 @@
       </table>
     </div>
   </section>
-  <section class="panel panel-default">
+  <section class="panel panel-default" ng-class="{ 'is-collapsed': calendar.legendCollapsed }">
     <header class="panel-heading panel-heading-plain">
-      <h2 class="panel-title">
-        <i class="fa fa-chevron-down"></i>
+      <h2 class="panel-title" ng-click="calendar.legendCollapsed = !calendar.legendCollapsed">
+        <i
+          class="fa"
+          aria-hidden="true"
+          ng-class="{ 'fa-chevron-down': calendar.legendCollapsed, ' fa-chevron-right': !report.legendCollapsed }"></i>
         Legend
       </h2>
     </header>
-    <div class="panel-body chr_leave-calendar__legend">
+    <div class="panel-body chr_leave-calendar__legend" ng-show="!calendar.legendCollapsed">
       <div class="row">
         <div class="col-sm-3">
           <div class="chr_leave-calendar__legend__entry">
