@@ -59,7 +59,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function validateParams($params) {
     if (empty($params['from_date'])) {
       throw new InvalidLeaveRequestException(
-        "Leave Requests should have a start date"
+        'Leave Requests should have a start date',
+        'leave_request_empty_from_date',
+        'from_date'
       );
     }
 
@@ -92,7 +94,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     //either there was an overlap or the absence period does not simply exist.
     if (!$period) {
       throw new InvalidLeaveRequestException(
-        "The Leave request dates is not contained within a valid absence period"
+        'The Leave request dates are not contained within a valid absence period',
+        'leave_request_not_within_absence_period',
+        'from_date'
       );
     }
   }
@@ -120,7 +124,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if ($contract['count'] > 1) {
       throw new InvalidLeaveRequestException(
-        "The Leave request dates must not have dates in more than one contract period"
+        'The Leave request dates must not have dates in more than one contract period',
+        'leave_request_overlapping_multiple_contracts',
+        'from_date'
       );
     }
   }
@@ -147,7 +153,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
       throw new InvalidLeaveRequestException(
-        "Balance change for the leave request cannot be greater than the remaining balance of the period"
+        'Balance change for the leave request cannot be greater than the remaining balance of the period',
+        'leave_request_balance_change_greater_than_remaining_balance',
+        'type_id'
       );
     }
   }
@@ -192,7 +200,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
     if ($leaveRequestBalance == 0) {
       throw new InvalidLeaveRequestException(
-        "Leave Request must have at least one working day to be created"
+        'Leave Request must have at least one working day to be created',
+        'leave_request_doesnt_have_working_day',
+        'from_date'
       );
     }
   }
@@ -228,7 +238,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if ($overlappingLeaveRequests) {
       throw new InvalidLeaveRequestException(
-        "This Leave request has dates that overlapps with an existing leave request"
+        'This Leave request has dates that overlaps with an existing leave request',
+        'leave_request_overlaps_another_leave_request',
+        'from_date'
       );
     }
   }
@@ -248,7 +260,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
       if ($fromDate > $toDate) {
         throw new InvalidLeaveRequestException(
-          "Leave Request start date cannot be greater than the end date"
+          'Leave Request start date cannot be greater than the end date',
+          'leave_request_from_date_greater_than_end_date',
+          'from_date'
         );
       }
   }
