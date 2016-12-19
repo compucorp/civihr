@@ -11,6 +11,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
   const SOURCE_ENTITLEMENT = 'entitlement';
   const SOURCE_LEAVE_REQUEST_DAY = 'leave_request_day';
+  const SOURCE_TOIL_REQUEST = 'toil_request';
 
   /**
    * Create a new LeaveBalanceChange based on array-data
