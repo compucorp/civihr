@@ -15,15 +15,19 @@ define([
 
       //Intercept backend calls for WorkPatternAPI.getCalendar
       $httpBackend.whenGET(/action\=getcalendar&entity\=WorkPattern/)
-        .respond(mockData.calenderData());
+        .respond(mockData.daysData());
     }));
 
-    describe('calenderData()', function () {
-      var workPatternPromise;
+    describe('calendarData()', function () {
+      var workPatternPromise,
+        dummyContactId,
+        dummyPeriodId;
 
       beforeEach(function () {
         spyOn(WorkPatternAPI, 'sendGET').and.callThrough();
-        workPatternPromise = WorkPatternAPI.getCalendar();
+        dummyContactId = "1";
+        dummyPeriodId = "2";
+        workPatternPromise = WorkPatternAPI.getCalendar(dummyContactId, dummyPeriodId, jasmine.any(Object));
       });
 
       afterEach(function () {
@@ -36,9 +40,14 @@ define([
         expect(WorkPatternAPI.sendGET.calls.mostRecent().args[1]).toBe('getcalendar');
       });
 
-      it('returns calender data', function () {
+      it('passes the contactId and periodId to the api', function () {
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[2].contact_id).toBe(dummyContactId);
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[2].period_id).toBe(dummyPeriodId);
+      });
+
+      it('returns calendar data', function () {
         workPatternPromise.then(function (response) {
-          expect(response).toEqual(mockData.calenderData());
+          expect(response).toEqual(mockData.daysData());
         });
       });
     });

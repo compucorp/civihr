@@ -1,19 +1,19 @@
 define([
   'mocks/data/work-pattern-data',
-  'leave-absences/shared/models/calender-model',
+  'leave-absences/shared/models/calendar-model',
 ], function (mockData) {
   'use strict';
 
-  describe('Calender', function () {
-    var Calender,
+  describe('Calendar', function () {
+    var Calendar,
       WorkPatternAPI,
       $q,
       $rootScope;
 
     beforeEach(module('leave-absences.models'));
 
-    beforeEach(inject(function (_Calender_, _WorkPatternAPI_, _$rootScope_, _$q_) {
-      Calender = _Calender_;
+    beforeEach(inject(function (_Calendar_, _WorkPatternAPI_, _$rootScope_, _$q_) {
+      Calendar = _Calendar_;
       WorkPatternAPI = _WorkPatternAPI_;
       $rootScope = _$rootScope_;
       $q = _$q_;
@@ -26,33 +26,34 @@ define([
     });
 
     describe('getCalendar()', function () {
-      var CalenderPromise,
+      var CalendarPromise,
         deferred;
 
       function commonSetUp(returnData) {
         deferred = $q.defer();
-        WorkPatternAPI.getCalendar.and.returnValue(deferred.promise);
-        CalenderPromise = Calender.getCalendar();
         deferred.resolve(returnData);
+        WorkPatternAPI.getCalendar.and.returnValue(deferred.promise);
+
+        CalendarPromise = Calendar.get(jasmine.any(String), jasmine.any(String), jasmine.any(Object));
       }
 
       it('calls equivalent API method', function () {
-        commonSetUp(mockData.calenderData());
-        CalenderPromise.then(function () {
+        commonSetUp(mockData.daysData());
+        CalendarPromise.then(function () {
           expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
         });
       });
 
       it('returns model instances when request is successful', function () {
-        commonSetUp(mockData.calenderData());
-        CalenderPromise.then(function (response) {
-          expect('calenderData' in response).toBe(true);
+        commonSetUp(mockData.daysData());
+        CalendarPromise.then(function (response) {
+          expect('days' in response).toBe(true);
         });
       });
 
       it('returns error object when request is not successful', function () {
         commonSetUp(mockData.errorData());
-        CalenderPromise.then(function (response) {
+        CalendarPromise.then(function (response) {
           expect(response).toBe(mockData.errorData());
         });
       });

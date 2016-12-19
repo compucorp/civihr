@@ -15,12 +15,15 @@ define([
        * @param {string} contactId The ID of the Contact
        * @param {string} periodId The ID of the Absence Period
        * @param {object} params
-       * @return {Promise} Resolved with {Array} All calender records
+       * @return {Promise} Resolved with {Array} All calendar records
        */
       getCalendar: function (contactId, periodId, params) {
         $log.debug('WorkPatternAPI.getCalendar');
 
-        return this.sendGET('WorkPattern', 'getcalendar', params);
+        return this.sendGET('WorkPattern', 'getcalendar',  _.assign(params, {
+          contact_id: contactId,
+          period_id: periodId
+        }));
       }
     });
   }]);

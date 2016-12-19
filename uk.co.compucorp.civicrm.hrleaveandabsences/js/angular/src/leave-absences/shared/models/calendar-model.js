@@ -1,18 +1,18 @@
 define([
   'leave-absences/shared/modules/models',
-  'leave-absences/shared/models/instances/calender-instance',
+  'leave-absences/shared/models/instances/calendar-instance',
   'leave-absences/shared/apis/work-pattern-api',
   'common/models/model'
 ], function (models) {
   'use strict';
 
-  models.factory('Calender', [
+  models.factory('Calendar', [
     '$log',
     'Model',
     'WorkPatternAPI',
-    'CalenderInstance',
+    'CalendarInstance',
     function ($log, Model, workPatternAPI, instance) {
-      $log.debug('Calender');
+      $log.debug('Calendar');
       return Model.extend({
 
         /**
@@ -21,17 +21,19 @@ define([
          * @param {string} contactId The ID of the Contact
          * @param {string} periodId The ID of the Absence Period
          * @param {object} params
-         * @return {Promise} Resolved with {Object} Calender Instance or Error Data
+         * @return {Promise} Resolved with {Object} Calendar Instance or Error Data
          */
-        getCalendar: function (contactId, periodId, params) {
-          $log.debug('Calender.getCalendar');
+        get: function (contactId, periodId, params) {
+          $log.debug('Calendar.getCalendar');
+
           return workPatternAPI.getCalendar(contactId, periodId, params)
             .then(function (data) {
-              if (data.is_error === 1) {
+              if (data.is_error) {
                 return data;
               }
+
               return instance.init({
-                calenderData: data.values
+                days: data.values
               }, true);
             });
         }

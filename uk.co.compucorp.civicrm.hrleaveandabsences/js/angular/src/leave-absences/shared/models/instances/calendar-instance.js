@@ -5,26 +5,26 @@ define([
 ], function (moment, instances) {
   'use strict';
 
-  instances.factory('CalenderInstance', [
+  instances.factory('CalendarInstance', [
     'ModelInstance',
     function (ModelInstance) {
 
       /**
        * This method checks whether a date matches the send type.
        *
-       * @param {string} Date
+       * @param {string} date
        * @param {string} Type of day
        *
        * @return {Boolean}
-       * Throws Error if date is not found in calenderData
+       * @throws error if date is not found in calendarData
        */
       function checkDate(date, dayType) {
-        var searchedDate = this.calenderData.find(function (data) {
-          return moment(data.date).isSame(moment(date));
+        var searchedDate = this.days.find(function (data) {
+          return moment(data.date).isSame(date);
         });
 
         if (!searchedDate) {
-          throw new Error("Date not found");
+          throw new Error('Date not found');
         }
 
         return searchedDate.type.name === dayType;
@@ -33,39 +33,45 @@ define([
       return ModelInstance.extend({
 
         /**
-         * This object contains the calendar data.
-         * Default value is empty Array
+         * Returns the default custom data (as in, not given by the API)
+         * with its default values
+         *
+         * @return {object}
          */
-        calenderData: [],
+        defaultCustomData: function () {
+          return {
+            days: []
+          };
+        },
 
         /**
          * This method checks whether a date is working day.
          *
-         * @param {string} Date
+         * @param {Object} date
          * @return {Boolean}
          */
         isWorkingDay: function (date) {
-          return checkDate.call(this, date, "working_day");
+          return checkDate.call(this, date, 'working_day');
         },
 
         /**
          * This method checks whether a date is non working day.
          *
-         * @param {string} Date
+         * @param {Object} date
          * @return {Boolean}
          */
         isNonWorkingDay: function (date) {
-          return checkDate.call(this, date, "non_working_day");
+          return checkDate.call(this, date, 'non_working_day');
         },
 
         /**
          * This method checks whether a date is weekend.
          *
-         * @param {string} Date
+         * @param {Object} date
          * @return {Boolean}
          */
         isWeekend: function (date) {
-          return checkDate.call(this, date, "weekend");
+          return checkDate.call(this, date, 'weekend');
         }
       });
     }]);
