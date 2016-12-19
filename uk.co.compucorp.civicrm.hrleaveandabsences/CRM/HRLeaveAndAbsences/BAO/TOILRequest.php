@@ -8,12 +8,6 @@ use CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException as InvalidTOILR
 class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_TOILRequest {
 
   /**
-   * @var float
-   *   The TOIL amount to be accrued
-   */
-  private $toil_to_accrue;
-
-  /**
    * Create a new TOILRequest based on array-data
    *
    * @param array $params key-value pairs
@@ -27,7 +21,9 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
-    self::validateParams($params);
+    if ($validate) {
+      self::validateParams($params);
+    }
 
     $instance = new self();
     //set from_date_type and to_date_type to be full day by default
@@ -56,8 +52,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
       $instance->save();
     }
 
-    $instance->toil_to_accrue = $params['toil_to_accrue'];
-    $instance->saveBalanceChange($leaveRequest);
+    $instance->saveBalanceChange($leaveRequest, $params['toil_to_accrue']);
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
@@ -71,7 +66,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
    */
-  private static function validateParams($params) {
+  public static function validateParams($params) {
     self::validateTOILAmountIsValid($params);
     self::validateValidTOILAmountNotGreaterThanMaximum($params);
     self::validateValidTOILPastDaysRequest($params);
@@ -103,7 +98,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
    */
   private static function validateValidTOILAmountNotGreaterThanMaximum($params) {
     $absenceType = AbsenceType::findById($params['type_id']);
-    if ($params['toil_to_accrue'] > $absenceType->max_leave_accrual) {
+    $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual != 0;
+    if ($params['toil_to_accrue'] > $absenceType->max_leave_accrual && !$unlimitedAccrual) {
       throw new InvalidTOILRequestException(
         "The TOIL amount requested for is greater than the maximum for this Absence Type"
       );
@@ -143,8 +139,10 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
    *
    * @param CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *   The Leave Request created by this TOIL Request
+   * @param float $toil_to_accrue
+   *   The amount of TOIL to be accrued.
    */
-  private function saveBalanceChange(LeaveRequest $leaveRequest) {
+  private function saveBalanceChange(LeaveRequest $leaveRequest, $toil_to_accrue) {
     $this->deleteBalanceChange();
 
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
@@ -158,7 +156,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
 
     LeaveBalanceChange::create([
       'type_id' => $balanceChangeTypes['Credit'],
-      'amount' => $this->toil_to_accrue,
+      'amount' => $toil_to_accrue,
       'expiry_date' => $expiryDate,
       'source_id' => $this->id,
       'source_type' => LeaveBalanceChange::SOURCE_TOIL_REQUEST
@@ -181,14 +179,14 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
    * @return array
    */
   private static function toilAmountOptions() {
-  $result = civicrm_api3('OptionValue', 'get', [
-    'option_group_id' => 'hrleaveandabsences_toil_amounts',
-  ]);
-  $toilAmounts = [];
+    $result = civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'hrleaveandabsences_toil_amounts',
+    ]);
+    $toilAmounts = [];
 
-  foreach ($result['values'] as $toilAmount) {
-    $toilAmounts[$toilAmount['name']] = $toilAmount['value'];
-  }
-  return $toilAmounts;
+    foreach ($result['values'] as $toilAmount) {
+      $toilAmounts[$toilAmount['name']] = $toilAmount['value'];
+    }
+    return $toilAmounts;
   }
 }

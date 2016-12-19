@@ -25,22 +25,22 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
    * @expectedExceptionMessage The TOIL amount is not valid
    */
-  public function testCreateTOILRequestWhenToilAmountIsNotValid() {
-    TOILRequest::create([
+  public function testValidateTOILRequestWhenToilAmountIsNotValid() {
+    TOILRequest::validateParams([
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => '2016-11-14',
       'toil_to_accrue' => 200,
       'duration' => 120
-    ], false);
+    ]);
   }
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
    * @expectedExceptionMessage The TOIL amount requested for is greater than the maximum for this Absence Type
    */
-  public function testCreateTOILRequestWhenToilAmountIsGreaterThanMaximumAllowed() {
+  public function testValidateTOILRequestWhenToilAmountIsGreaterThanMaximumAllowed() {
     $absenceType = AbsenceTypeFabricator::fabricate([
       'title' => 'Title 1',
       'allow_accruals_request' => true,
@@ -48,7 +48,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'is_active' => 1,
     ]);
 
-    TOILRequest::create([
+    TOILRequest::validateParams([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
@@ -56,14 +56,14 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'to_date' => '2016-11-18',
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
-    ], false);
+    ]);
   }
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
    * @expectedExceptionMessage You cannot request TOIL for past days
    */
-  public function testCreateTOILRequestWithPastDatesAndAbsenceTypeDoesNotAllow() {
+  public function testValidateTOILRequestWithPastDatesAndAbsenceTypeDoesNotAllow() {
     $absenceType = AbsenceTypeFabricator::fabricate([
       'title' => 'Title 1',
       'allow_accruals_request' => true,
@@ -72,7 +72,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'allow_accrue_in_the_past' => false
     ]);
 
-    TOILRequest::create([
+    TOILRequest::validateParams([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
@@ -80,7 +80,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'to_date' => '2016-11-18',
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
-    ], false);
+    ]);
   }
 
   public function testCreateTOILRequestWithPastDatesAndAbsenceTypeAllowsIt() {
@@ -94,6 +94,18 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-11-14');
     $toDate = new DateTime('2016-11-18');
+
+    // If this throws an exception, The test will fail
+    TOILRequest::validateParams([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'to_date' => $toDate->format('YmdHis'),
+      'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
+      'duration' => 120
+    ]);
+
     $toilRequest = TOILRequest::create([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
