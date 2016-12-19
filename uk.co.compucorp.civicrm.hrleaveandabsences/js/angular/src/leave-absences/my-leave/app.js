@@ -7,6 +7,7 @@ define([
   'leave-absences/my-leave/components/my-leave-report',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/leave-request-model',
+  'leave-absences/shared/models/calendar-model',
 ], function (angular) {
   angular.module('my-leave', [
       'ngResource',
