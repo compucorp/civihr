@@ -57,6 +57,47 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateParams($params) {
+    self::validateMandatory($params);
+    self::validateToDateType($params);
+    if (!empty($params['to_date'])) {
+      self::validateStartDateNotGreaterThanEndDate($params);
+    }
+
+    self::validateAbsencePeriod($params);
+    self::validateNoOverlappingLeaveRequests($params);
+    self::validateBalanceChange($params);
+    self::validateWorkingDay($params);
+    self::validateLeaveDatesDoesNotOverlapContracts($params);
+  }
+
+  /**
+   * This method validates that the to_date_type field must be present when to_date field is not empty
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateToDateType($params) {
+    if (!empty($params['to_date']) && empty($params['to_date_type'])) {
+      throw new InvalidLeaveRequestException(
+        'The type of To Date should not be empty',
+        'leave_request_empty_to_date_type',
+        'to_date_type'
+      );
+    }
+  }
+
+  /**
+   * A method for validating the mandatory fields in the params
+   * passed to the Leave Request create method
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateMandatory($params) {
     if (empty($params['from_date'])) {
       throw new InvalidLeaveRequestException(
         'Leave Requests should have a start date',
@@ -88,24 +129,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         'status_id'
       );
     }
-
-    if (!empty($params['to_date']) && empty($params['to_date_type'])) {
-      throw new InvalidLeaveRequestException(
-        'The type of To Date should not be empty',
-        'leave_request_empty_to_date_type',
-        'to_date_type'
-      );
-    }
-
-    if (!empty($params['to_date'])) {
-      self::validateStartDateNotGreaterThanEndDate($params);
-    }
-
-    self::validateAbsencePeriod($params);
-    self::validateNoOverlappingLeaveRequests($params);
-    self::validateBalanceChange($params);
-    self::validateWorkingDay($params);
-    self::validateLeaveDatesDoesNotOverlapContracts($params);
   }
 
   /**
