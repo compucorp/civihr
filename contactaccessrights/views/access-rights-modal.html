@@ -51,7 +51,7 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary-outline text-uppercase" data-dismiss="modal" ng-click="modalCtrl.cancel()">cancel</button>
-  <button type="button" class="btn btn-primary text-uppercase" ng-click="modalCtrl.submit()" ng-show="modalCtrl.dataLoaded">
+  <button type="button" class="btn btn-primary text-uppercase" ng-disabled="modalCtrl.hasSubmit" ng-click="modalCtrl.submit()" ng-show="modalCtrl.dataLoaded">
     save
   </button>
 </div>
