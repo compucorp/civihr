@@ -315,6 +315,20 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
           )
         ";
         break;
+
+      case 'pension':
+        $query['select'][] = "pension_ov.label as {$entity}__pension_type_label";
+
+        $query['join'][] = "LEFT JOIN $table ON {$table}.jobcontract_revision_id = " . $revision["{$entity}_revision_id"];
+        $query['join'][] = "LEFT JOIN civicrm_option_group pension_og ON pension_og.name = 'hrjc_pension_type'";
+        $query['join'][] = "
+          LEFT JOIN civicrm_option_value pension_ov ON (
+            pension_ov.option_group_id = pension_og.id
+            AND pension_ov.value = {$table}.pension_type
+          )
+        ";
+        break;
+
       default:
         $query['from'][] = $table;
         $query['where'][] = "{$table}.jobcontract_revision_id = " . $revision["{$entity}_revision_id"];

@@ -89,7 +89,7 @@ define([
         months = m.diff(dateStart, 'months');
 
         m.add(-months, 'months');
-        days = m.diff(dateStart, 'days');
+        days = m.diff(dateStart, 'days') + 1;
 
         years = years > 0  ? (years > 1 ? years + ' years ' : years + ' year ') :  '';
         months = months > 0 ? (months > 1 ? months + ' months ' : months + ' month ') :  '';
