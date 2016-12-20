@@ -222,6 +222,20 @@ define([
             expect(ctrl.errorMsg.length).not.toBe(0);
           });
         });
+
+        describe('prevent multiple save', function () {
+          beforeEach(function () {
+            ctrl.submit();
+          });
+
+          it('submitting should be true', function () {
+            expect(ctrl.submitting).toBe(true);
+          });
+
+          xit('submitting should be false when promise has finished', function () {
+            // TODO
+          });
+        });
       });
     });
 
