@@ -698,7 +698,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage Leave Requests should have a start date
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutAStartDate() {
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
@@ -712,7 +712,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutContactID() {
     $fromDate = new DateTime('+4 days');
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => $this->absenceType->id,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
@@ -726,7 +726,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutTypeID() {
     $fromDate = new DateTime('+4 days');
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'status_id' => 1,
       'contact_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
@@ -740,7 +740,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutStatusID() {
     $fromDate = new DateTime('+4 days');
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
@@ -755,7 +755,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   public function testALeaveRequestShouldNotBeCreatedWhenToDateIsNotEmptyAndToDateTypeIsEmpty() {
     $toDate= new DateTime('+4 days');
     $fromDate = new DateTime();
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
@@ -772,7 +772,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   public function testALeaveRequestEndDateShouldNotBeGreaterThanStartDate() {
     $fromDate = new DateTime('+4 days');
     $toDate = new DateTime();
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
@@ -1085,7 +1085,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = new DateTime('2016-11-03');
     $toDate = new DateTime('2016-11-05');
 
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
@@ -1237,7 +1237,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     //four working days which will create a balance change of 4
 
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => $absenceType->id,
       'contact_id' => $contact['id'],
       'status_id' => 1,
@@ -1347,7 +1347,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromType = $this->leaveRequestDayTypes['All Day']['id'];
     $toType = $this->leaveRequestDayTypes['All Day']['id'];
 
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => $absenceType->id,
       'contact_id' => $contact['id'],
       'status_id' => 1,
@@ -1404,7 +1404,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = new DateTime("2016-11-16");
     $fromType = $this->leaveRequestDayTypes['All Day']['id'];
 
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => $absenceType->id,
       'contact_id' => $contact['id'],
       'status_id' => 1,
@@ -1430,7 +1430,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromType = $this->leaveRequestDayTypes['All Day']['id'];
     $toType = $this->leaveRequestDayTypes['All Day']['id'];
 
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => 1,
       'contact_id' => $contact['id'],
       'status_id' => 1,
@@ -1462,7 +1462,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromType = $this->leaveRequestDayTypes['All Day']['id'];
     $toType = $this->leaveRequestDayTypes['All Day']['id'];
 
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => 1,
       'contact_id' => $contact['id'],
       'status_id' => 1,
@@ -1529,7 +1529,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromType = $this->leaveRequestDayTypes['All Day']['id'];
     $toType = $this->leaveRequestDayTypes['All Day']['id'];
 
-    LeaveRequest::create([
+    LeaveRequest::validateParams([
       'type_id' => $absenceType->id,
       'contact_id' => $contact['id'],
       'status_id' => 1,

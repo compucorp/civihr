@@ -56,7 +56,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateParams($params) {
+  public static function validateParams($params) {
     self::validateMandatory($params);
     self::validateToDateType($params);
     if (!empty($params['to_date'])) {
