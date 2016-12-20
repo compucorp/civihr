@@ -601,7 +601,7 @@
         <tbody>
           <tr>
             <td
-              class="chr_leave-report__label chr_leave-report__label--toggle"
+              class="chr_leave-report__label chr_leave-report__label--toggle chr_leave-report__table__heading--label"
               ng-click="report.isOpen.open = !report.isOpen.open">
               <i
                 class="fa"
@@ -609,14 +609,14 @@
                 ng-class="{ 'fa-chevron-down': report.isOpen.open, ' fa-chevron-right': !report.isOpen.open }"></i>
               Open Requests
             </td>
-            <td></td>
-            <td></td>
-            <td>-4</td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td></td>
+            <td class="chr_leave-report__table__heading--dates"></td>
+            <td class="chr_leave-report__table__heading--status"></td>
+            <td class="chr_leave-report__table__heading--type">-4</td>
+            <td class="chr_leave-report__table__heading--type">1</td>
+            <td class="chr_leave-report__table__heading--type">0</td>
+            <td class="chr_leave-report__table__heading--type">0</td>
+            <td class="chr_leave-report__table__heading--type">0</td>
+            <td class="chr_leave-report__table__heading--action"></td>
           </tr>
           <tr ng-show="report.isOpen.open">
             <td class="table-nested-cell" colspan="9">
