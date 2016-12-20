@@ -28,7 +28,12 @@ define([
         },
         create: function(params) {
           return $q(function (resolve, reject) {
-            resolve(mockData.getRandomLeaveRequest().values);
+            resolve(mockData.getRandomLeaveRequest().values[0]);
+          });
+        },
+        update: function(params) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.getRandomLeaveRequest().values[0]);
           });
         },
         isValid: function(params) {

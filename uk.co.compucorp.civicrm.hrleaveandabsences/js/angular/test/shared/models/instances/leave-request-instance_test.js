@@ -111,28 +111,23 @@ define([
     });
 
     describe('update()', function () {
-      var attr,
-        sendUpdateMock,
-        updatePromise;
+      var requestData, promise;
 
       beforeEach(function () {
-        attr = {
-          key: jasmine.any(String)
-        };
-        sendUpdateMock = jasmine.createSpy('update');
-        sendUpdateMock.and.returnValue(jasmine.any(Promise));
-        LeaveRequestAPI.update = sendUpdateMock;
-
-        updatePromise = LeaveRequestInstance.update(attr);
+        requestData = mockData.createRandomLeaveRequest();
+        spyOn(LeaveRequestAPI, 'update').and.callThrough();
+        promise = LeaveRequestAPI.update(requestData);
       });
 
-      it('calls LeaveRequestAPI.update', function () {
-        var updatedAttributes = _.assign({}, LeaveRequestInstance.attributes(), attr);
-        expect(LeaveRequestAPI.update).toHaveBeenCalledWith(updatedAttributes);
+      afterEach(function () {
+        //to excute the promise force an digest
+        $rootScope.$apply();
       });
 
-      it('returns a promise', function () {
-        expect(updatePromise).toEqual(jasmine.any(Promise));
+      it('calls equivalent API method', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.update).toHaveBeenCalled();
+        });
       });
     });
 
@@ -153,6 +148,13 @@ define([
       it('calls equivalent API method', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.create).toHaveBeenCalled();
+        });
+      });
+
+      it('id is appended to instance', function () {
+        expect(requestData.id).not.toBeDefined();
+        promise.then(function (result) {
+          expect(result.id).toBeDefined();
         });
       });
     });

@@ -12,7 +12,7 @@ define([
     function (ModelInstance, LeaveRequestAPI, OptionGroup) {
 
       /**
-       * This method is used to get ID of an option value
+       * Get ID of an option value
        *
        * @param {string} name - name of the option value
        * @return {Promise} Resolved with {Object} Specific leave request
@@ -29,7 +29,7 @@ define([
       return ModelInstance.extend({
 
         /**
-         * This method is used to cancel a leave request
+         * Cancel a leave request
          */
         cancel: function () {
           return getOptionIDByName('cancelled')
@@ -47,38 +47,35 @@ define([
         },
 
         /**
-         * This method is used to update a leave request
+         * Update a leave request
          *
-         * @param {object} attributes - Values which needs to be updated
          * @return {Promise} Resolved with {Object} Updated Leave request
          */
-        update: function (attributes) {
-          var updatedAttributes = _.assign({}, this.attributes(), attributes);
-          return LeaveRequestAPI.update(updatedAttributes);
+        update: function () {
+          return LeaveRequestAPI.update(this.attributes());
         },
 
         /**
-         * This method is used to create a new leave request
+         * Create a new leave request
          *
-         * @param {object} attributes - Values which will be used to create new leave request
-         * @return {Promise} Resolved with {Object} Created Leave request
+         * @return {Promise} Resolved with {Object} Created Leave request with
+         *  newly created id for this instance
          */
         create: function (attributes) {
-          var updatedAttributes = _.assign({}, this.attributes(), attributes);
-          return LeaveRequestAPI.create(updatedAttributes);
+          return LeaveRequestAPI.create(this.attributes())
+            .then(function(result){
+              this.attributes = _.assign({}, this.attributes(), result);
+            }.bind(this));
         },
 
         /**
-         * This method is used to validate a leave request attributes.
+         * Validate leave request instance attributes.
          *
-         * @param {object} attributes - Values which are currently part of
-         *  leave request instance
          * @return {Promise} empty array if no error found otherwise an object
          *  with is_error set and array of errors
          */
-        isValid: function (attributes) {
-          var updatedAttributes = _.assign({}, this.attributes(), attributes);
-          return LeaveRequestAPI.isValid(updatedAttributes);
+        isValid: function () {
+          return LeaveRequestAPI.isValid(this.attributes());
         }
       });
     }

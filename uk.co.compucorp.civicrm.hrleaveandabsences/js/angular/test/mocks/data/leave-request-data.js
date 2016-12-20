@@ -172,6 +172,15 @@ define([
       }]
     },
     randomLeaveRequestToServer: {
+      'type_id': absenceTypeData.getRandomAbsenceType('id'),
+      'contact_id': '202',
+      'status_id': optionGroupMock.randomValue('hrleaveandabsences_leave_request_status', 'name'),
+      'from_date': '2016-02-01',
+      'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
+      'to_date': '2016-02-03',
+      'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
+    },
+    randomUpdateLeaveRequestToServer: {
       'id': '17',
       'type_id': absenceTypeData.getRandomAbsenceType('id'),
       'contact_id': '202',
@@ -214,6 +223,9 @@ define([
     },
     createRandomLeaveRequest: function () {
       return mockData.randomLeaveRequestToServer;
+    },
+    updateRandomLeaveRequest: function () {
+      return mockData.randomUpdateLeaveRequestToServer;
     },
     calculateBalanceChangeRequest: function () {
       return mockData.calculateBalanceChangeRequestData;

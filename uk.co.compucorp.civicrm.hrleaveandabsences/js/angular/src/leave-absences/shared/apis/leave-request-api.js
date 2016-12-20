@@ -42,10 +42,12 @@ define([
         var deferred = $q.defer();
 
         if (!contactId || !periodId) {
-          deferred.resolve({
+          deferred.reject({
             is_error: 1,
             error_message: 'contact_id and period_id are mandatory'
           });
+
+          return deferred.promise;
         }
 
         var params = {
@@ -55,24 +57,35 @@ define([
           public_holiday: isPublicHoliday || false
         };
 
-        deferred.resolve(this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params)
+        return this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params)
           .then(function (data) {
             return data.values;
-          }));
-
-        return deferred.promise;
+          });
       },
 
       /**
        * This method is used to update a leave request
        *
-       * @param {object} updatedAttributes - Updated values of leave request
+       * @param {object} params - Updated values of leave request
        * @return {Promise} Resolved with {Object} Updated Leave request
        */
-      update: function (updatedAttributes) {
+      update: function (params) {
         $log.debug('LeaveRequestAPI.update');
+        var deferred = $q.defer();
 
-        return this.sendPOST('LeaveRequest', 'create', updatedAttributes);
+        if (!('id' in params)) {
+          deferred.reject({
+            is_error: 1,
+            error_message: 'id is mandatory field'
+          });
+          return deferred.promise;
+        }
+
+        return this.sendPOST('LeaveRequest', 'create', params)
+          .then(function (data) {
+            //returns array of single object hence getting first object
+            return data.values[0];
+          });
       },
 
       /**
@@ -90,23 +103,20 @@ define([
         var deferred = $q.defer();
 
         if (params && !('contact_id' in params) || !('from_date' in params) || !('from_date_type' in params)) {
-          deferred.resolve({
+          deferred.reject({
             is_error: 1,
             error_message: 'contact_id, from_date and from_date_type in params are mandatory'
           });
+          return deferred.promise;
         }
-
-        deferred.resolve(this.sendGET('LeaveRequest', 'calculatebalancechange')
+        return this.sendGET('LeaveRequest', 'calculatebalancechange')
           .then(function (data) {
             return data.values;
-          }));
-
-        return deferred.promise;
+          });
       },
 
       /**
-       * The method will create a new leave request. The
-       * API will create and return the leave request.
+       * Create a new leave request. The API will create and return the leave request.
        *
        * It will also check if provided data is valid by calling another
        * endpoint is_valid.
@@ -124,38 +134,30 @@ define([
         var deferred = $q.defer();
 
         if (params && 'to_date' in params && !('to_date_type' in params)) {
-          deferred.resolve({
+          deferred.reject({
             is_error: 1,
             error_message: 'to_date_type is mandatory'
           });
         } else if (params && !('contact_id' in params) || !('from_date' in params) ||
           !('from_date_type' in params) || !('status_id' in params)) {
 
-          deferred.resolve({
+          deferred.reject({
             is_error: 1,
             error_message: 'contact_id, from_date, status_id and from_date_type params are mandatory'
           });
-        } else {
-          this.isValid(params)
-            .then(function (result) {
-              if ('is_error' in result) {
-                deferred.resolve(result);
-              }
 
-              deferred.resolve(this.sendPOST('LeaveRequest', 'create', params)
-                .then(function (data) {
-                  return data.values;
-                }.bind(this))
-              );
-            }.bind(this));
+          return deferred.promise;
         }
 
-        return deferred.promise;
+        return this.sendPOST('LeaveRequest', 'create', params)
+          .then(function (data) {
+            //returns array of single object hence getting first object
+            return data.values[0];
+          });
       },
 
       /**
-       * The method will validate params for a new new leave request.
-       *
+       * Validate params for a new new leave request.
        *
        * @param {Object} params matched the API end point params with
        * mandatory values for contact_id, status_id, from_date, from_date_type
@@ -174,9 +176,13 @@ define([
               return {
                 is_error: 1,
                 errors: data.values
-              }
+              };
             }
-            return data.values;
+
+            return {
+              is_error: 0,
+              errors: data.values
+            };
           }));
 
         return deferred.promise;

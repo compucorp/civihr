@@ -16,7 +16,7 @@ define([
       return Model.extend({
 
         /**
-         * This method returns all the Leave Requests.
+         * Get all the Leave Requests.
          * It supports filters, pagination, sort and extra params
          *
          * @param {object} filters - Values the full list should be filtered by
@@ -36,7 +36,7 @@ define([
         },
 
         /**
-         * This method returns all the total change in balance that is caused by the
+         * Get all the total change in balance that is caused by the
          * leave requests of a given absence type, or of all the absence types of a given contact and period.
          *
          * @param {string} contactId The ID of the Contact to get the balance change for
