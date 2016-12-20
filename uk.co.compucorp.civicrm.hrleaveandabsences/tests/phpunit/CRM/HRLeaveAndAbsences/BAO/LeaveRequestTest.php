@@ -708,6 +708,65 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Leave Request should have a contact
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutContactID() {
+    $fromDate = new DateTime('+4 days');
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Leave Request should have an Absence Type
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutTypeID() {
+    $fromDate = new DateTime('+4 days');
+    LeaveRequest::create([
+      'status_id' => 1,
+      'contact_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The Leave Request status should not be empty
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutStatusID() {
+    $fromDate = new DateTime('+4 days');
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The type of To Date should not be empty
+   */
+  public function testALeaveRequestShouldNotBeCreatedWhenToDateIsNotEmptyAndToDateTypeIsEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage Leave Request start date cannot be greater than the end date
    */
   public function testALeaveRequestEndDateShouldNotBeGreaterThanStartDate() {
