@@ -41,7 +41,9 @@ define([
        * Saves data and closes the modal
        */
       vm.submit = function () {
-        if (vm.submitting) return;
+        if (vm.submitting) {
+          return;
+        }
 
         vm.submitting = true;
         $q.all([persistValues('regions'), persistValues('locations')])
@@ -50,7 +52,8 @@ define([
           })
           .catch(function (err) {
             vm.errorMsg = 'Error while saving data';
-          }).finally(function () {
+          })
+          .finally(function () {
             vm.submitting = true;
           });
       };
