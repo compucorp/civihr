@@ -262,6 +262,17 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
 
       $query['from'][] = $table;
       $query['where'][] = "{$table}.jobcontract_revision_id = " . $revision["{$entity}_revision_id"];
+
+      if ($entity == 'pension') {
+        $query['select'][] = "pension_ov.label as {$entity}__pension_type_label";
+
+        $query['from'][] = 'civicrm_option_group pension_og';
+        $query['from'][] = 'civicrm_option_value pension_ov';
+
+        $query['where'][] = "pension_og.name = 'hrjc_pension_type'";
+        $query['where'][] = 'pension_ov.option_group_id = pension_og.id';
+        $query['where'][] = "pension_ov.value = {$table}.pension_type";
+      }
     }
 
     return sprintf(
