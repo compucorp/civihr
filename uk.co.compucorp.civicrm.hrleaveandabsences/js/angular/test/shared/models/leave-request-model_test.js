@@ -27,6 +27,7 @@ define([
 
       spyOn(LeaveRequestAPI, 'all').and.callThrough();
       spyOn(LeaveRequestAPI, 'balanceChangeByAbsenceType').and.callThrough();
+      spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
     }));
 
     afterEach(function () {
@@ -55,12 +56,36 @@ define([
       });
     });
 
-    it('balanceChangeByAbsenceType() calls equivalent API method', function () {
-      var leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType();
+    describe('balanceChangeByAbsenceType()', function () {
 
-      leaveRequestPromise.then(function () {
-        expect(LeaveRequestAPI.balanceChangeByAbsenceType).toHaveBeenCalled();
+      afterEach(function () {
+        //to excute the promise force an digest
+        $rootScope.$apply();
+      });
+
+      it('calls equivalent API method', function () {
+        var leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType();
+
+        leaveRequestPromise.then(function () {
+          expect(LeaveRequestAPI.balanceChangeByAbsenceType).toHaveBeenCalled();
+        });
       });
     });
+
+    describe('calculateBalanceChange()', function () {
+
+      afterEach(function () {
+        //to excute the promise force an digest
+        $rootScope.$apply();
+      });
+
+      it('calls equivalent API method', function () {
+        var leaveRequestPromise = LeaveRequest.calculateBalanceChange();
+
+        leaveRequestPromise.then(function () {
+          expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
+        });
+      });
+});
   });
 });

@@ -53,8 +53,34 @@ define([
          * @return {Promise} Resolved with {Object} Updated Leave request
          */
         update: function (attributes) {
-          return LeaveRequestAPI.sendPOST('LeaveRequest', 'create', _.assign({}, this.attributes(), attributes))
+          var updatedAttributes = _.assign({}, this.attributes(), attributes);
+          return LeaveRequestAPI.update(updatedAttributes);
+        },
+
+        /**
+         * This method is used to create a new leave request
+         *
+         * @param {object} attributes - Values which will be used to create new leave request
+         * @return {Promise} Resolved with {Object} Created Leave request
+         */
+        create: function (attributes) {
+          var updatedAttributes = _.assign({}, this.attributes(), attributes);
+          return LeaveRequestAPI.create(updatedAttributes);
+        },
+
+        /**
+         * This method is used to validate a leave request attributes.
+         *
+         * @param {object} attributes - Values which are currently part of
+         *  leave request instance
+         * @return {Promise} empty array if no error found otherwise an object
+         *  with is_error set and array of errors
+         */
+        isValid: function (attributes) {
+          var updatedAttributes = _.assign({}, this.attributes(), attributes);
+          return LeaveRequestAPI.isValid(updatedAttributes);
         }
       });
-    }]);
+    }
+  ]);
 });

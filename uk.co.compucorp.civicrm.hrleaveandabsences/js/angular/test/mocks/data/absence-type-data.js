@@ -1,4 +1,6 @@
-define(function () {
+define([
+  'common/lodash'
+], function (_) {
   var all_data = {
     "is_error": 0,
     "version": 3,
@@ -57,11 +59,35 @@ define(function () {
       "allow_accruals_request": "0",
       "allow_accrue_in_the_past": "0",
       "allow_carry_forward": "0"
+    }, {
+      "id": "4",
+      "title": "Weekend",
+      "weight": "4",
+      "color": "#B32E2E",
+      "is_default": "0",
+      "is_reserved": "1",
+      "allow_request_cancelation": "1",
+      "allow_overuse": "1",
+      "must_take_public_holiday_as_leave": "0",
+      "default_entitlement": "0",
+      "add_public_holiday_to_entitlement": "0",
+      "is_active": "1",
+      "allow_accruals_request": "0",
+      "allow_accrue_in_the_past": "0",
+      "allow_carry_forward": "0"
     }]
   };
   return {
     all: function () {
       return all_data;
+    },
+    getRandomAbsenceType: function (key) {
+      return _.sample(all_data.values)[key];
+    },
+    getAllAbsenceTypesByKey: function (key) {
+      return all_data.values.map(function (item) {
+        return item[key];
+      })
     }
   }
 });

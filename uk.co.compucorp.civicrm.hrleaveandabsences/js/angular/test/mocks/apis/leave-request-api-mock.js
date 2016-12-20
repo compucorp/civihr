@@ -20,6 +20,21 @@ define([
           return $q(function (resolve, reject) {
             resolve(mockData.balanceChangeByAbsenceType().values);
           });
+        },
+        calculateBalanceChange: function(params) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.calculateBalanceChange().values);
+          });
+        },
+        create: function(params) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.getRandomLeaveRequest().values);
+          });
+        },
+        isValid: function(params) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.getisValid().values);
+          });
         }
       };
     }]);

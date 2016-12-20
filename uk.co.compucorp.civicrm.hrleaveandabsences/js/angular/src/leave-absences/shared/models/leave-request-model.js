@@ -48,6 +48,22 @@ define([
          */
         balanceChangeByAbsenceType: function (contactId, periodId, statuses, isPublicHoliday) {
           return leaveRequestAPI.balanceChangeByAbsenceType(contactId, periodId, statuses, isPublicHoliday);
+        },
+
+        /**
+         * Gets the overall balance change after a leave request is created. The
+         * corresponding API call will create and return the detailed breakdown of it in days.
+         *
+         * @param {Object} params matched the API end point params like
+         * mandatory values for contact_id, from_date, from_date_type and optional values for
+         * to_date and to_type.
+         *
+         * @return {Promise} containing the detailed breakdown of balance leaves
+         */
+        calculateBalanceChange: function (params) {
+          $log.debug('LeaveRequestAPI.calculateBalanceChange');
+
+          return leaveRequestAPI.calculateBalanceChange(params);
         }
       });
     }

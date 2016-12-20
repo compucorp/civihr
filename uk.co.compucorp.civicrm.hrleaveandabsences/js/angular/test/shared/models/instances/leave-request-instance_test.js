@@ -36,7 +36,8 @@ define([
         $q = _$q_;
         $rootScope = _$rootScope_;
         OptionGroup = _OptionGroup_;
-      }]));
+      }
+    ]));
 
     describe('cancel()', function () {
       var optionGroupDeferred,
@@ -82,16 +83,16 @@ define([
 
         it('OptionGroup.valuesOf gets called', function () {
           promise.then(function () {
-              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-            });
+            expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+          });
         });
 
         it('LeaveRequestInstance.update gets called', function () {
           promise.then(function () {
-              expect(LeaveRequestInstance.update).toHaveBeenCalledWith({
-                'status_id': mockOptionValue[0].value
-              });
+            expect(LeaveRequestInstance.update).toHaveBeenCalledWith({
+              'status_id': mockOptionValue[0].value
             });
+          });
         });
       });
 
@@ -111,26 +112,69 @@ define([
 
     describe('update()', function () {
       var attr,
-        sendPOSTMock,
+        sendUpdateMock,
         updatePromise;
 
       beforeEach(function () {
         attr = {
           key: jasmine.any(String)
         };
-        sendPOSTMock = jasmine.createSpy('sendPOST');
-        sendPOSTMock.and.returnValue(jasmine.any(Promise));
-        LeaveRequestAPI.sendPOST = sendPOSTMock;
+        sendUpdateMock = jasmine.createSpy('update');
+        sendUpdateMock.and.returnValue(jasmine.any(Promise));
+        LeaveRequestAPI.update = sendUpdateMock;
 
         updatePromise = LeaveRequestInstance.update(attr);
       });
 
-      it('calls LeaveRequestAPI.sendPOST', function () {
-        expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest', 'create', _.assign({}, LeaveRequestInstance.attributes(), attr));
+      it('calls LeaveRequestAPI.update', function () {
+        var updatedAttributes = _.assign({}, LeaveRequestInstance.attributes(), attr);
+        expect(LeaveRequestAPI.update).toHaveBeenCalledWith(updatedAttributes);
       });
 
       it('returns a promise', function () {
         expect(updatePromise).toEqual(jasmine.any(Promise));
+      });
+    });
+
+    describe('create()', function () {
+      var requestData, promise;
+
+      beforeEach(function () {
+        requestData = mockData.createRandomLeaveRequest();
+        spyOn(LeaveRequestAPI, 'create').and.callThrough();
+        promise = LeaveRequestAPI.create(requestData);
+      });
+
+      afterEach(function () {
+        //to excute the promise force an digest
+        $rootScope.$apply();
+      });
+
+      it('calls equivalent API method', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.create).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('isValid()', function () {
+      var requestData, promise;
+
+      beforeEach(function () {
+        requestData = mockData.createRandomLeaveRequest();
+        spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
+        promise = LeaveRequestAPI.isValid(requestData);
+      });
+
+      afterEach(function () {
+        //to excute the promise force an digest
+        $rootScope.$apply();
+      });
+
+      it('calls equivalent API method', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
+        });
       });
     });
   });
