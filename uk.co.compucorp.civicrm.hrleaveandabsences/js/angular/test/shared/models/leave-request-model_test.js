@@ -7,7 +7,6 @@ define([
   describe('LeaveRequest', function () {
     var $provide,
       LeaveRequest,
-      LeaveRequestInstance,
       LeaveRequestAPI,
       $rootScope;
 
@@ -19,9 +18,8 @@ define([
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
     }));
 
-    beforeEach(inject(function (_LeaveRequest_, _LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_) {
+    beforeEach(inject(function (_LeaveRequest_, _LeaveRequestAPI_, _$rootScope_) {
       LeaveRequest = _LeaveRequest_;
-      LeaveRequestInstance = _LeaveRequestInstance_;
       LeaveRequestAPI = _LeaveRequestAPI_;
       $rootScope = _$rootScope_;
 

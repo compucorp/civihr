@@ -11,6 +11,7 @@ require_once 'helpers/LeavePeriodEntitlementHelpersTrait.php';
 require_once 'helpers/LeaveRequestHelpersTrait.php';
 require_once 'helpers/SicknessRequestHelpersTrait.php';
 require_once 'helpers/WorkPatternHelpersTrait.php';
+require_once 'helpers/TOILRequestHelpersTrait.php';
 
 /**
  * Call the "cv" command.

@@ -298,7 +298,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     //This leave request is before the contract start date and will not be returned
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
@@ -307,7 +307,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     //This will be returned as it is after the contract start date
-    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
@@ -332,7 +332,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     //This leave request is before the contract start date and will not be returned
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
@@ -341,7 +341,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     // This will be returned
-    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-02'),
@@ -350,7 +350,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     // This will be returned
-    $leaveRequest3 = LeaveRequestFabricator::fabricate([
+    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-09-07'),
@@ -359,7 +359,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     //This will not be returned as it is after the contract start date
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
@@ -384,7 +384,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     //This leave request is before the contract start date and will not be returned
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
@@ -392,7 +392,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     // This will be returned as it's after the contract start date
-    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2017-09-02'),
@@ -400,7 +400,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     // This will be returned as it's after the contract start date as well
-    $leaveRequest3 = LeaveRequestFabricator::fabricate([
+    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2018-01-02'),
@@ -425,7 +425,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     //This leave request is before the contract start date and will not be returned
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
@@ -433,7 +433,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     // This will be returned
-    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
@@ -441,7 +441,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     // This will be returned
-    $leaveRequest3 = LeaveRequestFabricator::fabricate([
+    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
@@ -449,7 +449,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     //This will not be returned as it is after the contract start date
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
@@ -474,7 +474,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     );
 
     // This will be returned. The balance change will be -1
-    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
@@ -482,7 +482,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     // This will be returned. The balance change will be -4
-    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
@@ -518,7 +518,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     //This leave request matches the date params, but not the contract dates,
     //so it will not be returned
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),

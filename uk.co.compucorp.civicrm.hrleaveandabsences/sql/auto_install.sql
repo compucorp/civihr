@@ -394,3 +394,19 @@ CREATE TABLE `civicrm_hrleaveandabsences_sickness_request` (
     CONSTRAINT FK_civicrm_hrleaveandabsences_sickness_request_leave_request_id FOREIGN KEY (`leave_request_id`) REFERENCES `civicrm_hrleaveandabsences_leave_request`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_toil_request
+-- *
+-- * TOIL Request
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_toil_request` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique TOILRequest ID',
+     `leave_request_id` int unsigned NOT NULL   COMMENT 'FK to LeaveRequest',
+     `duration` int unsigned NOT NULL   COMMENT 'The duration of the overtime work in minutes',
+    PRIMARY KEY ( `id` ),
+    CONSTRAINT FK_civicrm_hrleaveandabsences_toil_request_leave_request_id FOREIGN KEY (`leave_request_id`) REFERENCES `civicrm_hrleaveandabsences_leave_request`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
