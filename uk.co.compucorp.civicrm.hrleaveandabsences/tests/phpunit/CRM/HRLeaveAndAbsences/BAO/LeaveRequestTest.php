@@ -1443,7 +1443,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage The Leave request dates is not contained within a valid absence period
+   * @expectedExceptionMessage The Leave request dates are not contained within a valid absence period
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheDatesOverlapTwoAbsencePeriods() {
     $contact = ContactFabricator::fabricate();
