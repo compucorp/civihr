@@ -246,7 +246,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testLeaveRequestBalanceForEntitlementOnlySumBalanceChangesCreatedByLeaveRequestsWithSpecificStatus() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
-    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime(),
+      new DateTime('+20 days')
+    );
 
     $this->createLeaveBalanceChange($entitlement->id, 23.5);
     $this->createBroughtForwardBalanceChange($entitlement->id, 4);
@@ -339,7 +342,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testLeaveRequestBalanceForEntitlementCanSumBalanceChangesCreatedByLeaveRequestsUpToASpecificDate() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
-    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime(),
+      new DateTime('+20 days')
+    );
 
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
@@ -393,7 +399,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testLeaveRequestBalanceForEntitlementCanSumBalanceChangesCreatedByLeaveRequestsOnASpecificDateRange() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
-    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime(),
+      new DateTime('+20 days')
+    );
 
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
