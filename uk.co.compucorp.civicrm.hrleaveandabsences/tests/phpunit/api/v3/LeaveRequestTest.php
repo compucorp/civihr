@@ -704,7 +704,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResultsBreakdown, $result['values']);
   }
 
-  public function testLeaveRequestIsValidWithoutAStartDate() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenStartDateIsEmpty() {
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
@@ -722,7 +722,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWithoutContactID() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenContactIDIsEmpty() {
     $fromDate = new DateTime('+4 days');
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
@@ -741,7 +741,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWithoutTypeID() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenTypeIDIsEmpty() {
     $fromDate = new DateTime('+4 days');
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'status_id' => 1,
@@ -760,7 +760,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWithoutStatusID() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenStatusIDIsEmpty() {
     $fromDate = new DateTime('+4 days');
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
@@ -779,7 +779,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWhenToDateIsNotEmptyAndToDateTypeIsEmpty() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateIsNotEmptyAndToDateTypeIsEmpty() {
     $toDate= new DateTime('+4 days');
     $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
@@ -801,7 +801,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWhenEndDateIsGreaterThanStartDate() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenEndDateIsGreaterThanStartDate() {
     $fromDate = new DateTime('+4 days');
     $toDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
@@ -824,7 +824,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWhenThereAreOverlappingLeaveRequests() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenThereAreOverlappingLeaveRequests() {
     $contactID = 1;
     $fromDate1 = new DateTime('2016-11-02');
     $toDate1 = new DateTime('2016-11-04');
@@ -882,7 +882,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWhenBalanceChangeGreaterThanPeriodEntitlementBalanceChangeWhenAllowOveruseFalse() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenBalanceChangeGreaterThanPeriodEntitlementBalanceChangeAndAllowOveruseFalse() {
     $contact = ContactFabricator::fabricate();
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -942,7 +942,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWhenLeaveRequestHasNoWorkingDay() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenLeaveRequestHasNoWorkingDay() {
     $contact = ContactFabricator::fabricate();
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -1002,7 +1002,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWhenTheDatesAreNotContainedInValidAbsencePeriod() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenTheDatesAreNotContainedInValidAbsencePeriod() {
     $contact = ContactFabricator::fabricate();
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -1035,7 +1035,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWhenTheDatesOverlapMoreThanOneContract() {
+  public function testLeaveRequestIsValidShouldReturnErrorWhenTheDatesOverlapMoreThanOneContract() {
     $contact = ContactFabricator::fabricate();
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -1107,7 +1107,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidWhenValidationsPassed() {
+  public function testLeaveRequestIsValidShouldNotReturnErrorWhenValidationsPass() {
     $contactID = 1;
 
     $period = AbsencePeriodFabricator::fabricate([
