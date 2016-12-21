@@ -258,3 +258,26 @@ function _civicrm_api3_leave_request_get_statuses_from_params($params) {
 
   return $params['statuses']['IN'];
 }
+
+/**
+ * LeaveRequest.isValid API
+ * This API runs the validation on the LeaveRequest BAO create method
+ * without a call to the LeaveRequest create itself.
+ *
+ * @param array $params
+ *  An array of params passed to the API
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_isvalid($params) {
+  $result = [];
+
+  try {
+    CRM_HRLeaveAndAbsences_BAO_LeaveRequest::validateParams($params);
+  }
+  catch (CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException $e) {
+    $result[$e->getField()] = [$e->getExceptionCode()];
+  }
+
+  return civicrm_api3_create_success($result);
+}

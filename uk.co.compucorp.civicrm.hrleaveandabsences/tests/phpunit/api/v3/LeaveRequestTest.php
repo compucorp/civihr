@@ -20,6 +20,12 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatt
 class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
+
+  /**
+   * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
+   */
+  private $absenceType;
 
   public function setUp() {
     // In order to make tests simpler, we disable the foreign key checks,
@@ -32,6 +38,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
     $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
+    $this->absenceType = AbsenceTypeFabricator::fabricate();
   }
 
   /**
@@ -695,5 +702,450 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_type' => $toType
     ]);
     $this->assertEquals($expectedResultsBreakdown, $result['values']);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenStartDateIsEmpty() {
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'from_date' => ['leave_request_empty_from_date']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenContactIDIsEmpty() {
+    $fromDate = new DateTime('+4 days');
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'contact_id' => ['leave_request_empty_contact_id']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenTypeIDIsEmpty() {
+    $fromDate = new DateTime('+4 days');
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'status_id' => 1,
+      'contact_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'type_id' => ['leave_request_empty_type_id']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenStatusIDIsEmpty() {
+    $fromDate = new DateTime('+4 days');
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'status_id' => ['leave_request_empty_status_id']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateIsNotEmptyAndToDateTypeIsEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'to_date_type' => ['leave_request_empty_to_date_type']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenEndDateIsGreaterThanStartDate() {
+    $fromDate = new DateTime('+4 days');
+    $toDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'from_date' => ['leave_request_from_date_greater_than_end_date']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenThereAreOverlappingLeaveRequests() {
+    $contactID = 1;
+    $fromDate1 = new DateTime('2016-11-02');
+    $toDate1 = new DateTime('2016-11-04');
+
+    $fromDate2 = new DateTime('2016-11-05');
+    $toDate2 = new DateTime('2016-11-10');
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'from_date' => $fromDate1->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate1->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Rejected'],
+      'from_date' => $fromDate2->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    //from date and to date have date in both leave request
+    $fromDate = new DateTime('2016-11-03');
+    $toDate = new DateTime('2016-11-05');
+
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'from_date' => ['leave_request_overlaps_another_leave_request']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenBalanceChangeGreaterThanPeriodEntitlementBalanceChangeAndAllowOveruseFalse() {
+    $contact = ContactFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_overuse' => 0
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contact['id'],
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
+    $periodStartDate = date('2016-01-01');
+    $title = 'Job Title';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+      'title' => $title
+    ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $fromDate = new DateTime("2016-11-14");
+    $toDate = new DateTime("2016-11-17");
+    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contact['id'],
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $fromType,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $toType
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'type_id' => ['leave_request_balance_change_greater_than_remaining_balance']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenLeaveRequestHasNoWorkingDay() {
+    $contact = ContactFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contact['id'],
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
+    $periodStartDate = date('2016-01-01');
+    $title = 'Job Title';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+      'title' => $title
+    ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+
+    //both days are on weekends
+    $fromDate = new DateTime("2016-11-12");
+    $toDate = new DateTime("2016-11-13");
+    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contact['id'],
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $fromType,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $toType
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'from_date' => ['leave_request_doesnt_have_working_day']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenTheDatesAreNotContainedInValidAbsencePeriod() {
+    $contact = ContactFabricator::fabricate();
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    //the dates are outside of the absence period dates
+    $fromDate = new DateTime("2015-11-12");
+    $toDate = new DateTime("2015-11-13");
+    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => $contact['id'],
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $fromType,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $toType
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'from_date' => ['leave_request_not_within_absence_period']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenTheDatesOverlapMoreThanOneContract() {
+    $contact = ContactFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contact['id'],
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 30);
+    $periodStartDate1 = date('2016-01-01');
+    $periodEndDate1 = date('2016-06-30');
+
+    $periodStartDate2 = date('2016-07-01');
+    $periodEndDate2 = date('2016-12-31');
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate1,
+      'period_end_date' => $periodEndDate1
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate2,
+      'period_end_date' => $periodEndDate2
+    ]);
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+
+    //The from date and to date overlaps the two job contracts
+    $fromDate = new DateTime("2016-06-25");
+    $toDate = new DateTime("2016-07-13");
+    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contact['id'],
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $fromType,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $toType
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'from_date' => ['leave_request_overlapping_multiple_contracts']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldNotReturnErrorWhenValidationsPass() {
+    $contactID = 1;
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 20);
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contactID,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $fromDate = new DateTime('2016-11-05');
+    $toDate = new DateTime('2016-11-11');
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 0,
+      'values' => []
+    ];
+    $this->assertArraySubset($expectedResult, $result);
   }
 }
