@@ -351,8 +351,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'pattern_id' => $workPattern->id
     ]);
 
-    $fromDate = date("2016-11-13");
-    $toDate = date("2016-11-15");
+    $fromDate = new DateTime('2016-11-13');
+    $toDate = new DateTime('2016-11-15');
     $fromType = $this->leaveRequestDayTypes['1/2 AM']['name'];
     $toType = $this->leaveRequestDayTypes['1/2 AM']['name'];
 
@@ -433,8 +433,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
     PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
 
-    $fromDate = date("2016-11-14");
-    $toDate = date("2016-11-15");
+    $fromDate = new DateTime('2016-11-14');
+    $toDate = new DateTime('2016-11-15');
     $fromType = $this->leaveRequestDayTypes['All Day']['name'];
     $toType = $this->leaveRequestDayTypes['All Day']['name'];
 
@@ -494,8 +494,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'pattern_id' => $pattern->id
     ]);
 
-    $fromDate = '2016-07-31';
-    $toDate = '2016-08-15';
+    $fromDate = new DateTime('2016-07-31');
+    $toDate = new DateTime('2016-08-15');
     $fromType = $this->leaveRequestDayTypes['All Day']['name'];
     $toType = $this->leaveRequestDayTypes['1/2 AM']['name'];
 
@@ -1401,14 +1401,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
 
     //there's a public holiday on the leave request day
-    $fromDate = new DateTime("2016-11-16");
+    $fromDate = new DateTime('2016-11-16');
     $fromType = $this->leaveRequestDayTypes['All Day']['id'];
 
     LeaveRequest::create([
       'type_id' => $absenceType->id,
       'contact_id' => $contact['id'],
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => $fromDate->format('Ymd'),
       'from_date_type' => $fromType,
     ]);
   }

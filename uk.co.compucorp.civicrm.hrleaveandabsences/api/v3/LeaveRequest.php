@@ -159,12 +159,12 @@ function civicrm_api3_leave_request_calculateBalanceChange($params) {
   if (($hasToDate && !$hasToType) || ($hasToType && !$hasToDate)) {
     throw new InvalidArgumentException("to_date and to_type must be included together");
   }
-  $toDate = !empty($params['to_date']) ? $params['to_date'] : null;
+  $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : null;
   $toType = !empty($params['to_type']) ? $params['to_type'] : null;
 
   $result = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::calculateBalanceChange(
     $params['contact_id'],
-    $params['from_date'],
+    new DateTime($params['from_date']),
     $params['from_type'],
     $toDate,
     $toType

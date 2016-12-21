@@ -225,19 +225,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @return float
    */
   private static function calculateBalanceChangeFromCreateParams($params) {
-    $toDate = !empty($params['to_date']) ? $params['to_date'] : '';
     $leaveRequestOptionsValue = self::getLeaveRequestDayTypeOptionsGroupByValue();
+
+    $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : null;
     $fromDateType = $leaveRequestOptionsValue[$params['from_date_type']];
     $toDateType = !empty($params['to_date_type']) ? $leaveRequestOptionsValue[$params['to_date_type']] : '';
-    $leaveRequestBalance =
-      self::calculateBalanceChange
-      (
-        $params['contact_id'],
-        $params['from_date'],
-        $fromDateType,
-        $toDate,
-        $toDateType
-      );
+
+    $leaveRequestBalance = self::calculateBalanceChange(
+      $params['contact_id'],
+      new DateTime($params['from_date']),
+      $fromDateType,
+      $toDate,
+      $toDateType
+    );
+
     return abs($leaveRequestBalance['amount']);
   }
 
@@ -534,22 +535,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @return array
    *   An array of formatted results
    */
-  public static function calculateBalanceChange($contactId, $fromDate, $fromType, $toDate = null, $toType = null) {
-
+  public static function calculateBalanceChange($contactId, DateTime $fromDate, $fromType, DateTime $toDate = null, $toType = null) {
     $leaveRequest = new self();
     $leaveRequest->contact_id = $contactId;
 
     //For single day leave requests
     if (!$toDate) {
-      $toDate = $fromDate;
+      $toDate = clone $fromDate;
     }
-    $startDate = new DateTime($fromDate);
-    $endDate = new DateTime($toDate);
-    $endDateUnmodified = new DateTime($toDate);
+
+    $endDateUnmodified = clone $toDate;
     // add one day to end date to include it in DatePeriod
-    $endDate->modify('+1 day');
+    $toDate->modify('+1 day');
     $interval   = new DateInterval('P1D');
-    $datePeriod = new DatePeriod($startDate, $interval, $endDate);
+    $datePeriod = new DatePeriod($fromDate, $interval, $toDate);
 
     $isHalfDay = ['half_day_am', 'half_day_pm'];
     $fromDateIsHalfDay = in_array($fromType, $isHalfDay);
@@ -576,7 +575,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       }
 
       //since its an half day, 0.5 will be deducted irrespective of the amount returned from the work pattern
-      if($fromDateIsHalfDay && $date == $startDate && $amount != 0) {
+      if($fromDateIsHalfDay && $date == $fromDate && $amount != 0) {
         $amount = -1 * 0.5;
         $leaveRequestDayTypeName = $fromType;
       }
