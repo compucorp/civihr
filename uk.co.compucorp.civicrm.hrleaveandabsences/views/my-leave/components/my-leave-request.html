@@ -1,0 +1,183 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="modal.closeModal()">
+    <span aria-hidden="true">&times;</span>
+    <span class="sr-only">Close</span>
+  </button>
+  <h4 class="modal-title">Leave Request</h4>
+</div>
+<div class="modal-body chr_leave-request-form">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="chr_custom-select chr_custom-select--full">
+        <select>
+          <option value="1" selected>Vacation (15 days available)</option>
+          <option value="2">Medical</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <uib-tabset class="chr_leave-request-form__tab">
+
+        <uib-tab heading="Details">
+          <div class="row">
+            <div class="col-xs-12 form-horizontal">
+              <div class="form-group">
+                <label class="col-xs-4 control-label">No. of Days</label>
+                <div class="col-xs-8">
+                  <div class="btn-group btn-group-justified" data-toggle="buttons">
+                    <label class="btn active">
+                      <input type="radio" name="options" id="option1" autocomplete="off" checked> Multiple Days
+                    </label>
+                    <label class="btn">
+                      <input type="radio" name="options" id="option2" autocomplete="off"> Single Day
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 form-horizontal">
+              <div class="form-group">
+                <label class="col-xs-4 control-label">From Date
+                  <i class="fa fa-asterisk"></i>
+                </label>
+                <div class="col-xs-4">
+                  <div class="input-group">
+                    <input type="text"
+                           class="form-control"
+                           uib-datepicker-popup
+                           show-button-bar="false"
+                           datepicker-options="{startingDay: 1,showWeeks: false}"
+                           ng-model="modal.leaveRequest.fromDate"
+                           is-open="modal.leaveRequest.showDatePickerFrom"/>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default fa fa-calendar"
+                                ng-click="modal.leaveRequest.showDatePickerFrom = true"></button>
+                      </span>
+                  </div>
+                </div>
+                <div class="col-xs-4">
+                  <div class="chr_custom-select chr_custom-select--full">
+                    <select>
+                      <option value="1" selected>1/2 - PM</option>
+                      <option value="2">1/2 - AM</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 form-horizontal">
+              <div class="form-group">
+                <label class="col-xs-4 control-label">To Date
+                  <i class="fa fa-asterisk"></i>
+                </label>
+                <div class="col-xs-4">
+                  <div class="input-group">
+                    <input type="text"
+                           class="form-control"
+                           uib-datepicker-popup
+                           datepicker-options="{startingDay: 1,showWeeks: false}"
+                           show-button-bar="false"
+                           ng-model="modal.leaveRequest.toDate"
+                           is-open="modal.leaveRequest.showDatePickerTo"/>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default fa fa-calendar"
+                                ng-click="modal.leaveRequest.showDatePickerTo = true"></button>
+                      </span>
+                  </div>
+                </div>
+                <div class="col-xs-4">
+                  <div class="chr_custom-select chr_custom-select--full">
+                    <select>
+                      <option value="1" selected>1/2 - PM</option>
+                      <option value="2">1/2 - AM</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr/>
+          <div class="row chr_leave-request-form__group">
+            <div class="col-xs-4">Opening Balance</div>
+            <div class="col-xs-8">17.0</div>
+          </div>
+          <div class="row chr_leave-request-form__group text-primary pointer"
+               ng-click="modal.leaveRequest.isChangeExpanded = !modal.leaveRequest.isChangeExpanded">
+            <div class="col-xs-4">
+              <i class="fa chr_leave-request-form__chevron"
+                 aria-hidden="true"
+                 ng-class="{ 'fa-chevron-right': !modal.leaveRequest.isChangeExpanded, ' fa-chevron-down': modal.leaveRequest.isChangeExpanded }"></i>
+              Change
+            </div>
+            <div class="col-xs-8">2.5</div>
+          </div>
+          <table class="table chr_leave-request-form__table" ng-show="modal.leaveRequest.isChangeExpanded">
+            <thead>
+            <tr>
+              <th>Date</th>
+              <th>Selection</th>
+              <th>Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>Mon 12/04/2015</td>
+              <td>1/2 PM</td>
+              <td>0.5</td>
+            </tr>
+            <tr>
+              <td>Mon 12/04/2015</td>
+              <td>1/2 PM</td>
+              <td>0.5</td>
+            </tr>
+            <tr>
+              <td>Mon 12/04/2015</td>
+              <td>1/2 PM</td>
+              <td>0.5</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+              <td colspan="3" class="text-center">
+                <ul class="pagination">
+                  <li class="active"><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">4</a></li>
+                  <li><a href="#">5</a></li>
+                </ul>
+              </td>
+            </tr>
+            </tfoot>
+          </table>
+          <div class="row chr_leave-request-form__group">
+            <div class="col-xs-4">Closing Balance</div>
+            <div class="col-xs-8">14.5</div>
+          </div>
+        </uib-tab>
+
+        <uib-tab heading="Comments">
+        </uib-tab>
+
+        <uib-tab heading="Files">
+        </uib-tab>
+
+      </uib-tabset>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button"
+          class="btn btn-primary pull-left"
+          ng-click="modal.closeModal()">
+    Back
+  </button>
+  <button type="submit" class="btn btn-primary">Save</button>
+</div>
