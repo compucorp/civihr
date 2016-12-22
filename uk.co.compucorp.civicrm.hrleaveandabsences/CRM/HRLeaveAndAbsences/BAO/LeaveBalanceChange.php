@@ -585,4 +585,27 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     CRM_Core_DAO::executeQuery($query, $params);
   }
+
+  /**
+   * Deletes the LeaveBalanceChanges linked to all of the LeaveRequestDates of
+   * the given LeaveRequest
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   */
+  public static function deleteAllForLeaveRequest(LeaveRequest $leaveRequest) {
+    $leaveBalanceChangeTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+
+    $query = "DELETE bc FROM {$leaveBalanceChangeTable} bc
+              INNER JOIN {$leaveRequestDateTable} lrd
+                ON bc.source_id = lrd.id AND bc.source_type = %1
+              WHERE lrd.leave_request_id = %2";
+
+    $params = [
+      1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$leaveRequest->id, 'Integer']
+    ];
+
+    CRM_Core_DAO::executeQuery($query, $params);
+  }
 }

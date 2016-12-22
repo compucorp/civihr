@@ -838,6 +838,26 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     }
   }
 
+  public function testCanDeleteAllTheBalanceChangesForALeaveRequest() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'to_date_type' => 1,
+    ], true);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $this->assertCount(7, $balanceChanges);
+define( 'CIVICRM_DEBUG_LOG_QUERY', 1 );
+    LeaveBalanceChange::deleteAllForLeaveRequest($leaveRequest);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $this->assertCount(0, $balanceChanges);
+  }
+
 //  public function testCreateExpirationRecordsCreatesRecordsForExpiredBalanceChanges() {
 //    $this->createBroughtForwardBalanceChange(1, 5, date('YmdHis', strtotime('-1 day')));
 //    $this->createBroughtForwardBalanceChange(2, 7, date('YmdHis', strtotime('-8 days')));
