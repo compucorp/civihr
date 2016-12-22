@@ -44,3 +44,26 @@ function civicrm_api3_t_o_i_l_request_delete($params) {
 function civicrm_api3_t_o_i_l_request_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+/**
+ * TOILRequest.isValid API
+ * This API runs the validation on the TOILRequest BAO create method
+ * without a call to the TOILRequest create itself.
+ *
+ * @param array $params
+ *  An array of params passed to the API
+ *
+ * @return array
+ */
+function civicrm_api3_t_o_i_l_request_isvalid($params) {
+  $result = [];
+
+  try {
+    CRM_HRLeaveAndAbsences_BAO_TOILRequest::validateParams($params);
+  }
+  catch (CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException $e) {
+    $result[$e->getField()] = [$e->getExceptionCode()];
+  }
+
+  return civicrm_api3_create_success($result);
+}

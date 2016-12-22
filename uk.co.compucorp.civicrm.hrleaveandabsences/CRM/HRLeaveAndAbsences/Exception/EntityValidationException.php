@@ -6,7 +6,7 @@
 class CRM_HRLeaveAndAbsences_Exception_EntityValidationException extends Exception {
   /**
    * @var string
-   *   The DAO field associated with the thrown exception
+   *   The field associated with the thrown exception
    */
   private $field;
 

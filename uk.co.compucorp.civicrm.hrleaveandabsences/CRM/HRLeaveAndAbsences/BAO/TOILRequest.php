@@ -83,7 +83,11 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
   private static function validateTOILAmountIsValid($params) {
     $toilAmountOptions = self::toilAmountOptions();
     if (!in_array($params['toil_to_accrue'], $toilAmountOptions)) {
-      throw new InvalidTOILRequestException("The TOIL amount is not valid");
+      throw new InvalidTOILRequestException(
+        'The TOIL amount is not valid',
+        'toil_request_toil_amount_is_invalid',
+        'toil_to_accrue'
+      );
     }
   }
 
@@ -101,7 +105,9 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual != 0;
     if ($params['toil_to_accrue'] > $absenceType->max_leave_accrual && !$unlimitedAccrual) {
       throw new InvalidTOILRequestException(
-        "The TOIL amount requested for is greater than the maximum for this Absence Type"
+        'The TOIL amount requested for is greater than the maximum for this Absence Type',
+        'toil_request_toil_amount_more_than_maximum_for_absence_type',
+        'toil_to_accrue'
       );
     }
   }
@@ -129,7 +135,9 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
 
     if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past) {
       throw new InvalidTOILRequestException(
-        "You cannot request TOIL for past days"
+        "You cannot request TOIL for past days",
+        'toil_request_toil_cannot_be_requested_for_past_days',
+        'from_date'
       );
     }
   }
