@@ -6,6 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest
@@ -48,6 +49,41 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     // Even though the balance is 5, we must have 7 balance changes, one for
     // each date
     $this->assertCount(7, $balanceChanges);
+  }
+
+  public function testDeleteDeletesTheLeaveRequestItsBalanceChangesAndDates() {
+    $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => $leaveRequestDateTypes['all_day'],
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'to_date_type' => $leaveRequestDateTypes['all_day'],
+    ], true);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $dates = $leaveRequest->getDates();
+    $this->assertCount(7, $balanceChanges);
+    $this->assertCount(7, $dates);
+
+    $leaveRequestService = new LeaveRequestService();
+    $leaveRequestService->delete($leaveRequest->id);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $dates = $leaveRequest->getDates();
+    $this->assertCount(0, $balanceChanges);
+    $this->assertCount(0, $dates);
+
+    try {
+      $leaveRequest = LeaveRequest::findById($leaveRequest->id);
+    } catch(Exception $e) {
+      return;
+    }
+
+    $this->fail("Expected to not find the LeaveRequest with {$leaveRequest->id}, but it was found");
   }
 
 }

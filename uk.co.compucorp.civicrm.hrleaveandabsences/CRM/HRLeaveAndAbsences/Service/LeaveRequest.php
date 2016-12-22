@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
 
@@ -18,6 +19,27 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $this->saveBalanceChanges($leaveRequest);
 
     return $leaveRequest;
+  }
+
+  /**
+   * Deletes the LeaveRequest with the given $leaveRequestID, including all of
+   * its LeaveRequestDates and LeaveBalanceChanges
+   *
+   * @param int $leaveRequestID
+   */
+  public function delete($leaveRequestID) {
+    $leaveRequest = LeaveRequest::findById($leaveRequestID);
+
+    $transaction = new CRM_Core_Transaction();
+    try {
+      LeaveBalanceChange::deleteAllForLeaveRequest($leaveRequest);
+      LeaveRequestDate::deleteDatesForLeaveRequest($leaveRequest->id);
+      $leaveRequest->delete();
+
+      $transaction->commit();
+    } catch(Exception $e) {
+      $transaction->rollback();
+    }
   }
 
   /**
@@ -52,7 +74,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    *
    * @return array
    */
-  private function calculateBalanceChanges(LeaveBalanceChange $leaveRequest) {
+  private function calculateBalanceChanges(LeaveRequest $leaveRequest) {
     return LeaveRequest::calculateBalanceChange(
       $leaveRequest->contact_id,
       new DateTime($leaveRequest->from_date),
@@ -61,5 +83,4 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       $leaveRequest->to_date_type
     );
   }
-
 }
