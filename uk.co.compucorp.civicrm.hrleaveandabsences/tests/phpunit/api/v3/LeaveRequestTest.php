@@ -2,6 +2,7 @@
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
@@ -1147,5 +1148,83 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'values' => []
     ];
     $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testCreateAlsoCreatesTheBalanceChangesForTheLeaveRequest() {
+    $contact = ContactFabricator::fabricate();
+
+    $startDate = new DateTime();
+    $endDate = new DateTime('+5 days');
+
+    $absenceType = AbsenceTypeFabricator::fabricate();
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $startDate->format('YmdHis'),
+      'end_date' => $endDate->format('YmdHis'),
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact['id']],
+      ['period_start_date' => $startDate->format('Y-m-d')]
+    );
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $period->id,
+      'type_id' => $absenceType->id,
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 20);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
+
+    $result = civicrm_api3('LeaveRequest', 'create', [
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => $startDate->format('Y-m-d'),
+      'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'to_date' => $endDate->format('Y-m-d'),
+      'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'status_id' => 1,
+      'sequential' => 1,
+    ]);
+
+    $leaveRequest = LeaveRequest::findById($result['values'][0]['id']);
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $this->assertCount(6, $balanceChanges);
+  }
+
+  public function testDeleteAlsoDeletesLeaveRequestAndItsBalanceChangesFor() {
+    $contact = ContactFabricator::fabricate();
+
+    $startDate = new DateTime();
+    $endDate = new DateTime('+5 days');
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact['id'],
+      'type_id' => 1,
+      'from_date' => $startDate->format('Ymd'),
+      'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'to_date' => $endDate->format('Ymd'),
+      'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'status_id' => 1,
+      'sequential' => 1,
+    ], true);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $this->assertCount(6, $balanceChanges);
+
+    civicrm_api3('LeaveRequest', 'delete', ['id' => $leaveRequest->id]);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $this->assertCount(0, $balanceChanges);
+
+    try {
+      $leaveRequest = LeaveRequest::findById($leaveRequest->id);
+    } catch(Exception $e) {
+      return;
+    }
+
+    $this->fail("Expected to not find the LeaveRequest with {$leaveRequest->id}, but it was found");
   }
 }
