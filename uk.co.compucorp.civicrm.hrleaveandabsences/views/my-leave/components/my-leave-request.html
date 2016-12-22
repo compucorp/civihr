@@ -1,9 +1,11 @@
 <div class="modal-header">
-  <button type="button" class="close" ng-click="modal.closeModal()"><span aria-hidden="true">&times;</span><span
-    class="sr-only">Close</span></button>
+  <button type="button" class="close" ng-click="modal.closeModal()">
+    <span aria-hidden="true">&times;</span>
+    <span class="sr-only">Close</span>
+  </button>
   <h4 class="modal-title">Leave Request</h4>
 </div>
-<div class="modal-body clearfix">
+<div class="modal-body chr_leave-request-form">
   <div class="row">
     <div class="col-xs-12">
       <div class="chr_custom-select chr_custom-select--full">
@@ -17,7 +19,7 @@
 
   <div class="row">
     <div class="col-xs-12">
-      <uib-tabset class="chr-tab__outer">
+      <uib-tabset class="chr_leave-request-form__tab">
 
         <uib-tab heading="Details">
           <div class="row">
@@ -25,7 +27,7 @@
               <div class="form-group">
                 <label class="col-xs-4 control-label">No. of Days</label>
                 <div class="col-xs-8">
-                  <div class="btn-group chr-toggle btn-group-justified" data-toggle="buttons">
+                  <div class="btn-group btn-group-justified" data-toggle="buttons">
                     <label class="btn active">
                       <input type="radio" name="options" id="option1" autocomplete="off" checked> Multiple Days
                     </label>
@@ -44,7 +46,7 @@
                   <i class="fa fa-asterisk"></i>
                 </label>
                 <div class="col-xs-4">
-                  <div class="input-group chr-datepicker">
+                  <div class="input-group">
                     <input type="text"
                            class="form-control"
                            uib-datepicker-popup
@@ -76,7 +78,7 @@
                   <i class="fa fa-asterisk"></i>
                 </label>
                 <div class="col-xs-4">
-                  <div class="input-group chr-datepicker">
+                  <div class="input-group">
                     <input type="text"
                            class="form-control"
                            uib-datepicker-popup
@@ -102,43 +104,43 @@
             </div>
           </div>
           <hr/>
-          <div class="row form-group">
+          <div class="row chr_leave-request-form__group">
             <div class="col-xs-4">Opening Balance</div>
             <div class="col-xs-8">17.0</div>
           </div>
-          <div class="row form-group text-primary pointer"
+          <div class="row chr_leave-request-form__group text-primary pointer"
                ng-click="modal.leaveRequest.isChangeExpanded = !modal.leaveRequest.isChangeExpanded">
             <div class="col-xs-4">
-              <i class="fa chr-inline-icon"
+              <i class="fa chr_leave-request-form__chevron"
                  aria-hidden="true"
                  ng-class="{ 'fa-chevron-right': !modal.leaveRequest.isChangeExpanded, ' fa-chevron-down': modal.leaveRequest.isChangeExpanded }"></i>
               Change
             </div>
             <div class="col-xs-8">2.5</div>
           </div>
-          <table class="table chr-table" ng-show="modal.leaveRequest.isChangeExpanded">
+          <table class="table chr_leave-request-form__table" ng-show="modal.leaveRequest.isChangeExpanded">
             <thead>
             <tr>
-              <th class="">Date</th>
-              <th class="">Selection</th>
-              <th class="">Amount</th>
+              <th>Date</th>
+              <th>Selection</th>
+              <th>Amount</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-              <td class="">Mon 12/04/2015</td>
-              <td class="">1/2 PM</td>
-              <td class="">0.5</td>
+              <td>Mon 12/04/2015</td>
+              <td>1/2 PM</td>
+              <td>0.5</td>
             </tr>
             <tr>
-              <td class="">Mon 12/04/2015</td>
-              <td class="">1/2 PM</td>
-              <td class="">0.5</td>
+              <td>Mon 12/04/2015</td>
+              <td>1/2 PM</td>
+              <td>0.5</td>
             </tr>
             <tr>
-              <td class="">Mon 12/04/2015</td>
-              <td class="">1/2 PM</td>
-              <td class="">0.5</td>
+              <td>Mon 12/04/2015</td>
+              <td>1/2 PM</td>
+              <td>0.5</td>
             </tr>
             </tbody>
             <tfoot>
@@ -155,7 +157,7 @@
             </tr>
             </tfoot>
           </table>
-          <div class="row form-group">
+          <div class="row chr_leave-request-form__group">
             <div class="col-xs-4">Closing Balance</div>
             <div class="col-xs-8">14.5</div>
           </div>
@@ -172,6 +174,10 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary pull-left" ng-click="modal.closeModal()">Back</button>
+  <button type="button"
+          class="btn btn-primary pull-left"
+          ng-click="modal.closeModal()">
+    Back
+  </button>
   <button type="submit" class="btn btn-primary">Save</button>
 </div>
