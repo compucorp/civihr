@@ -67,7 +67,7 @@ define([
          * @return {Promise} Resolved with {Object} Created Leave request with
          *  newly created id for this instance
          */
-        create: function (attributes) {
+        create: function () {
           return LeaveRequestAPI.create(this.toAPI())
             .then(function(result){
               this.id = result.id;

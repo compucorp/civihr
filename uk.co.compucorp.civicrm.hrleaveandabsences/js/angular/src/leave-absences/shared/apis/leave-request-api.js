@@ -73,7 +73,7 @@ define([
         $log.debug('LeaveRequestAPI.update');
         var deferred = $q.defer();
 
-        if (!!params.id) {
+        if (!params.id) {
           deferred.reject({
             is_error: 1,
             error_message: 'id is mandatory field'
@@ -103,7 +103,7 @@ define([
         $log.debug('LeaveRequestAPI.calculateBalanceChange');
         var deferred = $q.defer();
 
-        if (params && (!!params.contact_id || !!params.from_date || !!params.from_date_type)) {
+        if (params && (!params.contact_id || !params.from_date || !params.from_date_type)) {
           deferred.reject({
             is_error: 1,
             error_message: 'contact_id, from_date and from_date_type in params are mandatory'
@@ -133,13 +133,13 @@ define([
         $log.debug('LeaveRequestAPI.calculateBalanceChange');
         var deferred = $q.defer();
 
-        if (params && params.to_date && !!params.to_date_type) {
+        if (params && params.to_date && !params.to_date_type) {
           deferred.reject({
             is_error: 1,
             error_message: 'to_date_type is mandatory'
           });
-        } else if (params && (!!params.contact_id || !!params.from_date ||
-            !!params.from_date_type || !!params.status_id)) {
+        } else if (params && (!params.contact_id || !params.from_date ||
+            !params.from_date_type || !params.status_id)) {
 
           deferred.reject({
             is_error: 1,

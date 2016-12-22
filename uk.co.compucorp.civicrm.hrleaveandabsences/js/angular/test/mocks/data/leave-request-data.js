@@ -104,7 +104,7 @@ define([
           'type': {
             'id': 4,
             'value': 4,
-            'label': 'Weekend'
+            'label': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'label', 'Weekend')
           }
         }, {
           'date': '2016-11-06',
@@ -112,7 +112,7 @@ define([
           'type': {
             'id': 4,
             'value': 4,
-            'label': 'Weekend'
+            'label': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'label', 'Weekend')
           }
         }, {
           'date': '2016-11-07',
@@ -120,7 +120,7 @@ define([
           'type': {
             'id': 1,
             'value': 1,
-            'label': 'All Day'
+            'label': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'label', 'All Day')
           }
         }, {
           'date': '2016-11-08',
@@ -128,7 +128,7 @@ define([
           'type': {
             'id': 1,
             'value': 1,
-            'label': 'All Day'
+            'label': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'label', 'All Day')
           }
         }, {
           'date': '2016-11-09',
@@ -136,7 +136,7 @@ define([
           'type': {
             'id': 1,
             'value': 1,
-            'label': 'All Day'
+            'label': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'label', 'All Day')
           }
         }, {
           'date': '2016-11-10',
@@ -144,7 +144,7 @@ define([
           'type': {
             'id': 1,
             'value': 1,
-            'label': 'All Day'
+            'label': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'label', 'All Day')
           }
         }]
       }

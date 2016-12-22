@@ -3,16 +3,6 @@ define([
   'mocks/data/absence-type-data',
 ], function (optionGroupMock, absenceTypeData) {
 
-  var randomLeaveRequestToServer = {
-    'type_id': absenceTypeData.getRandomAbsenceType('id'),
-    'contact_id': '202',
-    'status_id': optionGroupMock.randomValue('hrleaveandabsences_leave_request_status', 'name'),
-    'from_date': '2016-02-01',
-    'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
-    'to_date': '2016-02-03',
-    'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
-  }
-
   return {
     /**
      * Creates a LeaveRequest with random values
@@ -20,7 +10,15 @@ define([
      * @return {object} containing valid leaverequest data
      **/
     createRandomLeaveRequest: function () {
-      return randomLeaveRequestToServer;
+      return {
+        'type_id': absenceTypeData.getRandomAbsenceType('id'),
+        'contact_id': '202',
+        'status_id': optionGroupMock.randomValue('hrleaveandabsences_leave_request_status', 'name'),
+        'from_date': '2016-02-01',
+        'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
+        'to_date': '2016-02-03',
+        'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
+      };
     },
     /**
      * Find if HTTP POST is for entity LeaveRequest and action create/update

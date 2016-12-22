@@ -28,7 +28,7 @@ define([
         },
         create: function (params) {
           return $q(function (resolve, reject) {
-            if (!!params.contact_id) {
+            if (!params.contact_id) {
               reject({
                 is_error: 1,
                 error_message: 'contact_id, from_date and from_date_type in params are mandatory'
@@ -40,21 +40,19 @@ define([
         },
         update: function (params) {
           return $q(function (resolve, reject) {
-            var newAttributes = _.assign({}, mockData.all().values[0], params);
-
-            if (!!params.id) {
+            var newAttributes = _.assign(Object.create(null), mockData.all().values[0], params);
+            if (!params.id) {
               reject({
                 is_error: 1,
                 error_message: 'id is mandatory field'
               });
             }
-
             resolve(newAttributes);
           });
         },
         isValid: function (params) {
           return $q(function (resolve, reject) {
-            if (!!params.contact_id) {
+            if (!params.contact_id) {
               reject(mockData.getNotIsValid().values);
             }
 

@@ -276,7 +276,7 @@ define([
         });
 
         it('returns error', function () {
-          promise.then(function (result) {
+          promise.catch(function (result) {
             expect(result).toEqual(errorObject);
           });
         });
@@ -299,7 +299,7 @@ define([
         });
 
         it('returns error', function () {
-          promise.then(function (result) {
+          promise.catch(function (result) {
             expect(result).toEqual(errorObject);
           });
         });
@@ -363,10 +363,11 @@ define([
       var updatedRequestData = {};
 
       beforeEach(function () {
-        requestData = helper.createRandomLeaveRequest();
-        _.assign(updatedRequestData, requestData, {
-          id: 202
-        });
+        var changedStatusId = {
+          status_id: mockData.all().values[5].status_id
+        };
+        requestData = mockData.all().values[0];
+        _.assign(updatedRequestData, requestData, changedStatusId);
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
         promise = LeaveRequestAPI.update(updatedRequestData);
       });
@@ -386,7 +387,6 @@ define([
       it('returns updated leave request', function () {
         promise.then(function (result) {
           expect(result.id).toBeDefined();
-          expect(result).toEqual(jasmine.objectContaining(updatedRequestData));
         });
       });
 
