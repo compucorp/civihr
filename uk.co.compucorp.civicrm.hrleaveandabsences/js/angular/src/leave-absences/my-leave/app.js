@@ -7,6 +7,8 @@ define([
   'leave-absences/my-leave/components/my-leave',
   'leave-absences/my-leave/components/my-leave-calendar',
   'leave-absences/my-leave/components/my-leave-report',
+  'leave-absences/shared/models/absence-period-model',
+  'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/shared/models/calendar-model',

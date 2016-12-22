@@ -8,6 +8,7 @@ define([
 
   return angular.module('leave-absences.models', [
     'common.models',
+    'common.services',
     'leave-absences.apis',
     'leave-absences.models.instances'
   ]);
