@@ -121,4 +121,42 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
     $this->assertEquals($requiredDocuments1, $sicknessRequest1->required_documents);
     $this->assertEquals($requiredDocuments2, $sicknessRequest2->required_documents);
   }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidSicknessRequestException
+   * @expectedExceptionMessage Sickness Requests should have a reason
+   */
+  public function testValidateSicknessRequestWhenReasonIsEmpty() {
+    $fromDate = new DateTime("2016-11-14");
+    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
+
+    SicknessRequest::validateParams([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $fromType,
+      'required_documents' => $requiredDocuments
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidSicknessRequestException
+   * @expectedExceptionMessage Sickness Requests should have a reason
+   */
+  public function testValidateParamsIsCalledOnCreate() {
+    $fromDate = new DateTime("2016-11-14");
+    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
+
+    SicknessRequest::create([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $fromType,
+      'required_documents' => $requiredDocuments
+    ], true);
+  }
 }
