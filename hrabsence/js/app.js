@@ -36,8 +36,8 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     },
     showCalendar: function() {
       HRAbsenceApp.contentRegion.show(new HRAbsenceApp.Calendar.CalendarView({
-        criteria: calendarAbsenceCriteria,
-        collection: calendarAbsenceCollection
+        criteria: absenceCriteria,
+        collection: absenceCollection
       }));
     },
     showStatistics: function() {
