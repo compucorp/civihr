@@ -77,6 +77,7 @@ define([
       "allow_carry_forward": "0"
     }]
   };
+  
   return {
     all: function () {
       return all_data;
@@ -88,6 +89,12 @@ define([
       return all_data.values.map(function (item) {
         return item[key];
       })
-    }
+    },
+    getAllAbsenceTypesTitles: function () {
+      return this.getAllAbsenceTypesByKey('title');
+    },
+    getAllAbsenceTypesIds: function () {
+      return this.getAllAbsenceTypesByKey('id');
+    },
   }
 });

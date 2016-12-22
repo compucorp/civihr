@@ -9,58 +9,58 @@ define([
       'count': 6,
       'values': [{
         'id': '17',
-        'type_id': '1',
+        'type_id': absenceTypeData.all().values[0]['id'],
         'contact_id': '202',
-        'status_id': '1',
+        'status_id': optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1'),
         'from_date': '2016-02-01',
-        'from_date_type': '1',
+        'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-02-03',
-        'to_date_type': '1'
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
       }, {
         'id': '18',
-        'type_id': '1',
+        'type_id': absenceTypeData.all().values[0]['id'],
         'contact_id': '202',
-        'status_id': '1',
+        'status_id': optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1'),
         'from_date': '2016-08-17',
-        'from_date_type': '1',
+        'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-08-25',
-        'to_date_type': '1'
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
       }, {
         'id': '19',
-        'type_id': '1',
+        'type_id': absenceTypeData.all().values[0]['id'],
         'contact_id': '202',
-        'status_id': '6',
+        'status_id': optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '6'),
         'from_date': '2016-01-30',
-        'from_date_type': '1',
+        'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-02-01',
-        'to_date_type': '1'
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
       }, {
         'id': '20',
-        'type_id': '1',
+        'type_id': absenceTypeData.all().values[0]['id'],
         'contact_id': '202',
-        'status_id': '3',
+        'status_id': optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3'),
         'from_date': '2016-11-23',
-        'from_date_type': '1',
+        'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-11-28',
-        'to_date_type': '1'
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
       }, {
         'id': '21',
-        'type_id': '3',
+        'type_id': absenceTypeData.all().values[2]['id'],
         'contact_id': '202',
-        'status_id': '5',
+        'status_id': optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '5'),
         'from_date': '2016-06-03',
-        'from_date_type': '1',
+        'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-06-13',
-        'to_date_type': '1'
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
       }, {
         'id': '22',
-        'type_id': '2',
+        'type_id': absenceTypeData.all().values[1]['id'],
         'contact_id': '202',
-        'status_id': '4',
+        'status_id': optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '4'),
         'from_date': '2016-01-01',
-        'from_date_type': '1',
+        'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-01-01',
-        'to_date_type': '1'
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
       }]
     },
     singleDataSuccess: {
@@ -69,13 +69,13 @@ define([
       'count': 1,
       'values': [{
         'id': '17',
-        'type_id': '1',
+        'type_id': absenceTypeData.all().values[0]['id'],
         'contact_id': '202',
-        'status_id': '1',
+        'status_id': optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1'),
         'from_date': '2016-02-01',
-        'from_date_type': '1',
+        'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-02-03',
-        'to_date_type': '1'
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
       }]
     },
     singleDataError: {
@@ -91,13 +91,6 @@ define([
         '2': -1,
         '3': -11
       }
-    },
-    calculateBalanceChangeRequestData: {
-      'contact_id': 109,
-      'from_date': '2016-11-05',
-      'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
-      'to_date': '2016-11-10',
-      'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name')
     },
     calculateBalanceChangeData: {
       'is_error': 0,
@@ -156,40 +149,6 @@ define([
         }]
       }
     },
-    randomLeaveRequestFromServer: {
-      'is_error': 0,
-      'version': 3,
-      'count': 1,
-      'values': [{
-        'id': '17',
-        'type_id': absenceTypeData.getRandomAbsenceType('id'),
-        'contact_id': '202',
-        'status_id': optionGroupMock.randomValue('hrleaveandabsences_leave_request_status', 'value'),
-        'from_date': '2016-02-01',
-        'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'value'),
-        'to_date': '2016-02-03',
-        'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'value'),
-      }]
-    },
-    randomLeaveRequestToServer: {
-      'type_id': absenceTypeData.getRandomAbsenceType('id'),
-      'contact_id': '202',
-      'status_id': optionGroupMock.randomValue('hrleaveandabsences_leave_request_status', 'name'),
-      'from_date': '2016-02-01',
-      'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
-      'to_date': '2016-02-03',
-      'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
-    },
-    randomUpdateLeaveRequestToServer: {
-      'id': '17',
-      'type_id': absenceTypeData.getRandomAbsenceType('id'),
-      'contact_id': '202',
-      'status_id': optionGroupMock.randomValue('hrleaveandabsences_leave_request_status', 'name'),
-      'from_date': '2016-02-01',
-      'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
-      'to_date': '2016-02-03',
-      'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
-    },
     isValidData: {
       "is_error": 0,
       "count": 0,
@@ -205,6 +164,7 @@ define([
       }
     }
   };
+
   return {
     all: function () {
       return mockData.allData;
@@ -218,41 +178,8 @@ define([
     balanceChangeByAbsenceType: function () {
       return mockData.balanceChangeByAbsenceTypeData;
     },
-    getRandomLeaveRequest: function () {
-      return mockData.randomLeaveRequestFromServer;
-    },
-    createRandomLeaveRequest: function () {
-      return mockData.randomLeaveRequestToServer;
-    },
-    updateRandomLeaveRequest: function () {
-      return mockData.randomUpdateLeaveRequestToServer;
-    },
-    calculateBalanceChangeRequest: function () {
-      return mockData.calculateBalanceChangeRequestData;
-    },
     calculateBalanceChange: function () {
       return mockData.calculateBalanceChangeData;
-    },
-    getAllRequestDayTypes: function () {
-      return optionGroupMock.getAllValuesForKey('hrleaveandabsences_leave_request_day_type', 'name');
-    },
-    getAllRequestDayValues: function () {
-      return optionGroupMock.getAllValuesForKey('hrleaveandabsences_leave_request_day_type', 'value');
-    },
-    getAllRequestStatusesNames: function () {
-      return optionGroupMock.getAllValuesForKey('hrleaveandabsences_leave_request_status', 'name');
-    },
-    getAllRequestStatusesLabels: function () {
-      return optionGroupMock.getAllValuesForKey('hrleaveandabsences_leave_request_status', 'label');
-    },
-    getAllRequestStatusesValues: function () {
-      return optionGroupMock.getAllValuesForKey('hrleaveandabsences_leave_request_status', 'value');
-    },
-    getAllAbsenceTypesTitles: function () {
-      return absenceTypeData.getAllAbsenceTypesByKey('title');
-    },
-    getAllAbsenceTypesIds: function () {
-      return absenceTypeData.getAllAbsenceTypesByKey('id');
     },
     getisValid: function () {
       return mockData.isValidData;

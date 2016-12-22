@@ -34,15 +34,18 @@ define([
         cancel: function () {
           return getOptionIDByName('cancelled')
             .then(function (cancelledStatusId) {
-              return this.update({
-                'status_id': cancelledStatusId.value
-              });
+              this.status_id = cancelledStatusId.value;
+              return this.update();
             }.bind(this))
             .then(function (data) {
               if (data.is_error === 1) {
                 return data;
               }
               this.status_id = data.values[0].status_id;
+            }.bind(this), function(error){
+              if (error.is_error === 1) {
+                return error;
+              }
             }.bind(this));
         },
 
@@ -52,7 +55,10 @@ define([
          * @return {Promise} Resolved with {Object} Updated Leave request
          */
         update: function () {
-          return LeaveRequestAPI.update(this.attributes());
+          return LeaveRequestAPI.update(this.toAPI())
+            .then(function(result){
+              _.assign(this, this.fromAPI(result));
+            }.bind(this));
         },
 
         /**
@@ -62,9 +68,9 @@ define([
          *  newly created id for this instance
          */
         create: function (attributes) {
-          return LeaveRequestAPI.create(this.attributes())
+          return LeaveRequestAPI.create(this.toAPI())
             .then(function(result){
-              this.attributes = _.assign({}, this.attributes(), result);
+              this.id = result.id;
             }.bind(this));
         },
 
@@ -75,7 +81,7 @@ define([
          *  with is_error set and array of errors
          */
         isValid: function () {
-          return LeaveRequestAPI.isValid(this.attributes());
+          return LeaveRequestAPI.isValid(this.toAPI());
         }
       });
     }

@@ -1,7 +1,8 @@
 define([
+  'mocks/data/leave-request-data',
   'leave-absences/shared/models/leave-request-model',
   'mocks/apis/leave-request-api-mock',
-], function () {
+], function (mockData) {
   'use strict';
 
   describe('LeaveRequest', function () {
@@ -55,6 +56,11 @@ define([
     });
 
     describe('balanceChangeByAbsenceType()', function () {
+      var leaveRequestPromise
+
+      beforeEach(function () {
+        leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String));
+      });
 
       afterEach(function () {
         //to excute the promise force an digest
@@ -62,8 +68,6 @@ define([
       });
 
       it('calls equivalent API method', function () {
-        var leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType();
-
         leaveRequestPromise.then(function () {
           expect(LeaveRequestAPI.balanceChangeByAbsenceType).toHaveBeenCalled();
         });
@@ -71,6 +75,11 @@ define([
     });
 
     describe('calculateBalanceChange()', function () {
+      var requestData, promise;
+
+      beforeEach(function () {
+        promise = LeaveRequest.calculateBalanceChange(jasmine.any(Object));
+      });
 
       afterEach(function () {
         //to excute the promise force an digest
@@ -78,12 +87,10 @@ define([
       });
 
       it('calls equivalent API method', function () {
-        var leaveRequestPromise = LeaveRequest.calculateBalanceChange();
-
-        leaveRequestPromise.then(function () {
+        promise.then(function () {
           expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
         });
       });
-});
+    });
   });
 });

@@ -21,26 +21,47 @@ define([
             resolve(mockData.balanceChangeByAbsenceType().values);
           });
         },
-        calculateBalanceChange: function(params) {
+        calculateBalanceChange: function (params) {
           return $q(function (resolve, reject) {
             resolve(mockData.calculateBalanceChange().values);
           });
         },
-        create: function(params) {
+        create: function (params) {
           return $q(function (resolve, reject) {
-            resolve(mockData.getRandomLeaveRequest().values[0]);
+            if (!!params.contact_id) {
+              reject({
+                is_error: 1,
+                error_message: 'contact_id, from_date and from_date_type in params are mandatory'
+              });
+            }
+
+            resolve(mockData.all().values[0]);
           });
         },
-        update: function(params) {
+        update: function (params) {
           return $q(function (resolve, reject) {
-            resolve(mockData.getRandomLeaveRequest().values[0]);
+            var newAttributes = _.assign({}, mockData.all().values[0], params);
+
+            if (!!params.id) {
+              reject({
+                is_error: 1,
+                error_message: 'id is mandatory field'
+              });
+            }
+
+            resolve(newAttributes);
           });
         },
-        isValid: function(params) {
+        isValid: function (params) {
           return $q(function (resolve, reject) {
+            if (!!params.contact_id) {
+              reject(mockData.getNotIsValid().values);
+            }
+
             resolve(mockData.getisValid().values);
           });
         }
       };
-    }]);
+    }
+  ]);
 });
