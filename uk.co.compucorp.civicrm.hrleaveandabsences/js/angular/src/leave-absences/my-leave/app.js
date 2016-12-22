@@ -12,6 +12,7 @@ define([
 ], function (angular) {
   angular.module('my-leave', [
     'ngResource',
+    'ngAnimate',
     'ui.router',
     'ui.bootstrap',
     'my-leave.config',

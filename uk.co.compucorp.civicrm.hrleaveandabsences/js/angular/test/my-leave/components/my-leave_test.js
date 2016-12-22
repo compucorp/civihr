@@ -8,14 +8,14 @@
     'use strict';
 
     describe('myLeave', function () {
-      var $compile, $log, $rootScope, component;
+      var $compile, $log, $rootScope, component, controller, $uibModal;
 
       beforeEach(module('leave-absences.templates', 'my-leave'));
-      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_) {
+      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$uibModal_) {
         $compile = _$compile_;
         $log = _$log_;
         $rootScope = _$rootScope_;
-
+        $uibModal = _$uibModal_;
         spyOn($log, 'debug');
 
         compileComponent();
@@ -29,6 +29,33 @@
         expect(component.find('div.my-leave-page').length).toBe(1);
       });
 
+      describe('leaveRequest', function () {
+
+        it('DatePickerFrom is hidden', function () {
+          expect(controller.leaveRequest.showDatePickerFrom).toBe(false);
+        });
+
+        it('DatePickerTo is hidden', function () {
+          expect(controller.leaveRequest.showDatePickerTo).toBe(false);
+        });
+
+        it('change is not expanded', function () {
+          expect(controller.leaveRequest.isChangeExpanded).toBe(false);
+        })
+      });
+
+      describe('showModal', function () {
+
+        beforeEach(function () {
+          spyOn($uibModal, 'open');
+          controller.showModal();
+        });
+
+        it('opens the modal', function () {
+          expect($uibModal.open).toHaveBeenCalled();
+        });
+      });
+
       function compileComponent() {
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;
@@ -36,6 +63,8 @@
         component = angular.element('<my-leave contact-id="' + contactId + '"></my-leave>');
         $compile(component)($scope);
         $scope.$digest();
+
+        controller = component.controller('myLeave');
       }
     });
   })
