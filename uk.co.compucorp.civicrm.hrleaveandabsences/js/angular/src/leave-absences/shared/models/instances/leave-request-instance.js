@@ -12,7 +12,7 @@ define([
     function (ModelInstance, LeaveRequestAPI, OptionGroup) {
 
       /**
-       * This method is used to get ID of an option value
+       * Get ID of an option value
        *
        * @param {string} name - name of the option value
        * @return {Promise} Resolved with {Object} Specific leave request
@@ -29,32 +29,61 @@ define([
       return ModelInstance.extend({
 
         /**
-         * This method is used to cancel a leave request
+         * Cancel a leave request
          */
         cancel: function () {
           return getOptionIDByName('cancelled')
             .then(function (cancelledStatusId) {
-              return this.update({
-                'status_id': cancelledStatusId.value
-              });
+              this.status_id = cancelledStatusId.value;
+              return this.update();
             }.bind(this))
             .then(function (data) {
               if (data.is_error === 1) {
                 return data;
               }
               this.status_id = data.values[0].status_id;
+            }.bind(this), function(error){
+              if (error.is_error === 1) {
+                return error;
+              }
             }.bind(this));
         },
 
         /**
-         * This method is used to update a leave request
+         * Update a leave request
          *
-         * @param {object} attributes - Values which needs to be updated
          * @return {Promise} Resolved with {Object} Updated Leave request
          */
-        update: function (attributes) {
-          return LeaveRequestAPI.sendPOST('LeaveRequest', 'create', _.assign({}, this.attributes(), attributes))
+        update: function () {
+          return LeaveRequestAPI.update(this.toAPI())
+            .then(function(result){
+              _.assign(this, this.fromAPI(result));
+            }.bind(this));
+        },
+
+        /**
+         * Create a new leave request
+         *
+         * @return {Promise} Resolved with {Object} Created Leave request with
+         *  newly created id for this instance
+         */
+        create: function () {
+          return LeaveRequestAPI.create(this.toAPI())
+            .then(function(result){
+              this.id = result.id;
+            }.bind(this));
+        },
+
+        /**
+         * Validate leave request instance attributes.
+         *
+         * @return {Promise} empty array if no error found otherwise an object
+         *  with is_error set and array of errors
+         */
+        isValid: function () {
+          return LeaveRequestAPI.isValid(this.toAPI());
         }
       });
-    }]);
+    }
+  ]);
 });

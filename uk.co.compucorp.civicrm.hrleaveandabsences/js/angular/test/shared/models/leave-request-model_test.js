@@ -1,7 +1,8 @@
 define([
+  'mocks/data/leave-request-data',
   'leave-absences/shared/models/leave-request-model',
   'mocks/apis/leave-request-api-mock',
-], function () {
+], function (mockData) {
   'use strict';
 
   describe('LeaveRequest', function () {
@@ -25,6 +26,7 @@ define([
 
       spyOn(LeaveRequestAPI, 'all').and.callThrough();
       spyOn(LeaveRequestAPI, 'balanceChangeByAbsenceType').and.callThrough();
+      spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
     }));
 
     afterEach(function () {
@@ -53,11 +55,41 @@ define([
       });
     });
 
-    it('balanceChangeByAbsenceType() calls equivalent API method', function () {
-      var leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType();
+    describe('balanceChangeByAbsenceType()', function () {
+      var leaveRequestPromise
 
-      leaveRequestPromise.then(function () {
-        expect(LeaveRequestAPI.balanceChangeByAbsenceType).toHaveBeenCalled();
+      beforeEach(function () {
+        leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String));
+      });
+
+      afterEach(function () {
+        //to excute the promise force an digest
+        $rootScope.$apply();
+      });
+
+      it('calls equivalent API method', function () {
+        leaveRequestPromise.then(function () {
+          expect(LeaveRequestAPI.balanceChangeByAbsenceType).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('calculateBalanceChange()', function () {
+      var requestData, promise;
+
+      beforeEach(function () {
+        promise = LeaveRequest.calculateBalanceChange(jasmine.any(Object));
+      });
+
+      afterEach(function () {
+        //to excute the promise force an digest
+        $rootScope.$apply();
+      });
+
+      it('calls equivalent API method', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
+        });
       });
     });
   });

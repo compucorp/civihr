@@ -1,9 +1,10 @@
 define([
   'mocks/data/leave-request-data',
+  'mocks/helpers/helper',
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/models/instances/leave-request-instance',
   'leave-absences/shared/modules/models',
-], function (mockData) {
+], function (mockData, helper) {
   'use strict';
 
   describe('LeaveRequestInstance', function () {
@@ -12,7 +13,10 @@ define([
       LeaveRequestAPI,
       $q,
       OptionGroup,
-      $rootScope;
+      $rootScope,
+      instance,
+      requestData,
+      expectedError;
 
     beforeEach(module('leave-absences.models', 'leave-absences.models.instances', 'leave-absences.mocks',
       function (_$provide_) {
@@ -25,10 +29,10 @@ define([
     }));
 
     beforeEach(inject([
-      "LeaveRequestInstance",
-      "LeaveRequestAPI",
-      "$rootScope",
-      "$q",
+      'LeaveRequestInstance',
+      'LeaveRequestAPI',
+      '$rootScope',
+      '$q',
       'api.optionGroup',
       function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _OptionGroup_) {
         LeaveRequestInstance = _LeaveRequestInstance_;
@@ -36,7 +40,12 @@ define([
         $q = _$q_;
         $rootScope = _$rootScope_;
         OptionGroup = _OptionGroup_;
-      }]));
+
+        spyOn(LeaveRequestAPI, 'create').and.callThrough();
+        spyOn(LeaveRequestAPI, 'update').and.callThrough();
+        spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
+      }
+    ]));
 
     describe('cancel()', function () {
       var optionGroupDeferred,
@@ -49,8 +58,8 @@ define([
         optionGroupDeferred = $q.defer();
         leaveRequestDeferred = $q.defer();
         mockOptionValue = [{
-          name: "cancelled",
-          value: "1"
+          name: 'cancelled',
+          value: '1'
         }];
         mockUpdateResponse = returnData;
 
@@ -68,7 +77,7 @@ define([
         $rootScope.$apply();
       });
 
-      describe("success", function () {
+      describe('success', function () {
 
         beforeEach(function () {
           commonSetup(mockData.singleDataSuccess());
@@ -82,20 +91,19 @@ define([
 
         it('OptionGroup.valuesOf gets called', function () {
           promise.then(function () {
-              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-            });
+            expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+          });
         });
 
         it('LeaveRequestInstance.update gets called', function () {
           promise.then(function () {
-              expect(LeaveRequestInstance.update).toHaveBeenCalledWith({
-                'status_id': mockOptionValue[0].value
-              });
-            });
+            expect(LeaveRequestInstance.update).toHaveBeenCalled();
+            expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
+          });
         });
       });
 
-      describe("error", function () {
+      describe('error', function () {
 
         beforeEach(function () {
           commonSetup(mockData.singleDataError());
@@ -110,27 +118,167 @@ define([
     });
 
     describe('update()', function () {
-      var attr,
-        sendPOSTMock,
-        updatePromise;
+      var instanceUpdate, newRequestData;
 
       beforeEach(function () {
-        attr = {
-          key: jasmine.any(String)
+        var changedStatusId = {
+          status_id: mockData.all().values[5].status_id
         };
-        sendPOSTMock = jasmine.createSpy('sendPOST');
-        sendPOSTMock.and.returnValue(jasmine.any(Promise));
-        LeaveRequestAPI.sendPOST = sendPOSTMock;
-
-        updatePromise = LeaveRequestInstance.update(attr);
+        requestData = mockData.all().values[0];
+        instance = LeaveRequestInstance.init(requestData, false);
+        newRequestData = _.assign({}, requestData, changedStatusId);
       });
 
-      it('calls LeaveRequestAPI.sendPOST', function () {
-        expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest', 'create', _.assign({}, LeaveRequestInstance.attributes(), attr));
+      describe('when id is set', function () {
+
+        beforeEach(function () {
+          _.assign(instance, newRequestData);
+          instanceUpdate = instance.update();
+        });
+
+        afterEach(function () {
+          //to excute the promise force an digest
+          $rootScope.$apply();
+        });
+
+        it('calls equivalent API method', function () {
+          instanceUpdate.then(function () {
+            expect(LeaveRequestAPI.update).toHaveBeenCalled();
+          });
+        });
+
+        it('modifies attributes', function () {
+          var updatedAttributes = _.assign(Object.create(null), requestData, newRequestData);
+
+          instanceUpdate.then(function () {
+            expect(instance.attributes()).toEqual(jasmine.objectContaining(updatedAttributes));
+          });
+        });
       });
 
-      it('returns a promise', function () {
-        expect(updatePromise).toEqual(jasmine.any(Promise));
+      describe('when id is missing', function () {
+
+        beforeEach(function () {
+          expectedError = {
+            is_error: 1,
+            error_message: 'id is mandatory field'
+          };
+          delete instance.id;
+          instanceUpdate = instance.update();
+        });
+
+        afterEach(function () {
+          //to excute the promise force an digest
+          $rootScope.$apply();
+        });
+
+        it('fails to update attributes ', function () {
+          instanceUpdate.catch(function (error) {
+            expect(error).toEqual(jasmine.objectContaining(expectedError));
+          });
+        });
+      });
+    });
+
+    describe('create()', function () {
+      var instanceCreate;
+
+      beforeEach(function () {
+        requestData = helper.createRandomLeaveRequest();
+        instance = LeaveRequestInstance.init(requestData, false);
+        instanceCreate = instance.create();
+      });
+
+      afterEach(function () {
+        //to excute the promise force an digest
+        $rootScope.$apply();
+      });
+
+      it('calls equivalent API method', function () {
+        instanceCreate.then(function () {
+          expect(LeaveRequestAPI.create).toHaveBeenCalled();
+        });
+      });
+
+      it('id is appended to instance', function () {
+        expect(instance.id).not.toBeDefined();
+        instanceCreate.then(function () {
+          expect(instance.id).toBeDefined();
+          expect(instance.id).toEqual(jasmine.any(String));
+        });
+      });
+
+      describe('when one mandatory filed is missing', function () {
+
+        beforeEach(function () {
+          expectedError = {
+            is_error: 1,
+            error_message: 'contact_id, from_date and from_date_type in params are mandatory'
+          };
+          delete instance.contact_id;
+          instanceCreate = instance.create();
+        });
+
+        afterEach(function () {
+          //to excute the promise force an digest
+          $rootScope.$apply();
+        });
+
+        it('fails to create instance', function () {
+          instanceCreate.catch(function (error) {
+            expect(error).toEqual(jasmine.objectContaining(expectedError));
+          });
+        });
+      });
+    });
+
+    describe('isValid()', function () {
+      var instanceValid;
+
+      beforeEach(function () {
+        requestData = {
+          contact_id: '123'
+        };
+        instance = LeaveRequestInstance.init(requestData, false);
+        instanceValid = instance.isValid();
+      });
+
+      afterEach(function () {
+        //to excute the promise force an digest
+        $rootScope.$apply();
+      });
+
+      it('calls equivalent API method', function () {
+        instanceValid.then(function () {
+          expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
+        });
+      });
+
+      describe('when leave request is valid', function () {
+        it('returns no error', function () {
+          instanceValid.then(function (result) {
+            expect(result).toEqual([]);
+          });
+        });
+
+        describe('when valid data not present', function () {
+
+          beforeEach(function () {
+            delete instance.contact_id;
+            instanceValid = instance.isValid();
+          });
+
+          afterEach(function () {
+            //to excute the promise force an digest
+            $rootScope.$apply();
+          });
+
+          it('returns array of errors', function () {
+            instanceValid.catch(function (result) {
+              expect(Object.keys(result).length).toBeGreaterThan(0);
+            });
+          });
+        });
       });
     });
   });
