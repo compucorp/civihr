@@ -36,13 +36,27 @@ function civicrm_api3_sickness_request_delete($params) {
 
 /**
  * SicknessRequest.get API
+ * This API also returns the associated LeaveRequest data along with the SicknessRequest.
  *
  * @param array $params
+ *
  * @return array API result descriptor
+ *
  * @throws API_Exception
  */
 function civicrm_api3_sickness_request_get($params) {
-  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $getLeaveRequest = function (&$item) {
+    $leaveRequest = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::findById($item['leave_request_id']);
+    $leaveRequestFieldValues = $leaveRequest->toArray();
+    $item = array_merge($leaveRequestFieldValues, $item);
+  };
+
+  $result = _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  if ($result['count'] > 0) {
+    array_walk($result['values'], $getLeaveRequest);
+  }
+
+  return $result;
 }
 
 /**
