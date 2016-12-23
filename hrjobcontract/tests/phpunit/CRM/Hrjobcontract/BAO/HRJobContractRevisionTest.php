@@ -2,6 +2,14 @@
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContractRevision as HRJobContractRevisionFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobHealth as HRJobHealthFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobHour as HRJobHourFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobLeave as HRJobLeaveFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobPay as HRJobPayFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobPension as HRJobPensionFabricator;
 
 /**
  * Class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest
@@ -15,7 +23,81 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_
   use HRJobContractTestTrait;
 
   public function setUpHeadless() {
-    return \Civi\Test::headless()->installMe(__DIR__)->apply();
+    return \Civi\Test::headless()
+      ->install('uk.co.compucorp.civicrm.hrcore')
+      ->installMe(__DIR__)
+      ->apply();
+  }
+
+  /**
+   * Tests that structure of response for CRM_Hrjobcontract_BAO_HRJobContractRevision::fullDetails()
+   * has all required sets of values.
+   */
+  function testFullDetailsResponse() {
+    $contact = ContactFabricator::fabricate();
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact['id']],
+      ['period_start_date' => '2015-01-01']
+    );
+
+    HRJobContractRevisionFabricator::fabricate(['jobcontract_id' => $contract['id']]);
+    HRJobHealthFabricator::fabricate(['jobcontract_id' => $contract['id']]);
+    HRJobHourFabricator::fabricate(['jobcontract_id' => $contract['id']]);
+    HRJobLeaveFabricator::fabricate(['jobcontract_id' => $contract['id']]);
+    HRJobPayFabricator::fabricate(['jobcontract_id' => $contract['id']]);
+
+    $pensionDetails = HRJobPensionFabricator::fabricate([
+      'jobcontract_id' => $contract['id'],
+      'pension_type' => mt_rand(1000, 9000)
+    ]);
+
+    $currentRevision = $this->getContractCurrentRevision($contract['id']);
+    $fullDetails = CRM_Hrjobcontract_BAO_HRJobContractRevision::fullDetails($currentRevision);
+
+    foreach (['details', 'health', 'hour', 'leave', 'pay', 'pension'] as $entitiy ) {
+      $this->assertArrayHasKey($entitiy, $fullDetails);
+    }
+
+    $this->assertEquals($this->getPensionTypeLabel($pensionDetails['pension_type']), $fullDetails['pension']['pension_type_label']);
+
+    $this->assertInternalType("array", $fullDetails['leave']);
+  }
+
+  /**
+   * Obtains label for given pension type.
+   * 
+   * @param string $pensionType
+   *   Value of pension type
+   * 
+   * @return string
+   *   Label for given pension type value
+   */
+  private function getPensionTypeLabel($pensionType) {
+    $pensionTypeResult = civicrm_api3('OptionValue', 'getsingle', [
+      'sequential' => 1,
+      'option_group_id' => 'hrjc_pension_type',
+      'value' => $pensionType
+    ]);
+
+    return $pensionTypeResult['label'];
+  }
+
+  /**
+   * Obtains current revision for given contract.
+   * 
+   * @param int $jobContractID
+   *   ID of job contract
+   * 
+   * @return array
+   *   Details for current revision of job contract
+   */
+  private function getContractCurrentRevision($jobContractID) {
+    $result = civicrm_api3('HRJobContractRevision', 'getcurrentrevision', [
+      'debug' => 1,
+      'sequential' => 1,
+      'jobcontract_id' => $jobContractID
+    ]);
+    return $result['values'];
   }
 
   /**
