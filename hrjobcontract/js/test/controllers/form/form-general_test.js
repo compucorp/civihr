@@ -69,6 +69,10 @@ define([
           expect($scope.datepickerOptions.start.maxDate).toEqual(moment('2015-12-06').toDate());
           expect($scope.datepickerOptions.end.minDate).toEqual(moment('2015-11-22').toDate());
         });
+
+        it('sets duration calculating number of days including start and end dates', function() {
+          expect($scope.duration).toEqual('17 days');
+        });
       });
     });
 

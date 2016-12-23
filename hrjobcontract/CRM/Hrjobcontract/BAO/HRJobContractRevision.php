@@ -10,7 +10,6 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * @param array $params key-value pairs
    *
    * @return CRM_Hrjobcontract_DAO_HRJobContractRevision|NULL
-   *
    */
   public static function create($params) {
     global $user;
