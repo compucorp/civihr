@@ -83,12 +83,32 @@ function _civicrm_api3_sickness_request_create_spec(&$spec) {
 /**
  * SicknessRequest.create API
  *
+ * Since this method uses the SicknessRequest service instead of the default
+ * _civicrm_api3_basic_create function, we need to duplicate some of the code of
+ * that function in order to make sure the $params array will be handled/validate
+ * the same way and also to make sure the response will have the same format.
+ *
  * @param array $params
  * @return array API result descriptor
  * @throws API_Exception
  */
 function civicrm_api3_sickness_request_create($params) {
-  return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $bao = _civicrm_api3_get_BAO(__FUNCTION__);
+  _civicrm_api3_check_edit_permissions($bao, $params);
+  _civicrm_api3_format_params_for_create($params, null);
+
+  $leaveBalanceChangeService = new CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange();
+  $leaveRequestService = new CRM_HRLeaveAndAbsences_Service_LeaveRequest($leaveBalanceChangeService);
+  $service = new CRM_HRLeaveAndAbsences_Service_SicknessRequest($leaveBalanceChangeService, $leaveRequestService);
+
+  $sicknessRequest = $service->create($params);
+  $values = [];
+  _civicrm_api3_object_to_array($sicknessRequest, $values[$sicknessRequest->id]);
+
+  $result = civicrm_api3_create_success($values, $params, null, 'create', $sicknessRequest);
+  array_walk($result['values'], '_civicrm_api3_sickness_request_merge_with_leave_request');
+
+  return $result;
 }
 
 /**
@@ -99,7 +119,16 @@ function civicrm_api3_sickness_request_create($params) {
  * @throws API_Exception
  */
 function civicrm_api3_sickness_request_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $bao = _civicrm_api3_get_BAO(__FUNCTION__);
+  civicrm_api3_verify_mandatory($params, NULL, ['id']);
+  _civicrm_api3_check_edit_permissions($bao, ['id' => $params['id']]);
+
+  $leaveBalanceChangeService = new CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange();
+  $leaveRequestService = new CRM_HRLeaveAndAbsences_Service_LeaveRequest($leaveBalanceChangeService);
+  $service = new CRM_HRLeaveAndAbsences_Service_SicknessRequest($leaveBalanceChangeService, $leaveRequestService);
+  $service->delete($params['id']);
+
+  return civicrm_api3_create_success(true);
 }
 
 /**
@@ -113,15 +142,9 @@ function civicrm_api3_sickness_request_delete($params) {
  * @throws API_Exception
  */
 function civicrm_api3_sickness_request_get($params) {
-  $getLeaveRequest = function (&$item) {
-    $leaveRequest = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::findById($item['leave_request_id']);
-    $leaveRequestFieldValues = $leaveRequest->toArray();
-    $item = array_merge($leaveRequestFieldValues, $item);
-  };
-
   $result = _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
   if ($result['count'] > 0) {
-    array_walk($result['values'], $getLeaveRequest);
+    array_walk($result['values'], '_civicrm_api3_sickness_request_merge_with_leave_request');
   }
 
   return $result;
@@ -148,4 +171,16 @@ function civicrm_api3_sickness_request_isvalid($params) {
   }
 
   return civicrm_api3_create_success($result);
+}
+
+/**
+ * Helper method to fetch the LeaveRequest associated with a SicknessRequest and
+ * merge it into a SicknessRequest array returned by the API
+ *
+ * @param array $item
+ */
+function _civicrm_api3_sickness_request_merge_with_leave_request(&$item) {
+  $leaveRequest = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::findById($item['leave_request_id']);
+  $leaveRequestFieldValues = $leaveRequest->toArray();
+  $item = array_merge($leaveRequestFieldValues, $item);
 }
