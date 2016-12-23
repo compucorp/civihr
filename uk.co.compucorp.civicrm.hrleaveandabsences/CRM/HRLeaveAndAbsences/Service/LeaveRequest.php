@@ -3,8 +3,18 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
+use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
+
+  /**
+   * @var \LeaveBalanceChangeService
+   */
+  private $leaveBalanceChangeService;
+
+  public function __construct(LeaveBalanceChangeService $leaveBalanceChangeService) {
+    $this->leaveBalanceChangeService = $leaveBalanceChangeService;
+  }
 
   /**
    * Wraps the LeaveRequest BAO create method in order to perform some more
@@ -16,7 +26,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    */
   public function create($params, $validate = true) {
     $leaveRequest = LeaveRequest::create($params, $validate);
-    $this->saveBalanceChanges($leaveRequest);
+    $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
 
     return $leaveRequest;
   }
@@ -40,47 +50,5 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     } catch(Exception $e) {
       $transaction->rollback();
     }
-  }
-
-  /**
-   * Saves LeaveBalanceChange instances for each of the dates of the given
-   * LeaveRequest
-   *
-   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
-   */
-  private function saveBalanceChanges(LeaveRequest $leaveRequest) {
-    $balanceChanges = $this->calculateBalanceChanges($leaveRequest);
-
-    $dates = $leaveRequest->getDates();
-
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
-    foreach($dates as $date) {
-      foreach($balanceChanges['breakdown'] as $balanceChange) {
-        if($balanceChange['date'] == $date->date) {
-          LeaveBalanceChange::create([
-            'source_id' => $date->id,
-            'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
-            'amount' => $balanceChange['amount'],
-            'type_id' => $balanceChangeTypes['debit']
-          ]);
-        }
-      }
-    }
-  }
-
-  /**
-   * Calculates the balance changes for each of the LeaveRequest dates
-   * @param $leaveRequest
-   *
-   * @return array
-   */
-  private function calculateBalanceChanges(LeaveRequest $leaveRequest) {
-    return LeaveRequest::calculateBalanceChange(
-      $leaveRequest->contact_id,
-      new DateTime($leaveRequest->from_date),
-      $leaveRequest->from_date_type,
-      empty($leaveRequest->to_date) ? null : new DateTime($leaveRequest->to_date),
-      $leaveRequest->to_date_type
-    );
   }
 }
