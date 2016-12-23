@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
 
 /**
  * Class api_v3_TOILRequestTest
@@ -10,11 +11,13 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 class api_v3_TOILRequestTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
 
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
 
     $this->toilAmounts = $this->toilAmountOptions();
+    $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
   }
 
   public function testTOILRequestIsValidShouldReturnErrorWhenToilAmountIsNotValid() {
@@ -122,5 +125,77 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'values' => []
     ];
     $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testToilRequestGetShouldReturnAssociatedLeaveRequestData() {
+    $fromDate1 = new DateTime("2016-11-14");
+    $toDate1 = new DateTime("2016-11-17");
+
+    $fromDate2 = new DateTime("2016-11-20");
+    $toDate2 = new DateTime("2016-11-30");
+
+    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Title 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 4,
+      'is_active' => 1,
+    ]);
+
+    $toilRequest1 = TOILRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate1->format('YmdHis'),
+      'from_date_type' => $fromType,
+      'to_date' => $toDate1->format('YmdHis'),
+      'to_date_type' => $toType,
+      'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
+      'duration' => 60
+    ], false);
+
+    $toilRequest2 = TOILRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate2->format('YmdHis'),
+      'from_date_type' => $fromType,
+      'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => $toType,
+      'toil_to_accrue' => $this->toilAmounts['3 Days']['value'],
+      'duration' => 120
+    ], false);
+
+    $expectedResult = [
+      [
+        'id' => $toilRequest1->id,
+        'type_id' => $absenceType->id,
+        'contact_id' => 1,
+        'status_id' => 1,
+        'from_date' => $fromDate1->format('Y-m-d'),
+        'from_date_type' => $fromType,
+        'to_date' => $toDate1->format('Y-m-d'),
+        'to_date_type' => $toType,
+        'leave_request_id' => $toilRequest1->leave_request_id,
+        'duration' => 60,
+      ],
+      [
+        'id' => $toilRequest2->id,
+        'type_id' => $absenceType->id,
+        'contact_id' => 1,
+        'status_id' => 1,
+        'from_date' => $fromDate2->format('Y-m-d'),
+        'from_date_type' => $fromType,
+        'to_date' => $toDate2->format('Y-m-d'),
+        'to_date_type' => $toType,
+        'leave_request_id' => $toilRequest2->leave_request_id,
+        'duration' => 120,
+      ]
+    ];
+
+    $result = civicrm_api3('TOILRequest', 'get', ['contact_id'=> 1, 'sequential' => 1]);
+    $this->assertEquals($expectedResult, $result['values']);
   }
 }
