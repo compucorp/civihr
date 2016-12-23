@@ -154,12 +154,26 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     }
     return $result;
   }
-
-  public static function del($absenceTypeId) {
+  
+  /**
+   * Delete Absence Type
+   * 
+   * @param int $absenceTypeId
+   *   ID of Absence Type to be deleted
+   * @throws CRM_Core_Exception
+   *   If Absence Type is being used on existing leave requests
+   */
+  public static function del($absenceTypeId) {    
     $absenceType = new CRM_HRAbsence_DAO_HRAbsenceType();
     $absenceType->id = $absenceTypeId;
     $absenceType->find(TRUE);
 
+    if (($countRequests = self::countLeaveRequestsForAbsenceType($absenceType)) > 0) {
+      throw new CRM_Core_Exception(ts("You can not delete this absence type -- it is assigned to %1 existing leave request(s). If you do not want this absence type to be used going forward, consider disabling it instead.", array(1 => $countRequests)));
+    }
+
+    self::deleteLeaveEntitlements($absenceTypeId);
+    
     $absenceActivities = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id');
 
     if ($absenceType->debit_activity_type_id && $id = CRM_Utils_Array::value($absenceType->debit_activity_type_id, $absenceActivities)) {
@@ -173,6 +187,53 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
 
     CRM_Utils_Hook::post('delete', 'HRAbsenceType', $absenceTypeId, $absenceType);
   }
+  
+  /**
+   * Count leave requests for given absence type object
+   * 
+   * @param CRM_HRAbsence_BAO_HRAbsenceType $absenceType
+   *   Instance of Absence Type object for which leave requests need to be counted
+   * @return int
+   *   Number of activities found for given Absence Type object
+   */
+  private static function countLeaveRequestsForAbsenceType(CRM_HRAbsence_DAO_HRAbsenceType $absenceType) {
+    $count = 0;
+    
+    if (!empty($absenceType->credit_activity_type_id)) {
+      $count += civicrm_api3('Activity', 'getcount', [
+        'sequential' => 1,
+        'activity_type_id' => $absenceType->credit_activity_type_id
+      ]);
+    }
+    if (!empty($absenceType->debit_activity_type_id)) {
+      $count += civicrm_api3('Activity', 'getcount', [
+        'sequential' => 1,
+        'activity_type_id' => $absenceType->debit_activity_type_id
+      ]);
+    }
+    
+    return $count;
+  }
+
+  /**
+   * Deletes all leave entitlements for given absence type ID.
+   * 
+   * @param int $absenceTypeId
+   *   ID of Absence Type for which entitlements have to be deleted
+   */
+  private static function deleteLeaveEntitlements($absenceTypeId) {
+    $result = civicrm_api3('HRJobLeave', 'get', [
+      'sequential' => 1,
+      'leave_type' => $absenceTypeId,
+      'jobcontract_revision_id' => array('>' => 0)
+    ]);
+    foreach ($result['values'] as $currentLeave) {
+      $result = civicrm_api3('HRJobLeave', 'delete', [
+        'id' => $currentLeave['id'],
+      ]);
+    }
+  }
+
 
   /**
    * Get the total duration for given 'Source Absence ID'
