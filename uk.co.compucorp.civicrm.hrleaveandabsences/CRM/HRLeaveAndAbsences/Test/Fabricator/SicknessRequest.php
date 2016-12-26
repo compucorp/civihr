@@ -1,51 +1,56 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_SicknessRequest as SicknessRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 
-class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
+class CRM_HRLeaveAndAbsences_Test_Fabricator_SicknessRequest {
 
   private static $leaveRequestStatuses;
   private static $dayTypes;
+  private static $sicknessReasons;
 
   public static function fabricate($params, $withBalanceChanges = false) {
     $params = self::mergeDefaultParams($params);
 
-    $leaveRequest = LeaveRequest::create($params);
+    $sicknessRequest = SicknessRequest::create($params);
     if($withBalanceChanges) {
+      $leaveRequest = LeaveRequest::findById($sicknessRequest->leave_request_id);
       foreach($leaveRequest->getDates() as $date) {
         LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
       }
     }
 
-    return $leaveRequest;
+    return $sicknessRequest;
   }
 
   /**
-   * Creates a new Leave Request without running any validation
+   * Creates a new Sickness Request without running any validation
    *
    * @param array $params
    * @param boolean $withBalanceChanges
    *
-   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
+   * @return \CRM_HRLeaveAndAbsences_BAO_SicknessRequest
    */
   public static function fabricateWithoutValidation($params = [], $withBalanceChanges = false) {
     $params = self::mergeDefaultParams($params);
-    $leaveRequest =  LeaveRequest::create($params, false);
+    $sicknessRequest =  SicknessRequest::create($params, false);
 
     if ($withBalanceChanges) {
+      $leaveRequest = LeaveRequest::findById($sicknessRequest->leave_request_id);
       foreach ($leaveRequest->getDates() as $date) {
         LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
       }
     }
 
-    return $leaveRequest;
+    return $sicknessRequest;
   }
 
   private static function mergeDefaultParams($params) {
     $defaultParams = [
       'status_id' => self::getStatusId('Approved'),
       'from_date_type' => self::getDayTypeId('All Day'),
+      'reason' => self::getSicknessReasonId('Accident')
     ];
 
     if(!empty($params['to_date']) && empty($params['to_date_type'])) {
@@ -69,5 +74,13 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
     }
 
     return self::$dayTypes[$typeLabel];
+  }
+
+  private static function getSicknessReasonId($reasonLabel) {
+    if(is_null(self::$sicknessReasons)) {
+      self::$sicknessReasons = array_flip(SicknessRequest::buildOptions('reason'));
+    }
+
+    return self::$sicknessReasons[$reasonLabel];
   }
 }

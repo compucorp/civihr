@@ -246,7 +246,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testLeaveRequestBalanceForEntitlementOnlySumBalanceChangesCreatedByLeaveRequestsWithSpecificStatus() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
-    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime(),
+      new DateTime('+20 days')
+    );
 
     $this->createLeaveBalanceChange($entitlement->id, 23.5);
     $this->createBroughtForwardBalanceChange($entitlement->id, 4);
@@ -339,7 +342,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testLeaveRequestBalanceForEntitlementCanSumBalanceChangesCreatedByLeaveRequestsUpToASpecificDate() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
-    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime(),
+      new DateTime('+20 days')
+    );
 
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
@@ -393,7 +399,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testLeaveRequestBalanceForEntitlementCanSumBalanceChangesCreatedByLeaveRequestsOnASpecificDateRange() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
-    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime(),
+      new DateTime('+20 days')
+    );
 
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
@@ -827,6 +836,26 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       $exceptionMessage = "Unable to find a CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange with id {$balanceChange->id}.";
       $this->assertEquals($exceptionMessage, $e->getMessage());
     }
+  }
+
+  public function testCanDeleteAllTheBalanceChangesForALeaveRequest() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'to_date_type' => 1,
+    ], true);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $this->assertCount(7, $balanceChanges);
+
+    LeaveBalanceChange::deleteAllForLeaveRequest($leaveRequest);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $this->assertCount(0, $balanceChanges);
   }
 
 //  public function testCreateExpirationRecordsCreatesRecordsForExpiredBalanceChanges() {

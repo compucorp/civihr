@@ -15,12 +15,30 @@ function _civicrm_api3_leave_request_create_spec(&$spec) {
 /**
  * LeaveRequest.create API
  *
+ * Since this method uses the LeaveRequest service instead of the default
+ * _civicrm_api3_basic_create function, we need to duplicate some of the code of
+ * that function in order to make sure the $params array will be handled/validate
+ * the same way and also to make sure the response will have the same format.
+ *
+ *
  * @param array $params
+ *
  * @return array API result descriptor
+ *
  * @throws API_Exception
  */
 function civicrm_api3_leave_request_create($params) {
-  return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $bao = _civicrm_api3_get_BAO(__FUNCTION__);
+  _civicrm_api3_check_edit_permissions($bao, $params);
+  _civicrm_api3_format_params_for_create($params, null);
+
+  $leaveBalanceChangeService = new CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange();
+  $service = new CRM_HRLeaveAndAbsences_Service_LeaveRequest($leaveBalanceChangeService);
+  $leaveRequest = $service->create($params);
+  $values = [];
+  _civicrm_api3_object_to_array($leaveRequest, $values[$leaveRequest->id]);
+
+  return civicrm_api3_create_success($values, $params, null, 'create', $leaveRequest);
 }
 
 /**
@@ -31,7 +49,16 @@ function civicrm_api3_leave_request_create($params) {
  * @throws API_Exception
  */
 function civicrm_api3_leave_request_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $bao = _civicrm_api3_get_BAO(__FUNCTION__);
+  civicrm_api3_verify_mandatory($params, NULL, array('id'));
+  _civicrm_api3_check_edit_permissions($bao, array('id' => $params['id']));
+  civicrm_api3_create_success(true);
+
+  $leaveBalanceChangeService = new CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange();
+  $service = new CRM_HRLeaveAndAbsences_Service_LeaveRequest($leaveBalanceChangeService);
+  $service->delete($params['id']);
+
+  return civicrm_api3_create_success(true);
 }
 
 /**
@@ -159,12 +186,12 @@ function civicrm_api3_leave_request_calculateBalanceChange($params) {
   if (($hasToDate && !$hasToType) || ($hasToType && !$hasToDate)) {
     throw new InvalidArgumentException("to_date and to_type must be included together");
   }
-  $toDate = !empty($params['to_date']) ? $params['to_date'] : null;
+  $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : null;
   $toType = !empty($params['to_type']) ? $params['to_type'] : null;
 
   $result = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::calculateBalanceChange(
     $params['contact_id'],
-    $params['from_date'],
+    new DateTime($params['from_date']),
     $params['from_type'],
     $toDate,
     $toType
