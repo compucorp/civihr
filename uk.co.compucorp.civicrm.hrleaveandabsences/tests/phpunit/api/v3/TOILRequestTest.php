@@ -198,4 +198,63 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('TOILRequest', 'get', ['contact_id'=> 1, 'sequential' => 1]);
     $this->assertEquals($expectedResult, $result['values']);
   }
+
+  public function testTOILRequestIsValidShouldReturnErrorWhenDurationIsEmptyOrNotPresent() {
+    $result = civicrm_api3('TOILRequest', 'isValid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'toil_to_accrue' => 200,
+      'duration' => null
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'duration' => ['toil_request_duration_is_empty']
+      ]
+    ];
+
+    $this->assertArraySubset($expectedResult, $result);
+
+    $result = civicrm_api3('TOILRequest', 'isValid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'toil_to_accrue' => 200,
+    ]);
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testTOILRequestIsValidShouldReturnErrorWhenToilToAccrueIsEmptyOrNotPresent() {
+    $result = civicrm_api3('TOILRequest', 'isValid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'toil_to_accrue' => '',
+      'duration' => 10,
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'toil_to_accrue' => ['toil_request_toil_to_accrue_is_empty']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+
+    $result = civicrm_api3('TOILRequest', 'isValid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'duration' => 10
+    ]);
+    $this->assertArraySubset($expectedResult, $result);
+  }
 }

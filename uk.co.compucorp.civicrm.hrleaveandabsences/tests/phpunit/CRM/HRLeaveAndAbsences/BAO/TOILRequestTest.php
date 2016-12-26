@@ -23,6 +23,64 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   * @expectedExceptionMessage The TOIL duration cannot be empty
+   */
+  public function testValidateTOILRequestWhenDurationIsNotPresent() {
+    TOILRequest::validateParams([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'toil_to_accrue' => 1,
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   * @expectedExceptionMessage The TOIL duration cannot be empty
+   */
+  public function testValidateTOILRequestWhenDurationIsEmpty() {
+    TOILRequest::validateParams([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'toil_to_accrue' => 1,
+      'duration' => null
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   * @expectedExceptionMessage The TOIL amount cannot be empty
+   */
+  public function testValidateTOILRequestWhenToilAmountIsNotPresent() {
+    TOILRequest::validateParams([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'duration' => 120
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   * @expectedExceptionMessage The TOIL amount cannot be empty
+   */
+  public function testValidateTOILRequestWhenToilAmountIsEmpty() {
+    TOILRequest::validateParams([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'duration' => 120,
+      'toil_to_accrue' => null
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
    * @expectedExceptionMessage The TOIL amount is not valid
    */
   public function testValidateTOILRequestWhenToilAmountIsNotValid() {

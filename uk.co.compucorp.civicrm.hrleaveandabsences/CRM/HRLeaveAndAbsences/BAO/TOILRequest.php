@@ -67,9 +67,36 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
    */
   public static function validateParams($params) {
+    self::validateMandatoryFields($params);
     self::validateTOILAmountIsValid($params);
     self::validateValidTOILAmountNotGreaterThanMaximum($params);
     self::validateValidTOILPastDaysRequest($params);
+  }
+
+  /**
+   * Validates if all the mandatory fields are present
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   */
+  private static function validateMandatoryFields($params) {
+    if(empty($params['duration'])) {
+      throw new InvalidTOILRequestException(
+        'The TOIL duration cannot be empty',
+        'toil_request_duration_is_empty',
+        'duration'
+      );
+    }
+
+    if(empty($params['toil_to_accrue'])) {
+      throw new InvalidTOILRequestException(
+        'The TOIL amount cannot be empty',
+        'toil_request_toil_to_accrue_is_empty',
+        'toil_to_accrue'
+      );
+    }
   }
 
   /**
