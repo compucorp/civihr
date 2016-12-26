@@ -851,7 +851,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
     $this->assertCount(7, $balanceChanges);
-define( 'CIVICRM_DEBUG_LOG_QUERY', 1 );
+
     LeaveBalanceChange::deleteAllForLeaveRequest($leaveRequest);
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);

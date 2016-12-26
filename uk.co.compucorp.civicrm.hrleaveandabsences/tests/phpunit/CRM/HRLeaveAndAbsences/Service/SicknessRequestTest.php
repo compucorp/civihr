@@ -18,6 +18,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_SicknessRequest as SicknessRequestFab
  */
 class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTest {
 
+  use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
+
   public function testCreateAlsoCreateTheLeaveRequestBalanceChanges() {
     $contact = ContactFabricator::fabricate();
 
@@ -34,7 +36,6 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
       new LeaveRequestService($balanceChangeService)
     );
 
-    $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason', 'validate'));
 
     // a 7 days request, from friday to thursday
@@ -43,9 +44,9 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
       'contact_id' => $contact['id'],
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'from_date_type' => $leaveRequestDateTypes['all_day'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
-      'to_date_type' => $leaveRequestDateTypes['all_day'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'reason' => $sicknessReasons['accident']
     ], false);
 
@@ -78,7 +79,6 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
       new LeaveRequestService($balanceChangeService)
     );
 
-    $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason', 'validate'));
 
     $params = [
@@ -86,9 +86,9 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
       'contact_id' => $contact['id'],
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'from_date_type' => $leaveRequestDateTypes['all_day'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
-      'to_date_type' => $leaveRequestDateTypes['all_day'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'reason' => $sicknessReasons['accident']
     ];
 
@@ -125,16 +125,14 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
   }
 
   public function testDeleteDeletesTheLeaveRequestItsBalanceChangesAndDates() {
-    $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
-
     $sicknessRequest = SicknessRequestFabricator::fabricateWithoutValidation([
       'type_id'        => 1,
       'contact_id'     => 1,
       'status_id'      => 1,
       'from_date'      => CRM_Utils_Date::processDate('2016-01-01'),
-      'from_date_type' => $leaveRequestDateTypes['all_day'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date'        => CRM_Utils_Date::processDate('2016-01-07'),
-      'to_date_type'   => $leaveRequestDateTypes['all_day'],
+      'to_date_type'   => $this->getLeaveRequestDayTypes()['All Day']['value'],
     ], TRUE);
 
     $leaveRequest = LeaveRequest::findById($sicknessRequest->leave_request_id);

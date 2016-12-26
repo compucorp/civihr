@@ -16,6 +16,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
  */
 class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
+  use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
+
   public function testCreateAlsoCreateTheLeaveRequestBalanceChanges() {
     $contact = ContactFabricator::fabricate();
 
@@ -28,17 +30,15 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestService = new LeaveRequestService(new LeaveBalanceChangeService());
 
-    $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
-
     // a 7 days leave request, from monday to sunday
     $leaveRequest = $leaveRequestService->create([
       'type_id' => 1,
       'contact_id' => $contact['id'],
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'from_date_type' => $leaveRequestDateTypes['all_day'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
-      'to_date_type' => $leaveRequestDateTypes['all_day'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
     ], false);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
@@ -64,16 +64,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestService = new LeaveRequestService(new LeaveBalanceChangeService());
 
-    $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
-
     $params = [
       'type_id' => 1,
       'contact_id' => $contact['id'],
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'from_date_type' => $leaveRequestDateTypes['all_day'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
-      'to_date_type' => $leaveRequestDateTypes['all_day'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
     ];
 
     // a 7 days leave request, from monday to sunday

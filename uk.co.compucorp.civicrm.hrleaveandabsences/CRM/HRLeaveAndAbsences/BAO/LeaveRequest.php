@@ -227,9 +227,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function calculateBalanceChangeFromCreateParams($params) {
     $leaveRequestOptionsValue = self::getLeaveRequestDayTypeOptionsGroupByValue();
 
-    $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : null;
     $fromDateType = $leaveRequestOptionsValue[$params['from_date_type']];
-    $toDateType = !empty($params['to_date_type']) ? $leaveRequestOptionsValue[$params['to_date_type']] : '';
+    $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : null;
+    $toDateType = !empty($params['to_date_type']) ? $leaveRequestOptionsValue[$params['to_date_type']] : null;
 
     $leaveRequestBalance = self::calculateBalanceChange(
       $params['contact_id'],

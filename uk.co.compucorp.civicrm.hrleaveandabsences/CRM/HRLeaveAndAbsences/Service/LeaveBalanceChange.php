@@ -41,7 +41,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
       $leaveRequest->contact_id,
       new DateTime($leaveRequest->from_date),
       $leaveRequest->from_date_type,
-      empty($leaveRequest->to_date) ? null : new DateTime($leaveRequest->to_date),
+      !empty($leaveRequest->to_date) ? new DateTime($leaveRequest->to_date) : null,
       $leaveRequest->to_date_type
     );
   }
