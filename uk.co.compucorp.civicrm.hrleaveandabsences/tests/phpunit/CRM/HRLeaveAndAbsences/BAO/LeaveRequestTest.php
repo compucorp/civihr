@@ -42,7 +42,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->absenceType = AbsenceTypeFabricator::fabricate([
       'must_take_public_holiday_as_leave' => 1
     ]);
-    $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
+    $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
   public function tearDown() {

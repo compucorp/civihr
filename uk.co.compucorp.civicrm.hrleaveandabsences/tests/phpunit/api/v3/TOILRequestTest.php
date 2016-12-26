@@ -17,7 +17,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
 
     $this->toilAmounts = $this->toilAmountOptions();
-    $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
+    $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
   public function testTOILRequestIsValidShouldReturnErrorWhenToilAmountIsNotValid() {

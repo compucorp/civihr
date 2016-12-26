@@ -6,18 +6,20 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
 
   protected $leaveRequestDayTypes = [];
 
-  protected function leaveRequestDayTypeOptionsBuilder() {
-    $leaveRequestDayTypeOptionsGroup = [];
-    $leaveRequestDayTypeOptions = LeaveRequest::buildOptions('from_date_type');
-    foreach($leaveRequestDayTypeOptions  as $key => $label) {
-      $name = CRM_Core_Pseudoconstant::getName(LeaveRequest::class, 'from_date_type', $key);
-      $leaveRequestDayTypeOptionsGroup[$label] = [
-        'id' => $key,
-        'value' => $key,
-        'name' => $name,
-        'label' => $label
-      ];
+  protected function getLeaveRequestDayTypes() {
+    if(empty($this->leaveRequestDayTypes)) {
+      $leaveRequestDayTypeOptions = LeaveRequest::buildOptions('from_date_type');
+      foreach($leaveRequestDayTypeOptions  as $key => $label) {
+        $name = CRM_Core_Pseudoconstant::getName(LeaveRequest::class, 'from_date_type', $key);
+        $this->leaveRequestDayTypes[$label] = [
+          'id' => $key,
+          'value' => $key,
+          'name' => $name,
+          'label' => $label
+        ];
+      }
     }
-    return $leaveRequestDayTypeOptionsGroup;
+
+    return $this->leaveRequestDayTypes;
   }
 }

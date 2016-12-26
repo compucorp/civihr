@@ -38,7 +38,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // created during the extension installation
     $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
-    $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
+    $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
     $this->absenceType = AbsenceTypeFabricator::fabricate();
   }
 

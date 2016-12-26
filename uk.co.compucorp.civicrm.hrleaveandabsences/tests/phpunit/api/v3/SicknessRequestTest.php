@@ -25,7 +25,7 @@ class SicknessRequestTest extends BaseHeadlessTest {
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
     $this->requiredDocumentOptions = $this->requiredDocumentOptionsBuilder();
-    $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
+    $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
   public function testSicknessRequestIsValidReturnsErrorWhenReasonIsEmpty() {
