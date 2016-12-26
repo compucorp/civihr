@@ -1,7 +1,11 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 
 /**
  * Class api_v3_TOILRequestTest
@@ -10,8 +14,9 @@ use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
  */
 class api_v3_TOILRequestTest extends BaseHeadlessTest {
 
-  use CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait;
 
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
@@ -256,5 +261,61 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'duration' => 10
     ]);
     $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testCreateResponseAlsoIncludeTheLeaveRequestFields() {
+    $contact = ContactFabricator::fabricate();
+
+    $startDate = new DateTime();
+    $endDate = new DateTime('+10 days');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact['id']],
+      ['period_start_date' => $startDate->format('Y-m-d')]
+    );
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $startDate->format('YmdHis'),
+      'end_date' => $endDate->format('YmdHis')
+    ]);
+
+    $type = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 10
+    ]);
+
+    $leavePeriodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $period->id,
+      'type_id' => $type->id,
+    ]);
+
+    $this->createLeaveBalanceChange($leavePeriodEntitlement->id, 10);
+
+    $result = civicrm_api3('TOILRequest', 'create', [
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'status_id' => $this->getLeaveRequestStatuses()['Approved']['value'],
+      'from_date' => $startDate->format('Y-m-d'),
+      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'toil_to_accrue' => 3,
+      'duration' => 60,
+      'sequential' => 1
+    ]);
+
+    $expectedValues = [
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'status_id' => $this->getLeaveRequestStatuses()['Approved']['value'],
+      'from_date' => $startDate->format('Y-m-d'),
+      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'to_date' => '',
+      'to_date_type' => '',
+      'duration' => 60
+    ];
+
+    $this->assertArraySubset($expectedValues, $result['values'][0]);
+    $this->assertNotEmpty($result['values'][0]['id']);
+    $this->assertNotEmpty($result['values'][0]['leave_request_id']);
   }
 }
