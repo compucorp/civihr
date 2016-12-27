@@ -5,6 +5,7 @@ use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_SicknessRequest as SicknessRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
@@ -24,8 +25,10 @@ class SicknessRequestTest extends BaseHeadlessTest {
 
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
-    $this->requiredDocumentOptions = $this->requiredDocumentOptionsBuilder();
+    $this->requiredDocumentOptions = $this->getSicknessRequestRequiredDocumentsOptions();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
+    $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
+    $this->sicknessRequestReasons = $this->getSicknessRequestReasons();
   }
 
   public function testSicknessRequestIsValidReturnsErrorWhenReasonIsEmpty() {
@@ -232,5 +235,59 @@ class SicknessRequestTest extends BaseHeadlessTest {
     }
 
     $this->fail("Expected to not find the LeaveRequest with {$leaveRequest->id}, but it was found");
+  }
+
+  public function testCreateResponseAlsoIncludeTheLeaveRequestFields() {
+    $contact = ContactFabricator::fabricate();
+
+    $startDate = new DateTime();
+    $endDate = new DateTime('+10 days');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact['id']],
+      ['period_start_date' => $startDate->format('Y-m-d')]
+    );
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $startDate->format('YmdHis'),
+      'end_date' => $endDate->format('YmdHis')
+    ]);
+
+    $type = AbsenceTypeFabricator::fabricate([
+      'is_sick' => true
+    ]);
+
+    $leavePeriodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $period->id,
+      'type_id' => $type->id,
+    ]);
+
+    $this->createLeaveBalanceChange($leavePeriodEntitlement->id, 10);
+
+    $result = civicrm_api3('SicknessRequest', 'create', [
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'status_id' => $this->leaveRequestStatuses['Approved']['value'],
+      'from_date' => $startDate->format('Y-m-d'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'reason' => $this->sicknessRequestReasons['Accident']['value'],
+      'sequential' => 1
+    ]);
+
+    $expectedValues = [
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'status_id' => $this->leaveRequestStatuses['Approved']['value'],
+      'from_date' => $startDate->format('Y-m-d'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => '',
+      'reason' => $this->sicknessRequestReasons['Accident']['value'],
+      'to_date_type' => '',
+    ];
+
+    $this->assertArraySubset($expectedValues, $result['values'][0]);
+    $this->assertNotEmpty($result['values'][0]['id']);
+    $this->assertNotEmpty($result['values'][0]['leave_request_id']);
   }
 }

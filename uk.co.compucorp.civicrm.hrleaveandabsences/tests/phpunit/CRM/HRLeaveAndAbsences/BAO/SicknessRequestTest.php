@@ -16,7 +16,7 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
 
-    $this->requiredDocumentOptions = $this->requiredDocumentOptionsBuilder();
+    $this->requiredDocumentOptions = $this->getSicknessRequestRequiredDocumentsOptions();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
