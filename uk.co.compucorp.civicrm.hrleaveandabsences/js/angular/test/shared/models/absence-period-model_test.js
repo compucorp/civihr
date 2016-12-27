@@ -71,6 +71,7 @@ define([
       afterEach(function () {
         //to excute the promise force an digest
         $rootScope.$apply();
+        jasmine.clock().uninstall();
       });
 
       it('calls equivalent API method', function () {
