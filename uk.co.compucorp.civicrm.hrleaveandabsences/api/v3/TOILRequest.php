@@ -116,6 +116,16 @@ function civicrm_api3_t_o_i_l_request_delete($params) {
   return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
 
+function _civicrm_api3_t_o_i_l_request_get_spec(&$spec) {
+  $spec['expired'] = [
+    'name'         => 'expired',
+    'type'         => CRM_Utils_Type::T_BOOLEAN,
+    'title'        => ts('Expired?'),
+    'description'  => ts('When true, only expired TOIL Requests will be returned. Otherwise, only the non-expired ones will be returned'),
+    'api.required' => FALSE
+  ];
+}
+
 /**
  * TOILRequest.get API
  * This API also returns the associated LeaveRequest data along with the TOILRequest.
@@ -127,7 +137,9 @@ function civicrm_api3_t_o_i_l_request_delete($params) {
  * @throws API_Exception
  */
 function civicrm_api3_t_o_i_l_request_get($params) {
-  $result = _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $query = new CRM_HRLeaveAndAbsences_API_Query_TOILRequestSelect($params);
+  $result = civicrm_api3_create_success($query->run(), $params, '', 'get');
+
   if ($result['count'] > 0) {
     array_walk($result['values'], '_civicrm_api3_t_o_i_l_request_merge_with_leave_request');
   }
