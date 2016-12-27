@@ -1,0 +1,29 @@
+<div class="manager-leave-page">
+  <div class="button-container">
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary">Record New Absence</button>
+      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+              data-toggle="dropdown">
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="#">Action 1</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="tabs-container">
+    <div class="container">
+      <ul class="nav nav-tabs nav-justified nav-tabs-header">
+        <li ui-sref-active="active">
+          <a ui-sref="manager-leave.requests">Leave Requests</a>
+        </li>
+        <li ui-sref-active="active">
+          <a ui-sref="manager-leave.calendar">Calendar</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div ui-view></div>
+      </div>
+    </div>
+  </div>
+</div>
