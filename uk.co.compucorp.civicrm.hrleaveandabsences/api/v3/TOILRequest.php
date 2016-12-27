@@ -79,6 +79,14 @@ function _civicrm_api3_t_o_i_l_request_create_spec(&$spec) {
   $spec['leave_request_id'] = [
     'api.required' => 0
   ];
+
+  $spec['expiry_date'] = [
+    'name' => 'expiry_date',
+    'type' => CRM_Utils_Type::T_DATE,
+    'title' => ts('Expiry Date'),
+    'description' => 'The date when the accrued TOIL will expire, if not used',
+    'api.required' => false
+  ];
 }
 
 /**
