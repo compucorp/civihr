@@ -28,18 +28,19 @@ define([
     vm.balanceChanges = {};
     vm.currentPeriod = null;
     vm.loading = true;
-    vm.isOpen = {
-      approved: false,
-      entitlement: false,
-      holiday: false,
-      open: false,
-      other: false
+    vm.sections = {
+      approved:     { isOpen: false, data: [], loadFn: loadApprovedRequests },
+      entitlements: { isOpen: false, data: [], loadFn: loadEntitlementsBreakdown },
+      expired:      { isOpen: false, data: [], loadFn: loadExpiredBalanceChanges },
+      holidays:     { isOpen: false, data: [], loadFn: loadPublicHolidays },
+      open:         { isOpen: false, data: [], loadFn: loadPendingRequests },
+      other:        { isOpen: false, data: [], loadFn: loadOtherRequests }
     };
 
     /**
-     * Changes the current period and reload all related data
+     * Changes the current period and reloads all related data
      *
-     * @param  {type} newPeriod
+     * @param {AbsencePeriodInstance} newPeriod
      */
     vm.changePeriod = function (newPeriod) {
       vm.currentPeriod = newPeriod;
@@ -47,20 +48,52 @@ define([
 
       $q.all([
         loadEntitlements(),
-        loadBalanceChanges()
+        loadBalanceChanges(),
+        loadOpenSectionsData()
       ])
+      .then(function () {
+        clearClosedSectionsData();
+      })
       .then(function () {
         vm.loading = false;
       });
     };
 
+    /**
+     * Open the given section, triggering the load function if no
+     * cached data is present
+     *
+     * @param {string} sectionName
+     */
+    vm.openSection = function (sectionName) {
+      var section = vm.sections[sectionName];
+
+      if (!section.data.length) {
+        section.loadFn();
+      }
+    };
+
     init();
+
+
+    /**
+     * Clears the cached data of all the closed sections
+     */
+    function clearClosedSectionsData() {
+      Object.values(vm.sections)
+        .filter(function (section) {
+          return !section.isOpen;
+        })
+        .forEach(function (section) {
+          section.data = [];
+        });
+    }
 
     /**
      * Init code
      */
     function init() {
-      return $q.all([
+      $q.all([
         loadAbsenceTypes(),
         loadAbsencePeriods()
       ])
@@ -103,6 +136,23 @@ define([
     }
 
     /**
+     * Loads the approved requests
+     *
+     * @return {Promise}
+     */
+    function loadApprovedRequests() {
+      return LeaveRequest.all({
+        contact_id: vm.contactId,
+        from_date: { from: vm.currentPeriod.start_date },
+        to_date: { to: vm.currentPeriod.end_date },
+        status: '<value of OptionValue "approved">'
+      })
+      .then(function (leaveRequests) {
+        vm.sections.approved.data = leaveRequests;
+      });
+    }
+
+    /**
      * Loads the balance changes of the various sections
      *
      * @return {Promise}
@@ -138,7 +188,7 @@ define([
     }
 
     /**
-     * Loads all the entitlements
+     * Loads the entitlements, including current and future balance
      *
      * @return {Promise}
      */
@@ -149,6 +199,115 @@ define([
       }, true)
       .then(function (entitlements) {
         vm.entitlements = entitlements;
+      });
+    }
+
+    /**
+     * Loads the entitlements breakdown
+     *
+     * @return {Promise}
+     */
+    function loadEntitlementsBreakdown() {
+      return Entitlement.breakdown({
+        contact_id: vm.contactId,
+        period_id: vm.currentPeriod.id
+      }, vm.entitlements)
+      .then(function () {
+        // Flattens the breakdowns array
+        return Array.prototype.concat.apply([], vm.entitlements.map(function (entitlement) {
+          return entitlement.breakdown;
+        }));
+      })
+      .then(function (breakdown) {
+        vm.sections.entitlements.data = breakdown;
+      });
+    }
+
+    /**
+     * Loads the expired balance changes (Brought Forward, TOIL)
+     *
+     * @return {Promise}
+     */
+    function loadExpiredBalanceChanges() {
+      return Entitlement.breakdown({
+        contact_id: vm.contactId,
+        period_id: vm.currentPeriod.id,
+        expired: true
+      })
+      .then(function (expiredBalanceChanges) {
+        vm.sections.expired.data = expiredBalanceChanges;
+      });
+    }
+
+    /**
+     * Loads the data of all the currently opened sections
+     *
+     * @return {Promise}
+     */
+    function loadOpenSectionsData() {
+      return $q.all(Object.values(vm.sections)
+        .filter(function (section) {
+          return section.isOpen;
+        })
+        .map(function (section) {
+          return section.loadFn();
+        }));
+    }
+
+    /**
+     * Loads the rejected/cancelled leave requests
+     *
+     * @return {Promise}
+     */
+    function loadOtherRequests() {
+      return LeaveRequest.all({
+        contact_id: vm.contactId,
+        from_date: { from: vm.currentPeriod.start_date },
+        to_date: { to: vm.currentPeriod.end_date },
+        status: { in: [
+          '<value of OptionValue "rejected">',
+          '<value of OptionValue "cancelled">'
+        ] }
+      })
+      .then(function (leaveRequests) {
+        vm.sections.other.data = leaveRequests;
+      });
+    }
+
+    /**
+     * Loads the currently pending leave requests
+     *
+     * @return {Promise}
+     */
+    function loadPendingRequests() {
+      return LeaveRequest.all({
+        contact_id: vm.contactId,
+        from_date: { from: vm.currentPeriod.start_date },
+        to_date: { to: vm.currentPeriod.end_date },
+        status: { in: [
+          '<value of OptionValue "awaiting approval">',
+          '<value of OptionValue "more information">'
+        ] }
+      })
+      .then(function (leaveRequests) {
+        vm.sections.open.data = leaveRequests;
+      });
+    }
+
+    /**
+     * Loads the leave requests associated to public holidays
+     *
+     * @return {Promise}
+     */
+    function loadPublicHolidays() {
+      return LeaveRequest.all({
+        contact_id: vm.contactId,
+        from_date: { from: vm.currentPeriod.start_date },
+        to_date: { to: vm.currentPeriod.end_date },
+        public_holiday: true
+      })
+      .then(function (leaveRequests) {
+        vm.sections.holidays.data = leaveRequests;
       });
     }
 

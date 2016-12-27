@@ -43,6 +43,8 @@
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
         spyOn(Entitlement, 'all').and.callThrough();
+        spyOn(Entitlement, 'breakdown').and.callThrough();
+        spyOn(LeaveRequest, 'all').and.callThrough();
         spyOn(LeaveRequest, 'balanceChangeByAbsenceType').and.callThrough();
       }));
 
@@ -56,8 +58,8 @@
         });
 
         it('has all the sections collapsed', function () {
-          expect(Object.values(controller.isOpen).every(function (status) {
-            return status === false;
+          expect(Object.values(controller.sections).every(function (section) {
+            return section.isOpen === false;
           })).toBe(true);
         });
 
@@ -158,43 +160,75 @@
           newPeriod = _(controller.absencePeriods).filter(function (period) {
             return !period.current;
           }).sample();
-
-          Entitlement.all.calls.reset();
-          LeaveRequest.balanceChangeByAbsenceType.calls.reset();
-
-          controller.changePeriod(newPeriod);
         });
 
-        it('sets the new current period', function () {
-          expect(controller.currentPeriod).toBe(newPeriod);
+        describe('basic tests', function () {
+          beforeEach(function () {
+            Entitlement.all.calls.reset();
+            LeaveRequest.balanceChangeByAbsenceType.calls.reset();
+
+            controller.changePeriod(newPeriod);
+          });
+
+          it('sets the new current period', function () {
+            expect(controller.currentPeriod).toBe(newPeriod);
+          });
+
+          it('goes into loading mode', function () {
+            expect(controller.loading).toBe(true);
+          });
+
+          it('reloads the entitlements', function () {
+            expect(Entitlement.all).toHaveBeenCalled();
+            expect(Entitlement.all.calls.argsFor(0)[0]).toEqual(jasmine.objectContaining({
+              period_id: newPeriod.id
+            }));
+          });
+
+          it('reloads all the balance changes', function () {
+            var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(_.random(0, 2))[0];
+
+            expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledTimes(3);
+            expect(args).toEqual(jasmine.objectContaining({
+              period_id: newPeriod.id
+            }));
+          });
         });
 
-        it('goes into loading mode', function () {
-          expect(controller.loading).toBe(true);
+        describe('open sections', function () {
+          beforeEach(function () {
+            controller.sections.approved.isOpen = true;
+            controller.sections.entitlements.isOpen = true;
+
+            controller.changePeriod(newPeriod);
+            $rootScope.$digest();
+          });
+
+          it('reloads all data for sections already opened', function () {
+            expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+              from_date: { from: newPeriod.start_date },
+              to_date: {to: newPeriod.end_date },
+              status: '<value of OptionValue "approved">'
+            }));
+            expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
+              period_id: newPeriod.id
+            }), jasmine.any(Array));
+          });
         });
 
-        it('reloads the entitlements', function () {
-          expect(Entitlement.all).toHaveBeenCalled();
-          expect(Entitlement.all.calls.argsFor(0)[0]).toEqual(jasmine.objectContaining({
-            period_id: newPeriod.id
-          }));
-        });
+        describe('closed sections', function () {
+          beforeEach(function () {
+            controller.sections.holidays.data = [jasmine.any(Object), jasmine.any(Object)];
+            controller.sections.open.data = [jasmine.any(Object), jasmine.any(Object)];
 
-        it('reloads all the balance changes', function () {
-          var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(_.random(0, 2))[0];
+            controller.changePeriod(newPeriod);
+            $rootScope.$digest();
+          });
 
-          expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledTimes(3);
-          expect(args).toEqual(jasmine.objectContaining({
-            period_id: newPeriod.id
-          }));
-        });
-
-        it('reloads all leave requests for sections already opened', function () {
-
-        });
-
-        it('removes all leave requests for sections that are closed', function () {
-
+          it('removes all cached data for sections that are closed', function () {
+            expect(controller.sections.holidays.data.length).toBe(0);
+            expect(controller.sections.open.data.length).toBe(0);
+          });
         });
 
         describe('after loading', function () {
@@ -211,55 +245,137 @@
       describe('when opening a section', function () {
         describe('data caching', function () {
           describe('when the section had not been opened yet', function () {
-            it('makes a request to fetch the data', function () {
+            beforeEach(function () {
+              controller.openSection('approved');
+              $rootScope.$digest();
+            });
 
+            it('makes a request to fetch the data', function () {
+              expect(LeaveRequest.all).toHaveBeenCalled();
             });
           });
 
           describe('when the section had already been opened', function () {
-            it('does not make another request to fetch the data', function () {
+            beforeEach(function () {
+              controller.sections.approved.data = [jasmine.any(Object), jasmine.any(Object)];
 
+              controller.openSection('approved');
+              $rootScope.$digest();
+            });
+
+            it('does not make another request to fetch the data', function () {
+              expect(LeaveRequest.all).not.toHaveBeenCalled();
             });
           });
         });
 
         describe('section: Period Entitlement', function () {
-          it('fetches the entitlements breakdown', function () {
+          beforeEach(function () {
+            controller.openSection('entitlements');
+            $rootScope.$digest();
+          });
 
+          it('fetches the entitlements breakdown', function () {
+            expect(Entitlement.breakdown).toHaveBeenCalled();
           });
 
           it('passes to the Model the entitlements already stored', function () {
+            expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.any(Object), controller.entitlements);
+          });
 
+          it('caches the data', function () {
+            expect(controller.sections.entitlements.data.length).not.toBe(0);
           });
         });
 
         describe('section: Public Holidays', function () {
-          it('fetches all leave requests linked to a public holiday', function () {
+          beforeEach(function () {
+            controller.openSection('holidays');
+            $rootScope.$digest();
+          });
 
+          it('fetches all leave requests linked to a public holiday', function () {
+            expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+              public_holiday: true
+            }));
+          });
+
+          it('caches the data', function () {
+            expect(controller.sections.holidays.data.length).not.toBe(0);
           });
         });
 
         describe('section: Approved Requests', function () {
-          it('fetches all approved leave requests', function () {
+          beforeEach(function () {
+            controller.openSection('approved');
+            $rootScope.$digest();
+          });
 
+          it('fetches all approved leave requests', function () {
+            expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+              status: '<value of OptionValue "approved">'
+            }));
+          });
+
+          it('caches the data', function () {
+            expect(controller.sections.approved.data.length).not.toBe(0);
           });
         });
 
         describe('section: Open Requests', function () {
-          it('fetches all pending leave requests', function () {
+          beforeEach(function () {
+            controller.openSection('open');
+            $rootScope.$digest();
+          });
 
+          it('fetches all pending leave requests', function () {
+            expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+              status: { in: [
+                '<value of OptionValue "awaiting approval">',
+                '<value of OptionValue "more information">'
+              ] }
+            }));
+          });
+
+          it('caches the data', function () {
+            expect(controller.sections.open.data.length).not.toBe(0);
           });
         });
 
         describe('section: Expired', function () {
-          it('fetches all expired balance changes', function () {
+          beforeEach(function () {
+            controller.openSection('expired');
+            $rootScope.$digest();
+          });
 
+          it('fetches all expired balance changes', function () {
+            expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
+              expired: true
+            }));
+          });
+
+          it('caches the data', function () {
+            expect(controller.sections.expired.data.length).not.toBe(0);
           });
         });
 
         describe('section: Cancelled and Other', function () {
-          it('fetches all cancelled/rejected leave requests', function () {
+          beforeEach(function () {
+            controller.openSection('other');
+            $rootScope.$digest();
+          });
 
+          it('fetches all cancelled/rejected leave requests', function () {
+            expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+              status: { in: [
+                '<value of OptionValue "rejected">',
+                '<value of OptionValue "cancelled">'
+              ] }
+            }));
+          });
+
+          it('caches the data', function () {
+            expect(controller.sections.other.data.length).not.toBe(0);
           });
         });
       });
