@@ -23,8 +23,8 @@ function _civicrm_api3_sickness_request_create_spec(&$spec) {
     'type'         => CRM_Utils_Type::T_INT,
     'description'  => 'FK to Contact',
     'api.required' => TRUE,
-    'FKClassName'  => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequest',
-    'FKApiName'    => 'LeaveRequest',
+    'FKClassName'  => 'CRM_Contact_DAO_Contact',
+    'FKApiName'    => 'Contact',
   ];
 
   $spec['status_id'] = array(

@@ -1,7 +1,13 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
 
 /**
  * Class api_v3_TOILRequestTest
@@ -10,8 +16,9 @@ use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
  */
 class api_v3_TOILRequestTest extends BaseHeadlessTest {
 
-  use CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait;
 
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
@@ -197,5 +204,252 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
 
     $result = civicrm_api3('TOILRequest', 'get', ['contact_id'=> 1, 'sequential' => 1]);
     $this->assertEquals($expectedResult, $result['values']);
+  }
+
+  public function testTOILRequestIsValidShouldReturnErrorWhenDurationIsEmptyOrNotPresent() {
+    $result = civicrm_api3('TOILRequest', 'isValid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'toil_to_accrue' => 200,
+      'duration' => null
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'duration' => ['toil_request_duration_is_empty']
+      ]
+    ];
+
+    $this->assertArraySubset($expectedResult, $result);
+
+    $result = civicrm_api3('TOILRequest', 'isValid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'toil_to_accrue' => 200,
+    ]);
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testTOILRequestIsValidShouldReturnErrorWhenToilToAccrueIsEmptyOrNotPresent() {
+    $result = civicrm_api3('TOILRequest', 'isValid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'toil_to_accrue' => '',
+      'duration' => 10,
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'toil_to_accrue' => ['toil_request_toil_to_accrue_is_empty']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+
+    $result = civicrm_api3('TOILRequest', 'isValid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'duration' => 10
+    ]);
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testCreateResponseAlsoIncludeTheLeaveRequestFields() {
+    $contact = ContactFabricator::fabricate();
+
+    $startDate = new DateTime();
+    $endDate = new DateTime('+10 days');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact['id']],
+      ['period_start_date' => $startDate->format('Y-m-d')]
+    );
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $startDate->format('YmdHis'),
+      'end_date' => $endDate->format('YmdHis')
+    ]);
+
+    $type = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 10
+    ]);
+
+    $leavePeriodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $period->id,
+      'type_id' => $type->id,
+    ]);
+
+    $this->createLeaveBalanceChange($leavePeriodEntitlement->id, 10);
+
+    $result = civicrm_api3('TOILRequest', 'create', [
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'status_id' => $this->getLeaveRequestStatuses()['Approved']['value'],
+      'from_date' => $startDate->format('Y-m-d'),
+      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'toil_to_accrue' => 3,
+      'duration' => 60,
+      'sequential' => 1
+    ]);
+
+    $expectedValues = [
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'status_id' => $this->getLeaveRequestStatuses()['Approved']['value'],
+      'from_date' => $startDate->format('Y-m-d'),
+      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'to_date' => '',
+      'to_date_type' => '',
+      'duration' => 60
+    ];
+
+    $this->assertArraySubset($expectedValues, $result['values'][0]);
+    $this->assertNotEmpty($result['values'][0]['id']);
+    $this->assertNotEmpty($result['values'][0]['leave_request_id']);
+  }
+
+  public function testGetWithoutTheExpiredParamReturnsAllTOILRequests() {
+    $contact = ContactFabricator::fabricate();
+
+    $type = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 10
+    ]);
+
+    // This request has expired, but will be included on
+    // the response since the "expired" flag is not set
+    $toilRequest1 = TOILRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'from_date' => '20160101',
+      'duration' => 10,
+      'expiry_date' => '20160110'
+    ]);
+
+    $toilRequestBalanceChange = $this->findToilRequestBalanceChange($toilRequest1->id);
+    LeaveBalanceChangeFabricator::fabricate([
+      'source_id' => $toilRequestBalanceChange->source_id,
+      'source_type' => $toilRequestBalanceChange->source_type,
+      'amount' => $toilRequestBalanceChange->amount * -1,
+      'expiry_date' => CRM_Utils_Date::processDate($toilRequestBalanceChange->expiry_date),
+      'expired_balance_change_id' => $toilRequestBalanceChange->id,
+      'type_id' => $this->getBalanceChangeTypeValue('Debit')
+    ]);
+
+    $nextMonday = new DateTime('next monday');
+
+    // This is not expired yet and it will be included on
+    // the response
+    $toilRequest2 = TOILRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'from_date' => $nextMonday->format('Ymd'),
+      'duration' => 10,
+      'expiry_date' => $nextMonday->modify('+5 days')->format('Ymd')
+    ]);
+
+    $result = civicrm_api3('TOILRequest', 'get');
+    $this->assertEquals(2, $result['count']);
+    $this->assertNotEmpty($result['values'][$toilRequest1->id]);
+    $this->assertNotEmpty($result['values'][$toilRequest2->id]);
+  }
+
+  public function testGetWitTheExpiredParamReturnsOnlyExpiredRequests() {
+    $contact = ContactFabricator::fabricate();
+
+    $type = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 10
+    ]);
+
+    // This request has expired, and it will be included in
+    // the response
+    $toilRequest1 = TOILRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'from_date' => '20160101',
+      'duration' => 10,
+      'expiry_date' => '20160110'
+    ]);
+
+    $toilRequestBalanceChange = $this->findToilRequestBalanceChange($toilRequest1->id);
+    LeaveBalanceChangeFabricator::fabricate([
+      'source_id' => $toilRequestBalanceChange->source_id,
+      'source_type' => $toilRequestBalanceChange->source_type,
+      'amount' => $toilRequestBalanceChange->amount * -1,
+      'expiry_date' => CRM_Utils_Date::processDate($toilRequestBalanceChange->expiry_date),
+      'expired_balance_change_id' => $toilRequestBalanceChange->id,
+      'type_id' => $this->getBalanceChangeTypeValue('Debit')
+    ]);
+
+    $nextMonday = new DateTime('next monday');
+
+    // This is not expired yet and it will not be included on
+    // the response
+    $toilRequest2 = TOILRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'from_date' => $nextMonday->format('Ymd'),
+      'duration' => 10,
+      'expiry_date' => $nextMonday->modify('+5 days')->format('Ymd')
+    ]);
+
+    $result = civicrm_api3('TOILRequest', 'get', ['expired' => true]);
+    $this->assertEquals(1, $result['count']);
+    $this->assertNotEmpty($result['values'][$toilRequest1->id]);
+  }
+
+  public function testGetWitTheExpiredParamDoesNotReturnsARequestWithAnExpiryDateInThePastButWithoutAnExpiredAmount() {
+    $contact = ContactFabricator::fabricate();
+
+    $type = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 10
+    ]);
+
+    // This request has expired, and it will be included in
+    // the response
+    $toilRequest1 = TOILRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact['id'],
+      'type_id' => $type->id,
+      'from_date' => '20160101',
+      'duration' => 10,
+      'expiry_date' => '20160110'
+    ]);
+
+    $result = civicrm_api3('TOILRequest', 'get', ['expired' => true]);
+    // The expiry date is in the past and the expired leave balance change was
+    // not created yet. Nothing will be returned
+    $this->assertEquals(0, $result['count']);
+
+    $toilRequestBalanceChange = $this->findToilRequestBalanceChange($toilRequest1->id);
+    // Now we create the expired balance change, but the amount will be 0, meaning
+    // that, in practice, nothing has expired and all the accrued days were used
+    LeaveBalanceChangeFabricator::fabricate([
+      'source_id' => $toilRequestBalanceChange->source_id,
+      'source_type' => $toilRequestBalanceChange->source_type,
+      'amount' => 0,
+      'expiry_date' => CRM_Utils_Date::processDate($toilRequestBalanceChange->expiry_date),
+      'expired_balance_change_id' => $toilRequestBalanceChange->id,
+      'type_id' => $this->getBalanceChangeTypeValue('Debit')
+    ]);
+define( 'CIVICRM_DEBUG_LOG_QUERY', 1 );
+    $result = civicrm_api3('TOILRequest', 'get', ['expired' => true]);
+    // Even with the balance change, it should still return nothing because 0
+    // means nothing has expired
+    $this->assertEquals(0, $result['count']);
   }
 }

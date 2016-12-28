@@ -307,7 +307,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testTheLeaveRequestBalanceShouldOnlyIncludeDaysDeductedByApprovedLeaveRequests() {
-    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime(),
+      new DateTime('+8 days')
+    );
 
     // None of these will be included in the Leave Request balance
     $this->createLeaveBalanceChange($periodEntitlement->id, 6);

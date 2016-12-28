@@ -8,7 +8,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
 
   private $balanceChangeTypes = [];
 
-  private function getBalanceChangeTypeValue($type) {
+  public function getBalanceChangeTypeValue($type) {
     if(empty($this->balanceChangeTypes)) {
       $this->balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
     }
@@ -162,5 +162,26 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     $dao = CRM_Core_DAO::executeQuery("SELECT id FROM {$tableName} ORDER BY id DESC LIMIT 1");
     $dao->fetch();
     return (int)$dao->id;
+  }
+
+  /**
+   * Finds a LeaveBalanceChange associated with the TOILRequest with the given ID
+   *
+   * @param int $toilRequestID
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange|null
+   */
+  public function findToilRequestBalanceChange($toilRequestID) {
+    $balanceChange = new LeaveBalanceChange();
+    $balanceChange->source_id = $toilRequestID;
+    $balanceChange->source_type = LeaveBalanceChange::SOURCE_TOIL_REQUEST;
+
+    if($balanceChange->find()) {
+      $balanceChange->fetch();
+
+      return $balanceChange;
+    }
+
+    return null;
   }
 }

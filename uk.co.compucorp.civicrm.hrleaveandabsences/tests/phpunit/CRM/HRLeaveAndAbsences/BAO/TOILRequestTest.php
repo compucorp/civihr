@@ -23,6 +23,64 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   * @expectedExceptionMessage The TOIL duration cannot be empty
+   */
+  public function testValidateTOILRequestWhenDurationIsNotPresent() {
+    TOILRequest::validateParams([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'toil_to_accrue' => 1,
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   * @expectedExceptionMessage The TOIL duration cannot be empty
+   */
+  public function testValidateTOILRequestWhenDurationIsEmpty() {
+    TOILRequest::validateParams([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'toil_to_accrue' => 1,
+      'duration' => null
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   * @expectedExceptionMessage The TOIL amount cannot be empty
+   */
+  public function testValidateTOILRequestWhenToilAmountIsNotPresent() {
+    TOILRequest::validateParams([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'duration' => 120
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   * @expectedExceptionMessage The TOIL amount cannot be empty
+   */
+  public function testValidateTOILRequestWhenToilAmountIsEmpty() {
+    TOILRequest::validateParams([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'duration' => 120,
+      'toil_to_accrue' => null
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
    * @expectedExceptionMessage The TOIL amount is not valid
    */
   public function testValidateTOILRequestWhenToilAmountIsNotValid() {
@@ -279,7 +337,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
     $this->assertEquals($this->toilAmounts['3 Days']['value'], $toilBalanceChange->amount);
   }
 
-  public function testCreateTOILRequestBalanceChangeWhenTOILHasNoExpiry() {
+  public function testCreateTOILRequestBalanceChangeWhenNoExpiryDateIsGivenAndAbsenceTypeSaysTOILNeverExpires() {
     $fromDate = new DateTime();
     $toDate = new DateTime('+3 days');
 
@@ -310,7 +368,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
     $this->assertNull($toilBalanceChange->expiry_date);
   }
 
-  public function testCreateTOILRequestBalanceChangeWhenTOILHasExpiryDate() {
+  public function testCreateTOILRequestBalanceChangeWhenNoExpiryDateIsGivenAndAbsenceTypeHasTOILExpiryDuration() {
     $fromDate = new DateTime();
     $toDate = new DateTime('+3 days');
 
@@ -341,5 +399,38 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
     $toilBalanceChange->find(true);
 
     $this->assertEquals($toilBalanceChange->expiry_date, $expectedExpiryDate->format('Y-m-d'));
+  }
+
+  public function testCreateTOILRequestBalanceChangeWhenATOILExpiryDateIsGiven() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Title 1',
+      'max_leave_accrual' => 10,
+      'allow_accruals_request' => true,
+      'accrual_expiration_duration' => 10,
+      'accrual_expiration_unit' => AbsenceType::EXPIRATION_UNIT_DAYS,
+      'is_active' => 1,
+    ]);
+
+    $expiryDate = new DateTime('+100 days');
+
+    $toilRequest = TOILRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => date('YmdHis'),
+      'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
+      'duration' => 300,
+      'expiry_date' => $expiryDate->format('Ymd')
+    ], false);
+
+    $toilBalanceChange = new LeaveBalanceChange();
+    $toilBalanceChange->source_id = $toilRequest->id;
+    $toilBalanceChange->source_type = LeaveBalanceChange::SOURCE_TOIL_REQUEST;
+    $toilBalanceChange->find(true);
+
+    // The settings on the AbsenceType says TOIL Requests should expire in 10 days,
+    // but the expiry date passed to create was 100 days, so that should be the
+    // date used
+    $this->assertEquals($expiryDate->format('Y-m-d'), $toilBalanceChange->expiry_date);
   }
 }
