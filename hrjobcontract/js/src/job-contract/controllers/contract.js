@@ -69,25 +69,17 @@ define([
             };
 
             function updateContractList(newEndDate){
-                var isCurrentContract;
+                var isCurrentContract = !newEndDate || new Date(newEndDate).setHours(0,0,0,0) >= new Date().setHours(0,0,0,0);
 
-                //Is contract end date changed
-                if ($scope.details.period_end_date ?
-                new Date($scope.details.period_end_date).getTime() !== new Date(newEndDate).getTime() :
-                !!$scope.details.period_end_date !== !!newEndDate) {
-
-                    isCurrentContract = !newEndDate || new Date(newEndDate).setHours(0,0,0,0) >= new Date().setHours(0,0,0,0);
-
-                    if (isCurrentContract != !!+$scope.$parent.contract.is_current) {
-                        if (isCurrentContract) {
-                            $scope.$parent.contract.is_current = '1';
-                            $scope.$parent.$parent.contractCurrent.push($scope.$parent.contract);
-                            $scope.$parent.$parent.contractPast.splice($scope.$parent.$parent.contractPast.indexOf($scope.$parent.contract),1);
-                        } else {
-                            $scope.$parent.contract.is_current = '0';
-                            $scope.$parent.$parent.contractPast.push($scope.$parent.contract);
-                            $scope.$parent.$parent.contractCurrent.splice($scope.$parent.$parent.contractCurrent.indexOf($scope.$parent.contract),1)
-                        }
+                if (isCurrentContract != !!+$scope.$parent.contract.is_current) {
+                    if (isCurrentContract) {
+                        $scope.$parent.contract.is_current = '1';
+                        $scope.$parent.$parent.contractCurrent.push($scope.$parent.contract);
+                        $scope.$parent.$parent.contractPast.splice($scope.$parent.$parent.contractPast.indexOf($scope.$parent.contract),1);
+                    } else {
+                        $scope.$parent.contract.is_current = '0';
+                        $scope.$parent.$parent.contractPast.push($scope.$parent.contract);
+                        $scope.$parent.$parent.contractCurrent.splice($scope.$parent.$parent.contractCurrent.indexOf($scope.$parent.contract),1)
                     }
                 }
             }
