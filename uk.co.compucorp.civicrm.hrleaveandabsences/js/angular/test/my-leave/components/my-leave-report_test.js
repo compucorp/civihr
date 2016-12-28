@@ -2,6 +2,7 @@
   define([
     'common/angular',
     'common/lodash',
+    'mocks/data/option-group-mock-data',
     'common/angularMocks',
     'leave-absences/shared/config',
     'mocks/apis/absence-period-api-mock',
@@ -9,13 +10,13 @@
     'mocks/apis/entitlement-api-mock',
     'mocks/apis/leave-request-api-mock',
     'leave-absences/my-leave/app'
-  ], function (angular, _) {
+  ], function (angular, _, optionGroupMock) {
     'use strict';
 
     describe('myLeaveReport', function () {
       var contactId = CRM.vars.leaveAndAbsences.contactId;
-      var $compile, $log, $provide, $rootScope, component, controller;
-      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest;
+      var $compile, $q, $log, $provide, $rootScope, component, controller;
+      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup;
 
       beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', function (_$provide_) {
         $provide = _$provide_;
@@ -27,18 +28,21 @@
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
       }));
 
-      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$httpBackend_) {
+      beforeEach(inject(function (_$compile_, _$q_, _$log_, _$rootScope_, _$httpBackend_) {
         $compile = _$compile_;
+        $q = _$q_;
         $log = _$log_;
         $rootScope = _$rootScope_;
 
         spyOn($log, 'debug');
       }));
-      beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_) {
+      beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_) {
         AbsencePeriod = _AbsencePeriod_;
         AbsenceType = _AbsenceType_;
         Entitlement = _Entitlement_;
         LeaveRequest = _LeaveRequest_;
+        LeaveRequestInstance = _LeaveRequestInstance_;
+        OptionGroup = _OptionGroup_;
 
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
@@ -46,6 +50,9 @@
         spyOn(Entitlement, 'breakdown').and.callThrough();
         spyOn(LeaveRequest, 'all').and.callThrough();
         spyOn(LeaveRequest, 'balanceChangeByAbsenceType').and.callThrough();
+        spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
+          return $q.resolve(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'));
+        });
       }));
 
       beforeEach(function () {
@@ -78,6 +85,11 @@
           describe('after data is loaded', function () {
             it('is out of loading mode', function () {
               expect(controller.loading).toBe(false);
+            });
+
+            it('has fetched the leave request statuses', function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+              expect(controller.leaveRequestStatuses.length).not.toBe(0);
             });
 
             it('has fetched the absence types', function () {
@@ -246,8 +258,7 @@
         describe('data caching', function () {
           describe('when the section had not been opened yet', function () {
             beforeEach(function () {
-              controller.openSection('approved');
-              $rootScope.$digest();
+              openSection('approved');
             });
 
             it('makes a request to fetch the data', function () {
@@ -259,8 +270,7 @@
             beforeEach(function () {
               controller.sections.approved.data = [jasmine.any(Object), jasmine.any(Object)];
 
-              controller.openSection('approved');
-              $rootScope.$digest();
+              openSection('approved');
             });
 
             it('does not make another request to fetch the data', function () {
@@ -271,8 +281,7 @@
 
         describe('section: Period Entitlement', function () {
           beforeEach(function () {
-            controller.openSection('entitlements');
-            $rootScope.$digest();
+            openSection('entitlements');
           });
 
           it('fetches the entitlements breakdown', function () {
@@ -290,8 +299,7 @@
 
         describe('section: Public Holidays', function () {
           beforeEach(function () {
-            controller.openSection('holidays');
-            $rootScope.$digest();
+            openSection('holidays');
           });
 
           it('fetches all leave requests linked to a public holiday', function () {
@@ -307,8 +315,7 @@
 
         describe('section: Approved Requests', function () {
           beforeEach(function () {
-            controller.openSection('approved');
-            $rootScope.$digest();
+            openSection('approved');
           });
 
           it('fetches all approved leave requests', function () {
@@ -324,8 +331,7 @@
 
         describe('section: Open Requests', function () {
           beforeEach(function () {
-            controller.openSection('open');
-            $rootScope.$digest();
+            openSection('open');
           });
 
           it('fetches all pending leave requests', function () {
@@ -344,8 +350,7 @@
 
         describe('section: Expired', function () {
           beforeEach(function () {
-            controller.openSection('expired');
-            $rootScope.$digest();
+            openSection('expired');
           });
 
           it('fetches all expired balance changes', function () {
@@ -361,8 +366,7 @@
 
         describe('section: Cancelled and Other', function () {
           beforeEach(function () {
-            controller.openSection('other');
-            $rootScope.$digest();
+            openSection('other');
           });
 
           it('fetches all cancelled/rejected leave requests', function () {
@@ -378,32 +382,102 @@
             expect(controller.sections.other.data.length).not.toBe(0);
           });
         });
+
+        /**
+         * Open the given section and runs the digest cycle
+         *
+         * @param {string} section
+         */
+        function openSection(section) {
+          controller.openSection(section);
+          $rootScope.$digest();
+        }
       });
 
       describe('action matrix for a leave request', function () {
-        describe('status: awaiting approval', function () {
-          it('shows the "edit" and "cancel" actions', function () {
+        var actionMatrix;
 
+        describe('status: awaiting approval', function () {
+          beforeEach(function () {
+            actionMatrix = getActionMatrixForStatus('waiting_approval');
+          });
+
+          it('shows the "edit" and "cancel" actions', function () {
+            expect(actionMatrix.length).toBe(2);
+            expect(actionMatrix).toContain('edit');
+            expect(actionMatrix).toContain('cancel');
           });
         });
 
         describe('status: more information required', function () {
-          it('shows the "respond" and "cancel" actions', function () {
+          beforeEach(function () {
+            actionMatrix = getActionMatrixForStatus('more_information_requested');
+          });
 
+          it('shows the "respond" and "cancel" actions', function () {
+            expect(actionMatrix.length).toBe(2);
+            expect(actionMatrix).toContain('respond');
+            expect(actionMatrix).toContain('cancel');
           });
         });
 
         describe('status: approved', function () {
-          it('shows the "cancel" actions', function () {
+          beforeEach(function () {
+            actionMatrix = getActionMatrixForStatus('approved');
+          });
 
+          it('shows the "cancel" action', function () {
+            expect(actionMatrix.length).toBe(1);
+            expect(actionMatrix).toContain('cancel');
           });
         });
 
         describe('status: cancelled', function () {
-          it('shows the no actions', function () {
+          beforeEach(function () {
+            actionMatrix = getActionMatrixForStatus('cancelled');
+          });
 
+          it('shows no actions', function () {
+            expect(actionMatrix.length).toBe(0);
           });
         });
+
+        describe('status: rejected', function () {
+          beforeEach(function () {
+            actionMatrix = getActionMatrixForStatus('rejected');
+          });
+
+          it('shows no actions', function () {
+            expect(actionMatrix.length).toBe(0);
+          });
+        });
+
+        /**
+         * Calls the controller method that returns the action matrix for
+         * a given Leave Request
+         *
+         * @param  {string} statusName
+         * @return {Array}
+         */
+        function getActionMatrixForStatus(statusName) {
+          return controller.actionsFor(createRequestWithStatus(statusName));
+        }
+
+        /**
+         * Creates a Leave Request instance with the id of the given status
+         *
+         * @param  {string} statusName
+         * @return {LeaveRequestInstance}
+         */
+        function createRequestWithStatus(statusName) {
+          var statuses = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status');
+
+          return LeaveRequestInstance.init({
+            status_id: _.find(statuses, function (status) {
+              return status.name === statusName;
+            }).id
+          });
+        }
       });
 
       describe('when cancelling a leave request', function () {

@@ -13,20 +13,28 @@ define([
     controllerAs: 'report',
     controller: [
       '$log', '$q', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest',
-      controller
+      'OptionGroup', controller
     ]
   });
 
 
-  function controller($log, $q, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest) {
+  function controller($log, $q, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup) {
     $log.debug('Component: my-leave-report');
 
     var vm = Object.create(this);
+    var actionMatrix = {
+      'waiting_approval'          : ['edit'   , 'cancel'],
+      'more_information_requested': ['respond', 'cancel'],
+      'approved'                  : ['cancel'           ],
+      'cancelled'                 : [                   ],
+      'rejected'                  : [                   ]
+    };
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
     vm.balanceChanges = {};
     vm.currentPeriod = null;
+    vm.leaveRequestStatuses = [];
     vm.loading = true;
     vm.sections = {
       approved:     { isOpen: false, data: [], loadFn: loadApprovedRequests },
@@ -35,6 +43,21 @@ define([
       holidays:     { isOpen: false, data: [], loadFn: loadPublicHolidays },
       open:         { isOpen: false, data: [], loadFn: loadPendingRequests },
       other:        { isOpen: false, data: [], loadFn: loadOtherRequests }
+    };
+
+    /**
+     * Returns the available actions, based on the current status
+     * of the given leave request
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {Array}
+     */
+    vm.actionsFor = function (leaveRequest) {
+      var statusKey = _.find(vm.leaveRequestStatuses, function (status) {
+        return status.id === leaveRequest.status_id;
+      })['name'];
+
+      return statusKey ? actionMatrix[statusKey] : [];
     };
 
     /**
@@ -94,6 +117,7 @@ define([
      */
     function init() {
       $q.all([
+        loadStatuses(),
         loadAbsenceTypes(),
         loadAbsencePeriods()
       ])
@@ -106,6 +130,19 @@ define([
       .then(function () {
         vm.loading = false;
       });
+    }
+
+    /**
+     * NOTE: This is just temporary, see PCHR-1810
+     * Loads all the possible statuses of a leave request
+     *
+     * @return {Promise}
+     */
+    function loadStatuses() {
+      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
+        .then(function (statuses) {
+          vm.leaveRequestStatuses = statuses;
+        });
     }
 
     /**
