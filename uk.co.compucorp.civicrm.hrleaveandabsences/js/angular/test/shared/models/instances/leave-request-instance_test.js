@@ -33,7 +33,7 @@ define([
       'LeaveRequestAPI',
       '$rootScope',
       '$q',
-      'api.optionGroup',
+      'OptionGroup',
       function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _OptionGroup_) {
         LeaveRequestInstance = _LeaveRequestInstance_;
         LeaveRequestAPI = _LeaveRequestAPI_;

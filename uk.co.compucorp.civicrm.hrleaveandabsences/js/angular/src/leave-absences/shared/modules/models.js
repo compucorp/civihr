@@ -1,6 +1,7 @@
 define([
   'common/angular',
   'common/modules/models',
+  'common/modules/services',
   'leave-absences/shared/modules/apis',
   'leave-absences/shared/modules/models-instances',
 ], function (angular) {

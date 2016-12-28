@@ -1,6 +1,6 @@
 define([
   'leave-absences/shared/modules/models-instances',
-  'common/services/api/option-group',
+  'common/models/option-group',
   'common/models/instances/instance'
 ], function (instances) {
   'use strict';
@@ -8,7 +8,7 @@ define([
   instances.factory('LeaveRequestInstance', [
     'ModelInstance',
     'LeaveRequestAPI',
-    'api.optionGroup',
+    'OptionGroup',
     function (ModelInstance, LeaveRequestAPI, OptionGroup) {
 
       /**

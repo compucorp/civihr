@@ -1,5 +1,6 @@
 define([
   'common/angularMocks',
+  'common/mocks/module'
 ], function (mocks) {
   'use strict';
 
