@@ -45,7 +45,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   public $_jobHoursTime;
   protected $_aid;
   protected $_cancelURL = NULL;
-  
+
   /**
    * Array of possible activity statuses
    * @var array 
@@ -552,39 +552,48 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->_targetContact = $contactResult['values'][$this->_targetContactID];
     }
 
-    $this->_sendTemplateParams = $this->buildSendTemplateParams();
-    $this->_sendTemplateParams = $this->setFromAddress($this->_sendTemplateParams);
+    $this->_sendTemplateParams = $this->buildSendTemplateParams($isAdmin);
     $this->_mailprm = $this->buildMailDestinatariesParams($this->_sendTemplateParams);
 
     if ($this->_action & (CRM_Core_Action::ADD)) {
+
       if (array_key_exists('_qf_AbsenceRequest_done_save', $this->_submitValues)) {
         $this->createLeaveActivities($this->_sendTemplateParams['tplParams']['absentDateDurations'], 'Scheduled');
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied.'), ts('Saved'), 'success');
-      } elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $this->_submitValues) || $isAdmin) {
+      }
+      elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $this->_submitValues) || $isAdmin) {
         $this->createLeaveActivities($this->_sendTemplateParams['tplParams']['absentDateDurations'], 'Completed');
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied and approved.'), ts('Saved'), 'success');
       }
 
       self::sendAbsenceMail($this->_mailprm, $this->_sendTemplateParams);
       $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}", false, 'hrabsence/list'));
-    } elseif ($this->_mode == 'edit') {
+    }
+    elseif ($this->_mode == 'edit') {
+
       if (array_key_exists('_qf_AbsenceRequest_done_cancelabsence', $this->_submitValues)) {
         $result = $this->updateActivitiesStatus('Cancelled');
         CRM_Core_Session::setStatus(ts('Absence(s) have been Cancelled.'), ts('Cancelled'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
-      } elseif (array_key_exists('_qf_AbsenceRequest_done_approve', $this->_submitValues)) {
+      }
+      elseif (array_key_exists('_qf_AbsenceRequest_done_approve', $this->_submitValues)) {
         $result = $this->setActivitiesAsCompleted($this->_sendTemplateParams['tplParams']['absentDateDurations']);
         CRM_Core_Session::setStatus(ts('Absence(s) have been Approved.'), ts('Approved'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
-      } elseif (array_key_exists('_qf_AbsenceRequest_done_reject', $this->_submitValues)) {
+      }
+      elseif (array_key_exists('_qf_AbsenceRequest_done_reject', $this->_submitValues)) {
         $result = $this->updateActivitiesStatus('Rejected');
         CRM_Core_Session::setStatus(ts('Absence(s) have been Rejected.'), ts('Rejected'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
-      } elseif (array_key_exists('_qf_AbsenceRequest_done_cancel', $this->_submitValues)) {
+      }
+      elseif (array_key_exists('_qf_AbsenceRequest_done_cancel', $this->_submitValues)) {
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}", false, 'hrabsence/list'));
-      } else {
-        $this->recreateSubactivities($this->_sendTemplateParams['tplParams']['absentDateDurations']);
+      }
+      else {
+        $result = civicrm_api3('Activity', 'get', ['id' => $this->_activityId]);
+        $this->recreateSubActivities($this->_sendTemplateParams['tplParams']['absentDateDurations']);
         $buttonName = $this->controller->getButtonName();
+
         if ($buttonName == "_qf_AbsenceRequest_done_save") {
           $this->_aid = $this->_submitValues['source_record_id'];
           $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}", false, 'hrabsence/list'));
@@ -596,7 +605,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       if ($this->_sendTemplateParams['sendMail']) {
         self::sendAbsenceMail($this->_mailprm, $this->_sendTemplateParams);
       }
-    } else {
+    }
+    else {
+
       if (CRM_Utils_Request::retrieve('aid', 'Positive', $this)) {
         $activityIDs = CRM_Utils_Request::retrieve('aid', 'Positive', $this);
       }
@@ -604,9 +615,11 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       if (array_key_exists('_qf_AbsenceRequest_done_cancelabsence', $this->_submitValues)) {
         $this->updateActivitiesStatus('Cancelled');
         $statusMsg = ts('Absence(s) have been Cancelled');
-      } elseif (array_key_exists('_qf_AbsenceRequest_done_cancel', $this->_submitValues)) {
+      }
+      elseif (array_key_exists('_qf_AbsenceRequest_done_cancel', $this->_submitValues)) {
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}", false, 'hrabsence/list'));
       }
+
       CRM_Core_Session::setStatus($statusMsg, '', 'success');
       $session->pushUserContext(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$activityIDs}"));
     }
@@ -615,30 +628,30 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   /**
    * Builds array of template's parameters to be passed to sendAbsenceMail function
    * 
+   * @param boolean $isAdmin
+   *   True if current user has administrator role, false otherwise
+   * 
    * @return array
    *   Template parameters to build e-mail message to be sent to contacts
    */
-  private function buildSendTemplateParams() {
-    $activityStatus = empty($this->_activityStatuses) ? 
-      CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name') : 
-      $this->_activityStatuses;
-
+  private function buildSendTemplateParams($isAdmin) {
     $absentDateDurations = [];
 
     // Build array of absences per day
     if (!empty($this->_submitValues['date_values'])) {
       foreach (explode('|', $this->_submitValues['date_values']) as $dateString) {
+
         if ($dateString) {
           $values = explode('(', $dateString);
           $date = CRM_Utils_Date::processDate($values[0]);
           $valuesDate = explode(':', $dateString);
           $absentDateDurations[$date]['duration'] = (int) $valuesDate[1];
-          if ((isset($valuesDate[2]) && $valuesDate[2] == 1 && $this->_showhide == 1 && array_key_exists('_qf_AbsenceRequest_done_save', $this->_submitValues)) || (isset($valuesDate[2]) && $valuesDate[2] == 0 && $this->_showhide == 0 && array_key_exists('_qf_AbsenceRequest_done_save', $this->_submitValues))) {
-            $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Scheduled', $activityStatus);
-          } elseif (isset($valuesDate[2]) && $valuesDate[2] == 0 && $this->_showhide == 1) {
-            $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Rejected', $activityStatus);
-          } elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $this->_submitValues) || array_key_exists('_qf_AbsenceRequest_done_approve', $this->_submitValues)) {
-            $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Completed', $activityStatus);
+
+          $dateSelection = isset($valuesDate[2]) ? $valuesDate[2] : null;
+          $approvalStatus = $this->calculateDateStatus($dateSelection);
+
+          if ($approvalStatus) {
+            $absentDateDurations[$date]['approval'] = $approvalStatus;
           }
         }
       }
@@ -679,24 +692,52 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       'tplParams' => $tplParams,
     ];
 
-    return $sendTemplateParams;
+    return $this->setFromAddress($sendTemplateParams, $isAdmin);
   }
-  
+
+  /**
+   * Calculates Status for a date in a leave request.
+   * 
+   * @param int $dateValue
+   *   Either 1, 0 or null, depending on selection made by user
+   * 
+   * @return int
+   *   ID of status
+   */
+  private function calculateDateStatus($dateValue) {
+    $status = null;
+
+    if (array_key_exists('_qf_AbsenceRequest_done_save', $this->_submitValues) &&
+      isset($dateValue) &&
+      in_array($dateValue, [0, 1]) &&
+      in_array($this->_showhide, [0, 1]) &&
+      $dateValue == $this->_showhide) {
+
+      $status = 'Scheduled';
+    }
+    elseif (isset($dateValue) && $dateValue == 0 && $this->_showhide == 1) {
+      $status = 'Rejected';
+    }
+    elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $this->_submitValues) || array_key_exists('_qf_AbsenceRequest_done_approve', $this->_submitValues)) {
+      $status = 'Completed';
+    }
+
+    return empty($status) ? null : CRM_Utils_Array::key($status, $this->_activityStatuses);
+  }
+
   /**
    * Adds the from address to be used when sending e-mails to contacts.
    * 
-   * @global stdClass $user
-   *   Object holding data of currently logged in user
    * @param array $sendTemplateParams
    *   Parameters of template to be sent as an e-mail message
+   * @param boolean $isAdmin
+   *   True if current user has administrator role, false otherwise
    * 
    * @return array
    *   Parameters of template to be sent as an e-mail message with the from
    *   address added to it.
    */
-  private function setFromAddress($sendTemplateParams) {
-    global $user;
-    $isAdmin = in_array('civihr_admin', $user->roles) ? true : false;
+  private function setFromAddress($sendTemplateParams, $isAdmin) {
 
     // Get Domain Address
     $domainData = civicrm_api3('Domain', 'get', ['sequential' => 1, 'current_domain' => 1]);
@@ -715,34 +756,37 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $loggedUserEmail = "$domainEmailAddress";
     }
 
-    if ($this->_action & (CRM_Core_Action::ADD)) {
-      if (array_key_exists('_qf_AbsenceRequest_done_save', $this->_submitValues)) {
-        $sendTemplateParams['from'] = "{$this->_targetContact['display_name']} <$domainEmailAddress>";
-      } elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $this->_submitValues) || $isAdmin) {
+    $addAction = ($this->_action & (CRM_Core_Action::ADD)) ? true : false;
+    $editAction = ($this->_mode == 'edit') ? true : false;
+    $buttonName = $this->controller->getButtonName();
+    $sendMail = false;
+
+    switch (true) {
+      case $addAction && array_key_exists('_qf_AbsenceRequest_done_save', $this->_submitValues):
+        $sendTemplateParams['from'] = $targetContactEmail;
+        break;
+      case $addAction && (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $this->_submitValues) || $isAdmin):
         $sendTemplateParams['from'] = $loggedUserEmail;
         $sendTemplateParams['tplParams']['approval'] = TRUE;
-      }
-    } elseif ($this->_mode == 'edit') {
-      if (array_key_exists('_qf_AbsenceRequest_done_cancelabsence', $this->_submitValues)) {
+        break;
+      case $editAction && array_key_exists('_qf_AbsenceRequest_done_cancelabsence', $this->_submitValues):
         $sendTemplateParams['from'] = $targetContactEmail;
         $sendTemplateParams['tplParams']['cancel'] = $sendMail = TRUE;
-      } elseif (array_key_exists('_qf_AbsenceRequest_done_approve', $this->_submitValues)) {
+        break;
+      case $editAction && array_key_exists('_qf_AbsenceRequest_done_approve', $this->_submitValues):
         $sendTemplateParams['from'] = $loggedUserEmail;
         $sendTemplateParams['tplParams']['approval'] = $sendMail = TRUE;
-      } elseif (array_key_exists('_qf_AbsenceRequest_done_reject', $this->_submitValues)) {      
+        break;
+      case $editAction && array_key_exists('_qf_AbsenceRequest_done_reject', $this->_submitValues):
         $sendTemplateParams['from'] = $loggedUserEmail;
         $sendTemplateParams['tplParams']['reject'] = $sendMail = TRUE;
-      } else {
-        $buttonName = $this->controller->getButtonName();
-        if ($buttonName == "_qf_AbsenceRequest_done_save") {
-          $sendTemplateParams['from'] = $targetContactEmail;
-          $sendTemplateParams['tplParams']['save'] = $sendMail = TRUE;
-        }
-      }
-    }
-
-    if (empty($sendTemplateParams['from'])) {
-      $sendTemplateParams['from'] = "$domainEmailAddress";
+        break;
+      case $editAction && $buttonName == '_qf_AbsenceRequest_done_save':
+        $sendTemplateParams['from'] = $targetContactEmail;
+        $sendTemplateParams['tplParams']['save'] = $sendMail = TRUE;
+        break;
+      default:
+        $sendTemplateParams['from'] = $loggedUserEmail;
     }
 
     $sendTemplateParams['sendMail'] = $sendMail;
@@ -756,8 +800,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
    * 
    * @param array $absentDateDurations
    *   List of durations (days) of leave
-   * @param type $status
-   *   Status in which activities have to be created in
+   * @param string $status
+   *   Status name in which activities have to be created in
    */
   private function createLeaveActivities($absentDateDurations, $status) {
     $activityParam = [
@@ -771,27 +815,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $result = civicrm_api3('Activity', 'create', $activityParam);
 
     //save the custom data
-    if (!empty($this->_submitValues['hidden_custom'])) {
-      $customFields = CRM_Utils_Array::crmArrayMerge(
-        CRM_Core_BAO_CustomField::getFields('Activity', FALSE, FALSE, $this->_activityTypeID),
-        CRM_Core_BAO_CustomField::getFields('Activity', FALSE, FALSE, NULL, NULL, TRUE)
-      );
-      $customValues = CRM_Core_BAO_CustomField::postProcess($this->_submitValues, $customFields, $result['id'], 'Activity');
-      CRM_Core_BAO_CustomValueTable::store($customValues, 'civicrm_activity', $result['id']);
-    }
+    $this->updateCustomFields($result);
 
-    if (!empty($customValues)) {
-      $customGroup = [];
-      foreach ($customValues as $fieldID => $values) {
-        foreach ($values as $fieldValue) {
-          $customValue = ['data' => $fieldValue['value']];
-          $customFields[$fieldID]['id'] = $fieldID;
-          $formattedValue = CRM_Core_BAO_CustomGroup::formatCustomValues($customValue, $customFields[$fieldID], TRUE);
-          $customGroup[$customFields[$fieldID]['groupTitle']][$customFields[$fieldID]['label']] = str_replace('&nbsp;', '', $formattedValue);
-        }
-      }
-      $this->_sendTemplateParams['tplParams']['customGroup'] = $customGroup;
-    }
     $activityLeavesParam = [
       'sequential' => 1,
       'source_record_id' => $result['id'],
@@ -822,7 +847,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $mailprm[$this->_targetContactID]['email'] = $this->_targetContact['email'];
 
     // Add managers
-    $managerContactResult = [];
     if (($this->_action & (CRM_Core_Action::ADD) || $sendTemplateParams['sendMail']) && !empty($this->_managerContactID)) {
       foreach ($this->_managerContactID as $val) {
         $managerContactResult = civicrm_api3('contact', 'get', [
@@ -839,13 +863,13 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   }
 
   /**
-   * Updates acivities to given status for current leave request.
+   * Updates activities to given status for current leave request.
    * 
-   * @param type $status
-   *   Status to which activities should be set
+   * @param string $status
+   *   Status name to which activities should be set
    * 
    * @return array
-   *   Data of main activity for curent leave request
+   *   Data of main activity for current leave request
    */
   private function updateActivitiesStatus($status) {
     $statusId = CRM_Utils_Array::key($status, $this->_activityStatuses);
@@ -857,26 +881,28 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'status_id' => $statusId
       ]
     );
-    $subact = civicrm_api3('Activity', 'get', ['return' => "id", 'source_record_id' => $result['id']]);
-    foreach($subact['values'] as $val) {
+
+    $subActivities = civicrm_api3('Activity', 'get', ['return' => "id", 'source_record_id' => $result['id']]);
+
+    foreach($subActivities['values'] as $val) {
       civicrm_api3('Activity', 'create', ['id' => $val['id'] , 'status_id' => $statusId]);
     }
-    
+
     return $result;
   }
 
   /**
    * Sets leave request as approved by changing the main activity's status and
-   * its subactivities to Completed.
+   * its sub-activities to Completed.
    * 
    * @param array $absentDateDurations
    *   List of durations (days) of leave
    * 
    * @return array
-   *   Data of main activity for curent leave request
+   *   Data of main activity for current leave request
    */
   private function setActivitiesAsCompleted($absentDateDurations) {
-    $this->recreateSubactivities($absentDateDurations);
+    $this->recreateSubActivities($absentDateDurations);
 
     $activityStatus = empty($this->_activityStatuses) ? 
       CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name') : 
@@ -891,29 +917,30 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   }
 
   /**
-   * Deletes subactivities of leave request and creates them again for each day.
+   * Deletes sub-activities of leave request and creates them again for each day 
+   * in absentDateDurations array.
    * 
    * @param array $absentDateDurations
    *   List of durations (days) of leave
    */
-  private function recreateSubactivities($absentDateDurations) {
-    $result = civicrm_api3('Activity', 'get', array(
+  private function recreateSubActivities($absentDateDurations) {
+    $result = civicrm_api3('Activity', 'get', [
       'source_record_id' => $this->_submitValues['source_record_id'],
       'option.limit' => 365
-    ));
+    ]);
     foreach ($result['values'] as $row_result) {
-      civicrm_api3('Activity', 'delete', array(
+      civicrm_api3('Activity', 'delete', [
         'id' => $row_result['id']
-      ));
+      ]);
     }
     foreach ($absentDateDurations as $date => $duration) {
-      $result = civicrm_api3('Activity', 'create', array(
+      civicrm_api3('Activity', 'create', [
         'activity_type_id' => CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name'),
         'source_record_id' => $this->_submitValues['source_record_id'],
         'activity_date_time' => $date,
         'duration' => $duration['duration'],
         'status_id' => $duration['approval'],
-      ));
+      ]);
     }
   }
 
@@ -925,6 +952,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
    *   Data of main activity associated to leave request
    */
   private function updateCustomFields($activity) {
+
     if (!empty($this->_submitValues['hidden_custom'])) {
       $customFields = CRM_Utils_Array::crmArrayMerge(
         CRM_Core_BAO_CustomField::getFields('Activity', FALSE, FALSE, $this->_activityTypeID),
