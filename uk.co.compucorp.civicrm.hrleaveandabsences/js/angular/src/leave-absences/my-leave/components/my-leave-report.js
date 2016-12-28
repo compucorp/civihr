@@ -13,12 +13,12 @@ define([
     controllerAs: 'report',
     controller: [
       '$log', '$q', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest',
-      'OptionGroup', controller
+      'OptionGroup', 'dialog', controller
     ]
   });
 
 
-  function controller($log, $q, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup) {
+  function controller($log, $q, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog) {
     $log.debug('Component: my-leave-report');
 
     var vm = Object.create(this);
@@ -61,6 +61,24 @@ define([
     };
 
     /**
+     * Cancels a leave request, but asks for user's confirmation first
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     */
+    vm.cancelRequest = function (leaveRequest) {
+      dialog.open({
+        title: 'Confirm Cancellation Leave Request',
+        copyCancel: 'Cancel',
+        copyConfirm: 'Confirm',
+        classConfirm: 'btn-danger',
+        msg: 'This cannot be undone'
+      })
+      .then(function (response) {
+        !!response && cancelRequest(leaveRequest);
+      });
+    };
+
+    /**
      * Changes the current period and reloads all related data
      *
      * @param {AbsencePeriodInstance} newPeriod
@@ -96,26 +114,8 @@ define([
       }
     };
 
-    init();
-
-
-    /**
-     * Clears the cached data of all the closed sections
-     */
-    function clearClosedSectionsData() {
-      Object.values(vm.sections)
-        .filter(function (section) {
-          return !section.isOpen;
-        })
-        .forEach(function (section) {
-          section.data = [];
-        });
-    }
-
-    /**
-     * Init code
-     */
-    function init() {
+    // Init block
+    (function init() {
       $q.all([
         loadStatuses(),
         loadAbsenceTypes(),
@@ -130,6 +130,40 @@ define([
       .then(function () {
         vm.loading = false;
       });
+    })();
+
+    /**
+     * Triggers the cancellation action, then removes the cancelled
+     * leave request from either the "approved", or "open" sections (the only
+     * sections where a leave request can be cancelled), and moves it to the
+     * "other" section
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     */
+    function cancelRequest(leaveRequest) {
+      leaveRequest.cancel().then(function () {
+        [vm.sections.approved, vm.sections.open].forEach(function (section) {
+          _.remove(section.data, function (dataEntry) {
+            return dataEntry.id === leaveRequest.id;
+          });
+        });
+      })
+      .then(function () {
+        vm.sections.other.data.push(leaveRequest);
+      });
+    }
+
+    /**
+     * Clears the cached data of all the closed sections
+     */
+    function clearClosedSectionsData() {
+      Object.values(vm.sections)
+        .filter(function (section) {
+          return !section.isOpen;
+        })
+        .forEach(function (section) {
+          section.data = [];
+        });
     }
 
     /**

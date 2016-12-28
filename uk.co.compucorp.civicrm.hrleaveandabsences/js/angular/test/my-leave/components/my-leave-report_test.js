@@ -2,6 +2,7 @@
   define([
     'common/angular',
     'common/lodash',
+    'mocks/data/leave-request-data',
     'mocks/data/option-group-mock-data',
     'common/angularMocks',
     'leave-absences/shared/config',
@@ -10,13 +11,13 @@
     'mocks/apis/entitlement-api-mock',
     'mocks/apis/leave-request-api-mock',
     'leave-absences/my-leave/app'
-  ], function (angular, _, optionGroupMock) {
+  ], function (angular, _, leaveRequestMock, optionGroupMock) {
     'use strict';
 
     describe('myLeaveReport', function () {
       var contactId = CRM.vars.leaveAndAbsences.contactId;
       var $compile, $q, $log, $provide, $rootScope, component, controller;
-      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup;
+      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, dialog;
 
       beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', function (_$provide_) {
         $provide = _$provide_;
@@ -36,13 +37,14 @@
 
         spyOn($log, 'debug');
       }));
-      beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_) {
+      beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _dialog_) {
         AbsencePeriod = _AbsencePeriod_;
         AbsenceType = _AbsenceType_;
         Entitlement = _Entitlement_;
         LeaveRequest = _LeaveRequest_;
         LeaveRequestInstance = _LeaveRequestInstance_;
         OptionGroup = _OptionGroup_;
+        dialog = _dialog_;
 
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
@@ -481,21 +483,104 @@
       });
 
       describe('when cancelling a leave request', function () {
-        it('shows a confirmation dialog', function () {
+        var leaveRequest1, leaveRequest2, leaveRequest3;
 
+        beforeEach(function () {
+          leaveRequest1 = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
+          leaveRequest2 = LeaveRequestInstance.init(leaveRequestMock.all().values[1], true);
+          leaveRequest3 = LeaveRequestInstance.init(leaveRequestMock.all().values[2], true);
+
+          spyOn(leaveRequest1, 'cancel').and.callThrough();
+          spyOn(leaveRequest1, 'update').and.callFake(function () {
+            return $q.resolve(leaveRequestMock.singleDataSuccess());
+          });
+
+          controller.sections.open.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+        });
+
+        describe('the user is prompted for confirmation', function () {
+          beforeEach(function () {
+            resolveDialogWith(null);
+
+            controller.cancelRequest(leaveRequest1);
+            $rootScope.$digest();
+          });
+
+          it('shows a confirmation dialog', function () {
+            expect(dialog.open).toHaveBeenCalled();
+          });
         });
 
         describe('when the user confirms', function () {
-          it('sends the cancellation request', function () {
+          var oldData;
 
+          beforeEach(function () {
+            oldData = controller.sections.open.data;
+            resolveDialogWith(true);
+
+            controller.cancelRequest(leaveRequest1);
+            $rootScope.$digest();
+          });
+
+          it('sends the cancellation request', function () {
+            expect(leaveRequest1.cancel).toHaveBeenCalled();
+          });
+
+          it('removes the leave request from the current section', function () {
+            expect(controller.sections.open.data).not.toContain(leaveRequest1);
+          });
+
+          it('remove the leave request without creating a new array', function () {
+            expect(controller.sections.open.data).toBe(oldData);
+          });
+
+          it('moves the leave request to the "Other" section', function () {
+            expect(controller.sections.other.data).toContain(leaveRequest1);
           });
         });
 
         describe('when the user does not confirm', function () {
-          it('does not send the cancellation request', function () {
+          beforeEach(function () {
+            resolveDialogWith(false);
 
+            controller.cancelRequest(leaveRequest1);
+            $rootScope.$digest();
+          });
+
+          it('does not send the cancellation request', function () {
+            expect(leaveRequest1.cancel).not.toHaveBeenCalled();
+          });
+
+          it('does not remove the leave request from the current section', function () {
+            expect(controller.sections.open.data).toContain(leaveRequest1);
+          });
+
+          it('does not move the leave request to the "Other" section', function () {
+            expect(controller.sections.other.data).not.toContain(leaveRequest1);
           });
         });
+
+        /**
+         * Spyes on dialog.open() method and resolves it with the given value
+         *
+         * @param {any} value
+         */
+        function resolveDialogWith(value) {
+          var spy;
+
+          if (typeof dialog.open.calls !== 'undefined') {
+            spy = dialog.open;
+          } else {
+            spy = spyOn(dialog, 'open');
+          }
+
+          spy.and.callFake(function () {
+            var deferred = $q.defer();
+            deferred.resolve(value);
+
+            return deferred.promise;
+          });;
+        }
       });
 
       function compileComponent() {
