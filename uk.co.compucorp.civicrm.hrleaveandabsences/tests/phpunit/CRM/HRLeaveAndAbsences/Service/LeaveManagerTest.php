@@ -61,6 +61,18 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
     $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($staffMember['id']));
   }
 
+  public function testCurrentUserIsAdmin() {
+    // First we need to make sure no permission is set. Note that if
+    // permissions is null, CRM_Core_Permission always returns true, so we must
+    // manually set to an empty array
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
+
+    $this->assertFalse($this->leaveManagerService->currentUserIsAdmin());
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+
+    $this->assertTrue($this->leaveManagerService->currentUserIsAdmin());
+  }
+
   private function setContactAsLeaveApproverOf($leaveApprover, $contact, $startDate = null, $endDate = null, $isActive = true) {
     $relationshipType = $this->getLeaveApproverRelationshipType();
 

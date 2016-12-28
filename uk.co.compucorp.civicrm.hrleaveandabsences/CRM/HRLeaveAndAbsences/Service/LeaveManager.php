@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * This service contains some methods to deal with who is the manager of Leave
+ * Requests. Examples, checking if a contact is the "Leave Approver" of another
+ * contact of if a contact has permission to administer things under Leave and
+ * Absences.
+ */
 class CRM_HRLeaveAndAbsences_Service_LeaveManager {
 
   /**
@@ -45,5 +51,15 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManager {
     $result = CRM_Core_DAO::executeQuery($query, $params);
 
     return $result->N > 0;
+  }
+
+  /**
+   * Checks if the current logged user is a L&A admin. An admin is a user with
+   * the "administer leave and absences" permission.
+   *
+   * @return bool
+   */
+  public function currentUserIsAdmin() {
+    return CRM_Core_Permission::check('administer leave and absences');
   }
 }
