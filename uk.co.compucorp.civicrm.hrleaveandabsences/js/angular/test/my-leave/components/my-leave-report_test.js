@@ -131,35 +131,33 @@
 
             describe('balance changes', function () {
               it('has fetched the balance changes for the current contact and period', function () {
-                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0)[0];
+                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
 
-                expect(args).toEqual(jasmine.objectContaining({
-                  contact_id: contactId,
-                  period_id: controller.currentPeriod.id
-                }));
+                expect(args[0]).toEqual(contactId);
+                expect(args[1]).toEqual(controller.currentPeriod.id);
               });
 
               it('has fetched the balance changes for the public holidays', function () {
-                expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledWith(jasmine.objectContaining({
-                  public_holiday: true
-                }));
+                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
+
+                expect(args[3]).toEqual(true);
                 expect(controller.balanceChanges.publicHolidays).not.toBe(0);
               });
 
               it('has fetched the balance changes for the approved requests', function () {
-                expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledWith(jasmine.objectContaining({
-                  statuses: [ idOfRequestStatus('approved') ]
-                }));
+                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1);
+
+                expect(args[2]).toEqual([ idOfRequestStatus('approved') ]);
                 expect(controller.balanceChanges.approved).not.toBe(0);
               });
 
               it('has fetched the balance changes for the open requests', function () {
-                expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledWith(jasmine.objectContaining({
-                  statuses: [
-                    idOfRequestStatus('waiting_approval'),
-                    idOfRequestStatus('more_information_requested')
-                  ]
-                }));
+                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2);
+
+                expect(args[2]).toEqual([
+                  idOfRequestStatus('waiting_approval'),
+                  idOfRequestStatus('more_information_requested')
+                ]);
                 expect(controller.balanceChanges.open).not.toBe(0);
               });
             });
@@ -200,12 +198,10 @@
           });
 
           it('reloads all the balance changes', function () {
-            var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(_.random(0, 2))[0];
+            var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(_.random(0, 2));
 
             expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledTimes(3);
-            expect(args).toEqual(jasmine.objectContaining({
-              period_id: newPeriod.id
-            }));
+            expect(args[1]).toEqual(newPeriod.id);
           });
         });
 

@@ -242,26 +242,14 @@ define([
      */
     function loadBalanceChanges() {
       return $q.all([
-        LeaveRequest.balanceChangeByAbsenceType({
-          contact_id: vm.contactId,
-          period_id: vm.currentPeriod.id,
-          public_holiday: true
-        }),
-        LeaveRequest.balanceChangeByAbsenceType({
-          contact_id: vm.contactId,
-          period_id: vm.currentPeriod.id,
-          statuses: [
-            idOfRequestStatus('approved')
-          ]
-        }),
-        LeaveRequest.balanceChangeByAbsenceType({
-          contact_id: vm.contactId,
-          period_id: vm.currentPeriod.id,
-          statuses: [
-            idOfRequestStatus('waiting_approval'),
-            idOfRequestStatus('more_information_requested')
-          ]
-        })
+        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.currentPeriod.id, null, true),
+        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.currentPeriod.id, [
+          idOfRequestStatus('approved')
+        ]),
+        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.currentPeriod.id, [
+          idOfRequestStatus('waiting_approval'),
+          idOfRequestStatus('more_information_requested')
+        ])
       ])
       .then(function (results) {
         vm.balanceChanges.public_holidays = results[0];
