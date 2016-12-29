@@ -148,7 +148,7 @@
 
               it('has fetched the balance changes for the approved requests', function () {
                 expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledWith(jasmine.objectContaining({
-                  statuses: [ '<value of OptionValue "approved">' ]
+                  statuses: [ idOfRequestStatus('approved') ]
                 }));
                 expect(controller.balanceChanges.approved).not.toBe(0);
               });
@@ -156,8 +156,8 @@
               it('has fetched the balance changes for the open requests', function () {
                 expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledWith(jasmine.objectContaining({
                   statuses: [
-                    '<value of OptionValue "awaiting approval">',
-                    '<value of OptionValue "more information">'
+                    idOfRequestStatus('waiting_approval'),
+                    idOfRequestStatus('more_information_requested')
                   ]
                 }));
                 expect(controller.balanceChanges.open).not.toBe(0);
@@ -222,7 +222,7 @@
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               from_date: { from: newPeriod.start_date },
               to_date: {to: newPeriod.end_date },
-              status: '<value of OptionValue "approved">'
+              status: idOfRequestStatus('approved')
             }));
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
               period_id: newPeriod.id
@@ -322,7 +322,7 @@
 
           it('fetches all approved leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              status: '<value of OptionValue "approved">'
+              status: idOfRequestStatus('approved')
             }));
           });
 
@@ -339,8 +339,8 @@
           it('fetches all pending leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               status: { in: [
-                '<value of OptionValue "awaiting approval">',
-                '<value of OptionValue "more information">'
+                idOfRequestStatus('waiting_approval'),
+                idOfRequestStatus('more_information_requested')
               ] }
             }));
           });
@@ -374,8 +374,8 @@
           it('fetches all cancelled/rejected leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               status: { in: [
-                '<value of OptionValue "rejected">',
-                '<value of OptionValue "cancelled">'
+                idOfRequestStatus('rejected'),
+                idOfRequestStatus('cancelled')
               ] }
             }));
           });
@@ -456,29 +456,15 @@
 
         /**
          * Calls the controller method that returns the action matrix for
-         * a given Leave Request
+         * a given Leave Request in a particular status
          *
          * @param  {string} statusName
          * @return {Array}
          */
         function getActionMatrixForStatus(statusName) {
-          return controller.actionsFor(createRequestWithStatus(statusName));
-        }
-
-        /**
-         * Creates a Leave Request instance with the id of the given status
-         *
-         * @param  {string} statusName
-         * @return {LeaveRequestInstance}
-         */
-        function createRequestWithStatus(statusName) {
-          var statuses = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status');
-
-          return LeaveRequestInstance.init({
-            status_id: _.find(statuses, function (status) {
-              return status.name === statusName;
-            }).id
-          });
+          return controller.actionsFor(LeaveRequestInstance.init({
+            status_id: idOfRequestStatus(statusName)
+          }));
         }
       });
 
@@ -582,6 +568,20 @@
           });;
         }
       });
+
+      /**
+       * Returns the id of the given leave request status
+       *
+       * @param  {string} statusName
+       * @return {integer}
+       */
+      function idOfRequestStatus(statusName) {
+        var statuses = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status');
+
+        return _.find(statuses, function (status) {
+          return status.name === statusName;
+        })['id'];
+      }
 
       function compileComponent() {
         var $scope = $rootScope.$new();

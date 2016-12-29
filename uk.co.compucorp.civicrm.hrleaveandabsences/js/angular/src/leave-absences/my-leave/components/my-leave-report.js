@@ -167,7 +167,19 @@ define([
     }
 
     /**
-     * NOTE: This is just temporary, see PCHR-1810
+     * Returns the id of the given leave request status
+     *
+     * @param  {string} statusName
+     * @return {integer}
+     */
+    function idOfRequestStatus(statusName) {
+      return _.find(vm.leaveRequestStatuses, function (status) {
+        return status.name === statusName;
+      })['id'];
+    }
+
+    /**
+     * NOTE: This should be just temporary, see PCHR-1810
      * Loads all the possible statuses of a leave request
      *
      * @return {Promise}
@@ -216,7 +228,7 @@ define([
         contact_id: vm.contactId,
         from_date: { from: vm.currentPeriod.start_date },
         to_date: { to: vm.currentPeriod.end_date },
-        status: '<value of OptionValue "approved">'
+        status: idOfRequestStatus('approved')
       })
       .then(function (leaveRequests) {
         vm.sections.approved.data = leaveRequests;
@@ -239,15 +251,15 @@ define([
           contact_id: vm.contactId,
           period_id: vm.currentPeriod.id,
           statuses: [
-            '<value of OptionValue "approved">'
+            idOfRequestStatus('approved')
           ]
         }),
         LeaveRequest.balanceChangeByAbsenceType({
           contact_id: vm.contactId,
           period_id: vm.currentPeriod.id,
           statuses: [
-            '<value of OptionValue "awaiting approval">',
-            '<value of OptionValue "more information">'
+            idOfRequestStatus('waiting_approval'),
+            idOfRequestStatus('more_information_requested')
           ]
         })
       ])
@@ -336,8 +348,8 @@ define([
         from_date: { from: vm.currentPeriod.start_date },
         to_date: { to: vm.currentPeriod.end_date },
         status: { in: [
-          '<value of OptionValue "rejected">',
-          '<value of OptionValue "cancelled">'
+          idOfRequestStatus('rejected'),
+          idOfRequestStatus('cancelled')
         ] }
       })
       .then(function (leaveRequests) {
@@ -356,8 +368,8 @@ define([
         from_date: { from: vm.currentPeriod.start_date },
         to_date: { to: vm.currentPeriod.end_date },
         status: { in: [
-          '<value of OptionValue "awaiting approval">',
-          '<value of OptionValue "more information">'
+          idOfRequestStatus('waiting_approval'),
+          idOfRequestStatus('more_information_requested')
         ] }
       })
       .then(function (leaveRequests) {
