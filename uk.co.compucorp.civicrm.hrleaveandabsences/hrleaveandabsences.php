@@ -255,6 +255,24 @@ function hrleaveandabsences_civicrm_permission(&$permissions) {
 }
 
 /**
+ * Implements hook_civicrm_alterAPIPermissions().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterAPIPermissions
+ */
+function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  $actionEntities = [
+    'get' => ['absence_type', 'absence_period', 'option_group', 'option_value', 'leave_period_entitlement'],
+    'getbalancechangebyabsencetype' => ['leave_request']
+  ];
+
+  foreach ($actionEntities as $action => $entities) {
+    foreach ($entities as $entity) {
+      $permissions[$entity][$action] = ['access AJAX API'];
+    }
+  }
+}
+
+/**
  * Implements hook_civicrm_upgrade().
  *
  * @param $op string, the type of operation being performed; 'check' or 'enqueue'
