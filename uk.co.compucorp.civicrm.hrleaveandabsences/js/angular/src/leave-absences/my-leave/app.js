@@ -1,6 +1,7 @@
 define([
   'common/angular',
   'common/angularBootstrap',
+  'common/text-angular',
   'leave-absences/shared/ui-router',
   'leave-absences/my-leave/modules/config',
   'leave-absences/my-leave/components/my-leave',
@@ -15,6 +16,7 @@ define([
     'ngAnimate',
     'ui.router',
     'ui.bootstrap',
+    'textAngular',
     'my-leave.config',
     'my-leave.components',
     'leave-absences.models',
