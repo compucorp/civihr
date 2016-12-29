@@ -21,7 +21,7 @@ define([
         showDatePickerTo: false,
         isChangeExpanded: false,
         selectedResponse: "1",
-        isAdmin: true
+        isAdmin: false
       };
 
       vm.showModal = function () {
