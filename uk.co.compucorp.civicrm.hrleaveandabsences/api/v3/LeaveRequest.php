@@ -73,16 +73,31 @@ function _civicrm_api3_leave_request_get_spec(&$spec) {
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0,
   ];
+
+  $spec['managed_by'] = [
+    'name' => 'managed_by',
+    'title' => 'Include only Leave Requests for contacts managed by the contact with the given ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0,
+    'FKClassName'  => 'CRM_Contact_DAO_Contact',
+    'FKApiName'    => 'Contact',
+  ];
+
 }
 
 /**
  * LeaveRequest.get API
  *
- * This API accepts a special param, named public_holiday. It does not map
- * directly to one of the LeaveRequests fields, but it can be used to make the
- * response include only Public Holiday Leave Requests. When it's not present,
- * or if it's false, the API will return all Leave Requests, except the Public
- * Holiday ones.
+ * This API accepts some special params:
+ *
+ * - public_holiday: It does not map directly to one of the LeaveRequests
+ * fields, but it can be used to make the response include only Public Holiday
+ * Leave Requests. When it's not present, or if it's false, the API will return
+ * all Leave Requests, except the Public Holiday ones.
+ *
+ * - managed_by: It's another filter which doesn't map directly to one of
+ * the LeaveRequests fields. It accepts a contact ID and, when present, will
+ * only return LeaveRequests of contacts managed by given contact ID.
  *
  * @param array $params
  *

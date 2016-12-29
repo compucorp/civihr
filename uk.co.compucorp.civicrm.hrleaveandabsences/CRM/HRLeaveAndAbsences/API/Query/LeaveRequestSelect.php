@@ -1,6 +1,8 @@
 <?php
 
 use Civi\API\SelectQuery;
+use CRM_Contact_BAO_Relationship as Relationship;
+use CRM_Contact_BAO_RelationshipType as RelationshipType;
 use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
 use CRM_Hrjobcontract_BAO_HRJobDetails as HRJobDetails;
 use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
@@ -43,12 +45,9 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
   }
 
   /**
-   * Build the custom query, joining LeaveRequests with LeaveRequestDates,
-   * LeaveBalanceChanges, HRJobContract and HRJobDetails.
-   *
-   * It also add conditions in order to only return the LeaveRequests overlapping
-   * a contract and, in case the 'public_holiday' param is set, it only returns
-   * Public Holiday Leave Requests.
+   * Build the custom query. It joins LeaveRequests with LeaveRequestDates,
+   * LeaveBalanceChanges, HRJobContract and HRJobDetails and also with
+   * any necessary additional tables, depending on the given $params
    */
   private function buildCustomQuery() {
     $customQuery = CRM_Utils_SQL_Select::from(LeaveRequest::getTableName() . ' as a');
@@ -65,12 +64,15 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    * Add the conditions to the query.
    *
    * This where we make sure we only return Leave Requests overlapping non
-   * deleted contracts and with balance changes
+   * deleted contracts and with balance changes.
+   *
+   * This is also were we add some additional conditions, depending on filter/flags
+   * passed to the $params array
    *
    * @param \CRM_Utils_SQL_Select $customQuery
    */
   private function addWhere(CRM_Utils_SQL_Select $customQuery) {
-    $customQuery->where([
+    $conditions = [
       'jc.deleted = 0',
       '(
           a.from_date <= jd.period_end_date OR
@@ -82,7 +84,21 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
         )',
       'lbc.source_id = lrd.id',
       "lbc.source_type = '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'",
-    ]);
+    ];
+
+    if(!empty($this->params['managed_by'])) {
+      $managerID = (int)$this->params['managed_by'];
+      $today =  '"' . date('Y-m-d') . '"';
+
+      $conditions[] = 'rt.is_active = 1';
+      $conditions[] = 'rt.name_a_b = "has Leave Approved by"';
+      $conditions[] = 'r.is_active = 1';
+      $conditions[] = "r.contact_id_b = {$managerID}";
+      $conditions[] = "(r.start_date IS NULL OR r.start_date <= {$today})";
+      $conditions[] = "(r.end_date IS NULL OR r.end_date >= {$today})";
+    }
+
+    $customQuery->where($conditions);
   }
 
   /**
@@ -92,6 +108,10 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    * If the $params array has the public_holiday flag set and it's true, the
    * join condition will make sure only LeaveRequests linked to a LeaveBalanceChange
    * of the Public Holiday type will be returned.
+   *
+   * If the $params array has the managed_by flag set, the join condition will
+   * also include joins with the civicrm_relationship and civicrm_relationship_type
+   * tables.
    *
    * @param \CRM_Utils_SQL_Select $query
    */
@@ -103,7 +123,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       $balanceChangeJoinCondition = "lbc.type_id = {$leaveBalanceChangeTypes['Public Holiday']}";
     }
 
-    $query->join(null, [
+    $joins = [
       'INNER JOIN ' . LeaveRequestDate::getTableName() . ' lrd ON lrd.leave_request_id = a.id',
       'INNER JOIN ' . LeaveBalanceChange::getTableName() . ' lbc ON ' . $balanceChangeJoinCondition,
       'INNER JOIN ' . HRJobContract::getTableName() . ' jc ON a.contact_id = jc.contact_id',
@@ -114,7 +134,14 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
                     ORDER BY jcr2.effective_date DESC
                     LIMIT 1)',
       'INNER JOIN ' . HRJobDetails::getTableName() . ' jd ON jd.jobcontract_revision_id = jcr.details_revision_id'
-    ]);
+    ];
+
+    if(!empty($this->params['managed_by'])) {
+      $joins[] = 'INNER JOIN ' . Relationship::getTableName() . ' r ON r.contact_id_a = a.contact_id';
+      $joins[] = 'INNER JOIN ' . RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id';
+    }
+
+    $query->join(null, $joins);
   }
 
   /**
