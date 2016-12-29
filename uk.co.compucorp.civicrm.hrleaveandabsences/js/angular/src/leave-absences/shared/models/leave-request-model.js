@@ -27,7 +27,7 @@ define([
          * @return {Promise} Resolved with {Array} Array of leave request instances
          */
         all: function (filters, pagination, sort, params) {
-          return leaveRequestAPI.all(filters, pagination, sort, params)
+          return leaveRequestAPI.all(this.processFilters(filters), pagination, sort, params)
             .then(function (leaveRequests) {
               return leaveRequests.map(function (leaveRequest) {
                 return instance.init(leaveRequest, true);
