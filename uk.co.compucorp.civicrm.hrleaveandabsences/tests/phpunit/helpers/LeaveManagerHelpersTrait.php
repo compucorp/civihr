@@ -1,19 +1,20 @@
 <?php
 
+use CRM_HRCore_Test_Fabricator_Relationship as RelationshipFabricator;
+
 trait CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait {
 
   public function setContactAsLeaveApproverOf($leaveApprover, $contact, $startDate = null, $endDate = null, $isActive = true) {
     $relationshipType = $this->getLeaveApproverRelationshipType();
 
-    civicrm_api3('Relationship', 'create', array(
-      'sequential' => 1,
+    RelationshipFabricator::fabricate([
       'contact_id_a' => $contact['id'],
       'contact_id_b' => $leaveApprover['id'],
       'relationship_type_id' => $relationshipType['id'],
       'start_date' => $startDate,
       'end_date' => $endDate,
       'is_active' => $isActive
-    ));
+    ]);
   }
 
   private function getLeaveApproverRelationshipType() {
