@@ -22,6 +22,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -1226,5 +1227,170 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     }
 
     $this->fail("Expected to not find the LeaveRequest with {$leaveRequest->id}, but it was found");
+  }
+
+  public function testGetShouldOnlyReturnTheLeaveRequestsOfStaffMembersManagedByTheContactOnTheManagedByParam() {
+    $manager1 = ContactFabricator::fabricate();
+    $manager2 = ContactFabricator::fabricate();
+
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+    $staffMember3 = ContactFabricator::fabricate();
+    $staffMember4 = ContactFabricator::fabricate();
+
+    // We need the contracts because LeaveRequest.get only returns Leave Requests
+    // overlapping contracts
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember1['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember2['id']],
+      ['period_start_date' => '2015-10-01']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember3['id']],
+      ['period_start_date' => '2014-08-23']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember4['id']],
+      ['period_start_date' => '2016-03-13']
+    );
+
+    // Set Leave Approvers for staffMembers 1, 2 and 3. Staff Member 4 won't have
+    // a Leave Approver
+    $this->setContactAsLeaveApproverOf($manager1, $staffMember1);
+    $this->setContactAsLeaveApproverOf($manager2, $staffMember2);
+    $this->setContactAsLeaveApproverOf($manager2, $staffMember3);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember1['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember1['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-01'),
+    ], true);
+
+    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember2['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
+    ], true);
+
+    $leaveRequest4 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember3['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-13'),
+    ], true);
+
+    $leaveRequest5 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember4['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-10-23'),
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'get');
+
+    // Without managed_by, all leave requests should be returned
+    $this->assertEquals(5, $result['count']);
+    $this->assertNotEmpty($result['values'][$leaveRequest1->id]);
+    $this->assertNotEmpty($result['values'][$leaveRequest2->id]);
+    $this->assertNotEmpty($result['values'][$leaveRequest3->id]);
+    $this->assertNotEmpty($result['values'][$leaveRequest4->id]);
+    $this->assertNotEmpty($result['values'][$leaveRequest5->id]);
+
+    // On the Leave Requests of contacts managed by manager 1 (staff member 1) will
+    // be returned
+    $result = civicrm_api3('LeaveRequest', 'get', ['managed_by' => $manager1['id']]);
+
+    // Without managed_by, all leave requests should be returned
+    $this->assertEquals(2, $result['count']);
+    $this->assertNotEmpty($result['values'][$leaveRequest1->id]);
+    $this->assertNotEmpty($result['values'][$leaveRequest2->id]);
+
+    // On the Leave Requests of contacts managed by manager 2 (staff members 2 and 3) will
+    // be returned
+    $result = civicrm_api3('LeaveRequest', 'get', ['managed_by' => $manager2['id']]);
+
+    // Without managed_by, all leave requests should be returned
+    $this->assertEquals(2, $result['count']);
+    $this->assertNotEmpty($result['values'][$leaveRequest3->id]);
+    $this->assertNotEmpty($result['values'][$leaveRequest4->id]);
+  }
+
+  public function testGetShouldOnlyReturnTheLeaveRequestsOfStaffMembersManagedByManagersWithAnActiveLeaveApproverRelationship() {
+    $manager = ContactFabricator::fabricate();
+    $staffMember = ContactFabricator::fabricate();
+
+    // We need the contract because LeaveRequest.get only returns Leave Requests
+    // overlapping contracts
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember['id']],
+      ['period_start_date' => '2015-01-01']
+    );
+
+    // The relationship between the manager and the staff member was active
+    // only until 2016-12-28
+    $this->setContactAsLeaveApproverOf($manager, $staffMember, '2016-01-01', '2016-12-28');
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'get');
+
+    // Without managed_by, all leave requests should be returned
+    $this->assertEquals(1, $result['count']);
+    $this->assertNotEmpty($result['values'][$leaveRequest->id]);
+
+    $result = civicrm_api3('LeaveRequest', 'get', ['managed_by' => $manager['id']]);
+
+    // Even though the relationship was active during the Leave Request date,
+    // it's not active today, so nothing will be returned
+    $this->assertEquals(0, $result['count']);
+  }
+
+  public function testGetShouldOnlyReturnTheLeaveRequestsOfStaffMembersManagedByManagersWithAnEnabledLeaveApproverRelationship() {
+    $manager = ContactFabricator::fabricate();
+    $staffMember = ContactFabricator::fabricate();
+
+    // We need the contract because LeaveRequest.get only returns Leave Requests
+    // overlapping contracts
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember['id']],
+      ['period_start_date' => '2010-01-01']
+    );
+
+    // Considering only the dates, the relationship would be active today,
+    // but the is_active flag will be set to false, making it disabled
+    $startDate = new DateTime('today');
+    $endDate = new DateTime('+ 10 days');
+    $enabled = false;
+    $this->setContactAsLeaveApproverOf($manager, $staffMember, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'), $enabled);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'get');
+
+    // Without managed_by, all leave requests should be returned
+    $this->assertEquals(1, $result['count']);
+    $this->assertNotEmpty($result['values'][$leaveRequest->id]);
+
+    $result = civicrm_api3('LeaveRequest', 'get', ['managed_by' => $manager['id']]);
+
+    $this->assertEquals(0, $result['count']);
   }
 }

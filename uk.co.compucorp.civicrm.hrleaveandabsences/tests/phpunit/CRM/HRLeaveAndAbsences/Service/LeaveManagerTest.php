@@ -8,6 +8,8 @@ use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
  */
 class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
 
+  use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+
   private $leaveManagerService;
 
   private $loggedInContact;
@@ -71,44 +73,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
     CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
 
     $this->assertTrue($this->leaveManagerService->currentUserIsAdmin());
-  }
-
-  private function setContactAsLeaveApproverOf($leaveApprover, $contact, $startDate = null, $endDate = null, $isActive = true) {
-    $relationshipType = $this->getLeaveApproverRelationshipType();
-
-    civicrm_api3('Relationship', 'create', array(
-      'sequential' => 1,
-      'contact_id_a' => $contact['id'],
-      'contact_id_b' => $leaveApprover['id'],
-      'relationship_type_id' => $relationshipType['id'],
-      'start_date' => $startDate,
-      'end_date' => $endDate,
-      'is_active' => $isActive
-    ));
-  }
-
-  private function getLeaveApproverRelationshipType() {
-    $result = civicrm_api3('RelationshipType', 'get', [
-      'name_a_b' => 'has Leave Approved by',
-    ]);
-
-    if(empty($result['values'])) {
-      return $this->createLeaveApproverRelationshipType();
-    }
-
-    return array_shift($result['values']);
-  }
-
-  private function createLeaveApproverRelationshipType() {
-    $result = civicrm_api3('RelationshipType', 'create', array(
-      'sequential'     => 1,
-      'name_a_b'       => 'has Leave Approved by',
-      'name_b_a'       => 'is Leave Approver of',
-      'contact_type_a' => 'Individual',
-      'contact_type_b' => 'Individual',
-    ));
-
-    return $result['values'][0];
   }
 
   private function registerCurrentLoggedInContactInSession() {
