@@ -118,15 +118,20 @@ define([
           });
         });
 
-        it('status and publicHoliday has original values if truthy values has been passed', function () {
+        it('sends as `public_holiday` the original value if truthy value had been passed', function () {
           LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String), jasmine.any(Array), true);
 
-          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', {
-            contact_id: jasmine.any(String),
-            period_id: jasmine.any(String),
-            statuses: jasmine.any(Array),
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
             public_holiday: true
-          });
+          }));
+        });
+
+        it('sends as `statuses` an "IN" list if the original value is an array', function () {
+          LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String), jasmine.any(Array), jasmine.any(Boolean));
+
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
+            statuses: { "IN": jasmine.any(Array) },
+          }));
         });
       });
 
