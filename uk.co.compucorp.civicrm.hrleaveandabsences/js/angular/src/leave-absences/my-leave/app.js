@@ -13,11 +13,14 @@ define([
   'leave-absences/my-leave/components/my-leave-report',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
+  'leave-absences/shared/directives/leave-request-popup',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/shared/models/calendar-model',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
+  'leave-absences/shared/models/entitlement-model',
+  'common/services/angular-date/date-format',
 ], function (angular) {
   angular.module('my-leave', [
     'ngResource',
@@ -31,11 +34,16 @@ define([
     'common.models',
     'my-leave.config',
     'my-leave.components',
-    'my-leave.directives',
+    'leave-absences.directives',
     'leave-absences.models',
+    'common.angularDate',
   ])
-  .run(['$log', function ($log) {
+  .run(['$log','DateFormat', function ($log, DateFormat) {
     $log.debug('app.run');
+    //set HR_Settings
+    DateFormat.getDateFormat().then(function(result){
+      console.log("DateFormat.getDateFormat", result);
+    });
   }]);
 
   return angular;

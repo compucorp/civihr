@@ -98,7 +98,11 @@ define([
         var deferred = $q.defer();
 
         if (params && (!params.contact_id || !params.from_date || !params.from_date_type)) {
-          deferred.reject('contact_id, from_date and from_date_type in params are mandatory');
+          deferred.reject({
+            is_error: 1,
+            error_message: 'contact_id, from_date and from_date_type in params are mandatory',
+            params: params
+          });
         }
 
         deferred.resolve(this.sendGET('LeaveRequest', 'calculatebalancechange', params)

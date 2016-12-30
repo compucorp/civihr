@@ -37,6 +37,7 @@ define([
          */
         current: function () {
           var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
+          dateFormat = 'YYYY-MM-DD';
           var today = moment().format(dateFormat);
 
           var params = {
@@ -50,7 +51,8 @@ define([
 
           return absencePeriodAPI.all(params)
             .then(function (absencePeriods) {
-              if (absencePeriods.length) {
+
+              if (absencePeriods && absencePeriods.length) {
                 return instance.init(absencePeriods[0], true);
               }
 

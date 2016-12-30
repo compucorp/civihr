@@ -1,25 +1,69 @@
 (function (CRM) {
   define([
+    'common/lodash',
     'common/angular',
     'common/angularMocks',
     'leave-absences/shared/config',
-    'leave-absences/my-leave/app'
-  ], function (angular) {
+    'common/mocks/services/hr-settings-mock',
+    'mocks/apis/absence-period-api-mock',
+    'mocks/apis/absence-type-api-mock',
+    'mocks/apis/entitlement-api-mock',
+    'mocks/apis/work-pattern-api-mock',
+    'mocks/apis/leave-request-api-mock',
+    'mocks/apis/option-group-api-mock',
+    'leave-absences/shared/directives/leave-request-popup',
+    'leave-absences/shared/models/absence-period-model',
+    'leave-absences/shared/models/absence-type-model',
+    'leave-absences/shared/models/entitlement-model',
+    'leave-absences/shared/models/calendar-model',
+    'leave-absences/shared/models/leave-request-model',
+    //'common/services/angular-date/date-format',
+    'leave-absences/shared/components/leave-request-popup-controller',
+    'leave-absences/shared/models/instances/leave-request-instance',
+  ], function (_, angular) {
     'use strict';
 
-    describe('leaveRequestModal', function () {
-      var $compile, $log, $rootScope, component, controller, directive, $uibModal, $controllerScope;
+    describe('LeaveRequestPopupCtrl', function () {
+      var $compile, $log, $rootScope, controller, directive, $uibModal, modalInstanceSpy, $scope, $q,
+        $controllerScope, $provide, DateFormat, LeaveRequestInstance;
 
-      beforeEach(module('leave-absences.templates', 'my-leave'));
+      beforeEach(module('leave-absences.templates', 'leave-absences.directives', 'leave-absences.components',
+        'leave-absences.models', 'leave-absences.mocks', 'common.mocks', 'leave-absences.models.instances',
+        function (_$provide_) {
+          $provide = _$provide_;
+        }));
 
-      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$uibModal_) {
+      beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_, _AbsenceTypeAPIMock_,
+        _EntitlementAPIMock_, _WorkPatternAPI_, _LeaveRequestAPIMock_, _OptionGroupAPIMock_) {
+        $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
+        $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
+        $provide.value('EntitlementAPI', _EntitlementAPIMock_);
+        $provide.value('WorkPatternAPI', _WorkPatternAPI_);
+        $provide.value('HR_settings', _HR_settingsMock_);
+        $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
+        $provide.value('api.optionGroup', _OptionGroupAPIMock_);
+      }));
+
+      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$uibModal_, _LeaveRequestInstance_) {
         $compile = _$compile_;
         $log = _$log_;
         $rootScope = _$rootScope_;
         $uibModal = _$uibModal_;
+        LeaveRequestInstance = _LeaveRequestInstance_;
         spyOn($log, 'debug');
+        modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
+      }));
 
-        compileDirective();
+      beforeEach(inject(function (_$controller_, _$rootScope_, _$q_) {
+        $scope = _$rootScope_.$new();
+        $q = _$q_;
+
+        controller = _$controller_('LeaveRequestPopupCtrl', {
+          $scope: $scope,
+          $uibModalInstance: modalInstanceSpy,
+          baseData: {contactId: 202}
+        });
+        $scope.$digest();
       }));
 
       it('is called', function () {
@@ -28,53 +72,54 @@
 
       describe('dialog is open', function () {
 
-        beforeEach(function () {
-          spyOn($uibModal, 'open');
-          directive.triggerHandler('click');
-        });
-
-        it('opens dependent popup', function () {
-          expect($uibModal.open).toHaveBeenCalled();
-        });
-
         it('has expected markup', function () {
-
+          //todo or remove
         });
 
         describe('initialize leave request', function () {
 
-          it('with absence periods', function () {
+          beforeEach(function () {
+            $scope.$digest();
+          });
 
+          it('creates an instance of leave request', function(){
+            console.log('leaveRequest', controller.leaveRequest);
+            expect(controller.leaveRequest).toBeDefined();
+          });
+
+          it('with current absence period', function () {
+            console.log('period', controller.period);
+            expect(controller.period).toBeDefined();
           });
 
           it('with absence types', function () {
-
+            console.log('absenceTypes', controller.absenceTypes);
+            expect(controller.absenceTypes).toBeDefined(); 
           });
 
           it('with work pattern', function () {
-
+            console.log('calendar', controller.calendar);
+            expect(controller.calendar).toBeDefined();
+            expect(controller.calendar.days).toBeDefined();
           });
 
           it('with balance changes', function () {
-
+            console.log('balance', controller.balance);
+            expect(controller.balance).toBeDefined();
+            expect(controller.balance.opening).toBeDefined();
+            expect(controller.balance.change).toBeDefined();
+            expect(controller.balance.closing).toBeDefined();
           });
         });
 
         describe('when cancels dialog (clicks on X)', function () {
 
           beforeEach(function () {
-            directive.triggerHandler('click');
-            var close = directive.querySelectorAll('.close');
-            console.log('close', close);
-            close.triggerHandler('click');
-            //console.log($controllerScope.vm.modalInstance);
-            spyOn($controllerScope.modalInstance, 'close');
-            //console.log('$controllerScope.closeModal',$controllerScope.closeModal);
-            //$controllerScope.closeModal();
+            controller.cancel();
           });
 
           it('closes model', function () {
-            expect($controllerScope.closeModal).toHaveBeenCalled();
+            expect(modalInstanceSpy.dismiss).toHaveBeenCalled();
           });
         });
       });
@@ -84,22 +129,24 @@
         describe('view all', function () {
 
           beforeEach(function () {
-            directive.triggerHandler('click');
+            $scope.$digest();
           });
 
           it('shows all items', function () {
-
+            console.log('absenceTypes',controller.absenceTypes);
+            expect(controller.absenceTypes.length).toEqual(6);
           });
 
           it('selects the current period', function () {
-
+            console.log('period',controller.period);
+            expect(controller.period.current).toBeTruthy();
           });
 
         });
 
         describe('change selection', function () {
 
-          it('selects another type', function () {
+          it('selects another absence type', function () {
 
           });
         });
@@ -300,19 +347,6 @@
 
         });
       });
-
-      /**
-       * Creates and compiles the directive
-       */
-      function compileDirective() {
-        $controllerScope = $rootScope.$new();
-        var contactId = CRM.vars.leaveAndAbsences.contactId;
-
-        directive = angular.element('<lr-model-directive contact-id="' + contactId + '"></lr-model-directive>');
-        $compile(directive)($controllerScope);
-        $controllerScope.$digest();
-        controller = directive.controller;
-      }
     });
   });
 })(CRM);
