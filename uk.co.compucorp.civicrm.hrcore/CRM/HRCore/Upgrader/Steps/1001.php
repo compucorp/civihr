@@ -4,6 +4,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
 
   public function upgrade_1001() {
     $listsToDelete = [
+      ['civicrm_contact_Type', 'name', 'civicrmContactTypes'],
       ['civicrm_case_type', 'name', 'civicrmCaseTypesList'],
       ['civicrm_relationship_type', 'name_b_a', 'civicrmRelationshipTypesList'],
       ['civicrm_option_value', 'name', 'civicrmActivityTypesList'],
@@ -12,6 +13,8 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
     foreach ($listsToDelete as $list) {
       $this->listDelete($list[0], $list[1], $list[2]);
     }
+
+    CRM_Core_BAO_Navigation::resetNavigation();
 
     return TRUE;
   }
@@ -46,7 +49,22 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
 
 
   /**
-   * A list of default CiviCRM case types which need to be removed.
+   * A list of sample CiviCRM contact types which need to be removed.
+   *
+   * @return array
+   */
+  private function civicrmContactTypes() {
+    return [
+      'Student',
+      'Parent',
+      'Staff',
+      'Team',
+      'Sponsor',
+    ];
+  }
+
+  /**
+   * A list of sample CiviCRM case types which need to be removed.
    *
    * @return array
    */
@@ -58,7 +76,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
   }
 
   /**
-   * A list of default CiviCRM relationship types  which need to be removed.
+   * A list of sample CiviCRM relationship types  which need to be removed.
    *
    * @return array
    */
@@ -77,8 +95,9 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
       'Volunteer is',
     ];
   }
+
   /**
-   * A list of default CiviCRM Activity types which need to be removed.
+   * A list of sample CiviCRM Activity types which need to be removed.
    *
    * @return array
    */
