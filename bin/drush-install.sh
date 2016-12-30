@@ -80,9 +80,6 @@ set -ex
 drush "$@" cvapi extension.install keys=$CORE_EXTS,$ENTITY_EXTS,$APP_EXTS
 set +ex
 
-set_default_localisation_settings ${CIVI_PATH}
-set_resource_urls
-
 if [ "$WITH_HR_SAMPLE" == "1" ]; then
   set -ex
   drush "$@" cvapi extension.install keys=uk.co.compucorp.civicrm.hrsampledata
