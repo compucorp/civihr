@@ -4,10 +4,11 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
 
   public function upgrade_1001() {
     $listsToDelete = [
-      ['civicrm_contact_Type', 'name', 'civicrmContactTypes'],
+      ['civicrm_contact_Type', 'name', 'civicrmContactTypesList'],
       ['civicrm_case_type', 'name', 'civicrmCaseTypesList'],
       ['civicrm_relationship_type', 'name_b_a', 'civicrmRelationshipTypesList'],
       ['civicrm_option_value', 'name', 'civicrmActivityTypesList'],
+      ['civicrm_location_type', 'name', 'civicrmLocationTypesList'],
     ];
 
     foreach ($listsToDelete as $list) {
@@ -53,7 +54,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
    *
    * @return array
    */
-  private function civicrmContactTypes() {
+  private function civicrmContactTypesList() {
     return [
       'Student',
       'Parent',
@@ -109,6 +110,18 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
       'Income and benefits stabilization',
       'Long-term housing plan',
       'ADC referral',
+    ];
+  }
+
+  /**
+   * A list of sample CiviCRM Location types which need to be removed.
+   *
+   * @return array
+   */
+  private function civicrmLocationTypesList() {
+    return [
+      'Main',
+      'Other',
     ];
   }
 
