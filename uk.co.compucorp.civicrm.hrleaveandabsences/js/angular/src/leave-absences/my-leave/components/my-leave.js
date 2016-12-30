@@ -19,7 +19,9 @@ define([
         toDate: new Date(),
         showDatePickerFrom: false,
         showDatePickerTo: false,
-        isChangeExpanded: false
+        isChangeExpanded: false,
+        selectedResponse: "1",
+        isAdmin: false
       };
 
       vm.showModal = function () {
