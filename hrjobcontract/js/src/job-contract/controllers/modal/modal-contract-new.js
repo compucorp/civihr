@@ -1,4 +1,5 @@
 define([
+    'common/moment',
     'common/angular',
     'job-contract/controllers/controllers',
     'job-contract/services/contract',
@@ -11,8 +12,9 @@ define([
     'job-contract/services/contract-files',
     'job-contract/services/utils',
     'common/services/pub-sub',
-], function (angular, controllers) {
+], function (moment, angular, controllers) {
     'use strict';
+
     controllers.controller('ModalContractNewCtrl', ['$scope', '$uibModalInstance', '$q', '$uibModal', '$rootElement', '$sce',
         'Contract','ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'model', 'UtilsService', 'utils',
@@ -152,7 +154,8 @@ define([
                                 uploader = $scope.uploader,
                                 revisionId;
 
-                            contract.is_current = !entityDetails.period_end_date || new Date(entityDetails.period_end_date).setHours(0,0,0,0) >= new Date().setHours(0,0,0,0);
+
+                            contract.is_current = !entityDetails.period_end_date || moment().diff(entityDetails.period_end_date, "day") == 0;
 
                             UtilsService.prepareEntityIds(entityDetails, contractId);
 
