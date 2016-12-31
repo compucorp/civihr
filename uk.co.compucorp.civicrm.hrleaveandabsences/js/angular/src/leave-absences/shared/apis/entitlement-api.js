@@ -21,8 +21,6 @@ define([
       all: function (params, withRemainder) {
         $log.debug('EntitlementAPI.all');
 
-        var params = {};
-
         if (withRemainder) {
           params['api.LeavePeriodEntitlement.getremainder'] = {
             'entitlement_id': '$value.id',
