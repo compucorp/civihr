@@ -19,7 +19,7 @@ define([
        * @return {Promise}
        */
       all: function (params, withRemainder) {
-        $log.debug('EntitlementAPI');
+        $log.debug('EntitlementAPI.all');
 
         var params = {};
 
@@ -59,7 +59,7 @@ define([
        * details along with entitlement id
        */
       breakdown: function (params) {
-        $log.debug('EntitlementAPI');
+        $log.debug('EntitlementAPI.breakdown');
 
         return this.sendGET('LeavePeriodEntitlement', 'getbreakdown', params)
           .then(function (data) {
