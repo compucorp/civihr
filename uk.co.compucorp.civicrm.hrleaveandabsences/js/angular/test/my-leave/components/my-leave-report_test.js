@@ -68,7 +68,7 @@
 
         it('has all the sections collapsed', function () {
           expect(Object.values(controller.sections).every(function (section) {
-            return section.isOpen === false;
+            return section.open === false;
           })).toBe(true);
         });
 
@@ -158,7 +158,7 @@
                   idOfRequestStatus('waiting_approval'),
                   idOfRequestStatus('more_information_requested')
                 ]);
-                expect(controller.balanceChanges.open).not.toBe(0);
+                expect(controller.balanceChanges.pending).not.toBe(0);
               });
             });
           });
@@ -207,8 +207,8 @@
 
         describe('open sections', function () {
           beforeEach(function () {
-            controller.sections.approved.isOpen = true;
-            controller.sections.entitlements.isOpen = true;
+            controller.sections.approved.open = true;
+            controller.sections.entitlements.open = true;
 
             controller.changePeriod(newPeriod);
             $rootScope.$digest();
@@ -229,7 +229,7 @@
         describe('closed sections', function () {
           beforeEach(function () {
             controller.sections.holidays.data = [jasmine.any(Object), jasmine.any(Object)];
-            controller.sections.open.data = [jasmine.any(Object), jasmine.any(Object)];
+            controller.sections.pending.data = [jasmine.any(Object), jasmine.any(Object)];
 
             controller.changePeriod(newPeriod);
             $rootScope.$digest();
@@ -237,7 +237,7 @@
 
           it('removes all cached data for sections that are closed', function () {
             expect(controller.sections.holidays.data.length).toBe(0);
-            expect(controller.sections.open.data.length).toBe(0);
+            expect(controller.sections.pending.data.length).toBe(0);
           });
         });
 
@@ -253,6 +253,22 @@
       });
 
       describe('when opening a section', function () {
+        beforeEach(function () {
+          _.forEach(controller.sections, function (section) {
+            section.open = false;
+          });
+        });
+
+        describe('flag', function () {
+          beforeEach(function () {
+            openSection('approved');
+          });
+
+          it('changes the `open` flag for that section', function () {
+            expect(controller.sections.approved.open).toBe(true);
+          });
+        });
+        
         describe('data caching', function () {
           describe('when the section had not been opened yet', function () {
             beforeEach(function () {
@@ -329,7 +345,7 @@
 
         describe('section: Open Requests', function () {
           beforeEach(function () {
-            openSection('open');
+            openSection('pending');
           });
 
           it('fetches all pending leave requests', function () {
@@ -342,7 +358,7 @@
           });
 
           it('caches the data', function () {
-            expect(controller.sections.open.data.length).not.toBe(0);
+            expect(controller.sections.pending.data.length).not.toBe(0);
           });
         });
 
@@ -387,9 +403,26 @@
          * @param {string} section
          */
         function openSection(section) {
-          controller.openSection(section);
+          controller.toggleSection(section);
           $rootScope.$digest();
         }
+      });
+
+      describe('when closing a section', function () {
+        beforeEach(function () {
+          controller.sections.approved.open = true;
+        });
+
+        describe('flag', function () {
+          beforeEach(function () {
+            controller.toggleSection('approved');
+            $rootScope.$digest();
+          });
+
+          it('changes the `open` flag for that section', function () {
+            expect(controller.sections.approved.open).toBe(false);
+          });
+        });
       });
 
       describe('action matrix for a leave request', function () {
@@ -477,7 +510,7 @@
             return $q.resolve(leaveRequestMock.singleDataSuccess());
           });
 
-          controller.sections.open.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+          controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
         });
 
         describe('the user is prompted for confirmation', function () {
@@ -497,7 +530,7 @@
           var oldData;
 
           beforeEach(function () {
-            oldData = controller.sections.open.data;
+            oldData = controller.sections.pending.data;
             resolveDialogWith(true);
 
             controller.cancelRequest(leaveRequest1);
@@ -509,11 +542,11 @@
           });
 
           it('removes the leave request from the current section', function () {
-            expect(controller.sections.open.data).not.toContain(leaveRequest1);
+            expect(controller.sections.pending.data).not.toContain(leaveRequest1);
           });
 
           it('remove the leave request without creating a new array', function () {
-            expect(controller.sections.open.data).toBe(oldData);
+            expect(controller.sections.pending.data).toBe(oldData);
           });
 
           it('moves the leave request to the "Other" section', function () {
@@ -534,7 +567,7 @@
           });
 
           it('does not remove the leave request from the current section', function () {
-            expect(controller.sections.open.data).toContain(leaveRequest1);
+            expect(controller.sections.pending.data).toContain(leaveRequest1);
           });
 
           it('does not move the leave request to the "Other" section', function () {

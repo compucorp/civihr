@@ -37,12 +37,12 @@ define([
     vm.leaveRequestStatuses = [];
     vm.loading = true;
     vm.sections = {
-      approved:     { isOpen: false, data: [], loadFn: loadApprovedRequests },
-      entitlements: { isOpen: false, data: [], loadFn: loadEntitlementsBreakdown },
-      expired:      { isOpen: false, data: [], loadFn: loadExpiredBalanceChanges },
-      holidays:     { isOpen: false, data: [], loadFn: loadPublicHolidays },
-      open:         { isOpen: false, data: [], loadFn: loadPendingRequests },
-      other:        { isOpen: false, data: [], loadFn: loadOtherRequests }
+      approved:     { open: false, data: [], loadFn: loadApprovedRequests },
+      entitlements: { open: false, data: [], loadFn: loadEntitlementsBreakdown },
+      expired:      { open: false, data: [], loadFn: loadExpiredBalanceChanges },
+      holidays:     { open: false, data: [], loadFn: loadPublicHolidays },
+      pending:      { open: false, data: [], loadFn: loadPendingRequests },
+      other:        { open: false, data: [], loadFn: loadOtherRequests }
     };
 
     /**
@@ -101,15 +101,16 @@ define([
     };
 
     /**
-     * Open the given section, triggering the load function if no
-     * cached data is present
+     * Opens/closes the given section. When opening it triggers the
+     * load function if no cached data is present
      *
      * @param {string} sectionName
      */
-    vm.openSection = function (sectionName) {
+    vm.toggleSection = function (sectionName) {
       var section = vm.sections[sectionName];
+      section.open = !section.open;
 
-      if (!section.data.length) {
+      if (section.open && !section.data.length) {
         section.loadFn();
       }
     };
@@ -134,7 +135,7 @@ define([
 
     /**
      * Triggers the cancellation action, then removes the cancelled
-     * leave request from either the "approved", or "open" sections (the only
+     * leave request from either the "approved", or "pending" sections (the only
      * sections where a leave request can be cancelled), and moves it to the
      * "other" section
      *
@@ -142,7 +143,7 @@ define([
      */
     function cancelRequest(leaveRequest) {
       leaveRequest.cancel().then(function () {
-        [vm.sections.approved, vm.sections.open].forEach(function (section) {
+        [vm.sections.approved, vm.sections.pending].forEach(function (section) {
           _.remove(section.data, function (dataEntry) {
             return dataEntry.id === leaveRequest.id;
           });
@@ -159,7 +160,7 @@ define([
     function clearClosedSectionsData() {
       Object.values(vm.sections)
         .filter(function (section) {
-          return !section.isOpen;
+          return !section.open;
         })
         .forEach(function (section) {
           section.data = [];
@@ -252,9 +253,9 @@ define([
         ])
       ])
       .then(function (results) {
-        vm.balanceChanges.public_holidays = results[0];
+        vm.balanceChanges.publicHolidays = results[0];
         vm.balanceChanges.approved = results[1];
-        vm.balanceChanges.open = results[2];
+        vm.balanceChanges.pending = results[2];
       });
     }
 
@@ -318,7 +319,7 @@ define([
     function loadOpenSectionsData() {
       return $q.all(Object.values(vm.sections)
         .filter(function (section) {
-          return section.isOpen;
+          return section.open;
         })
         .map(function (section) {
           return section.loadFn();
@@ -361,7 +362,7 @@ define([
         ] }
       })
       .then(function (leaveRequests) {
-        vm.sections.open.data = leaveRequests;
+        vm.sections.pending.data = leaveRequests;
       });
     }
 
