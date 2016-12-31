@@ -26,11 +26,11 @@
             <th class="chr_leave-report__table__heading--label"></th>
             <th class="chr_leave-report__table__heading--dates">Dates</th>
             <th class="chr_leave-report__table__heading--status">Status</th>
-            <th class="chr_leave-report__table__heading--type">Vacation</th>
-            <th class="chr_leave-report__table__heading--type">TOIL</th>
-            <th class="chr_leave-report__table__heading--type">Maternity</th>
-            <th class="chr_leave-report__table__heading--type">Sick</th>
-            <th class="chr_leave-report__table__heading--type">Other</th>
+            <th
+              class="chr_leave-report__table__heading--type"
+              ng-repeat="absenceType in report.absenceTypes track by $index">
+              {{::absenceType.title}}
+            </th>
             <th class="chr_leave-report__table__heading--action"></th>
           </tr>
         </thead>
@@ -38,11 +38,11 @@
           <tr>
             <td
               class="chr_leave-report__label chr_leave-report__label--toggle"
-              ng-click="report.isOpen.entitlement = !report.isOpen.entitlement">
+              ng-click="report.toggleSection('entitlements')">
               <i
                 class="fa"
                 aria-hidden="true"
-                ng-class="{ 'fa-chevron-down': report.isOpen.entitlement, ' fa-chevron-right': !report.isOpen.entitlement }"></i>
+                ng-class="{ 'fa-chevron-down': report.sections.entitlements.open, ' fa-chevron-right': !report.sections.entitlements.open }"></i>
               Period Entitlement
             </td>
             <td></td>
@@ -54,7 +54,7 @@
             <td>0</td>
             <td></td>
           </tr>
-          <tr ng-show="report.isOpen.entitlement">
+          <tr ng-show="report.sections.entitlements.open">
             <td class="table-nested-cell" colspan="9">
               <div class="table-nested table-responsive">
                 <table class="table table-condensed">
@@ -63,11 +63,11 @@
                       <th class="chr_leave-report__table__heading--label"></th>
                       <th class="chr_leave-report__table__heading--dates">Dates</th>
                       <th class="chr_leave-report__table__heading--status">Status</th>
-                      <th class="chr_leave-report__table__heading--type">Vacation</th>
-                      <th class="chr_leave-report__table__heading--type">TOIL</th>
-                      <th class="chr_leave-report__table__heading--type">Maternity</th>
-                      <th class="chr_leave-report__table__heading--type">Sick</th>
-                      <th class="chr_leave-report__table__heading--type">Other</th>
+                      <th
+                        class="chr_leave-report__table__heading--type"
+                        ng-repeat="absenceType in report.absenceTypes track by $index">
+                        {{::absenceType.title}}
+                      </th>
                       <th class="chr_leave-report__table__heading--action"></th>
                     </tr>
                   </thead>
@@ -124,23 +124,21 @@
           <tr>
             <td
               class="chr_leave-report__label chr_leave-report__label--toggle"
-              ng-click="report.isOpen.holiday = !report.isOpen.holiday">
+              ng-click="report.toggleSection('holidays')">
               <i
                 class="fa"
                 aria-hidden="true"
-                ng-class="{ 'fa-chevron-down': report.isOpen.holiday, ' fa-chevron-right': !report.isOpen.holiday }"></i>
+                ng-class="{ 'fa-chevron-down': report.sections.holidays.open, ' fa-chevron-right': !report.sections.holidays.open }"></i>
               Public Holidays
             </td>
             <td></td>
             <td></td>
-            <td>-8</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td ng-repeat="balanceChange in report.balanceChanges.publicHolidays track by $index">
+              {{::balanceChange}}
+            </td>
             <td></td>
           </tr>
-          <tr ng-show="report.isOpen.holiday">
+          <tr ng-show="report.sections.holidays.open">
             <td class="table-nested-cell" colspan="9">
               <div class="table-nested table-responsive">
                 <table class="table table-condensed">
@@ -149,11 +147,11 @@
                       <th class="chr_leave-report__table__heading--label"></th>
                       <th class="chr_leave-report__table__heading--dates">Dates</th>
                       <th class="chr_leave-report__table__heading--status">Status</th>
-                      <th class="chr_leave-report__table__heading--type">Vacation</th>
-                      <th class="chr_leave-report__table__heading--type">TOIL</th>
-                      <th class="chr_leave-report__table__heading--type">Maternity</th>
-                      <th class="chr_leave-report__table__heading--type">Sick</th>
-                      <th class="chr_leave-report__table__heading--type">Other</th>
+                      <th
+                        class="chr_leave-report__table__heading--type"
+                        ng-repeat="absenceType in report.absenceTypes track by $index">
+                        {{::absenceType.title}}
+                      </th>
                       <th class="chr_leave-report__table__heading--action"></th>
                     </tr>
                   </thead>
@@ -391,23 +389,21 @@
           <tr>
             <td
               class="chr_leave-report__label chr_leave-report__label--toggle"
-              ng-click="report.isOpen.approved = !report.isOpen.approved">
+              ng-click="report.toggleSection('approved')">
               <i
                 class="fa"
                 aria-hidden="true"
-                ng-class="{ 'fa-chevron-down': report.isOpen.approved, ' fa-chevron-right': !report.isOpen.approved }"></i>
+                ng-class="{ 'fa-chevron-down': report.sections.approved.open, ' fa-chevron-right': !report.sections.approved.open }"></i>
               Approved Requests
             </td>
             <td></td>
             <td></td>
-            <td>-4</td>
-            <td>-2</td>
-            <td>-21</td>
-            <td>-2</td>
-            <td>-1</td>
+            <td ng-repeat="balanceChange in report.balanceChanges.approved track by $index">
+              {{::balanceChange}}
+            </td>
             <td></td>
           </tr>
-          <tr ng-show="report.isOpen.approved">
+          <tr ng-show="report.sections.approved.open">
             <td class="table-nested-cell" colspan="9">
               <div class="table-nested table-responsive">
                 <table class="table table-condensed">
@@ -416,11 +412,11 @@
                       <th class="chr_leave-report__table__heading--label"></th>
                       <th class="chr_leave-report__table__heading--dates">Dates</th>
                       <th class="chr_leave-report__table__heading--status">Status</th>
-                      <th class="chr_leave-report__table__heading--type">Vacation</th>
-                      <th class="chr_leave-report__table__heading--type">TOIL</th>
-                      <th class="chr_leave-report__table__heading--type">Maternity</th>
-                      <th class="chr_leave-report__table__heading--type">Sick</th>
-                      <th class="chr_leave-report__table__heading--type">Other</th>
+                      <th
+                        class="chr_leave-report__table__heading--type"
+                        ng-repeat="absenceType in report.absenceTypes track by $index">
+                        {{::absenceType.title}}
+                      </th>
                       <th class="chr_leave-report__table__heading--action"></th>
                     </tr>
                   </thead>
@@ -584,11 +580,9 @@
             <td class="chr_leave-report__label">Balance</td>
             <td></td>
             <td></td>
-            <td>19</td>
-            <td>1</td>
-            <td>-21</td>
-            <td>-2</td>
-            <td>-1</td>
+            <td ng-repeat="entitlement in report.entitlements track by $index">
+              {{::entitlement.remainder.current}}
+            </td>
             <td></td>
           </tr>
         </tbody>
@@ -602,23 +596,23 @@
           <tr>
             <td
               class="chr_leave-report__label chr_leave-report__label--toggle chr_leave-report__table__heading--label"
-              ng-click="report.isOpen.open = !report.isOpen.open">
+              ng-click="report.toggleSection('pending')">
               <i
                 class="fa"
                 aria-hidden="true"
-                ng-class="{ 'fa-chevron-down': report.isOpen.open, ' fa-chevron-right': !report.isOpen.open }"></i>
+                ng-class="{ 'fa-chevron-down': report.sections.pending.open, ' fa-chevron-right': !report.sections.pending.open }"></i>
               Open Requests
             </td>
             <td class="chr_leave-report__table__heading--dates"></td>
             <td class="chr_leave-report__table__heading--status"></td>
-            <td class="chr_leave-report__table__heading--type">-4</td>
-            <td class="chr_leave-report__table__heading--type">1</td>
-            <td class="chr_leave-report__table__heading--type">0</td>
-            <td class="chr_leave-report__table__heading--type">0</td>
-            <td class="chr_leave-report__table__heading--type">0</td>
+            <td
+              class="chr_leave-report__table__heading--type"
+              ng-repeat="balanceChange in report.balanceChanges.pending track by $index">
+              {{::balanceChange}}
+            </td>
             <td class="chr_leave-report__table__heading--action"></td>
           </tr>
-          <tr ng-show="report.isOpen.open">
+          <tr ng-show="report.sections.pending.open">
             <td class="table-nested-cell" colspan="9">
               <div class="table-nested table-responsive">
                 <table class="table table-condensed">
@@ -627,11 +621,11 @@
                       <th class="chr_leave-report__table__heading--label"></th>
                       <th class="chr_leave-report__table__heading--dates">Dates</th>
                       <th class="chr_leave-report__table__heading--status">Status</th>
-                      <th class="chr_leave-report__table__heading--type">Vacation</th>
-                      <th class="chr_leave-report__table__heading--type">TOIL</th>
-                      <th class="chr_leave-report__table__heading--type">Maternity</th>
-                      <th class="chr_leave-report__table__heading--type">Sick</th>
-                      <th class="chr_leave-report__table__heading--type">Other</th>
+                      <th
+                        class="chr_leave-report__table__heading--type"
+                        ng-repeat="absenceType in report.absenceTypes track by $index">
+                        {{::absenceType.title}}
+                      </th>
                       <th class="chr_leave-report__table__heading--action"></th>
                     </tr>
                   </thead>
@@ -695,11 +689,9 @@
             <td class="chr_leave-report__label">Future Balance</td>
             <td></td>
             <td></td>
-            <td>15</td>
-            <td>2</td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td ng-repeat="entitlement in report.entitlements track by $index">
+              {{::entitlement.remainder.future}}
+            </td>
             <td></td>
           </tr>
         </tbody>
@@ -714,15 +706,15 @@
             <td
             colspan="9"
               class="chr_leave-report__label chr_leave-report__label--toggle"
-              ng-click="report.isOpen.other = !report.isOpen.other">
+              ng-click="report.toggleSection('other')">
               <i
                 class="fa"
                 aria-hidden="true"
-                ng-class="{ 'fa-chevron-down': report.isOpen.other, ' fa-chevron-right': !report.isOpen.other }"></i>
+                ng-class="{ 'fa-chevron-down': report.sections.other.open, ' fa-chevron-right': !report.sections.other.open }"></i>
               Cancelled and Other
             </td>
           </tr>
-          <tr ng-show="report.isOpen.other">
+          <tr ng-show="report.sections.other.open">
             <td class="table-nested-cell" colspan="9">
               <div class="table-nested table-responsive">
                 <table class="table table-condensed">
@@ -731,11 +723,11 @@
                       <th class="chr_leave-report__table__heading--label"></th>
                       <th class="chr_leave-report__table__heading--dates">Dates</th>
                       <th class="chr_leave-report__table__heading--status">Status</th>
-                      <th class="chr_leave-report__table__heading--type">Vacation</th>
-                      <th class="chr_leave-report__table__heading--type">TOIL</th>
-                      <th class="chr_leave-report__table__heading--type">Maternity</th>
-                      <th class="chr_leave-report__table__heading--type">Sick</th>
-                      <th class="chr_leave-report__table__heading--type">Other</th>
+                      <th
+                        class="chr_leave-report__table__heading--type"
+                        ng-repeat="absenceType in report.absenceTypes track by $index">
+                        {{::absenceType.title}}
+                      </th>
                       <th class="chr_leave-report__table__heading--action"></th>
                     </tr>
                   </thead>
