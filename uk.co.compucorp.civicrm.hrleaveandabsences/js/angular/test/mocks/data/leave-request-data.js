@@ -1,7 +1,8 @@
 define([
+  'common/lodash',
   'mocks/data/option-group-mock-data',
   'mocks/data/absence-type-data',
-], function (optionGroupMock, absenceTypeData) {
+], function (_, optionGroupMock, absenceTypeData) {
   var mockData = {
     allData: {
       'is_error': 0,
@@ -86,11 +87,15 @@ define([
       'is_error': 0,
       'version': 3,
       'count': 3,
-      'values': {
-        '1': -21,
-        '2': -1,
-        '3': -11
-      }
+      'values': (function () {
+        var values = {};
+
+        absenceTypeData.all().values.forEach(function (absenceType) {
+          values[absenceType.id] = -1 * _.random(0, 25);
+        });
+
+        return values;
+      })()
     },
     calculateBalanceChangeData: {
       'is_error': 0,
