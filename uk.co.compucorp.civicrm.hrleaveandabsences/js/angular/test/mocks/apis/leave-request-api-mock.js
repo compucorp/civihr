@@ -13,7 +13,15 @@ define([
       return {
         all: function (filters, pagination, sort, params) {
           return $q(function (resolve, reject) {
-            resolve(mockData.all().values);
+            var list = mockData.all().values;
+
+            resolve({
+              list: list,
+              total: list.length,
+              allIds: list.map(function (leaveRequest) {
+                return leaveRequest.id;
+              }).join(',')
+            });
           });
         },
         balanceChangeByAbsenceType: function (contactId, periodId, statuses, isPublicHoliday) {

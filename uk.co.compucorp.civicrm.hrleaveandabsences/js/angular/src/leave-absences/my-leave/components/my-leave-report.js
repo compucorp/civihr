@@ -231,7 +231,7 @@ define([
         status: idOfRequestStatus('approved')
       })
       .then(function (leaveRequests) {
-        vm.sections.approved.data = leaveRequests;
+        vm.sections.approved.data = leaveRequests.list;
       });
     }
 
@@ -354,7 +354,7 @@ define([
         ] }
       })
       .then(function (leaveRequests) {
-        vm.sections.other.data = leaveRequests;
+        vm.sections.other.data = leaveRequests.list;
       });
     }
 
@@ -374,7 +374,7 @@ define([
         ] }
       })
       .then(function (leaveRequests) {
-        vm.sections.pending.data = leaveRequests;
+        vm.sections.pending.data = leaveRequests.list;
       });
     }
 
@@ -391,7 +391,7 @@ define([
         public_holiday: true
       })
       .then(function (leaveRequests) {
-        vm.sections.holidays.data = leaveRequests;
+        vm.sections.holidays.data = leaveRequests.list;
       });
     }
 
