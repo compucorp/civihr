@@ -39,7 +39,7 @@ define([
       approved:     { open: false, data: [], loadFn: loadApprovedRequests },
       entitlements: { open: false, data: [], loadFn: loadEntitlementsBreakdown },
       expired:      { open: false, data: [], loadFn: loadExpiredBalanceChanges },
-      holidays:     { open: false, data: [], loadFn: loadPublicHolidays },
+      holidays:     { open: false, data: [], loadFn: loadPublicHolidaysRequests },
       pending:      { open: false, data: [], loadFn: loadPendingRequests },
       other:        { open: false, data: [], loadFn: loadOtherRequests }
     };
@@ -381,7 +381,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadPublicHolidays() {
+    function loadPublicHolidaysRequests() {
       return LeaveRequest.all({
         contact_id: vm.contactId,
         from_date: { from: vm.currentPeriod.start_date },
