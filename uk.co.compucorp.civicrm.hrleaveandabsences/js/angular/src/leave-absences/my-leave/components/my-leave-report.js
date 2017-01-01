@@ -32,7 +32,6 @@ define([
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
-    vm.balanceChanges = {};
     vm.currentPeriod = null;
     vm.leaveRequestStatuses = [];
     vm.loading = true;
@@ -253,9 +252,13 @@ define([
         ])
       ])
       .then(function (results) {
-        vm.balanceChanges.publicHolidays = results[0];
-        vm.balanceChanges.approved = results[1];
-        vm.balanceChanges.pending = results[2];
+        vm.absenceTypes.forEach(function (absenceType) {
+          absenceType.balanceChanges = {
+            publicHolidays: results[0][absenceType.id],
+            approved: results[1][absenceType.id],
+            pending: results[2][absenceType.id],
+          };
+        });
       });
     }
 

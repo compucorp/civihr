@@ -74,6 +74,7 @@
 
         it('contains the expected markup', function () {
           expect(component.find('.chr_leave-report').length).toBe(1);
+          expect(component.find('.chr_leave-report__table').length).toBe(3);
         });
 
         describe('data loading', function () {
@@ -130,6 +131,12 @@
             });
 
             describe('balance changes', function () {
+              var mockData;
+
+              beforeEach(function () {
+                mockData = leaveRequestMock.balanceChangeByAbsenceType().values;
+              });
+
               it('has fetched the balance changes for the current contact and period', function () {
                 var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
 
@@ -137,28 +144,56 @@
                 expect(args[1]).toEqual(controller.currentPeriod.id);
               });
 
-              it('has fetched the balance changes for the public holidays', function () {
-                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
+              describe('public holidays', function () {
+                it('has fetched the balance changes for the public holidays', function () {
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
+                  expect(args[3]).toEqual(true);
+                });
 
-                expect(args[3]).toEqual(true);
-                expect(controller.balanceChanges.publicHolidays).not.toBe(0);
+                it('has stored them in each absence type', function () {
+                  controller.absenceTypes.forEach(function (absenceType) {
+                    var balanceChanges = absenceType.balanceChanges.publicHolidays;
+
+                    expect(balanceChanges).toBeDefined();
+                    expect(balanceChanges).toBe(mockData[absenceType.id]);
+                  });
+                });
               });
 
-              it('has fetched the balance changes for the approved requests', function () {
-                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1);
+              describe('approved requests', function () {
+                it('has fetched the balance changes for the approved requests', function () {
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1);
+                  expect(args[2]).toEqual([ idOfRequestStatus('approved') ]);
+                });
 
-                expect(args[2]).toEqual([ idOfRequestStatus('approved') ]);
-                expect(controller.balanceChanges.approved).not.toBe(0);
+                it('has stored them in each absence type', function () {
+                  controller.absenceTypes.forEach(function (absenceType) {
+                    var balanceChanges = absenceType.balanceChanges.approved;
+
+                    expect(balanceChanges).toBeDefined();
+                    expect(balanceChanges).toBe(mockData[absenceType.id]);
+                  });
+                });
               });
 
-              it('has fetched the balance changes for the open requests', function () {
-                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2);
+              describe('open requests', function () {
+                it('has fetched the balance changes for the open requests', function () {
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2);
 
-                expect(args[2]).toEqual([
-                  idOfRequestStatus('waiting_approval'),
-                  idOfRequestStatus('more_information_requested')
-                ]);
-                expect(controller.balanceChanges.pending).not.toBe(0);
+                  expect(args[2]).toEqual([
+                    idOfRequestStatus('waiting_approval'),
+                    idOfRequestStatus('more_information_requested')
+                  ]);
+                });
+
+                it('has stored them in each absence type', function () {
+                  controller.absenceTypes.forEach(function (absenceType) {
+                    var balanceChanges = absenceType.balanceChanges.pending;
+
+                    expect(balanceChanges).toBeDefined();
+                    expect(balanceChanges).toBe(mockData[absenceType.id]);
+                  });
+                });
               });
             });
           });
@@ -268,7 +303,7 @@
             expect(controller.sections.approved.open).toBe(true);
           });
         });
-        
+
         describe('data caching', function () {
           describe('when the section had not been opened yet', function () {
             beforeEach(function () {

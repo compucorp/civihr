@@ -133,8 +133,8 @@
             </td>
             <td></td>
             <td></td>
-            <td ng-repeat="balanceChange in report.balanceChanges.publicHolidays track by $index">
-              {{::balanceChange}}
+            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+              {{::absenceType.balanceChanges.publicHolidays}}
             </td>
             <td></td>
           </tr>
@@ -398,8 +398,8 @@
             </td>
             <td></td>
             <td></td>
-            <td ng-repeat="balanceChange in report.balanceChanges.approved track by $index">
-              {{::balanceChange}}
+            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+              {{::absenceType.balanceChanges.approved}}
             </td>
             <td></td>
           </tr>
@@ -607,8 +607,8 @@
             <td class="chr_leave-report__table__heading--status"></td>
             <td
               class="chr_leave-report__table__heading--type"
-              ng-repeat="balanceChange in report.balanceChanges.pending track by $index">
-              {{::balanceChange}}
+              ng-repeat="absenceType in report.absenceTypes track by $index">
+              {{::absenceType.balanceChanges.pending}}
             </td>
             <td class="chr_leave-report__table__heading--action"></td>
           </tr>
