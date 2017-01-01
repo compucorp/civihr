@@ -226,7 +226,7 @@ define([
         contact_id: vm.contactId,
         from_date: { from: vm.currentPeriod.start_date },
         to_date: { to: vm.currentPeriod.end_date },
-        status: idOfRequestStatus('approved')
+        status_id: idOfRequestStatus('approved')
       })
       .then(function (leaveRequests) {
         vm.sections.approved.data = leaveRequests.list;
@@ -346,7 +346,7 @@ define([
         contact_id: vm.contactId,
         from_date: { from: vm.currentPeriod.start_date },
         to_date: { to: vm.currentPeriod.end_date },
-        status: { in: [
+        status_id: { in: [
           idOfRequestStatus('rejected'),
           idOfRequestStatus('cancelled')
         ] }
@@ -366,7 +366,7 @@ define([
         contact_id: vm.contactId,
         from_date: { from: vm.currentPeriod.start_date },
         to_date: { to: vm.currentPeriod.end_date },
-        status: { in: [
+        status_id: { in: [
           idOfRequestStatus('waiting_approval'),
           idOfRequestStatus('more_information_requested')
         ] }

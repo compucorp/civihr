@@ -264,7 +264,7 @@
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               from_date: { from: newPeriod.start_date },
               to_date: {to: newPeriod.end_date },
-              status: idOfRequestStatus('approved')
+              status_id: idOfRequestStatus('approved')
             }));
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
               period_id: newPeriod.id
@@ -380,7 +380,7 @@
 
           it('fetches all approved leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              status: idOfRequestStatus('approved')
+              status_id: idOfRequestStatus('approved')
             }));
           });
 
@@ -396,7 +396,7 @@
 
           it('fetches all pending leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              status: { in: [
+              status_id: { in: [
                 idOfRequestStatus('waiting_approval'),
                 idOfRequestStatus('more_information_requested')
               ] }
@@ -431,7 +431,7 @@
 
           it('fetches all cancelled/rejected leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              status: { in: [
+              status_id: { in: [
                 idOfRequestStatus('rejected'),
                 idOfRequestStatus('cancelled')
               ] }
