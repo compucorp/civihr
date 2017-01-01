@@ -33,7 +33,7 @@ define([
     vm.absencePeriods = [];
     vm.absenceTypes = [];
     vm.currentPeriod = null;
-    vm.leaveRequestStatuses = [];
+    vm.leaveRequestStatuses = {};
     vm.loading = true;
     vm.sections = {
       approved:     { open: false, data: [], loadFn: loadApprovedRequests },
@@ -52,9 +52,7 @@ define([
      * @return {Array}
      */
     vm.actionsFor = function (leaveRequest) {
-      var statusKey = _.find(vm.leaveRequestStatuses, function (status) {
-        return status.id === leaveRequest.status_id;
-      })['name'];
+      var statusKey = vm.leaveRequestStatuses[leaveRequest.status_id].name;
 
       return statusKey ? actionMatrix[statusKey] : [];
     };
@@ -187,7 +185,7 @@ define([
     function loadStatuses() {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
-          vm.leaveRequestStatuses = statuses;
+          vm.leaveRequestStatuses = _.indexBy(statuses, 'id');
         });
     }
 
