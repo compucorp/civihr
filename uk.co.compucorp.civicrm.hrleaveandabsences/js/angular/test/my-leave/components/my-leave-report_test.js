@@ -2,6 +2,7 @@
   define([
     'common/angular',
     'common/lodash',
+    'mocks/helpers/helper',
     'mocks/data/leave-request-data',
     'mocks/data/option-group-mock-data',
     'common/angularMocks',
@@ -11,7 +12,7 @@
     'mocks/apis/entitlement-api-mock',
     'mocks/apis/leave-request-api-mock',
     'leave-absences/my-leave/app'
-  ], function (angular, _, leaveRequestMock, optionGroupMock) {
+  ], function (angular, _, helper, leaveRequestMock, optionGroupMock) {
     'use strict';
 
     describe('myLeaveReport', function () {
@@ -130,7 +131,7 @@
               });
 
               it('has stored the remainder in each absence type', function () {
-                controller.absenceTypes.forEach(function (absenceType) {
+                _.forEach(controller.absenceTypes, function (absenceType) {
                   var remainder = absenceType.remainder;
 
                   expect(remainder).toBeDefined();
@@ -162,7 +163,7 @@
                 });
 
                 it('has stored them in each absence type', function () {
-                  controller.absenceTypes.forEach(function (absenceType) {
+                  _.forEach(controller.absenceTypes, function (absenceType) {
                     var balanceChanges = absenceType.balanceChanges.publicHolidays;
 
                     expect(balanceChanges).toBeDefined();
@@ -178,7 +179,7 @@
                 });
 
                 it('has stored them in each absence type', function () {
-                  controller.absenceTypes.forEach(function (absenceType) {
+                  _.forEach(controller.absenceTypes, function (absenceType) {
                     var balanceChanges = absenceType.balanceChanges.approved;
 
                     expect(balanceChanges).toBeDefined();
@@ -198,7 +199,7 @@
                 });
 
                 it('has stored them in each absence type', function () {
-                  controller.absenceTypes.forEach(function (absenceType) {
+                  _.forEach(controller.absenceTypes, function (absenceType) {
                     var balanceChanges = absenceType.balanceChanges.pending;
 
                     expect(balanceChanges).toBeDefined();
@@ -328,7 +329,10 @@
 
           describe('when the section had already been opened', function () {
             beforeEach(function () {
-              controller.sections.approved.data = [jasmine.any(Object), jasmine.any(Object)];
+              controller.sections.approved.data = [
+                LeaveRequestInstance.init(helper.createRandomLeaveRequest(), true),
+                LeaveRequestInstance.init(helper.createRandomLeaveRequest(), true)
+              ];
 
               openSection('approved');
             });

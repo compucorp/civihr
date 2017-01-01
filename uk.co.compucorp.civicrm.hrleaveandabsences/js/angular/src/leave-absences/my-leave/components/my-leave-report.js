@@ -31,7 +31,7 @@ define([
     };
 
     vm.absencePeriods = [];
-    vm.absenceTypes = [];
+    vm.absenceTypes = {};
     vm.currentPeriod = null;
     vm.leaveRequestStatuses = {};
     vm.loading = true;
@@ -200,7 +200,7 @@ define([
     function loadAbsenceTypes() {
       return AbsenceType.all()
         .then(function (absenceTypes) {
-          vm.absenceTypes = absenceTypes;
+          vm.absenceTypes = _.indexBy(absenceTypes, 'id');
         });
     }
 
@@ -239,7 +239,7 @@ define([
         ])
       ])
       .then(function (results) {
-        vm.absenceTypes.forEach(function (absenceType) {
+        _.forEach(vm.absenceTypes, function (absenceType) {
           absenceType.balanceChanges = {
             publicHolidays: results[0][absenceType.id],
             approved: results[1][absenceType.id],
@@ -264,7 +264,7 @@ define([
         vm.entitlements = entitlements;
       })
       .then(function () {
-        vm.absenceTypes.forEach(function (absenceType) {
+        _.forEach(vm.absenceTypes, function (absenceType) {
           absenceType.remainder = _.find(vm.entitlements, function (entitlement) {
             return entitlement.type_id === absenceType.id;
           })['remainder'];
