@@ -165,18 +165,6 @@ define([
     }
 
     /**
-     * Returns the id of the given leave request status
-     *
-     * @param  {string} statusName
-     * @return {integer}
-     */
-    function idOfRequestStatus(statusName) {
-      return _.find(vm.leaveRequestStatuses, function (status) {
-        return status.name === statusName;
-      })['id'];
-    }
-
-    /**
      * NOTE: This should be just temporary, see PCHR-1810
      * Loads all the possible statuses of a leave request
      *
@@ -185,7 +173,7 @@ define([
     function loadStatuses() {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
-          vm.leaveRequestStatuses = _.indexBy(statuses, 'id');
+          vm.leaveRequestStatuses = _.indexBy(statuses, 'value');
         });
     }
 
@@ -226,7 +214,7 @@ define([
         contact_id: vm.contactId,
         from_date: { from: vm.currentPeriod.start_date },
         to_date: { to: vm.currentPeriod.end_date },
-        status_id: idOfRequestStatus('approved')
+        status_id: valueOfRequestStatus('approved')
       })
       .then(function (leaveRequests) {
         vm.sections.approved.data = leaveRequests.list;
@@ -243,11 +231,11 @@ define([
       return $q.all([
         LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.currentPeriod.id, null, true),
         LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.currentPeriod.id, [
-          idOfRequestStatus('approved')
+          valueOfRequestStatus('approved')
         ]),
         LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.currentPeriod.id, [
-          idOfRequestStatus('waiting_approval'),
-          idOfRequestStatus('more_information_requested')
+          valueOfRequestStatus('waiting_approval'),
+          valueOfRequestStatus('more_information_requested')
         ])
       ])
       .then(function (results) {
@@ -347,8 +335,8 @@ define([
         from_date: { from: vm.currentPeriod.start_date },
         to_date: { to: vm.currentPeriod.end_date },
         status_id: { in: [
-          idOfRequestStatus('rejected'),
-          idOfRequestStatus('cancelled')
+          valueOfRequestStatus('rejected'),
+          valueOfRequestStatus('cancelled')
         ] }
       })
       .then(function (leaveRequests) {
@@ -367,8 +355,8 @@ define([
         from_date: { from: vm.currentPeriod.start_date },
         to_date: { to: vm.currentPeriod.end_date },
         status_id: { in: [
-          idOfRequestStatus('waiting_approval'),
-          idOfRequestStatus('more_information_requested')
+          valueOfRequestStatus('waiting_approval'),
+          valueOfRequestStatus('more_information_requested')
         ] }
       })
       .then(function (leaveRequests) {
@@ -391,6 +379,18 @@ define([
       .then(function (leaveRequests) {
         vm.sections.holidays.data = leaveRequests.list;
       });
+    }
+
+    /**
+     * Returns the value of the given leave request status
+     *
+     * @param  {string} statusName
+     * @return {integer}
+     */
+    function valueOfRequestStatus(statusName) {
+      return _.find(vm.leaveRequestStatuses, function (status) {
+        return status.name === statusName;
+      })['value'];
     }
 
     return vm;

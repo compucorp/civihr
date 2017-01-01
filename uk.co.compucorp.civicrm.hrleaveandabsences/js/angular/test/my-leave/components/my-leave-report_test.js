@@ -174,7 +174,7 @@
               describe('approved requests', function () {
                 it('has fetched the balance changes for the approved requests', function () {
                   var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1);
-                  expect(args[2]).toEqual([ idOfRequestStatus('approved') ]);
+                  expect(args[2]).toEqual([ valueOfRequestStatus('approved') ]);
                 });
 
                 it('has stored them in each absence type', function () {
@@ -192,8 +192,8 @@
                   var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2);
 
                   expect(args[2]).toEqual([
-                    idOfRequestStatus('waiting_approval'),
-                    idOfRequestStatus('more_information_requested')
+                    valueOfRequestStatus('waiting_approval'),
+                    valueOfRequestStatus('more_information_requested')
                   ]);
                 });
 
@@ -264,7 +264,7 @@
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               from_date: { from: newPeriod.start_date },
               to_date: {to: newPeriod.end_date },
-              status_id: idOfRequestStatus('approved')
+              status_id: valueOfRequestStatus('approved')
             }));
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
               period_id: newPeriod.id
@@ -380,7 +380,7 @@
 
           it('fetches all approved leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              status_id: idOfRequestStatus('approved')
+              status_id: valueOfRequestStatus('approved')
             }));
           });
 
@@ -397,8 +397,8 @@
           it('fetches all pending leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               status_id: { in: [
-                idOfRequestStatus('waiting_approval'),
-                idOfRequestStatus('more_information_requested')
+                valueOfRequestStatus('waiting_approval'),
+                valueOfRequestStatus('more_information_requested')
               ] }
             }));
           });
@@ -432,8 +432,8 @@
           it('fetches all cancelled/rejected leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               status_id: { in: [
-                idOfRequestStatus('rejected'),
-                idOfRequestStatus('cancelled')
+                valueOfRequestStatus('rejected'),
+                valueOfRequestStatus('cancelled')
               ] }
             }));
           });
@@ -538,7 +538,7 @@
          */
         function getActionMatrixForStatus(statusName) {
           return controller.actionsFor(LeaveRequestInstance.init({
-            status_id: idOfRequestStatus(statusName)
+            status_id: valueOfRequestStatus(statusName)
           }));
         }
       });
@@ -645,17 +645,17 @@
       });
 
       /**
-       * Returns the id of the given leave request status
+       * Returns the value of the given leave request status
        *
        * @param  {string} statusName
        * @return {integer}
        */
-      function idOfRequestStatus(statusName) {
+      function valueOfRequestStatus(statusName) {
         var statuses = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status');
 
         return _.find(statuses, function (status) {
           return status.name === statusName;
-        })['id'];
+        })['value'];
       }
 
       function compileComponent() {
