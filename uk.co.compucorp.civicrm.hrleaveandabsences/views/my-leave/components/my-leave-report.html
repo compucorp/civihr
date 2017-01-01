@@ -11,9 +11,9 @@
         <div class="col-sm-3">
           <div class="chr_custom-select chr_custom-select--full">
             <select>
-              <option value="1" selected>Current Period (2016)</option>
+              <option value="1">Current Period (2016)</option>
               <option value="2" selected>2017</option>
-              <option value="3" selected>2018</option>
+              <option value="3">2018</option>
             </select>
           </div>
         </div>
@@ -580,8 +580,8 @@
             <td class="chr_leave-report__label">Balance</td>
             <td></td>
             <td></td>
-            <td ng-repeat="entitlement in report.entitlements track by $index">
-              {{::entitlement.remainder.current}}
+            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+              {{::absenceType.remainder.current}}
             </td>
             <td></td>
           </tr>
@@ -689,8 +689,8 @@
             <td class="chr_leave-report__label">Future Balance</td>
             <td></td>
             <td></td>
-            <td ng-repeat="entitlement in report.entitlements track by $index">
-              {{::entitlement.remainder.future}}
+            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+              {{::absenceType.remainder.future}}
             </td>
             <td></td>
           </tr>

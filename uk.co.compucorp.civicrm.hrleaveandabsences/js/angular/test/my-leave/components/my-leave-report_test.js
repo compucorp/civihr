@@ -125,8 +125,19 @@
                 });
               });
 
-              it('has fetched both current and future balance of the entitlements', function () {
+              it('has fetched current and future remainder of the entitlements', function () {
                 expect(Entitlement.all.calls.argsFor(0)[1]).toEqual(true);
+              });
+
+              it('has stored the remainder in each absence type', function () {
+                controller.absenceTypes.forEach(function (absenceType) {
+                  var remainder = absenceType.remainder;
+
+                  expect(remainder).toBeDefined();
+                  expect(remainder).toEqual(_.find(controller.entitlements, function (entitlement) {
+                    return entitlement.type_id === absenceType.id
+                  })['remainder']);
+                });
               });
             });
 
