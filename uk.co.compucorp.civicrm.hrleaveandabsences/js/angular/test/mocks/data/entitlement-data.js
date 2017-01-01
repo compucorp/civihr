@@ -42,30 +42,6 @@ define(function () {
         "overridden": "0"
       }]
     },
-    all_data_with_remainder: {
-      "is_error": 0,
-      "version": 3,
-      "count": 3,
-      "values": [{
-        "id": "1",
-        "remainder": {
-          "current": 11,
-          "future": 5
-        }
-      }, {
-        "id": "2",
-        "remainder": {
-          "current": 0,
-          "future": -1
-        }
-      }, {
-        "id": "3",
-        "remainder": {
-          "current": 5,
-          "future": 5
-        }
-      }]
-    },
     breakdown_data: {
       "is_error": 0,
       "version": 3,
@@ -235,7 +211,7 @@ define(function () {
     }
   };
   return {
-    all: function (params, withBalance) {
+    all: function (withBalance) {
       if (withBalance) {
         return mockData.entitlements_chained_with_remainder;
       }

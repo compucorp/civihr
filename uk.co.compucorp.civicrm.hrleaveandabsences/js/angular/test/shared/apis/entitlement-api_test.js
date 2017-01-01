@@ -20,7 +20,7 @@ define([
           var jsonFromParams = JSON.parse(params.json);
           //intercept same get call when chaining with withremainder call
           if ('api.LeavePeriodEntitlement.getremainder' in jsonFromParams) {
-            return [200, mockData.all({}, true)];
+            return [200, mockData.all(true)];
           }
           return [200, mockData.all()];
         });
