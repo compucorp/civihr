@@ -50,7 +50,7 @@ define([
               if (entitlements) {
                 entitlements.map(function (entitlement) {
                   var foundEntitlement = _.find(breakdown, function (element) {
-                    return element.id === entitlement.id;
+                    return element.id == entitlement.id;
                   });
 
                   if (foundEntitlement) {
