@@ -58,21 +58,25 @@ define([
     };
 
     /**
-     * Cancels a leave request, but asks for user's confirmation first
+     * Performs an action on a given leave request
+     * TODO: refactor when adding more actions
      *
      * @param {LeaveRequestInstance} leaveRequest
+     * @param {string} action
      */
-    vm.cancelRequest = function (leaveRequest) {
-      dialog.open({
-        title: 'Confirm Cancellation Leave Request',
-        copyCancel: 'Cancel',
-        copyConfirm: 'Confirm',
-        classConfirm: 'btn-danger',
-        msg: 'This cannot be undone'
-      })
-      .then(function (response) {
-        !!response && cancelRequest(leaveRequest);
-      });
+    vm.action = function (leaveRequest, action) {
+      if (action === 'cancel') {
+        dialog.open({
+          title: 'Confirm Cancellation Leave Request',
+          copyCancel: 'Cancel',
+          copyConfirm: 'Confirm',
+          classConfirm: 'btn-danger',
+          msg: 'This cannot be undone'
+        })
+        .then(function (response) {
+          !!response && cancelRequest(leaveRequest);
+        });
+      }
     };
 
     /**

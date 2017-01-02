@@ -594,7 +594,7 @@
           beforeEach(function () {
             resolveDialogWith(null);
 
-            controller.cancelRequest(leaveRequest1);
+            controller.action(leaveRequest1, 'cancel');
             $rootScope.$digest();
           });
 
@@ -610,7 +610,7 @@
             oldData = controller.sections.pending.data;
             resolveDialogWith(true);
 
-            controller.cancelRequest(leaveRequest1);
+            controller.action(leaveRequest1, 'cancel');
             $rootScope.$digest();
           });
 
@@ -635,7 +635,7 @@
           beforeEach(function () {
             resolveDialogWith(false);
 
-            controller.cancelRequest(leaveRequest1);
+            controller.action(leaveRequest1, 'cancel');
             $rootScope.$digest();
           });
 
