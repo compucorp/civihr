@@ -708,6 +708,22 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Leave Requests should have an end date
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutAnEndDate() {
+    $fromDate = new DateTime('+4 days');
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage Leave Request should have a contact
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutContactID() {
