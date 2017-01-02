@@ -42,44 +42,68 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     }
 
     $activityTypesResult = civicrm_api3('activity_type', 'get', array());
-    if (CRM_Utils_Array::value('allow_debits', $params) && empty($params['debit_activity_type_id'])) {
-      $weight = count($activityTypesResult["values"]);
-      $debitActivityLabel = $params['title'];
-      $debitActivityTypeId = array_search($debitActivityLabel, $activityTypesResult["values"]);
-      if (!$debitActivityTypeId) {
-        $weight = $weight + 1;
-        $paramsCreate = array(
-          'weight' => $weight,
-          'label' => $debitActivityLabel,
-          'filter' => 1,
-          'is_active' => 1,
-          'is_optgroup' => 0,
-          'is_default' => 0,
-          'grouping' => 'Timesheet',
-        );
-        $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
-        $debitActivityTypeId = $resultCreateActivityType['values'][$resultCreateActivityType["id"]]['value'];
+    if (CRM_Utils_Array::value('allow_debits', $params)) {
+      if (empty($params['debit_activity_type_id'])) {
+        $weight = count($activityTypesResult["values"]);
+        $debitActivityLabel = $params['title'];
+        $debitActivityTypeId = array_search($debitActivityLabel, $activityTypesResult["values"]);
+        if (!$debitActivityTypeId) {
+          $weight = $weight + 1;
+          $paramsCreate = array(
+            'weight' => $weight,
+            'label' => $debitActivityLabel,
+            'filter' => 1,
+            'is_active' => 1,
+            'is_optgroup' => 0,
+            'is_default' => 0,
+            'grouping' => 'Timesheet',
+          );
+          $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
+          $debitActivityTypeId = $resultCreateActivityType['values'][$resultCreateActivityType["id"]]['value'];
+        }
+        $params["debit_activity_type_id"] = $debitActivityTypeId;
+      } else {
+        $optionValue = civicrm_api3('OptionValue', 'get', array(
+          'sequential' => 1,
+          'option_group_id' => "activity_type",
+          'value' => $params['debit_activity_type_id'],
+        ));
+        civicrm_api3('OptionValue', 'create', array(
+          'id' => $optionValue['id'],
+          'label' => $params['title'],
+        ));
       }
-      $params["debit_activity_type_id"] = $debitActivityTypeId;
     }
-    if (CRM_Utils_Array::value('allow_credits', $params) && empty($params["credit_activity_type_id"])) {
-      $weight = count($activityTypesResult["values"]);
-      $creditActivityLabel = ts('%1 (Credit)', array(1 => $params["title"]));
-      $creditActivityTypeId = array_search($creditActivityLabel, $activityTypesResult["values"]);
-      if (!$creditActivityTypeId) {
-        $weight = $weight + 1;
-        $paramsCreate = array(
-          'weight' => $weight,
-          'label' => $creditActivityLabel,
-          'filter' => 1,
-          'is_active' => 1,
-          'is_optgroup' => 0,
-          'is_default' => 0,
-          'grouping' => 'Timesheet',
-        );
-        $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
-        $creditActivityTypeId = $resultCreateActivityType['values'][$resultCreateActivityType["id"]]['value'];
-        $params["credit_activity_type_id"] = $creditActivityTypeId;
+    if (CRM_Utils_Array::value('allow_credits', $params)){
+      if (empty($params['credit_activity_type_id'])) {
+        $weight = count($activityTypesResult["values"]);
+        $creditActivityLabel = ts('%1 (Credit)', array(1 => $params["title"]));
+        $creditActivityTypeId = array_search($creditActivityLabel, $activityTypesResult["values"]);
+        if (!$creditActivityTypeId) {
+          $weight = $weight + 1;
+          $paramsCreate = array(
+            'weight' => $weight,
+            'label' => $creditActivityLabel,
+            'filter' => 1,
+            'is_active' => 1,
+            'is_optgroup' => 0,
+            'is_default' => 0,
+            'grouping' => 'Timesheet',
+          );
+          $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
+          $creditActivityTypeId = $resultCreateActivityType['values'][$resultCreateActivityType["id"]]['value'];
+          $params["credit_activity_type_id"] = $creditActivityTypeId;
+        }
+      } else {
+        $optionValue = civicrm_api3('OptionValue', 'get', array(
+          'sequential' => 1,
+          'option_group_id' => "activity_type",
+          'value' => $params['credit_activity_type_id'],
+        ));
+        civicrm_api3('OptionValue', 'create', array(
+          'id' => $optionValue['id'],
+          'label' => ts('%1 (Credit)', array(1 => $params["title"]))
+        ));
       }
     }
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
@@ -154,16 +178,16 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     }
     return $result;
   }
-  
+
   /**
    * Delete Absence Type
-   * 
+   *
    * @param int $absenceTypeId
    *   ID of Absence Type to be deleted
    * @throws CRM_Core_Exception
    *   If Absence Type is being used on existing leave requests
    */
-  public static function del($absenceTypeId) {    
+  public static function del($absenceTypeId) {
     $absenceType = new CRM_HRAbsence_DAO_HRAbsenceType();
     $absenceType->id = $absenceTypeId;
     $absenceType->find(TRUE);
@@ -173,7 +197,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     }
 
     self::deleteLeaveEntitlements($absenceTypeId);
-    
+
     $absenceActivities = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id');
 
     if ($absenceType->debit_activity_type_id && $id = CRM_Utils_Array::value($absenceType->debit_activity_type_id, $absenceActivities)) {
@@ -187,10 +211,10 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
 
     CRM_Utils_Hook::post('delete', 'HRAbsenceType', $absenceTypeId, $absenceType);
   }
-  
+
   /**
    * Count leave requests for given absence type object
-   * 
+   *
    * @param CRM_HRAbsence_BAO_HRAbsenceType $absenceType
    *   Instance of Absence Type object for which leave requests need to be counted
    * @return int
@@ -198,7 +222,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
    */
   private static function countLeaveRequestsForAbsenceType(CRM_HRAbsence_DAO_HRAbsenceType $absenceType) {
     $count = 0;
-    
+
     if (!empty($absenceType->credit_activity_type_id)) {
       $count += civicrm_api3('Activity', 'getcount', [
         'sequential' => 1,
@@ -211,13 +235,13 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
         'activity_type_id' => $absenceType->debit_activity_type_id
       ]);
     }
-    
+
     return $count;
   }
 
   /**
    * Deletes all leave entitlements for given absence type ID.
-   * 
+   *
    * @param int $absenceTypeId
    *   ID of Absence Type for which entitlements have to be deleted
    */
