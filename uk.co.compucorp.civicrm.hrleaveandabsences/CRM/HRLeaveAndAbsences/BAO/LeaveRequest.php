@@ -59,31 +59,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    */
   public static function validateParams($params) {
     self::validateMandatory($params);
-    self::validateToDateType($params);
     self::validateStartDateNotGreaterThanEndDate($params);
     self::validateAbsencePeriod($params);
     self::validateNoOverlappingLeaveRequests($params);
     self::validateBalanceChange($params);
     self::validateWorkingDay($params);
     self::validateLeaveDatesDoesNotOverlapContracts($params);
-  }
-
-  /**
-   * This method validates that the to_date_type field must be present when to_date field is not empty
-   *
-   * @param array $params
-   *   The params array received by the create method
-   *
-   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   */
-  private static function validateToDateType($params) {
-    if (!empty($params['to_date']) && empty($params['to_date_type'])) {
-      throw new InvalidLeaveRequestException(
-        'The type of To Date should not be empty',
-        'leave_request_empty_to_date_type',
-        'to_date_type'
-      );
-    }
   }
 
   /**
@@ -104,11 +85,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       );
     }
 
-    if (empty($params['to_date'])) {
+    if (empty($params['from_date_type'])) {
       throw new InvalidLeaveRequestException(
-        'Leave Requests should have an end date',
-        'leave_request_empty_to_date',
-        'to_date'
+        'The type of From Date should not be empty',
+        'leave_request_empty_from_date_type',
+        'from_date_type'
       );
     }
 
@@ -133,6 +114,22 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         'The Leave Request status should not be empty',
         'leave_request_empty_status_id',
         'status_id'
+      );
+    }
+
+    if (empty($params['to_date'])) {
+      throw new InvalidLeaveRequestException(
+        'Leave Requests should have an end date',
+        'leave_request_empty_to_date',
+        'to_date'
+      );
+    }
+
+    if (empty($params['to_date_type'])) {
+      throw new InvalidLeaveRequestException(
+        'The type of To Date should not be empty',
+        'leave_request_empty_to_date_type',
+        'to_date_type'
       );
     }
   }
