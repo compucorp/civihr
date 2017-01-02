@@ -5,6 +5,8 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
   public function upgrade_1000() {
     $this->downloadUKEnglish();
     $this->updateLocalisationSettings();
+    $this->setAvailableCountries();
+    $this->setAvailableProvinces();
     $this->setCiviHRTheme();
 
     return TRUE;
@@ -14,7 +16,7 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
    * Downloads en_GB (UK english) localization file
    */
   private function downloadUKEnglish() {
-    $localizationFileURL = "https://download.civicrm.org/civicrm-l10n-core/mo/en_GB/civicrm.mo";
+    $localizationURL = "https://download.civicrm.org/civicrm-l10n-core/mo/en_GB/civicrm.mo";
 
     global $civicrm_root;
     $downloadPath = "{$civicrm_root}/l10n/en_GB/LC_MESSAGES/";
@@ -23,7 +25,7 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
       mkdir($downloadPath, 0755, true);
     }
 
-    file_put_contents($downloadPath, fopen($localizationFileURL, 'r'));
+    file_put_contents($downloadPath, fopen($localizationURL, 'r'));
   }
 
   /**
@@ -56,14 +58,56 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
 
     civicrm_api3('Setting', 'create', $settings);
 
-    // Adds GBP to enabled currencies and sets it as a default one
-    civicrm_api3('OptionValue', 'create', [
-      'option_group_id' => "currencies_enabled",
-      'label' => "GBP (£)",
-      'value' => "GBP",
-      'is_default' => 1,
-      'is_active' => 1,
-    ]);
+    $currenciesToEnable = [
+      ['GBP (£)','GBP', 1],
+      ['EUR (€)','EUR', 0],
+    ];
+
+    foreach ($currenciesToEnable as $currency) {
+      civicrm_api3('OptionValue', 'create', [
+        'option_group_id' => "currencies_enabled",
+        'label' => $currency[0],
+        'value' => $currency[1],
+        'is_default' => $currency[2],
+        'is_active' => 1,
+      ]);
+    }
+  }
+
+  /**
+   * Sets Available Countries
+   */
+  private function setAvailableCountries() {
+    $countriesList = civicrm_api3('Country', 'get', array(
+      'sequential' => 1,
+      'return' => array("id"),
+      'options' => array('limit' => 0),
+    ));
+
+    $countriesIDs = array_column($countriesList['values'], 'id');
+    unset($countriesList);
+
+    civicrm_api3('Setting', 'create', array(
+      'countryLimit' => $countriesIDs,
+    ));
+  }
+
+  /**
+   * Sets Available Provinces
+   */
+  private function setAvailableProvinces() {
+    $tableName = CRM_Core_DAO_StateProvince::getTableName();
+
+    $provincesIDs = [];
+    $query = CRM_Core_DAO::executeQuery("SELECT id FROM {$tableName}");
+
+    while($query->fetch()) {
+      $provincesIDs[] = $query->id;
+    }
+
+    civicrm_api3('Setting', 'create', array(
+      'provinceLimit' => $provincesIDs,
+    ));
   }
 
   /**
