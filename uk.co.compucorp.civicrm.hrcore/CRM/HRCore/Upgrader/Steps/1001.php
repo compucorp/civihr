@@ -9,11 +9,14 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
       ['civicrm_relationship_type', 'name_b_a', 'civicrmRelationshipTypesList'],
       ['civicrm_option_value', 'name', 'civicrmActivityTypesList'],
       ['civicrm_location_type', 'name', 'civicrmLocationTypesList'],
+      ['civicrm_option_value', 'name', 'civicrmMobileProvidersList'],
     ];
 
     foreach ($listsToDelete as $list) {
       $this->listDelete($list[0], $list[1], $list[2]);
     }
+
+    $this->deleteEthnicityOptions();
 
     CRM_Core_BAO_Navigation::resetNavigation();
 
@@ -46,6 +49,34 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
 
       CRM_Core_DAO::executeQuery($sql);
     }
+  }
+
+  /**
+   * Removes a list of unneeded ethnicity options
+   */
+  private function deleteEthnicityOptions() {
+    $ethnicityGroupID = civicrm_api3('CustomField', 'get', array(
+      'sequential' => 1,
+      'return' => array("option_group_id"),
+      'name' => "ethnicity",
+      'options' => ['limit' => 0]
+    ))['id'];
+
+    $ethnicityOptions = civicrm_api3('OptionValue', 'get', array(
+      'sequential' => 1,
+      'option_group_id' => $ethnicityGroupID,
+    ));
+
+    if (!empty($ethnicityOptions['values'])) {
+      foreach ($ethnicityOptions['values'] as $option) {
+        if (!in_array($option['name'], ['Prefer_Not_to_Say', 'Not_Applicable'])) {
+          civicrm_api3('OptionValue', 'delete', array(
+            'id' => $option['id'],
+          ));
+        }
+      }
+    }
+
   }
 
 
@@ -88,10 +119,8 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
       'Parent of',
       'Health Services Coordinator',
       'Homeless Services Coordinator',
-      'Partner of',
       'Senior Services Coordinator',
       'Sibling of',
-      'Spouse of',
       'Supervisor',
       'Volunteer is',
     ];
@@ -123,6 +152,26 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
       'Main',
       'Other',
     ];
+  }
+
+  /**
+   * A list of sample CiviCRM mobile providers which need to be removed.
+   *
+   * @return array
+   */
+  private function civicrmMobileProvidersList() {
+    $mobileProviders = civicrm_api3('OptionValue', 'get', array(
+      'sequential' => 1,
+      'option_group_id' => "mobile_provider",
+      'options' => array('limit' => 0),
+    ));
+
+    $providers = [];
+    if (!empty($mobileProviders['values'])) {
+      $providers = array_column($mobileProviders['values'], 'name');
+    }
+
+    return $providers;
   }
 
 }
