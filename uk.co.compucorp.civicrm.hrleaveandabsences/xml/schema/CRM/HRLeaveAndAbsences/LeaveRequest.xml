@@ -91,6 +91,7 @@
   <field>
     <name>to_date_type</name>
     <type>int unsigned</type>
+    <required>true</required>
     <comment>One of the values of the Leave Request Day Type option group</comment>
     <add>4.4</add>
     <pseudoconstant>

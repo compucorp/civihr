@@ -26,13 +26,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
 
-    //For single day leave requests
-    $hasFromDateAndFromDateType = !empty($params['from_date']) && !empty($params['from_date_type']);
-    $doesNotHaveToDateAndToDateType = empty($params['to_date']) && empty($params['to_date_type']);
-    if ($hasFromDateAndFromDateType && $doesNotHaveToDateAndToDateType){
-      $params['to_date'] = $params['from_date'];
-      $params['to_date_type'] = $params['from_date_type'];
-    }
     if($validate){
       self::validateParams($params);
     }

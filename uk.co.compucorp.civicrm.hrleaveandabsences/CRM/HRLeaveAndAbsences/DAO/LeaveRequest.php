@@ -222,6 +222,7 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('To Date Type') ,
           'description' => 'One of the values of the Leave Request Day Type option group',
+          'required' => true,
           'pseudoconstant' => array(
             'optionGroupName' => 'hrleaveandabsences_leave_request_day_type',
             'optionEditPath' => 'civicrm/admin/options/hrleaveandabsences_leave_request_day_type',

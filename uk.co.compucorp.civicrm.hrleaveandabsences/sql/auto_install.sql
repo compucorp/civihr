@@ -329,9 +329,9 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_request` (
      `contact_id` int unsigned NOT NULL   COMMENT 'FK to Contact',
      `status_id` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Request Status option group',
      `from_date` date NOT NULL   COMMENT 'The date the leave request starts.',
-     `from_date_type` int unsigned    COMMENT 'One of the values of the Leave Request Day Type option group',
+     `from_date_type` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Request Day Type option group',
      `to_date` date NOT NULL   COMMENT 'The date the leave request ends',
-     `to_date_type` int unsigned    COMMENT 'One of the values of the Leave Request Day Type option group',
+     `to_date_type` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Request Day Type option group',
     PRIMARY KEY ( `id` ),
     CONSTRAINT FK_civicrm_hrlaa_leave_request_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
     CONSTRAINT FK_civicrm_hrlaa_leave_request_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
