@@ -202,24 +202,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         ALTER TABLE `civicrm_hrjobcontract_pay` ADD `annual_benefits` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL AFTER `pay_is_auto_est`, ADD `annual_deductions` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL AFTER `annual_benefits`
     ");
 
-    CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS civicrm_hrhours_location");
-      CRM_Core_DAO::executeQuery("
-        CREATE TABLE IF NOT EXISTS `civicrm_hrhours_location` (
-        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-          `location` varchar(63) DEFAULT NULL,
-          `standard_hours` int(4) DEFAULT NULL,
-          `periodicity` varchar(63) DEFAULT NULL,
-          `is_active` tinyint(4) DEFAULT '1',
-          PRIMARY KEY(id)
-        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
-      ");
-      CRM_Core_DAO::executeQuery("
-        INSERT INTO `civicrm_hrhours_location` (`id`, `location`, `standard_hours`, `periodicity`, `is_active`) VALUES
-        (1, 'Head office', 40, 'Week', 1),
-        (2, 'Other office', 8, 'Day', 1),
-        (3, 'Small office', 36, 'Week', 1)
-      ");
-
     // pay_cycle:
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_pay_cycle', 'id', 'name');
     if (!$optionGroupID) {
@@ -544,6 +526,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1026();
     $this->upgrade_1027();
     $this->upgrade_1028();
+    $this->upgrade_1029();
   }
 
   function upgrade_1001() {
@@ -1056,7 +1039,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    *
    * @return bool
    */
-  public function upgrade_1027() {
+  public function upgrade_1029() {
     $optionsValue = [
       3 => 'Bi-Weekly',
       4 => 'Bi-Monthly',
@@ -1276,6 +1259,18 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       // OptionGroup already exists
       // Skip this
     }
+  }
+
+  /**
+   * Removes all pay scales except 'Not Applicable'
+   *
+   * @return TRUE
+   */
+  function upgrade_1027() {
+    $tableName = CRM_Hrjobcontract_DAO_PayScale::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName} WHERE pay_scale != 'Not Applicable'");
+
+    return true;
   }
 
   function decToFraction($fte) {
