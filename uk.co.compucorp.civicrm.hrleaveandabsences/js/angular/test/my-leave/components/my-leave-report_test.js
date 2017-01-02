@@ -578,6 +578,11 @@
         var leaveRequest1, leaveRequest2, leaveRequest3;
 
         beforeEach(function () {
+          Entitlement.all.calls.reset();
+          LeaveRequest.balanceChangeByAbsenceType.calls.reset();
+        });
+
+        beforeEach(function () {
           leaveRequest1 = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
           leaveRequest2 = LeaveRequestInstance.init(leaveRequestMock.all().values[1], true);
           leaveRequest3 = LeaveRequestInstance.init(leaveRequestMock.all().values[2], true);
@@ -606,28 +611,65 @@
         describe('when the user confirms', function () {
           var oldData;
 
-          beforeEach(function () {
-            oldData = controller.sections.pending.data;
-            resolveDialogWith(true);
+          describe('basic tests', function () {
+            beforeEach(function () {
+              oldData = controller.sections.pending.data;
 
-            controller.action(leaveRequest1, 'cancel');
-            $rootScope.$digest();
+              resolveDialogWith(true);
+              controller.action(leaveRequest1, 'cancel');
+              $rootScope.$digest();
+            });
+
+            it('sends the cancellation request', function () {
+              expect(leaveRequest1.cancel).toHaveBeenCalled();
+            });
+
+            it('refreshes the entitlements to reload the remainders', function () {
+              expect(Entitlement.all).toHaveBeenCalled();
+            });
+
+            it('refreshes the balance changes', function () {
+              expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalled();
+            });
+
+            it('removes the leave request from the current section', function () {
+              expect(controller.sections.pending.data).not.toContain(leaveRequest1);
+            });
+
+            it('remove the leave request without creating a new array', function () {
+              expect(controller.sections.pending.data).toBe(oldData);
+            });
           });
 
-          it('sends the cancellation request', function () {
-            expect(leaveRequest1.cancel).toHaveBeenCalled();
-          });
+          describe('moving the request to the "Other" section', function () {
+            describe('when the section has cached data', function () {
+              beforeEach(function () {
+                var alreadyRejected = LeaveRequestInstance.init(helper.createRandomLeaveRequest(), true);
+                controller.sections.other.data = [alreadyRejected];
 
-          it('removes the leave request from the current section', function () {
-            expect(controller.sections.pending.data).not.toContain(leaveRequest1);
-          });
+                resolveDialogWith(true);
+                controller.action(leaveRequest1, 'cancel');
+                $rootScope.$digest();
+              });
 
-          it('remove the leave request without creating a new array', function () {
-            expect(controller.sections.pending.data).toBe(oldData);
-          });
+              it('moves the leave request in it', function () {
+                expect(controller.sections.other.data).toContain(leaveRequest1);
+              });
+            });
 
-          it('moves the leave request to the "Other" section', function () {
-            expect(controller.sections.other.data).toContain(leaveRequest1);
+            describe('when the section has not any cached data', function () {
+              beforeEach(function () {
+                controller.sections.other.data = [];
+
+                resolveDialogWith(true);
+                controller.action(leaveRequest1, 'cancel');
+                $rootScope.$digest();
+              });
+
+              it('does not move the leave request in it', function () {
+                expect(controller.sections.other.data).not.toContain(leaveRequest1);
+              });
+            });
           });
         });
 
@@ -641,6 +683,14 @@
 
           it('does not send the cancellation request', function () {
             expect(leaveRequest1.cancel).not.toHaveBeenCalled();
+          });
+
+          it('does not refresh the entitlements', function () {
+            expect(Entitlement.all).not.toHaveBeenCalled();
+          });
+
+          it('does not refresh the balance changes', function () {
+            expect(LeaveRequest.balanceChangeByAbsenceType).not.toHaveBeenCalled();
           });
 
           it('does not remove the leave request from the current section', function () {

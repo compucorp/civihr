@@ -146,21 +146,38 @@ define([
      * Triggers the cancellation action, then removes the cancelled
      * leave request from either the "approved", or "pending" sections (the only
      * sections where a leave request can be cancelled), and moves it to the
-     * "other" section
+     * "other" section (if it has already cached data)
+     *
+     * It also reloads the entitlements (to get the updated remainders) and the
+     * balance changes so that the numbers add up
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function cancelRequest(leaveRequest) {
-      leaveRequest.cancel().then(function () {
-        [vm.sections.approved, vm.sections.pending].forEach(function (section) {
-          _.remove(section.data, function (dataEntry) {
-            return dataEntry.id === leaveRequest.id;
+      vm.loading = true;
+
+      leaveRequest.cancel()
+        .then(function () {
+          [vm.sections.approved, vm.sections.pending].forEach(function (section) {
+            _.remove(section.data, function (dataEntry) {
+              return dataEntry.id === leaveRequest.id;
+            });
           });
+        })
+        .then(function () {
+          if (vm.sections.other.data.length) {
+            vm.sections.other.data.push(leaveRequest);
+          }
+        })
+        .then(function () {
+          return $q.all([
+            loadEntitlements(),
+            loadBalanceChanges()
+          ]);
+        })
+        .then(function () {
+          vm.loading = false;
         });
-      })
-      .then(function () {
-        vm.sections.other.data.push(leaveRequest);
-      });
     }
 
     /**
