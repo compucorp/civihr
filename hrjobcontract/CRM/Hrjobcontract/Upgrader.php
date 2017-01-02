@@ -1286,20 +1286,24 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Add 'Fixed Term' Contract Type and sort
-   * contract types alphabetically
+   * Upgrader to :
+   *
+   * 1) Add 'Fixed Term' Contract Type
+   * 2) Sort contract types alphabetically
+   * 3) Add 'Retirement' contract end reason
+   * 4) add new contract change reason options
    *
    * @return TRUE
    */
-  function upgrade_1026() {
-    // add 'Fixed Term' Contract Type
+  public function upgrade_1026() {
+    // 1) Add 'Fixed Term' Contract Type
     civicrm_api3('OptionValue', 'create',[
       'option_group_id' => 'hrjc_contract_type',
       'name' => 'Fixed Term',
       'label' => 'Fixed Term',
     ]);
 
-    // Sort contract types alphabetically
+    // 2) Sort contract types alphabetically
     // fetch all contract types sorted alphabetically ( by their labels )
     $prefixes = civicrm_api3('OptionValue', 'get', [
       'sequential' => 1,
@@ -1317,6 +1321,24 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           'weight' => $weight++
         ]);
       }
+    }
+
+    // 3) Add 'Retirement' contract end reason
+    civicrm_api3('OptionValue', 'create',[
+      'option_group_id' => 'hrjc_contract_end_reason',
+      'name' => 'Retirement',
+      'label' => 'Retirement',
+    ]);
+
+    // 4) Add new contract change reason options
+    $toAdd = ['Promotion', 'Increment', 'Disciplinary'];
+
+    foreach ($toAdd as $option) {
+      civicrm_api3('OptionValue', 'create',[
+        'option_group_id' => '$option',
+        'name' => $option,
+        'label' => $option,
+      ]);
     }
 
     return true;
