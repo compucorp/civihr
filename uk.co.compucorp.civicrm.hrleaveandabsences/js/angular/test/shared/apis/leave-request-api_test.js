@@ -115,7 +115,7 @@ define([
             period_id: jasmine.any(String),
             statuses: null,
             public_holiday: false
-          });
+          }, false);
         });
 
         it('sends as `public_holiday` the original value if truthy value had been passed', function () {
@@ -123,7 +123,7 @@ define([
 
           expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
             public_holiday: true
-          }));
+          }), false);
         });
 
         it('sends as `statuses` an "IN" list if the original value is an array', function () {
@@ -131,7 +131,7 @@ define([
 
           expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
             statuses: { "IN": jasmine.any(Array) },
-          }));
+          }), false);
         });
       });
 

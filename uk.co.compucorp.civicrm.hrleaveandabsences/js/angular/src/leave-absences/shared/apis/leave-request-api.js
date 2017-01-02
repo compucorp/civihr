@@ -55,7 +55,7 @@ define([
           public_holiday: isPublicHoliday || false
         };
 
-        deferred.resolve(this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params)
+        deferred.resolve(this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params, false)
           .then(function (data) {
             return data.values;
           }));

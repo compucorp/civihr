@@ -29,7 +29,7 @@ define([
           }
         }
 
-        return this.sendGET('LeavePeriodEntitlement', 'get', params)
+        return this.sendGET('LeavePeriodEntitlement', 'get', params, false)
           .then(function (data) {
             return data.values;
           })
