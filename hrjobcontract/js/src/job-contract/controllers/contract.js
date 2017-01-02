@@ -91,7 +91,7 @@ define([
               }
             }
 
-            function updateContractFiles (){
+            function updateContractFiles(){
 
                 promiseFiles = $q.all({
                     details: ContractFilesService.get($scope.details.jobcontract_revision_id,'civicrm_hrjobcontract_details'),
