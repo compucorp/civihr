@@ -35,7 +35,7 @@ define([
       '$q',
       'api.optionGroup',
       function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _OptionGroup_) {
-        LeaveRequestInstance = _LeaveRequestInstance_;
+        LeaveRequestInstance = _LeaveRequestInstance_.init({}, false);
         LeaveRequestAPI = _LeaveRequestAPI_;
         $q = _$q_;
         $rootScope = _$rootScope_;
@@ -47,18 +47,18 @@ define([
       }
     ]));
 
-    describe('cancel()', function () {
+    describe('status change methods', function () {
       var optionGroupDeferred,
         leaveRequestDeferred,
         mockOptionValue,
         mockUpdateResponse,
         promise;
 
-      function commonSetup(returnData) {
+      function commonSetup(statusName, methodName, returnData) {
         optionGroupDeferred = $q.defer();
         leaveRequestDeferred = $q.defer();
         mockOptionValue = [{
-          name: 'cancelled',
+          name: statusName,
           value: '1'
         }];
         mockUpdateResponse = returnData;
@@ -69,7 +69,7 @@ define([
         optionGroupDeferred.resolve(mockOptionValue);
         leaveRequestDeferred.resolve(mockUpdateResponse);
 
-        promise = LeaveRequestInstance.cancel();
+        promise = LeaveRequestInstance[methodName]();
         LeaveRequestInstance.status_id = jasmine.any(String);
       }
 
@@ -77,44 +77,173 @@ define([
         $rootScope.$apply();
       });
 
-      describe('success', function () {
+      describe('cancel', function() {
 
-        beforeEach(function () {
-          commonSetup(mockData.singleDataSuccess());
-        });
+        describe('success', function () {
 
-        it('updates the status_id of the instance', function () {
-          promise.then(function () {
-            expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
+          beforeEach(function () {
+            commonSetup('cancelled', 'cancel', mockData.singleDataSuccess());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
+            });
+          });
+
+          it('OptionGroup.valuesOf gets called', function () {
+            promise.then(function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+            });
+          });
+
+          it('LeaveRequestInstance.update gets called', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.update).toHaveBeenCalled();
+              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
+            });
           });
         });
 
-        it('OptionGroup.valuesOf gets called', function () {
-          promise.then(function () {
-            expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-          });
-        });
+        describe('error', function () {
 
-        it('LeaveRequestInstance.update gets called', function () {
-          promise.then(function () {
-            expect(LeaveRequestInstance.update).toHaveBeenCalled();
-            expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
+          beforeEach(function () {
+            commonSetup('cancelled', 'cancel', mockData.singleDataError());
           });
-        });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function (data) {
+              expect(data).toBe(mockUpdateResponse);
+            });
+          });
+        })
       });
 
-      describe('error', function () {
+      describe('approve', function() {
 
-        beforeEach(function () {
-          commonSetup(mockData.singleDataError());
-        });
+        describe('success', function () {
 
-        it('updates the status_id of the instance', function () {
-          promise.then(function (data) {
-            expect(data).toBe(mockUpdateResponse);
+          beforeEach(function () {
+            commonSetup('approved', 'approve', mockData.singleDataSuccess());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
+            });
+          });
+
+          it('OptionGroup.valuesOf gets called', function () {
+            promise.then(function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+            });
+          });
+
+          it('LeaveRequestInstance.update gets called', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.update).toHaveBeenCalled();
+              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
+            });
           });
         });
-      })
+
+        describe('error', function () {
+
+          beforeEach(function () {
+            commonSetup('approved', 'approve', mockData.singleDataError());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function (data) {
+              expect(data).toBe(mockUpdateResponse);
+            });
+          });
+        })
+      });
+
+      describe('reject', function() {
+
+        describe('success', function () {
+
+          beforeEach(function () {
+            commonSetup('rejected', 'reject', mockData.singleDataSuccess());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
+            });
+          });
+
+          it('OptionGroup.valuesOf gets called', function () {
+            promise.then(function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+            });
+          });
+
+          it('LeaveRequestInstance.update gets called', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.update).toHaveBeenCalled();
+              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
+            });
+          });
+        });
+
+        describe('error', function () {
+
+          beforeEach(function () {
+            commonSetup('rejected', 'reject', mockData.singleDataError());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function (data) {
+              expect(data).toBe(mockUpdateResponse);
+            });
+          });
+        })
+      });
+
+      describe('sendBack', function() {
+
+        describe('success', function () {
+
+          beforeEach(function () {
+            commonSetup('more_information_requested', 'sendBack', mockData.singleDataSuccess());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
+            });
+          });
+
+          it('OptionGroup.valuesOf gets called', function () {
+            promise.then(function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+            });
+          });
+
+          it('LeaveRequestInstance.update gets called', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.update).toHaveBeenCalled();
+              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
+            });
+          });
+        });
+
+        describe('error', function () {
+
+          beforeEach(function () {
+            commonSetup('more_information_requested', 'sendBack', mockData.singleDataError());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function (data) {
+              expect(data).toBe(mockUpdateResponse);
+            });
+          });
+        })
+      });
     });
 
     describe('update()', function () {
