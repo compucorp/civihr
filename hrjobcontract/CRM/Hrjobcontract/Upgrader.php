@@ -1273,6 +1273,18 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     return true;
   }
 
+  /**
+   * Removes all Hour Locations except 'Head Office'
+   *
+   * @return TRUE
+   */
+  function upgrade_1027() {
+    $tableName = CRM_Hrjobcontract_DAO_HoursLocation::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName} WHERE location != 'Head office'");
+
+    return true;
+  }
+
   function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
     $array = array();
