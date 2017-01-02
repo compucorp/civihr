@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
+
 /**
  * LeavePeriodEntitlement.create API specification (optional)
  * This is used for documentation and validation.
@@ -102,7 +104,7 @@ function civicrm_api3_leave_period_entitlement_getbreakdown($params) {
 /**
  * LeavePeriodEntitlement.getbreakdown specification
  *
- * @param array $params
+ * @param array $spec
  *
  * @return void
  */
@@ -134,6 +136,109 @@ function _civicrm_api3_leave_period_entitlement_getbreakdown_spec(&$spec) {
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0
   ];
+}
+
+/**
+ * LeavePeriodEntitlement.getEntitlement specification
+ *
+ * @param array $spec
+ *
+ * @return void
+ */
+function _civicrm_api3_leave_period_entitlement_getentitlement_spec(&$spec) {
+  $spec['entitlement_id'] = [
+    'name' => 'entitlement_id',
+    'title' => 'Leave Period Entitlement ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0
+  ];
+
+  $spec['contact_id'] = [
+    'name' => 'contact_id',
+    'title' => 'Contact ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0
+  ];
+
+  $spec['period_id'] = [
+    'name' => 'period_id',
+    'title' => 'Absence Period ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0
+  ];
+}
+
+/**
+ * LeavePeriodEntitlement.getEntitlement API
+ *
+ * This API accepts either an entitlement_id or a pair of contact_id and period_id.
+ *
+ * It will return a list of LeavePeriodEntitlement IDs, together with the
+ * entitlement for it. If entitlement_id is given, only the information for
+ * that specific LeavePeriodEntitlement is returned, other wise the API returns
+ * information about all the LeavePeriodEntitlements for the given contact during
+ * the given period.
+ *
+ * The return format is:
+ *
+ * [
+ *   'is_error' => 0,
+ *   'version' => 3,
+ *   'count' => 1,
+ *   'values' => [
+ *     [
+ *       'id' => 1, // LeavePeriodEntitlement.id
+ *       'entitlement' => 25,
+ *     ],
+ *     [
+ *       'id' => 2, // LeavePeriodEntitlement.id
+ *       'entitlement' => 5,
+ *     ]
+ *   ]
+ * ]
+ *
+ * @param array $params
+ *
+ * @return array API result descriptor
+ *
+ * @throws CiviCRM_API3_Exception
+ */
+function civicrm_api3_leave_period_entitlement_getentitlement($params) {
+  $hasEntitlementID = !empty($params['entitlement_id']);
+  $hasContactAndPeriodID = !empty($params['contact_id']) && !empty($params['period_id']);
+  $hasContactOrPeriodID = !empty($params['contact_id']) || !empty($params['period_id']);
+  if(($hasEntitlementID && $hasContactOrPeriodID) || (!$hasEntitlementID && !$hasContactAndPeriodID)) {
+    throw new InvalidArgumentException("You must include either the id of a specific entitlement, or both the contact and period id");
+  }
+
+  $leavePeriodEntitlements = [];
+
+  if(!empty($params['entitlement_id'])) {
+    $leavePeriodEntitlements[] = LeavePeriodEntitlement::findById($params['entitlement_id']);
+  }
+
+  if(!empty($params['contact_id']) && !empty($params['period_id'])){
+    $leavePeriodEntitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($params['contact_id'], $params['period_id']);
+  }
+
+  $results = [];
+  foreach($leavePeriodEntitlements as $leavePeriodEntitlement) {
+    $results[] = [
+      'id'          => $leavePeriodEntitlement->id,
+      'entitlement' => $leavePeriodEntitlement->getEntitlement()
+    ];
+
+  }
+
+  $results = civicrm_api3_create_success($results);
+
+  // If the results include only one LeavePeriodEntitlement, CiviCRM will
+  // automatically add an ID to the results, so we have to manually remove it
+  if(array_key_exists('id', $results)) {
+    unset($results['id']);
+  }
+
+  return $results;
 }
 
 
