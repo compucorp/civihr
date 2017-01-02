@@ -117,7 +117,7 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
    */
   public $from_date_type;
   /**
-   * The date the leave request ends. If null, it means is starts and ends at the same date
+   * The date the leave request ends
    *
    * @var date
    */
@@ -214,7 +214,8 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
           'name' => 'to_date',
           'type' => CRM_Utils_Type::T_DATE,
           'title' => ts('To Date') ,
-          'description' => 'The date the leave request ends. If null, it means is starts and ends at the same date',
+          'description' => 'The date the leave request ends',
+          'required' => true,
         ) ,
         'to_date_type' => array(
           'name' => 'to_date_type',
