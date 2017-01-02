@@ -76,6 +76,16 @@ define([
     };
 
     /**
+     * Labels the given period according to whether it's current or not
+     *
+     * @param  {AbsencePeriodInstance} period
+     * @return {string}
+     */
+    vm.labelPeriod = function (period) {
+      return period.current ? 'Current Period (' + period.title + ')' : period.title;
+    };
+
+    /**
      * Refreshes all data that is dependend on the selected absence period,
      * and clears the cached data of closed sections
      */

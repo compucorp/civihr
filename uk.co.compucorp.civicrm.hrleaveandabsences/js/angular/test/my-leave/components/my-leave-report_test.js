@@ -212,6 +212,35 @@
         });
       });
 
+      describe('period label', function () {
+        var label, period;
+
+        describe('when the period is current', function () {
+          beforeEach(function () {
+            period = _(controller.absencePeriods).find(function (period) {
+              return period.current;
+            });
+            label = controller.labelPeriod(period);
+          })
+
+          it('labels it as such', function () {
+            expect(label).toBe('Current Period (' + period.title + ')');
+          });
+        });
+
+        describe('when the period is not current', function () {
+          beforeEach(function () {
+            period = _(controller.absencePeriods).filter(function (period) {
+              return !period.current;
+            }).sample();
+            label = controller.labelPeriod(period);
+          })
+          it('returns the title as it is', function () {
+            expect(label).toBe(period.title);
+          });
+        });
+      });
+
       describe('when refreshing the data with a new absence period', function () {
         var newPeriod;
 
