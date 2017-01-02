@@ -228,4 +228,19 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
       
       return true;
   }
+
+  /**
+   * Upgrader to set Government ID >> National Insurance
+   * to be the default one and changing its weight
+   * to be on the top.
+   */
+  public function upgrade_1501() {
+    civicrm_api3('OptionValue', 'create', array(
+      'sequential' => 1,
+      'option_group_id' => "type_20130502144049",
+      'name' => "National_Insurance",
+      'is_default' => 1,
+      'weight' => 0,
+    ));
+  }
 }
