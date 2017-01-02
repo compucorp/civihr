@@ -355,6 +355,15 @@ define([
      */
     getAllRequestStatusesValues: function () {
       return this.getAllValuesForKey('hrleaveandabsences_leave_request_status', 'value');
+    },
+    /**
+     * Returns the specified collection
+     *
+     * @param  {string} collection
+     * @return {Array}
+     */
+    getCollection: function (collection) {
+      return mockedOptionValues[collection];
     }
   }
 });

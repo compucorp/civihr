@@ -1,10 +1,11 @@
 define([
   'mocks/data/leave-request-data',
+  'mocks/data/option-group-mock-data',
   'mocks/helpers/helper',
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/models/instances/leave-request-instance',
   'leave-absences/shared/modules/models',
-], function (mockData, helper) {
+], function (leaveRequestMockData, optionGroupMockData, helper) {
   'use strict';
 
   describe('LeaveRequestInstance', function () {
@@ -54,6 +55,178 @@ define([
         mockUpdateResponse,
         promise;
 
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      describe('cancel', function () {
+
+        describe('success', function () {
+
+          beforeEach(function () {
+            commonSetup('cancelled', 'cancel', leaveRequestMockData.singleDataSuccess());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
+            });
+          });
+
+          it('OptionGroup.valuesOf gets called', function () {
+            promise.then(function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+            });
+          });
+
+          it('LeaveRequestInstance.update gets called', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.update).toHaveBeenCalled();
+              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
+            });
+          });
+        });
+
+        describe('error', function () {
+
+          beforeEach(function () {
+            commonSetup('cancelled', 'cancel', leaveRequestMockData.singleDataError());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function (data) {
+              expect(data).toBe(mockUpdateResponse);
+            });
+          });
+        })
+      });
+
+      describe('approve', function () {
+
+        describe('success', function () {
+
+          beforeEach(function () {
+            commonSetup('approved', 'approve', leaveRequestMockData.singleDataSuccess());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
+            });
+          });
+
+          it('OptionGroup.valuesOf gets called', function () {
+            promise.then(function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+            });
+          });
+
+          it('LeaveRequestInstance.update gets called', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.update).toHaveBeenCalled();
+              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
+            });
+          });
+        });
+
+        describe('error', function () {
+
+          beforeEach(function () {
+            commonSetup('approved', 'approve', leaveRequestMockData.singleDataError());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function (data) {
+              expect(data).toBe(mockUpdateResponse);
+            });
+          });
+        })
+      });
+
+      describe('reject', function () {
+
+        describe('success', function () {
+
+          beforeEach(function () {
+            commonSetup('rejected', 'reject', leaveRequestMockData.singleDataSuccess());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
+            });
+          });
+
+          it('OptionGroup.valuesOf gets called', function () {
+            promise.then(function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+            });
+          });
+
+          it('LeaveRequestInstance.update gets called', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.update).toHaveBeenCalled();
+              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
+            });
+          });
+        });
+
+        describe('error', function () {
+
+          beforeEach(function () {
+            commonSetup('rejected', 'reject', leaveRequestMockData.singleDataError());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function (data) {
+              expect(data).toBe(mockUpdateResponse);
+            });
+          });
+        })
+      });
+
+      describe('sendBack', function () {
+
+        describe('success', function () {
+
+          beforeEach(function () {
+            commonSetup('more_information_requested', 'sendBack', leaveRequestMockData.singleDataSuccess());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
+            });
+          });
+
+          it('OptionGroup.valuesOf gets called', function () {
+            promise.then(function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+            });
+          });
+
+          it('LeaveRequestInstance.update gets called', function () {
+            promise.then(function () {
+              expect(LeaveRequestInstance.update).toHaveBeenCalled();
+              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
+            });
+          });
+        });
+
+        describe('error', function () {
+
+          beforeEach(function () {
+            commonSetup('more_information_requested', 'sendBack', leaveRequestMockData.singleDataError());
+          });
+
+          it('updates the status_id of the instance', function () {
+            promise.then(function (data) {
+              expect(data).toBe(mockUpdateResponse);
+            });
+          });
+        })
+      });
+
       function commonSetup(statusName, methodName, returnData) {
         optionGroupDeferred = $q.defer();
         leaveRequestDeferred = $q.defer();
@@ -72,178 +245,6 @@ define([
         promise = LeaveRequestInstance[methodName]();
         LeaveRequestInstance.status_id = jasmine.any(String);
       }
-
-      afterEach(function () {
-        $rootScope.$apply();
-      });
-
-      describe('cancel', function() {
-
-        describe('success', function () {
-
-          beforeEach(function () {
-            commonSetup('cancelled', 'cancel', mockData.singleDataSuccess());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
-            });
-          });
-
-          it('OptionGroup.valuesOf gets called', function () {
-            promise.then(function () {
-              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-            });
-          });
-
-          it('LeaveRequestInstance.update gets called', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.update).toHaveBeenCalled();
-              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
-            });
-          });
-        });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('cancelled', 'cancel', mockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
-      });
-
-      describe('approve', function() {
-
-        describe('success', function () {
-
-          beforeEach(function () {
-            commonSetup('approved', 'approve', mockData.singleDataSuccess());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
-            });
-          });
-
-          it('OptionGroup.valuesOf gets called', function () {
-            promise.then(function () {
-              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-            });
-          });
-
-          it('LeaveRequestInstance.update gets called', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.update).toHaveBeenCalled();
-              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
-            });
-          });
-        });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('approved', 'approve', mockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
-      });
-
-      describe('reject', function() {
-
-        describe('success', function () {
-
-          beforeEach(function () {
-            commonSetup('rejected', 'reject', mockData.singleDataSuccess());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
-            });
-          });
-
-          it('OptionGroup.valuesOf gets called', function () {
-            promise.then(function () {
-              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-            });
-          });
-
-          it('LeaveRequestInstance.update gets called', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.update).toHaveBeenCalled();
-              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
-            });
-          });
-        });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('rejected', 'reject', mockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
-      });
-
-      describe('sendBack', function() {
-
-        describe('success', function () {
-
-          beforeEach(function () {
-            commonSetup('more_information_requested', 'sendBack', mockData.singleDataSuccess());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
-            });
-          });
-
-          it('OptionGroup.valuesOf gets called', function () {
-            promise.then(function () {
-              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-            });
-          });
-
-          it('LeaveRequestInstance.update gets called', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.update).toHaveBeenCalled();
-              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
-            });
-          });
-        });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('more_information_requested', 'sendBack', mockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
-      });
     });
 
     describe('update()', function () {
@@ -251,9 +252,9 @@ define([
 
       beforeEach(function () {
         var changedStatusId = {
-          status_id: mockData.all().values[5].status_id
+          status_id: leaveRequestMockData.all().values[5].status_id
         };
-        requestData = mockData.all().values[0];
+        requestData = leaveRequestMockData.all().values[0];
         instance = LeaveRequestInstance.init(requestData, false);
         newRequestData = _.assign({}, requestData, changedStatusId);
       });
@@ -409,6 +410,182 @@ define([
           });
         });
       });
+    });
+
+    describe('check status methods', function () {
+
+      var promise;
+
+      beforeEach(function () {
+        spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
+          return $q.resolve(optionGroupMockData.getCollection('hrleaveandabsences_leave_request_status'));
+        });
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      describe('isApproved', function () {
+
+        describe('status is approved', function () {
+
+          beforeEach(function () {
+            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            promise = LeaveRequestInstance.isApproved();
+          });
+
+          it('returns true', function () {
+            promise.then(function (data) {
+              expect(data).toBe(true);
+            })
+          });
+        });
+
+        describe('status is not approved', function () {
+
+          beforeEach(function () {
+            LeaveRequestInstance.status_id = getStatusIdByName('cancelled');
+            promise = LeaveRequestInstance.isApproved();
+          });
+
+          it('returns false', function () {
+            promise.then(function (data) {
+              expect(data).toBe(false);
+            })
+          });
+        });
+      });
+
+      describe('isAwaitingApproval', function () {
+
+        describe('status is waiting_approval', function () {
+
+          beforeEach(function () {
+            LeaveRequestInstance.status_id = getStatusIdByName('waiting_approval');
+            promise = LeaveRequestInstance.isAwaitingApproval();
+          });
+
+          it('returns true', function () {
+            promise.then(function (data) {
+              expect(data).toBe(true);
+            })
+          });
+        });
+
+        describe('status is not waiting_approval', function () {
+
+          beforeEach(function () {
+            LeaveRequestInstance.status_id = getStatusIdByName('cancelled');
+            promise = LeaveRequestInstance.isAwaitingApproval();
+          });
+
+          it('returns false', function () {
+            promise.then(function (data) {
+              expect(data).toBe(false);
+            })
+          });
+        });
+      });
+
+      describe('isCancelled', function () {
+
+        describe('status is cancelled', function () {
+
+          beforeEach(function () {
+            LeaveRequestInstance.status_id = getStatusIdByName('cancelled');
+            promise = LeaveRequestInstance.isCancelled();
+          });
+
+          it('returns true', function () {
+            promise.then(function (data) {
+              expect(data).toBe(true);
+            })
+          });
+        });
+
+        describe('status is not cancelled', function () {
+
+          beforeEach(function () {
+            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            promise = LeaveRequestInstance.isCancelled();
+          });
+
+          it('returns false', function () {
+            promise.then(function (data) {
+              expect(data).toBe(false);
+            })
+          });
+        });
+      });
+
+      describe('isRejected', function () {
+
+        describe('status is rejected', function () {
+
+          beforeEach(function () {
+            LeaveRequestInstance.status_id = getStatusIdByName('rejected');
+            promise = LeaveRequestInstance.isRejected();
+          });
+
+          it('returns true', function () {
+            promise.then(function (data) {
+              expect(data).toBe(true);
+            })
+          });
+        });
+
+        describe('status is not rejected', function () {
+
+          beforeEach(function () {
+            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            promise = LeaveRequestInstance.isRejected();
+          });
+
+          it('returns false', function () {
+            promise.then(function (data) {
+              expect(data).toBe(false);
+            })
+          });
+        });
+      });
+
+      describe('isSentBack', function () {
+
+        describe('status is more_information_requested', function () {
+
+          beforeEach(function () {
+            LeaveRequestInstance.status_id = getStatusIdByName('more_information_requested');
+            promise = LeaveRequestInstance.isSentBack();
+          });
+
+          it('returns true', function () {
+            promise.then(function (data) {
+              expect(data).toBe(true);
+            })
+          });
+        });
+
+        describe('status is not more_information_requested', function () {
+
+          beforeEach(function () {
+            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            promise = LeaveRequestInstance.isSentBack();
+          });
+
+          it('returns false', function () {
+            promise.then(function (data) {
+              expect(data).toBe(false);
+            })
+          });
+        });
+      });
+
+      function getStatusIdByName(statusName) {
+        return optionGroupMockData.getCollection('hrleaveandabsences_leave_request_status').find(function (option) {
+          return option.name === statusName
+        }).value;
+      }
     });
   });
 });

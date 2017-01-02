@@ -50,6 +50,19 @@ define([
           }.bind(this));
       }
 
+      /**
+       * Checks if a LeaveRequest is of a specific type
+       *
+       * @param {string} statusName - name of the option value
+       * @return {Promise} Resolved with {Boolean}
+       */
+      function checkLeaveStatus(statusName) {
+        return getOptionIDByName(statusName)
+          .then(function (statusObj) {
+            return this.status_id === statusObj.value;
+          }.bind(this));
+      }
+
       return ModelInstance.extend({
 
         /**
@@ -113,6 +126,51 @@ define([
          */
         isValid: function () {
           return LeaveRequestAPI.isValid(this.toAPI());
+        },
+
+        /**
+         * Checks if a LeaveRequest is Approved.
+         *
+         * @return {Promise} resolved with {Boolean}
+         */
+        isApproved: function() {
+          return checkLeaveStatus.call(this, 'approved');
+        },
+
+        /**
+         * Checks if a LeaveRequest is AwaitingApproval.
+         *
+         * @return {Promise} resolved with {Boolean}
+         */
+        isAwaitingApproval: function() {
+          return checkLeaveStatus.call(this, 'waiting_approval');
+        },
+
+        /**
+         * Checks if a LeaveRequest is cancelled.
+         *
+         * @return {Promise} resolved with {Boolean}
+         */
+        isCancelled: function() {
+          return checkLeaveStatus.call(this, 'cancelled');
+        },
+
+        /**
+         * Checks if a LeaveRequest is Rejected.
+         *
+         * @return {Promise} resolved with {Boolean}
+         */
+        isRejected: function() {
+          return checkLeaveStatus.call(this, 'rejected');
+        },
+
+        /**
+         * Checks if a LeaveRequest is Sent Back.
+         *
+         * @return {Promise} resolved with {Boolean}
+         */
+        isSentBack: function() {
+          return checkLeaveStatus.call(this, 'more_information_requested');
         }
       });
     }
