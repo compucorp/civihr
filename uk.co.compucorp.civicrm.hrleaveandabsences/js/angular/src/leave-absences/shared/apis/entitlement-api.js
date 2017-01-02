@@ -1,7 +1,8 @@
 define([
   'leave-absences/shared/modules/apis',
+  'common/lodash',
   'common/services/api'
-], function (apis) {
+], function (apis, _) {
   'use strict';
 
   apis.factory('EntitlementAPI', ['$log', 'api', function ($log, api) {
@@ -36,16 +37,20 @@ define([
             if (withRemainder) {
               //entitlements data will have key 'api.LeavePeriodEntitlement.getremainder'
               //which is normalized with a friendlier 'remainder' key
-              entitlements.map(function (entitlement) {
-                var remainderValues = entitlement['api.LeavePeriodEntitlement.getremainder']['values'];
-                if (remainderValues.length) {
-                  entitlement['remainder'] = remainderValues[0]['remainder'];
-                }
-                delete entitlement['api.LeavePeriodEntitlement.getremainder'];
+              entitlements = entitlements.map(function (entitlement) {
+                var copy = _.clone(entitlement);
+                var remainderValues = copy['api.LeavePeriodEntitlement.getremainder']['values'];
 
-                return entitlement;
+                if (remainderValues.length) {
+                  copy['remainder'] = remainderValues[0]['remainder'];
+                }
+
+                delete copy['api.LeavePeriodEntitlement.getremainder'];
+
+                return copy;
               });
             }
+
             return entitlements;
           });
       },
