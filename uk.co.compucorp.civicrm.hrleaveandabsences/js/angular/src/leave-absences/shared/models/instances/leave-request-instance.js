@@ -82,6 +82,20 @@ define([
          */
         isValid: function () {
           return LeaveRequestAPI.isValid(this.toAPI());
+        },
+
+        /**
+         * Override of parent method
+         *
+         * @param {object} result - The accumulator object
+         * @param {string} key - The property name
+         */
+        toAPIFilter: function (result, __, key) {
+          if (_.includes(['balance_change', 'dates'], key)) {
+            return;
+          } else {
+            result[key] = this[key];
+          }
         }
       });
     }

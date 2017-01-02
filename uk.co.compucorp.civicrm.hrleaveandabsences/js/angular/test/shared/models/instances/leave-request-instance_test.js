@@ -281,5 +281,25 @@ define([
         });
       });
     });
+
+    describe('toAPI()', function () {
+      var leaveRequest, toAPIData;
+
+      beforeEach(function () {
+        leaveRequest = LeaveRequestInstance.init(mockData.all().values[1], true);
+        leaveRequest.balance_change = _.random(-10, -5);
+        leaveRequest.dates = jasmine.any(Array);
+
+        toAPIData = leaveRequest.toAPI();
+      });
+
+      it('filters out the `balance_change` and `dates` properties', function () {
+        expect(Object.keys(toAPIData)).toEqual(_.without(
+          Object.keys(leaveRequest.attributes()),
+          'balance_change',
+          'dates'
+        ));
+      });
+    });
   });
 });
