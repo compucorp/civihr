@@ -32,9 +32,9 @@ define([
 
     vm.absencePeriods = [];
     vm.absenceTypes = {};
-    vm.currentPeriod = null;
     vm.leaveRequestStatuses = {};
     vm.loading = true;
+    vm.selectedPeriod = null;
     vm.sections = {
       approved:     { open: false, data: [], loadFn: loadApprovedRequests },
       entitlements: { open: false, data: [], loadFn: loadEntitlementsBreakdown },
@@ -76,12 +76,10 @@ define([
     };
 
     /**
-     * Changes the current period and reloads all related data
-     *
-     * @param {AbsencePeriodInstance} newPeriod
+     * Refreshes all data that is dependend on the selected absence period,
+     * and clears the cached data of closed sections
      */
-    vm.changePeriod = function (newPeriod) {
-      vm.currentPeriod = newPeriod;
+    vm.refresh = function () {
       vm.loading = true;
 
       $q.all([
@@ -186,7 +184,7 @@ define([
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
           vm.absencePeriods = absencePeriods;
-          vm.currentPeriod = _.find(vm.absencePeriods, function (period) {
+          vm.selectedPeriod = _.find(vm.absencePeriods, function (period) {
             return period.current === true;
           });
         });
@@ -212,8 +210,8 @@ define([
     function loadApprovedRequests() {
       return LeaveRequest.all({
         contact_id: vm.contactId,
-        from_date: { from: vm.currentPeriod.start_date },
-        to_date: { to: vm.currentPeriod.end_date },
+        from_date: { from: vm.selectedPeriod.start_date },
+        to_date: { to: vm.selectedPeriod.end_date },
         status_id: valueOfRequestStatus('approved')
       })
       .then(function (leaveRequests) {
@@ -229,11 +227,11 @@ define([
      */
     function loadBalanceChanges() {
       return $q.all([
-        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.currentPeriod.id, null, true),
-        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.currentPeriod.id, [
+        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, null, true),
+        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
           valueOfRequestStatus('approved')
         ]),
-        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.currentPeriod.id, [
+        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
           valueOfRequestStatus('waiting_approval'),
           valueOfRequestStatus('more_information_requested')
         ])
@@ -258,7 +256,7 @@ define([
     function loadEntitlements() {
       return Entitlement.all({
         contact_id: vm.contactId,
-        period_id: vm.currentPeriod.id
+        period_id: vm.selectedPeriod.id
       }, true)
       .then(function (entitlements) {
         vm.entitlements = entitlements;
@@ -280,7 +278,7 @@ define([
     function loadEntitlementsBreakdown() {
       return Entitlement.breakdown({
         contact_id: vm.contactId,
-        period_id: vm.currentPeriod.id
+        period_id: vm.selectedPeriod.id
       }, vm.entitlements)
       .then(function () {
         // Flattens the breakdowns array
@@ -301,7 +299,7 @@ define([
     function loadExpiredBalanceChanges() {
       return Entitlement.breakdown({
         contact_id: vm.contactId,
-        period_id: vm.currentPeriod.id,
+        period_id: vm.selectedPeriod.id,
         expired: true
       })
       .then(function (expiredBalanceChanges) {
@@ -332,8 +330,8 @@ define([
     function loadOtherRequests() {
       return LeaveRequest.all({
         contact_id: vm.contactId,
-        from_date: { from: vm.currentPeriod.start_date },
-        to_date: { to: vm.currentPeriod.end_date },
+        from_date: { from: vm.selectedPeriod.start_date },
+        to_date: { to: vm.selectedPeriod.end_date },
         status_id: { in: [
           valueOfRequestStatus('rejected'),
           valueOfRequestStatus('cancelled')
@@ -352,8 +350,8 @@ define([
     function loadPendingRequests() {
       return LeaveRequest.all({
         contact_id: vm.contactId,
-        from_date: { from: vm.currentPeriod.start_date },
-        to_date: { to: vm.currentPeriod.end_date },
+        from_date: { from: vm.selectedPeriod.start_date },
+        to_date: { to: vm.selectedPeriod.end_date },
         status_id: { in: [
           valueOfRequestStatus('waiting_approval'),
           valueOfRequestStatus('more_information_requested')
@@ -372,8 +370,8 @@ define([
     function loadPublicHolidaysRequests() {
       return LeaveRequest.all({
         contact_id: vm.contactId,
-        from_date: { from: vm.currentPeriod.start_date },
-        to_date: { to: vm.currentPeriod.end_date },
+        from_date: { from: vm.selectedPeriod.start_date },
+        to_date: { to: vm.selectedPeriod.end_date },
         public_holiday: true
       })
       .then(function (leaveRequests) {

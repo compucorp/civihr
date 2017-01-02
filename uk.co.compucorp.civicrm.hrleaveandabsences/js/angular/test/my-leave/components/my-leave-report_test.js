@@ -106,9 +106,9 @@
               expect(controller.absencePeriods.length).not.toBe(0);
             });
 
-            it('has automatically selected the current period', function () {
-              expect(controller.currentPeriod).not.toBe(null);
-              expect(controller.currentPeriod).toBe(_.find(controller.absencePeriods, function (period) {
+            it('has automatically selected the period, choosing the current one', function () {
+              expect(controller.selectedPeriod).not.toBe(null);
+              expect(controller.selectedPeriod).toBe(_.find(controller.absencePeriods, function (period) {
                 return period.current === true;
               }));
             });
@@ -119,10 +119,10 @@
                 expect(controller.entitlements.length).not.toBe(0);
               });
 
-              it('has fetched the entitlements for the current contact and period', function () {
+              it('has fetched the entitlements for the current contact and selected period', function () {
                 expect(Entitlement.all.calls.argsFor(0)[0]).toEqual({
                   contact_id: contactId,
-                  period_id: controller.currentPeriod.id
+                  period_id: controller.selectedPeriod.id
                 });
               });
 
@@ -149,11 +149,11 @@
                 mockData = leaveRequestMock.balanceChangeByAbsenceType().values;
               });
 
-              it('has fetched the balance changes for the current contact and period', function () {
+              it('has fetched the balance changes for the current contact and selected period', function () {
                 var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
 
                 expect(args[0]).toEqual(contactId);
-                expect(args[1]).toEqual(controller.currentPeriod.id);
+                expect(args[1]).toEqual(controller.selectedPeriod.id);
               });
 
               describe('public holidays', function () {
@@ -212,13 +212,15 @@
         });
       });
 
-      describe('when changing the absence period', function () {
+      describe('when refreshing the data with a new absence period', function () {
         var newPeriod;
 
         beforeEach(function () {
           newPeriod = _(controller.absencePeriods).filter(function (period) {
-            return !period.current;
+            return period !== controller.selectedPeriod;
           }).sample();
+
+          controller.selectedPeriod = newPeriod;
         });
 
         describe('basic tests', function () {
@@ -226,11 +228,7 @@
             Entitlement.all.calls.reset();
             LeaveRequest.balanceChangeByAbsenceType.calls.reset();
 
-            controller.changePeriod(newPeriod);
-          });
-
-          it('sets the new current period', function () {
-            expect(controller.currentPeriod).toBe(newPeriod);
+            controller.refresh();
           });
 
           it('goes into loading mode', function () {
@@ -257,7 +255,7 @@
             controller.sections.approved.open = true;
             controller.sections.entitlements.open = true;
 
-            controller.changePeriod(newPeriod);
+            controller.refresh();
             $rootScope.$digest();
           });
 
@@ -278,7 +276,7 @@
             controller.sections.holidays.data = [jasmine.any(Object), jasmine.any(Object)];
             controller.sections.pending.data = [jasmine.any(Object), jasmine.any(Object)];
 
-            controller.changePeriod(newPeriod);
+            controller.refresh();
             $rootScope.$digest();
           });
 
