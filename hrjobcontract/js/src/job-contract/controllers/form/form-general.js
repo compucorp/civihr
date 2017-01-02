@@ -83,13 +83,14 @@ define([
         var days, months, m, years;
 
         m = moment(dateEnd);
+        m.add(1, 'days');
         years = m.diff(dateStart, 'years');
 
         m.add(-years, 'years');
         months = m.diff(dateStart, 'months');
 
         m.add(-months, 'months');
-        days = m.diff(dateStart, 'days') + 1;
+        days = m.diff(dateStart, 'days');
 
         years = years > 0  ? (years > 1 ? years + ' years ' : years + ' year ') :  '';
         months = months > 0 ? (months > 1 ? months + ' months ' : months + ' month ') :  '';
