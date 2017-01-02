@@ -1285,6 +1285,43 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     return true;
   }
 
+  /**
+   * Add 'Fixed Term' Contract Type and sort
+   * contract types alphabetically
+   *
+   * @return TRUE
+   */
+  function upgrade_1026() {
+    // add 'Fixed Term' Contract Type
+    civicrm_api3('OptionValue', 'create',[
+      'option_group_id' => 'hrjc_contract_type',
+      'name' => 'Fixed Term',
+      'label' => 'Fixed Term',
+    ]);
+
+    // Sort contract types alphabetically
+    // fetch all contract types sorted alphabetically ( by their labels )
+    $prefixes = civicrm_api3('OptionValue', 'get', [
+      'sequential' => 1,
+      'return' => ['id'],
+      'option_group_id' => 'hrjc_contract_type',
+      'options' => ['limit' => 0, 'sort' => 'label asc']
+    ]);
+
+    // update options weight
+    $weight = 1;
+    if (!empty($prefixes['values'])) {
+      foreach($prefixes['values'] as $prefix) {
+        civicrm_api3('OptionValue', 'create', [
+          'id' => $prefix['id'],
+          'weight' => $weight++
+        ]);
+      }
+    }
+
+    return true;
+  }
+
   function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
     $array = array();

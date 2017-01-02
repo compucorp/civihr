@@ -33,7 +33,7 @@ trait CRM_HRCore_Upgrader_Steps_1002 {
    * Sort Individual Prefixes alphabetically
    */
   private function sortIndividualPrefixes() {
-    // fetch all prefixes sorted by alphabetically ( by their labels )
+    // fetch all prefixes sorted alphabetically ( by their labels )
     $prefixes = civicrm_api3('OptionValue', 'get', [
       'sequential' => 1,
       'return' => ['id'],
