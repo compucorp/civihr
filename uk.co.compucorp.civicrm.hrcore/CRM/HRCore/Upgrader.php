@@ -7,6 +7,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
 
   use CRM_HRCore_Upgrader_Steps_1000;
   use CRM_HRCore_Upgrader_Steps_1001;
+  use CRM_HRCore_Upgrader_Steps_1002;
 
   public function install() {
     $this->runAllUpgraders();
