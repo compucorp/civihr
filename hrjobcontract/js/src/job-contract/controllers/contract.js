@@ -77,23 +77,21 @@ define([
               *
               * @param {type} newEndDate the date specified by the user
             */
-            function updateContractList(newEndDate){
-              var isCurrentContract = !newEndDate || moment().diff(newEndDate, "day") == 0;
+            $scope.updateContractList = function(newEndDate){
+              var isCurrentContract = moment().diff(newEndDate, "day") <= 0;
 
-              if (isCurrentContract != !!$scope.$parent.contract.is_current) {
-                if (isCurrentContract) {
-                  $scope.$parent.contract.is_current = '1';
-                  $scope.$parent.contractCurrent.push($scope.$parent.contract);
-                  $scope.$parent.contractPast.splice($scope.$parent.$parent.contractPast.indexOf($scope.$parent.contract),1);
-                } else {
-                  $scope.$parent.contract.is_current = '0';
-                  $scope.$parent.contractPast.push($scope.$parent.contract);
-                  $scope.$parent.contractCurrent.splice($scope.$parent.contractCurrent.indexOf($scope.$parent.contract),1)
-                }
+              if (isCurrentContract) {
+                $scope.$parent.contract.is_current = '1';
+                $scope.$parent.contractCurrent.push($scope.$parent.contract);
+                $scope.$parent.contractPast.splice($scope.$parent.contractPast.indexOf($scope.$parent.contract),1);
+              } else {
+                $scope.$parent.contract.is_current = '0';
+                $scope.$parent.contractPast.push($scope.$parent.contract);
+                $scope.$parent.contractCurrent.splice($scope.$parent.contractCurrent.indexOf($scope.$parent.contract),1)
               }
             }
 
-            function updateContractFiles(){
+            function updateContractFiles (){
 
                 promiseFiles = $q.all({
                     details: ContractFilesService.get($scope.details.jobcontract_revision_id,'civicrm_hrjobcontract_details'),
@@ -234,7 +232,7 @@ define([
 
                     ContractService.updateHeaderInfo();
                     updateContractView(results);
-                    updateContractList(results.details.period_end_date);
+                    $scope.updateContractList(results.details.period_end_date);
 
                     if (results.revisionCreated) {
 
