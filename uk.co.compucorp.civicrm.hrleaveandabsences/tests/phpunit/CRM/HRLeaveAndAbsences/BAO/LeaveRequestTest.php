@@ -475,23 +475,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testCalculateBalanceChangeForALeaveRequestForAContactWithMultipleWeeks() {
     $contact = ContactFabricator::fabricate();
-    $periodStartDate = date('Y-01-01');
+    $periodStartDate = new DateTime('2016-01-01');
     $title = 'Job Title';
 
-    HRJobContractFabricator::fabricate([
-      'contact_id' => $contact['id']
-    ],
-    [
-      'period_start_date' => $periodStartDate,
-      'title' => $title
-    ]);
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact['id'] ],
+      [
+        'period_start_date' => $periodStartDate->format('Y-m-d'),
+        'title' => $title
+      ]
+    );
 
     // Week 1 weekdays: monday, wednesday and friday
     // Week 2 weekdays: tuesday and thursday
     $pattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
     ContactWorkPatternFabricator::fabricate([
       'contact_id' => $contact['id'],
-      'pattern_id' => $pattern->id
+      'pattern_id' => $pattern->id,
+      'effective_date' => $periodStartDate->format('YmdHis')
     ]);
 
     $fromDate = new DateTime('2016-07-31');

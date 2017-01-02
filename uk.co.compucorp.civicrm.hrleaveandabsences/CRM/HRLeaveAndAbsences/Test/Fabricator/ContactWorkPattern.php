@@ -17,7 +17,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern extends Sequenti
     return [
       'contact_id' => 1,
       'pattern_id' => 1,
-      'effective_date' => CRM_Utils_Date::processDate(date('Y-01-01')),
+      'effective_date' => CRM_Utils_Date::processDate(date('2010-01-01')),
     ];
   }
 }
