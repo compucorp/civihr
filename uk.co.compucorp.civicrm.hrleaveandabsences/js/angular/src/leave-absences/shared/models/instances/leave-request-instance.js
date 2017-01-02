@@ -15,7 +15,7 @@ define([
        * Get ID of an option value
        *
        * @param {string} name - name of the option value
-       * @return {Promise} Resolved with {Object} Specific leave request
+       * @return {Promise} Resolved with {Object} - Specific leave request
        */
       function getOptionIDByName(name) {
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
@@ -30,7 +30,7 @@ define([
        * Update status ID
        *
        * @param {string} status - name of the option value
-       * @return {Promise} Resolved with {Object} Error Data in case of error
+       * @return {Promise} Resolved with {Object} - Error Data in case of error
        */
       function changeLeaveStatus(status) {
         return getOptionIDByName(status)

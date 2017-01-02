@@ -35,7 +35,7 @@ define([
       '$q',
       'api.optionGroup',
       function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _OptionGroup_) {
-        LeaveRequestInstance = _LeaveRequestInstance_;
+        LeaveRequestInstance = _LeaveRequestInstance_.init({}, false);
         LeaveRequestAPI = _LeaveRequestAPI_;
         $q = _$q_;
         $rootScope = _$rootScope_;
