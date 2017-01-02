@@ -154,8 +154,7 @@ define([
                                 uploader = $scope.uploader,
                                 revisionId;
 
-
-                            contract.is_current = !entityDetails.period_end_date || moment().diff(entityDetails.period_end_date, "day") == 0;
+                            contract.is_current = !entityDetails.period_end_date || moment().diff(entityDetails.period_end_date, "day") <= 0;
 
                             UtilsService.prepareEntityIds(entityDetails, contractId);
 
