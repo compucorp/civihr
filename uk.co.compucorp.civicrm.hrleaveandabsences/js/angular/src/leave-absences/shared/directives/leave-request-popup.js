@@ -9,6 +9,9 @@ define([
       $log.debug('leaveRequestPopup');
 
       return {
+        scope: {
+          contactId: '<'
+        },
         restrict: 'EA',
         link: function (scope, element, attrs, ctrl) {
           $log.debug('link');

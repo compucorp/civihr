@@ -18,9 +18,9 @@ define([
        * @return {Promise} Resolved with {Array} All calendar records
        */
       getCalendar: function (contactId, periodId, params) {
-        $log.debug('WorkPatternAPI.getCalendar');
+        $log.debug('WorkPatternAPI.getCalendar', contactId, periodId, params);
 
-        return this.sendGET('WorkPattern', 'getcalendar',  _.assign(params, {
+        return this.sendGET('WorkPattern', 'getcalendar',  _.assign({}, params, {
           contact_id: contactId,
           period_id: periodId
         }));

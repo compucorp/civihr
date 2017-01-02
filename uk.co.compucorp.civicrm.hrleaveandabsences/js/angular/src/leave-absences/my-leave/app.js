@@ -20,6 +20,7 @@ define([
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/entitlement-model',
+  'leave-absences/shared/models/public-holiday-model',
   'common/services/angular-date/date-format',
 ], function (angular) {
   angular.module('my-leave', [

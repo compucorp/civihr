@@ -13,6 +13,7 @@ define([
         return $q(function (resolve, reject) {
           if (params && 'start_date' in params) {
             var dateFormat = HR_settingsMock.DATE_FORMAT.toUpperCase();
+            dateFormat = 'YYYY-MM-DD';
             //find if dates are in range else return null
             var checkDate = moment(params.start_date['<='], dateFormat);
 

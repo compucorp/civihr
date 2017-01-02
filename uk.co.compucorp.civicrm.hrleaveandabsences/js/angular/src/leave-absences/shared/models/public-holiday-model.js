@@ -22,6 +22,8 @@ define([
          * @return {Promise}
          */
         all: function (params) {
+          $log.debug('PublicHoliday all params', params);
+
           return publicHolidayAPI.all(params)
             .then(function (publicHolidays) {
               return publicHolidays.map(function (publicHoliday) {
@@ -36,7 +38,10 @@ define([
          * @return {Bool} returns true if date is a public holday else false
          */
         isPublicHoliday: function (whichDate) {
+          $log.debug('PublicHoliday isPublicHoliday whichDate', whichDate);
+
           var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
+          dateFormat = 'YYYY-MM-DD';
           var checkDate = moment(whichDate).format(dateFormat);
 
           var params = {
@@ -45,6 +50,7 @@ define([
 
           return publicHolidayAPI.all(params)
             .then(function (publicHolidays) {
+              
               if (!!publicHolidays.length) {
                 return true;
               }

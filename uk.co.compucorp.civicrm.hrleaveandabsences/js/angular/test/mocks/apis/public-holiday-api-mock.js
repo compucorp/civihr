@@ -13,6 +13,7 @@ define([
         return $q(function (resolve, reject) {
           if (params && 'date' in params) {
             var dateFormat = HR_settingsMock.DATE_FORMAT.toUpperCase();
+            dateFormat = 'YYYY-MM-DD';
             var checkDate = moment(params.date, dateFormat);
 
             var mockPeriod = mockData.all().values.filter(function (value) {

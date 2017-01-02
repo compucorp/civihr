@@ -6,8 +6,8 @@ define([
   'use strict';
 
   instances.factory('CalendarInstance', [
-    'ModelInstance',
-    function (ModelInstance) {
+    'ModelInstance', '$log',
+    function (ModelInstance, $log) {
 
       /**
        * This method checks whether a date matches the send type.
@@ -51,6 +51,8 @@ define([
          * @return {Boolean}
          */
         isWorkingDay: function (date) {
+          $log.debug('CalendarInstance.isWorkingDay', date);
+
           return checkDate.call(this, date, 'working_day');
         },
 
@@ -61,6 +63,8 @@ define([
          * @return {Boolean}
          */
         isNonWorkingDay: function (date) {
+          $log.debug('CalendarInstance.isNonWorkingDay', date);
+
           return checkDate.call(this, date, 'non_working_day');
         },
 
@@ -71,6 +75,8 @@ define([
          * @return {Boolean}
          */
         isWeekend: function (date) {
+          $log.debug('CalendarInstance.isWeekend', date);
+
           return checkDate.call(this, date, 'weekend');
         }
       });

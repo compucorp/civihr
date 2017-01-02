@@ -88,25 +88,22 @@ define([
        * API will create and return the detailed breakdown of it in days.
        *
        * @param {Object} params matched the API end point params like
-       * mandatory values for contact_id, from_date, from_date_type and optional values for
+       * mandatory values for contact_id, from_date, from_type and optional values for
        * to_date and to_type.
        *
        * @return {Promise} containing the detailed breakdown of balance leaves
        */
       calculateBalanceChange: function (params) {
-        $log.debug('LeaveRequestAPI.calculateBalanceChange');
+        $log.debug('LeaveRequestAPI.calculateBalanceChange', params);
         var deferred = $q.defer();
 
-        if (params && (!params.contact_id || !params.from_date || !params.from_date_type)) {
-          deferred.reject({
-            is_error: 1,
-            error_message: 'contact_id, from_date and from_date_type in params are mandatory',
-            params: params
-          });
+        if (params && (!params.contact_id || !params.from_date || !params.from_type)) {
+          deferred.reject('contact_id, from_date and from_type in params are mandatory');
         }
 
-        deferred.resolve(this.sendGET('LeaveRequest', 'calculatebalancechange', params)
+        deferred.resolve(this.sendPOST('LeaveRequest', 'calculatebalancechange', params)
           .then(function (data) {
+            console.log('data', data);
             return data.values;
           }));
 
@@ -117,9 +114,9 @@ define([
        * Create a new leave request with given params.
        *
        * @param {Object} params matched the API end point params with
-       * mandatory values for contact_id, status_id, from_date, from_date_type
-       * and optional values for to_date and to_date_type.
-       * If to_date is given then to_date_type is also mandotory.
+       * mandatory values for contact_id, status_id, from_date, from_type
+       * and optional values for to_date and to_type.
+       * If to_date is given then to_type is also mandotory.
        *
        * @return {Promise} containing the leave request object additionally with id key set
        * else rejects the promise with error data
@@ -151,7 +148,7 @@ define([
        * creating a leave request to validate data.
        *
        * @param {Object} params matched the API end point params with
-       * values like contact_id, status_id, from_date, from_date_type etc.,
+       * values like contact_id, status_id, from_date, from_type etc.,
        *
        * @return {Promise} returns an array of errors for invalid data else empty array
        */

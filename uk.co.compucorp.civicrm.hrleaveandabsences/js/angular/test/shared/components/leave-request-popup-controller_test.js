@@ -17,6 +17,7 @@
     'leave-absences/shared/models/entitlement-model',
     'leave-absences/shared/models/calendar-model',
     'leave-absences/shared/models/leave-request-model',
+    'leave-absences/shared/models/public-holiday-model',
     //'common/services/angular-date/date-format',
     'leave-absences/shared/components/leave-request-popup-controller',
     'leave-absences/shared/models/instances/leave-request-instance',
@@ -34,7 +35,7 @@
         }));
 
       beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_, _AbsenceTypeAPIMock_,
-        _EntitlementAPIMock_, _WorkPatternAPI_, _LeaveRequestAPIMock_, _OptionGroupAPIMock_) {
+        _EntitlementAPIMock_, _WorkPatternAPI_, _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
         $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
         $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
         $provide.value('EntitlementAPI', _EntitlementAPIMock_);
@@ -42,6 +43,7 @@
         $provide.value('HR_settings', _HR_settingsMock_);
         $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
         $provide.value('api.optionGroup', _OptionGroupAPIMock_);
+        $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
       }));
 
       beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$uibModal_, _LeaveRequestInstance_) {
@@ -145,9 +147,25 @@
         });
 
         describe('change selection', function () {
+          var beforeChangeAbsenceType, afterChangeAbsenceType, beforeBalanceChange, afterBalanceChange;
+
+          beforeEach(function(){
+            beforeChangeAbsenceType = controller.selectedAbsenceType;
+            beforeBalanceChange = controller.balance;
+            controller.selectedAbsenceType = controller.absenceTypes[1];
+
+            controller.onAbsenceTypeChange();
+            afterChangeAbsenceType =  controller.selectedAbsenceType;
+            afterBalanceChange = controller.balance;
+            $scope.$digest();
+          });
 
           it('selects another absence type', function () {
+            expect(beforeChangeAbsenceType).not.toEqual(afterChangeAbsenceType);
+          });
 
+          it('balance is changed', function(){
+            expect(beforeBalanceChange).not.toEqual(afterBalanceChange);
           });
         });
       });
