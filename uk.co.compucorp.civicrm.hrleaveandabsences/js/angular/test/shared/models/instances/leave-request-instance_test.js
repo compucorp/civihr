@@ -77,7 +77,7 @@ define([
         $rootScope.$apply();
       });
 
-      describe('cancel', function() {
+      describe('cancel', function () {
 
         describe('success', function () {
 
@@ -119,7 +119,7 @@ define([
         })
       });
 
-      describe('approve', function() {
+      describe('approve', function () {
 
         describe('success', function () {
 
@@ -161,7 +161,7 @@ define([
         })
       });
 
-      describe('reject', function() {
+      describe('reject', function () {
 
         describe('success', function () {
 
@@ -203,7 +203,7 @@ define([
         })
       });
 
-      describe('sendBack', function() {
+      describe('sendBack', function () {
 
         describe('success', function () {
 
@@ -407,6 +407,132 @@ define([
               expect(Object.keys(result).length).toBeGreaterThan(0);
             });
           });
+        });
+      });
+    });
+
+    describe('check status methods', function () {
+
+      var optionGroupDeferred,
+        mockOptionValue,
+        promise;
+
+      function commonSetup(statusName, methodName) {
+        optionGroupDeferred = $q.defer();
+        mockOptionValue = [{
+          name: 'approved',
+          value: '1'
+        }, {
+          name: 'cancelled',
+          value: '2'
+        }, {
+          name: 'rejected',
+          value: '3'
+        }, {
+          name: 'waiting_approval',
+          value: '4'
+        }, {
+          name: 'more_information_requested',
+          value: '5'
+        }];
+
+        spyOn(OptionGroup, 'valuesOf').and.returnValue(optionGroupDeferred.promise);
+
+        optionGroupDeferred.resolve(mockOptionValue);
+
+        LeaveRequestInstance.status_id = mockOptionValue.find(function (option) {
+          return option.name === statusName
+        }).value;
+
+        promise = LeaveRequestInstance[methodName]();
+      }
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      describe('isApproved', function () {
+
+        it('return true if status is approved', function () {
+          commonSetup('approved', 'isApproved');
+          promise.then(function (data) {
+            expect(data).toBe(true);
+          })
+        });
+
+        it('return false if status is not approved', function () {
+          commonSetup('cancelled', 'isApproved');
+          promise.then(function (data) {
+            expect(data).toBe(false);
+          })
+        });
+      });
+
+      describe('isAwaitingApproval', function () {
+
+        it('return true if status is AwaitingApproval', function () {
+          commonSetup('waiting_approval', 'isAwaitingApproval');
+          promise.then(function (data) {
+            expect(data).toBe(true);
+          })
+        });
+
+        it('return false if status is not AwaitingApproval', function () {
+          commonSetup('cancelled', 'isAwaitingApproval');
+          promise.then(function (data) {
+            expect(data).toBe(false);
+          })
+        });
+      });
+
+      describe('isCancelled', function () {
+
+        it('return true if status is Cancelled', function () {
+          commonSetup('cancelled', 'isCancelled');
+          promise.then(function (data) {
+            expect(data).toBe(true);
+          })
+        });
+
+        it('return false if status is not Cancelled', function () {
+          commonSetup('waiting_approval', 'isCancelled');
+          promise.then(function (data) {
+            expect(data).toBe(false);
+          })
+        });
+      });
+
+      describe('isRejected', function () {
+
+        it('return true if status is Rejected', function () {
+          commonSetup('rejected', 'isRejected');
+          promise.then(function (data) {
+            expect(data).toBe(true);
+          })
+        });
+
+        it('return false if status is not Rejected', function () {
+          commonSetup('waiting_approval', 'isRejected');
+          promise.then(function (data) {
+            expect(data).toBe(false);
+          })
+        });
+      });
+
+      describe('isSentBack', function () {
+
+        it('return true if status is SentBack', function () {
+          commonSetup('more_information_requested', 'isSentBack');
+          promise.then(function (data) {
+            expect(data).toBe(true);
+          })
+        });
+
+        it('return false if status is not SentBack', function () {
+          commonSetup('waiting_approval', 'isSentBack');
+          promise.then(function (data) {
+            expect(data).toBe(false);
+          })
         });
       });
     });
