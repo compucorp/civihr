@@ -73,6 +73,15 @@ define([
         it('sets duration calculating number of days including start and end dates', function() {
           expect($scope.duration).toEqual('17 days');
         });
+
+        it('calculates duration including first and last days of months as absolute number of months with no day fraction', function() {
+          _.assign($scope.entity.details, {
+            period_start_date: moment('2017-02-01').toDate(),
+            period_end_date: moment('2017-03-31').toDate()
+          });
+          $scope.$digest();
+          expect($scope.duration.trim()).toEqual('2 months');
+        });
       });
     });
 
