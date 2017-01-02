@@ -36,12 +36,6 @@ define([
             .then(function (cancelledStatusId) {
               this.status_id = cancelledStatusId.value;
               return this.update();
-            }.bind(this))
-            .then(function (data) {
-              if (data.is_error === 1) {
-                return data;
-              }
-              this.status_id = data.values[0].status_id;
             }.bind(this), function(error){
               if (error.is_error === 1) {
                 return error;
