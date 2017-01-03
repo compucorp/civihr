@@ -7,34 +7,14 @@ define([
     'use strict';
 
     describe('ContractCtrl', function () {
-        var ctrl, $rootScope, $scope, $controller, $route, $filter, $uibModal, $rootElement, $q, settings,
-        API, ContractService, ContractDetailsService, ContractHourService, ContractPayService, ContractLeaveService,
-        ContractHealthService, ContractPensionService,ContractFilesService,ContactService,$log;
+        var ctrl, $rootScope, $scope, $controller, ContractService;
 
         beforeEach(module('hrjc'));
-        beforeEach(inject(function (_$controller_, _$rootScope_, _ContractService_, _$route_, _$filter_, _$uibModal_, _$rootElement_, _$q_, _settings_,
-                                    _API_, _ContractDetailsService_, _ContractHourService_, _ContractPayService_, _ContractLeaveService_,
-                                    _ContractHealthService_, _ContractPensionService_, _ContractFilesService_, _ContactService_, _$log_) {
+        beforeEach(inject(function (_$controller_, _$rootScope_, _ContractService_) {
 
           $controller = _$controller_;
           $rootScope = _$rootScope_;
           ContractService = _ContractService_;
-          $route = _$route_;
-          $filter= _$filter_;
-          $uibModal= _$uibModal_;
-          $rootElement = _$rootElement_;
-          $q = _$q_;
-          settings = _settings_;
-          API = _API_;
-          ContractDetailsService = _ContractDetailsService_;
-          ContractHourService = _ContractHourService_;
-          ContractPayService = _ContractPayService_;
-          ContractLeaveService =_ContractLeaveService_;
-          ContractHealthService =_ContractHealthService_;
-          ContractPensionService = _ContractPensionService_;
-          ContractFilesService =_ContractFilesService_;
-          ContactService=_ContactService_;
-          $log = _$log_;
 
           $scope = $rootScope.$new();
 
@@ -61,22 +41,7 @@ define([
 
           ctrl = $controller('ContractCtrl', {
             $scope: $scope,
-            ContractService: ContractService,
-            $route:$route,
-            $filter:$filter,
-            $uibModal:$uibModal,
-            $rootElement:$rootElement,
-            $q:$q,
-            settings:settings,
-            API:API,
-            ContractDetailsService:ContractDetailsService,
-            ContractHourService:ContractHourService,
-            ContractPayService:ContractPayService,
-            ContractLeaveService:ContractLeaveService,
-            ContractHealthService:ContractHealthService,
-            ContractPensionService:ContractPensionService,
-            ContractFilesService:ContractFilesService,
-            ContactService:ContactService
+            ContractService: ContractService
           });
 
         }));
