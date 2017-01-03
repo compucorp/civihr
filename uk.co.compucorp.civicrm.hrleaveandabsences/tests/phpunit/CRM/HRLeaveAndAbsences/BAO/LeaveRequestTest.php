@@ -129,6 +129,52 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($toDate->format('Y-m-d'), $dates[1]->date);
   }
 
+  public function testUpdatingALeaveRequestShouldNotThrowOverLappingLeaveRequestExceptionWhenItOnlyOverlapsWithItself() {
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 20);
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => 1,
+      'pattern_id' => $workPattern->id
+    ]);
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'from_date' => CRM_Utils_Date::processDate('2016-11-02'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-11-04'),
+      'to_date_type' => 1
+    ], true);
+
+    //updating leave request
+    $leaveRequest2 = LeaveRequest::create([
+      'id' => $leaveRequest1->id,
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-11-03'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-11-05'),
+      'to_date_type' => 1
+    ]);
+    $this->assertInstanceOf(LeaveRequest::class, $leaveRequest2);
+  }
+
   public function testCanFindAPublicHolidayLeaveRequestForAContact() {
     $contactID = 2;
 
