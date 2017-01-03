@@ -406,19 +406,25 @@ define([
 
     describe('isManagedBy()', function () {
 
+      var leaveRequestID = '101',
+        contactID = '102';
+
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
-        promise = LeaveRequestAPI.isManagedBy(jasmine.any(String), jasmine.any(String));
+        promise = LeaveRequestAPI.isManagedBy(leaveRequestID, contactID);
       });
 
       afterEach(function () {
         $httpBackend.flush();
       });
 
-      it('calls endpoint', function () {
+      it('calls endpoint with leaveRequestID and contactID', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest',
-            'isManagedBy', jasmine.any(Object));
+            'isManagedBy', jasmine.objectContaining({
+              leave_request_id: leaveRequestID,
+              contact_id: contactID
+            }));
         });
       });
 

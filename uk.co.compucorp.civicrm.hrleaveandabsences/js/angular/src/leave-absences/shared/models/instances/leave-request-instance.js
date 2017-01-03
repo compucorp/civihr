@@ -90,10 +90,7 @@ define([
          * @return {Promise} Resolved with {Object} Updated Leave request
          */
         update: function () {
-          return LeaveRequestAPI.update(this.toAPI())
-            .then(function (result) {
-              _.assign(this, this.fromAPI(result));
-            }.bind(this));
+          return LeaveRequestAPI.update(this.toAPI());
         },
 
         /**
@@ -174,19 +171,20 @@ define([
         roleOf: function (contact) {
           var deferred = $q.defer();
 
-          if (this.contact_id === contact.id) {
+          if (this.contact_id == contact.id) {
             deferred.resolve('owner');
           } else {
             LeaveRequestAPI.isManagedBy(this.id, contact.id)
               .then(function (response) {
                 //TODO Implement check for Admin in MS5
-                if (response === true) {
+                if (!!response) {
                   deferred.resolve('manager');
                 } else {
                   deferred.resolve('none');
                 }
               });
           }
+
           return deferred.promise;
         }
       });

@@ -196,63 +196,35 @@ define([
     });
 
     describe('update()', function () {
-      var instanceUpdate, newRequestData;
+      var promise,
+        toAPIReturnValue = {
+          key: jasmine.any(String)
+        };
 
       beforeEach(function () {
-        var changedStatusId = {
-          status_id: leaveRequestMockData.all().values[5].status_id
-        };
-        requestData = leaveRequestMockData.all().values[0];
-        instance = LeaveRequestInstance.init(requestData, false);
-        newRequestData = _.assign({}, requestData, changedStatusId);
+        var defer = $q.defer();
+        LeaveRequestAPI.update.and.returnValue(defer.promise);
+        defer.resolve(jasmine.any(Object));
+        spyOn(LeaveRequestInstance, 'toAPI').and.returnValue(toAPIReturnValue);
+
+        promise = LeaveRequestInstance.update();
       });
 
-      describe('when id is set', function () {
+      afterEach(function () {
+        $rootScope.$apply();
+      });
 
-        beforeEach(function () {
-          _.assign(instance, newRequestData);
-          instanceUpdate = instance.update();
-        });
-
-        afterEach(function () {
-          //to excute the promise force an digest
-          $rootScope.$apply();
-        });
-
-        it('calls equivalent API method', function () {
-          instanceUpdate.then(function () {
-            expect(LeaveRequestAPI.update).toHaveBeenCalled();
-          });
-        });
-
-        it('modifies attributes', function () {
-          var updatedAttributes = _.assign(Object.create(null), requestData, newRequestData);
-
-          instanceUpdate.then(function () {
-            expect(instance.attributes()).toEqual(jasmine.objectContaining(updatedAttributes));
-          });
+      it('calls update api method with the return value of toAPI method', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.update).toHaveBeenCalledWith(toAPIReturnValue);
         });
       });
 
-      describe('when id is missing', function () {
-
-        beforeEach(function () {
-          expectedError = 'id is mandatory field';
-          delete instance.id;
-          instanceUpdate = instance.update();
+      it('calls toAPI method', function () {
+        promise.then(function () {
+          expect(LeaveRequestInstance.toAPI).toHaveBeenCalled();
         });
-
-        afterEach(function () {
-          //to excute the promise force an digest
-          $rootScope.$apply();
-        });
-
-        it('fails to update attributes ', function () {
-          instanceUpdate.catch(function (error) {
-            expect(error).toBe(expectedError);
-          });
-        });
-      });
+      })
     });
 
     describe('create()', function () {
@@ -532,22 +504,16 @@ define([
 
     describe('roleOf()', function () {
 
-      var promise,
-        defer;
+      var promise;
 
       afterEach(function () {
         $rootScope.$apply();
       });
 
-      describe('when contact_id of leave request is same as contact id of parameter', function () {
+      describe('when the user is the owner of the leave request', function () {
 
         beforeEach(function () {
-          spyOn(LeaveRequestAPI, 'isManagedBy').and.callThrough();
-          //dummy contact id
-          LeaveRequestInstance.contact_id = "101";
-          promise = LeaveRequestInstance.roleOf({
-            id: '101'
-          });
+          setUserAsOwner();
         });
 
         it('returns owner', function () {
@@ -557,52 +523,57 @@ define([
         })
       });
 
-      describe('when contact_id of leave request is not same as contact id of parameter', function () {
+      describe('when the user is the manager', function () {
 
-        describe('when isManagedBy return true', function () {
-
-          beforeEach(function () {
-            spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
-              defer = $q.defer();
-              defer.resolve(true);
-              return defer.promise;
-            });
-            commonSetup();
+        beforeEach(function () {
+          spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
+            return setIsManagedResponseTo(true);
           });
-
-          it('returns manager', function () {
-            promise.then(function (result) {
-              expect(result).toBe('manager');
-            });
-          })
+          setUserAsNotOwner();
         });
 
-        describe('when user has no specific role', function () {
-
-          beforeEach(function () {
-            spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
-              defer = $q.defer();
-              defer.resolve(false);
-              return defer.promise;
-            });
-            commonSetup();
+        it('returns manager', function () {
+          promise.then(function (result) {
+            expect(result).toBe('manager');
           });
-
-          it('returns none', function () {
-            promise.then(function (result) {
-              expect(result).toBe('none');
-            });
-          })
-        });
-
-        function commonSetup() {
-          //dummy contact id
-          LeaveRequestInstance.contact_id = "101";
-          promise = LeaveRequestInstance.roleOf({
-            id: '102' //not same as instance.contact_id
-          });
-        }
+        })
       });
+
+      describe('when the user has no relationship', function () {
+
+        beforeEach(function () {
+          spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
+            return setIsManagedResponseTo(false);
+          });
+          setUserAsNotOwner();
+        });
+
+        it('returns none', function () {
+          promise.then(function (result) {
+            expect(result).toBe('none');
+          });
+        })
+      });
+
+      function setUserAsNotOwner() {
+        //dummy contact id
+        LeaveRequestInstance.contact_id = "101";
+        promise = LeaveRequestInstance.roleOf({
+          id: '102' //not same as instance.contact_id
+        });
+      }
+
+      function setUserAsOwner() {
+        //dummy contact id
+        LeaveRequestInstance.contact_id = "101";
+        promise = LeaveRequestInstance.roleOf({
+          id: '101'
+        });
+      }
+
+      function setIsManagedResponseTo(value) {
+        return $q.resolve(value);
+      }
     });
   });
 });
