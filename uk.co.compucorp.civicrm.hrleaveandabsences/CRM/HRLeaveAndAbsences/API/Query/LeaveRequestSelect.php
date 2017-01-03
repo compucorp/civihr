@@ -188,16 +188,20 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       $leaveRequestBao = new LeaveRequest();
       $leaveRequestBao->copyValues($leaveRequest);
 
-      $balanceChange = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequestBao);
-      $results[$i]['balance_change'] = $balanceChange;
+      if($this->shouldReturnBalanceChange()) {
+        $balanceChange = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequestBao);
+        $results[$i]['balance_change'] = $balanceChange;
+      }
 
-      $dates = $leaveRequestBao->getDates();
-      $results[$i]['dates'] = [];
-      foreach($dates as $date) {
-        $results[$i]['dates'][] = [
-          'id' => $date->id,
-          'date' => $date->date
-        ];
+      if($this->shouldReturnDates()) {
+        $dates = $leaveRequestBao->getDates();
+        $results[$i]['dates'] = [];
+        foreach($dates as $date) {
+          $results[$i]['dates'][] = [
+            'id' => $date->id,
+            'date' => $date->date
+          ];
+        }
       }
     }
   }
@@ -215,6 +219,41 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    */
   private function addGroupBy(CRM_Utils_SQL_Select $query) {
     $query->groupBy(['a.id']);
+  }
+
+  /**
+   * Returns if the balance_change field should be included on the returned results
+   *
+   * @return bool
+   */
+  private function shouldReturnBalanceChange() {
+    return $this->shouldReturnField('balance_change');
+  }
+
+  /**
+   * Returns if the dates field should be included on the returned results
+   *
+   * @return bool
+   */
+  private function shouldReturnDates() {
+    return $this->shouldReturnField('dates');
+  }
+
+  /**
+   * Returns, based on the "return" param, if the given field should be returned
+   * on the results.
+   *
+   * If "return" is empty, it means all the fields should be returned. Otherwise,
+   * a field will be returned only if "return" is not empty and it includes the
+   * field.
+   *
+   * @param string $field
+   *
+   * @return bool
+   */
+  private function shouldReturnField($field) {
+    return empty($this->params['return']) ||
+           (is_array($this->params['return']) && in_array($field, $this->params['return']));
   }
 
 }
