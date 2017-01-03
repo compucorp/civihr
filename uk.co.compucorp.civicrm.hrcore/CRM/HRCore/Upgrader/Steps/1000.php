@@ -3,11 +3,11 @@
 trait CRM_HRCore_Upgrader_Steps_1000 {
 
   public function upgrade_1000() {
-    $this->downloadUKEnglish();
-    $this->updateLocalisationSettings();
-    $this->setAvailableCountries();
-    $this->setAvailableProvinces();
-    $this->setCiviHRTheme();
+    $this->up1000_downloadUKEnglish();
+    $this->up1000_updateLocalisationSettings();
+    $this->up1000_setAvailableCountries();
+    $this->up1000_setAvailableProvinces();
+    $this->up1000_setCiviHRTheme();
 
     return TRUE;
   }
@@ -15,7 +15,7 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
   /**
    * Downloads en_GB (UK english) localization file
    */
-  private function downloadUKEnglish() {
+  private function up1000_downloadUKEnglish() {
     $localizationURL = "https://download.civicrm.org/civicrm-l10n-core/mo/en_GB/civicrm.mo";
 
     global $civicrm_root;
@@ -36,7 +36,7 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
    *   3- setting the default country to UK
    *   4- setting the system langagun to UK english (en_GB)
    */
-  private function updateLocalisationSettings() {
+  private function up1000_updateLocalisationSettings() {
     $settings = [
       'defaultCurrency' => 'GBP',
       'dateformatDatetime' => '%d/%m/%Y %l:%M %P',
@@ -77,7 +77,7 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
   /**
    * Sets Available Countries
    */
-  private function setAvailableCountries() {
+  private function up1000_setAvailableCountries() {
     $countriesList = civicrm_api3('Country', 'get', array(
       'sequential' => 1,
       'return' => array("id"),
@@ -95,7 +95,7 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
   /**
    * Sets Available Provinces
    */
-  private function setAvailableProvinces() {
+  private function up1000_setAvailableProvinces() {
     $tableName = CRM_Core_DAO_StateProvince::getTableName();
 
     $provincesIDs = [];
@@ -113,7 +113,7 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
   /**
    * Sets CiviHR theme by updating the custom CSS URL
    */
-  private function setCiviHRTheme() {
+  private function up1000_setCiviHRTheme() {
     civicrm_api3('Setting', 'create', [
       'customCSSURL' => '[civicrm.root]/tools/extensions/civihr/org.civicrm.bootstrapcivicrm/css/custom-civicrm.css',
     ]);

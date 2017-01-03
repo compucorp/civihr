@@ -4,7 +4,7 @@ trait CRM_Hremergency_Upgrader_Steps_1000 {
 
   public function upgrade_1000() {
     $relationships = ['Friend', 'Spouse', 'Partner'];
-    $this->createRelationshipsWithEmployeeOptions($relationships);
+    $this->up1000_createRelationshipsWithEmployeeOptions($relationships);
 
     return TRUE;
   }
@@ -16,7 +16,7 @@ trait CRM_Hremergency_Upgrader_Steps_1000 {
    * @param array $relationships
    *   A list of relationship with employee option values to create
    */
-  private function createRelationshipsWithEmployeeOptions($relationships) {
+  private function up1000_createRelationshipsWithEmployeeOptions($relationships) {
     $groupName= civicrm_api3('CustomField', 'get', [
       'sequential' => 1,
       'return' => array("column_name"),
@@ -38,6 +38,5 @@ trait CRM_Hremergency_Upgrader_Steps_1000 {
       }
     }
   }
-
 
 }

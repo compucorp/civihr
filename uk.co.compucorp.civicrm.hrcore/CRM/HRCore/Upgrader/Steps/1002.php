@@ -3,8 +3,8 @@
 trait CRM_HRCore_Upgrader_Steps_1002 {
 
   public function upgrade_1002() {
-    $this->createMissIndividualPrefix();
-    $this->sortIndividualPrefixes();
+    $this->up1002_createMissIndividualPrefix();
+    $this->up1002_sortIndividualPrefixes();
 
     return TRUE;
   }
@@ -12,7 +12,7 @@ trait CRM_HRCore_Upgrader_Steps_1002 {
   /**
    * Create 'Miss.' Individual Prefix
    */
-  private function createMissIndividualPrefix() {
+  private function up1002_createMissIndividualPrefix() {
     $missPrefix = civicrm_api3('OptionValue', 'get', [
       'option_group_id' => 'individual_prefix',
       'name' => 'Miss.',
@@ -31,7 +31,7 @@ trait CRM_HRCore_Upgrader_Steps_1002 {
   /**
    * Sort Individual Prefixes alphabetically
    */
-  private function sortIndividualPrefixes() {
+  private function up1002_sortIndividualPrefixes() {
     // fetch all prefixes sorted alphabetically ( by their labels )
     $prefixes = civicrm_api3('OptionValue', 'get', [
       'sequential' => 1,

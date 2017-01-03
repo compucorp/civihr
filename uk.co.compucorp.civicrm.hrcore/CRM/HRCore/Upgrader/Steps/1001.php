@@ -4,19 +4,19 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
 
   public function upgrade_1001() {
     $listsToDelete = [
-      ['civicrm_contact_Type', 'name', 'civicrmContactTypesList'],
-      ['civicrm_case_type', 'name', 'civicrmCaseTypesList'],
-      ['civicrm_relationship_type', 'name_b_a', 'civicrmRelationshipTypesList'],
-      ['civicrm_option_value', 'name', 'civicrmActivityTypesList'],
-      ['civicrm_location_type', 'name', 'civicrmLocationTypesList'],
-      ['civicrm_option_value', 'name', 'civicrmMobileProvidersList'],
+      ['civicrm_contact_Type', 'name', 'up1001_civicrmContactTypesList'],
+      ['civicrm_case_type', 'name', 'up1001_civicrmCaseTypesList'],
+      ['civicrm_relationship_type', 'name_b_a', 'up1001_civicrmRelationshipTypesList'],
+      ['civicrm_option_value', 'name', 'up1001_civicrmActivityTypesList'],
+      ['civicrm_location_type', 'name', 'up1001_civicrmLocationTypesList'],
+      ['civicrm_option_value', 'name', 'up1001_civicrmMobileProvidersList'],
     ];
 
     foreach ($listsToDelete as $list) {
-      $this->listDelete($list[0], $list[1], $list[2]);
+      $this->up1001_listDelete($list[0], $list[1], $list[2]);
     }
 
-    $this->deleteEthnicityOptions();
+    $this->up1001_deleteEthnicityOptions();
 
     CRM_Core_BAO_Navigation::resetNavigation();
 
@@ -37,7 +37,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
    *   list that we need to delete its items, The callback
    *   must return an array.
    */
-  private function listDelete($table, $uniqueField, $listCallback) {
+  private function up1001_listDelete($table, $uniqueField, $listCallback) {
     if (is_callable(array($this, $listCallback))) {
       $toDelete = $this->{$listCallback}();
     }
@@ -54,7 +54,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
   /**
    * Removes a list of unneeded ethnicity options
    */
-  private function deleteEthnicityOptions() {
+  private function up1001_deleteEthnicityOptions() {
     $ethnicityGroupID = civicrm_api3('CustomField', 'get', array(
       'sequential' => 1,
       'return' => array("option_group_id"),
@@ -85,7 +85,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
    *
    * @return array
    */
-  private function civicrmContactTypesList() {
+  private function up1001_civicrmContactTypesList() {
     return [
       'Student',
       'Parent',
@@ -100,7 +100,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
    *
    * @return array
    */
-  private function civicrmCaseTypesList() {
+  private function up1001_civicrmCaseTypesList() {
     return [
       'adult_day_care_referral',
       'housing_support'
@@ -112,7 +112,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
    *
    * @return array
    */
-  private function civicrmRelationshipTypesList() {
+  private function up1001_civicrmRelationshipTypesList() {
     return [
       'Benefits Specialist',
       'Case Coordinator',
@@ -133,7 +133,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
    *
    * @return array
    */
-  private function civicrmActivityTypesList() {
+  private function up1001_civicrmActivityTypesList() {
     return [
       'Medical evaluation',
       'Mental health evaluation',
@@ -149,7 +149,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
    *
    * @return array
    */
-  private function civicrmLocationTypesList() {
+  private function up1001_civicrmLocationTypesList() {
     return [
       'Main',
       'Other',
@@ -161,7 +161,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
    *
    * @return array
    */
-  private function civicrmMobileProvidersList() {
+  private function up1001_civicrmMobileProvidersList() {
     $mobileProviders = civicrm_api3('OptionValue', 'get', array(
       'sequential' => 1,
       'option_group_id' => "mobile_provider",
