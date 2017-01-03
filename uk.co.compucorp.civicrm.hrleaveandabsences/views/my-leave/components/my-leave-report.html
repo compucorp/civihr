@@ -47,9 +47,9 @@
             </td>
             <td></td>
             <td></td>
-            <td>31</td>
-            <td>3</td>
-            <td>0</td>
+            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+              {{absenceType.entitlement}}
+            </td>
             <td></td>
           </tr>
           <tr ng-show="report.sections.entitlements.open">

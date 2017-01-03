@@ -282,7 +282,7 @@ define([
 
     /**
      * Loads the entitlements, including current and future balance,
-     * and groups the balance by absence type
+     * and groups the entitlements value and remainder by absence type
      *
      * @return {Promise}
      */
@@ -296,9 +296,12 @@ define([
       })
       .then(function () {
         _.forEach(vm.absenceTypes, function (absenceType) {
-          absenceType.remainder = _.find(vm.entitlements, function (entitlement) {
+          var entitlement = _.find(vm.entitlements, function (entitlement) {
             return entitlement.type_id === absenceType.id;
-          })['remainder'];
+          });
+
+          absenceType.entitlement = entitlement.value;
+          absenceType.remainder = entitlement.remainder;
         });
       });
     }

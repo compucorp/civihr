@@ -140,6 +140,17 @@
                   })['remainder']);
                 });
               });
+
+              it('has stored the entitlement value in each absence type', function () {
+                _.forEach(controller.absenceTypes, function (absenceType) {
+                  var value = absenceType.entitlement;
+
+                  expect(value).toBeDefined();
+                  expect(value).toEqual(_.find(controller.entitlements, function (entitlement) {
+                    return entitlement.type_id === absenceType.id
+                  })['value']);
+                });
+              });
             });
 
             describe('balance changes', function () {
