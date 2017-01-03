@@ -80,7 +80,7 @@
                       <td></td>
                       <td></td>
                       <td ng-repeat="absenceType in report.absenceTypes track by $index">
-                        {{(entry.type_id == absenceType.id ? entry.amount : '')}}
+                        {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
                       </td>
                       <td></td>
                     </tr>
