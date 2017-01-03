@@ -102,6 +102,15 @@ define([
           "type_id": absenceType.id,
           "contact_id": "202",
           "overridden": "0",
+          "api.LeavePeriodEntitlement.getentitlement": {
+            "is_error": 0,
+            "version": 3,
+            "count": 1,
+            "values": [{
+              "id": id,
+              "entitlement": _.random(0, 30)
+            }]
+          }
         };
 
         if (withRemainder) {

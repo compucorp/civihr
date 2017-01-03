@@ -8,10 +8,51 @@ define([
   apis.factory('EntitlementAPI', ['$log', 'api', function ($log, api) {
     $log.debug('EntitlementAPI');
 
+    /**
+     * Entitlements data will have key 'api.LeavePeriodEntitlement.getremainder'
+     * which is normalized with a friendlier 'remainder' key
+     *
+     * @param  {Object} entitlement
+     * @return {Object}
+     */
+    function storeRemainder(entitlement) {
+      var clone = _.clone(entitlement);
+      var remainderValues = clone['api.LeavePeriodEntitlement.getremainder']['values'];
+
+      if (remainderValues.length) {
+        clone['remainder'] = remainderValues[0]['remainder'];
+      }
+
+      delete clone['api.LeavePeriodEntitlement.getremainder'];
+
+      return clone;
+    }
+
+    /**
+     * Entitlements data will have key 'api.LeavePeriodEntitlement.getentitlement'
+     * which is normalized with a friendlier 'value' key
+     *
+     * @param  {Object} entitlement
+     * @return {Object}
+     */
+    function storeValue(entitlement) {
+      var clone = _.clone(entitlement);
+      var value = clone['api.LeavePeriodEntitlement.getentitlement'].values[0].entitlement;
+
+      clone['value'] = value;
+      delete clone['api.LeavePeriodEntitlement.getentitlement'];
+
+      return clone;
+    }
+
     return api.extend({
 
       /**
        * This method returns all the entitlements.
+       *
+       * It chains an additional call to the `getentitlement` endpoint to also return
+       * the actual value of each entitlement
+       *
        * It can also return the remainder (current and future) among the rest of
        * the data when passed withRemainder.
        *
@@ -21,6 +62,10 @@ define([
        */
       all: function (params, withRemainder) {
         $log.debug('EntitlementAPI.all');
+
+        params['api.LeavePeriodEntitlement.getentitlement'] = {
+          'entitlement_id': '$value.id'
+        };
 
         if (withRemainder) {
           params['api.LeavePeriodEntitlement.getremainder'] = {
@@ -34,21 +79,10 @@ define([
             return data.values;
           })
           .then(function (entitlements) {
+            entitlements = entitlements.map(storeValue);
+
             if (withRemainder) {
-              //entitlements data will have key 'api.LeavePeriodEntitlement.getremainder'
-              //which is normalized with a friendlier 'remainder' key
-              entitlements = entitlements.map(function (entitlement) {
-                var copy = _.clone(entitlement);
-                var remainderValues = copy['api.LeavePeriodEntitlement.getremainder']['values'];
-
-                if (remainderValues.length) {
-                  copy['remainder'] = remainderValues[0]['remainder'];
-                }
-
-                delete copy['api.LeavePeriodEntitlement.getremainder'];
-
-                return copy;
-              });
+              entitlements = entitlements.map(storeRemainder);
             }
 
             return entitlements;

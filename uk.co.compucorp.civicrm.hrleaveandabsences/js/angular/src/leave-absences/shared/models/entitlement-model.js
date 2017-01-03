@@ -22,7 +22,6 @@ define([
          * @return {Promise}
          */
         all: function (params, withRemainder) {
-
           return entitlementAPI.all(params, withRemainder)
             .then(function (entitlements) {
               return entitlements.map(function (entitlement) {
