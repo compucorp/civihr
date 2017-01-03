@@ -123,6 +123,8 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
       'Sibling of',
       'Supervisor',
       'Volunteer is',
+      'Spouse of',
+      'Partner of',
     ];
   }
 

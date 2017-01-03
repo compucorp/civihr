@@ -5,7 +5,6 @@ trait CRM_HRCore_Upgrader_Steps_1002 {
   public function upgrade_1002() {
     $this->createMissIndividualPrefix();
     $this->sortIndividualPrefixes();
-    $this->createFriendOfRelationshipType();
 
     return TRUE;
   }
@@ -51,18 +50,6 @@ trait CRM_HRCore_Upgrader_Steps_1002 {
         ]);
       }
     }
-  }
-
-  private function createFriendOfRelationshipType() {
-    civicrm_api3('RelationshipType', 'create', array(
-      'sequential' => 1,
-      'name_a_b' => "Friend of",
-      'name_b_a' => "Friend of",
-      'contact_type_a' => "Individual",
-      'contact_type_b' => "Individual",
-      'label_a_b' => "Friend of",
-      'label_b_a' => "Friend of",
-    ));
   }
 
 }

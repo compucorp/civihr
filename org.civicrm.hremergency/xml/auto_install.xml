@@ -316,5 +316,35 @@
       <is_active>1</is_active>
       <option_group_name>relationship_with_employee_20150304120408</option_group_name>
     </OptionValue>
+    <OptionValue>
+      <label>Friend</label>
+      <name>Friend</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>relationship_with_employee_20150304120408</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Spouse</label>
+      <name>Spouse</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>relationship_with_employee_20150304120408</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Partner</label>
+      <name>Partner</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>relationship_with_employee_20150304120408</option_group_name>
+    </OptionValue>
   </OptionValues>
 </CustomData>
