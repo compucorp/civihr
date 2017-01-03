@@ -53,14 +53,16 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
   public function addDefaultPeriod() {
     if (CRM_HRAbsence_BAO_HRAbsencePeriod::getRecordCount($params = array()) == 0) {
-      $currentYear = date('Y');
-      $params = array(
-        'name' => $currentYear,
-        'title' => $currentYear.' (Jan 1 to Dec 31)',
-        'start_date' => $currentYear.'0101000000',
-        'end_date' => $currentYear.'1231235959',
-      );
-      CRM_HRAbsence_BAO_HRAbsencePeriod::create($params);
+      $years = [date('Y'), date('Y', strtotime('+1 year'))];
+      foreach ($years as $year) {
+        $params = array(
+          'name' => $year,
+          'title' => $year.' (Jan 1 to Dec 31)',
+          'start_date' => $year.'0101000000',
+          'end_date' => $year.'1231235959',
+        );
+        CRM_HRAbsence_BAO_HRAbsencePeriod::create($params);
+      }
     }
   }
 
