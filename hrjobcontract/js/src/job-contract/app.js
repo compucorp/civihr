@@ -62,7 +62,7 @@ define([
             pathFile: CRM.url('civicrm/hrjobcontract/file/'),
             pathReport: CRM.url('civicrm/report/hrjobcontract/summary'),
             pathRest: CRM.url('civicrm/ajax/rest'),
-            pathTpl: CRM.jobContractTabApp.path + 'views/',
+            pathTpl: CRM.jobContractTabApp.path + '/views/',
             CRM: {
                 options: CRM.FieldOptions || {},
                 defaultCurrency: CRM.jobContractTabApp.defaultCurrency,
@@ -83,7 +83,7 @@ define([
                     })
                     .when('/', {
                             controller: 'ContractListCtrl',
-                            templateUrl: settings.pathApp + 'views/contractList.html?v=' + (new Date().getTime()),
+                            templateUrl: settings.pathApp + 'views/contractList.html',
                             resolve: {
                                 contractList: ['ContractService', function (ContractService) {
                                     return ContractService.get()
