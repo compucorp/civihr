@@ -540,6 +540,156 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals('2016-02-23', $result['values'][$leaveRequest2->id]['dates'][3]['date']);
   }
 
+  public function testGetFullShouldNotIncludeTheBalanceChangeIfTheReturnOptionIsNotEmptyAndDoesntIncludeIt() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'getFull', [
+      'sequential' => 1,
+      'return' => ['id', 'dates']]
+    );
+
+    $expectedValues = [
+      [
+        'id' => $leaveRequest1->id,
+        'dates' => $this->createLeaveRequestDatesArray($leaveRequest1)
+      ],
+      [
+        'id' => $leaveRequest2->id,
+        'dates' => $this->createLeaveRequestDatesArray($leaveRequest2)
+      ]
+    ];
+
+    $this->assertEquals($expectedValues, $result['values']);
+  }
+
+  public function testGetFullShouldNotIncludeTheDatesIfTheReturnOptionIsNotEmptyAndDoesntIncludeIt() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'getFull', [
+      'sequential' => 1,
+      'return' => ['id', 'balance_change']]
+    );
+
+    $expectedValues = [
+      [
+        'id' => $leaveRequest1->id,
+        'balance_change' => -1
+      ],
+      [
+        'id' => $leaveRequest2->id,
+        'balance_change' => -1
+      ]
+    ];
+
+    $this->assertEquals($expectedValues, $result['values']);
+  }
+
+  public function testGetFullShouldNotIncludeTheBalanceChangeAndDatesIfTheReturnOptionIsNotEmptyAndDoesntIncludeThem() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'getFull', [
+        'sequential' => 1,
+        'return' => ['id', 'type_id']]
+    );
+
+    $expectedValues = [
+      [
+        'id' => $leaveRequest1->id,
+        'type_id' => 1
+      ],
+      [
+        'id' => $leaveRequest2->id,
+        'type_id' => 1
+      ]
+    ];
+
+    $this->assertEquals($expectedValues, $result['values']);
+  }
+
   public function testGetDoesNotReturnALeaveRequestNotOverlappingAContractEvenIfItMatchesTheDatesParams() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
@@ -1442,5 +1592,17 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'get', ['managed_by' => $manager['id']]);
 
     $this->assertEquals(0, $result['count']);
+  }
+
+  private function createLeaveRequestDatesArray(LeaveRequest $leaveRequest) {
+    $dates = [];
+    foreach ($leaveRequest->getDates() as $date) {
+      $dates[] = [
+        'id'   => $date->id,
+        'date' => $date->date
+      ];
+    }
+
+    return $dates;
   }
 }
