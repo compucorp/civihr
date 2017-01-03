@@ -739,6 +739,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'contact_id' => 2,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => 1
     ]);
 
@@ -762,6 +765,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'contact_id' => $leaveRequest->contact_id,
       'type_id' => $leaveRequest->type_id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => 1
     ], true);
 
@@ -778,6 +784,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testGetExistingBalanceChangeForALeaveRequestDateShouldReturnNullIfThereIsNoRecordLinkedToALeaveRequestWithTheGivenContact() {
     $date = new DateTime('2017-01-01');
+    $leaveDate = $date->format('YmdHis');
 
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = 2;
@@ -786,7 +793,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => $leaveRequest->type_id,
-      'from_date' => $date->format('YmdHis'),
+      'from_date' => $leaveDate,
+      'to_date' => $leaveDate,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => 1
     ], true);
 
@@ -802,6 +812,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testGetExistingBalanceChangeForALeaveRequestDateShouldReturnARecordIfItIsLinkedToALeaveRequestForTheSameContactTypeAndDate() {
     $date = new DateTime('2017-01-01');
+    $leaveDate = $date->format('YmdHis');
 
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = 2;
@@ -810,7 +821,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $leaveRequest->contact_id,
       'type_id' => $leaveRequest->type_id,
-      'from_date' => $date->format('YmdHis'),
+      'from_date' => $leaveDate,
+      'to_date' => $leaveDate,
+      'from_date_type' => 1,
+      'to_date_type' =>1,
       'status_id' => 1
     ], true);
 

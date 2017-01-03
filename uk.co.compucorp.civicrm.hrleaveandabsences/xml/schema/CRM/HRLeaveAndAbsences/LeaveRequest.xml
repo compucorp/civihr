@@ -83,13 +83,15 @@
   <field>
     <name>to_date</name>
     <type>date</type>
-    <comment>The date the leave request ends. If null, it means is starts and ends at the same date</comment>
+    <required>true</required>
+    <comment>The date the leave request ends</comment>
     <add>4.4</add>
   </field>
 
   <field>
     <name>to_date_type</name>
     <type>int unsigned</type>
+    <required>true</required>
     <comment>One of the values of the Leave Request Day Type option group</comment>
     <add>4.4</add>
     <pseudoconstant>

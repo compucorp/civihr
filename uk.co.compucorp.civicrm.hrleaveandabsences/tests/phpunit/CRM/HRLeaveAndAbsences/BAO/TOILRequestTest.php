@@ -183,6 +183,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
     ], false);
@@ -220,6 +222,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
     ], false);
@@ -232,6 +236,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 80
     ], false);
@@ -275,6 +281,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
     ], false);
@@ -310,6 +318,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
     ], false);
@@ -322,6 +332,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
       'toil_to_accrue' => $this->toilAmounts['3 Days']['value'],
       'duration' => 80
     ], false);
@@ -354,6 +366,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
     ], false);
@@ -387,6 +401,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
     ], false);
@@ -418,6 +434,9 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => date('YmdHis'),
+      'to_date' => date('YmdHis'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 300,
       'expiry_date' => $expiryDate->format('Ymd')
