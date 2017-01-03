@@ -7,14 +7,13 @@ define([
     'use strict';
 
     describe('ContractCtrl', function () {
-        var ctrl, $rootScope, $scope, $controller, ContractService;
+        var ctrl, $rootScope, $scope, $controller;
 
         beforeEach(module('hrjc'));
-        beforeEach(inject(function (_$controller_, _$rootScope_, _ContractService_) {
+        beforeEach(inject(function (_$controller_, _$rootScope_) {
 
           $controller = _$controller_;
           $rootScope = _$rootScope_;
-          ContractService = _ContractService_;
 
           $scope = $rootScope.$new();
 
@@ -37,11 +36,8 @@ define([
           $scope.$parent.contractCurrent = [];
           $scope.$parent.contractPast = [];
 
-          $scope.model =  {"details":{"id":null,"position":"","title":"","funding_notes":"","contract_type":"","period_start_date":"","period_end_date":"","end_reason":"","notice_amount":"","notice_unit":"","notice_amount_employee":"","notice_unit_employee":"","location":null,"jobcontract_revision_id":null},"hour":{"id":null,"location_standard_hours":"","hours_type":"","hours_amount":"","hours_unit":"","hours_fte":"","fte_num":"","fte_denom":"","jobcontract_revision_id":null},"pay":{"id":null,"pay_scale":"","is_paid":"","pay_amount":"","pay_unit":"","pay_currency":"","pay_annualized_est":"","pay_is_auto_est":"","annual_benefits":[],"annual_deductions":[],"pay_cycle":"","pay_per_cycle_gross":"","pay_per_cycle_net":"","jobcontract_revision_id":null},"health":{"id":null,"provider":"","plan_type":"","description":"","dependents":"","provider_life_insurance":"","plan_type_life_insurance":"","description_life_insurance":"","dependents_life_insurance":"","jobcontract_revision_id":null},"pension":{"id":null,"is_enrolled":"","ee_contrib_pct":"","er_contrib_pct":"","pension_type":"","ee_contrib_abs":"","ee_evidence_note":"","jobcontract_revision_id":null},"leave":[{"id":null,"leave_type":"1","leave_amount":0,"add_public_holidays":"","jobcontract_revision_id":null},{"id":null,"leave_type":"2","leave_amount":0,"add_public_holidays":"","jobcontract_revision_id":null},{"id":null,"leave_type":"3","leave_amount":0,"add_public_holidays":"","jobcontract_revision_id":null},{"id":null,"leave_type":"4","leave_amount":0,"add_public_holidays":"","jobcontract_revision_id":null},{"id":null,"leave_type":"5","leave_amount":0,"add_public_holidays":"","jobcontract_revision_id":null},{"id":null,"leave_type":"6","leave_amount":0,"add_public_holidays":"","jobcontract_revision_id":null}]}
-
           ctrl = $controller('ContractCtrl', {
-            $scope: $scope,
-            ContractService: ContractService
+            $scope: $scope
           });
 
         }));
