@@ -446,7 +446,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'expired_balance_change_id' => $toilRequestBalanceChange->id,
       'type_id' => $this->getBalanceChangeTypeValue('Debit')
     ]);
-define( 'CIVICRM_DEBUG_LOG_QUERY', 1 );
+
     $result = civicrm_api3('TOILRequest', 'get', ['expired' => true]);
     // Even with the balance change, it should still return nothing because 0
     // means nothing has expired

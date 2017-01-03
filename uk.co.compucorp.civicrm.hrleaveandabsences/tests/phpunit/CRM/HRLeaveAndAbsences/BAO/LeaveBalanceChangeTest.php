@@ -112,7 +112,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testBalanceForEntitlementCanSumOnlyTheBalanceChangesForLeaveRequestWithSpecificStatuses() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
-    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('-10 days'),
+      new DateTime('+10 days')
+    );
 
     // This is the initial entitlement and, since it has no
     // source_id, it will always be included in the balance SUM
