@@ -181,6 +181,15 @@ define([
         return deferred.promise;
       },
 
+      /**
+       * Calls the isManagedBy backend API.
+       *
+       * @param {String} leaveRequestID - Id of leave request
+       * @param {String} contactID - Id of contact
+       *
+       * @return {Promise} resolves with an {Object} - Return value of backend
+       */
+
       isManagedBy: function (leaveRequestID, contactID) {
         $log.debug('LeaveRequestAPI.isManagedBy');
 

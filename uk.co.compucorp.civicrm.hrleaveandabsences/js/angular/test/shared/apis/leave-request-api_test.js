@@ -46,7 +46,7 @@ define([
       $httpBackend.whenGET(/action\=isValid&entity\=LeaveRequest/)
         .respond(mockData.getisValid());
 
-      //Intercept backend calls for LeaveRequest.isValid
+      //Intercept backend calls for LeaveRequest.isManagedBy
       $httpBackend.whenGET(/action\=isManagedBy&entity\=LeaveRequest/)
         .respond(mockData.isManagedBy());
     }));

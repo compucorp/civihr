@@ -174,6 +174,14 @@ define([
           return checkLeaveStatus.call(this, 'more_information_requested');
         },
 
+        /**
+         * Check the role of a given contact in relationship to the leave request.
+         *
+         * @param {Object} contact - contact object
+         *
+         * @return {Promise} resolves with an {String} - owner/manager/none/error
+         */
+
         roleOf: function (contact) {
           var deferred = $q.defer();
 
