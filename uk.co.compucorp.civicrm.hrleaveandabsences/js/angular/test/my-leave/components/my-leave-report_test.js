@@ -386,6 +386,40 @@
           it('caches the data', function () {
             expect(controller.sections.entitlements.data.length).not.toBe(0);
           });
+
+          describe('cached data format', function () {
+            var expectedFormat;
+
+            beforeEach(function () {
+              var entitlements = controller.entitlements;
+
+              expectedFormat = Array.prototype.concat.apply([], entitlements.map(function (entitlement) {
+                return entitlement.breakdown;
+              }));
+            });
+
+            it('groups and flattens all breakdown entries before caching them', function () {
+              expect(controller.sections.entitlements.data.length).toBe(expectedFormat.length);
+            });
+          });
+
+          describe('absence type reference in breakdown', function () {
+            it('stores the absence type_id in every breakdown entry', function () {
+              controller.entitlements.forEach(function (entitlement) {
+                var entries = entitlementBreakdownEntries(entitlement);
+
+                expect(entries.every(function (breakdownEntry) {
+                  return breakdownEntry.type_id === entitlement.type_id;
+                })).toBe(true);
+              });
+            });
+
+            function entitlementBreakdownEntries(entitlement) {
+              return controller.sections.entitlements.data.filter(function (entry) {
+                return _.contains(entitlement.breakdown, entry);
+              });
+            }
+          });
         });
 
         describe('section: Public Holidays', function () {

@@ -99,10 +99,12 @@ define([
       $q.all([
         loadEntitlements(),
         loadBalanceChanges(),
-        loadOpenSectionsData()
       ])
       .then(function () {
-        clearClosedSectionsData();
+        return $q.all([
+          loadOpenSectionsData(),
+          clearClosedSectionsData()
+        ]);
       })
       .then(function () {
         vm.loading = false;
@@ -312,13 +314,21 @@ define([
         period_id: vm.selectedPeriod.id
       }, vm.entitlements)
       .then(function () {
-        // Flattens the breakdowns array
-        return Array.prototype.concat.apply([], vm.entitlements.map(function (entitlement) {
-          return entitlement.breakdown;
-        }));
+        // Adds the type_id to every breakdown entry
+        return vm.entitlements.map(function (entitlement) {
+          return entitlement.breakdown.map(function (breakdownEntry) {
+            return _.assign(_.clone(breakdownEntry), {
+              type_id: entitlement.type_id
+            });
+          });
+        });
       })
-      .then(function (breakdown) {
-        vm.sections.entitlements.data = breakdown;
+      .then(function (breakdownList) {
+        // Flattens the breakdown list array
+        return Array.prototype.concat.apply([], breakdownList);
+      })
+      .then(function (breakdownListFlatten) {
+        vm.sections.entitlements.data = breakdownListFlatten;
       });
     }
 
