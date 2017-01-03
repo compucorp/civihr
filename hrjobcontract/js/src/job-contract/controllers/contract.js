@@ -76,7 +76,7 @@ define([
               *
               * @param {string || date} newEndDate the date specified by the user
             */
-            $scope.updateContractList = function(newEndDate){
+            function updateContractList(newEndDate){
               var isCurrentContract = moment().diff(newEndDate, "day") <= 0;
 
               if (isCurrentContract) {
@@ -231,7 +231,7 @@ define([
 
                     ContractService.updateHeaderInfo();
                     updateContractView(results);
-                    $scope.updateContractList(results.details.period_end_date);
+                    updateContractList(results.details.period_end_date);
 
                     if (results.revisionCreated) {
 
