@@ -45,6 +45,10 @@ define([
       //Intercept backend calls for LeaveRequest.isValid
       $httpBackend.whenGET(/action\=isValid&entity\=LeaveRequest/)
         .respond(mockData.getisValid());
+
+      //Intercept backend calls for LeaveRequest.isValid
+      $httpBackend.whenGET(/action\=isManagedBy&entity\=LeaveRequest/)
+        .respond(mockData.isManagedBy());
     }));
 
     describe('all()', function () {
@@ -394,10 +398,10 @@ define([
 
         beforeEach(function () {
           errorObject = {
-              is_error: 1,
-              error_message: 'id is mandatory field'
-            }
-            //remove id
+            is_error: 1,
+            error_message: 'id is mandatory field'
+          }
+          //remove id
           delete updatedRequestData.id;
           promise = LeaveRequestAPI.update(updatedRequestData);
         });
@@ -413,6 +417,31 @@ define([
           });
         });
       });
+    });
+
+    describe('isManagedBy()', function () {
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+        promise = LeaveRequestAPI.isManagedBy(jasmine.any(String), jasmine.any(String));
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls endpoint', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest',
+            'isManagedBy', jasmine.any(Object));
+        });
+      });
+
+      it('returns data', function () {
+        promise.then(function (result) {
+          expect(result).toEqual(mockData.isManagedBy().values);
+        });
+      })
     });
   });
 });

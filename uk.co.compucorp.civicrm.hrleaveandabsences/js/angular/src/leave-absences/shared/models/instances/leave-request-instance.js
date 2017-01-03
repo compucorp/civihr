@@ -9,7 +9,8 @@ define([
     'ModelInstance',
     'LeaveRequestAPI',
     'api.optionGroup',
-    function (ModelInstance, LeaveRequestAPI, OptionGroup) {
+    '$q',
+    function (ModelInstance, LeaveRequestAPI, OptionGroup, $q) {
 
       /**
        * Get ID of an option value
@@ -43,7 +44,7 @@ define([
               return data;
             }
             this.status_id = data.values[0].status_id;
-          }.bind(this), function(error){
+          }.bind(this), function (error) {
             if (error.is_error) {
               return error;
             }
@@ -100,7 +101,7 @@ define([
          */
         update: function () {
           return LeaveRequestAPI.update(this.toAPI())
-            .then(function(result){
+            .then(function (result) {
               _.assign(this, this.fromAPI(result));
             }.bind(this));
         },
@@ -113,7 +114,7 @@ define([
          */
         create: function () {
           return LeaveRequestAPI.create(this.toAPI())
-            .then(function(result){
+            .then(function (result) {
               this.id = result.id;
             }.bind(this));
         },
@@ -133,7 +134,7 @@ define([
          *
          * @return {Promise} resolved with {Boolean}
          */
-        isApproved: function() {
+        isApproved: function () {
           return checkLeaveStatus.call(this, 'approved');
         },
 
@@ -142,7 +143,7 @@ define([
          *
          * @return {Promise} resolved with {Boolean}
          */
-        isAwaitingApproval: function() {
+        isAwaitingApproval: function () {
           return checkLeaveStatus.call(this, 'waiting_approval');
         },
 
@@ -151,7 +152,7 @@ define([
          *
          * @return {Promise} resolved with {Boolean}
          */
-        isCancelled: function() {
+        isCancelled: function () {
           return checkLeaveStatus.call(this, 'cancelled');
         },
 
@@ -160,7 +161,7 @@ define([
          *
          * @return {Promise} resolved with {Boolean}
          */
-        isRejected: function() {
+        isRejected: function () {
           return checkLeaveStatus.call(this, 'rejected');
         },
 
@@ -169,8 +170,28 @@ define([
          *
          * @return {Promise} resolved with {Boolean}
          */
-        isSentBack: function() {
+        isSentBack: function () {
           return checkLeaveStatus.call(this, 'more_information_requested');
+        },
+
+        roleOf: function (contact) {
+          var deferred = $q.defer();
+
+          if (this.contact_id === contact.id) {
+            deferred.resolve('owner');
+          } else {
+            LeaveRequestAPI.isManagedBy(this.id, contact.id)
+              .then(function (response) {
+                if (response === true) {
+                  deferred.resolve('manager');
+                } else if (CRM.checkPerm('CiviHRLeaveAndAbsences: Administer Leave and Absences')) {
+                  deferred.resolve('admin');
+                } else {
+                  deferred.resolve('none');
+                }
+              });
+          }
+          return deferred.promise;
         }
       });
     }

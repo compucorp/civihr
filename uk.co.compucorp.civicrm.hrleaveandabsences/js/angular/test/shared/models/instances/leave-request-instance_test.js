@@ -587,5 +587,101 @@ define([
         }).value;
       }
     });
+
+    describe('roleOf()', function () {
+
+      var promise,
+        defer;
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      describe('when contact_id of leave request is same as contact id of parameter', function () {
+
+        beforeEach(function () {
+          spyOn(LeaveRequestAPI, 'isManagedBy').and.callThrough();
+          //dummy contact id
+          LeaveRequestInstance.contact_id = "101";
+          promise = LeaveRequestInstance.roleOf({
+            id: '101'
+          });
+        });
+
+        it('returns owner', function () {
+          promise.then(function (result) {
+            expect(result).toBe('owner');
+          });
+        })
+      });
+
+      describe('when contact_id of leave request is not same as contact id of parameter', function () {
+
+        describe('when isManagedBy return true', function () {
+
+          beforeEach(function () {
+            spyOn(CRM, 'checkPerm');
+            spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
+              defer = $q.defer();
+              defer.resolve(true);
+              return defer.promise;
+            });
+            commonSetup();
+          });
+
+          it('returns manager', function () {
+            promise.then(function (result) {
+              expect(result).toBe('manager');
+            });
+          })
+        });
+
+        describe('when user has CiviHRLeaveAndAbsences: Administer Leave and Absences permission', function () {
+
+          beforeEach(function () {
+            spyOn(CRM, 'checkPerm').and.returnValue(true);
+            spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
+              defer = $q.defer();
+              defer.resolve(false);
+              return defer.promise;
+            });
+            commonSetup();
+          });
+
+          it('returns admin', function () {
+            promise.then(function (result) {
+              expect(result).toBe('admin');
+            });
+          })
+        });
+
+        describe('when user has no specific role', function () {
+
+          beforeEach(function () {
+            spyOn(CRM, 'checkPerm').and.returnValue(false);
+            spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
+              defer = $q.defer();
+              defer.resolve(false);
+              return defer.promise;
+            });
+            commonSetup();
+          });
+
+          it('returns none', function () {
+            promise.then(function (result) {
+              expect(result).toBe('none');
+            });
+          })
+        });
+
+        function commonSetup() {
+          //dummy contact id
+          LeaveRequestInstance.contact_id = "101";
+          promise = LeaveRequestInstance.roleOf({
+            id: '102' //not same as instance.contact_id
+          });
+        }
+      });
+    });
   });
 });

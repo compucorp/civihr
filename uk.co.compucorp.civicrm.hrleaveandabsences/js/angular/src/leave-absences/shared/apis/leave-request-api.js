@@ -138,8 +138,7 @@ define([
             is_error: 1,
             error_message: 'to_date_type is mandatory'
           });
-        } else if (params && (!params.contact_id || !params.from_date ||
-            !params.from_date_type || !params.status_id)) {
+        } else if (params && (!params.contact_id || !params.from_date || !params.from_date_type || !params.status_id)) {
 
           deferred.reject({
             is_error: 1,
@@ -179,6 +178,20 @@ define([
           });
 
         return deferred.promise;
+      },
+
+      isManagedBy: function (leaveRequestID, contactID) {
+        $log.debug('LeaveRequestAPI.isManagedBy');
+
+        var params = {
+          leave_request_id: leaveRequestID,
+          contact_id: contactID
+        };
+
+        return this.sendGET('LeaveRequest', 'isManagedBy', params)
+          .then(function (data) {
+            return data.values;
+          });
       }
     });
   }]);
