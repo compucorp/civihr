@@ -3,18 +3,53 @@ define([
     'common/angularMocks',
     'job-contract/app',
     'job-contract/controllers/contract'
-], function () {
+], function (moment) {
     'use strict';
 
     describe('ContractCtrl', function () {
-        var ctrl, $rootScope, $scope, $controller;
+        var ctrl, $rootScope, $controller, $scope;
 
         beforeEach(module('hrjc'));
         beforeEach(inject(function (_$controller_, _$rootScope_) {
-
           $controller = _$controller_;
           $rootScope = _$rootScope_;
+          makeController();
+        }));
 
+        describe("Update contract based on new end date", function () {
+
+          describe("When end date is past", function () {
+            beforeEach(function () {
+              var date = moment().day(-7); // Seven days ago
+              $scope.updateContractList(date);
+            });
+            it("Make contract past", function () {
+              expect($scope.$parent.contract.is_current).toBe("0");
+            });
+          });
+
+          describe("When end date is today", function () {
+            beforeEach(function () {
+              var date = moment();
+              $scope.updateContractList(date);
+            });
+            it("Make contract current", function () {
+              expect($scope.$parent.contract.is_current).toBe("1");
+            });
+          });
+
+          describe("When date is future", function () {
+            beforeEach(function () {
+              var date = moment().day(7); // Seven days from now
+              $scope.updateContractList(date);
+            });
+            it("Make contract current", function () {
+              expect($scope.$parent.contract.is_current).toBe("1");
+            });
+          });
+        });
+
+        function makeController() {
           $scope = $rootScope.$new();
 
           $scope.contract = {
@@ -39,19 +74,6 @@ define([
           ctrl = $controller('ContractCtrl', {
             $scope: $scope
           });
-
-        }));
-
-        it('should make current contract', function () {
-          var d = new Date().toISOString().split("T")[0];
-          $scope.updateContractList(d);
-          expect($scope.$parent.contract.is_current).toBe("1");
-        });
-
-        it('should make past contract', function () {
-          $scope.updateContractList("2016-01-06");
-          expect($scope.$parent.contract.is_current).toBe("0");
-        });
-
+        }
     });
 });
