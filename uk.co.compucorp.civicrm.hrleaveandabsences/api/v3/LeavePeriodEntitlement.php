@@ -184,7 +184,7 @@ function _civicrm_api3_leave_period_entitlement_getentitlement_spec(&$spec) {
  * [
  *   'is_error' => 0,
  *   'version' => 3,
- *   'count' => 1,
+ *   'count' => 2,
  *   'values' => [
  *     [
  *       'id' => 1, // LeavePeriodEntitlement.id
