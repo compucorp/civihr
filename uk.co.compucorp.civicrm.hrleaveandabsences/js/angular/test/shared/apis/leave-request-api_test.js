@@ -10,7 +10,7 @@ define([
 
   describe('LeaveRequestAPI', function () {
     var LeaveRequestAPI, $httpBackend, $rootScope, $q, $log, dateFormat = 'YYYY-MM-DD',
-      promise, requestData, errorObject;
+      promise, requestData, errorMessage;
 
     beforeEach(module('leave-absences.apis'));
 
@@ -88,10 +88,7 @@ define([
         });
 
         function commonExpect(data) {
-          expect(data).toEqual({
-            is_error: 1,
-            error_message: 'contact_id and period_id are mandatory'
-          });
+          expect(data).toBe('contact_id and period_id are mandatory');
         }
 
         it('throws error if contact_id is blank', function () {
@@ -199,10 +196,7 @@ define([
       describe('when mandatory field is missing', function () {
 
         beforeEach(function () {
-          errorObject = {
-            is_error: 1,
-            error_message: 'contact_id, from_date and from_date_type in params are mandatory'
-          };
+          errorMessage = 'contact_id, from_date and from_date_type in params are mandatory';
           requestData = {};
           promise = LeaveRequestAPI.calculateBalanceChange(requestData);
         });
@@ -213,7 +207,7 @@ define([
 
         it('throws an error', function () {
           promise.catch(function (result) {
-            expect(result).toEqual(errorObject);
+            expect(result).toBe(errorMessage);
           });
         });
       });
@@ -266,10 +260,7 @@ define([
       describe('with mandatory field missing', function () {
 
         beforeEach(function () {
-          errorObject = {
-            is_error: 1,
-            error_message: 'contact_id, from_date, status_id and from_date_type params are mandatory'
-          };
+          errorMessage = 'contact_id, from_date, status_id and from_date_type params are mandatory';
           requestData = helper.createRandomLeaveRequest();
           delete requestData.contact_id;
           promise = LeaveRequestAPI.create(requestData);
@@ -281,7 +272,7 @@ define([
 
         it('returns error', function () {
           promise.catch(function (result) {
-            expect(result).toEqual(errorObject);
+            expect(result).toBe(errorMessage);
           });
         });
       });
@@ -289,10 +280,7 @@ define([
       describe('missing to date type value, given to date', function () {
 
         beforeEach(function () {
-          errorObject = {
-            is_error: 1,
-            error_message: 'to_date_type is mandatory'
-          };
+          errorMessage = 'to_date_type is mandatory';
           requestData = helper.createRandomLeaveRequest();
           delete requestData.to_date_type;
           promise = LeaveRequestAPI.create(requestData);
@@ -304,7 +292,7 @@ define([
 
         it('returns error', function () {
           promise.catch(function (result) {
-            expect(result).toEqual(errorObject);
+            expect(result).toBe(errorMessage);
           });
         });
       });
@@ -397,10 +385,7 @@ define([
       describe('when does not contain id set', function () {
 
         beforeEach(function () {
-          errorObject = {
-            is_error: 1,
-            error_message: 'id is mandatory field'
-          }
+          errorMessage = 'id is mandatory field';
           //remove id
           delete updatedRequestData.id;
           promise = LeaveRequestAPI.update(updatedRequestData);
@@ -413,7 +398,7 @@ define([
 
         it('returns error', function () {
           promise.catch(function (result) {
-            expect(result).toEqual(errorObject);
+            expect(result).toBe(errorMessage);
           });
         });
       });
@@ -439,7 +424,7 @@ define([
 
       it('returns data', function () {
         promise.then(function (result) {
-          expect(result).toEqual(mockData.isManagedBy());
+          expect(result).toEqual(mockData.isManagedBy().values);
         });
       })
     });

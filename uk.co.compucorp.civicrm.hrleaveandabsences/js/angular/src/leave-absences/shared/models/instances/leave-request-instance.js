@@ -38,16 +38,6 @@ define([
           .then(function (statusId) {
             this.status_id = statusId.value;
             return this.update();
-          }.bind(this))
-          .then(function (data) {
-            if (data.is_error) {
-              return data;
-            }
-            this.status_id = data.values[0].status_id;
-          }.bind(this), function (error) {
-            if (error.is_error) {
-              return error;
-            }
           }.bind(this));
       }
 
@@ -179,9 +169,8 @@ define([
          *
          * @param {Object} contact - contact object
          *
-         * @return {Promise} resolves with an {String} - owner/manager/none/error
+         * @return {Promise} resolves with an {String} - owner/manager/none
          */
-
         roleOf: function (contact) {
           var deferred = $q.defer();
 
@@ -190,12 +179,8 @@ define([
           } else {
             LeaveRequestAPI.isManagedBy(this.id, contact.id)
               .then(function (response) {
-                if(response.is_error) {
-                  deferred.resolve('error');
-                }
-
                 //TODO Implement check for Admin in MS5
-                if (response.values === true) {
+                if (response === true) {
                   deferred.resolve('manager');
                 } else {
                   deferred.resolve('none');

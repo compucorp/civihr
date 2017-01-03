@@ -86,19 +86,6 @@ define([
             });
           });
         });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('cancelled', 'cancel', leaveRequestMockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
       });
 
       describe('approve', function () {
@@ -128,19 +115,6 @@ define([
             });
           });
         });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('approved', 'approve', leaveRequestMockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
       });
 
       describe('reject', function () {
@@ -170,19 +144,6 @@ define([
             });
           });
         });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('rejected', 'reject', leaveRequestMockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
       });
 
       describe('sendBack', function () {
@@ -212,19 +173,6 @@ define([
             });
           });
         });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('more_information_requested', 'sendBack', leaveRequestMockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
       });
 
       function commonSetup(statusName, methodName, returnData) {
@@ -289,10 +237,7 @@ define([
       describe('when id is missing', function () {
 
         beforeEach(function () {
-          expectedError = {
-            is_error: 1,
-            error_message: 'id is mandatory field'
-          };
+          expectedError = 'id is mandatory field';
           delete instance.id;
           instanceUpdate = instance.update();
         });
@@ -304,7 +249,7 @@ define([
 
         it('fails to update attributes ', function () {
           instanceUpdate.catch(function (error) {
-            expect(error).toEqual(jasmine.objectContaining(expectedError));
+            expect(error).toBe(expectedError);
           });
         });
       });
@@ -341,10 +286,7 @@ define([
       describe('when one mandatory filed is missing', function () {
 
         beforeEach(function () {
-          expectedError = {
-            is_error: 1,
-            error_message: 'contact_id, from_date and from_date_type in params are mandatory'
-          };
+          expectedError = 'contact_id, from_date and from_date_type in params are mandatory';
           delete instance.contact_id;
           instanceCreate = instance.create();
         });
@@ -356,7 +298,7 @@ define([
 
         it('fails to create instance', function () {
           instanceCreate.catch(function (error) {
-            expect(error).toEqual(jasmine.objectContaining(expectedError));
+            expect(error).toBe(expectedError);
           });
         });
       });
@@ -617,34 +559,12 @@ define([
 
       describe('when contact_id of leave request is not same as contact id of parameter', function () {
 
-        describe('when api returns error', function () {
-
-          beforeEach(function () {
-            spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
-              defer = $q.defer();
-              defer.resolve({
-                is_error: true
-              });
-              return defer.promise;
-            });
-            commonSetup();
-          });
-
-          it('returns error', function () {
-            promise.then(function (result) {
-              expect(result).toBe('error');
-            });
-          })
-        });
-
         describe('when isManagedBy return true', function () {
 
           beforeEach(function () {
             spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
               defer = $q.defer();
-              defer.resolve({
-                values: true
-              });
+              defer.resolve(true);
               return defer.promise;
             });
             commonSetup();
@@ -662,9 +582,7 @@ define([
           beforeEach(function () {
             spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
               defer = $q.defer();
-              defer.resolve({
-                values: false
-              });
+              defer.resolve(false);
               return defer.promise;
             });
             commonSetup();

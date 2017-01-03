@@ -30,20 +30,12 @@ define(function () {
           }
         }
       ]
-    },
-    errorData: {
-      'is_error': 1,
-      'version': 3,
-      'error_message': jasmine.any(String)
     }
   };
 
   return {
     daysData: function () {
       return mockData.daysData;
-    },
-    errorData: function () {
-      return mockData.errorData;
     }
   }
 });

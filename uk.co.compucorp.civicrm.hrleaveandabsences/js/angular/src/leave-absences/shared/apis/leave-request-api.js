@@ -42,10 +42,7 @@ define([
         var deferred = $q.defer();
 
         if (!contactId || !periodId) {
-          deferred.reject({
-            is_error: 1,
-            error_message: 'contact_id and period_id are mandatory'
-          });
+          deferred.reject('contact_id and period_id are mandatory');
         }
 
         var params = {
@@ -74,10 +71,7 @@ define([
         var deferred = $q.defer();
 
         if (!params.id) {
-          deferred.reject({
-            is_error: 1,
-            error_message: 'id is mandatory field'
-          });
+          deferred.reject('id is mandatory field');
         }
 
         deferred.resolve(this.sendPOST('LeaveRequest', 'create', params)
@@ -104,10 +98,7 @@ define([
         var deferred = $q.defer();
 
         if (params && (!params.contact_id || !params.from_date || !params.from_date_type)) {
-          deferred.reject({
-            is_error: 1,
-            error_message: 'contact_id, from_date and from_date_type in params are mandatory'
-          });
+          deferred.reject('contact_id, from_date and from_date_type in params are mandatory');
         }
 
         deferred.resolve(this.sendGET('LeaveRequest', 'calculatebalancechange', params)
@@ -127,24 +118,19 @@ define([
        * If to_date is given then to_date_type is also mandotory.
        *
        * @return {Promise} containing the leave request object additionally with id key set
-       * else return array object with is_error key set
+       * else rejects the promise with error data
        */
       create: function (params) {
         $log.debug('LeaveRequestAPI.calculateBalanceChange');
         var deferred = $q.defer();
 
-        if (params && params.to_date && !params.to_date_type) {
-          deferred.reject({
-            is_error: 1,
-            error_message: 'to_date_type is mandatory'
-          });
-        } else if (params &&
-          (!params.contact_id || !params.from_date || !params.from_date_type || !params.status_id)) {
-
-          deferred.reject({
-            is_error: 1,
-            error_message: 'contact_id, from_date, status_id and from_date_type params are mandatory'
-          });
+        if (params) {
+          if (params.to_date && !params.to_date_type) {
+            deferred.reject('to_date_type is mandatory');
+          }
+          else if (!params.contact_id || !params.from_date || !params.from_date_type || !params.status_id) {
+            deferred.reject('contact_id, from_date, status_id and from_date_type params are mandatory');
+          }
         }
 
         deferred.resolve(this.sendPOST('LeaveRequest', 'create', params)
@@ -187,9 +173,8 @@ define([
        * @param {String} leaveRequestID - Id of leave request
        * @param {String} contactID - Id of contact
        *
-       * @return {Promise} resolves with an {Object} - Return value of backend
+       * @return {Promise} resolves with an {Boolean}
        */
-
       isManagedBy: function (leaveRequestID, contactID) {
         $log.debug('LeaveRequestAPI.isManagedBy');
 
@@ -198,7 +183,10 @@ define([
           contact_id: contactID
         };
 
-        return this.sendGET('LeaveRequest', 'isManagedBy', params);
+        return this.sendGET('LeaveRequest', 'isManagedBy', params)
+          .then(function (response) {
+            return response.values;
+          });
       }
     });
   }]);
