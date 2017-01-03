@@ -86,19 +86,6 @@ define([
             });
           });
         });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('cancelled', 'cancel', leaveRequestMockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
       });
 
       describe('approve', function () {
@@ -128,19 +115,6 @@ define([
             });
           });
         });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('approved', 'approve', leaveRequestMockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
       });
 
       describe('reject', function () {
@@ -170,19 +144,6 @@ define([
             });
           });
         });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('rejected', 'reject', leaveRequestMockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
       });
 
       describe('sendBack', function () {
@@ -212,19 +173,6 @@ define([
             });
           });
         });
-
-        describe('error', function () {
-
-          beforeEach(function () {
-            commonSetup('more_information_requested', 'sendBack', leaveRequestMockData.singleDataError());
-          });
-
-          it('updates the status_id of the instance', function () {
-            promise.then(function (data) {
-              expect(data).toBe(mockUpdateResponse);
-            });
-          });
-        })
       });
 
       function commonSetup(statusName, methodName, returnData) {
@@ -248,66 +196,35 @@ define([
     });
 
     describe('update()', function () {
-      var instanceUpdate, newRequestData;
+      var promise,
+        toAPIReturnValue = {
+          key: jasmine.any(String)
+        };
 
       beforeEach(function () {
-        var changedStatusId = {
-          status_id: leaveRequestMockData.all().values[5].status_id
-        };
-        requestData = leaveRequestMockData.all().values[0];
-        instance = LeaveRequestInstance.init(requestData, false);
-        newRequestData = _.assign({}, requestData, changedStatusId);
+        var defer = $q.defer();
+        LeaveRequestAPI.update.and.returnValue(defer.promise);
+        defer.resolve(jasmine.any(Object));
+        spyOn(LeaveRequestInstance, 'toAPI').and.returnValue(toAPIReturnValue);
+
+        promise = LeaveRequestInstance.update();
       });
 
-      describe('when id is set', function () {
+      afterEach(function () {
+        $rootScope.$apply();
+      });
 
-        beforeEach(function () {
-          _.assign(instance, newRequestData);
-          instanceUpdate = instance.update();
-        });
-
-        afterEach(function () {
-          //to excute the promise force an digest
-          $rootScope.$apply();
-        });
-
-        it('calls equivalent API method', function () {
-          instanceUpdate.then(function () {
-            expect(LeaveRequestAPI.update).toHaveBeenCalled();
-          });
-        });
-
-        it('modifies attributes', function () {
-          var updatedAttributes = _.assign(Object.create(null), requestData, newRequestData);
-
-          instanceUpdate.then(function () {
-            expect(instance.attributes()).toEqual(jasmine.objectContaining(updatedAttributes));
-          });
+      it('calls update api method with the return value of toAPI method', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.update).toHaveBeenCalledWith(toAPIReturnValue);
         });
       });
 
-      describe('when id is missing', function () {
-
-        beforeEach(function () {
-          expectedError = {
-            is_error: 1,
-            error_message: 'id is mandatory field'
-          };
-          delete instance.id;
-          instanceUpdate = instance.update();
+      it('calls toAPI method', function () {
+        promise.then(function () {
+          expect(LeaveRequestInstance.toAPI).toHaveBeenCalled();
         });
-
-        afterEach(function () {
-          //to excute the promise force an digest
-          $rootScope.$apply();
-        });
-
-        it('fails to update attributes ', function () {
-          instanceUpdate.catch(function (error) {
-            expect(error).toEqual(jasmine.objectContaining(expectedError));
-          });
-        });
-      });
+      })
     });
 
     describe('create()', function () {
@@ -341,10 +258,7 @@ define([
       describe('when one mandatory filed is missing', function () {
 
         beforeEach(function () {
-          expectedError = {
-            is_error: 1,
-            error_message: 'contact_id, from_date and from_date_type in params are mandatory'
-          };
+          expectedError = 'contact_id, from_date and from_date_type in params are mandatory';
           delete instance.contact_id;
           instanceCreate = instance.create();
         });
@@ -356,7 +270,7 @@ define([
 
         it('fails to create instance', function () {
           instanceCreate.catch(function (error) {
-            expect(error).toEqual(jasmine.objectContaining(expectedError));
+            expect(error).toBe(expectedError);
           });
         });
       });
@@ -585,6 +499,80 @@ define([
         return optionGroupMockData.getCollection('hrleaveandabsences_leave_request_status').find(function (option) {
           return option.name === statusName
         }).value;
+      }
+    });
+
+    describe('roleOf()', function () {
+
+      var promise;
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      describe('when the user is the owner of the leave request', function () {
+
+        beforeEach(function () {
+          setUserAsOwner();
+        });
+
+        it('returns owner', function () {
+          promise.then(function (result) {
+            expect(result).toBe('owner');
+          });
+        })
+      });
+
+      describe('when the user is the manager', function () {
+
+        beforeEach(function () {
+          spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
+            return setIsManagedResponseTo(true);
+          });
+          setUserAsNotOwner();
+        });
+
+        it('returns manager', function () {
+          promise.then(function (result) {
+            expect(result).toBe('manager');
+          });
+        })
+      });
+
+      describe('when the user has no relationship', function () {
+
+        beforeEach(function () {
+          spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
+            return setIsManagedResponseTo(false);
+          });
+          setUserAsNotOwner();
+        });
+
+        it('returns none', function () {
+          promise.then(function (result) {
+            expect(result).toBe('none');
+          });
+        })
+      });
+
+      function setUserAsNotOwner() {
+        //dummy contact id
+        LeaveRequestInstance.contact_id = "101";
+        promise = LeaveRequestInstance.roleOf({
+          id: '102' //not same as instance.contact_id
+        });
+      }
+
+      function setUserAsOwner() {
+        //dummy contact id
+        LeaveRequestInstance.contact_id = "101";
+        promise = LeaveRequestInstance.roleOf({
+          id: '101'
+        });
+      }
+
+      function setIsManagedResponseTo(value) {
+        return $q.resolve(value);
       }
     });
   });

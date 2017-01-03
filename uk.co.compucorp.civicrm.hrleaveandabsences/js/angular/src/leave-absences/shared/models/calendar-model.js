@@ -21,17 +21,13 @@ define([
          * @param {string} contactId The ID of the Contact
          * @param {string} periodId The ID of the Absence Period
          * @param {object} params
-         * @return {Promise} Resolved with {Object} Calendar Instance or Error Data
+         * @return {Promise} Resolved with {Object} Calendar Instance
          */
         get: function (contactId, periodId, params) {
           $log.debug('Calendar.getCalendar');
 
           return workPatternAPI.getCalendar(contactId, periodId, params)
             .then(function (data) {
-              if (data.is_error) {
-                return data;
-              }
-
               return instance.init({
                 days: data.values
               }, true);

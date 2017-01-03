@@ -50,13 +50,6 @@ define([
           expect('days' in response).toBe(true);
         });
       });
-
-      it('returns error object when request is not successful', function () {
-        commonSetUp(mockData.errorData());
-        CalendarPromise.then(function (response) {
-          expect(response).toBe(mockData.errorData());
-        });
-      });
     });
   });
 });

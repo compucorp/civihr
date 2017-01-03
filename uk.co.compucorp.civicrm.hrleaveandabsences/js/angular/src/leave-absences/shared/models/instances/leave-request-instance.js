@@ -9,7 +9,8 @@ define([
     'ModelInstance',
     'LeaveRequestAPI',
     'api.optionGroup',
-    function (ModelInstance, LeaveRequestAPI, OptionGroup) {
+    '$q',
+    function (ModelInstance, LeaveRequestAPI, OptionGroup, $q) {
 
       /**
        * Get ID of an option value
@@ -37,16 +38,6 @@ define([
           .then(function (statusId) {
             this.status_id = statusId.value;
             return this.update();
-          }.bind(this))
-          .then(function (data) {
-            if (data.is_error) {
-              return data;
-            }
-            this.status_id = data.values[0].status_id;
-          }.bind(this), function(error){
-            if (error.is_error) {
-              return error;
-            }
           }.bind(this));
       }
 
@@ -99,10 +90,7 @@ define([
          * @return {Promise} Resolved with {Object} Updated Leave request
          */
         update: function () {
-          return LeaveRequestAPI.update(this.toAPI())
-            .then(function(result){
-              _.assign(this, this.fromAPI(result));
-            }.bind(this));
+          return LeaveRequestAPI.update(this.toAPI());
         },
 
         /**
@@ -113,7 +101,7 @@ define([
          */
         create: function () {
           return LeaveRequestAPI.create(this.toAPI())
-            .then(function(result){
+            .then(function (result) {
               this.id = result.id;
             }.bind(this));
         },
@@ -133,7 +121,7 @@ define([
          *
          * @return {Promise} resolved with {Boolean}
          */
-        isApproved: function() {
+        isApproved: function () {
           return checkLeaveStatus.call(this, 'approved');
         },
 
@@ -142,7 +130,7 @@ define([
          *
          * @return {Promise} resolved with {Boolean}
          */
-        isAwaitingApproval: function() {
+        isAwaitingApproval: function () {
           return checkLeaveStatus.call(this, 'waiting_approval');
         },
 
@@ -151,7 +139,7 @@ define([
          *
          * @return {Promise} resolved with {Boolean}
          */
-        isCancelled: function() {
+        isCancelled: function () {
           return checkLeaveStatus.call(this, 'cancelled');
         },
 
@@ -160,7 +148,7 @@ define([
          *
          * @return {Promise} resolved with {Boolean}
          */
-        isRejected: function() {
+        isRejected: function () {
           return checkLeaveStatus.call(this, 'rejected');
         },
 
@@ -169,8 +157,35 @@ define([
          *
          * @return {Promise} resolved with {Boolean}
          */
-        isSentBack: function() {
+        isSentBack: function () {
           return checkLeaveStatus.call(this, 'more_information_requested');
+        },
+
+        /**
+         * Check the role of a given contact in relationship to the leave request.
+         *
+         * @param {Object} contact - contact object
+         *
+         * @return {Promise} resolves with an {String} - owner/manager/none
+         */
+        roleOf: function (contact) {
+          var deferred = $q.defer();
+
+          if (this.contact_id == contact.id) {
+            deferred.resolve('owner');
+          } else {
+            LeaveRequestAPI.isManagedBy(this.id, contact.id)
+              .then(function (response) {
+                //TODO Implement check for Admin in MS5
+                if (!!response) {
+                  deferred.resolve('manager');
+                } else {
+                  deferred.resolve('none');
+                }
+              });
+          }
+
+          return deferred.promise;
         }
       });
     }
