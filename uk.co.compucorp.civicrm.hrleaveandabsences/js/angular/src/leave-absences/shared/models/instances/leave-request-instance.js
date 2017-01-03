@@ -182,10 +182,9 @@ define([
           } else {
             LeaveRequestAPI.isManagedBy(this.id, contact.id)
               .then(function (response) {
+                //TODO Implement check for Admin in MS5
                 if (response === true) {
                   deferred.resolve('manager');
-                } else if (CRM.checkPerm('CiviHRLeaveAndAbsences: Administer Leave and Absences')) {
-                  deferred.resolve('admin');
                 } else {
                   deferred.resolve('none');
                 }

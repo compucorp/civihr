@@ -620,7 +620,6 @@ define([
         describe('when isManagedBy return true', function () {
 
           beforeEach(function () {
-            spyOn(CRM, 'checkPerm');
             spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
               defer = $q.defer();
               defer.resolve(true);
@@ -636,29 +635,9 @@ define([
           })
         });
 
-        describe('when user has CiviHRLeaveAndAbsences: Administer Leave and Absences permission', function () {
-
-          beforeEach(function () {
-            spyOn(CRM, 'checkPerm').and.returnValue(true);
-            spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
-              defer = $q.defer();
-              defer.resolve(false);
-              return defer.promise;
-            });
-            commonSetup();
-          });
-
-          it('returns admin', function () {
-            promise.then(function (result) {
-              expect(result).toBe('admin');
-            });
-          })
-        });
-
         describe('when user has no specific role', function () {
 
           beforeEach(function () {
-            spyOn(CRM, 'checkPerm').and.returnValue(false);
             spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
               defer = $q.defer();
               defer.resolve(false);
