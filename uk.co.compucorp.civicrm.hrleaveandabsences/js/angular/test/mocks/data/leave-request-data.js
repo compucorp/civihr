@@ -167,6 +167,12 @@ define([
           "overlaps_existing_leave_request"
         ]
       }
+    },
+    isManagedByData: {
+      "is_error": 0,
+      "version": 3,
+      "count": 1,
+      "values": true
     }
   };
 
@@ -191,6 +197,9 @@ define([
     },
     getNotIsValid: function () {
       return mockData.isNotValidData;
+    },
+    isManagedBy: function () {
+      return mockData.isManagedByData;
     }
   };
 });

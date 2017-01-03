@@ -119,11 +119,13 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     }
 
     $fromDate = "'{$fromDate}'";
-    $toDate = $toDate ? "'{$toDate}'" : 'NULL';
+    $toDate = $toDate ? "'{$toDate}'" : $fromDate;
+    $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
+    $dateType = $leaveRequestDateTypes['all_day'];
 
     $query = "
-      INSERT INTO {$leaveRequestTable}(type_id, contact_id, status_id, from_date, to_date)
-      VALUES({$typeID}, {$contactID}, {$status}, {$fromDate}, {$toDate})
+      INSERT INTO {$leaveRequestTable}(type_id, contact_id, status_id, from_date, to_date, from_date_type, to_date_type)
+      VALUES({$typeID}, {$contactID}, {$status}, {$fromDate}, {$toDate}, {$dateType}, {$dateType} )
     ";
 
     CRM_Core_DAO::executeQuery($query);

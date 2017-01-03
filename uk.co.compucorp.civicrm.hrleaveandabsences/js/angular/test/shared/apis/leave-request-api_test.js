@@ -10,7 +10,7 @@ define([
 
   describe('LeaveRequestAPI', function () {
     var LeaveRequestAPI, $httpBackend, $rootScope, $q, $log, dateFormat = 'YYYY-MM-DD',
-      promise, requestData, errorObject;
+      promise, requestData, errorMessage;
 
     beforeEach(module('leave-absences.apis'));
 
@@ -45,6 +45,10 @@ define([
       //Intercept backend calls for LeaveRequest.isValid
       $httpBackend.whenGET(/action\=isValid&entity\=LeaveRequest/)
         .respond(mockData.getisValid());
+
+      //Intercept backend calls for LeaveRequest.isManagedBy
+      $httpBackend.whenGET(/action\=isManagedBy&entity\=LeaveRequest/)
+        .respond(mockData.isManagedBy());
     }));
 
     describe('all()', function () {
@@ -84,10 +88,7 @@ define([
         });
 
         function commonExpect(data) {
-          expect(data).toEqual({
-            is_error: 1,
-            error_message: 'contact_id and period_id are mandatory'
-          });
+          expect(data).toBe('contact_id and period_id are mandatory');
         }
 
         it('throws error if contact_id is blank', function () {
@@ -200,10 +201,7 @@ define([
       describe('when mandatory field is missing', function () {
 
         beforeEach(function () {
-          errorObject = {
-            is_error: 1,
-            error_message: 'contact_id, from_date and from_date_type in params are mandatory'
-          };
+          errorMessage = 'contact_id, from_date and from_date_type in params are mandatory';
           requestData = {};
           promise = LeaveRequestAPI.calculateBalanceChange(requestData);
         });
@@ -214,7 +212,7 @@ define([
 
         it('throws an error', function () {
           promise.catch(function (result) {
-            expect(result).toEqual(errorObject);
+            expect(result).toBe(errorMessage);
           });
         });
       });
@@ -267,10 +265,7 @@ define([
       describe('with mandatory field missing', function () {
 
         beforeEach(function () {
-          errorObject = {
-            is_error: 1,
-            error_message: 'contact_id, from_date, status_id and from_date_type params are mandatory'
-          };
+          errorMessage = 'contact_id, from_date, status_id and from_date_type params are mandatory';
           requestData = helper.createRandomLeaveRequest();
           delete requestData.contact_id;
           promise = LeaveRequestAPI.create(requestData);
@@ -282,7 +277,7 @@ define([
 
         it('returns error', function () {
           promise.catch(function (result) {
-            expect(result).toEqual(errorObject);
+            expect(result).toBe(errorMessage);
           });
         });
       });
@@ -290,10 +285,7 @@ define([
       describe('missing to date type value, given to date', function () {
 
         beforeEach(function () {
-          errorObject = {
-            is_error: 1,
-            error_message: 'to_date_type is mandatory'
-          };
+          errorMessage = 'to_date_type is mandatory';
           requestData = helper.createRandomLeaveRequest();
           delete requestData.to_date_type;
           promise = LeaveRequestAPI.create(requestData);
@@ -305,7 +297,7 @@ define([
 
         it('returns error', function () {
           promise.catch(function (result) {
-            expect(result).toEqual(errorObject);
+            expect(result).toBe(errorMessage);
           });
         });
       });
@@ -398,11 +390,8 @@ define([
       describe('when does not contain id set', function () {
 
         beforeEach(function () {
-          errorObject = {
-              is_error: 1,
-              error_message: 'id is mandatory field'
-            }
-            //remove id
+          errorMessage = 'id is mandatory field';
+          //remove id
           delete updatedRequestData.id;
           promise = LeaveRequestAPI.update(updatedRequestData);
         });
@@ -414,10 +403,41 @@ define([
 
         it('returns error', function () {
           promise.catch(function (result) {
-            expect(result).toEqual(errorObject);
+            expect(result).toBe(errorMessage);
           });
         });
       });
+    });
+
+    describe('isManagedBy()', function () {
+
+      var leaveRequestID = '101',
+        contactID = '102';
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+        promise = LeaveRequestAPI.isManagedBy(leaveRequestID, contactID);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls endpoint with leaveRequestID and contactID', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest',
+            'isManagedBy', jasmine.objectContaining({
+              leave_request_id: leaveRequestID,
+              contact_id: contactID
+            }));
+        });
+      });
+
+      it('returns data', function () {
+        promise.then(function (result) {
+          expect(result).toEqual(mockData.isManagedBy().values);
+        });
+      })
     });
   });
 });

@@ -37,10 +37,7 @@ define([
         create: function (params) {
           return $q(function (resolve, reject) {
             if (!params.contact_id) {
-              reject({
-                is_error: 1,
-                error_message: 'contact_id, from_date and from_date_type in params are mandatory'
-              });
+              reject('contact_id, from_date and from_date_type in params are mandatory');
             }
 
             resolve(mockData.all().values[0]);
@@ -50,10 +47,7 @@ define([
           return $q(function (resolve, reject) {
             var newAttributes = _.assign(Object.create(null), mockData.all().values[0], params);
             if (!params.id) {
-              reject({
-                is_error: 1,
-                error_message: 'id is mandatory field'
-              });
+              reject('id is mandatory field');
             }
             resolve(newAttributes);
           });
@@ -65,6 +59,11 @@ define([
             }
 
             resolve(mockData.getisValid().values);
+          });
+        },
+        isManagedBy: function (params) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.isManagedBy().values);
           });
         }
       };

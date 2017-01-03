@@ -145,7 +145,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
       'type_id'        => $absenceType->id,
       'status_id'      => $leaveRequestStatuses['Admin Approved'],
       'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
-      'from_date_type' => $leaveRequestDayTypes['All Day']
+      'from_date_type' => $leaveRequestDayTypes['All Day'],
+      'to_date' => CRM_Utils_Date::processDate($publicHoliday->date),
+      'to_date_type' => $leaveRequestDayTypes['All Day']
     ], false);
   }
 

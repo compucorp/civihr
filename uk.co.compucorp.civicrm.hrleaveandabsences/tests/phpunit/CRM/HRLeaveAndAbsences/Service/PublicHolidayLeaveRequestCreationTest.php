@@ -78,6 +78,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'contact_id' => $contactID,
       'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
       'status_id' => 1
     ], true);
 

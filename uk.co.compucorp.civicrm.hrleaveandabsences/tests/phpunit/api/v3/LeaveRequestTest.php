@@ -397,6 +397,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
+      'to_date' => CRM_Utils_Date::processDate('2015-12-30'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => $leaveRequestStatuses['Cancelled']
     ], true);
 
@@ -405,6 +408,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2017-09-02'),
+      'to_date' => CRM_Utils_Date::processDate('2017-09-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => $leaveRequestStatuses['Admin Approved']
     ], true);
 
@@ -413,6 +419,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2018-01-02'),
+      'to_date' => CRM_Utils_Date::processDate('2018-01-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => $leaveRequestStatuses['Admin Approved']
     ], true);
 
@@ -438,6 +447,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
+      'to_date' => CRM_Utils_Date::processDate('2015-12-30'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => $leaveRequestStatuses['Cancelled']
     ], true);
 
@@ -446,6 +458,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => $leaveRequestStatuses['Admin Approved']
     ], true);
 
@@ -454,6 +469,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => $leaveRequestStatuses['Admin Approved']
     ], true);
 
@@ -462,6 +480,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
+      'to_date' => CRM_Utils_Date::processDate('2017-12-30'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => $leaveRequestStatuses['Rejected']
     ], true);
 
@@ -487,6 +508,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => $leaveRequestStatuses['Admin Approved']
     ], true);
 
@@ -496,6 +520,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => $leaveRequestStatuses['Admin Approved']
     ], true);
 
@@ -531,6 +557,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
+      'to_date' =>  CRM_Utils_Date::processDate('2015-12-30'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
       'status_id' => $leaveRequestStatuses['Cancelled']
     ], true);
 
@@ -1270,30 +1299,45 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $staffMember1['id'],
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-02-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-02-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
     ], true);
 
     $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
     ], true);
 
     $leaveRequest4 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember3['id'],
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-03-13'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-13'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
     ], true);
 
     $leaveRequest5 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember4['id'],
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-10-23'),
+      'to_date' => CRM_Utils_Date::processDate('2016-10-23'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get');
@@ -1344,6 +1388,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $staffMember['id'],
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get');
@@ -1381,6 +1428,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $staffMember['id'],
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get');
