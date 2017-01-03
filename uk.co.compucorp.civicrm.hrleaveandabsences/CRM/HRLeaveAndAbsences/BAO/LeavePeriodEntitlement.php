@@ -192,9 +192,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
       self::saveBroughtForwardBalanceChange($calculation, $periodEntitlement);
       self::savePublicHolidaysBalanceChanges($calculation, $periodEntitlement);
-
       self::saveLeaveBalanceChange($calculation, $periodEntitlement, $overriddenEntitlement);
-
 
       $transaction->commit();
     } catch(\Exception $ex) {
@@ -344,7 +342,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
           'contact_id'     => $periodEntitlement->contact_id,
           'status_id'      => $leaveRequestStatuses['Admin Approved'],
           'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
-          'from_date_type' => $leaveRequestDateTypes['All Day']
+          'to_date'        => CRM_Utils_Date::processDate($publicHoliday->date),
+          'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
+          'from_date_type' => $leaveRequestDateTypes['All Day'],
+          'to_date_type'   => $leaveRequestDateTypes['All Day']
         ]);
 
         $requestDate  = LeaveRequestDate::getDatesForLeaveRequest($leaveRequest->id)[0];

@@ -299,7 +299,9 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'type_id' => $type->id,
       'status_id' => $this->getLeaveRequestStatuses()['Approved']['value'],
       'from_date' => $startDate->format('Y-m-d'),
+      'to_date' => $startDate->format('Y-m-d'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'toil_to_accrue' => 3,
       'duration' => 60,
       'sequential' => 1
@@ -311,8 +313,8 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'status_id' => $this->getLeaveRequestStatuses()['Approved']['value'],
       'from_date' => $startDate->format('Y-m-d'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-      'to_date' => '',
-      'to_date_type' => '',
+      'to_date' => $startDate->format('Y-m-d'),
+      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'duration' => 60
     ];
 
@@ -334,7 +336,8 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     $toilRequest1 = TOILRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $type->id,
-      'from_date' => '20160101',
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'duration' => 10,
       'expiry_date' => '20160110'
     ]);
@@ -357,6 +360,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'contact_id' => $contact['id'],
       'type_id' => $type->id,
       'from_date' => $nextMonday->format('Ymd'),
+      'to_date' => $nextMonday->format('Ymd'),
       'duration' => 10,
       'expiry_date' => $nextMonday->modify('+5 days')->format('Ymd')
     ]);
@@ -380,9 +384,10 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     $toilRequest1 = TOILRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $type->id,
-      'from_date' => '20160101',
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'duration' => 10,
-      'expiry_date' => '20160110'
+      'expiry_date' => CRM_Utils_Date::processDate('2016-01-10')
     ]);
 
     $toilRequestBalanceChange = $this->findToilRequestBalanceChange($toilRequest1->id);
@@ -403,6 +408,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'contact_id' => $contact['id'],
       'type_id' => $type->id,
       'from_date' => $nextMonday->format('Ymd'),
+      'to_date' => $nextMonday->format('Ymd'),
       'duration' => 10,
       'expiry_date' => $nextMonday->modify('+5 days')->format('Ymd')
     ]);
@@ -425,7 +431,8 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     $toilRequest1 = TOILRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $type->id,
-      'from_date' => '20160101',
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'duration' => 10,
       'expiry_date' => '20160110'
     ]);
