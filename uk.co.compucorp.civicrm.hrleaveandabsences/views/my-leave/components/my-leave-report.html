@@ -70,48 +70,18 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td class="chr_leave-report__label">Brought Forward (expires 31/03/2016)</td>
+                    <tr ng-repeat="entry in report.sections.entitlements.data track by $index">
+                      <td class="chr_leave-report__label">
+                        {{entry.type.label}}
+                        <span ng-if="entry.expiry_date">
+                          (expires {{entry.expiry_date}})
+                        </span>
+                      </td>
                       <td></td>
                       <td></td>
-                      <td>3</td>
-                      <td>3</td>
-                      <td>0</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                    <tr>
-                      <td class="chr_leave-report__label">&nbsp;</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                    <tr>
-                      <td class="chr_leave-report__label">Leave</td>
-                      <td></td>
-                      <td></td>
-                      <td>20</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                    <tr>
-                      <td class="chr_leave-report__label">Public Holidays</td>
-                      <td></td>
-                      <td></td>
-                      <td>8</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                        {{(entry.type_id == absenceType.id ? entry.amount : '')}}
+                      </td>
                       <td></td>
                     </tr>
                   </tbody>
