@@ -74,8 +74,7 @@ define([
               * by sorting the contract into current or past
               * depending on the period end date of the contract.
               *
-              *
-              * @param {type} newEndDate the date specified by the user
+              * @param {string || date} newEndDate the date specified by the user
             */
             $scope.updateContractList = function(newEndDate){
               var isCurrentContract = moment().diff(newEndDate, "day") <= 0;
