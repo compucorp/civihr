@@ -3,36 +3,46 @@
 trait CRM_HRCore_Upgrader_Steps_1003 {
 
   public function upgrade_1003() {
-    $this->updateDisplayPreferencesSettings();
+    // Updates Display Preferences settings by
+    // hiding Tags and Groups from contact related screens.
+    $this->disableSettingOptions('contact_view_options', ['tag', 'group']);
+
+    // Updates Address Fields settings by
+    // hiding Postal Code Suffix, County, Latitude and Longitude .
+    $this->disableSettingOptions('address_options', ['postal_code_suffix', 'county', 'geo_code_1', 'geo_code_2']);
 
     return TRUE;
   }
 
   /**
-   * Updates Display Preferences settings by hiding
-   * Tags and Groups from contact related screens.
+   * Disables a set of civicrm setting values
+   * (e.g contact view options, address fields.. etc ) based
+   * on provided criteria.
+   *
+   * @param string $settingKey
+   * @param array $fieldsToDisable
    */
-  private function updateDisplayPreferencesSettings() {
-    $viewOptionsSettings = civicrm_api3('Setting', 'get', array(
+  private function disableSettingOptions($settingKey, $fieldsToDisable) {
+    $currentSettings = civicrm_api3('Setting', 'get', [
       'sequential' => 1,
-      'return' => array("contact_view_options"),
-    ));
+      'return' => [$settingKey],
+    ]);
 
-    $viewOptions = civicrm_api3('OptionValue', 'get', array(
+    $settingOptions = civicrm_api3('OptionValue', 'get', [
       'sequential' => 1,
-      'return' => array("id"),
-      'option_group_id' => "contact_view_options",
-      'name' => array('IN' => array("tag", "group")),
-    ));
+      'return' => ['value'],
+      'option_group_id' => $settingKey,
+      'name' => ['IN' => $fieldsToDisable],
+    ]);
 
     $toDeleteOptions = [];
-    if (!empty($viewOptions['values'])) {
-      $toDeleteOptions = array_column($viewOptions['values'], 'id');
+    if (!empty($settingOptions['values'])) {
+      $toDeleteOptions = array_column($settingOptions['values'], 'value');
     }
 
     $newOptions = [];
-    if(!empty($viewOptionsSettings['values']['contact_view_options'])) {
-      $currentOptions = $viewOptionsSettings['values']['contact_view_options'];
+    if(!empty($currentSettings['values'][$settingKey])) {
+      $currentOptions = $currentSettings['values'][$settingKey];
 
       foreach ($currentOptions as $option) {
         if (!in_array($option, $toDeleteOptions)) {
@@ -41,10 +51,10 @@ trait CRM_HRCore_Upgrader_Steps_1003 {
       }
     }
 
-    civicrm_api3('Setting', 'create', array(
+    civicrm_api3('Setting', 'create', [
       'sequential' => 1,
-      'contact_view_options' => $newOptions,
-    ));
+      $settingKey => $newOptions,
+    ]);
   }
 
 }
