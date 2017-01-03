@@ -61,7 +61,7 @@ define([
         },
         isManagedBy: function (params) {
           return $q(function (resolve, reject) {
-            resolve(mockData.isManagedBy().values);
+            resolve(mockData.isManagedBy());
           });
         }
       };

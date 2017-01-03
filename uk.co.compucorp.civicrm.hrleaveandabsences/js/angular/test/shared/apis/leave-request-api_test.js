@@ -439,7 +439,7 @@ define([
 
       it('returns data', function () {
         promise.then(function (result) {
-          expect(result).toEqual(mockData.isManagedBy().values);
+          expect(result).toEqual(mockData.isManagedBy());
         });
       })
     });

@@ -617,12 +617,34 @@ define([
 
       describe('when contact_id of leave request is not same as contact id of parameter', function () {
 
+        describe('when api returns error', function () {
+
+          beforeEach(function () {
+            spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
+              defer = $q.defer();
+              defer.resolve({
+                is_error: true
+              });
+              return defer.promise;
+            });
+            commonSetup();
+          });
+
+          it('returns error', function () {
+            promise.then(function (result) {
+              expect(result).toBe('error');
+            });
+          })
+        });
+
         describe('when isManagedBy return true', function () {
 
           beforeEach(function () {
             spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
               defer = $q.defer();
-              defer.resolve(true);
+              defer.resolve({
+                values: true
+              });
               return defer.promise;
             });
             commonSetup();
@@ -640,7 +662,9 @@ define([
           beforeEach(function () {
             spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
               defer = $q.defer();
-              defer.resolve(false);
+              defer.resolve({
+                values: false
+              });
               return defer.promise;
             });
             commonSetup();
