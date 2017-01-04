@@ -2,7 +2,8 @@ define([
   'common/lodash',
   'mocks/data/absence-period-data',
   'mocks/data/absence-type-data',
-], function (_, absencePeriodData, absenceTypeData) {
+  'mocks/data/option-group-mock-data'
+], function (_, absencePeriodData, absenceTypeData, optionGroupData) {
   var mockData = {
     all_data: (function () {
       var entitlements = generateEntitlements();
@@ -14,53 +15,36 @@ define([
         "values": entitlements
       };
     })(),
-    breakdown_data: {
-      "is_error": 0,
-      "version": 3,
-      "count": 3,
-      "values": [{
-        "id": "1",
-        "breakdown": [{
-          "amount": "20.00",
-          "expiry_date": null,
-          "type": {
-            "id": 1,
-            "value": "leave",
-            "label": "Leave"
-          }
-        }, {
-          "amount": "8.00",
-          "expiry_date": null,
-          "type": {
-            "id": 3,
-            "value": "public_holiday",
-            "label": "Public Holiday"
-          }
-        }, {
-          "amount": "5.00",
-          "expiry_date": "2016-04-01",
-          "type": {
-            "id": 2,
-            "value": "brought_forward",
-            "label": "Brought Forward"
-          }
-        }]
-      }, {
-        "id": "2",
-        "breakdown": []
-      }, {
-        "id": "3",
-        "breakdown": [{
-          "amount": "5.00",
-          "expiry_date": null,
-          "type": {
-            "id": 1,
-            "value": "leave",
-            "label": "Leave"
-          }
-        }]
-      }]
-    },
+    breakdown_data: (function () {
+      var entitlements = generateEntitlements();
+      var dayTypes = optionGroupData.getCollection('hrleaveandabsences_leave_request_day_type');
+
+      return {
+        "is_error": 0,
+        "version": 3,
+        "count": entitlements.length,
+        "values": (function () {
+          return entitlements.map(function (entitlement) {
+            return {
+              "id": entitlement.id,
+              "breakdown": _.times(_.random(1, 10)).map(function () {
+                var dayType = _.sample(dayTypes);
+
+                return {
+                  "amount": _.random(-30, 30) + ".00",
+                  "expiry_date": null,
+                  "type": {
+                    "id": dayType.id,
+                    "value": dayType.value,
+                    "label": dayType.label
+                  }
+                };
+              })
+            };
+          });
+        })()
+      };
+    })(),
     entitlements_chained_with_remainder: (function () {
       var entitlements = generateEntitlements(true);
 

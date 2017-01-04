@@ -339,18 +339,7 @@ define([
         period_id: vm.selectedPeriod.id
       }, vm.entitlements)
       .then(function () {
-        // Adds the type_id to every breakdown entry
-        return vm.entitlements.map(function (entitlement) {
-          return entitlement.breakdown.map(function (breakdownEntry) {
-            return _.assign(_.clone(breakdownEntry), {
-              type_id: entitlement.type_id
-            });
-          });
-        });
-      })
-      .then(function (breakdownList) {
-        // Flattens the breakdown list array
-        return Array.prototype.concat.apply([], breakdownList);
+        return processBreakdownsList(vm.entitlements);
       })
       .then(function (breakdownListFlatten) {
         vm.sections.entitlements.data = breakdownListFlatten;
@@ -443,6 +432,35 @@ define([
       .then(function (leaveRequests) {
         vm.sections.holidays.data = leaveRequests.list;
       });
+    }
+
+    /**
+     * For each breakdowns, it sets the absence type id to
+     * each list entry (based on the entitlement they belong to)
+     * and flattens the result in the end to get one single list
+     *
+     * @param  {Array} list
+     *   each breakdown should contain `id` and `breakdown` properties
+     * @return {Promise} resolves to the flatten list
+     */
+    function processBreakdownsList (list) {
+      return $q.resolve()
+        .then(function () {
+          return list.map(function (listEntry) {
+            var entitlement = _.find(vm.entitlements, function (entitlement) {
+              return entitlement.id === listEntry.id;
+            });
+
+            return listEntry.breakdown.map(function (breakdownEntry) {
+              return _.assign(_.clone(breakdownEntry), {
+                type_id: entitlement.type_id
+              });
+            });
+          });
+        })
+        .then(function (breakdownList) {
+          return Array.prototype.concat.apply([], breakdownList);
+        });
     }
 
     /**
