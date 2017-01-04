@@ -22,7 +22,7 @@ define([
          * @return {Promise}
          */
         all: function (params, withRemainder) {
-          return entitlementAPI.all(params, withRemainder)
+          return entitlementAPI.all(this.processFilters(params), withRemainder)
             .then(function (entitlements) {
               return entitlements.map(function (entitlement) {
                 return instance.init(entitlement, true);

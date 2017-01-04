@@ -10,8 +10,7 @@ define([
     }],
     controllerAs: 'myleave',
     controller: ['$log', '$scope', '$uibModal', 'settings', function ($log, $scope, $modal, settings) {
-      console.log('CRM id of the currently logged in user: ', this.contactId);
-      $log.debug('Component: my-leave');
+      $log.debug('Component: my-leave', this.contactId);
 
       var vm = {};
       vm.leaveRequest = {

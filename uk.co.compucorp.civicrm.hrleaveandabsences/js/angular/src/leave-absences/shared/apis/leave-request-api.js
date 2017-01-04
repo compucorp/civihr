@@ -52,10 +52,14 @@ define([
           public_holiday: isPublicHoliday || false
         };
 
-        deferred.resolve(this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params, false)
+        this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params)
           .then(function (data) {
-            return data.values;
-          }));
+            if(data && data.is_error == 1){
+              deferred.reject(data);
+            }
+
+            deferred.resolve(data.values);
+          });
 
         return deferred.promise;
       },
@@ -67,18 +71,22 @@ define([
        * @return {Promise} Resolved with {Object} Updated Leave request
        */
       update: function (params) {
-        $log.debug('LeaveRequestAPI.update');
+        $log.debug('LeaveRequestAPI.update', params);
         var deferred = $q.defer();
 
         if (!params.id) {
           deferred.reject('id is mandatory field');
         }
 
-        deferred.resolve(this.sendPOST('LeaveRequest', 'create', params)
+        this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
+            if(data && data.is_error == 1){
+              deferred.reject(data);
+            }
+
             //returns array of single object hence getting first object
-            return data.values[0];
-          }));
+            deferred.resolve(data.values[0]);
+          });
 
         return deferred.promise;
       },
@@ -101,11 +109,14 @@ define([
           deferred.reject('contact_id, from_date and from_type in params are mandatory');
         }
 
-        deferred.resolve(this.sendPOST('LeaveRequest', 'calculatebalancechange', params)
+        this.sendPOST('LeaveRequest', 'calculatebalancechange', params)
           .then(function (data) {
-            console.log('data', data);
-            return data.values;
-          }));
+            if(data && data.is_error == 1){
+              deferred.reject(data);
+            }
+
+            deferred.resolve(data.values);
+          });
 
         return deferred.promise;
       },
@@ -114,15 +125,15 @@ define([
        * Create a new leave request with given params.
        *
        * @param {Object} params matched the API end point params with
-       * mandatory values for contact_id, status_id, from_date, from_type
-       * and optional values for to_date and to_type.
-       * If to_date is given then to_type is also mandotory.
+       * mandatory values for contact_id, status_id, from_date, from_date_type
+       * and optional values for to_date and to_date_type.
+       * If to_date is given then to_date_type is also mandotory.
        *
        * @return {Promise} containing the leave request object additionally with id key set
        * else rejects the promise with error data
        */
       create: function (params) {
-        $log.debug('LeaveRequestAPI.calculateBalanceChange');
+        $log.debug('LeaveRequestAPI.create', params);
         var deferred = $q.defer();
 
         if (params) {
@@ -134,11 +145,14 @@ define([
           }
         }
 
-        deferred.resolve(this.sendPOST('LeaveRequest', 'create', params)
+        this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
+            if(data && data.is_error == 1){
+              deferred.reject(data);
+            }
             //returns array of single object hence getting first object
-            return data.values[0];
-          }));
+            deferred.resolve(data.values[0]);
+          });
 
         return deferred.promise;
       },
@@ -148,12 +162,12 @@ define([
        * creating a leave request to validate data.
        *
        * @param {Object} params matched the API end point params with
-       * values like contact_id, status_id, from_date, from_type etc.,
+       * values like contact_id, status_id, from_date, from_date_type etc.,
        *
        * @return {Promise} returns an array of errors for invalid data else empty array
        */
       isValid: function (params) {
-        $log.debug('LeaveRequestAPI.isValid');
+        $log.debug('LeaveRequestAPI.isValid', params);
         var deferred = $q.defer();
 
         this.sendGET('LeaveRequest', 'isValid', params)

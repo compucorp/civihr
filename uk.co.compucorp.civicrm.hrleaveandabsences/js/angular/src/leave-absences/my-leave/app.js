@@ -43,7 +43,7 @@ define([
     $log.debug('app.run');
     //set HR_Settings
     DateFormat.getDateFormat().then(function(result){
-      console.log("DateFormat.getDateFormat", result);
+      //sets the HR_Settings to default
     });
   }]);
 

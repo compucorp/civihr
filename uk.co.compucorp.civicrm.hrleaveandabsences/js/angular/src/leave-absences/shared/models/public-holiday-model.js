@@ -40,9 +40,7 @@ define([
         isPublicHoliday: function (whichDate) {
           $log.debug('PublicHoliday isPublicHoliday whichDate', whichDate);
 
-          var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
-          dateFormat = 'YYYY-MM-DD';
-          var checkDate = moment(whichDate).format(dateFormat);
+          var checkDate = moment(whichDate).format('YYYY-MM-DD');
 
           var params = {
             'date': checkDate
@@ -50,7 +48,7 @@ define([
 
           return publicHolidayAPI.all(params)
             .then(function (publicHolidays) {
-              
+
               if (!!publicHolidays.length) {
                 return true;
               }

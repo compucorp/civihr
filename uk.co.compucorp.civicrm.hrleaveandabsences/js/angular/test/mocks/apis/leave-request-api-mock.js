@@ -31,13 +31,23 @@ define([
         },
         calculateBalanceChange: function (params) {
           return $q(function (resolve, reject) {
+            if(params && params.from_type == 'half_day_am'){
+              resolve(mockData.singleDayCalculateBalanceChange().values);
+            }
+            else if(params && params.from_type == 'all_day'){
+              resolve(mockData.multipleDayCalculateBalanceChange().values);
+            }
+
             resolve(mockData.calculateBalanceChange().values);
           });
         },
         create: function (params) {
           return $q(function (resolve, reject) {
-            if (!params.contact_id) {
-              reject('contact_id, from_date and from_date_type in params are mandatory');
+            if (!params.contact_id  || !params.from_date) {
+              reject({
+                is_error: 1,
+                error_message: 'contact_id, from_date and from_date_type in params are mandatory'
+              });
             }
 
             resolve(mockData.all().values[0]);
@@ -54,7 +64,7 @@ define([
         },
         isValid: function (params) {
           return $q(function (resolve, reject) {
-            if (!params.contact_id) {
+            if (!params.contact_id || !params.from_date) {
               reject(mockData.getNotIsValid().values);
             }
 

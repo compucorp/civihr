@@ -36,9 +36,7 @@ define([
          * @return {Object} Absence period instance or null if not found
          */
         current: function () {
-          var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
-          dateFormat = 'YYYY-MM-DD';
-          var today = moment().format(dateFormat);
+          var today = moment().format('YYYY-MM-DD');
 
           var params = {
             "start_date": {

@@ -13,12 +13,11 @@ define([
     controllerAs: 'report',
     controller: [
       '$log', '$q', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest',
-      'OptionGroup', 'dialog', 'HR_settings', controller
+      'OptionGroup', 'dialog', 'HR_settings', '$rootScope', controller
     ]
   });
 
-
-  function controller($log, $q, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HR_settings) {
+  function controller($log, $q, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HR_settings, $rootScope) {
     $log.debug('Component: my-leave-report');
 
     var vm = Object.create(this);
@@ -478,6 +477,10 @@ define([
       })['value'];
     }
 
+    $rootScope.$on('LeaveRequest::new', function(event, message){
+      console.log('LeaveRequest::new handled in report', message);
+      vm.refresh();
+    });
     return vm;
   }
 });
