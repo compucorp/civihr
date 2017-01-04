@@ -861,7 +861,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals(10, $result[0]['remainder']['current']);
   }
 
-  public function testgetBreakdownBalanceChangesShouldIncludeOnlyNonExpiredBalancesWhenFalseIsPassed() {
+  public function testGetBreakdownBalanceChangesShouldIncludeOnlyNonExpiredBalancesWhenFalseIsPassed() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5);
@@ -890,7 +890,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals('entitlement', $breakdowns[2]->source_type);
   }
 
-  public function testgetBreakdownBalanceChangesShouldIncludeOnlyExpiredBalancesWhenTrueIsPassed() {
+  public function testGetBreakdownBalanceChangesShouldIncludeOnlyExpiredBalancesWhenTrueIsPassed() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5);
@@ -912,29 +912,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals('entitlement', $breakdowns[1]->source_type);
   }
 
-  public function testGetLeavePeriodEntitlementBreakdown() {
+  public function testGetBreakdown() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
-    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5);
+
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 8, 3);
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
-    $params = ['entitlement_id' => $periodEntitlement->id];
-    $result = LeavePeriodEntitlement::getBreakdown($params);
-    $this->assertCount(1, $result);
+    $result = LeavePeriodEntitlement::getBreakdown([
+      'entitlement_id' => $periodEntitlement->id
+    ]);
 
     $expectedResult = [
       [
-        'id' => "$periodEntitlement->id",
+        'id' => $periodEntitlement->id,
         'breakdown' => [
-          [
-            'amount' => '9.00',
-            'expiry_date' => null,
-            'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
-              'value' => 'brought_forward',
-              'label' => 'Brought Forward'
-            ]
-          ],
           [
             'amount' => '8.00',
             'expiry_date' => null,
@@ -953,27 +944,31 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
               'label' => 'Leave'
             ]
           ]
-        ],
-      ],
+        ]
+      ]
     ];
+
     $this->assertEquals($expectedResult, $result);
   }
 
-  public function testGetLeavePeriodEntitlementBreakdownWithExpiredSetToTrue() {
+  public function testGetBreakdownWithExpiredSetToTrue() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
+
     $expiredByNoOfDays = 2;
-    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5, $expiredByNoOfDays);
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 8, 3, $expiredByNoOfDays);
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
-    $params = ['entitlement_id' => $periodEntitlement->id, 'expired' => true];
-    $result = LeavePeriodEntitlement::getBreakdown($params);
+    $result = LeavePeriodEntitlement::getBreakdown([
+      'entitlement_id' => $periodEntitlement->id,
+      'expired'        => true
+    ]);
+
     $expectedResult = [
       [
-        'id' => "$periodEntitlement->id",
+        'id' => $periodEntitlement->id,
         'breakdown' => [
           [
-            'amount' => '-5.00',
+            'amount' => '-3.00', //only the expired amount will be returned
             'expiry_date' => date('Y-m-d', strtotime("-{$expiredByNoOfDays} day")),
             'type' => [
               'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
@@ -981,24 +976,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
               'label' => 'Brought Forward'
             ]
           ],
-          [
-            'amount' => '-3.00',
-            'expiry_date' => date('Y-m-d', strtotime("-{$expiredByNoOfDays} day")),
-            'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
-              'value' => 'brought_forward',
-              'label' => 'Brought Forward'
-            ]
-          ]
         ],
       ],
     ];
+
     $this->assertEquals($expectedResult, $result);
   }
 
-  public function testGetLeavePeriodEntitlementBreakdownWithContactAndPeriodId() {
+  public function testGetBreakdownWithContactAndPeriodId() {
     $contactId = 1;
+
     $absencePeriod = AbsencePeriodFabricator::fabricate();
+
     $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
       'contact_id' => $contactId,
       'period_id' => $absencePeriod->id
@@ -1010,33 +999,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       'type_id' => 2
     ]);
 
-    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement1->id, 9, 5);
-    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement1->id, 8, 3);
+    $this->createBroughtForwardBalanceChange($periodEntitlement1->id, 8);
     $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
 
-    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement2->id, 5, 5);
-    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement2->id, 3, 3);
+    $this->createBroughtForwardBalanceChange($periodEntitlement2->id, 5);
     $this->createLeaveBalanceChange($periodEntitlement2->id, 2);
 
-    $params = ['contact_id' => $contactId, 'period_id' => $absencePeriod->id];
-
-    $result = LeavePeriodEntitlement::getBreakdown($params);
+    $result = LeavePeriodEntitlement::getBreakdown([
+      'contact_id' => $contactId,
+      'period_id'  => $absencePeriod->id
+    ]);
 
     $expectedResult = [
       [
-        'id' => "$periodEntitlement1->id",
+        'id' => $periodEntitlement1->id,
         'breakdown' => [
           [
-            'amount' => '9.00',
-            'expiry_date' => null,
-            'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
-              'value' => 'brought_forward',
-              'label' => 'Brought Forward'
-            ]
-          ],
-          [
-            'amount' => '8.00',
+            'amount' => '8',
             'expiry_date' => null,
             'type' => [
               'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
@@ -1056,19 +1035,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
         ],
       ],
       [
-        'id' => "$periodEntitlement2->id",
+        'id' => $periodEntitlement2->id,
         'breakdown' => [
           [
-            'amount' => '5.00',
-            'expiry_date' => null,
-            'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
-              'value' => 'brought_forward',
-              'label' => 'Brought Forward'
-            ]
-          ],
-          [
-            'amount' => '3.00',
+            'amount' => '5',
             'expiry_date' => null,
             'type' => [
               'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
@@ -1088,12 +1058,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
         ],
       ]
     ];
+
     $this->assertEquals($expectedResult, $result);
   }
 
-  public function testGetLeavePeriodEntitlementBreakdownWithContactAndPeriodIdAndExpiredSetToTrue() {
+  public function testGetBreakdownWithContactAndPeriodIdAndExpiredSetToTrue() {
     $contactId = 1;
+
     $absencePeriod = AbsencePeriodFabricator::fabricate();
+
     $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
       'contact_id' => $contactId,
       'period_id' => $absencePeriod->id
@@ -1104,23 +1077,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       'period_id' => $absencePeriod->id,
       'type_id' => 2
     ]);
+
     $expiredByNoOfDays = 2;
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement1->id, 9, 5, $expiredByNoOfDays);
-    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement1->id, 8, 3, $expiredByNoOfDays);
     $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
 
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement2->id, 5, 3, $expiredByNoOfDays);
-    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement2->id, 3, 2, $expiredByNoOfDays);
     $this->createLeaveBalanceChange($periodEntitlement2->id, 2);
-
-    $params = ['contact_id' => $contactId, 'period_id' => $absencePeriod->id, 'expired' => true];
 
     $expectedResult = [
       [
         'id' => "$periodEntitlement1->id",
         'breakdown' => [
           [
-            'amount' => '-5.00',
+            'amount' => '-5',
             'expiry_date' => date('Y-m-d', strtotime("-{$expiredByNoOfDays} day")),
             'type' => [
               'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
@@ -1128,22 +1098,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
               'label' => 'Brought Forward'
             ]
           ],
-          [
-            'amount' => '-3.00',
-            'expiry_date' => date('Y-m-d', strtotime("-{$expiredByNoOfDays} day")),
-            'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
-              'value' => 'brought_forward',
-              'label' => 'Brought Forward'
-            ]
-          ]
         ],
       ],
       [
         'id' => "$periodEntitlement2->id",
         'breakdown' => [
           [
-            'amount' => '-3.00',
+            'amount' => '-3',
             'expiry_date' => date('Y-m-d', strtotime("-{$expiredByNoOfDays} day")),
             'type' => [
               'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
@@ -1151,21 +1112,126 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
               'label' => 'Brought Forward'
             ]
           ],
+        ],
+      ]
+    ];
+
+    $result = LeavePeriodEntitlement::getBreakdown([
+      'contact_id' => $contactId,
+      'period_id'  => $absencePeriod->id,
+      'expired'    => true
+    ]);
+
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testGetBreakdownWillGroupTogetherBalanceChangesOfTheSameType() {
+    $contactId = 1;
+    $absencePeriod = AbsencePeriodFabricator::fabricate();
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 2
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement1->id, 5);
+    $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
+
+    $this->createPublicHolidayBalanceChange($periodEntitlement2->id, 4);
+    $this->createPublicHolidayBalanceChange($periodEntitlement2->id, 5);
+    $this->createLeaveBalanceChange($periodEntitlement2->id, 13);
+
+    $expectedResult = [
+      [
+        'id' => $periodEntitlement1->id,
+        'breakdown' => [
           [
-            'amount' => '-2.00',
-            'expiry_date' => date('Y-m-d', strtotime("-{$expiredByNoOfDays} day")),
+            'amount' => 15, // 10 + 5
+            'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
-              'value' => 'brought_forward',
-              'label' => 'Brought Forward'
+              'id' => $this->getBalanceChangeTypeValue('Leave'),
+              'value' => 'leave',
+              'label' => 'Leave'
+            ]
+          ]
+        ],
+      ],
+      [
+        'id' => $periodEntitlement2->id,
+        'breakdown' => [
+          [
+            'amount' => 9, // 4 + 5
+            'expiry_date' => null,
+            'type' => [
+              'id' => $this->getBalanceChangeTypeValue('Public Holiday'),
+              'value' => 'public_holiday',
+              'label' => 'Public Holiday'
+            ]
+          ],
+          [
+            'amount' => 13,
+            'expiry_date' => null,
+            'type' => [
+              'id' => $this->getBalanceChangeTypeValue('Leave'),
+              'value' => 'leave',
+              'label' => 'Leave'
+            ]
+          ],
+        ],
+      ]
+    ];
+
+    $result = LeavePeriodEntitlement::getBreakdown([
+      'contact_id' => $contactId,
+      'period_id'  => $absencePeriod->id
+    ]);
+
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testGetBreakdownWillGroupTogetherOverriddenBalanceChangeWithLeave() {
+    $contactId = 1;
+    $absencePeriod = AbsencePeriodFabricator::fabricate();
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $this->createOverriddenBalanceChange($periodEntitlement->id, 5);
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    $expectedResult = [
+      [
+        'id' => "$periodEntitlement->id",
+        'breakdown' => [
+          [
+            'amount' => 15, // 10 from leave + 5 from overridden
+            'expiry_date' => null,
+            'type' => [
+              'id' => $this->getBalanceChangeTypeValue('Leave'),
+              'value' => 'leave',
+              'label' => 'Leave'
             ]
           ]
         ],
       ]
     ];
-    $result = LeavePeriodEntitlement::getBreakdown($params);
+
+    $result = LeavePeriodEntitlement::getBreakdown([
+      'contact_id' => $contactId,
+      'period_id'  => $absencePeriod->id
+    ]);
+
     $this->assertEquals($expectedResult, $result);
   }
+
   /**
    * Some tests on this class use the HRJobDetails API which uses the
    * HRJobContractRevision API that depends on the the global $user.
