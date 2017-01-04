@@ -861,7 +861,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals(10, $result[0]['remainder']['current']);
   }
 
-  public function testgetBreakdownBalanceChangesShouldIncludeOnlyNonExpiredBalancesWhenFalseIsPassed() {
+  public function testGetBreakdownBalanceChangesShouldIncludeOnlyNonExpiredBalancesWhenFalseIsPassed() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5);
@@ -890,7 +890,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals('entitlement', $breakdowns[2]->source_type);
   }
 
-  public function testgetBreakdownBalanceChangesShouldIncludeOnlyExpiredBalancesWhenTrueIsPassed() {
+  public function testGetBreakdownBalanceChangesShouldIncludeOnlyExpiredBalancesWhenTrueIsPassed() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5);
@@ -912,7 +912,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals('entitlement', $breakdowns[1]->source_type);
   }
 
-  public function testGetLeavePeriodEntitlementBreakdown() {
+  public function testGetBreakdown() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5);
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 8, 3);
@@ -959,7 +959,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($expectedResult, $result);
   }
 
-  public function testGetLeavePeriodEntitlementBreakdownWithExpiredSetToTrue() {
+  public function testGetBreakdownWithExpiredSetToTrue() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
     $expiredByNoOfDays = 2;
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5, $expiredByNoOfDays);
@@ -996,7 +996,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($expectedResult, $result);
   }
 
-  public function testGetLeavePeriodEntitlementBreakdownWithContactAndPeriodId() {
+  public function testGetBreakdownWithContactAndPeriodId() {
     $contactId = 1;
     $absencePeriod = AbsencePeriodFabricator::fabricate();
     $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
@@ -1091,7 +1091,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($expectedResult, $result);
   }
 
-  public function testGetLeavePeriodEntitlementBreakdownWithContactAndPeriodIdAndExpiredSetToTrue() {
+  public function testGetBreakdownWithContactAndPeriodIdAndExpiredSetToTrue() {
     $contactId = 1;
     $absencePeriod = AbsencePeriodFabricator::fabricate();
     $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
@@ -1166,6 +1166,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $result = LeavePeriodEntitlement::getBreakdown($params);
     $this->assertEquals($expectedResult, $result);
   }
+  
   /**
    * Some tests on this class use the HRJobDetails API which uses the
    * HRJobContractRevision API that depends on the the global $user.
