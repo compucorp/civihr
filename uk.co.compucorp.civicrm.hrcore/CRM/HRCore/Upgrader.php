@@ -19,9 +19,11 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    */
   private function runAllUpgraders() {
     $revisions = $this->getRevisions();
+
     foreach ($revisions as $revision) {
       $methodName = 'upgrade_' . $revision;
-      if (is_callable(array($this, $methodName))) {
+
+      if (is_callable([$this, $methodName])) {
         $this->{$methodName}();
       }
     }

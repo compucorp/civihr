@@ -1262,49 +1262,57 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Removes all pay scales except 'Not Applicable'
+   * Upgrader to :
+   * 1- Remove all pay scales except 'Not Applicable'
+   * 2- Remove all Hour Locations except 'Head Office'
+   * 3- Add 'Fixed Term' Contract Type
+   * 4- Sort contract types alphabetically
+   * 5- Add 'Retirement' contract end reason
+   * 6- add new contract change reason options
    *
    * @return TRUE
    */
-  function upgrade_1027() {
-    $tableName = CRM_Hrjobcontract_DAO_PayScale::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName} WHERE pay_scale != 'Not Applicable'");
+  public function upgrade_1027() {
+    $this->up1027_removeUnneededPayScales();
+    $this->up1027_removeUnneededHourLocations();
+
+    $optionValues = [
+      ['hrjc_contract_type', ['Fixed Term']],
+      ['hrjc_contract_end_reason', ['Retirement']],
+      ['hrjc_revision_change_reason', ['Promotion', 'Increment', 'Disciplinary'] ],
+    ];
+
+    foreach ($optionValues as $value) {
+      $this->addOptionValues($value[0], $value[1]);
+    }
+
+    $this->up1027_sortContractTypes();
 
     return true;
+  }
+
+  /**
+   * Removes all Pay scales except 'Not Applicable'
+   */
+  private function up1027_removeUnneededPayScales() {
+    $tableName = CRM_Hrjobcontract_DAO_PayScale::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName} WHERE pay_scale != 'Not Applicable'");
   }
 
   /**
    * Removes all Hour Locations except 'Head Office'
-   *
-   * @return TRUE
    */
-  function upgrade_1027() {
+  private function up1027_removeUnneededHourLocations() {
     $tableName = CRM_Hrjobcontract_DAO_HoursLocation::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName} WHERE location != 'Head office'");
-
-    return true;
   }
 
   /**
-   * Upgrader to :
-   *
-   * 1) Add 'Fixed Term' Contract Type
-   * 2) Sort contract types alphabetically
-   * 3) Add 'Retirement' contract end reason
-   * 4) add new contract change reason options
-   *
-   * @return TRUE
+   * Sorts contract types alphabetically
    */
-  public function upgrade_1026() {
-    // 1) Add 'Fixed Term' Contract Type
-    civicrm_api3('OptionValue', 'create',[
-      'option_group_id' => 'hrjc_contract_type',
-      'name' => 'Fixed Term',
-      'label' => 'Fixed Term',
-    ]);
-
-    // 2) Sort contract types alphabetically
+   private function up1027_sortContractTypes() {
     // fetch all contract types sorted alphabetically ( by their labels )
+    // hence ['sort' => 'label asc']
     $prefixes = civicrm_api3('OptionValue', 'get', [
       'sequential' => 1,
       'return' => ['id'],
@@ -1322,29 +1330,38 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         ]);
       }
     }
-
-    // 3) Add 'Retirement' contract end reason
-    civicrm_api3('OptionValue', 'create',[
-      'option_group_id' => 'hrjc_contract_end_reason',
-      'name' => 'Retirement',
-      'label' => 'Retirement',
-    ]);
-
-    // 4) Add new contract change reason options
-    $toAdd = ['Promotion', 'Increment', 'Disciplinary'];
-
-    foreach ($toAdd as $option) {
-      civicrm_api3('OptionValue', 'create',[
-        'option_group_id' => '$option',
-        'name' => $option,
-        'label' => $option,
-      ]);
-    }
-
-    return true;
   }
 
-  function decToFraction($fte) {
+  /**
+   * Creates a set of option values
+   *
+   * @param string $groupName
+   *   Option group name
+   * @param array $optionsToAdd
+   *   option values to add to the option group
+   */
+  private function addOptionValues($groupName, $optionsToAdd) {
+    foreach ($optionsToAdd as $option) {
+      $optionValue = civicrm_api3('OptionValue', 'get',[
+        'sequential' => 1,
+        'return' => ['id'],
+        'option_group_id' => $groupName,
+        'name' => $option,
+        'options' => ['limit' => 1]
+      ]);
+
+      // create the option value only if it is not exist
+      if (empty($optionValue['id'])) {
+        civicrm_api3('OptionValue', 'create',[
+          'option_group_id' => $groupName,
+          'name' => $option,
+          'label' => $option,
+        ]);
+      }
+    }
+  }
+
+  private function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
     $array = array();
     if (!empty($fteDecimalPart[1])) {
@@ -1385,7 +1402,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
   }
 
-  function commonDivisor($a,$b) {
+  private function commonDivisor($a,$b) {
     return ($a % $b) ? CRM_Hrjobcontract_Upgrader::commonDivisor($b,$a % $b) : $b;
   }
 

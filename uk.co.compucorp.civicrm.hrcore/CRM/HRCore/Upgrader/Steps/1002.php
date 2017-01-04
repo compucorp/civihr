@@ -2,21 +2,16 @@
 
 trait CRM_HRCore_Upgrader_Steps_1002 {
 
-  public function upgrade_1002() {
-    $this->up1002_createMissIndividualPrefix();
-    $this->up1002_sortIndividualPrefixes();
-
-    return TRUE;
-  }
-
   /**
-   * Create 'Miss.' Individual Prefix
+   * Upgrader to create 'Miss' Individual prefix
+   *
+   * @return bool
    */
-  private function up1002_createMissIndividualPrefix() {
+  public function upgrade_1002() {
     $missPrefix = civicrm_api3('OptionValue', 'get', [
       'option_group_id' => 'individual_prefix',
       'name' => 'Miss.',
-      'options' => ['limit' => 0],
+      'options' => ['limit' => 1],
     ]);
 
     if (empty($missPrefix['id'])) {
@@ -26,30 +21,8 @@ trait CRM_HRCore_Upgrader_Steps_1002 {
         'label' => 'Miss.',
       ]);
     }
-  }
 
-  /**
-   * Sort Individual Prefixes alphabetically
-   */
-  private function up1002_sortIndividualPrefixes() {
-    // fetch all prefixes sorted alphabetically ( by their labels )
-    $prefixes = civicrm_api3('OptionValue', 'get', [
-      'sequential' => 1,
-      'return' => ['id'],
-      'option_group_id' => 'individual_prefix',
-      'options' => ['limit' => 0, 'sort' => 'label asc']
-    ]);
-
-    // update the prefixes weight
-    $weight = 1;
-    if (!empty($prefixes['values'])) {
-      foreach($prefixes['values'] as $prefix) {
-        civicrm_api3('OptionValue', 'create', [
-          'id' => $prefix['id'],
-          'weight' => $weight++
-        ]);
-      }
-    }
+    return TRUE;
   }
 
 }
