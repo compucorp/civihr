@@ -424,6 +424,48 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
+   * Loops through the list of LeaveBalanceChanges and groups them by the type_id.
+   *
+   * Balance Changes of type "Overridden" will be grouped together with those of
+   * type "Leave". The reason is that "Overridden" is just a special type of
+   * "Leave" which was overridden by the manager during the entitlement
+   * calculation.
+   *
+   * @param CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[] $balanceChanges
+   *
+   * @return array
+   *   The returned array has the following format:
+   *   [
+   *      TYPE_ID_1 => [
+   *        // list of LeaveBalanceChange instances with TYPE_ID_1
+   *      ],
+   *      TYPE_ID_2 => [
+   *        // list of LeaveBalanceChange instances with TYPE_ID_2
+   *      ]
+   *   ]
+   */
+  private static function groupBalanceChangesByType($balanceChanges) {
+    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+
+    $balanceChangesByType = [];
+    foreach ($balanceChanges as $balanceChange) {
+      $typeID = $balanceChange->type_id;
+
+      if ($typeID == $leaveBalanceChangeTypes['Overridden']) {
+        $typeID = $leaveBalanceChangeTypes['Leave'];
+      }
+
+      if (empty($balanceChangesByType[$typeID])) {
+        $balanceChangesByType[$typeID] = [];
+      }
+
+      $balanceChangesByType[$typeID][] = $balanceChange;
+    }
+
+    return $balanceChangesByType;
+  }
+
+  /**
    * Returns the entitlement (number of days) for this LeavePeriodEntitlement.
    *
    * This is basic the sum of the amounts of the LeaveBalanceChanges that are
@@ -593,9 +635,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
   /**
    * Returns formatted results for getting the breakdown for a period entitlement
-   * i.e all of the leave balance changes given a leavePeriodEntitlement ID or (ContactID + periodId)
+   * i.e all of the leave balance changes given a leavePeriodEntitlement ID or
+   * (ContactID + periodId).
+   *
    * It also returns either valid or expired leave balance changes based on
-   * whether the expired parameter is true or false
+   * whether the expired parameter is true or false.
+   *
+   * Balance Changes of the same type will be grouped together. The amount will
+   * be the sum of the grouped items. Balance Changes of type "Overridden" will
+   * be grouped together with those of type "Leave". The reason is that
+   * "Overridden" is just a special type of "Leave" which was overridden by the
+   * manager during the entitlement calculation.
    *
    * @param array $params
    *   The param array passed to the LeavePeriodEntitlement.getBreakdown API Endpoint
@@ -633,6 +683,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     }
 
     $leaveBalanceTypeIdOptionsGroup = self::getLeaveBalanceChangeTypeIdOptionsGroup();
+
     $results = [];
     $returnExpired = !empty($params['expired']);
     foreach($leavePeriodEntitlements as $leavePeriodEntitlement) {
@@ -640,16 +691,25 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
         'id' => $leavePeriodEntitlement->id,
         'breakdown' => []
       ];
+
       $balanceChanges = $leavePeriodEntitlement->getBreakdownBalanceChanges($returnExpired);
-      foreach($balanceChanges as $balanceChange) {
+      $balanceChangesByType = self::groupBalanceChangesByType($balanceChanges);
+
+      foreach($balanceChangesByType as $typeID => $balanceChangeGroup) {
+        $amount = array_reduce($balanceChangeGroup, function($totalAmount, $balanceChange) {
+          return $totalAmount + (float)$balanceChange->amount;
+        }, 0);
+
         $periodEntitlementInfo['breakdown'][] = [
-          'amount' => $balanceChange->amount,
-          'expiry_date' => $balanceChange->expiry_date,
-          'type' => $leaveBalanceTypeIdOptionsGroup[$balanceChange->type_id],
+          'amount' => $amount,
+          'expiry_date' => $balanceChangeGroup[0]->expiry_date,
+          'type' => $leaveBalanceTypeIdOptionsGroup[$typeID],
         ];
       }
+
       $results[] = $periodEntitlementInfo;
     }
+
     return $results;
   }
 
