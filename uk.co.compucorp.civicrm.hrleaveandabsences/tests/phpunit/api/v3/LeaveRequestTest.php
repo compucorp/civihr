@@ -12,6 +12,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
 
 /**
  * Class api_v3_LeaveRequestTest
@@ -23,6 +24,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -294,6 +296,51 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(1, $result['values'][0]['contact_id']);
     $this->assertEquals($absenceType->id, $result['values'][0]['type_id']);
     $this->assertEquals($publicHoliday->date, $result['values'][0]['from_date']);
+  }
+
+  public function testGetIncludesToilLeaveRequests() {
+    HRJobContractFabricator::fabricate(['contact_id' => 1], ['period_start_date' => '-1 day']);
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'must_take_public_holiday_as_leave' => true,
+      'allow_accruals_request' => true,
+    ]);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'status_id' => $leaveRequestStatuses['Approved']
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'status_id' => $leaveRequestStatuses['Waiting Approval']
+    ], true);
+
+    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+5 day'),
+      'to_date' => CRM_Utils_Date::processDate('+6 days'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => 2,
+      'duration' => 300,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'get', ['sequential' => 1]);
+    $this->assertCount(3, $result['values']);
+    $this->assertEquals($leaveRequest1->id, $result['values'][0]['id']);
+    $this->assertEquals($leaveRequest2->id, $result['values'][1]['id']);
+    $this->assertEquals($toilRequest->leave_request_id, $result['values'][2]['id']);
   }
 
   public function testGetCanReturnALeaveRequestWhichOverlapsAContractWithoutEndDate() {

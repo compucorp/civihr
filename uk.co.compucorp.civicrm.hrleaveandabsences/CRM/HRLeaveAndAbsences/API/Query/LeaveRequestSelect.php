@@ -9,6 +9,7 @@ use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
+use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
 
 /**
  * This class is basically a wrapper around Civi\API\SelectQuery.
@@ -82,8 +83,10 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
           a.to_date >= jd.period_start_date OR
           (a.to_date IS NULL AND a.from_date >= jd.period_start_date)
         )',
-      'lbc.source_id = lrd.id',
-      "lbc.source_type = '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'",
+      "(
+        lbc.source_id = lrd.id AND lbc.source_type = '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'
+        OR lbc.source_id = tr.id AND lbc.source_type = '" . LeaveBalanceChange::SOURCE_TOIL_REQUEST . "'
+      )",
     ];
 
     if(!empty($this->params['managed_by'])) {
@@ -124,6 +127,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     }
 
     $joins = [
+      'LEFT JOIN ' .  TOILRequest::getTableName() . ' tr ON a.id = tr.leave_request_id',
       'INNER JOIN ' . LeaveRequestDate::getTableName() . ' lrd ON lrd.leave_request_id = a.id',
       'INNER JOIN ' . LeaveBalanceChange::getTableName() . ' lbc ON ' . $balanceChangeJoinCondition,
       'INNER JOIN ' . HRJobContract::getTableName() . ' jc ON a.contact_id = jc.contact_id',
