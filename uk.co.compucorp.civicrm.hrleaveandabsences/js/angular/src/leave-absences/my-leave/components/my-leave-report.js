@@ -13,12 +13,12 @@ define([
     controllerAs: 'report',
     controller: [
       '$log', '$q', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest',
-      'OptionGroup', 'dialog', controller
+      'OptionGroup', 'dialog', 'HR_settings', controller
     ]
   });
 
 
-  function controller($log, $q, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog) {
+  function controller($log, $q, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HR_settings) {
     $log.debug('Component: my-leave-report');
 
     var vm = Object.create(this);
@@ -32,6 +32,7 @@ define([
 
     vm.absencePeriods = [];
     vm.absenceTypes = {};
+    vm.dateFormat = HR_settings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.loading = true;
     vm.selectedPeriod = null;

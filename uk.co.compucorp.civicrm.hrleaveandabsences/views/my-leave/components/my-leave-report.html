@@ -74,7 +74,7 @@
                       <td class="chr_leave-report__label">
                         {{entry.type.label}}
                         <span ng-if="entry.expiry_date">
-                          (expires {{entry.expiry_date}})
+                          (expires {{entry.expiry_date | date:report.dateFormat}})
                         </span>
                       </td>
                       <td></td>
@@ -126,7 +126,7 @@
                   <tbody>
                     <tr ng-repeat="request in report.sections.holidays.data track by $index">
                       <td class="chr_leave-report__label">Public Holiday</td>
-                      <td>{{request.from_date}}</td>
+                      <td>{{request.from_date | date:report.dateFormat}}</td>
                       <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
                       <td ng-repeat="absenceType in report.absenceTypes track by $index">
                         {{(request.type_id == absenceType.id ? request.balance_change : '')}}
@@ -177,7 +177,9 @@
                       <td class="chr_leave-report__label">
                         {{report.absenceTypes[request.type_id].title}}
                       </td>
-                      <td>{{request.from_date}} - {{request.to_date}}</td>
+                      <td>
+                        {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                      </td>
                       <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
                       <td ng-repeat="absenceType in report.absenceTypes track by $index">
                         {{(request.type_id == absenceType.id ? request.balance_change : '')}}
@@ -258,7 +260,9 @@
                       <td class="chr_leave-report__label">
                         {{report.absenceTypes[request.type_id].title}}
                       </td>
-                      <td>{{request.from_date}} - {{request.to_date}}</td>
+                      <td>
+                        {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                      </td>
                       <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
                       <td ng-repeat="absenceType in report.absenceTypes track by $index">
                         {{(request.type_id == absenceType.id ? request.balance_change : '')}}
@@ -332,7 +336,9 @@
                       <td class="chr_leave-report__label">
                         {{report.absenceTypes[request.type_id].title}}
                       </td>
-                      <td>{{request.from_date}} - {{request.to_date}}</td>
+                      <td>
+                        {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                      </td>
                       <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
                       <td ng-repeat="absenceType in report.absenceTypes track by $index">
                         {{(request.type_id == absenceType.id ? request.balance_change : '')}}

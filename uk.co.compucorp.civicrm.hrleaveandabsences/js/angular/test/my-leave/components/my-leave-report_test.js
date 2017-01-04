@@ -6,7 +6,7 @@
     'mocks/data/leave-request-data',
     'mocks/data/option-group-mock-data',
     'common/angularMocks',
-    'leave-absences/shared/config',
+    'common/mocks/services/hr-settings-mock',
     'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/entitlement-api-mock',
@@ -18,16 +18,17 @@
     describe('myLeaveReport', function () {
       var contactId = CRM.vars.leaveAndAbsences.contactId;
       var $compile, $q, $log, $provide, $rootScope, component, controller;
-      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, dialog;
+      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HR_settings, dialog;
 
       beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', function (_$provide_) {
         $provide = _$provide_;
       }));
-      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock) {
+      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock, HR_settingsMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('EntitlementAPI', EntitlementAPIMock);
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
+        $provide.value('HR_settings', HR_settingsMock);
       }));
 
       beforeEach(inject(function (_$compile_, _$q_, _$log_, _$rootScope_, _$httpBackend_) {
@@ -38,13 +39,14 @@
 
         spyOn($log, 'debug');
       }));
-      beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _dialog_) {
+      beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _HR_settings_, _dialog_) {
         AbsencePeriod = _AbsencePeriod_;
         AbsenceType = _AbsenceType_;
         Entitlement = _Entitlement_;
         LeaveRequest = _LeaveRequest_;
         LeaveRequestInstance = _LeaveRequestInstance_;
         OptionGroup = _OptionGroup_;
+        HR_settings = _HR_settings_;
         dialog = _dialog_;
 
         spyOn(AbsencePeriod, 'all').and.callThrough();
@@ -65,6 +67,11 @@
       describe('initialization', function () {
         it('is initialized', function () {
           expect($log.debug).toHaveBeenCalled();
+        });
+
+        it('holds the date format', function () {
+          expect(controller.dateFormat).toBeDefined();
+          expect(controller.dateFormat).toBe(HR_settings.DATE_FORMAT);
         });
 
         it('has all the sections collapsed', function () {
