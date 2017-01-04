@@ -13,6 +13,7 @@ trait CRM_HRUI_Upgrader_Steps_4701 {
   public function upgrade_4701() {
     $this->up4701_setCustomCSSURL();
     $this->up4701_sortIndividualPrefixes();
+    $this->up4701_moveSkypeTop();
     $this->up4701_websiteToSocialAccountReplacement();
 
     return TRUE;
@@ -51,6 +52,18 @@ trait CRM_HRUI_Upgrader_Steps_4701 {
         ]);
       }
     }
+  }
+
+  /**
+   * Moves Skype option value to the top
+   * of IM list
+   */
+  private function up4701_moveSkypeTop() {
+    civicrm_api3('OptionValue', 'create', [
+      'option_group_id' => 'instant_messenger_service',
+      'name' => 'Skype',
+      'weight' => 0,
+    ]);
   }
 
   /**

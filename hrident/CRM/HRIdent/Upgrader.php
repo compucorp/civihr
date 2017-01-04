@@ -104,8 +104,8 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
     // the hardcoded name for this option group
     civicrm_api3('OptionValue', 'create', [
       'sequential' => 1,
-      'option_group_id' => "type_20130502144049",
-      'name' => "National_Insurance",
+      'option_group_id' => 'type_20130502144049',
+      'name' => 'National_Insurance',
       'is_default' => 1,
       'weight' => 0,
     ]);
