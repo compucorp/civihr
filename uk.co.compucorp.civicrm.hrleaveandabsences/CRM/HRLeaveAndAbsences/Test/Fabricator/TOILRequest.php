@@ -15,11 +15,11 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest {
   }
 
   /**
-   * Creates a new Sickness Request without running any validation
+   * Creates a new TOIL Request without running any validation
    *
    * @param array $params
    *
-   * @return \CRM_HRLeaveAndAbsences_BAO_SicknessRequest
+   * @return \CRM_HRLeaveAndAbsences_BAO_TOILRequest
    */
   public static function fabricateWithoutValidation($params = []) {
     $params = self::mergeDefaultParams($params);
