@@ -9,24 +9,23 @@
 class CRM_HRLeaveAndAbsences_Service_LeaveManager {
 
   /**
-   * Checks if the current logged in user is the Leave Manager for the Contact
-   * with the given ID.
+   * Checks contact given by $contactID is managed by the contact given by
+   * $managerID.
    *
    * In order to do this, we check if there's a Relationship between both
    * contacts, where contact A ($contactID) "has Leave Approved By" contact B
-   * (the logged in), and that if the Relationship is active on the current date.
+   * ($managerID), and that if the Relationship is active on the current date.
    *
    * Note about implementation: Due to the impossibility of making complex
    * queries using the CiviCRM API (r.start_date IS NULL OR r.start_date <=
    * CURDATE()), this method uses a SQL query to check the relationship.
    *
    * @param int $contactID
+   * @param int $managerID
    *
    * @return bool
    */
-  public function currentUserIsLeaveManagerOf($contactID) {
-    $currentUserID = CRM_Core_Session::getLoggedInContactID();
-
+  public function isContactManagedBy($contactID, $managerID) {
     $relationshipTable = CRM_Contact_BAO_Relationship::getTableName();
     $relationshipTypeTable = CRM_Contact_BAO_RelationshipType::getTableName();
 
@@ -44,13 +43,29 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManager {
 
     $params = [
       1 => [$contactID, 'Integer'],
-      2 => [$currentUserID, 'Integer'],
+      2 => [$managerID, 'Integer'],
       3 => [date('Y-m-d'), 'String']
     ];
 
     $result = CRM_Core_DAO::executeQuery($query, $params);
 
     return $result->N > 0;
+  }
+
+  /**
+   * Checks if the current logged in user is the Leave Manager for the Contact
+   * with the given ID.
+   *
+   * @see CRM_HRLeaveAndAbsences_Service_LeaveManager::isContactManagedBy()
+   *
+   * @param int $contactID
+   *
+   * @return bool
+   */
+  public function currentUserIsLeaveManagerOf($contactID) {
+    $currentUserID = CRM_Core_Session::getLoggedInContactID();
+
+    return $this->isContactManagedBy($contactID, $currentUserID);
   }
 
   /**
