@@ -162,6 +162,62 @@
                 <td></td>
               </tr>
               <tr>
+                <td
+                  class="chr_leave-report__label chr_leave-report__label--toggle"
+                  ng-click="report.toggleSection('expired')">
+                  <i
+                    class="fa"
+                    aria-hidden="true"
+                    ng-class="{ 'fa-chevron-down': report.sections.expired.open, ' fa-chevron-right': !report.sections.expired.open }"></i>
+                  Expired
+                </td>
+                <td></td>
+                <td></td>
+                <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                  {{absenceType.balanceChanges.expired}}
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td class="table-nested-cell" colspan="9">
+                  <crm-loading show="!report.sections.expired.loading">
+                    <div ng-show="report.sections.expired.open" class="table-nested table-responsive">
+                      <table class="table table-condensed">
+                        <thead>
+                          <tr>
+                            <th class="chr_leave-report__table__heading--label"></th>
+                            <th class="chr_leave-report__table__heading--dates">Dates</th>
+                            <th class="chr_leave-report__table__heading--status">Status</th>
+                            <th
+                              class="chr_leave-report__table__heading--type"
+                              ng-repeat="absenceType in report.absenceTypes track by $index">
+                              {{absenceType.title}}
+                            </th>
+                            <th class="chr_leave-report__table__heading--action"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr ng-repeat="entry in report.sections.expired.data track by $index">
+                            <td class="chr_leave-report__label">
+                              {{entry.type.label}}
+                              <span ng-if="entry.expiry_date">
+                                (expired {{entry.expiry_date | date:report.dateFormat}})
+                              </span>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                              {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
+                            </td>
+                            <td></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </crm-loading>
+                </td>
+              </tr>
+              <tr>
                 <td class="table-nested-cell" colspan="9">
                   <crm-loading show="!report.sections.approved.loading">
                     <div ng-show="report.sections.approved.open" class="table-nested table-responsive">

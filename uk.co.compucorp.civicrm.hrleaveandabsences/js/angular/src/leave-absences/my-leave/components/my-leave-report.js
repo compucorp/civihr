@@ -358,7 +358,10 @@ define([
         expired: true
       })
       .then(function (expiredBalanceChanges) {
-        vm.sections.expired.data = expiredBalanceChanges;
+        return processBreakdownsList(expiredBalanceChanges);
+      })
+      .then(function (expiredBalanceChangesFlatten) {
+        vm.sections.expired.data = expiredBalanceChangesFlatten;
       });
     }
 

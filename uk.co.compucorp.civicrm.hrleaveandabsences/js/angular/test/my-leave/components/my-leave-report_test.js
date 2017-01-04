@@ -3,6 +3,7 @@
     'common/angular',
     'common/lodash',
     'mocks/helpers/helper',
+    'mocks/data/entitlement-data',
     'mocks/data/leave-request-data',
     'mocks/data/option-group-mock-data',
     'common/angularMocks',
@@ -12,7 +13,7 @@
     'mocks/apis/entitlement-api-mock',
     'mocks/apis/leave-request-api-mock',
     'leave-absences/my-leave/app'
-  ], function (angular, _, helper, leaveRequestMock, optionGroupMock) {
+  ], function (angular, _, helper, entitlementMock, leaveRequestMock, optionGroupMock) {
     'use strict';
 
     describe('myLeaveReport', function () {
@@ -405,58 +406,6 @@
           });
         });
 
-        describe('section: Period Entitlement', function () {
-          beforeEach(function () {
-            openSection('entitlements');
-          });
-
-          it('fetches the entitlements breakdown', function () {
-            expect(Entitlement.breakdown).toHaveBeenCalled();
-          });
-
-          it('passes to the Model the entitlements already stored', function () {
-            expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.any(Object), controller.entitlements);
-          });
-
-          it('caches the data', function () {
-            expect(controller.sections.entitlements.data.length).not.toBe(0);
-          });
-
-          describe('cached data format', function () {
-            var expectedFormat;
-
-            beforeEach(function () {
-              var entitlements = controller.entitlements;
-
-              expectedFormat = Array.prototype.concat.apply([], entitlements.map(function (entitlement) {
-                return entitlement.breakdown;
-              }));
-            });
-
-            it('groups and flattens all breakdown entries before caching them', function () {
-              expect(controller.sections.entitlements.data.length).toBe(expectedFormat.length);
-            });
-          });
-
-          describe('absence type reference in breakdown', function () {
-            it('stores the absence type_id in every breakdown entry', function () {
-              controller.entitlements.forEach(function (entitlement) {
-                var entries = entitlementBreakdownEntries(entitlement);
-
-                expect(entries.every(function (breakdownEntry) {
-                  return breakdownEntry.type_id === entitlement.type_id;
-                })).toBe(true);
-              });
-            });
-
-            function entitlementBreakdownEntries(entitlement) {
-              return controller.sections.entitlements.data.filter(function (entry) {
-                return _.contains(entitlement.breakdown, entry);
-              });
-            }
-          });
-        });
-
         describe('section: Public Holidays', function () {
           beforeEach(function () {
             openSection('holidays');
@@ -508,22 +457,6 @@
           });
         });
 
-        describe('section: Expired', function () {
-          beforeEach(function () {
-            openSection('expired');
-          });
-
-          it('fetches all expired balance changes', function () {
-            expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
-              expired: true
-            }));
-          });
-
-          it('caches the data', function () {
-            expect(controller.sections.expired.data.length).not.toBe(0);
-          });
-        });
-
         describe('section: Cancelled and Other', function () {
           beforeEach(function () {
             openSection('other');
@@ -540,6 +473,98 @@
 
           it('caches the data', function () {
             expect(controller.sections.other.data.length).not.toBe(0);
+          });
+        });
+
+        describe('breakdown-based sections', function () {
+          describe('section: Period Entitlement', function () {
+            beforeEach(function () {
+              openSection('entitlements');
+            });
+
+            it('fetches the entitlements breakdown', function () {
+              expect(Entitlement.breakdown).toHaveBeenCalled();
+            });
+
+            it('passes to the Model the entitlements already stored', function () {
+              expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.any(Object), controller.entitlements);
+            });
+
+            it('caches the data', function () {
+              expect(controller.sections.entitlements.data.length).not.toBe(0);
+            });
+
+            describe('cached data format', function () {
+              var expectedFormat;
+
+              beforeEach(function () {
+                var entitlements = controller.entitlements;
+
+                expectedFormat = Array.prototype.concat.apply([], entitlements.map(function (entitlement) {
+                  return entitlement.breakdown;
+                }));
+              });
+
+              it('groups and flattens all breakdown entries before caching them', function () {
+                expect(controller.sections.entitlements.data.length).toBe(expectedFormat.length);
+              });
+            });
+
+            describe('absence type reference in breakdown', function () {
+              it('stores the absence type_id in every breakdown entry', function () {
+                controller.entitlements.forEach(function (entitlement) {
+                  var entries = entitlementBreakdownEntries(entitlement);
+
+                  expect(entries.every(function (breakdownEntry) {
+                    return breakdownEntry.type_id === entitlement.type_id;
+                  })).toBe(true);
+                });
+              });
+
+              function entitlementBreakdownEntries(entitlement) {
+                return controller.sections.entitlements.data.filter(function (entry) {
+                  return _.contains(entitlement.breakdown, entry);
+                });
+              }
+            });
+          });
+
+          describe('section: Expired', function () {
+            var dataReturnedFromAPI;
+
+            beforeEach(function () {
+              dataReturnedFromAPI = entitlementMock.breakdown().values;
+
+              openSection('expired');
+            });
+
+            it('fetches all expired balance changes', function () {
+              expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
+                expired: true
+              }));
+            });
+
+            it('does not pass to the Model the entitlements already stored', function () {
+              expect(Entitlement.breakdown).not.toHaveBeenCalledWith(jasmine.any(Object), controller.entitlements);
+            });
+
+            it('caches the data', function () {
+              expect(controller.sections.expired.data.length).not.toBe(0);
+            });
+
+            describe('cached data format', function () {
+              var expectedFormat;
+
+              beforeEach(function () {
+                expectedFormat = Array.prototype.concat.apply([], dataReturnedFromAPI.map(function (entitlement) {
+                  return entitlement.breakdown;
+                }));
+              });
+
+              it('groups and flattens all breakdown entries before caching them', function () {
+                expect(controller.sections.expired.data.length).toBe(expectedFormat.length);
+              });
+            });
           });
         });
 
