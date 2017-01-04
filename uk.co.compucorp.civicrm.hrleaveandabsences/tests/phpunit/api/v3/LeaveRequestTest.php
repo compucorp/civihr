@@ -1641,6 +1641,88 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(0, $result['count']);
   }
 
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_request_id
+   */
+  public function testIsManagedByShouldThrowAnExceptionIfLeaveRequestIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'isManagedBy', ['contact_id' => 1]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id
+   */
+  public function testIsManagedByShouldThrowAnExceptionIfContactIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'isManagedBy', ['leave_request_id' => 1]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_request_id, contact_id
+   */
+  public function testIsManagedByShouldThrowAnExceptionIfBothTheContactIDAndLeaveRequestIDAreMissing() {
+    civicrm_api3('LeaveRequest', 'isManagedBy');
+  }
+
+  public function testIsManagedByShouldReturnTrueIfTheContactOfTheGivenLeaveRequestIsManagedByTheGivenContactID() {
+    $manager = ContactFabricator::fabricate();
+    $staffMember = ContactFabricator::fabricate();
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $this->setContactAsLeaveApproverOf($manager, $staffMember);
+
+    $result = civicrm_api3('LeaveRequest', 'isManagedBy', [
+      'leave_request_id' => $leaveRequest->id,
+      'contact_id' => $manager['id']
+    ]);
+
+    $expected = [
+      'is_error' => 0,
+      'count' => 1,
+      'version' => 3,
+      'values' => true,
+    ];
+    
+    $this->assertEquals($expected, $result);
+  }
+
+  public function testIsManagedByShouldReturnFalseIfTheContactOfTheGivenLeaveRequestIsNotManagedByTheGivenContactID() {
+    $manager = ContactFabricator::fabricate();
+    $staffMember = ContactFabricator::fabricate();
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'isManagedBy', [
+      'leave_request_id' => $leaveRequest->id,
+      'contact_id' => $manager['id']
+    ]);
+
+    $expected = [
+      'is_error' => 0,
+      'count' => 1,
+      'version' => 3,
+      'values' => false,
+    ];
+
+    $this->assertEquals($expected, $result);
+  }
+
   private function createLeaveRequestDatesArray(LeaveRequest $leaveRequest) {
     $dates = [];
     foreach ($leaveRequest->getDates() as $date) {
