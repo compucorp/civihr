@@ -89,13 +89,15 @@
           xdescribe('before data is loaded', function () {
             // TODO: check why it doesn't work
             it('is in loading mode', function () {
-              expect(controller.loading).toBe(true);
+              expect(controller.loading.page).toBe(true);
+              expect(controller.loading.content).toBe(false);
             });
           });
 
           describe('after data is loaded', function () {
             it('is out of loading mode', function () {
-              expect(controller.loading).toBe(false);
+              expect(controller.loading.page).toBe(false);
+              expect(controller.loading.content).toBe(false);
             });
 
             it('has fetched the leave request statuses', function () {
@@ -252,7 +254,8 @@
               return !period.current;
             }).sample();
             label = controller.labelPeriod(period);
-          })
+          });
+
           it('returns the title as it is', function () {
             expect(label).toBe(period.title);
           });
@@ -279,7 +282,7 @@
           });
 
           it('goes into loading mode', function () {
-            expect(controller.loading).toBe(true);
+            expect(controller.loading.content).toBe(true);
           });
 
           it('reloads the entitlements', function () {
@@ -339,7 +342,7 @@
           });
 
           it('goes out of loading mode', function () {
-            expect(controller.loading).toBe(false);
+            expect(controller.loading.content).toBe(false);
           });
         });
       });
@@ -351,13 +354,27 @@
           });
         });
 
-        describe('flag', function () {
+        describe('basic tests', function () {
           beforeEach(function () {
-            openSection('approved');
+            openSection('approved', false);
           });
 
-          it('changes the `open` flag for that section', function () {
+          it('marks the section as open', function () {
             expect(controller.sections.approved.open).toBe(true);
+          });
+
+          it('puts the section in loading mode', function () {
+            expect(controller.sections.approved.loading).toBe(true);
+          });
+
+          describe('after the data has been loaded', function () {
+            beforeEach(function () {
+              $rootScope.$digest();
+            });
+
+            it('puts the section out of loading mode', function () {
+              expect(controller.sections.approved.loading).toBe(false);
+            });
           });
         });
 
@@ -531,9 +548,11 @@
          *
          * @param {string} section
          */
-        function openSection(section) {
+        function openSection(section, digest) {
+          digest = typeof digest === 'undefined' ? true : !!digest;
+
           controller.toggleSection(section);
-          $rootScope.$digest();
+          digest && $rootScope.$digest();
         }
       });
 
@@ -542,13 +561,13 @@
           controller.sections.approved.open = true;
         });
 
-        describe('flag', function () {
+        describe('basic tests', function () {
           beforeEach(function () {
             controller.toggleSection('approved');
             $rootScope.$digest();
           });
 
-          it('changes the `open` flag for that section', function () {
+          it('marks the section as closed', function () {
             expect(controller.sections.approved.open).toBe(false);
           });
         });

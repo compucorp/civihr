@@ -34,15 +34,18 @@ define([
     vm.absenceTypes = {};
     vm.dateFormat = HR_settings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
-    vm.loading = true;
     vm.selectedPeriod = null;
+    vm.loading = {
+      content: true,
+      page: true
+    };
     vm.sections = {
-      approved:     { open: false, data: [], loadFn: loadApprovedRequests },
-      entitlements: { open: false, data: [], loadFn: loadEntitlementsBreakdown },
-      expired:      { open: false, data: [], loadFn: loadExpiredBalanceChanges },
-      holidays:     { open: false, data: [], loadFn: loadPublicHolidaysRequests },
-      pending:      { open: false, data: [], loadFn: loadPendingRequests },
-      other:        { open: false, data: [], loadFn: loadOtherRequests }
+      approved:     { open: false, data: [], loading: false, loadFn: loadApprovedRequests },
+      entitlements: { open: false, data: [], loading: false, loadFn: loadEntitlementsBreakdown },
+      expired:      { open: false, data: [], loading: false, loadFn: loadExpiredBalanceChanges },
+      holidays:     { open: false, data: [], loading: false, loadFn: loadPublicHolidaysRequests },
+      pending:      { open: false, data: [], loading: false, loadFn: loadPendingRequests },
+      other:        { open: false, data: [], loading: false, loadFn: loadOtherRequests }
     };
 
     /**
@@ -95,20 +98,20 @@ define([
      * and clears the cached data of closed sections
      */
     vm.refresh = function () {
-      vm.loading = true;
+      vm.loading.content = true;
 
       $q.all([
         loadEntitlements(),
         loadBalanceChanges(),
       ])
       .then(function () {
+        vm.loading.content = false;
+      })
+      .then(function () {
         return $q.all([
           loadOpenSectionsData(),
           clearClosedSectionsData()
         ]);
-      })
-      .then(function () {
-        vm.loading = false;
       });
     };
 
@@ -123,7 +126,7 @@ define([
       section.open = !section.open;
 
       if (section.open && !section.data.length) {
-        section.loadFn();
+        callSectionLoadFn(section);
       }
     };
 
@@ -135,15 +138,33 @@ define([
         loadAbsencePeriods()
       ])
       .then(function () {
+        vm.loading.page = false;
+      })
+      .then(function () {
         return $q.all([
           loadEntitlements(),
           loadBalanceChanges()
         ]);
       })
       .then(function () {
-        vm.loading = false;
+        vm.loading.content = false;
       });
     })();
+
+    /**
+     * Calls the load function of the given data, and puts the section
+     * in and out of loading mode
+     *
+     * @param  {Object} section
+     * @return {Promise}
+     */
+    function callSectionLoadFn(section) {
+      section.loading = true;
+
+      return section.loadFn().then(function () {
+        section.loading = false;
+      });
+    }
 
     /**
      * Triggers the cancellation action, then removes the cancelled
@@ -157,7 +178,7 @@ define([
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function cancelRequest(leaveRequest) {
-      vm.loading = true;
+      vm.loading.content = true;
 
       leaveRequest.cancel()
         .then(function () {
@@ -179,7 +200,7 @@ define([
           ]);
         })
         .then(function () {
-          vm.loading = false;
+          vm.loading.content = false;
         });
     }
 
@@ -363,7 +384,7 @@ define([
           return section.open;
         })
         .map(function (section) {
-          return section.loadFn();
+          return callSectionLoadFn(section);
         }));
     }
 
