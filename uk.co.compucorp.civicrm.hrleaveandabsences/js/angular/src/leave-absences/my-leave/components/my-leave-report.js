@@ -70,7 +70,7 @@ define([
     vm.action = function (leaveRequest, action) {
       if (action === 'cancel') {
         dialog.open({
-          title: 'Confirm Cancellation Leave Request',
+          title: 'Confirm Cancellation?',
           copyCancel: 'Cancel',
           copyConfirm: 'Confirm',
           classConfirm: 'btn-danger',

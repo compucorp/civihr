@@ -162,6 +162,55 @@
                 <td></td>
               </tr>
               <tr>
+                <td class="table-nested-cell" colspan="9">
+                  <crm-loading show="!report.sections.approved.loading">
+                    <div ng-show="report.sections.approved.open" class="table-nested table-responsive">
+                      <table class="table table-condensed">
+                        <thead>
+                          <tr>
+                            <th class="chr_leave-report__table__heading--label"></th>
+                            <th class="chr_leave-report__table__heading--dates">Dates</th>
+                            <th class="chr_leave-report__table__heading--status">Status</th>
+                            <th
+                              class="chr_leave-report__table__heading--type"
+                              ng-repeat="absenceType in report.absenceTypes track by $index">
+                              {{absenceType.title}}
+                            </th>
+                            <th class="chr_leave-report__table__heading--action"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr ng-repeat="request in report.sections.approved.data track by $index">
+                            <td class="chr_leave-report__label">
+                              {{report.absenceTypes[request.type_id].title}}
+                            </td>
+                            <td>
+                              {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                            </td>
+                            <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
+                            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                              {{(request.type_id == absenceType.id ? request.balance_change : '')}}
+                            </td>
+                            <td ng-if="report.actionsFor(request).length">
+                              <div uib-dropdown dropdown-append-to-body>
+                                <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                                  <i class="fa fa-ellipsis-v"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                                  <li ng-repeat="action in report.actionsFor(request)">
+                                    <a href ng-click="report.action(request, action)">{{action}}</a>
+                                  </li>
+                                </ul>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </crm-loading>
+                </td>
+              </tr>
+              <tr>
                 <td
                   class="chr_leave-report__label chr_leave-report__label--toggle"
                   ng-click="report.toggleSection('expired')">
@@ -210,55 +259,6 @@
                               {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
                             </td>
                             <td></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </crm-loading>
-                </td>
-              </tr>
-              <tr>
-                <td class="table-nested-cell" colspan="9">
-                  <crm-loading show="!report.sections.approved.loading">
-                    <div ng-show="report.sections.approved.open" class="table-nested table-responsive">
-                      <table class="table table-condensed">
-                        <thead>
-                          <tr>
-                            <th class="chr_leave-report__table__heading--label"></th>
-                            <th class="chr_leave-report__table__heading--dates">Dates</th>
-                            <th class="chr_leave-report__table__heading--status">Status</th>
-                            <th
-                              class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypes track by $index">
-                              {{absenceType.title}}
-                            </th>
-                            <th class="chr_leave-report__table__heading--action"></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr ng-repeat="request in report.sections.approved.data track by $index">
-                            <td class="chr_leave-report__label">
-                              {{report.absenceTypes[request.type_id].title}}
-                            </td>
-                            <td>
-                              {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
-                            </td>
-                            <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
-                            <td ng-repeat="absenceType in report.absenceTypes track by $index">
-                              {{(request.type_id == absenceType.id ? request.balance_change : '')}}
-                            </td>
-                            <td ng-if="report.actionsFor(request).length">
-                              <div uib-dropdown dropdown-append-to-body>
-                                <a href class="chr_leave-report__action" uib-dropdown-toggle>
-                                  <i class="fa fa-ellipsis-v"></i>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-                                  <li ng-repeat="action in report.actionsFor(request)">
-                                    <a href ng-click="report.action(request, action)">{{action}}</a>
-                                  </li>
-                                </ul>
-                              </div>
-                            </td>
                           </tr>
                         </tbody>
                       </table>
