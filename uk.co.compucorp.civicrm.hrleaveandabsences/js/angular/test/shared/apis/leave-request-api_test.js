@@ -29,11 +29,6 @@ define([
       $httpBackend.whenGET(/action\=getbalancechangebyabsencetype&entity\=LeaveRequest/)
         .respond(mockData.balanceChangeByAbsenceType());
 
-      //Intercept backend calls for LeaveRequest.calculateBalanceChange
-      //this is changed to sendPOSt now
-      // $httpBackend.whenGET(/action\=calculatebalancechange&entity\=LeaveRequest/)
-      //   .respond(mockData.calculateBalanceChange());
-
       //Intercept backend calls for LeaveRequest.create in POST
       $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)
         .respond(function (method, url, data, headers, params) {
@@ -120,7 +115,7 @@ define([
             period_id: jasmine.any(String),
             statuses: null,
             public_holiday: false
-          }, false);
+          });
         });
 
         it('sends as `public_holiday` the original value if truthy value had been passed', function () {
@@ -128,7 +123,7 @@ define([
 
           expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
             public_holiday: true
-          }), false);
+          }));
         });
 
         it('sends as `statuses` an "IN" list if the original value is an array', function () {
@@ -136,7 +131,7 @@ define([
 
           expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
             statuses: { "IN": jasmine.any(Array) },
-          }), false);
+          }));
         });
       });
 
@@ -216,7 +211,7 @@ define([
       describe('when mandatory field is missing', function () {
 
         beforeEach(function () {
-          errorMessage = 'contact_id, from_date and from_date_type in params are mandatory';
+          errorMessage = 'contact_id, from_date and from_type in params are mandatory';
           requestData = {};
           promise = LeaveRequestAPI.calculateBalanceChange(requestData);
         });

@@ -44,10 +44,7 @@ define([
         create: function (params) {
           return $q(function (resolve, reject) {
             if (!params.contact_id  || !params.from_date) {
-              reject({
-                is_error: 1,
-                error_message: 'contact_id, from_date and from_date_type in params are mandatory'
-              });
+              reject('contact_id, from_date and from_date_type in params are mandatory');
             }
 
             resolve(mockData.all().values[0]);
