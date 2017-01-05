@@ -21,16 +21,20 @@
               resolve: {
                 contactId: function () {
                   return CRM.vars.leaveAndAbsences.contactId;
-                }
+                },
+                format: ['DateFormat', function (DateFormat) {
+                  // stores the data format in HR_setting.DATE_FORMAT
+                  return DateFormat.getDateFormat();
+                }]
               }
             })
             .state('my-leave.report', {
               url: '/report',
-              template: '<my-leave-report contact-id="$ctrl.contactId"></my-leave-report>'
+              template: '<my-leave-report contact-id="myleave.contactId"></my-leave-report>'
             })
             .state('my-leave.calendar', {
               url: '/calendar',
-              template: '<my-leave-calendar contact-id="$ctrl.contactId"></my-leave-calendar>'
+              template: '<my-leave-calendar contact-id="myleave.contactId"></my-leave-calendar>'
             });
         }
       ]);

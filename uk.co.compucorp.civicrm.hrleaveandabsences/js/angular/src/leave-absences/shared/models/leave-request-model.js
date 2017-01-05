@@ -24,14 +24,16 @@ define([
          *   `page` for the current page, `size` for number of items per page
          * @param {string} sort - The field and direction to order by
          * @param  {Object} params
-         * @return {Promise} Resolved with {Array} Array of leave request instances
+         * @return {Promise} resolves with {Object}
          */
         all: function (filters, pagination, sort, params) {
-          return leaveRequestAPI.all(filters, pagination, sort, params)
-            .then(function (leaveRequests) {
-              return leaveRequests.map(function (leaveRequest) {
+          return leaveRequestAPI.all(this.processFilters(filters), pagination, sort, params)
+            .then(function (response) {
+              response.list = response.list.map(function (leaveRequest) {
                 return instance.init(leaveRequest, true);
               });
+
+              return response;
             });
         },
 

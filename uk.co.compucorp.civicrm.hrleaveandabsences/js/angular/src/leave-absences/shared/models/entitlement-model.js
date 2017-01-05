@@ -15,15 +15,14 @@ define([
         /**
          * Calls the all() method of the Entitlement API, and returns an
          * EntitlementInstance for each entitlement.
-         * It can pass the withBalance property to get remainder for entitlements.
+         * It can pass the withRemainder property to get remainder for entitlements.
          *
          * @param {Object} params matches the api endpoint params (period_id, contact_id, etc)
-         * @param {boolean} withBalance to return remainder of data
+         * @param {boolean} withRemainder to return remainder of data
          * @return {Promise}
          */
-        all: function (params, withBalance) {
-
-          return entitlementAPI.all(params, withBalance)
+        all: function (params, withRemainder) {
+          return entitlementAPI.all(params, withRemainder)
             .then(function (entitlements) {
               return entitlements.map(function (entitlement) {
                 return instance.init(entitlement, true);
@@ -50,7 +49,7 @@ define([
               if (entitlements) {
                 entitlements.map(function (entitlement) {
                   var foundEntitlement = _.find(breakdown, function (element) {
-                    return element.id === entitlement.id;
+                    return element.id == entitlement.id;
                   });
 
                   if (foundEntitlement) {

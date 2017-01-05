@@ -1,241 +1,63 @@
-define(function () {
+define([
+  'common/lodash',
+  'mocks/data/absence-period-data',
+  'mocks/data/absence-type-data',
+  'mocks/data/option-group-mock-data'
+], function (_, absencePeriodData, absenceTypeData, optionGroupData) {
   var mockData = {
-    all_data: {
-      "is_error": 0,
-      "version": 3,
-      "count": 6,
-      "values": [{
-        "id": "1",
-        "period_id": "1",
-        "type_id": "1",
-        "contact_id": "202",
-        "overridden": "0"
-      }, {
-        "id": "2",
-        "period_id": "1",
-        "type_id": "2",
-        "contact_id": "202",
-        "overridden": "0"
-      }, {
-        "id": "3",
-        "period_id": "1",
-        "type_id": "3",
-        "contact_id": "202",
-        "overridden": "0"
-      }, {
-        "id": "4",
-        "period_id": "2",
-        "type_id": "1",
-        "contact_id": "202",
-        "overridden": "0"
-      }, {
-        "id": "5",
-        "period_id": "2",
-        "type_id": "2",
-        "contact_id": "202",
-        "overridden": "0"
-      }, {
-        "id": "6",
-        "period_id": "2",
-        "type_id": "3",
-        "contact_id": "202",
-        "overridden": "0"
-      }]
-    },
-    all_data_with_remainder: {
-      "is_error": 0,
-      "version": 3,
-      "count": 3,
-      "values": [{
-        "id": "1",
-        "remainder": {
-          "current": 11,
-          "future": 5
-        }
-      }, {
-        "id": "2",
-        "remainder": {
-          "current": 0,
-          "future": -1
-        }
-      }, {
-        "id": "3",
-        "remainder": {
-          "current": 5,
-          "future": 5
-        }
-      }]
-    },
-    breakdown_data: {
-      "is_error": 0,
-      "version": 3,
-      "count": 3,
-      "values": [{
-        "id": "1",
-        "breakdown": [{
-          "amount": "20.00",
-          "expiry_date": null,
-          "type": {
-            "id": 1,
-            "value": "leave",
-            "label": "Leave"
-          }
-        }, {
-          "amount": "8.00",
-          "expiry_date": null,
-          "type": {
-            "id": 3,
-            "value": "public_holiday",
-            "label": "Public Holiday"
-          }
-        }, {
-          "amount": "5.00",
-          "expiry_date": "2016-04-01",
-          "type": {
-            "id": 2,
-            "value": "brought_forward",
-            "label": "Brought Forward"
-          }
-        }]
-      }, {
-        "id": "2",
-        "breakdown": []
-      }, {
-        "id": "3",
-        "breakdown": [{
-          "amount": "5.00",
-          "expiry_date": null,
-          "type": {
-            "id": 1,
-            "value": "leave",
-            "label": "Leave"
-          }
-        }]
-      }]
-    },
-    entitlements_chained_with_remainder: {
-      "is_error": 0,
-      "version": 3,
-      "count": 6,
-      "values": [{
-        "id": "1",
-        "period_id": "1",
-        "type_id": "1",
-        "contact_id": "202",
-        "overridden": "0",
-        "api.LeavePeriodEntitlement.getremainder": {
-          "is_error": 0,
-          "version": 3,
-          "count": 1,
-          "id": 0,
-          "values": [{
-            "id": "1",
-            "remainder": {
-              "current": 11,
-              "future": 5
-            }
-          }]
-        }
-      }, {
-        "id": "2",
-        "period_id": "1",
-        "type_id": "2",
-        "contact_id": "202",
-        "overridden": "0",
-        "api.LeavePeriodEntitlement.getremainder": {
-          "is_error": 0,
-          "version": 3,
-          "count": 1,
-          "id": 0,
-          "values": [{
-            "id": "2",
-            "remainder": {
-              "current": 0,
-              "future": -1
-            }
-          }]
-        }
-      }, {
-        "id": "3",
-        "period_id": "1",
-        "type_id": "3",
-        "contact_id": "202",
-        "overridden": "0",
-        "api.LeavePeriodEntitlement.getremainder": {
-          "is_error": 0,
-          "version": 3,
-          "count": 1,
-          "id": 0,
-          "values": [{
-            "id": "3",
-            "remainder": {
-              "current": 5,
-              "future": 5
-            }
-          }]
-        }
-      }, {
-        "id": "4",
-        "period_id": "2",
-        "type_id": "1",
-        "contact_id": "202",
-        "overridden": "0",
-        "api.LeavePeriodEntitlement.getremainder": {
-          "is_error": 0,
-          "version": 3,
-          "count": 1,
-          "id": 0,
-          "values": [{
-            "id": "4",
-            "remainder": {
-              "current": -8,
-              "future": -8
-            }
-          }]
-        }
-      }, {
-        "id": "5",
-        "period_id": "2",
-        "type_id": "2",
-        "contact_id": "202",
-        "overridden": "0",
-        "api.LeavePeriodEntitlement.getremainder": {
-          "is_error": 0,
-          "version": 3,
-          "count": 1,
-          "id": 0,
-          "values": [{
-            "id": "5",
-            "remainder": {
-              "current": 0,
-              "future": 0
-            }
-          }]
-        }
-      }, {
-        "id": "6",
-        "period_id": "2",
-        "type_id": "3",
-        "contact_id": "202",
-        "overridden": "0",
-        "api.LeavePeriodEntitlement.getremainder": {
-          "is_error": 0,
-          "version": 3,
-          "count": 1,
-          "id": 0,
-          "values": [{
-            "id": "6",
-            "remainder": {
-              "current": 0,
-              "future": 0
-            }
-          }]
-        }
-      }]
-    }
+    all_data: (function () {
+      var entitlements = generateEntitlements();
+
+      return {
+        "is_error": 0,
+        "version": 3,
+        "count": entitlements.length,
+        "values": entitlements
+      };
+    })(),
+    breakdown_data: (function () {
+      var entitlements = generateEntitlements();
+      var dayTypes = optionGroupData.getCollection('hrleaveandabsences_leave_request_day_type');
+
+      return {
+        "is_error": 0,
+        "version": 3,
+        "count": entitlements.length,
+        "values": (function () {
+          return entitlements.map(function (entitlement) {
+            return {
+              "id": entitlement.id,
+              "breakdown": _.times(_.random(1, 10)).map(function () {
+                var dayType = _.sample(dayTypes);
+
+                return {
+                  "amount": _.random(-30, 30) + ".00",
+                  "expiry_date": null,
+                  "type": {
+                    "id": dayType.id,
+                    "value": dayType.value,
+                    "label": dayType.label
+                  }
+                };
+              })
+            };
+          });
+        })()
+      };
+    })(),
+    entitlements_chained_with_remainder: (function () {
+      var entitlements = generateEntitlements(true);
+
+      return {
+        "is_error": 0,
+        "version": 3,
+        "count": entitlements.length,
+        "values": entitlements
+      };
+    })(),
   };
   return {
-    all: function (params, withBalance) {
+    all: function (withBalance) {
       if (withBalance) {
         return mockData.entitlements_chained_with_remainder;
       }
@@ -244,5 +66,57 @@ define(function () {
     breakdown: function () {
       return mockData.breakdown_data;
     }
+  }
+
+  /**
+   * Generates an entitlement for each absence type in each period
+   *
+   * @param {Boolean} withRemainder if the remainder data should be attached
+   * @return {Array}
+   */
+  function generateEntitlements(withRemainder) {
+    var i = 1, values = [];
+
+    absencePeriodData.all().values.forEach(function (absencePeriod) {
+      absenceTypeData.all().values.forEach(function (absenceType) {
+        var id = i++;
+        var entitlement = {
+          "id": id,
+          "period_id": absencePeriod.id,
+          "type_id": absenceType.id,
+          "contact_id": "202",
+          "overridden": "0",
+          "api.LeavePeriodEntitlement.getentitlement": {
+            "is_error": 0,
+            "version": 3,
+            "count": 1,
+            "values": [{
+              "id": id,
+              "entitlement": _.random(0, 30)
+            }]
+          }
+        };
+
+        if (withRemainder) {
+          entitlement["api.LeavePeriodEntitlement.getremainder"] = {
+            "is_error": 0,
+            "version": 3,
+            "count": 1,
+            "id": 0,
+            "values": [{
+              "id": id,
+              "remainder": {
+                "current": _.random(-10, 10),
+                "future": _.random(-10, 10)
+              }
+            }]
+          };
+        }
+
+        values.push(entitlement);
+      });
+    });
+
+    return values;
   }
 });

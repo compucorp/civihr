@@ -20,7 +20,7 @@ define([
           var jsonFromParams = JSON.parse(params.json);
           //intercept same get call when chaining with withremainder call
           if ('api.LeavePeriodEntitlement.getremainder' in jsonFromParams) {
-            return [200, mockData.all({}, true)];
+            return [200, mockData.all(true)];
           }
           return [200, mockData.all()];
         });
@@ -38,8 +38,10 @@ define([
       var totalEntitlements, entitlementPromise, remainderPromise;
 
       beforeEach(function () {
+        spyOn(EntitlementAPI, 'sendGET').and.callThrough();
+
         totalEntitlements = mockData.all().values.length;
-        entitlementPromise = EntitlementAPI.all();
+        entitlementPromise = EntitlementAPI.all({});
         remainderPromise = EntitlementAPI.all({}, true);
       });
 
@@ -52,7 +54,9 @@ define([
           expect(response.length).toEqual(totalEntitlements);
           var entitlementFirst = response[0];
 
-          expect(Object.keys(entitlementFirst)).toEqual(['id', 'period_id', 'type_id', 'contact_id', 'overridden']);
+          ['id', 'period_id', 'type_id', 'contact_id', 'overridden'].forEach(function (property) {
+            expect(entitlementFirst[property]).toBeDefined();
+          });
         });
       });
 
@@ -81,6 +85,26 @@ define([
 
           expect(Object.keys(remainder)).toContain('future');
           expect(remainder.future).toEqual(jasmine.any(Number));
+        });
+      });
+
+      describe('entitlement value', function () {
+        it('chains a call to the getentitlement endpoint', function () {
+          var params = EntitlementAPI.sendGET.calls.mostRecent().args[2];
+
+          expect(params).toEqual(jasmine.objectContaining({
+            'api.LeavePeriodEntitlement.getentitlement': {
+              'entitlement_id': '$value.id'
+            }
+          }));
+        });
+
+        it('stores the value in a `value` property', function () {
+          entitlementPromise.then(function (entitlements) {
+            entitlements.forEach(function (entitlement) {
+              expect(entitlement.value).toBeDefined();
+            });
+          });
         });
       });
     });

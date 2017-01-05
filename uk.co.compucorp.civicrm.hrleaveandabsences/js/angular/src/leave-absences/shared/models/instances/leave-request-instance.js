@@ -1,6 +1,6 @@
 define([
   'leave-absences/shared/modules/models-instances',
-  'common/services/api/option-group',
+  'common/models/option-group',
   'common/models/instances/instance'
 ], function (instances) {
   'use strict';
@@ -8,7 +8,7 @@ define([
   instances.factory('LeaveRequestInstance', [
     'ModelInstance',
     'LeaveRequestAPI',
-    'api.optionGroup',
+    'OptionGroup',
     '$q',
     function (ModelInstance, LeaveRequestAPI, OptionGroup, $q) {
 
@@ -186,6 +186,18 @@ define([
           }
 
           return deferred.promise;
+        },
+
+        /**
+         * Override of parent method
+         *
+         * @param {object} result - The accumulator object
+         * @param {string} key - The property name
+         */
+        toAPIFilter: function (result, __, key) {
+          if (!_.includes(['balance_change', 'dates'], key)) {
+            result[key] = this[key];
+          }
         }
       });
     }

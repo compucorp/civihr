@@ -3,7 +3,7 @@ define([
   'common/moment',
   'leave-absences/shared/models/instances/absence-period-instance',
   'leave-absences/shared/apis/absence-period-api',
-  'common/models/model', 
+  'common/models/model',
   'common/services/hr-settings',
 ], function (models, moment) {
   'use strict';

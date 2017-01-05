@@ -22,6 +22,10 @@ define([
       ModelInstance = _ModelInstance_;
     }));
 
+    afterEach(function () {
+      jasmine.clock().uninstall();
+    });
+
     it('inherits from ModelInstance', function () {
       expect(_.functions(AbsencePeriodInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
     });
@@ -110,7 +114,7 @@ define([
       beforeEach(function () {
         //attributes for one of current period in 2016
         var attributes = mockData.all().values[0];
-        
+
         instance = AbsencePeriodInstance.init(attributes, true);
       });
 

@@ -34,7 +34,7 @@ define([
       'LeaveRequestAPI',
       '$rootScope',
       '$q',
-      'api.optionGroup',
+      'OptionGroup',
       function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _OptionGroup_) {
         LeaveRequestInstance = _LeaveRequestInstance_.init({}, false);
         LeaveRequestAPI = _LeaveRequestAPI_;
@@ -574,6 +574,28 @@ define([
       function setIsManagedResponseTo(value) {
         return $q.resolve(value);
       }
+    });
+
+    // Testing the customization of toAPIFilter via toAPI, as the former
+    // is just an implementation detail, exposed so it can be customized
+    describe('toAPI()', function () {
+      var leaveRequest, toAPIData;
+
+      beforeEach(function () {
+        leaveRequest = LeaveRequestInstance.init(leaveRequestMockData.all().values[1], true);
+        leaveRequest.balance_change = _.random(-10, -5);
+        leaveRequest.dates = jasmine.any(Array);
+
+        toAPIData = leaveRequest.toAPI();
+      });
+
+      it('filters out the `balance_change` and `dates` properties', function () {
+        expect(Object.keys(toAPIData)).toEqual(_.without(
+          Object.keys(leaveRequest.attributes()),
+          'balance_change',
+          'dates'
+        ));
+      });
     });
   });
 });

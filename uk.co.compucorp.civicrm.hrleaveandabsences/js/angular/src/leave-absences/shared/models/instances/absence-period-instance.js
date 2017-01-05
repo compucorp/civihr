@@ -31,8 +31,8 @@ define([
           var today = moment();
           attributes.current = false;
 
-          if (moment(attributes.start_date).isSameOrBefore(today) &&
-            moment(attributes.end_date).isSameOrAfter(today)) {
+          if (moment(attributes.start_date).isSameOrBefore(today, 'day') &&
+            moment(attributes.end_date).isSameOrAfter(today, 'day')) {
             attributes.current = true;
           }
 

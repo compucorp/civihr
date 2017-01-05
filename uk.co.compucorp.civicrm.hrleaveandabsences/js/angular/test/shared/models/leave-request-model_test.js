@@ -48,7 +48,7 @@ define([
 
       it('returns model instances', function () {
         leaveRequestPromise.then(function (response) {
-          expect(response.every(function (modelInstance) {
+          expect(response.list.every(function (modelInstance) {
             return ('cancel' in modelInstance) && ('update' in modelInstance);
           })).toBe(true);
         });

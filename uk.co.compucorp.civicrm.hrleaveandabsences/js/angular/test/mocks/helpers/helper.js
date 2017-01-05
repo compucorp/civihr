@@ -13,7 +13,7 @@ define([
       return {
         'type_id': absenceTypeData.getRandomAbsenceType('id'),
         'contact_id': '202',
-        'status_id': optionGroupMock.randomValue('hrleaveandabsences_leave_request_status', 'name'),
+        'status_id': optionGroupMock.randomValue('hrleaveandabsences_leave_request_status', 'value'),
         'from_date': '2016-02-01',
         'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
         'to_date': '2016-02-03',

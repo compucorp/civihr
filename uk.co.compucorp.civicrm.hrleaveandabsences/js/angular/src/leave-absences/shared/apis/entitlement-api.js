@@ -1,16 +1,58 @@
 define([
   'leave-absences/shared/modules/apis',
+  'common/lodash',
   'common/services/api'
-], function (apis) {
+], function (apis, _) {
   'use strict';
 
   apis.factory('EntitlementAPI', ['$log', 'api', function ($log, api) {
     $log.debug('EntitlementAPI');
 
+    /**
+     * Entitlements data will have key 'api.LeavePeriodEntitlement.getremainder'
+     * which is normalized with a friendlier 'remainder' key
+     *
+     * @param  {Object} entitlement
+     * @return {Object}
+     */
+    function storeRemainder(entitlement) {
+      var clone = _.clone(entitlement);
+      var remainderValues = clone['api.LeavePeriodEntitlement.getremainder']['values'];
+
+      if (remainderValues.length) {
+        clone['remainder'] = remainderValues[0]['remainder'];
+      }
+
+      delete clone['api.LeavePeriodEntitlement.getremainder'];
+
+      return clone;
+    }
+
+    /**
+     * Entitlements data will have key 'api.LeavePeriodEntitlement.getentitlement'
+     * which is normalized with a friendlier 'value' key
+     *
+     * @param  {Object} entitlement
+     * @return {Object}
+     */
+    function storeValue(entitlement) {
+      var clone = _.clone(entitlement);
+      var value = clone['api.LeavePeriodEntitlement.getentitlement'].values[0].entitlement;
+
+      clone['value'] = value;
+      delete clone['api.LeavePeriodEntitlement.getentitlement'];
+
+      return clone;
+    }
+
     return api.extend({
 
       /**
        * This method returns all the entitlements.
+       *
+       * It chains an additional call to the `getentitlement` endpoint to also return
+       * the actual value of each entitlement
+       *
        * It can also return the remainder (current and future) among the rest of
        * the data when passed withRemainder.
        *
@@ -19,9 +61,11 @@ define([
        * @return {Promise}
        */
       all: function (params, withRemainder) {
-        $log.debug('EntitlementAPI');
+        $log.debug('EntitlementAPI.all');
 
-        var params = {};
+        params['api.LeavePeriodEntitlement.getentitlement'] = {
+          'entitlement_id': '$value.id'
+        };
 
         if (withRemainder) {
           params['api.LeavePeriodEntitlement.getremainder'] = {
@@ -30,24 +74,17 @@ define([
           }
         }
 
-        return this.sendGET('LeavePeriodEntitlement', 'get', params)
+        return this.sendGET('LeavePeriodEntitlement', 'get', params, false)
           .then(function (data) {
             return data.values;
           })
           .then(function (entitlements) {
-            if (withRemainder) {
-              //entitlements data will have key 'api.LeavePeriodEntitlement.getremainder'
-              //which is normalized with a friendlier 'remainder' key
-              entitlements.map(function (entitlement) {
-                var remainderValues = entitlement['api.LeavePeriodEntitlement.getremainder']['values'];
-                if (remainderValues.length) {
-                  entitlement['remainder'] = remainderValues[0]['remainder'];
-                }
-                delete entitlement['api.LeavePeriodEntitlement.getremainder'];
+            entitlements = entitlements.map(storeValue);
 
-                return entitlement;
-              });
+            if (withRemainder) {
+              entitlements = entitlements.map(storeRemainder);
             }
+
             return entitlements;
           });
       },
@@ -59,7 +96,7 @@ define([
        * details along with entitlement id
        */
       breakdown: function (params) {
-        $log.debug('EntitlementAPI');
+        $log.debug('EntitlementAPI.breakdown');
 
         return this.sendGET('LeavePeriodEntitlement', 'getbreakdown', params)
           .then(function (data) {
