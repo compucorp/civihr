@@ -58,21 +58,27 @@ define([
         multipleDays: true
       };
       $ctrl.error = undefined;
+      $ctrl.loading = {};
 
       // Create an empty leave request
       $ctrl.leaveRequest = LeaveRequestInstance.init({
         contact_id: baseData.contactId //resolved from directive
       }, false);
 
-      AbsencePeriod.current().then(function (apInstance) {
-          $ctrl.period = apInstance;
-        })
-        .then(function () {
-          return initAbsenceTypesAndEntitlements();
-        })
-        .then(function () {
-          return initDayTypesAndStatus()
-        });
+      (function () {
+        $ctrl.loading.absenceTypes = true;
+        AbsencePeriod.current().then(function (apInstance) {
+            $ctrl.period = apInstance;
+          })
+          .then(function () {
+            return initAbsenceTypesAndEntitlements().then(function () {
+              $ctrl.loading.absenceTypes = false;
+            });
+          })
+          .then(function () {
+            return initDayTypesAndStatus()
+          });
+      })();
 
       /**
        * Initializes values for absence types and entitlements when the model is loaded
@@ -153,7 +159,7 @@ define([
        * reset dates, balanes types.
        *
        */
-      $ctrl.changeDayType = function () {
+      $ctrl.changeInNoOfDays = function () {
         //reset dates
         $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = undefined;
         //reset balance change
@@ -166,6 +172,12 @@ define([
           closing: 0
         };
         $ctrl.uiOptions.selectedFromType = $ctrl.uiOptions.selectedToType = undefined;
+
+        //reset dates and types in object also
+        $ctrl.leaveRequest.from_date_type = $ctrl.leaveRequest.to_date_type = undefined;
+        $ctrl.leaveRequest.from_date = $ctrl.leaveRequest.to_date = undefined;
+        //hide change balance section
+        $ctrl.uiOptions.showBalance = false;
       }
 
       /**
@@ -179,7 +191,10 @@ define([
         $ctrl.balance.opening = $ctrl.selectedAbsenceType.remainder;
 
         if ($ctrl.leaveRequest.from_date && $ctrl.leaveRequest.to_date) {
-          $ctrl.calculateBalanceChange();
+          $ctrl.loading.calculateBalanceChange = true;
+          $ctrl.calculateBalanceChange().then(function () {
+            $ctrl.loading.calculateBalanceChange = false;
+          });
         }
       }
 
@@ -205,21 +220,83 @@ define([
           .then(function () {
             if (isFrom) {
               $ctrl.leaveRequest.from_date = convertDateFormatToServer($ctrl.uiOptions.fromDate);
+              $ctrl.loading.fromDayTypes = false;
             } else {
               $ctrl.leaveRequest.to_date = convertDateFormatToServer($ctrl.uiOptions.toDate);
+              $ctrl.loading.toDayTypes = false;
+            }
+
+            if (!$ctrl.uiOptions.multipleDays) {
+              $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate;
+              $ctrl.uiOptions.selectedToType = $ctrl.uiOptions.selectedFromType;
+              $ctrl.leaveRequest.to_date = $ctrl.leaveRequest.from_date;
+              $ctrl.leaveRequest.to_date_type = $ctrl.leaveRequest.from_date_type;
             }
 
             if (!$ctrl.uiOptions.showBalance) {
               return
             }
 
-            if (!$ctrl.uiOptions.multipleDays) {
-              $ctrl.leaveRequest.to_date = $ctrl.leaveRequest.from_date;
-              $ctrl.leaveRequest.to_date_type = $ctrl.leaveRequest.from_date_type;
-            }
-
+            $ctrl.loading.calculateBalanceChange = true;
             if ($ctrl.leaveRequest.from_date && $ctrl.leaveRequest.to_date) {
-              $ctrl.calculateBalanceChange();
+              $ctrl.calculateBalanceChange().then(function () {
+                $ctrl.loading.dateChangesBalance = false;
+              });
+            }
+          });
+      }
+
+      /**
+       * Calculate change in balance, it updates local balance variables
+       *
+       * @return {Promise}
+       */
+      $ctrl.calculateBalanceChange = function () {
+        if ($ctrl.uiOptions.selectedToType) {
+          $ctrl.leaveRequest.to_date_type = $ctrl.uiOptions.selectedToType.name;
+        }
+
+        if ($ctrl.uiOptions.selectedFromType) {
+          $ctrl.leaveRequest.from_date_type = $ctrl.uiOptions.selectedFromType.name;
+
+          if (!$ctrl.uiOptions.multipleDays) {
+            $ctrl.leaveRequest.to_date_type = $ctrl.leaveRequest.from_date_type;
+          }
+        }
+
+        $ctrl.leaveRequest.from_date = convertDateFormatToServer($ctrl.uiOptions.fromDate);
+        $ctrl.leaveRequest.to_date = convertDateFormatToServer($ctrl.uiOptions.toDate);
+
+        var params = _.pick($ctrl.leaveRequest, ['contact_id', 'from_date', 'from_date_type', 'to_date', 'to_date_type']);
+
+        //todo to remove in future when this call is consistent with leaverequest db fields name
+        params = _.mapKeys(params, function (value, key) {
+          if (key == 'from_date_type') {
+            return 'from_type';
+          } else if (key == 'to_date_type') {
+            return 'to_type';
+          }
+
+          return key;
+        });
+
+        $ctrl.error = undefined;
+        return LeaveRequest.calculateBalanceChange(params)
+          .then(function (balanceChange) {
+            if (balanceChange) {
+              $ctrl.balance.change = balanceChange;
+              //the change is negative so adding it will actually subtract it
+              $ctrl.balance.closing = $ctrl.balance.opening + $ctrl.balance.change.amount;
+              rePaginate();
+            } else {
+              console.log('$ctrl.calculateBalanceChange', params, balanceChange);
+            }
+          })
+          .catch(function (errors) {
+            if (errors.error_message)
+              $ctrl.error = errors.error_message;
+            else {
+              $ctrl.error = errors;
             }
           });
       }
@@ -298,52 +375,6 @@ define([
       }
 
       /**
-       * Calculate change in balance, it updates local balance variables
-       *
-       * @return {Promise}
-       */
-      $ctrl.calculateBalanceChange = function () {
-        if ($ctrl.uiOptions.selectedFromType)
-          $ctrl.leaveRequest.from_date_type = $ctrl.uiOptions.selectedFromType.name;
-
-        if ($ctrl.uiOptions.selectedToType)
-          $ctrl.leaveRequest.to_date_type = $ctrl.uiOptions.selectedToType.name;
-
-        $ctrl.leaveRequest.from_date = convertDateFormatToServer($ctrl.uiOptions.fromDate);
-        $ctrl.leaveRequest.to_date = convertDateFormatToServer($ctrl.uiOptions.toDate);
-
-        var params = _.pick($ctrl.leaveRequest, ['contact_id', 'from_date', 'from_date_type', 'to_date', 'to_date_type']);
-
-        //todo to remove in future when this call is consistent with leaverequest db fields name
-        params = _.mapKeys(params, function (value, key) {
-          if (key == 'from_date_type') {
-            return 'from_type';
-          } else if (key == 'to_date_type') {
-            return 'to_type';
-          }
-
-          return key;
-        });
-
-        $ctrl.error = undefined;
-        return LeaveRequest.calculateBalanceChange(params)
-          .then(function (balanceChange) {
-            if (balanceChange) {
-              $ctrl.balance.change = balanceChange;
-              //the change is negative so adding it will actually subtract it
-              $ctrl.balance.closing = $ctrl.balance.opening + $ctrl.balance.change.amount;
-              rePaginate();
-            } else {
-              console.log('$ctrl.calculateBalanceChange', params, balanceChange);
-            }
-          })
-          .catch(function (error) {
-            $ctrl.error = error;
-            alert($ctrl.error);
-          });
-      }
-
-      /**
        * helper function to reset pagination for balance breakdow
        *
        **/
@@ -376,15 +407,27 @@ define([
       }
 
       /**
+       * Checks if submit button can be enabled for user and returns true if succeeds
+       *
+       * @returns {Boolean}
+       **/
+      $ctrl.canSubmit = function () {
+        if ($ctrl.leaveRequest.from_date && $ctrl.leaveRequest.to_date &&
+          $ctrl.leaveRequest.to_date_type && $ctrl.leaveRequest.from_date_type) {
+          return false;
+        }
+        return true;
+      }
+
+      /**
        * Submits the form, only if the leave request is valid, also emits event
        * to listeners that leaverequest is created
        */
       $ctrl.submit = function () {
         /* current absence type ($ctrl.leaveRequest.type_id) doesn't allow that */
         if ($ctrl.balance.closing < 0 && $ctrl.selectedAbsenceType.allow_overuse == '0') {
-          $ctrl.error = 'You are not allowed to apply leave in negative';
           // show an error
-          alert($ctrl.error);
+          $ctrl.error = 'You are not allowed to apply leave in negative';
           return;
         }
 
@@ -400,17 +443,26 @@ define([
               })
               .catch(function (errors) {
                 // show errors
-                $ctrl.error = errors;
-                alert($ctrl.error.error_message);
+                if (errors.error_message)
+                  $ctrl.error = errors.error_message;
+                else {
+                  $ctrl.error = errors;
+                }
               })
           })
           .catch(function (errors) {
             // show errors
-            $ctrl.error = errors;
-            alert($ctrl.error);
+            if (errors.error_message)
+              $ctrl.error = errors.error_message;
+            else {
+              $ctrl.error = errors;
+            }
           })
       }
 
+      /**
+       * dismiss modal on successful creation on submit
+       */
       $ctrl.ok = function () {
         //todo handle closure to pass data back to callee
         $modalInstance.close({
@@ -418,11 +470,21 @@ define([
         });
       };
 
+      /**
+       * when user cancels the model dialog
+       */
       $ctrl.cancel = function () {
         $modalInstance.dismiss({
           $value: 'cancel'
         });
       };
+
+      /**
+       * closes the error alerts if any
+       */
+      $ctrl.closeAlert = function () {
+        $ctrl.error = undefined;
+      }
 
       return $ctrl;
     }

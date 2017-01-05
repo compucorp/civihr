@@ -237,7 +237,7 @@
 
           beforeEach(function () {
             $ctrl.uiOptions.multipleDays = false;
-            $ctrl.changeDayType();
+            $ctrl.changeInNoOfDays();
             $scope.$digest();
           });
 

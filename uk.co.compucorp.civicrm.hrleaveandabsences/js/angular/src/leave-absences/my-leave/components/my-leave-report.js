@@ -478,7 +478,6 @@ define([
     }
 
     $rootScope.$on('LeaveRequest::new', function(event, message){
-      console.log('LeaveRequest::new handled in report', message);
       vm.refresh();
     });
 

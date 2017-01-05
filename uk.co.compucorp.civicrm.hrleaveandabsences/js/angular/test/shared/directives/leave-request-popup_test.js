@@ -7,7 +7,7 @@
   ], function (angular) {
     'use strict';
 
-    describe('leaveRequestModal', function () {
+    describe('leaveRequestPopup', function () {
       var $compile, $log, $rootScope, directive, $uibModal,
         $controllerScope, $provide, DateFormat;
 
