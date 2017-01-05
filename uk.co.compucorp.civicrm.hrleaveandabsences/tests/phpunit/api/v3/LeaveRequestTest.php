@@ -687,6 +687,77 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedValues, $result['values']);
   }
 
+  public function testGetFullIncludesBalanceChangesAndDatesForToilLeaveRequests() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-21'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-21'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => 8,
+      'duration' => 300,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'getFull', [
+        'sequential' => 1,
+        'return' => ['id', 'balance_change', 'dates']]
+    );
+
+    $toilLeaveRequestBao = LeaveRequest::findById($toilRequest->leave_request_id);
+    $expectedValues = [
+      [
+        'id' => $leaveRequest1->id,
+        'balance_change' => -1,
+        'dates' => $this->createLeaveRequestDatesArray($leaveRequest1)
+      ],
+      [
+        'id' => $leaveRequest2->id,
+        'balance_change' => -1,
+        'dates' => $this->createLeaveRequestDatesArray($leaveRequest2)
+      ],
+      [
+        'id' => $toilRequest->leave_request_id,
+        'balance_change' => 8,
+        'dates' => $this->createLeaveRequestDatesArray($toilLeaveRequestBao)
+      ]
+    ];
+
+    $this->assertEquals($expectedValues, $result['values']);
+  }
+
   public function testGetFullShouldNotIncludeTheBalanceChangeAndDatesIfTheReturnOptionIsNotEmptyAndDoesntIncludeThem() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
@@ -1691,7 +1762,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'version' => 3,
       'values' => true,
     ];
-    
+
     $this->assertEquals($expected, $result);
   }
 

@@ -3,9 +3,7 @@
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
-use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
-use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
@@ -340,6 +338,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     }
 
     return $balance;
+  }
+
+  /**
+   * Returns the LeaveBalanceChange amount for the TOIL request ID
+   * Also note that a TOIL Request creates a single LeaveBalanceChange record.
+   *
+   * @param int $toilRequestID
+   *
+   * @return float
+   */
+  public static function getAmountForTOILRequest($toilRequestID) {
+    $balanceChange = new self();
+    $balanceChange->source_id = $toilRequestID;
+    $balanceChange->source_type = self::SOURCE_TOIL_REQUEST;
+    $balanceChange->find(true);
+
+    return $balanceChange->amount;
   }
 
   /**
