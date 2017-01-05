@@ -1,1 +1,282 @@
-<div>Leave Requests</div>
+<div class="panel panel-w-subheading panel-default">
+  <div class="panel-heading row chr_manager_dashboard__header">
+    <span class="panel-title">Manager Absence Approval</span>
+    <div>
+      <div class="chr_custom-select">
+        <select>
+          <option value="1">Leave Type</option>
+          <option value="2">Leave Type 1</option>
+          <option value="3">Leave Type 2</option>
+        </select>
+      </div>
+      <div class="chr_custom-select">
+        <select>
+          <option value="1">Current Period</option>
+          <option value="2">Period 1</option>
+          <option value="3">Period 2</option>
+        </select>
+      </div>
+      <span class="chr_manager_dashboard__filter pointer" ng-click="isFilterExpanded = !isFilterExpanded">
+        <i class="fa"
+           aria-hidden="true"
+           ng-class="{ 'fa-chevron-right': !isFilterExpanded, ' fa-chevron-down': isFilterExpanded }">
+        </i>
+        Filter
+    </span>
+    </div>
+  </div>
+  <div class="panel-subheading chr_manager_dashboard__sub-header" ng-show="isFilterExpanded">
+    <div>
+      <input type="text" class="form-control" placeholder="Staff Member">
+    </div>
+    <div class="chr_custom-select">
+      <select>
+        <option value="1">Region</option>
+        <option value="2">Region 2</option>
+      </select>
+    </div>
+    <div class="chr_custom-select">
+      <select>
+        <option value="1">Department</option>
+        <option value="2">Department 2</option>
+      </select>
+    </div>
+    <div class="chr_custom-select">
+      <select>
+        <option value="1">Lorem Ipsum</option>
+        <option value="2">Lorem Ipsum 2</option>
+      </select>
+    </div>
+    <div class="chr_custom-select">
+      <select>
+        <option value="1">Location</option>
+        <option value="2">Location 2</option>
+      </select>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox"> Show pending requests only
+      </label>
+    </div>
+  </div>
+  <div class="panel-body row chr_manager_dashboard__panel_body">
+    <ul class="col-xs-3 nav nav-pills nav-stacked chr_vertical_tabs">
+      <li>
+        <a href="#">
+          <span class="badge badge-primary pull-right">2</span>
+          Awaiting Approval
+        </a>
+      </li>
+      <li class="active">
+        <a href="#">
+          <span class="badge pull-right">1</span>
+          More Information Required
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <span class="badge badge-success pull-right">2</span>
+          Approved
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <span class="badge badge-danger pull-right">1</span>
+          Rejected
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <span class="badge pull-right">3</span>
+          Cancelled
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <span class="badge pull-right">9</span>
+          All
+        </a>
+      </li>
+    </ul>
+    <div class="col-xs-9">
+      <table class="table chr_table--clean">
+        <thead>
+        <tr>
+          <th>Employee Name</th>
+          <th>Type</th>
+          <th>Dates</th>
+          <th>Status</th>
+          <th class="text-center">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>Jared Quinn</td>
+          <td>Vacation</td>
+          <td>15/9/2015 - 30/09/2015</td>
+          <td>More Information Required</td>
+          <td class="text-center">
+            <div class="btn-group">
+              <button type="button"
+                      class="btn btn-default dropdown-toggle chr-button--inline"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false">
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Respond</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Jared Quinn</td>
+          <td>Vacation</td>
+          <td>15/9/2015 - 30/09/2015</td>
+          <td>More Information Required</td>
+          <td class="text-center">
+            <div class="btn-group">
+              <button type="button"
+                      class="btn btn-default dropdown-toggle chr-button--inline"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false">
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Respond</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Jared Quinn</td>
+          <td>Vacation</td>
+          <td>15/9/2015 - 30/09/2015</td>
+          <td>More Information Required</td>
+          <td class="text-center">
+            <div class="btn-group">
+              <button type="button"
+                      class="btn btn-default dropdown-toggle chr-button--inline"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false">
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Respond</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Jared Quinn</td>
+          <td>Vacation</td>
+          <td>15/9/2015 - 30/09/2015</td>
+          <td>More Information Required</td>
+          <td class="text-center">
+            <div class="btn-group">
+              <button type="button"
+                      class="btn btn-default dropdown-toggle chr-button--inline"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false">
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Respond</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Jared Quinn</td>
+          <td>Vacation</td>
+          <td>15/9/2015 - 30/09/2015</td>
+          <td>More Information Required</td>
+          <td class="text-center">
+            <div class="btn-group">
+              <button type="button"
+                      class="btn btn-default dropdown-toggle chr-button--inline"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false">
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Respond</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Jared Quinn</td>
+          <td>Vacation</td>
+          <td>15/9/2015 - 30/09/2015</td>
+          <td>More Information Required</td>
+          <td class="text-center">
+            <div class="btn-group">
+              <button type="button"
+                      class="btn btn-default dropdown-toggle chr-button--inline"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false">
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Respond</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Jared Quinn</td>
+          <td>Vacation</td>
+          <td>15/9/2015 - 30/09/2015</td>
+          <td>More Information Required</td>
+          <td class="text-center">
+            <div class="btn-group">
+              <button type="button"
+                      class="btn btn-default dropdown-toggle chr-button--inline"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false">
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Respond</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+          <td colspan="5" class="text-center">
+            <ul class="pagination">
+              <li class="active"><a href="#">1</a></li>
+              <li><a href="#">2</a></li>
+              <li><a href="#">3</a></li>
+              <li><a href="#">4</a></li>
+              <li><a href="#">5</a></li>
+              <li><a href="#">...</a></li>
+              <li><a href="#">10</a></li>
+              <li class="active">
+                <a class="pointer" href="#">
+                  Next <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+              </li>
+              <li class="active">
+                <a class="pointer" href="#">
+                  Last <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                </a>
+              </li>
+            </ul>
+          </td>
+        </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
