@@ -55,7 +55,7 @@
         $uibModal = _$uibModal_;
         LeaveRequestInstance = _LeaveRequestInstance_;
         spyOn($log, 'debug');
-        modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
+        modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
       }));
 
       beforeEach(inject(function (_$controller_, _$rootScope_, _$q_) {
@@ -250,7 +250,7 @@
             expect($ctrl.uiOptions.selectedToType).not.toBeDefined();
           });
 
-          it('will reset balance and types', function() {
+          it('will reset balance and types', function () {
             expect($ctrl.uiOptions.selectedFromType).not.toBeDefined();
             expect($ctrl.uiOptions.selectedToType).not.toBeDefined();
             expect($ctrl.balance.closing).toEqual(0);
@@ -316,15 +316,15 @@
             expect($ctrl.filterLeaveRequestDayTypes).toHaveBeenCalledWith(jasmine.any(Date), jasmine.any(Boolean));
           });
 
-          describe('is public holiday', function() {
+          describe('is public holiday', function () {
 
-            beforeEach(function() {
+            beforeEach(function () {
               $ctrl.uiOptions.fromDate = new Date('01/01/2016');
               $ctrl.filterLeaveRequestDayTypes($ctrl.uiOptions.fromDate, true);
               $scope.$digest();
             });
 
-            it('should', function() {
+            it('should', function () {
               expect($ctrl.leaveRequestFromDayTypes.length).toEqual(1);
             });
           });
@@ -359,9 +359,9 @@
           });
         });
 
-        describe('from and to', function() {
+        describe('from and to', function () {
 
-          beforeEach(function() {
+          beforeEach(function () {
             spyOn($ctrl, 'calculateBalanceChange').and.callThrough();
             $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = new Date();
             $ctrl.onDateChange($ctrl.uiOptions.fromDate, true);
@@ -552,6 +552,36 @@
 
             it('sends event', function () {
               expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.leaveRequest);
+            });
+
+            describe('when balance change is negative', function () {
+
+              beforeEach(function () {
+                $ctrl.selectedAbsenceType = $ctrl.absenceTypes[1];
+                $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = new Date();
+                $ctrl.onDateChange($ctrl.uiOptions.fromDate, true);
+                $ctrl.onDateChange($ctrl.uiOptions.toDate, false);
+                $scope.$digest();
+                $ctrl.submit();
+                $scope.$digest();
+              });
+
+              it('will not save', function () {
+                expect($ctrl.error).toBeDefined();
+              });
+
+              describe('and allow_overuse is set', function () {
+
+                beforeEach(function () {
+                  $ctrl.selectedAbsenceType = $ctrl.absenceTypes[2];
+                  $ctrl.submit();
+                  $scope.$digest();
+                });
+
+                it('will save', function () {
+                  expect($ctrl.error).not.toBeDefined();
+                });
+              });
             });
           });
         });

@@ -31,7 +31,6 @@ define([
         closing: 0
       };
       $ctrl.period = {};
-
       $ctrl.pagination = {
         totalItems: $ctrl.balance.change.breakdown.length,
         filteredbreakdown: $ctrl.balance.change.breakdown,
@@ -45,7 +44,6 @@ define([
           this.filteredbreakdown = $ctrl.balance.change.breakdown.slice(begin, end);
         }
       };
-
       $ctrl.uiOptions = {
         showDatePickerFrom: false,
         showDatePickerTo: false,
@@ -59,6 +57,7 @@ define([
         showBalance: false,
         multipleDays: true
       };
+      $ctrl.error = undefined;
 
       // Create an empty leave request
       $ctrl.leaveRequest = LeaveRequestInstance.init({
@@ -78,6 +77,7 @@ define([
       /**
        * Initializes values for absence types and entitlements when the model is loaded
        *
+       * @returns {Promise}
        */
       function initAbsenceTypesAndEntitlements() {
         // Fetch all the absence types, except for the sickness ones
@@ -96,7 +96,7 @@ define([
                 period_id: $ctrl.period.id,
                 type_id: { in: absenceTypesIds
                 }
-              }, true) // `true` because we want to use the "future" balance for calculation
+              }, true) // `true` because we want to use the 'future' balance for calculation
               .then(function (entitlements) {
                 // create a list of absence types with a `balance` property
                 $ctrl.absenceTypes = entitlements.map(function (entitlementItem) {
@@ -107,7 +107,8 @@ define([
                   return {
                     id: entitlementItem.type_id,
                     title: absenceType.title + ' ( ' + entitlementItem.remainder.current + ' ) ',
-                    remainder: entitlementItem.remainder.current
+                    remainder: entitlementItem.remainder.current,
+                    allow_overuse: absenceType.allow_overuse
                   };
                 });
 
@@ -121,8 +122,9 @@ define([
       }
 
       /**
-       * Initializes values for day types and statuses when the model is loaded
+       * Initializes values for work patterns, day types and statuses when the model is loaded
        *
+       * @returns {Promise}
        */
       function initDayTypesAndStatus() {
         // Fetch the full calendar for the current user and the current period
@@ -147,7 +149,8 @@ define([
       }
 
       /**
-       * handler for change date types like multiple or single
+       * Change handler for change request type like multiple or single. It will
+       * reset dates, balanes types.
        *
        */
       $ctrl.changeDayType = function () {
@@ -166,13 +169,13 @@ define([
       }
 
       /**
-       * Whenever the absence type changes, update the balance opening
+       * Whenever the absence type changes, update the balance opening.
        * Also the balance change needs to be recalculated, if the `from` and `to`
        * dates have been already selected
        */
       $ctrl.onAbsenceTypeChange = function () {
         $ctrl.leaveRequest.type_id = $ctrl.selectedAbsenceType.id;
-        // get the `balance` of the newly selected absence type ($ctrl.leaveRequest.type_id)
+        // get the `balance` of the newly selected absence type
         $ctrl.balance.opening = $ctrl.selectedAbsenceType.remainder;
 
         if ($ctrl.leaveRequest.from_date && $ctrl.leaveRequest.to_date) {
@@ -181,84 +184,9 @@ define([
       }
 
       /**
-       * This method will be used on the view to return a list of available
-       * leave request day types (1/2 PM, Non working day, etc) for the given date
-       * (which is the date selected by the user via datepicker)
-       *
-       * If no date is passed, then no list is returned
-       *
-       *
-       * @param  {Date} dateParam
-       * @return {Promise} of array
-       */
-      $ctrl.filterLeaveRequestDayTypes = function (dateParam, isFrom) {
-        var deferred = $q.defer();
-
-        if (!dateParam) {
-          deferred.reject([]);
-        }
-
-        var date = convertDateFormatToServer(dateParam);
-        // Make a copy of the list
-        var listToReturn = $ctrl.leaveRequestDayTypes.slice(0);
-
-        PublicHoliday.isPublicHoliday(date).then(function (result) {
-          if (result) {
-
-            listToReturn = listToReturn.filter(function (item) {
-              return item.name === 'public_holiday';
-            });
-          } else {
-            //if not found the calender methods throw exceptions
-            var foundInCalendar = false;
-
-            try {
-              if ($ctrl.calendar.isNonWorkingDay(date)) {
-                // Only "Non Working Day" option
-                listToReturn = listToReturn.filter(function (item) {
-                  return item.name === 'non_working_day';
-                });
-                foundInCalendar = true;
-              } else if ($ctrl.calendar.isWeekend(date)) {
-                // Only "Weekend" option
-                listToReturn = listToReturn.filter(function (item) {
-                  return item.name === 'weekend';
-                });
-                foundInCalendar = true;
-              }
-            } catch (e) {
-              //empty catch to catch exceptions
-            } finally {
-              if (!foundInCalendar) {
-                // "All day", "1/2 AM", and "1/2 PM" options
-                listToReturn = listToReturn.filter(function (item) {
-                  return item.name === 'all_day' || item.name === 'half_day_am' || item.name === 'half_day_pm';
-                });
-              }
-            }
-          }
-
-          if (isFrom) {
-            $ctrl.leaveRequestFromDayTypes = listToReturn;
-            $ctrl.uiOptions.selectedFromType = $ctrl.leaveRequestFromDayTypes[0];
-            $ctrl.leaveRequest.from_date_type = $ctrl.uiOptions.selectedFromType.name;
-          } else {
-            $ctrl.leaveRequestToDayTypes = listToReturn;
-            $ctrl.uiOptions.selectedToType = $ctrl.leaveRequestToDayTypes[0];
-            $ctrl.leaveRequest.to_date_type = $ctrl.uiOptions.selectedToType.name;
-          }
-
-          deferred.resolve(listToReturn);
-        });
-
-        return deferred.promise;
-      }
-
-      /**
        * This should be called whenever a date has been changed
-       * (whether the date itself or the amount type)
        *
-       * First it syncs `from` and `to` date, if it's in "single day" mode
+       * First it syncs `from` and `to` date, if it's in 'single day' mode
        * Then, if all the dates are there, it gets the balance change
        *
        */
@@ -294,6 +222,79 @@ define([
               $ctrl.calculateBalanceChange();
             }
           });
+      }
+
+      /**
+       * This method will be used on the view to return a list of available
+       * leave request day types (1/2 PM, Non working day, etc) for the given date
+       * (which is the date selected by the user via datepicker)
+       *
+       * If no date is passed, then no list is returned
+       *
+       * @param  {Date} dateParam
+       * @return {Promise} of array
+       */
+      $ctrl.filterLeaveRequestDayTypes = function (dateParam, isFrom) {
+        var deferred = $q.defer();
+
+        if (!dateParam) {
+          deferred.reject([]);
+        }
+
+        var date = convertDateFormatToServer(dateParam);
+        // Make a copy of the list
+        var listToReturn = $ctrl.leaveRequestDayTypes.slice(0);
+
+        PublicHoliday.isPublicHoliday(date).then(function (result) {
+          if (result) {
+
+            listToReturn = listToReturn.filter(function (item) {
+              return item.name === 'public_holiday';
+            });
+          } else {
+            //if not found the calender methods throw exceptions
+            var foundInCalendar = false;
+
+            try {
+              if ($ctrl.calendar.isNonWorkingDay(date)) {
+                // Only 'Non Working Day' option
+                listToReturn = listToReturn.filter(function (item) {
+                  return item.name === 'non_working_day';
+                });
+                foundInCalendar = true;
+              } else if ($ctrl.calendar.isWeekend(date)) {
+                // Only 'Weekend' option
+                listToReturn = listToReturn.filter(function (item) {
+                  return item.name === 'weekend';
+                });
+                foundInCalendar = true;
+              }
+            } catch (e) {
+              //empty catch to catch exceptions
+            } finally {
+              if (!foundInCalendar) {
+                // 'All day', '1/2 AM', and '1/2 PM' options
+                listToReturn = listToReturn.filter(function (item) {
+                  return item.name === 'all_day' || item.name === 'half_day_am' || item.name === 'half_day_pm';
+                });
+              }
+            }
+          }
+
+          if (isFrom) {
+            $ctrl.leaveRequestFromDayTypes = listToReturn;
+            $ctrl.uiOptions.selectedFromType = $ctrl.leaveRequestFromDayTypes[0];
+            $ctrl.leaveRequest.from_date_type = $ctrl.uiOptions.selectedFromType.name;
+          } else {
+            $ctrl.leaveRequestToDayTypes = listToReturn;
+            $ctrl.uiOptions.selectedToType = $ctrl.leaveRequestToDayTypes[0];
+            $ctrl.leaveRequest.to_date_type = $ctrl.uiOptions.selectedToType.name;
+          }
+
+          deferred.resolve(listToReturn);
+        });
+
+        return deferred.promise;
       }
 
       /**
@@ -349,7 +350,6 @@ define([
       function rePaginate() {
         $ctrl.pagination.totalItems = $ctrl.balance.change.breakdown.length;
         $ctrl.pagination.filteredbreakdown = $ctrl.balance.change.breakdown;
-        $ctrl.pagination.currentPage = 1;
         $ctrl.pagination.pageChanged();
       }
 
@@ -381,9 +381,10 @@ define([
        */
       $ctrl.submit = function () {
         /* current absence type ($ctrl.leaveRequest.type_id) doesn't allow that */
-        if ($ctrl.balance.closing < 0 && $ctrl.selectedAbsenceType.allow_overuse == "0") {
+        if ($ctrl.balance.closing < 0 && $ctrl.selectedAbsenceType.allow_overuse == '0') {
+          $ctrl.error = 'You are not allowed to apply leave in negative';
           // show an error
-          alert("You are not allowed to apply leave in negative");
+          alert($ctrl.error);
           return;
         }
 
@@ -391,11 +392,11 @@ define([
         $ctrl.leaveRequest.isValid().then(function () {
             $ctrl.leaveRequest.create()
               .then(function () {
-                // close the modal
-                $ctrl.ok();
                 // refresh the list
                 $rootScope.$emit('LeaveRequest::new', $ctrl.leaveRequest);
                 $ctrl.error = undefined;
+                // close the modal
+                $ctrl.ok();
               })
               .catch(function (errors) {
                 // show errors

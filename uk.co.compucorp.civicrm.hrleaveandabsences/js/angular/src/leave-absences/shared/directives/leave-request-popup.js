@@ -26,8 +26,10 @@ define([
                   controller: 'LeaveRequestPopupCtrl',
                   controllerAs: '$ctrl',
                   resolve: {
-                    baseData: function() {
-                      return {contactId: scope.contactId};
+                    baseData: function () {
+                      return {
+                        contactId: scope.contactId
+                      };
                     }
                   }
                 });

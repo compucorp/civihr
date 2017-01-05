@@ -1,12 +1,14 @@
 <div class="modal-header">
-  <button type="button" class="close" ng-click="$ctrl.cancel()">
+  <button type="button"
+      class="close"
+      ng-click="$ctrl.cancel()">
     <span aria-hidden="true">&times;</span>
     <span class="sr-only">Close</span>
   </button>
   <h4 class="modal-title">Leave Request</h4>
 </div>
-
-<div ng-show="$ctrl.uiOptions.isAdmin" class="row chr_leave-request-modal__user-info">
+<div ng-show="$ctrl.uiOptions.isAdmin"
+    class="row chr_leave-request-modal__user-info">
   <span class="col-xs-6">Lawrence Longnamesburg (81)</span>
   <span class="col-xs-6">Awaiting Approval</span>
 </div>
@@ -15,7 +17,10 @@
   <div class="row">
     <div class="col-xs-12">
       <div class="chr_custom-select chr_custom-select--full">
-        <select name="absenceTypeSelect" ng-options="option.title for option in $ctrl.absenceTypes track by option.id" ng-model="$ctrl.selectedAbsenceType" ng-change="$ctrl.onAbsenceTypeChange()"></select>
+        <select name="absenceTypeSelect"
+            ng-options="option.title for option in $ctrl.absenceTypes track by option.id"
+            ng-model="$ctrl.selectedAbsenceType"
+            ng-change="$ctrl.onAbsenceTypeChange()"></select>
       </div>
     </div>
   </div>
@@ -30,8 +35,14 @@
                 <label class="col-xs-4 control-label">No. of Days</label>
                 <div class="col-xs-8">
                   <div class="btn-group btn-group-justified">
-                    <label class="btn active" ng-model="$ctrl.uiOptions.multipleDays" uib-btn-radio="true" ng-change="$ctrl.changeDayType()">Multiple Days</label>
-                    <label class="btn" ng-model="$ctrl.uiOptions.multipleDays" uib-btn-radio="false" ng-change="$ctrl.changeDayType()">Single Day</label>
+                    <label class="btn active"
+                        ng-model="$ctrl.uiOptions.multipleDays"
+                        uib-btn-radio="true"
+                        ng-change="$ctrl.changeDayType()">Multiple Days</label>
+                    <label class="btn"
+                        ng-model="$ctrl.uiOptions.multipleDays"
+                        uib-btn-radio="false"
+                        ng-change="$ctrl.changeDayType()">Single Day</label>
                   </div>
                 </div>
               </div>
@@ -45,8 +56,14 @@
                 </label>
                 <div class="col-xs-4">
                   <div class="input-group">
-                    <input type="text" class="form-control" uib-datepicker-popup show-button-bar="false" datepicker-options="$ctrl.uiOptions.datePickerOptions" ng-model="$ctrl.uiOptions.fromDate" is-open="$ctrl.uiOptions.showDatePickerFrom" ng-change="$ctrl.onDateChange($ctrl.uiOptions.fromDate, true)"
-                    />
+                    <input type="text"
+                        class="form-control"
+                        uib-datepicker-popup
+                        show-button-bar="false"
+                        datepicker-options="$ctrl.uiOptions.datePickerOptions"
+                        ng-model="$ctrl.uiOptions.fromDate"
+                        is-open="$ctrl.uiOptions.showDatePickerFrom"
+                        ng-change="$ctrl.onDateChange($ctrl.uiOptions.fromDate, true)" />
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default fa fa-calendar"
                                 ng-click="$ctrl.uiOptions.showDatePickerFrom = true"></button>
@@ -55,7 +72,10 @@
                 </div>
                 <div class="col-xs-4">
                   <div class="chr_custom-select chr_custom-select--full">
-                    <select name="fromDayTypeSelect" ng-options="option.label for option in $ctrl.leaveRequestFromDayTypes track by option.name" ng-model="$ctrl.uiOptions.selectedFromType" ng-change="$ctrl.calculateBalanceChange()">
+                    <select name="fromDayTypeSelect"
+                        ng-options="option.label for option in $ctrl.leaveRequestFromDayTypes track by option.name"
+                        ng-model="$ctrl.uiOptions.selectedFromType"
+                        ng-change="$ctrl.calculateBalanceChange()">
                       <option value="">Select</option>
                     </select>
                   </div>
@@ -63,7 +83,8 @@
               </div>
             </div>
           </div>
-          <div class="row" ng-show="$ctrl.uiOptions.multipleDays">
+          <div class="row"
+              ng-show="$ctrl.uiOptions.multipleDays">
             <div class="col-xs-12 form-horizontal">
               <div class="form-group">
                 <label class="col-xs-4 control-label">To Date
@@ -71,8 +92,14 @@
                 </label>
                 <div class="col-xs-4">
                   <div class="input-group">
-                    <input type="text" class="form-control" uib-datepicker-popup datepicker-options="$ctrl.uiOptions.datePickerOptions" show-button-bar="false" ng-model="$ctrl.uiOptions.toDate" is-open="$ctrl.uiOptions.showDatePickerTo" ng-change="$ctrl.onDateChange($ctrl.uiOptions.toDate, false)"
-                    />
+                    <input type="text"
+                        class="form-control"
+                        uib-datepicker-popup
+                        datepicker-options="$ctrl.uiOptions.datePickerOptions"
+                        show-button-bar="false"
+                        ng-model="$ctrl.uiOptions.toDate"
+                        is-open="$ctrl.uiOptions.showDatePickerTo"
+                        ng-change="$ctrl.onDateChange($ctrl.uiOptions.toDate, false)" />
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default fa fa-calendar"
                                 ng-click="$ctrl.uiOptions.showDatePickerTo = true"></button>
@@ -81,7 +108,10 @@
                 </div>
                 <div class="col-xs-4">
                   <div class="chr_custom-select chr_custom-select--full">
-                    <select name="toDayTypeSelect" ng-options="option.label for option in $ctrl.leaveRequestToDayTypes track by option.name" ng-model="$ctrl.uiOptions.selectedToType" ng-change="$ctrl.calculateBalanceChange()">
+                    <select name="toDayTypeSelect"
+                        ng-options="option.label for option in $ctrl.leaveRequestToDayTypes track by option.name"
+                        ng-model="$ctrl.uiOptions.selectedToType"
+                        ng-change="$ctrl.calculateBalanceChange()">
                       <option value="">Select</option>
                     </select>
                   </div>
@@ -95,13 +125,17 @@
               <div class="col-xs-4">Opening Balance</div>
               <div class="col-xs-8">{{$ctrl.balance.opening}}</div>
             </div>
-            <div class="row chr_leave-request-modal__form-group text-primary pointer" ng-click="$ctrl.uiOptions.isChangeExpanded = !$ctrl.uiOptions.isChangeExpanded">
+            <div class="row chr_leave-request-modal__form-group text-primary pointer"
+                ng-click="$ctrl.uiOptions.isChangeExpanded = !$ctrl.uiOptions.isChangeExpanded">
               <div class="col-xs-4">
-                <i class="fa chr_leave-request-modal__chevron" aria-hidden="true" ng-class="{ 'fa-chevron-right': !$ctrl.uiOptions.isChangeExpanded, ' fa-chevron-down': $ctrl.uiOptions.isChangeExpanded }"></i> Change
+                <i class="fa chr_leave-request-modal__chevron"
+                    aria-hidden="true"
+                    ng-class="{ 'fa-chevron-right': !$ctrl.uiOptions.isChangeExpanded, ' fa-chevron-down': $ctrl.uiOptions.isChangeExpanded }"></i> Change
               </div>
               <div class="col-xs-8">{{$ctrl.balance.change.amount}}</div>
             </div>
-            <table class="table chr_leave-request-modal__table" ng-show="$ctrl.uiOptions.isChangeExpanded">
+            <table class="table chr_leave-request-modal__table"
+                ng-show="$ctrl.uiOptions.isChangeExpanded">
               <thead>
                 <tr>
                   <th>Date</th>
@@ -118,31 +152,36 @@
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="3" class="text-center">
-                    <uib-pagination data-ng-if="$ctrl.pagination.totalItems" total-items="$ctrl.pagination.totalItems" ng-model="$ctrl.pagination.currentPage" class="pagination" ng-change="$ctrl.pagination.pageChanged()" direction-links="false">
+                  <td colspan="3"
+                      class="text-center">
+                    <uib-pagination data-ng-if="$ctrl.pagination.totalItems"
+                        total-items="$ctrl.pagination.totalItems"
+                        ng-model="$ctrl.pagination.currentPage"
+                        class="pagination"
+                        ng-change="$ctrl.pagination.pageChanged()"
+                        direction-links="false"
+                        items-per-page="$ctrl.pagination.numPerPage">
                     </uib-pagination>
                   </td>
                 </tr>
               </tfoot>
             </table>
-            <div class="row chr_leave-request-modal__form-group">
+            <div class="row chr_leave-request-modal__form-group"
+                ng-class="{'text-danger': $ctrl.balance.closing < 0}">
               <div class="col-xs-4">Closing Balance</div>
               <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
             </div>
           </div>
         </uib-tab>
-
         <uib-tab heading="Comments">
         </uib-tab>
-
         <uib-tab heading="Files">
         </uib-tab>
-
       </uib-tabset>
     </div>
   </div>
-
-  <div ng-show="$ctrl.uiOptions.isAdmin" class="row chr_leave-request-modal__response">
+  <div ng-show="$ctrl.uiOptions.isAdmin"
+      class="row chr_leave-request-modal__response">
     <div class="col-xs-12 form-horizontal">
       <div class="form-group">
         <label class="col-xs-4 control-label">Response
@@ -164,7 +203,11 @@
     <div ng-show="$ctrl.leaveRequest.selectedResponse == 3">
       <div class="col-xs-12">Please add a comment:</div>
       <div class="col-xs-12">
-        <div class="chr_wysiwyg" text-angular prevent-animations ta-toolbar="[['bold','italics','underline']]" ng-model="myleave.leaveRequest.responseComment">
+        <div class="chr_wysiwyg"
+            text-angular
+            prevent-animations
+            ta-toolbar="[['bold','italics','underline']]"
+            ng-model="myleave.leaveRequest.responseComment">
         </div>
         <div class="chr_wysiwyg__action">
           <hr/>
@@ -178,8 +221,12 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary pull-left" ng-click="$ctrl.cancel()">
+  <button type="button"
+      class="btn btn-primary pull-left"
+      ng-click="$ctrl.cancel()">
     Back
   </button>
-  <button type="submit" class="btn btn-primary" ng-click="$ctrl.submit()">Save</button>
+  <button type="submit"
+      class="btn btn-primary"
+      ng-click="$ctrl.submit()">Save</button>
 </div>

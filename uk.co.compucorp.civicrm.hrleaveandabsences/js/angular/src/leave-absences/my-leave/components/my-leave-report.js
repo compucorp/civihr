@@ -481,6 +481,7 @@ define([
       console.log('LeaveRequest::new handled in report', message);
       vm.refresh();
     });
+
     return vm;
   }
 });
