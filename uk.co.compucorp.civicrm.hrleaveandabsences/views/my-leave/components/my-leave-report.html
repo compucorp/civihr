@@ -57,8 +57,18 @@
               <tr>
                 <td class="table-nested-cell" colspan="9">
                   <crm-loading show="!report.sections.entitlements.loading">
-                    <div ng-show="report.sections.entitlements.open" class="table-nested table-responsive">
-                      <table class="table table-condensed">
+                    <div
+                      class="table-nested table-responsive"
+                      ng-show="report.sections.entitlements.open"
+                      ng-switch="!!report.sections.entitlements.data.length">
+                      <table class="table table-condensed" ng-switch-when="false">
+                        <tbody>
+                          <tr>
+                            <td align="center">No entitlement breakdown data available</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table class="table table-condensed" ng-switch-when="true">
                         <thead>
                           <tr>
                             <th class="chr_leave-report__table__heading--label"></th>
@@ -113,8 +123,18 @@
               <tr>
                 <td class="table-nested-cell" colspan="9">
                   <crm-loading show="!report.sections.holidays.loading">
-                    <div ng-show="report.sections.holidays.open" class="table-nested table-responsive">
-                      <table class="table table-condensed">
+                    <div
+                      class="table-nested table-responsive"
+                      ng-show="report.sections.holidays.open"
+                      ng-switch="!!report.sections.holidays.data.length">
+                      <table class="table table-condensed" ng-switch-when="false">
+                        <tbody>
+                          <tr>
+                            <td align="center">No leave requests for public holidays</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table class="table table-condensed" ng-switch-when="true">
                         <thead>
                           <tr>
                             <th class="chr_leave-report__table__heading--label"></th>
@@ -230,8 +250,18 @@
               <tr>
                 <td class="table-nested-cell" colspan="9">
                   <crm-loading show="!report.sections.expired.loading">
-                    <div ng-show="report.sections.expired.open" class="table-nested table-responsive">
-                      <table class="table table-condensed">
+                    <div
+                      class="table-nested table-responsive"
+                      ng-show="report.sections.expired.open"
+                      ng-switch="!!report.sections.expired.data.length">
+                      <table class="table table-condensed" ng-switch-when="false">
+                        <tbody>
+                          <tr>
+                            <td align="center">There are no expired balance changes</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table class="table table-condensed" ng-switch-when="true">
                         <thead>
                           <tr>
                             <th class="chr_leave-report__table__heading--label"></th>
@@ -306,8 +336,18 @@
             <tr>
               <td class="table-nested-cell" colspan="9">
                 <crm-loading show="!report.sections.pending.loading">
-                  <div ng-show="report.sections.pending.open" class="table-nested table-responsive">
-                    <table class="table table-condensed">
+                  <div
+                    class="table-nested table-responsive"
+                    ng-show="report.sections.pending.open"
+                    ng-switch="!!report.sections.pending.data.length">
+                    <table class="table table-condensed" ng-switch-when="false">
+                      <tbody>
+                        <tr>
+                          <td align="center">There are no open leave requests</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <table class="table table-condensed" ng-switch-when="true">
                       <thead>
                         <tr>
                           <th class="chr_leave-report__table__heading--label"></th>
@@ -384,8 +424,18 @@
             <tr>
               <td class="table-nested-cell" colspan="9">
                 <crm-loading show="!report.sections.other.loading">
-                  <div ng-show="report.sections.other.open" class="table-nested table-responsive">
-                    <table class="table table-condensed">
+                  <div
+                    class="table-nested table-responsive"
+                    ng-show="report.sections.other.open"
+                    ng-switch="!!report.sections.other.data.length">
+                    <table class="table table-condensed" ng-switch-when="false">
+                      <tbody>
+                        <tr>
+                          <td align="center">There are no expired balance changes</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <table class="table table-condensed" ng-switch-when="true">
                       <thead>
                         <tr>
                           <th class="chr_leave-report__table__heading--label"></th>
