@@ -208,6 +208,57 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result['values']);
   }
 
+  public function testGetBalanceChangeByAbsenceTypeCanBeFilteredForExpiredOnly() {
+    $contact = ContactFabricator::fabricate();
+
+    $absenceType1 = AbsenceTypeFabricator::fabricate();
+    $absenceType2 = AbsenceTypeFabricator::fabricate();
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType1->id,
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType2->id,
+    ]);
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $this->createExpiredBroughtForwardBalanceChange(
+      $periodEntitlement1->id,
+      5,
+      4
+    );
+
+    $this->createExpiredTOILRequestBalanceChange(
+      $periodEntitlement2->type_id,
+      $periodEntitlement2->contact_id,
+      $leaveRequestStatuses['Cancelled'],
+      CRM_Utils_Date::processDate('-5 days'),
+      CRM_Utils_Date::processDate('-5 days'),
+      3,
+      CRM_Utils_Date::processDate('-1 day'),
+      2
+    );
+
+    $result = civicrm_api3('LeaveRequest', 'getbalancechangebyabsencetype', [
+      'contact_id' => $contact['id'],
+      'period_id' => $absencePeriod->id,
+      'expired' => true
+    ]);
+    $expectedResult = [$absenceType1->id => -4, $absenceType2->id => -2];
+    $this->assertEquals($expectedResult, $result['values']);
+  }
+
   public function testGetDoesntReturnPublicHolidayLeaveRequestsIfThePublicHolidayParamIsNotPresentOrIsFalse() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 

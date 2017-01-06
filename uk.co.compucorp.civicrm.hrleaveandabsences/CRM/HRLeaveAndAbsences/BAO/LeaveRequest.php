@@ -451,6 +451,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *   And array of values from the Leave Request Status OptionGroup
    * @param bool $publicHolidaysOnly
    *   When true, will get the balance change only for the Public Holiday Leave Requests
+   * @param bool $expiredOnly
+   *   When true, will only count the balance change for expired days
    *
    * @return array
    */
@@ -458,21 +460,32 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $contactID,
     $periodID,
     $leaveRequestStatus = [],
-    $publicHolidaysOnly = false
+    $publicHolidaysOnly = false,
+    $expiredOnly = false
   ) {
     $periodEntitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactID, $periodID);
 
     $results = [];
     $excludePublicHolidays = !$publicHolidaysOnly;
     foreach($periodEntitlements as $periodEntitlement) {
-      $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
-        $periodEntitlement,
-        $leaveRequestStatus,
-        null,
-        null,
-        $excludePublicHolidays,
-        $publicHolidaysOnly
-      );
+      if($expiredOnly) {
+        $balance = LeaveBalanceChange::getBalanceForEntitlement(
+          $periodEntitlement,
+          $leaveRequestStatus,
+          $expiredOnly
+        );
+      }
+      else {
+        $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+          $periodEntitlement,
+          $leaveRequestStatus,
+          null,
+          null,
+          $excludePublicHolidays,
+          $publicHolidaysOnly
+        );
+      }
+
       $results[$periodEntitlement->type_id] = $balance;
     }
 

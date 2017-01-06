@@ -247,6 +247,14 @@ function _civicrm_api3_leave_request_getbalancechangebyabsencetype_spec(&$spec) 
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0,
   ];
+
+  $spec['expired'] = [
+    'name' => 'expired',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'title' => 'Include expired balance changes only?',
+    'description' => 'Only counts the days from expired balance changes',
+    'api.required' => 0,
+  ];
 }
 
 /**
@@ -262,12 +270,14 @@ function _civicrm_api3_leave_request_getbalancechangebyabsencetype_spec(&$spec) 
 function civicrm_api3_leave_request_getbalancechangebyabsencetype($params) {
   $statuses = _civicrm_api3_leave_request_get_statuses_from_params($params);
   $publicHolidayOnly = empty($params['public_holiday']) ? false : true;
+  $expiredOnly = empty($params['expired']) ? false : true;
 
   $values = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::getBalanceChangeByAbsenceType(
     $params['contact_id'],
     $params['period_id'],
     $statuses,
-    $publicHolidayOnly
+    $publicHolidayOnly,
+    $expiredOnly
   );
 
   return civicrm_api3_create_success($values);
