@@ -1,15 +1,7 @@
-
 // Media query variables.
 $tablet:  "screen and (min-width: #{screen-sm-min})";
 $normal:  "screen and (min-width: #{screen-md-min})";
 $wide:    "screen and (min-width: #{screen-lg-min})";
-
-// Drop shadows.
-@mixin box-shadow($shadow) {
-  -webkit-box-shadow: $shadow;
-     -moz-box-shadow: $shadow;
-          box-shadow: $shadow;
-}
 
 html {
   &.overlay-open .navbar-fixed-top {

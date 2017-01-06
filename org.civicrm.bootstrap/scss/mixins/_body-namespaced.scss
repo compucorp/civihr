@@ -2,11 +2,11 @@
  * Applies the given content to a namespaced body, and to
  * an equivalent namespaced container (which acts like a body-like element)
  */
-@mixin body-namespaced {
-    @at-root {
-        body#{$bootstrap-namespace},
-        #{$bootstrap-namespace} {
-            @content;
-        }
-    }
-}
+// @mixin body-namespaced {
+//     @at-root {
+//         body#{$bootstrap-namespace},
+//         #{$bootstrap-namespace} {
+//             @content;
+//         }
+//     }
+// }
