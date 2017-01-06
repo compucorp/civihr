@@ -3,6 +3,8 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
 
 trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
 
@@ -82,6 +84,29 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
       'amount' => $expiredAmount * -1, //expired amounts should be negative
       'expired_balance_change_id' => $broughtForwardBalanceChangeID,
       'expiry_date' => date('YmdHis', strtotime("-{$expiredByNoOfDays} day"))
+    ]);
+  }
+
+  public function createExpiredTOILRequestBalanceChange($typeID, $contactID, $status, $fromDate, $toDate, $toilToAccrue, $expiryDate, $expiredAmount) {
+    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $typeID,
+      'contact_id' => $contactID,
+      'status_id' => $status,
+      'from_date' => $fromDate,
+      'to_date' => $toDate,
+      'toil_to_accrue' => $toilToAccrue,
+      'duration' => 200,
+      'expiry_date' => $expiryDate
+    ]);
+
+    $toilBalanceChange = $this->findToilRequestBalanceChange($toilRequest->id);
+    return LeaveBalanceChangeFabricator::fabricate([
+      'source_id' => $toilBalanceChange->source_id,
+      'source_type' => $toilBalanceChange->source_type,
+      'amount' => $expiredAmount * -1,
+      'expiry_date' => CRM_Utils_Date::processDate($toilBalanceChange->expiry_date),
+      'expired_balance_change_id' => $toilBalanceChange->id,
+      'type_id' => $this->getBalanceChangeTypeValue('Debit')
     ]);
   }
 
