@@ -70,13 +70,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * be included in the sum.
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
-   *    The LeavePeriodEntitlement to get the Balance to
+   *   The LeavePeriodEntitlement to get the Balance to
    * @param array $leaveRequestStatus
-   *    An array of values from Leave Request Status option list
+   *   An array of values from Leave Request Status option list
+   * @param bool $expiredOnly
+   *   When this param is set to true, the method will consider only the expired
+   *   Balance Changes. Otherwise, it will consider all the Balance Changes,
+   *   including the expired ones.
    *
    * @return float
    */
-  public static function getBalanceForEntitlement(LeavePeriodEntitlement $periodEntitlement, $leaveRequestStatus = []) {
+  public static function getBalanceForEntitlement(LeavePeriodEntitlement $periodEntitlement, $leaveRequestStatus = [], $expiredOnly = false) {
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
@@ -107,7 +111,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
                  leave_balance_change.source_type = '" . self::SOURCE_TOIL_REQUEST . "'
       LEFT JOIN {$leaveRequestTable} toil_leave_request
               ON toil_leave_request.id = toil_request.leave_request_id
-      WHERE (
+      WHERE ((
               $whereLeaveRequestDates 
               AND
               (leave_request.type_id = {$periodEntitlement->type_id} OR toil_leave_request.type_id = {$periodEntitlement->type_id})
@@ -119,8 +123,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
             (
               leave_balance_change.source_id = {$periodEntitlement->id} AND 
               leave_balance_change.source_type = '" . self::SOURCE_ENTITLEMENT . "'
-            )
+            ))
     ";
+
+    if($expiredOnly) {
+      $query .= ' AND leave_balance_change.expired_balance_change_id IS NOT NULL';
+    }
 
     $result = CRM_Core_DAO::executeQuery($query);
     $result->fetch();
