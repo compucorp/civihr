@@ -452,4 +452,51 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
     // date used
     $this->assertEquals($expiryDate->format('Y-m-d'), $toilBalanceChange->expiry_date);
   }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   * @expectedExceptionMessage The TOIL amount requested for is greater than the maximum for this Absence Type
+   */
+  public function testOpenToilRequestWillNotBeUpdatedIfRequestedAmountIsMoreThanMaxLeaveAccrual() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Title 1',
+      'max_leave_accrual' => 3,
+      'allow_accruals_request' => true,
+      'is_active' => 1,
+    ]);
+
+    $toilRequest = TOILRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => date('YmdHis'),
+      'to_date' => date('YmdHis'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => $this->toilAmounts['3 Days']['value'],
+      'duration' => 300,
+    ], false);
+
+    // decrease the max leave accrual
+    AbsenceTypeFabricator::fabricate([
+      'id' => $absenceType->id,
+      'max_leave_accrual' => 1,
+      'allow_accruals_request' => true,
+    ]);
+
+    // update the TOIL request status
+    TOILRequest::validateParams([
+      'id' => $toilRequest->id,
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => date('YmdHis'),
+      'to_date' => date('YmdHis'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => $this->toilAmounts['3 Days']['value'],
+      'duration' => 300,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+  }
 }
