@@ -326,7 +326,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testTheEntitlementBreakdownReturnsThePositiveLeaveBroughtForwardAndPublicHolidayChangesWithoutASource() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
     $entitlement = $this->createLeavePeriodEntitlement();
 
     $this->createLeaveBalanceChange($entitlement->id, 10);

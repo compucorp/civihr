@@ -240,7 +240,7 @@ class SicknessRequestTest extends BaseHeadlessTest {
   public function testCreateResponseAlsoIncludeTheLeaveRequestFields() {
     $contact = ContactFabricator::fabricate();
 
-    $startDate = new DateTime();
+    $startDate = new DateTime('next monday');
     $endDate = new DateTime('+10 days');
 
     HRJobContractFabricator::fabricate(
