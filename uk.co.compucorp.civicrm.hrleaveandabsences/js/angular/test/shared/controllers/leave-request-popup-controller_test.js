@@ -72,7 +72,7 @@
         $scope.$digest();
       }));
 
-      fit('is called', function () {
+      it('is called', function () {
         expect($log.debug).toHaveBeenCalled();
       });
 
