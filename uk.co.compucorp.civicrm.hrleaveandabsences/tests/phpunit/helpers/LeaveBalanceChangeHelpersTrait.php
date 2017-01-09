@@ -1,8 +1,9 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
 
 trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
 
@@ -85,8 +86,31 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     ]);
   }
 
+  public function createExpiredTOILRequestBalanceChange($typeID, $contactID, $status, $fromDate, $toDate, $toilToAccrue, $expiryDate, $expiredAmount) {
+    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $typeID,
+      'contact_id' => $contactID,
+      'status_id' => $status,
+      'from_date' => $fromDate,
+      'to_date' => $toDate,
+      'toil_to_accrue' => $toilToAccrue,
+      'duration' => 200,
+      'expiry_date' => $expiryDate
+    ]);
+
+    $toilBalanceChange = $this->findToilRequestBalanceChange($toilRequest->id);
+    return LeaveBalanceChangeFabricator::fabricate([
+      'source_id' => $toilBalanceChange->source_id,
+      'source_type' => $toilBalanceChange->source_type,
+      'amount' => $expiredAmount * -1,
+      'expiry_date' => CRM_Utils_Date::processDate($toilBalanceChange->expiry_date),
+      'expired_balance_change_id' => $toilBalanceChange->id,
+      'type_id' => $this->getBalanceChangeTypeValue('Debit')
+    ]);
+  }
+
   /**
-   * This is a helper method to create the fixtures a Leave Request and its
+   * This is a helper method to create the fixtures for a Leave Request and its
    * respective dates and balance changes.
    *
    * Creating a real leave request will involve a lot more complicate steps, like
@@ -94,70 +118,34 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
    * we don't need all that for the tests. Only having the data on the right
    * tables is enough, and that's what this method does.
    *
-   * @param $typeID
+   * @param int $typeID
    *    The ID of the Absence Type this Leave Request will belong to
-   * @param $contactID
+   * @param int $contactID
    *    The ID of the Contact (user) this Leave Request will belong to
    * @param int $status
    *    One of the values of the Leave Request Status option list
-   * @param $fromDate
+   * @param string $fromDate
    *    The start date of the leave request
-   * @param null $toDate
+   * @param null|string $toDate
    *    The end date of the leave request. If null, it means it starts and ends at the same date
-   *
-   * @internal param int $entitlementID The ID of the entitlement to which the leave request will be added to*    The ID of the entitlement to which the leave request will be added to
    */
   public function createLeaveRequestBalanceChange($typeID, $contactID, $status, $fromDate, $toDate = null) {
-    $leaveRequestTable = LeaveRequest::getTableName();
-    $startDate = new DateTime($fromDate);
+    $fromDate = new DateTime($fromDate);
 
     if (!$toDate) {
-      $endDate = new DateTime($fromDate);
+      $toDate = clone $fromDate;
     }
     else {
-      $endDate = new DateTime($toDate);
+      $toDate = new DateTime($toDate);
     }
 
-    $fromDate = "'{$fromDate}'";
-    $toDate = $toDate ? "'{$toDate}'" : $fromDate;
-    $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
-    $dateType = $leaveRequestDateTypes['all_day'];
-
-    $query = "
-      INSERT INTO {$leaveRequestTable}(type_id, contact_id, status_id, from_date, to_date, from_date_type, to_date_type)
-      VALUES({$typeID}, {$contactID}, {$status}, {$fromDate}, {$toDate}, {$dateType}, {$dateType} )
-    ";
-
-    CRM_Core_DAO::executeQuery($query);
-    $leaveRequestID = $this->getLastIdInTable($leaveRequestTable);
-
-    // We need to add 1 day to the end date to include it
-    // when we loop through the DatePeriod
-    $endDate->modify('+1 day');
-    $interval   = new DateInterval('P1D');
-    $datePeriod = new DatePeriod($startDate, $interval, $endDate);
-
-    $leaveRequestDateTableName = LeaveRequestDate::getTableName();
-    $balanceChangeTableName = LeaveBalanceChange::getTableName();
-
-    $debitBalanceChangeType = $this->getBalanceChangeTypeValue('Debit');
-
-    foreach ($datePeriod as $date) {
-      $dbDate = $date->format('Y-m-d');
-
-      CRM_Core_DAO::executeQuery("
-        INSERT INTO {$leaveRequestDateTableName}(date, leave_request_id)
-        VALUES('{$dbDate}', {$leaveRequestID})
-      ");
-
-      $dateId = $this->getLastIdInTable($leaveRequestDateTableName);
-
-      CRM_Core_DAO::executeQuery("
-        INSERT INTO {$balanceChangeTableName}(type_id, amount, source_id, source_type)
-        VALUES({$debitBalanceChangeType}, -1, {$dateId}, '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "')
-      ");
-    }
-
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $typeID,
+      'contact_id' => $contactID,
+      'status_id' => $status,
+      'from_date' => $fromDate->format('Ymd'),
+      'to_date' => $toDate->format('Ymd')
+    ], true);
   }
 
   public function getLastIdInTable($tableName) {

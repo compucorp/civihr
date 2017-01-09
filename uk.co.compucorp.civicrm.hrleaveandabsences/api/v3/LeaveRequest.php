@@ -247,12 +247,26 @@ function _civicrm_api3_leave_request_getbalancechangebyabsencetype_spec(&$spec) 
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0,
   ];
+
+  $spec['expired'] = [
+    'name' => 'expired',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'title' => 'Include expired balance changes only?',
+    'description' => 'Only counts the days from expired balance changes',
+    'api.required' => 0,
+  ];
 }
 
 /**
  * LeaveRequest.getBalanceChangeByAbsenceType API
  *
- * Returns the total balance change for each
+ * Returns a list of all Absence Types, together with its total balance change.
+ * That is, the sum of all the Leave Balance Changes for Leave Requests of that
+ * Absence Type, for the given $contactID during the given $periodID.
+ *
+ * Balance Changes for Public Holiday Leave Requests won't be considered,
+ * except when $publicHolidays is true. In that case, only the balance changes
+ * for that type of request will be considered.
  *
  * @param array $params
  *  An array of params passed to the API
@@ -261,16 +275,41 @@ function _civicrm_api3_leave_request_getbalancechangebyabsencetype_spec(&$spec) 
  */
 function civicrm_api3_leave_request_getbalancechangebyabsencetype($params) {
   $statuses = _civicrm_api3_leave_request_get_statuses_from_params($params);
-  $publicHolidayOnly = empty($params['public_holiday']) ? false : true;
+  $publicHolidaysOnly = empty($params['public_holiday']) ? false : true;
+  $expiredOnly = empty($params['expired']) ? false : true;
+  $contactID = (int)$params['contact_id'];
+  $periodID = (int)$params['period_id'];
 
-  $values = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::getBalanceChangeByAbsenceType(
-    $params['contact_id'],
-    $params['period_id'],
-    $statuses,
-    $publicHolidayOnly
+  $periodEntitlements = CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement::getPeriodEntitlementsForContact(
+    $contactID,
+    $periodID
   );
 
-  return civicrm_api3_create_success($values);
+  $results = [];
+  $excludePublicHolidays = !$publicHolidaysOnly;
+  foreach($periodEntitlements as $periodEntitlement) {
+    if($expiredOnly) {
+      $balance = CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::getBalanceForEntitlement(
+        $periodEntitlement,
+        $statuses,
+        $expiredOnly
+      );
+    }
+    else {
+      $balance = CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+        $periodEntitlement,
+        $statuses,
+        null,
+        null,
+        $excludePublicHolidays,
+        $publicHolidaysOnly
+      );
+    }
+
+    $results[$periodEntitlement->type_id] = $balance;
+  }
+
+  return civicrm_api3_create_success($results);
 }
 
 /**

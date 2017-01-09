@@ -12,7 +12,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest
  *
@@ -118,8 +118,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       new DateTime('+10 days')
     );
 
-    // This is the initial entitlement and, since it has no
-    // source_id, it will always be included in the balance SUM
     $this->createLeaveBalanceChange($entitlement->id, 10);
     $this->assertEquals(10, LeaveBalanceChange::getBalanceForEntitlement($entitlement));
 
@@ -191,8 +189,143 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(9, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statusesToInclude));
   }
 
-  public function testTheEntitlementBreakdownReturnsThePositiveLeaveBroughtForwardAndPublicHolidayChangesWithoutASource() {
+  public function testBalanceForEntitlementIncludesExpiredBroughtForwardAndTOIL() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('-10 days'),
+      new DateTime('+10 days')
+    );
+
+    $this->createLeaveBalanceChange($entitlement->id, 10);
+    $this->assertEquals(10, LeaveBalanceChange::getBalanceForEntitlement($entitlement));
+
+    $this->createExpiredBroughtForwardBalanceChange($entitlement->id, 10, 5);
+
+    // Including all the balance changes
+    // 10 (Leave) + 10 (Brought Forward) - 5 (Expired Brought Forward)
+    $this->assertEquals(15, LeaveBalanceChange::getBalanceForEntitlement($entitlement));
+
+    $this->createExpiredTOILRequestBalanceChange(
+      $entitlement->type_id,
+      $entitlement->contact_id,
+      $leaveRequestStatuses['Approved'],
+      CRM_Utils_Date::processDate('-5 days'),
+      CRM_Utils_Date::processDate('-5 days'),
+      3,
+      CRM_Utils_Date::processDate('-1 days'),
+      1
+    );
+
+    // 10 (Leave) + 10 (Brought Forward) - 5 (Expired Brought Forward) + 3 (Accrued TOIL) - 1 (Expired TOIL)
+    $this->assertEquals(17, LeaveBalanceChange::getBalanceForEntitlement($entitlement));
+  }
+
+  public function testBalanceForEntitlementCanIncludeOnlyTheExpiredBalanceChanges() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('-10 days'),
+      new DateTime('+10 days')
+    );
+
+    $expiredOnly = true;
+    $this->createLeaveBalanceChange($entitlement->id, 10);
+    $this->assertEquals(0, LeaveBalanceChange::getBalanceForEntitlement($entitlement, [], $expiredOnly));
+
+    $this->createExpiredBroughtForwardBalanceChange($entitlement->id, 10, 5);
+
+    // - 5 (Only the expired Brought Forward)
+    $this->assertEquals(-5, LeaveBalanceChange::getBalanceForEntitlement($entitlement, [], $expiredOnly));
+
+    $this->createExpiredTOILRequestBalanceChange(
+      $entitlement->type_id,
+      $entitlement->contact_id,
+      $leaveRequestStatuses['Approved'],
+      CRM_Utils_Date::processDate('-5 days'),
+      CRM_Utils_Date::processDate('-5 days'),
+      3,
+      CRM_Utils_Date::processDate('-1 days'),
+      1
+    );
+
+    // -5 (Expired Brought Forward) - 1 (Expired TOIL)
+    $this->assertEquals(-6, LeaveBalanceChange::getBalanceForEntitlement($entitlement, [], $expiredOnly));
+  }
+
+  public function testBalanceForEntitlementCanIncludeOnlyTheExpiredBalanceChangesForTOILRequestsWithSpecificStatuses() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('-10 days'),
+      new DateTime('+10 days')
+    );
+
+    $expiredOnly = true;
+    $this->createLeaveBalanceChange($entitlement->id, 10);
+    $this->assertEquals(0, LeaveBalanceChange::getBalanceForEntitlement($entitlement, [], $expiredOnly));
+
+    $this->createExpiredBroughtForwardBalanceChange($entitlement->id, 10, 5);
+
+    // - 5 (Only the expired Brought Forward)
+    $this->assertEquals(-5, LeaveBalanceChange::getBalanceForEntitlement($entitlement, [], $expiredOnly));
+
+    $this->createExpiredTOILRequestBalanceChange(
+      $entitlement->type_id,
+      $entitlement->contact_id,
+      $leaveRequestStatuses['Approved'],
+      CRM_Utils_Date::processDate('-5 days'),
+      CRM_Utils_Date::processDate('-5 days'),
+      3,
+      CRM_Utils_Date::processDate('-1 day'),
+      1
+    );
+
+    $this->createExpiredTOILRequestBalanceChange(
+      $entitlement->type_id,
+      $entitlement->contact_id,
+      $leaveRequestStatuses['Cancelled'],
+      CRM_Utils_Date::processDate('-3 days'),
+      CRM_Utils_Date::processDate('-3 days'),
+      3,
+      CRM_Utils_Date::processDate('-1 day'),
+      3
+    );
+
+    $this->createExpiredTOILRequestBalanceChange(
+      $entitlement->type_id,
+      $entitlement->contact_id,
+      $leaveRequestStatuses['Waiting Approval'],
+      CRM_Utils_Date::processDate('-1 days'),
+      CRM_Utils_Date::processDate('-1 days'),
+      5,
+      CRM_Utils_Date::processDate('-1 day'),
+      2
+    );
+    
+    $statuses = [$leaveRequestStatuses['Approved']];
+    // -5 (Expired Brought Forward) - 1 (Expired Approved TOIL)
+    $this->assertEquals(-6, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
+
+    $statuses = [$leaveRequestStatuses['Approved'], $leaveRequestStatuses['Waiting Approval']];
+    // -5 (Expired Brought Forward) - 1 (Expired Approved TOIL) - 2 (Expired Waiting Approval TOIL)
+    $this->assertEquals(-8, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
+
+    $statuses = [$leaveRequestStatuses['Cancelled'], $leaveRequestStatuses['Waiting Approval']];
+    // -5 (Expired Brought Forward) - 3 (Expired Cancelled TOIL) -2 (Expired Waiting Approval TOIL)
+    $this->assertEquals(-10, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
+
+    $statuses = [$leaveRequestStatuses['Waiting Approval']];
+    // -5 (Expired Brought Forward) - 2 (Expired Waiting Approval TOIL)
+    $this->assertEquals(-7, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
+
+    $statuses = [$leaveRequestStatuses['Cancelled']];
+    // -5 (Expired Brought Forward) - 3 (Expired Cancelled TOIL)
+    $this->assertEquals(-8, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
+
+    $statuses = [$leaveRequestStatuses['Cancelled'], $leaveRequestStatuses['Approved']];
+    // -5 (Expired Brought Forward) - 3 (Expired Cancelled TOIL) - 1 (Expired Approved TOIL)
+    $this->assertEquals(-9, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
+  }
+
+  public function testTheEntitlementBreakdownReturnsThePositiveLeaveBroughtForwardAndPublicHolidayChangesWithoutASource() {
     $entitlement = $this->createLeavePeriodEntitlement();
 
     $this->createLeaveBalanceChange($entitlement->id, 10);
@@ -562,6 +695,75 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(0, $balance);
   }
 
+  public function testLeaveRequestBalanceForEntitlementShouldIncludeTOILBalanceChanges() {
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('today'),
+      new DateTime('+100 days')
+    );
+    
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
+    $this->assertEquals(0, $balance);
+
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $entitlement->contact_id,
+      'type_id' => $entitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('today'),
+      'to_date' => CRM_Utils_Date::processDate('today'),
+      'duration' => 360,
+      'toil_to_accrue' => 2,
+      'expiry_date' => CRM_Utils_Date::processDate('+30 days'),
+    ]);
+
+    // This will deduct 1 day from the 2 accrued by the toil request
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $entitlement->contact_id,
+      'type_id' => $entitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('+10 days'),
+      'to_date' => CRM_Utils_Date::processDate('+10 days')
+    ], true);
+
+
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
+    $this->assertEquals(1, $balance);
+  }
+
+  public function testLeaveRequestBalanceForEntitlementDoesNotIncludeExpiredTOILBalanceChangeByDefault() {
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('today'),
+      new DateTime('+100 days')
+    );
+
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
+    $this->assertEquals(0, $balance);
+
+    // Creates a 2 days TOIL Request with 1 day expired
+    $this->createExpiredTOILRequestBalanceChange(
+      $entitlement->type_id,
+      $entitlement->contact_id,
+      '',
+      CRM_Utils_Date::processDate('today'),
+      CRM_Utils_Date::processDate('today'),
+      2,
+      CRM_Utils_Date::processDate('+30 days'),
+      1
+    );
+
+    // This will deduct 1 day from the 2 accrued by the toil request
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $entitlement->contact_id,
+      'type_id' => $entitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('+10 days'),
+      'to_date' => CRM_Utils_Date::processDate('+10 days')
+    ], true);
+
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
+    // This is 1 because the number of days accrued is 2 and only 1 day was
+    // deducted (from the leave request). The other day is expired and should
+    // not be counted
+    $this->assertEquals(1, $balance);
+  }
+
+
   public function testTheLeaveRequestBreakdownReturnsOnlyTheLeaveBalanceChangesOfTheLeaveRequestDates() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
@@ -607,18 +809,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testTheTotalBalanceChangeForALeaveRequestShouldBeTheSumOfAllItsLeaveBalanceChanges() {
+    $withBalanceChanges = true;
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-04'),
       'status_id' => 1
-    ]);
-
-    $expectedLeaveBalanceChanges = [];
-    foreach($leaveRequest->getDates() as $date) {
-      $expectedLeaveBalanceChanges[] = LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
-    }
+    ], $withBalanceChanges);
 
     // The balance changes created by the fabricator deduct 1 day for each date,
     // so the total for the 4 days should be 4
