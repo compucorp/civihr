@@ -85,3 +85,5 @@ if [ "$WITH_HR_SAMPLE" == "1" ]; then
   set +ex
 fi
 
+# Enable CiviCRM views integration after civihr is completely get installed
+drush -y en civicrm_views_integration
