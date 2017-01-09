@@ -736,15 +736,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
 
-    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
-      'contact_id' => $entitlement->contact_id,
-      'type_id' => $entitlement->type_id,
-      'from_date' => CRM_Utils_Date::processDate('today'),
-      'to_date' => CRM_Utils_Date::processDate('today'),
-      'duration' => 360,
-      'toil_to_accrue' => 2,
-      'expiry_date' => CRM_Utils_Date::processDate('+30 days'),
-    ]);
+    // Creates a 2 days TOIL Request with 1 day expired
+    $this->createExpiredTOILRequestBalanceChange(
+      $entitlement->type_id,
+      $entitlement->contact_id,
+      '',
+      CRM_Utils_Date::processDate('today'),
+      CRM_Utils_Date::processDate('today'),
+      2,
+      CRM_Utils_Date::processDate('+30 days'),
+      1
+    );
 
     // This will deduct 1 day from the 2 accrued by the toil request
     LeaveRequestFabricator::fabricateWithoutValidation([
@@ -753,18 +755,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'from_date' => CRM_Utils_Date::processDate('+10 days'),
       'to_date' => CRM_Utils_Date::processDate('+10 days')
     ], true);
-
-    $toilBalanceChange = $this->findToilRequestBalanceChange($toilRequest->id);
-
-    //This balance change should not be included on the count
-    LeaveBalanceChangeFabricator::fabricate([
-      'source_id' => $toilBalanceChange->source_id,
-      'source_type' => $toilBalanceChange->source_type,
-      'expiry_date' => CRM_Utils_Date::processDate($toilBalanceChange->expiry_date),
-      'type_id' => $toilBalanceChange->type_id,
-      'amount' => -1,
-      'expired_balance_change_id' => $toilBalanceChange->id
-    ]);
 
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     // This is 1 because the number of days accrued is 2 and only 1 day was
@@ -819,18 +809,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testTheTotalBalanceChangeForALeaveRequestShouldBeTheSumOfAllItsLeaveBalanceChanges() {
+    $withBalanceChanges = true;
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-04'),
       'status_id' => 1
-    ]);
-
-    $expectedLeaveBalanceChanges = [];
-    foreach($leaveRequest->getDates() as $date) {
-      $expectedLeaveBalanceChanges[] = LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
-    }
+    ], $withBalanceChanges);
 
     // The balance changes created by the fabricator deduct 1 day for each date,
     // so the total for the 4 days should be 4
