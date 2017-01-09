@@ -70,6 +70,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'from_date' => CRM_Utils_Date::processDate($publicHoliday->date),
+      'to_date' => CRM_Utils_Date::processDate($publicHoliday->date),
       'contact_id' => $this->contract['contact_id'],
       'type_id' => $this->absenceType->id,
       'status_id' => 1

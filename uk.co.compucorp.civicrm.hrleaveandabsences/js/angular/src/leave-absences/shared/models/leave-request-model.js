@@ -24,7 +24,7 @@ define([
          *   `page` for the current page, `size` for number of items per page
          * @param {string} sort - The field and direction to order by
          * @param  {Object} params
-         * @return {Promise}
+         * @return {Promise} resolves with {Object}
          */
         all: function (filters, pagination, sort, params) {
           return leaveRequestAPI.all(this.processFilters(filters), pagination, sort, params)

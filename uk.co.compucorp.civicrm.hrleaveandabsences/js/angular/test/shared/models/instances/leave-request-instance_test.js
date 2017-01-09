@@ -576,6 +576,8 @@ define([
       }
     });
 
+    // Testing the customization of toAPIFilter via toAPI, as the former
+    // is just an implementation detail, exposed so it can be customized
     describe('toAPI()', function () {
       var leaveRequest, toAPIData;
 

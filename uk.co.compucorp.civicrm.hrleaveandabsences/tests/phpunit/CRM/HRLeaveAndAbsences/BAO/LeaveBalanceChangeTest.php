@@ -11,7 +11,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceCha
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
-
+use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest
  *
@@ -1037,6 +1038,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   private function deleteDefaultWorkPattern() {
     $workPatternTable = WorkPattern::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$workPatternTable} WHERE is_default = 1");
+  }
+
+  public function testGetBalanceChangeForToilLeaveRequest() {
+
+    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+1 days'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    $this->assertEquals(2, LeaveBalanceChange::getAmountForTOILRequest($toilRequest->id));
   }
 }
 

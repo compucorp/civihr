@@ -195,9 +195,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (_.includes(['balance_change', 'dates'], key)) {
-            return;
-          } else {
+          if (!_.includes(['balance_change', 'dates'], key)) {
             result[key] = this[key];
           }
         }

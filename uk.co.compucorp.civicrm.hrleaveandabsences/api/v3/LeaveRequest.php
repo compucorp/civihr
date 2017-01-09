@@ -323,3 +323,57 @@ function civicrm_api3_leave_request_isvalid($params) {
 
   return civicrm_api3_create_success($result);
 }
+
+/**
+ * LeaveRequest.isManagedBy API spec
+ *
+ * @param array $spec
+ */
+function _civicrm_api3_leave_request_ismanagedby_spec(&$spec) {
+  $spec['leave_request_id'] = [
+    'name' => 'leave_request_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Leave Request',
+    'description' => 'The Leave Request to check if the contact is the manager of',
+    'api.required' => 1
+  ];
+
+  $spec['contact_id'] = [
+    'name' => 'contact_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Contact',
+    'description' => 'The contact to check if the Leave Request is managed by',
+    'api.required' => 1,
+    'FKClassName'  => 'CRM_Contact_DAO_Contact',
+    'FKApiName'    => 'Contact',
+  ];
+}
+
+/**
+ * LeaveRequest.isManagedBy API
+ *
+ * Uses the LeaveManager service in order to check if the contact of the given
+ * Leave Request is managed by the contact with the given contact_id.
+ *
+ * @see CRM_HRLeaveAndAbsences_Service_LeaveManager::isContactManagedBy()
+ *
+ * @param array $params
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_ismanagedby($params) {
+  $leaveRequest = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::findById($params['leave_request_id']);
+  $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
+
+  $result = civicrm_api3_create_success($leaveManagerService->isContactManagedBy(
+    $leaveRequest->contact_id,
+    $params['contact_id'])
+  );
+
+  // When isContactManagedBy returns false, civicrm_api3_create_success will
+  // consider no value was returned and will set count to 0. So we manually
+  // set it to 1 here.
+  $result['count'] = 1;
+
+  return $result;
+}

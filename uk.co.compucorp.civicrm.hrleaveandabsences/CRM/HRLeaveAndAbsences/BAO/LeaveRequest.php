@@ -289,6 +289,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       $leaveRequestStatusFilter
     );
 
+    //if its an update and the only overlapping leave request is the leave request being updated itself
+    if (!empty($params['id'])) {
+      if(count($overlappingLeaveRequests) == 1 &&  $overlappingLeaveRequests[0]->id == $params['id']){
+        return;
+      }
+    }
+
     if ($overlappingLeaveRequests) {
       throw new InvalidLeaveRequestException(
         'This Leave request has dates that overlaps with an existing leave request',

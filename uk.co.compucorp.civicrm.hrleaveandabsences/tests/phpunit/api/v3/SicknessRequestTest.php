@@ -271,6 +271,8 @@ class SicknessRequestTest extends BaseHeadlessTest {
       'status_id' => $this->leaveRequestStatuses['Approved']['value'],
       'from_date' => $startDate->format('Y-m-d'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $startDate->format('Y-m-d'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'reason' => $this->sicknessRequestReasons['Accident']['value'],
       'sequential' => 1
     ]);
@@ -281,9 +283,9 @@ class SicknessRequestTest extends BaseHeadlessTest {
       'status_id' => $this->leaveRequestStatuses['Approved']['value'],
       'from_date' => $startDate->format('Y-m-d'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => '',
+      'to_date' => $startDate->format('Y-m-d'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'reason' => $this->sicknessRequestReasons['Accident']['value'],
-      'to_date_type' => '',
     ];
 
     $this->assertArraySubset($expectedValues, $result['values'][0]);
