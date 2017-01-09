@@ -41,7 +41,6 @@ define([
           $log.debug('PublicHoliday isPublicHoliday whichDate', whichDate);
 
           var checkDate = moment(whichDate).format('YYYY-MM-DD');
-
           var params = {
             'date': checkDate
           };

@@ -368,13 +368,14 @@ define([
     /**
      * Pick a specific object out of a collection
      *
-     * @param {array} the option group collection key
+     * @param {array} collection - the option group collection key
      * @param {string} key - The sub-collection key
      * @param {string} value - The sub-collection key's value to match
      * @return {object}
      */
     specificObject: function (collection, key, value) {
       var whichOptionGroup = mockedOptionValues[collection];
+      
       return _.find(whichOptionGroup, function (item) {
         return item[key] === value;
       });

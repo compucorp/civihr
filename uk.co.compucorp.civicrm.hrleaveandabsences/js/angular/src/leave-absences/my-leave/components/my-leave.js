@@ -10,7 +10,7 @@ define([
     }],
     controllerAs: 'myleave',
     controller: ['$log', '$scope', '$uibModal', 'settings', function ($log, $scope, $modal, settings) {
-      $log.debug('Component: my-leave', this.contactId);
+      $log.debug('Component: my-leave');
 
       var vm = {};
       vm.leaveRequest = {

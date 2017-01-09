@@ -50,10 +50,6 @@
         it('opens dependent popup', function () {
           expect($uibModal.open).toHaveBeenCalledWith(jasmine.any(Object));
         });
-
-        it('has expected markup', function () {
-
-        });
       });
     });
   });

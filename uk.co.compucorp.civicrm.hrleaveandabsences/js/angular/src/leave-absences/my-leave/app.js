@@ -21,7 +21,6 @@ define([
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/public-holiday-model',
-  'common/services/angular-date/date-format',
 ], function (angular) {
   angular.module('my-leave', [
     'ngResource',
@@ -37,14 +36,9 @@ define([
     'my-leave.components',
     'leave-absences.directives',
     'leave-absences.models',
-    'common.angularDate',
   ])
   .run(['$log','DateFormat', function ($log, DateFormat) {
     $log.debug('app.run');
-    //set HR_Settings
-    DateFormat.getDateFormat().then(function(result){
-      //sets the HR_Settings to default
-    });
   }]);
 
   return angular;

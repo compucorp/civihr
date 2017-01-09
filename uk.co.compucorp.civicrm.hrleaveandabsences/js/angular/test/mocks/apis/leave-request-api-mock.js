@@ -31,11 +31,13 @@ define([
         },
         calculateBalanceChange: function (params) {
           return $q(function (resolve, reject) {
-            if(params && params.from_type == 'half_day_am'){
-              resolve(mockData.singleDayCalculateBalanceChange().values);
-            }
-            else if(params && params.from_type == 'all_day'){
-              resolve(mockData.multipleDayCalculateBalanceChange().values);
+            if(params){
+              if(params.from_type === 'half_day_am'){
+                resolve(mockData.singleDayCalculateBalanceChange().values);
+              }
+              else if(params.from_type === 'all_day'){
+                resolve(mockData.multipleDayCalculateBalanceChange().values);
+              }
             }
 
             resolve(mockData.calculateBalanceChange().values);

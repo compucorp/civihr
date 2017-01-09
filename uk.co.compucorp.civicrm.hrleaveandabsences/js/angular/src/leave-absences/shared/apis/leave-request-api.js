@@ -7,6 +7,15 @@ define([
   apis.factory('LeaveRequestAPI', ['$log', 'api', '$q', function ($log, api, $q) {
     $log.debug('LeaveRequestAPI');
 
+    /**
+     * Checks if error is returned from server
+     *
+     * @return {Boolean}
+     */
+    function checkError(data) {
+      return data && !!data.is_error;
+    }
+
     return api.extend({
 
       /**
@@ -48,14 +57,16 @@ define([
         var params = {
           contact_id: contactId,
           period_id: periodId,
-          statuses: statuses ? { 'IN': statuses } : null,
+          statuses: statuses ? {
+            'IN': statuses
+          } : null,
           public_holiday: isPublicHoliday || false
         };
 
-        this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params)
+        this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params, false)
           .then(function (data) {
-            if(data && data.is_error == 1){
-              deferred.reject(data);
+            if (checkError(data)) {
+              deferred.reject(data.error_message);
             }
 
             deferred.resolve(data.values);
@@ -80,8 +91,8 @@ define([
 
         this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
-            if(data && data.is_error == 1){
-              deferred.reject(data);
+            if (checkError(data)) {
+              deferred.reject(data.error_message);
             }
 
             //returns array of single object hence getting first object
@@ -111,8 +122,8 @@ define([
 
         this.sendPOST('LeaveRequest', 'calculatebalancechange', params)
           .then(function (data) {
-            if(data && data.is_error == 1){
-              deferred.reject(data);
+            if (checkError(data)) {
+              deferred.reject(data.error_message);
             }
 
             deferred.resolve(data.values);
@@ -139,16 +150,15 @@ define([
         if (params) {
           if (params.to_date && !params.to_date_type) {
             deferred.reject('to_date_type is mandatory');
-          }
-          else if (!params.contact_id || !params.from_date || !params.from_date_type || !params.status_id) {
+          } else if (!params.contact_id || !params.from_date || !params.from_date_type || !params.status_id) {
             deferred.reject('contact_id, from_date, status_id and from_date_type params are mandatory');
           }
         }
 
         this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
-            if(data && data.is_error == 1){
-              deferred.reject(data);
+            if (checkError(data)) {
+              deferred.reject(data.error_message);
             }
             //returns array of single object hence getting first object
             deferred.resolve(data.values[0]);
