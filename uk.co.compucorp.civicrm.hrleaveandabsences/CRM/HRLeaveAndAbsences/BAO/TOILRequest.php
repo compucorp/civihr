@@ -4,6 +4,9 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException as InvalidTOILRequestException;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_TOILRequest {
 
@@ -26,7 +29,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     }
 
     $instance = new self();
-    //set from_date_type and to_date_type to be full day by default
+    //set from_date_type and to_date_type to be full day bxy default
     $dateTypeOptions = array_flip(LeaveRequest::buildOptions('from_date_type'));
     $params['from_date_type'] = $dateTypeOptions['All Day'];
     if(!empty($params['to_date'])){
@@ -223,5 +226,44 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
       $toilAmounts[$toilAmount['name']] = $toilAmount['value'];
     }
     return $toilAmounts;
+  }
+
+  /**
+   * Deletes the TOIL Requests associated with an Absence Type (within the given Absence Period)
+   * and all the LeaveRequests, LeaveBalanceChanges and LeaveRequestDates of the TOIL Requests.
+   *
+   * @param int $absenceTypeID
+   *   The absence Type that TOIL requests is to be deleted for.
+   * @param CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $absencePeriod
+   * @param boolean $nonExpiredOnly
+   *   Whether to delete only records linked to non expired balance changes
+   */
+  public static function deleteAllForAbsenceType($absenceTypeID, AbsencePeriod $absencePeriod, $nonExpiredOnly = false) {
+    $leaveBalanceChangeTable = LeaveBalanceChange::getTableName();
+    $toilRequestTable = TOILRequest::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+
+    $query = "DELETE tr, bc, lr, lrd FROM {$toilRequestTable} tr
+              INNER JOIN {$leaveBalanceChangeTable} bc ON bc.source_id = tr.id AND bc.source_type = %1
+              INNER JOIN {$leaveRequestTable} lr ON tr.leave_request_id = lr.id
+              INNER JOIN {$leaveRequestDateTable} lrd ON lr.id = lrd.leave_request_id
+              WHERE lr.from_date >= %2 AND lr.to_date <= %3
+              AND lr.type_id = %4";
+
+    if ($nonExpiredOnly) {
+      $query .= " AND bc.expiry_date >= %5";
+    }
+
+    $today = new DateTime('today');
+    $params = [
+      1 => [LeaveBalanceChange::SOURCE_TOIL_REQUEST, 'String'],
+      2 => [$absencePeriod->start_date, 'String'],
+      3 => [$absencePeriod->end_date, 'String'],
+      4 => [$absenceTypeID, 'Integer'],
+      5 => [$today->format('Y-m-d'), 'String'],
+    ];
+
+    CRM_Core_DAO::executeQuery($query, $params);
   }
 }
