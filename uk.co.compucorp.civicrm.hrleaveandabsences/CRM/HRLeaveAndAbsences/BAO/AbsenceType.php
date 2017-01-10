@@ -48,6 +48,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   ];
 
   /**
+   * The absence type object before it gets updated.
+   * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
+   */
+  public $oldAbsenceType;
+
+  /**
    * Create a new AbsenceType based on array-data
    *
    * @param array $params key-value pairs
@@ -75,6 +81,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     $mustUpdatePublicHolidaysLeaveRequests = self::mustUpdatePublicHolidayLeaveRequests($params);
 
     $instance = new $className();
+
+    if ($hook == 'edit') {
+      $instance->loadOldAbsenceType($params['id']);
+    }
+
     $instance->copyValues($params);
     $transaction = new CRM_Core_Transaction();
     $instance->save();
@@ -581,5 +592,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   private function toilNeverExpires() {
     return !$this->accrual_expiration_unit || !$this->accrual_expiration_duration;
+  }
+
+  /**
+   * Load an absence type object and assign to the oldAbsenceType variable
+   *
+   * @param int $id
+   *   The Id of the absence type
+   */
+  private function loadOldAbsenceType($id) {
+    $this->oldAbsenceType = self::findById($id);
   }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestService as PublicHolidayLeaveRequestServiceFactory;
+use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
 
 require_once 'hrleaveandabsences.civix.php';
 
@@ -480,5 +481,23 @@ function _hrleaveandabsences_civicrm_post_hrjobdetails($op, $objectId, &$objectR
       $service = PublicHolidayLeaveRequestServiceFactory::create();
       $service->updateAllInTheFutureForContract($revision['jobcontract_id']);
     } catch(Exception $e) {}
+  }
+}
+
+/**
+ * Function which will be called when hook_civicrm_post is executed for the
+ * AbsenceType entity
+ *
+ * @param string $op
+ * @param int $objectId
+ * @param object $objectRef
+ */
+function _hrleaveandabsences_civicrm_post_absencetype($op, $objectId, &$objectRef) {
+  if(in_array($op, ['edit'])) {
+
+    try {
+      $absenceTypeService = new AbsenceTypeService();
+      $absenceTypeService->postUpdateActions($objectRef);
+    } catch (Exception $e) {}
   }
 }
