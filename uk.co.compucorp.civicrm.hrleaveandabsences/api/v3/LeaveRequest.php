@@ -69,20 +69,21 @@ function civicrm_api3_leave_request_delete($params) {
 function _civicrm_api3_leave_request_get_spec(&$spec) {
   $spec['public_holiday'] = [
     'name' => 'public_holiday',
-    'title' => 'Include only Public Holiday Leave Requests?',
+    'title' => 'Public Holidays only?',
+    'description' => 'Include only Public Holiday Leave Requests?',
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0,
   ];
 
   $spec['managed_by'] = [
     'name' => 'managed_by',
-    'title' => 'Include only Leave Requests for contacts managed by the contact with the given ID',
+    'title' => 'Managed By',
+    'description' => 'Include only Leave Requests for contacts managed by the contact with the given ID',
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 0,
     'FKClassName'  => 'CRM_Contact_DAO_Contact',
     'FKApiName'    => 'Contact',
   ];
-
 }
 
 /**
@@ -118,9 +119,20 @@ function civicrm_api3_leave_request_get($params) {
 function _civicrm_api3_leave_request_getfull_spec(&$spec) {
   $spec['public_holiday'] = [
     'name' => 'public_holiday',
-    'title' => 'Include only Public Holiday Leave Requests?',
+    'title' => 'Public Holidays only?',
+    'description' => 'Include only Public Holiday Leave Requests?',
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0,
+  ];
+
+  $spec['managed_by'] = [
+    'name' => 'managed_by',
+    'title' => 'Managed By',
+    'description' => 'Include only Leave Requests for contacts managed by the contact with the given ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0,
+    'FKClassName'  => 'CRM_Contact_DAO_Contact',
+    'FKApiName'    => 'Contact',
   ];
 }
 
@@ -243,16 +255,17 @@ function _civicrm_api3_leave_request_getbalancechangebyabsencetype_spec(&$spec) 
 
   $spec['public_holiday'] = [
     'name' => 'public_holiday',
-    'title' => 'Include only Public Holiday Leave Requests?',
+    'title' => 'Include Public Holidays only?',
+    'description' => 'Include only Public Holiday Leave Requests?',
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0,
   ];
 
   $spec['expired'] = [
     'name' => 'expired',
-    'type' => CRM_Utils_Type::T_BOOLEAN,
     'title' => 'Include expired balance changes only?',
     'description' => 'Only counts the days from expired balance changes',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0,
   ];
 }
@@ -372,7 +385,7 @@ function _civicrm_api3_leave_request_ismanagedby_spec(&$spec) {
   $spec['leave_request_id'] = [
     'name' => 'leave_request_id',
     'type' => CRM_Utils_Type::T_INT,
-    'title' => 'Leave Request',
+    'title' => 'Leave Request ID',
     'description' => 'The Leave Request to check if the contact is the manager of',
     'api.required' => 1
   ];
@@ -380,7 +393,7 @@ function _civicrm_api3_leave_request_ismanagedby_spec(&$spec) {
   $spec['contact_id'] = [
     'name' => 'contact_id',
     'type' => CRM_Utils_Type::T_INT,
-    'title' => 'Contact',
+    'title' => 'Contact ID',
     'description' => 'The contact to check if the Leave Request is managed by',
     'api.required' => 1,
     'FKClassName'  => 'CRM_Contact_DAO_Contact',
