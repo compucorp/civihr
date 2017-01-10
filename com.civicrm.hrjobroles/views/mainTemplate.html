@@ -8,8 +8,8 @@
 
   <h3 ng-show="jobroles.present_job_roles.length > 0"
     class="header-bar header-bar-primary">Current Roles and Projects:</h3>
-    <ul class="{{prefix}}list-role">
-      <li class="{{prefix}}list-role-item"
+  <ul class="{{prefix}}list-role">
+    <li class="{{prefix}}list-role-item"
       ng-show="loaded"
       ng-repeat="job_roles_data in jobroles.present_job_roles"
       ng-include="job_role_panel_url" onload="loaded()">
@@ -18,18 +18,18 @@
   <h3 ng-show="jobroles.past_job_roles.length > 0" class="header-bar header-bar-danger">Past Roles and Projects:</h3>
   <ul class="{{prefix}}list-role">
     <li class="{{prefix}}list-role-item"
-    ng-repeat="job_roles_data in jobroles.past_job_roles"
-    ng-include
-    src="job_role_panel_url">
-  </li>
-</ul>
+      ng-repeat="job_roles_data in jobroles.past_job_roles"
+      ng-include
+      src="job_role_panel_url">
+    </li>
+  </ul>
 
-<div class="{{prefix}}list-role-item" ng-show="!!add_new">
-  <div ng-include src="add_new_role_url"></div>
-</div>
+  <div class="{{prefix}}list-role-item" ng-show="!!add_new">
+    <div ng-include src="add_new_role_url"></div>
+  </div>
 
-<button class="btn btn-default btn-primary" ng-click="add_new_role()" ng-hide="add_new">
-  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add new job role
-</button>
+  <button class="btn btn-default btn-primary" ng-click="add_new_role()" ng-hide="add_new">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add new job role
+  </button>
 
 </div>

@@ -228,6 +228,7 @@ define([
 
       // Set the data from the webservice call
       $scope.initData = function (role_id, form_id, data) {
+
         // Check if we have the array already
         if (typeof $scope.edit_data[role_id] === "undefined") {
           $scope.edit_data[role_id] = {};
@@ -497,20 +498,20 @@ define([
         $log.debug('Remove Role');
 
         var modalInstance = $modal.open({
-            appendTo: $rootElement.find('div').eq(0),
-            template: '',
-            templateUrl: settings.pathApp+'views/modalDialog.html?v='+(new Date()).getTime(),
-            size: 'sm',
-            controller: 'ModalDialogCtrl',
-            resolve: {
-                content: function(){
-                    return {
-                        copyCancel: 'No',
-                        title: 'Alert',
-                        msg: 'Are you sure you want to Delete Job Role?'
-                    };
-                }
+          appendTo: $rootElement.find('div').eq(0),
+          template: '',
+          templateUrl: settings.pathApp+'views/modalDialog.html?v='+(new Date()).getTime(),
+          size: 'sm',
+          controller: 'ModalDialogCtrl',
+          resolve: {
+            content: function(){
+              return {
+                copyCancel: 'No',
+                title: 'Alert',
+                msg: 'Are you sure you want to Delete Job Role?'
+              };
             }
+          }
         });
 
         // Delete job role
@@ -708,7 +709,6 @@ define([
       // Get the option groups and option values
       getOptionValues();
 
-      $scope.$broadcast('ct-spinner-show');
       // Get job roles based on the passed Contact ID
       getJobRolesList($scope.$parent.contactId);
 
