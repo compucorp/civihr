@@ -16,7 +16,8 @@ define([
         'from_date': '2016-02-01',
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-02-03',
-        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
+        'balance_change': -3
       }, {
         'id': '18',
         'type_id': absenceTypeData.all().values[0]['id'],
@@ -25,7 +26,8 @@ define([
         'from_date': '2016-08-17',
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-08-25',
-        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
+        'balance_change': -1.5
       }, {
         'id': '19',
         'type_id': absenceTypeData.all().values[0]['id'],
@@ -34,7 +36,8 @@ define([
         'from_date': '2016-01-30',
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-02-01',
-        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
+        'balance_change': -1
       }, {
         'id': '20',
         'type_id': absenceTypeData.all().values[0]['id'],
@@ -43,7 +46,8 @@ define([
         'from_date': '2016-11-23',
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-11-28',
-        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
+        'balance_change': -5
       }, {
         'id': '21',
         'type_id': absenceTypeData.all().values[2]['id'],
@@ -52,7 +56,8 @@ define([
         'from_date': '2016-06-03',
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-06-13',
-        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
+        'balance_change': -10
       }, {
         'id': '22',
         'type_id': absenceTypeData.all().values[1]['id'],
@@ -61,7 +66,8 @@ define([
         'from_date': '2016-01-01',
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-01-01',
-        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
+        'balance_change': -1
       }]
     },
     singleDataSuccess: {
