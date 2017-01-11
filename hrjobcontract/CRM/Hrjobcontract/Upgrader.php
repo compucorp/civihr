@@ -1128,6 +1128,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'api.OptionGroup.delete' => ['id' => '\$value.id'],
     ]);
 
+    CRM_Core_DAO::executeQuery("ALTER TABLE {$pensionsTableName} MODIFY pension_type INT(10) unsigned,
+                                ADD CONSTRAINT pension_type_contact_id_fk
+                                FOREIGN KEY(pension_type)
+                                REFERENCES civicrm_contact(id)
+                                ON DELETE SET NULL ON UPDATE CASCADE;");
+
     return true;
   }
 
