@@ -65,7 +65,7 @@
                           datepicker-options="$ctrl.uiOptions.datePickerOptions"
                           ng-model="$ctrl.uiOptions.fromDate"
                           is-open="$ctrl.uiOptions.showDatePickerFrom"
-                          ng-change="$ctrl.onDateChange($ctrl.uiOptions.fromDate, true)" />
+                          ng-change="$ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from')" />
                       <span class="input-group-btn">
                         <button type="button" class="btn btn-default fa fa-calendar"
                                 ng-click="$ctrl.uiOptions.showDatePickerFrom = true"></button>
@@ -105,7 +105,7 @@
                           show-button-bar="false"
                           ng-model="$ctrl.uiOptions.toDate"
                           is-open="$ctrl.uiOptions.showDatePickerTo"
-                          ng-change="$ctrl.onDateChange($ctrl.uiOptions.toDate, false)" />
+                          ng-change="$ctrl.onDateChange($ctrl.uiOptions.toDate, 'to')" />
                       <span class="input-group-btn">
                         <button type="button" class="btn btn-default fa fa-calendar"
                                 ng-click="$ctrl.uiOptions.showDatePickerTo = true"></button>
@@ -114,7 +114,7 @@
                   </div>
 
                   <div class="col-xs-4">
-                    <crm-loading show="!$ctrl.loading.fromDayTypes">
+                    <crm-loading show="!$ctrl.loading.toDayTypes">
                       <div class="chr_custom-select chr_custom-select--full">
                         <select name="toDayTypeSelect"
                             ng-disabled="$ctrl.leaveRequestToDayTypes.length == 1"
@@ -245,7 +245,7 @@
   </button>
     <button type="submit"
         class="btn btn-primary"
-        ng-disabled="$ctrl.canSubmit()"
+        ng-disabled="!$ctrl.canSubmit()"
         ng-click="$ctrl.submit()">Save</button>
   </div>
 </crm-loading>

@@ -10,10 +10,11 @@ define([
     /**
      * Checks if error is returned from server
      *
+     * @param {Object} dataFromServer
      * @return {Boolean}
      */
-    function checkError(data) {
-      return data && !!data.is_error;
+    function checkError(dataFromServer) {
+      return dataFromServer && !!dataFromServer.is_error;
     }
 
     return api.extend({
@@ -57,9 +58,7 @@ define([
         var params = {
           contact_id: contactId,
           period_id: periodId,
-          statuses: statuses ? {
-            'IN': statuses
-          } : null,
+          statuses: statuses ? { 'IN': statuses } : null,
           public_holiday: isPublicHoliday || false
         };
 

@@ -11,18 +11,6 @@
       var $compile, $log, $rootScope, directive, $uibModal,
         $controllerScope, $provide, DateFormat;
 
-      /**
-       * Creates and compiles the directive
-       */
-      function compileDirective() {
-        $controllerScope = $rootScope.$new();
-        var contactId = CRM.vars.leaveAndAbsences.contactId;
-
-        directive = angular.element('<leave-request-popup contact-id="' + contactId + '"></leave-request-popup>');
-        $compile(directive)($controllerScope);
-        $controllerScope.$digest();
-      }
-
       beforeEach(module('leave-absences.templates', 'leave-absences.directives'));
 
       beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$uibModal_) {
@@ -40,7 +28,6 @@
       });
 
       describe('dialog is open', function () {
-
         beforeEach(function () {
           spyOn($uibModal, 'open');
           directive.triggerHandler('click');
@@ -51,6 +38,18 @@
           expect($uibModal.open).toHaveBeenCalledWith(jasmine.any(Object));
         });
       });
+
+      /**
+       * Creates and compiles the directive
+       */
+      function compileDirective() {
+        $controllerScope = $rootScope.$new();
+        var contactId = CRM.vars.leaveAndAbsences.contactId;
+
+        directive = angular.element('<leave-request-popup contact-id="' + contactId + '"></leave-request-popup>');
+        $compile(directive)($controllerScope);
+        $controllerScope.$digest();
+      }
     });
   });
 })(CRM);

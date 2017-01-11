@@ -6,8 +6,8 @@ define([
   'use strict';
 
   instances.factory('CalendarInstance', [
-    'ModelInstance', '$log',
-    function (ModelInstance, $log) {
+    '$log', 'ModelInstance',
+    function ($log, ModelInstance) {
 
       /**
        * This method checks whether a date matches the send type.

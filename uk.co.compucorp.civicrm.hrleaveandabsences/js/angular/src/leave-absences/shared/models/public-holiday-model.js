@@ -22,7 +22,7 @@ define([
          * @return {Promise}
          */
         all: function (params) {
-          $log.debug('PublicHoliday all params', params);
+          $log.debug('PublicHoliday.all', params);
 
           return publicHolidayAPI.all(params)
             .then(function (publicHolidays) {
@@ -38,7 +38,7 @@ define([
          * @return {Bool} returns true if date is a public holday else false
          */
         isPublicHoliday: function (whichDate) {
-          $log.debug('PublicHoliday isPublicHoliday whichDate', whichDate);
+          $log.debug('PublicHoliday.isPublicHoliday', whichDate);
 
           var checkDate = moment(whichDate).format('YYYY-MM-DD');
           var params = {

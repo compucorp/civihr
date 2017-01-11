@@ -4,71 +4,87 @@ define([
   'common/moment',
   'common/services/api/option-group',
   'common/services/hr-settings',
+  'leave-absences/shared/models/absence-period-model',
+  'leave-absences/shared/models/absence-type-model',
+  'leave-absences/shared/models/entitlement-model',
+  'leave-absences/shared/models/calendar-model',
+  'leave-absences/shared/models/leave-request-model',
+  'leave-absences/shared/models/public-holiday-model',
+  'leave-absences/shared/models/instances/leave-request-instance',
 ], function (components, _, moment) {
   'use strict';
 
   components.controller('LeaveRequestPopupCtrl', [
     '$log', '$q', '$rootScope', '$uibModalInstance', 'AbsencePeriod', 'AbsenceType',
-    'api.optionGroup', 'baseData', 'Calendar', 'Entitlement', 'HR_settings',
+    'api.optionGroup', 'contactId', 'Calendar', 'Entitlement', 'HR_settings',
     'LeaveRequest', 'LeaveRequestInstance', 'PublicHoliday',
     function ($log, $q, $rootScope, $modalInstance, AbsencePeriod, AbsenceType,
-      OptionGroup, baseData, Calendar, Entitlement, HR_settings,
+      OptionGroup, contactId, Calendar, Entitlement, HR_settings,
       LeaveRequest, LeaveRequestInstance, PublicHoliday
     ) {
       $log.debug('LeaveRequestPopupCtrl');
 
-      var $ctrl = {},
+      var vm = {},
         serverDateFormat = 'YYYY-MM-DD';
 
-      $ctrl.absenceTypes = [];
-      $ctrl.calendar = {};
-      $ctrl.leaveRequestDayTypes = [];
-      $ctrl.balance = {
+      vm.absenceTypes = [];
+      vm.calendar = {};
+      vm.error = undefined;
+      vm.leaveRequestDayTypes = [];
+      vm.period = {};
+      vm.balance = {
+        closing: 0,
         opening: 0,
         change: {
           amount: 0,
           breakdown: []
-        },
-        closing: 0
-      };
-      $ctrl.period = {};
-      $ctrl.pagination = {
-        totalItems: $ctrl.balance.change.breakdown.length,
-        filteredbreakdown: $ctrl.balance.change.breakdown,
-        currentPage: 1,
-        numPerPage: 5,
-        pageChanged: function () {
-          //filter breakdowns
-          var begin = ((this.currentPage - 1) * this.numPerPage),
-            end = begin + this.numPerPage;
-
-          this.filteredbreakdown = $ctrl.balance.change.breakdown.slice(begin, end);
         }
       };
-      $ctrl.uiOptions = {
+      vm.loading = {
+        absenceTypes: true,
+        calculateBalanceChange: false,
+        fromDayTypes: false,
+        toDayTypes: false
+      };
+      vm.pagination = {
+        currentPage: 1,
+        filteredbreakdown: vm.balance.change.breakdown,
+        numPerPage: 5,
+        totalItems: vm.balance.change.breakdown.length,
+        /**
+         * Called when user changes the page under selection. It filters the
+         * breakdown to obtain the ones for currently selected page.
+         */
+        pageChanged: function () {
+          //filter breakdowns
+          var begin = (this.currentPage - 1) * this.numPerPage,
+            end = begin + this.numPerPage;
+
+          this.filteredbreakdown = vm.balance.change.breakdown.slice(begin, end);
+        }
+      };
+      vm.uiOptions = {
+        isAdmin: false,
+        isChangeExpanded: false,
+        multipleDays: true,
         showDatePickerFrom: false,
         showDatePickerTo: false,
-        isChangeExpanded: false,
+        userDateFormat: HR_settings.DATE_FORMAT,
+        showBalance: false,
         datePickerOptions: {
           startingDay: 1,
           showWeeks: false
-        },
-        isAdmin: false,
-        userDateFormat: HR_settings.DATE_FORMAT,
-        showBalance: false,
-        multipleDays: true
+        }
       };
-      $ctrl.error = undefined;
-      $ctrl.loading = {};
 
       /**
        * Change handler for change request type like multiple or single. It will
        * reset dates, day types, change balance.
        */
-      $ctrl.changeInNoOfDays = function () {
+      vm.changeInNoOfDays = function () {
         reset();
         //reinitialize opening balance
-        $ctrl.balance.opening = $ctrl.selectedAbsenceType.remainder;
+        vm.balance.opening = vm.selectedAbsenceType.remainder;
       };
 
       /**
@@ -76,15 +92,15 @@ define([
        * Also the balance change needs to be recalculated, if the `from` and `to`
        * dates have been already selected
        */
-      $ctrl.onAbsenceTypeChange = function () {
-        $ctrl.leaveRequest.type_id = $ctrl.selectedAbsenceType.id;
+      vm.onAbsenceTypeChange = function () {
+        vm.leaveRequest.type_id = vm.selectedAbsenceType.id;
         // get the `balance` of the newly selected absence type
-        $ctrl.balance.opening = $ctrl.selectedAbsenceType.remainder;
+        vm.balance.opening = vm.selectedAbsenceType.remainder;
 
-        if ($ctrl.leaveRequest.from_date && $ctrl.leaveRequest.to_date) {
-          $ctrl.loading.calculateBalanceChange = true;
-          $ctrl.calculateBalanceChange().then(function () {
-            $ctrl.loading.calculateBalanceChange = false;
+        if (canCalculateChange()) {
+          vm.loading.calculateBalanceChange = true;
+          vm.calculateBalanceChange().then(function () {
+            vm.loading.calculateBalanceChange = false;
           });
         }
       };
@@ -95,43 +111,35 @@ define([
        * First it syncs `from` and `to` date, if it's in 'single day' mode
        * Then, if all the dates are there, it gets the balance change
        *
+       * @param {Date} date - the selected date
+       * @param {String} dayType - set to from if from date is selected else to
        */
-      $ctrl.onDateChange = function (date, isFrom) {
-        if ($ctrl.uiOptions.multipleDays) {
-          if ($ctrl.uiOptions.toDate && $ctrl.uiOptions.fromDate) {
-            $ctrl.uiOptions.showBalance = true;
-          }
+      vm.onDateChange = function (date, dayType) {
+        dayType = dayType || 'from';
+
+        if (vm.uiOptions.multipleDays) {
+          vm.uiOptions.showBalance = !!vm.uiOptions.toDate && !!vm.uiOptions.fromDate;
         } else {
-          if ($ctrl.uiOptions.fromDate) {
-            $ctrl.uiOptions.showBalance = true;
-          }
+          vm.uiOptions.showBalance = !!vm.uiOptions.fromDate;
         }
 
-        $ctrl.filterLeaveRequestDayTypes(date, !!isFrom)
+        vm.loading[dayType + 'DayTypes'] = true;
+        filterLeaveRequestDayTypes(date, dayType)
           .then(function () {
-            if (isFrom) {
-              $ctrl.leaveRequest.from_date = convertDateFormatToServer($ctrl.uiOptions.fromDate);
-              $ctrl.loading.fromDayTypes = false;
-            } else {
-              $ctrl.leaveRequest.to_date = convertDateFormatToServer($ctrl.uiOptions.toDate);
-              $ctrl.loading.toDayTypes = false;
+            vm.loading[dayType + 'DayTypes'] = false;
+            vm.leaveRequest[dayType + '_date'] = convertDateFormatToServer(vm.uiOptions[dayType + 'Date']);
+
+            if (!vm.uiOptions.multipleDays) {
+              vm.uiOptions.toDate = vm.uiOptions.fromDate;
+              vm.uiOptions.selectedToType = vm.uiOptions.selectedFromType;
+              vm.leaveRequest.to_date = vm.leaveRequest.from_date;
+              vm.leaveRequest.to_date_type = vm.leaveRequest.from_date_type;
             }
 
-            if (!$ctrl.uiOptions.multipleDays) {
-              $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate;
-              $ctrl.uiOptions.selectedToType = $ctrl.uiOptions.selectedFromType;
-              $ctrl.leaveRequest.to_date = $ctrl.leaveRequest.from_date;
-              $ctrl.leaveRequest.to_date_type = $ctrl.leaveRequest.from_date_type;
-            }
-
-            if (!$ctrl.uiOptions.showBalance) {
-              return
-            }
-
-            $ctrl.loading.calculateBalanceChange = true;
-            if ($ctrl.leaveRequest.from_date && $ctrl.leaveRequest.to_date) {
-              $ctrl.calculateBalanceChange().then(function () {
-                $ctrl.loading.dateChangesBalance = false;
+            vm.loading.calculateBalanceChange = true;
+            if (canCalculateChange()) {
+              vm.calculateBalanceChange().then(function () {
+                vm.loading.calculateBalanceChange = false;
               });
             }
           });
@@ -142,180 +150,76 @@ define([
        *
        * @return {Promise}
        */
-      $ctrl.calculateBalanceChange = function () {
-        if ($ctrl.uiOptions.selectedToType) {
-          $ctrl.leaveRequest.to_date_type = $ctrl.uiOptions.selectedToType.name;
-        }
+      vm.calculateBalanceChange = function () {
+        setDateAndTypes();
 
-        if ($ctrl.uiOptions.selectedFromType) {
-          $ctrl.leaveRequest.from_date_type = $ctrl.uiOptions.selectedFromType.name;
-
-          if (!$ctrl.uiOptions.multipleDays) {
-            $ctrl.leaveRequest.to_date_type = $ctrl.leaveRequest.from_date_type;
-          }
-        }
-
-        $ctrl.leaveRequest.from_date = convertDateFormatToServer($ctrl.uiOptions.fromDate);
-        $ctrl.leaveRequest.to_date = convertDateFormatToServer($ctrl.uiOptions.toDate);
-
-        var params = _.pick($ctrl.leaveRequest, ['contact_id', 'from_date', 'from_date_type', 'to_date', 'to_date_type']);
-
-        //todo to remove in future when this call is consistent with leaverequest db fields name
-        params = _.mapKeys(params, function (value, key) {
-          if (key == 'from_date_type') {
-            return 'from_type';
-          } else if (key == 'to_date_type') {
-            return 'to_type';
-          }
-
-          return key;
-        });
-
-        $ctrl.error = undefined;
-        return LeaveRequest.calculateBalanceChange(params)
+        vm.error = undefined;
+        return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange())
           .then(function (balanceChange) {
             if (balanceChange) {
-              $ctrl.balance.change = balanceChange;
+              vm.balance.change = balanceChange;
               //the change is negative so adding it will actually subtract it
-              $ctrl.balance.closing = $ctrl.balance.opening + $ctrl.balance.change.amount;
+              vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
               rePaginate();
-            } else {
-              console.log('$ctrl.calculateBalanceChange', params, balanceChange);
             }
           })
           .catch(function (errors) {
             if (errors.error_message)
-              $ctrl.error = errors.error_message;
+              vm.error = errors.error_message;
             else {
-              $ctrl.error = errors;
+              vm.error = errors;
             }
           });
       };
 
       /**
-       * This method will be used on the view to return a list of available
-       * leave request day types (1/2 PM, Non working day, etc) for the given date
-       * (which is the date selected by the user via datepicker)
-       *
-       * If no date is passed, then no list is returned
-       *
-       * @param  {Date} dateParam
-       * @return {Promise} of array
-       */
-      $ctrl.filterLeaveRequestDayTypes = function (dateParam, isFrom) {
-        var deferred = $q.defer();
-
-        if (!dateParam) {
-          deferred.reject([]);
-        }
-
-        var date = convertDateFormatToServer(dateParam);
-        // Make a copy of the list
-        var listToReturn = $ctrl.leaveRequestDayTypes.slice(0);
-
-        PublicHoliday.isPublicHoliday(date).then(function (result) {
-          if (result) {
-
-            listToReturn = listToReturn.filter(function (publicHoliday) {
-              return publicHoliday.name === 'public_holiday';
-            });
-          } else {
-            //if not found the calender methods throw exceptions
-            var foundInCalendar = false;
-
-            try {
-              if ($ctrl.calendar.isNonWorkingDay(date)) {
-                // Only 'Non Working Day' option
-                listToReturn = listToReturn.filter(function (day) {
-                  return day.name === 'non_working_day';
-                });
-                foundInCalendar = true;
-              } else if ($ctrl.calendar.isWeekend(date)) {
-                // Only 'Weekend' option
-                listToReturn = listToReturn.filter(function (day) {
-                  return day.name === 'weekend';
-                });
-                foundInCalendar = true;
-              }
-            } catch (e) {
-              //empty catch to catch exceptions
-            } finally {
-              if (!foundInCalendar) {
-                // 'All day', '1/2 AM', and '1/2 PM' options
-                listToReturn = listToReturn.filter(function (dayType) {
-                  return dayType.name === 'all_day' || dayType.name === 'half_day_am' || dayType.name === 'half_day_pm';
-                });
-              }
-            }
-          }
-
-          if (isFrom) {
-            $ctrl.leaveRequestFromDayTypes = listToReturn;
-            $ctrl.uiOptions.selectedFromType = $ctrl.leaveRequestFromDayTypes[0];
-            $ctrl.leaveRequest.from_date_type = $ctrl.uiOptions.selectedFromType.name;
-          } else {
-            $ctrl.leaveRequestToDayTypes = listToReturn;
-            $ctrl.uiOptions.selectedToType = $ctrl.leaveRequestToDayTypes[0];
-            $ctrl.leaveRequest.to_date_type = $ctrl.uiOptions.selectedToType.name;
-          }
-
-          deferred.resolve(listToReturn);
-        });
-
-        return deferred.promise;
-      };
-
-
-      /**
        * Checks if submit button can be enabled for user and returns true if succeeds
        *
        * @returns {Boolean}
-       **/
-      $ctrl.canSubmit = function () {
-        if ($ctrl.leaveRequest.from_date && $ctrl.leaveRequest.to_date &&
-          $ctrl.leaveRequest.to_date_type && $ctrl.leaveRequest.from_date_type) {
-          return false;
-        }
-        return true;
+       */
+      vm.canSubmit = function () {
+        return vm.leaveRequest.from_date && vm.leaveRequest.to_date &&
+          vm.leaveRequest.to_date_type && vm.leaveRequest.from_date_type;
       };
 
       /**
        * Submits the form, only if the leave request is valid, also emits event
        * to listeners that leaverequest is created
        */
-      $ctrl.submit = function () {
-        /* current absence type ($ctrl.leaveRequest.type_id) doesn't allow that */
-        if ($ctrl.balance.closing < 0 && $ctrl.selectedAbsenceType.allow_overuse == '0') {
+      vm.submit = function () {
+        /* current absence type (vm.leaveRequest.type_id) doesn't allow that */
+        if (vm.balance.closing < 0 && vm.selectedAbsenceType.allow_overuse == '0') {
           // show an error
-          $ctrl.error = 'You are not allowed to apply leave in negative';
+          vm.error = 'You are not allowed to apply leave in negative';
           return;
         }
 
-        $ctrl.error = undefined;
-        $ctrl.leaveRequest.isValid().then(function () {
-            $ctrl.leaveRequest.create()
+        vm.error = undefined;
+        vm.leaveRequest.isValid()
+          .then(function () {
+            vm.leaveRequest.create()
               .then(function () {
                 // refresh the list
-                $rootScope.$emit('LeaveRequest::new', $ctrl.leaveRequest);
-                $ctrl.error = undefined;
+                $rootScope.$emit('LeaveRequest::new', vm.leaveRequest);
+                vm.error = undefined;
                 // close the modal
-                $ctrl.ok();
+                vm.ok();
               })
               .catch(function (errors) {
                 // show errors
                 if (errors.error_message)
-                  $ctrl.error = errors.error_message;
+                  vm.error = errors.error_message;
                 else {
-                  $ctrl.error = errors;
+                  vm.error = errors;
                 }
               })
           })
           .catch(function (errors) {
             // show errors
             if (errors.error_message)
-              $ctrl.error = errors.error_message;
+              vm.error = errors.error_message;
             else {
-              $ctrl.error = errors;
+              vm.error = errors;
             }
           });
       };
@@ -323,17 +227,17 @@ define([
       /**
        * dismiss modal on successful creation on submit
        */
-      $ctrl.ok = function () {
+      vm.ok = function () {
         //todo handle closure to pass data back to callee
         $modalInstance.close({
-          $value: $ctrl.leaveRequest
+          $value: vm.leaveRequest
         });
       };
 
       /**
        * when user cancels the model dialog
        */
-      $ctrl.cancel = function () {
+      vm.cancel = function () {
         $modalInstance.dismiss({
           $value: 'cancel'
         });
@@ -342,32 +246,81 @@ define([
       /**
        * closes the error alerts if any
        */
-      $ctrl.closeAlert = function () {
-        $ctrl.error = undefined;
+      vm.closeAlert = function () {
+        vm.error = undefined;
       };
 
       (function () {
         // Create an empty leave request
-        $ctrl.leaveRequest = LeaveRequestInstance.init({
-          contact_id: baseData.contactId //resolved from directive
+        vm.leaveRequest = LeaveRequestInstance.init({
+          contact_id: contactId //resolved from directive
         }, false);
 
-        $ctrl.loading.absenceTypes = true;
+        vm.loading.absenceTypes = true;
         AbsencePeriod.current()
           .then(function (apInstance) {
-            $ctrl.period = apInstance;
+            vm.period = apInstance;
           })
           .then(function () {
             return initAbsenceTypesAndEntitlements();
           })
           .then(function () {
-            $ctrl.loading.absenceTypes = false;
+            vm.loading.absenceTypes = false;
           })
           .then(function () {
             initDayTypesAndStatus();
           });
       })();
 
+
+      /**
+       * This method will be used on the view to return a list of available
+       * leave request day types (All day, 1/2 AM, 1/2 PM, Non working day,
+       * Weekend, Public holiday) for the given date (which is the date
+       * selected by the user via datepicker)
+       *
+       * If no date is passed, then no list is returned
+       *
+       * @param  {Date} date
+       * @param  {String} dayType - set to from if from date is selected else to
+       * @return {Promise} of array with day types
+       */
+      function filterLeaveRequestDayTypes(date, dayType) {
+        var deferred = $q.defer();
+
+        if (!date) {
+          deferred.reject([]);
+        }
+
+        // Make a copy of the list
+        var listToReturn = vm.leaveRequestDayTypes.slice(0);
+        date = convertDateFormatToServer(date);
+
+        PublicHoliday.isPublicHoliday(date)
+          .then(function (result) {
+            if (result) {
+              listToReturn = listToReturn.filter(function (publicHoliday) {
+                return publicHoliday.name === 'public_holiday';
+              });
+            } else {
+              var inCalendarList = getDayTypesFromDate(date);
+
+              if (!inCalendarList.length) {
+                // 'All day', '1/2 AM', and '1/2 PM' options
+                listToReturn = listToReturn.filter(function (dayType) {
+                  return dayType.name === 'all_day' || dayType.name === 'half_day_am' || dayType.name === 'half_day_pm';
+                });
+              } else {
+                listToReturn = inCalendarList;
+              }
+            }
+
+            setDayType(dayType, listToReturn);
+            deferred.resolve(listToReturn);
+          });
+
+        return deferred.promise;
+      }
 
       /**
        * Initializes values for absence types and entitlements when the
@@ -388,19 +341,19 @@ define([
             // And then for each of them get the remaining balance from the
             // entitlements linked to them
             Entitlement.all({
-                contact_id: $ctrl.leaveRequest.contact_id,
-                period_id: $ctrl.period.id,
-                type_id: { in: absenceTypesIds }
-              }, true) // `true` because we want to use the 'future' balance for calculation
+              contact_id: vm.leaveRequest.contact_id,
+              period_id: vm.period.id,
+              type_id: { in: absenceTypesIds }
+            }, true) // `true` because we want to use the 'future' balance for calculation
               .then(function (entitlements) {
                 // create a list of absence types with a `balance` property
-                $ctrl.absenceTypes = filterAbsenceTypes(absenceTypes, entitlements);
+                vm.absenceTypes = filterAbsenceTypes(absenceTypes, entitlements);
 
                 // Assign the first absence type to the leave request
-                $ctrl.selectedAbsenceType = $ctrl.absenceTypes[0];
-                $ctrl.leaveRequest.type_id = $ctrl.selectedAbsenceType.id;
+                vm.selectedAbsenceType = vm.absenceTypes[0];
+                vm.leaveRequest.type_id = vm.selectedAbsenceType.id;
                 // Init the `balance` object based on the first absence type
-                $ctrl.balance.opening = $ctrl.selectedAbsenceType.remainder;
+                vm.balance.opening = vm.selectedAbsenceType.remainder;
               });
           });
       }
@@ -411,7 +364,7 @@ define([
        * @param {Array} absenceTypes
        * @param {Object} entitlements
        * @returns {Array} of filtered absence types for given entitlements
-       **/
+       */
       function filterAbsenceTypes(absenceTypes, entitlements) {
         return entitlements.map(function (entitlementItem) {
           var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
@@ -434,22 +387,22 @@ define([
        */
       function initDayTypesAndStatus() {
         // Fetch the full calendar for the current user and the current period
-        return Calendar.get($ctrl.leaveRequest.contact_id, $ctrl.period.id)
+        return Calendar.get(vm.leaveRequest.contact_id, vm.period.id)
           .then(function (usersCalendar) {
-            $ctrl.calendar = usersCalendar;
+            vm.calendar = usersCalendar;
           })
           .then(function () {
-            // Fetch the leave request day types (All day, 1/2AM, 1/2PM, etc)
+            // Fetch the leave request day types
             return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
               .then(function (optionValues) {
-                $ctrl.leaveRequestDayTypes = optionValues;
+                vm.leaveRequestDayTypes = optionValues;
               });
           })
           .then(function () {
             return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
               .then(function (optionValues) {
-                $ctrl.leaveRequestStatuses = optionValues;
-                $ctrl.leaveRequest.status_id = getSpecificValueFromCollection($ctrl.leaveRequestStatuses, 'name', 'waiting_approval');
+                vm.leaveRequestStatuses = optionValues;
+                vm.leaveRequest.status_id = valueOfRequestStatus('waiting_approval');
               });
           });
       }
@@ -457,22 +410,22 @@ define([
       /**
        * helper function to reset pagination for balance breakdow
        *
-       **/
+       */
       function rePaginate() {
-        $ctrl.pagination.totalItems = $ctrl.balance.change.breakdown.length;
-        $ctrl.pagination.filteredbreakdown = $ctrl.balance.change.breakdown;
-        $ctrl.pagination.pageChanged();
+        vm.pagination.totalItems = vm.balance.change.breakdown.length;
+        vm.pagination.filteredbreakdown = vm.balance.change.breakdown;
+        vm.pagination.pageChanged();
       }
 
       /**
-       * Pick a specific value out of a collection
+       * Pick a specific value out of a leave request statuses
        *
-       * @param {array} the option group collection key
-       * @param {string} key - The sub-collection key
-       * @param {string} value - The sub-collection key's value to match
+       * @param {string} value - The leave request status value to match
        * @return {object}
        */
-      function getSpecificValueFromCollection(collection, key, value) {
+      function valueOfRequestStatus(value) {
+        var collection = vm.leaveRequestStatuses,
+          key = 'name';
         var specificObject = _.find(collection, function (collectionItem) {
           return collectionItem[key] === value;
         });
@@ -481,36 +434,125 @@ define([
 
       /**
        * Converts given date to server format
-       **/
+       *
+       * @param {Date} date
+       * @return {Date} converted to server format
+       */
       function convertDateFormatToServer(date) {
         return moment(date).format(serverDateFormat);
       }
 
       /**
-       * Resets data in dates, types etc.,
-       **/
+       * Resets data in dates, types, balance.
+       */
       function reset() {
-        //reset dates
-        $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = undefined;
-        //reset balance change
-        $ctrl.balance = {
+        vm.uiOptions.fromDate = vm.uiOptions.toDate = undefined;
+        vm.uiOptions.selectedFromType = vm.uiOptions.selectedToType = undefined;
+        vm.uiOptions.showBalance = false;
+
+        vm.leaveRequest.from_date_type = vm.leaveRequest.to_date_type = undefined;
+        vm.leaveRequest.from_date = vm.leaveRequest.to_date = undefined;
+
+        vm.balance = {
+          closing: 0,
           opening: 0,
           change: {
             amount: 0,
             breakdown: []
-          },
-          closing: 0
+          }
         };
-        $ctrl.uiOptions.selectedFromType = $ctrl.uiOptions.selectedToType = undefined;
-
-        //reset dates and types in object also
-        $ctrl.leaveRequest.from_date_type = $ctrl.leaveRequest.to_date_type = undefined;
-        $ctrl.leaveRequest.from_date = $ctrl.leaveRequest.to_date = undefined;
-        //hide change balance section
-        $ctrl.uiOptions.showBalance = false;
       }
 
-      return $ctrl;
+      /**
+       * heler function to obtain params for leave request calculateBalanceChange api call
+       *
+       * @returns {Object} containing required keys for leave request
+       */
+      function getParamsForBalanceChange() {
+        var params = _.pick(vm.leaveRequest, ['contact_id', 'from_date', 'from_date_type', 'to_date', 'to_date_type']);
+
+        //todo to remove in future when this call is consistent with leaverequest db fields name
+        return _.mapKeys(params, function (value, key) {
+          if (key == 'from_date_type') {
+            return 'from_type';
+          } else if (key == 'to_date_type') {
+            return 'to_type';
+          }
+
+          return key;
+        });
+      }
+
+      /**
+       * sets dates and types for vm.leaveRequest from UI
+       */
+      function setDateAndTypes() {
+        /*if (vm.uiOptions.selectedToType) {
+          vm.leaveRequest.to_date_type = vm.uiOptions.selectedToType.name;
+        }
+
+        if (vm.uiOptions.selectedFromType) {
+          vm.leaveRequest.from_date_type = vm.uiOptions.selectedFromType.name;
+
+          if (!vm.uiOptions.multipleDays) {
+            vm.leaveRequest.to_date_type = vm.leaveRequest.from_date_type;
+          }
+        }*/
+
+        vm.leaveRequest.from_date = convertDateFormatToServer(vm.uiOptions.fromDate);
+        vm.leaveRequest.to_date = convertDateFormatToServer(vm.uiOptions.toDate);
+      }
+
+      /**
+       * gets list of day types if its found to be weekend or non working in calendar
+       *
+       * @param {Date} date to Checks
+       * @returns {Array} non-empty if found else empty array
+       */
+      function getDayTypesFromDate(date) {
+        var listToReturn = [];
+
+        try {
+          if (vm.calendar.isNonWorkingDay(date)) {
+            listToReturn = listToReturn.filter(function (day) {
+              return day.name === 'non_working_day';
+            });
+          } else if (vm.calendar.isWeekend(date)) {
+            listToReturn = listToReturn.filter(function (day) {
+              return day.name === 'weekend';
+            });
+          }
+        } catch (e) {
+          listToReturn = [];
+        }
+
+        return listToReturn;
+      }
+
+      /**
+       * sets the collection for given day types to sent list of day types,
+       * also initializes the day types
+       *
+       * @param {String} dayType like `from` or `to`
+       * @param {Array} listOfDayTypes collection of available day types
+       */
+      function setDayType(dayType, listOfDayTypes) {
+        vm['leaveRequest' + _.startCase(dayType) + 'DayTypes'] = listOfDayTypes;
+        vm.uiOptions['selected' + _.startCase(dayType) + 'Type'] = vm['leaveRequest' + _.startCase(dayType) + 'DayTypes'][0];
+        vm.leaveRequest[dayType + '_date_type'] = vm.uiOptions['selected' + _.startCase(dayType) + 'Type'].name;
+      }
+
+      /**
+       * checks if all params are set to calculate balance
+       *
+       * @param {Array} listOfDayTypes collection of available day types
+       */
+      function canCalculateChange() {
+        return vm.leaveRequest.from_date && vm.leaveRequest.to_date &&
+          vm.leaveRequest.from_date_type && vm.leaveRequest.to_date_type;
+      }
+
+      return vm;
     }
-  ])
+  ]);
 });

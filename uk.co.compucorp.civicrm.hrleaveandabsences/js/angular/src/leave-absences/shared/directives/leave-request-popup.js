@@ -13,28 +13,23 @@ define([
           contactId: '<'
         },
         restrict: 'EA',
-        link: function (scope, element, attrs, ctrl) {
-          $log.debug('link');
+        link: function (scope, element) {
 
           element.on('click', function (event) {
-            //to set HR_settings DateFormat
-            DateFormat.getDateFormat().then(function (result) {
-              scope.openComponentModal = function () {
-                $modal.open({
-                  templateUrl: settings.pathTpl + 'directives/leave-request-popup.html',
-                  animation: scope.animationsEnabled,
-                  controller: 'LeaveRequestPopupCtrl',
-                  controllerAs: '$ctrl',
-                  resolve: {
-                    baseData: function () {
-                      return {
-                        contactId: scope.contactId
-                      };
-                    }
-                  }
-                });
-              };
-              scope.openComponentModal();
+
+            $modal.open({
+              templateUrl: settings.pathTpl + 'directives/leave-request-popup.html',
+              animation: scope.animationsEnabled,
+              controller: 'LeaveRequestPopupCtrl',
+              controllerAs: '$ctrl',
+              resolve: {
+                contactId: scope.contactId,
+                //to set HR_settings DateFormat
+                format: ['DateFormat', function (DateFormat) {
+                  // stores the data format in HR_setting.DATE_FORMAT
+                  return DateFormat.getDateFormat();
+                }]
+              }
             });
           });
         }

@@ -12,6 +12,6 @@ define([
           resolve(mockData.daysData());
         });
       }
-    }
+    };
   }]);
 });

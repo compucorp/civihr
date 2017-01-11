@@ -37,7 +37,7 @@ define([
     'leave-absences.directives',
     'leave-absences.models',
   ])
-  .run(['$log','DateFormat', function ($log, DateFormat) {
+  .run(['$log', function ($log) {
     $log.debug('app.run');
   }]);
 

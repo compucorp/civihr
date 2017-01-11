@@ -14,24 +14,16 @@
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
     'mocks/apis/public-holiday-api-mock',
-    'leave-absences/shared/directives/leave-request-popup',
-    'leave-absences/shared/models/absence-period-model',
-    'leave-absences/shared/models/absence-type-model',
-    'leave-absences/shared/models/entitlement-model',
-    'leave-absences/shared/models/calendar-model',
-    'leave-absences/shared/models/leave-request-model',
-    'leave-absences/shared/models/public-holiday-model',
     'leave-absences/shared/controllers/leave-request-popup-controller',
-    'leave-absences/shared/models/instances/leave-request-instance',
   ], function (_, moment, angular, optionGroupMock) {
     'use strict';
 
     describe('LeaveRequestPopupCtrl', function () {
-      var $compile, $log, $rootScope, $ctrl, directive, $uibModal, modalInstanceSpy, $scope, $q,
-        $controllerScope, $provide, DateFormat, LeaveRequestInstance, serverDateFormat = 'YYYY-MM-DD';;
+      var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
+        $provide, DateFormat, LeaveRequestInstance, serverDateFormat = 'YYYY-MM-DD';;
 
-      beforeEach(module('leave-absences.templates', 'leave-absences.directives', 'leave-absences.controllers',
-        'leave-absences.models', 'leave-absences.mocks', 'common.mocks', 'leave-absences.models.instances',
+      beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
+        'leave-absences.mocks', 'common.mocks',
         function (_$provide_) {
           $provide = _$provide_;
         }));
@@ -48,141 +40,169 @@
         $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
       }));
 
-      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$uibModal_, _LeaveRequestInstance_) {
-        $compile = _$compile_;
+      beforeEach(inject(function (_$log_, _$controller_, _$rootScope_,
+        _$q_, _LeaveRequestInstance_) {
+
         $log = _$log_;
         $rootScope = _$rootScope_;
-        $uibModal = _$uibModal_;
+        $controller = _$controller_;
+        $q = _$q_;
+
         LeaveRequestInstance = _LeaveRequestInstance_;
         spyOn($log, 'debug');
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
       }));
 
-      beforeEach(inject(function (_$controller_, _$rootScope_, _$q_) {
-        $scope = _$rootScope_.$new();
-        $q = _$q_;
-
-        $ctrl = _$controller_('LeaveRequestPopupCtrl', {
-          $scope: $scope,
-          $uibModalInstance: modalInstanceSpy,
-          baseData: {
-            contactId: 202
-          }
-        });
-        $scope.$digest();
+      beforeEach(inject(function () {
+        initController();
       }));
 
       it('is called', function () {
         expect($log.debug).toHaveBeenCalled();
       });
 
-      describe('dialog is open', function () {
-
+      describe('when initialized', function () {
         describe('before date selected', function () {
 
           beforeEach(function () {
             $scope.$digest();
           });
 
-          it('selects the current period', function () {
+          it('has absence period is set', function () {
+            expect($ctrl.period).toEqual(jasmine.any(Object));
+          });
+
+          it('has current period selected', function () {
             expect($ctrl.period.current).toBeTruthy();
           });
 
-          it('creates an instance of leave request', function () {
-            expect($ctrl.leaveRequest).toBeDefined();
-          });
-
-          it('with current absence period', function () {
-            expect($ctrl.period).toBeDefined();
-          });
-
-          it('creates an instance of leave request', function () {
-            expect($ctrl.leaveRequest).toBeDefined();
-            expect($ctrl.leaveRequest.contact_id).toBeDefined();
-            expect($ctrl.leaveRequest.from_date).not.toBeDefined();
-            expect($ctrl.leaveRequest.to_date).not.toBeDefined();
-          });
-
-          it('with absence types', function () {
+          it('has absence types loaded', function () {
             expect($ctrl.absenceTypes).toBeDefined();
             expect($ctrl.absenceTypes.length).toBeGreaterThan(0);
+          });
+
+          it('has first absence type selected', function () {
             expect($ctrl.selectedAbsenceType).toEqual($ctrl.absenceTypes[0]);
           });
 
-          it('calendar is empty', function () {
+          it('has no dates selected', function () {
             expect($ctrl.uiOptions.fromDate).not.toBeDefined();
             expect($ctrl.uiOptions.toDate).not.toBeDefined();
           });
 
-          it('day types are empty', function () {
+          it('has no day types selected', function () {
             expect($ctrl.uiOptions.selectedFromType).not.toBeDefined();
             expect($ctrl.uiOptions.selectedToType).not.toBeDefined();
           });
 
-          it('balance section is empty', function () {
+          it('has no balance to show', function () {
             expect($ctrl.uiOptions.showBalance).toBeFalsy();
             expect($ctrl.balance.opening).toEqual(0);
           });
 
-          it('with work pattern', function () {
+          it('has nil balance change amount', function () {
+            expect($ctrl.balance.change.amount).toEqual(0);
+          });
+
+          it('has balance change hidden', function () {
+            expect($ctrl.uiOptions.isChangeExpanded).toBeFalsy();
+          });
+
+          it('has nil total items for balance change pagination', function () {
+            expect($ctrl.pagination.totalItems).toEqual(0);
+          });
+
+          it('has days of work pattern loaded', function () {
             expect($ctrl.calendar).toBeDefined();
             expect($ctrl.calendar.days).toBeDefined();
+          });
+
+          describe('leave request instance', function () {
+            it('has new instance created', function () {
+              expect($ctrl.leaveRequest).toEqual(jasmine.any(Object));
+            });
+
+            it('has contact_id set', function () {
+              expect($ctrl.leaveRequest.contact_id).toBeDefined();
+            });
+
+            it('does not have from/to dates set', function () {
+              expect($ctrl.leaveRequest.from_date).not.toBeDefined();
+              expect($ctrl.leaveRequest.to_date).not.toBeDefined();
+            });
+          });
+
+          describe('multiple days', function () {
+            it('should be selected by default', function () {
+              expect($ctrl.uiOptions.multipleDays).toBeTruthy();
+            });
           });
         });
 
         describe('after from date is selected', function () {
+          var fromDate;
 
           beforeEach(function () {
             $ctrl.uiOptions.fromDate = new Date();
-            $ctrl.onDateChange($ctrl.uiOptions.fromDate, true);
+            fromDate = moment($ctrl.uiOptions.fromDate).format(serverDateFormat);
+            $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
             $scope.$digest();
           });
 
-          it('with balance changes', function () {
-            expect($ctrl.balance).toBeDefined();
-            expect($ctrl.balance.opening).toBeDefined();
-            expect($ctrl.balance.change).toBeDefined();
-            expect($ctrl.balance.closing).toBeDefined();
+          it('has balance change defined', function () {
+            expect($ctrl.balance).toEqual(jasmine.any(Object));
+            expect($ctrl.balance.opening).toEqual(jasmine.any(Number));
+            expect($ctrl.balance.change).toEqual(jasmine.any(Object));
+            expect($ctrl.balance.closing).toEqual(jasmine.any(Number));
           });
 
-          it('will define from day date and type', function () {
-            expect($ctrl.leaveRequest.from_date).toBeDefined();
-            expect($ctrl.uiOptions.selectedFromType).toBeDefined();
-            expect($ctrl.leaveRequest.from_date_type).toBeDefined();
+          it('has from day date and type defined', function () {
+            expect($ctrl.leaveRequest.from_date).toEqual(fromDate);
+            expect($ctrl.uiOptions.selectedFromType.name).toEqual('all_day');
+            expect($ctrl.leaveRequest.from_date_type).toEqual('all_day');
+          });
+
+          it('will select first day type', function () {
+            expect($ctrl.uiOptions.selectedFromType).toEqual($ctrl.leaveRequestFromDayTypes[0]);
           });
         });
 
         describe('after to date is selected', function () {
+          var toDate;
 
           beforeEach(function () {
-            $ctrl.onDateChange(new Date(), false);
+            $ctrl.uiOptions.toDate = new Date();
+            toDate = moment($ctrl.uiOptions.toDate).format(serverDateFormat);
+            $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
             $scope.$digest();
           });
 
-          it('to day date and type are defined', function () {
-            expect($ctrl.leaveRequest.to_date).toBeDefined();
-            expect($ctrl.uiOptions.selectedToType).toBeDefined();
-            expect($ctrl.leaveRequest.to_date_type).toBeDefined();
+          it('will set to day date and type', function () {
+            expect($ctrl.leaveRequest.to_date).toEqual(toDate);
+            expect($ctrl.uiOptions.selectedToType.name).toEqual('all_day');
+            expect($ctrl.leaveRequest.to_date_type).toEqual('all_day');
+          });
+
+          it('will select first day type', function () {
+            expect($ctrl.uiOptions.selectedToType).toEqual($ctrl.leaveRequestToDayTypes[0]);
           });
         });
 
         describe('from and to dates are selected', function () {
-
           beforeEach(function () {
             $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = new Date();
-            $ctrl.onDateChange($ctrl.uiOptions.fromDate, true);
-            $ctrl.onDateChange($ctrl.uiOptions.toDate, false);
+            $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
+            $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
             $scope.$digest();
           });
 
-          it('balance is displayed', function () {
+          it('will show balance change', function () {
             expect($ctrl.uiOptions.showBalance).toBeTruthy();
           });
         });
       });
 
       describe('when user cancels dialog (clicks X), or back button', function () {
-
         beforeEach(function () {
           $ctrl.cancel();
         });
@@ -193,19 +213,7 @@
       });
 
       describe('leave absence types', function () {
-
-        describe('view all', function () {
-
-          beforeEach(function () {
-            $scope.$digest();
-          });
-
-          it('shows all items', function () {
-            expect($ctrl.absenceTypes.length).toBeGreaterThan(0);
-          });
-        });
-
-        describe('change selection', function () {
+        describe('on change selection', function () {
           var beforeChangeAbsenceType, afterChangeAbsenceType;
 
           beforeEach(function () {
@@ -217,35 +225,25 @@
             $scope.$digest();
           });
 
-          it('selects another absence type', function () {
+          it('should select another absence type', function () {
             expect(beforeChangeAbsenceType.id).not.toEqual(afterChangeAbsenceType.id);
+          });
+
+          it('should set type_id on leave request', function () {
+            expect($ctrl.leaveRequest.type_id).toEqual($ctrl.selectedAbsenceType.id);
           });
         });
       });
 
       describe('number of days selection', function () {
-
-        describe('multiple', function () {
-
-          it('selects by default', function () {
-            expect($ctrl.uiOptions.multipleDays).toBeTruthy();
-          });
-
-        });
-
-        describe('single', function () {
-
+        describe('when switching to single day', function () {
           beforeEach(function () {
             $ctrl.uiOptions.multipleDays = false;
             $ctrl.changeInNoOfDays();
             $scope.$digest();
           });
 
-          it('selects single day', function () {
-            expect($ctrl.uiOptions.multipleDays).toBeFalsy();
-          });
-
-          it('hides to date and type', function () {
+          it('will hide to date and type', function () {
             expect($ctrl.uiOptions.toDate).not.toBeDefined();
             expect($ctrl.uiOptions.selectedToType).not.toBeDefined();
           });
@@ -260,112 +258,47 @@
       });
 
       describe('calendar', function () {
-
-        it('no dates are selected by default', function () {
-          expect($ctrl.uiOptions.fromDate).not.toBeDefined();
-          expect($ctrl.uiOptions.toDate).not.toBeDefined();
-        });
-
-        describe('from date', function () {
-
+        describe('when from date is selected', function () {
           beforeEach(function () {
-            $ctrl.onDateChange(new Date(), true);
+            $ctrl.onDateChange(new Date(), 'from');
             $scope.$digest();
           });
 
-          it('can change date', function () {
+          it('will set from date', function () {
             expect(moment($ctrl.leaveRequest.from_date, serverDateFormat, true).isValid()).toBe(true);
           });
-
         });
 
-        describe('to date', function () {
-
+        describe('when to date is selected', function () {
           beforeEach(function () {
-            $ctrl.onDateChange(new Date(), false);
+            $ctrl.onDateChange(new Date(), 'to');
             $scope.$digest();
           });
 
-          it('can change date', function () {
+          it('will set to date', function () {
             expect(moment($ctrl.leaveRequest.to_date, serverDateFormat, true).isValid()).toBe(true);
           });
-
         });
       });
 
       describe('day types', function () {
-
-        it('by default no selection', function () {
-          expect($ctrl.uiOptions.selectedFromType).not.toBeDefined();
-          expect($ctrl.uiOptions.selectedToType).not.toBeDefined();
-        });
-
-        describe('from', function () {
-
+        describe('on change selection', function () {
           beforeEach(function () {
-            spyOn($ctrl, 'filterLeaveRequestDayTypes').and.callThrough();
-            $ctrl.onDateChange(new Date(), true);
+            $ctrl.onDateChange(new Date(), 'to');
             $scope.$digest();
           });
 
-          it('by default selects first day type', function () {
-            expect($ctrl.uiOptions.selectedFromType).toEqual($ctrl.leaveRequestFromDayTypes[0]);
-          });
-
-          it('will filter based on current date', function () {
-            expect($ctrl.filterLeaveRequestDayTypes).toHaveBeenCalledWith(jasmine.any(Date), jasmine.any(Boolean));
-          });
-
-          describe('is public holiday', function () {
-
-            beforeEach(function () {
-              $ctrl.uiOptions.fromDate = new Date('01/01/2016');
-              $ctrl.filterLeaveRequestDayTypes($ctrl.uiOptions.fromDate, true);
-              $scope.$digest();
-            });
-
-            it('should', function () {
-              expect($ctrl.leaveRequestFromDayTypes.length).toEqual(1);
-            });
-          });
-
-        });
-
-        describe('to', function () {
-
-          beforeEach(function () {
-            $ctrl.onDateChange(new Date(), false);
-            $scope.$digest();
-          });
-
-          it('by default selects first day type', function () {
-            expect($ctrl.uiOptions.selectedToType).toEqual($ctrl.leaveRequestToDayTypes[0]);
-          });
-
-          describe('change selection', function () {
-            var before, after;
-
-            beforeEach(function () {
-              before = $ctrl.uiOptions.selectedToType;
-              $ctrl.uiOptions.selectedToType = $ctrl.leaveRequestToDayTypes[1];
-              $ctrl.calculateBalanceChange();
-              after = $ctrl.uiOptions.selectedToType;
-              $scope.$digest();
-            });
-
-            it('success', function () {
-              expect($ctrl.leaveRequest.to_date_type).toEqual(after.name);
-            });
+          it('will select to date type', function () {
+            expect($ctrl.leaveRequest.to_date_type).toEqual($ctrl.uiOptions.selectedToType.name);
           });
         });
 
-        describe('from and to', function () {
-
+        describe('when from and to are selected', function () {
           beforeEach(function () {
             spyOn($ctrl, 'calculateBalanceChange').and.callThrough();
             $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = new Date();
-            $ctrl.onDateChange($ctrl.uiOptions.fromDate, true);
-            $ctrl.onDateChange($ctrl.uiOptions.toDate, false);
+            $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
+            $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
             $scope.$digest();
           });
 
@@ -376,216 +309,173 @@
       });
 
       describe('calculate balance', function () {
-
-        describe('opening', function () {
-
-          it('has default', function () {
-            expect($ctrl.balance.opening).toEqual(0);
-          });
-
-        });
-
-        describe('change', function () {
-
-          it('has default', function () {
-            expect($ctrl.balance.change.amount).toEqual(0);
-          });
-
-          describe('when day type changed', function () {
-
-            describe('for single day', function () {
-
-              beforeEach(function () {
-                //select half_day_am  to get single day mock data
-                //$ctrl.uiOptions.multipleDays = false;
-                //$ctrl.uiOptions.fromDate = new Date();
-                $ctrl.uiOptions.selectedFromType = optionGroupMock.specificObject('hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am');
-                $ctrl.calculateBalanceChange();
-                $scope.$digest();
-              });
-
-              it('will update balance', function () {
-                expect($ctrl.balance.change.amount).toEqual(-0.5);
-              });
-
-              it('will update closing balance', function () {
-                expect($ctrl.balance.closing).toEqual(-0.5);
-              });
+        describe('when day type changed', function () {
+          describe('for single day', function () {
+            beforeEach(function () {
+              //select half_day_am  to get single day mock data
+              $ctrl.uiOptions.selectedFromType = optionGroupMock.specificObject('hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am');
+              $ctrl.calculateBalanceChange();
+              $scope.$digest();
             });
-            describe('for multiple days', function () {
 
-              beforeEach(function () {
-                $ctrl.uiOptions.multipleDays = true;
-                //select all_day to get multiple day mock data
-                $ctrl.onDateChange(new Date(), true);
-                $ctrl.onDateChange(new Date(), false);
-                $ctrl.uiOptions.selectedFromType = optionGroupMock.specificObject('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
-                $ctrl.calculateBalanceChange();
-                $scope.$digest();
-              });
+            it('will update balance', function () {
+              expect($ctrl.balance.change.amount).toEqual(jasmine.any(Number));
+            });
 
-              it('will update change amount', function () {
-                expect($ctrl.balance.change.amount).toEqual(-2);
-              });
+            it('will update closing balance', function () {
+              expect($ctrl.balance.closing).toEqual(jasmine.any(Number));
+            });
+          });
 
-              it('will update closing balance', function () {
-                expect($ctrl.balance.closing).toEqual(-2);
-              });
+          describe('for multiple days', function () {
+            beforeEach(function () {
+              $ctrl.uiOptions.multipleDays = true;
+              //select all_day to get multiple day mock data
+              $ctrl.onDateChange(new Date(), 'from');
+              $ctrl.onDateChange(new Date(), 'to');
+              $ctrl.uiOptions.selectedFromType = optionGroupMock.specificObject('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
+              $ctrl.calculateBalanceChange();
+              $scope.$digest();
+            });
+
+            it('will update change amount', function () {
+              expect($ctrl.balance.change.amount).toEqual(-2);
+            });
+
+            it('will update closing balance', function () {
+              expect($ctrl.balance.closing).toEqual(-2);
             });
           });
         });
 
-        describe('change details', function () {
-
-          describe('hidden', function () {
-
-            it('by default', function () {
-              expect($ctrl.uiOptions.isChangeExpanded).toBeFalsy();
-            });
+        describe('when balance change is expanded during pagination', function () {
+          beforeEach(function () {
+            $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = new Date();
+            $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
+            $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
+            $scope.$digest();
           });
 
-          describe('when expanded', function () {
+          it('will select default page', function () {
+            expect($ctrl.pagination.currentPage).toEqual(1);
+          });
+
+          it('will set totalItems', function () {
+            expect($ctrl.pagination.totalItems).toBeGreaterThan(0);
+          });
+
+          describe('when page selection changes', function () {
+            var beforeFilteredItems;
 
             beforeEach(function () {
-              $ctrl.uiOptions.isChangeExpanded = true;
+              beforeFilteredItems = $ctrl.pagination.filteredbreakdown;
+              $ctrl.pagination.currentPage = 2;
+              $ctrl.pagination.pageChanged();
             });
 
-            it('will display balance breakdown', function () {
-              expect($ctrl.uiOptions.isChangeExpanded).toBeTruthy();
+            it('should change current page', function () {
+              expect($ctrl.pagination.currentPage).not.toEqual(1);
             });
 
-            describe('during pagination', function () {
-
-              describe('init', function () {
-
-                it('should', function () {
-                  expect($ctrl.pagination.totalItems).toEqual(0);
-                });
-              });
-
-              describe('after date is selected', function () {
-
-                beforeEach(function () {
-                  $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = new Date();
-                  $ctrl.onDateChange($ctrl.uiOptions.fromDate, true);
-                  $ctrl.onDateChange($ctrl.uiOptions.toDate, false);
-                  $scope.$digest();
-                });
-
-                it('will select default page', function () {
-                  expect($ctrl.pagination.currentPage).toEqual(1);
-                });
-
-                it('should set totalItems', function () {
-                  expect($ctrl.pagination.totalItems).toBeGreaterThan(0);
-                });
-
-                describe('change selected page', function () {
-                  var beforeFilteredItems;
-
-                  beforeEach(function () {
-                    beforeFilteredItems = $ctrl.pagination.filteredbreakdown;
-                    $ctrl.pagination.currentPage = 2;
-                    $ctrl.pagination.pageChanged();
-                  });
-
-                  it('should change current page', function () {
-                    expect($ctrl.pagination.currentPage).not.toEqual(1);
-                  });
-
-                  it('should change filtered data', function () {
-                    expect($ctrl.pagination.filteredbreakdown[0]).not.toEqual(beforeFilteredItems[0]);
-                  });
-                });
-              });
+            it('should change filtered data', function () {
+              expect($ctrl.pagination.filteredbreakdown[0]).not.toEqual(beforeFilteredItems[0]);
             });
           });
         });
       });
 
       describe('save leave request', function () {
-
-        describe('with invalid fields', function () {
-
-          it('does not have required fields', function () {
-            expect($ctrl.leaveRequest.from_date).not.toBeDefined();
+        describe('when submit with invalid fields', function () {
+          beforeEach(function () {
+            $ctrl.submit();
+            $scope.$digest();
           });
 
-          describe('on submit', function () {
-
-            beforeEach(function () {
-              $ctrl.submit();
-              $scope.$digest();
-            });
-
-            it('should fail', function () {
-              expect($ctrl.error).toEqual(jasmine.any(Object));
-            });
+          it('should fail', function () {
+            console.log($ctrl.error);
+            expect($ctrl.error).toEqual(jasmine.any(Object));
           });
+
         });
 
-        describe('with valid fields', function () {
-
+        describe('when submit with valid fields', function () {
           beforeEach(function () {
-            $ctrl.onDateChange(new Date(), true);
-            $ctrl.onDateChange(new Date(), false);
+            spyOn($rootScope, '$emit');
+            $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = new Date();
+            $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
+            $scope.$digest();
+            $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
+            $ctrl.submit();
             $scope.$digest();
           });
 
           it('has all required fields', function () {
-            expect($ctrl.leaveRequest.id).not.toBeDefined();
             expect($ctrl.leaveRequest.from_date).toBeDefined();
+            expect($ctrl.leaveRequest.to_date).toBeDefined();
+            expect($ctrl.leaveRequest.from_date_type).toBeDefined();
+            expect($ctrl.leaveRequest.to_date_type).toBeDefined();
+            expect($ctrl.leaveRequest.contact_id).toBeDefined();
+            expect($ctrl.leaveRequest.status_id).toBeDefined();
+            expect($ctrl.leaveRequest.type_id).toBeDefined();
           });
 
-          describe('on submit', function () {
+          it('is successful', function () {
+            expect($ctrl.error).not.toBeDefined();
+            expect($ctrl.leaveRequest.id).toBeDefined();
+          });
 
+          it('will send event', function () {
+            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.leaveRequest);
+          });
+
+          describe('when balance change is negative', function () {
             beforeEach(function () {
-              spyOn($rootScope, '$emit');
+              $ctrl.selectedAbsenceType = $ctrl.absenceTypes[1];
+              $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = new Date();
+              $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
+              $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
+              $scope.$digest();
               $ctrl.submit();
               $scope.$digest();
             });
 
-            it('is successful', function () {
-              expect($ctrl.error).not.toEqual(jasmine.any(Object));
-              expect($ctrl.leaveRequest.id).toBeDefined();
+            describe('and absence type does not allow overuse', function () {
+              it('will not save', function () {
+                expect($ctrl.error).toBeDefined();
+              });
             });
 
-            it('sends event', function () {
-              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.leaveRequest);
-            });
-
-            describe('when balance change is negative', function () {
-
+            describe('and absence type allows overuse', function () {
               beforeEach(function () {
-                $ctrl.selectedAbsenceType = $ctrl.absenceTypes[1];
-                $ctrl.uiOptions.toDate = $ctrl.uiOptions.fromDate = new Date();
-                $ctrl.onDateChange($ctrl.uiOptions.fromDate, true);
-                $ctrl.onDateChange($ctrl.uiOptions.toDate, false);
-                $scope.$digest();
+                $ctrl.selectedAbsenceType = $ctrl.absenceTypes[2];
                 $ctrl.submit();
                 $scope.$digest();
               });
 
-              it('will not save', function () {
-                expect($ctrl.error).toBeDefined();
-              });
-
-              describe('and allow_overuse is set', function () {
-
-                beforeEach(function () {
-                  $ctrl.selectedAbsenceType = $ctrl.absenceTypes[2];
-                  $ctrl.submit();
-                  $scope.$digest();
-                });
-
-                it('will save', function () {
-                  expect($ctrl.error).not.toBeDefined();
-                });
+              it('will save', function () {
+                expect($ctrl.error).not.toBeDefined();
               });
             });
           });
         });
       });
+
+      /**
+       * Initialize the controller
+       *
+       * @param
+       */
+      function initController() {
+        $scope = $rootScope.$new();
+        $q = $q;
+
+        $ctrl = $controller('LeaveRequestPopupCtrl', {
+          $scope: $scope,
+          $uibModalInstance: modalInstanceSpy,
+          contactId: CRM.vars.leaveAndAbsences.contactId
+        });
+        $scope.$digest();
+      }
     });
   });
 })(CRM);

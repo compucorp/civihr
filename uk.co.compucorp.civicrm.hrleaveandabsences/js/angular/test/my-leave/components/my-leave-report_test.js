@@ -799,7 +799,6 @@
         });
 
         describe('when new leave request is created', function() {
-
           beforeEach(function() {
             spyOn(controller,'refresh').and.callThrough();
             $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
