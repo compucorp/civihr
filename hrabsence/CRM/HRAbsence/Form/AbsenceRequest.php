@@ -615,6 +615,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       if (array_key_exists('_qf_AbsenceRequest_done_cancelabsence', $this->_submitValues)) {
         $this->updateActivitiesStatus('Cancelled');
         $statusMsg = ts('Absence(s) have been Cancelled');
+        self::sendAbsenceMail($this->_mailprm, $this->_sendTemplateParams);
       }
       elseif (array_key_exists('_qf_AbsenceRequest_done_cancel', $this->_submitValues)) {
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}", false, 'hrabsence/list'));
@@ -769,8 +770,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $sendTemplateParams['from'] = $loggedUserEmail;
         $sendTemplateParams['tplParams']['approval'] = TRUE;
         break;
-      case $editAction && array_key_exists('_qf_AbsenceRequest_done_cancelabsence', $this->_submitValues):
-        $sendTemplateParams['from'] = $targetContactEmail;
+      case array_key_exists('_qf_AbsenceRequest_done_cancelabsence', $this->_submitValues):
+        $sendTemplateParams['from'] = $loggedUserEmail;
         $sendTemplateParams['tplParams']['cancel'] = $sendMail = TRUE;
         break;
       case $editAction && array_key_exists('_qf_AbsenceRequest_done_approve', $this->_submitValues):
