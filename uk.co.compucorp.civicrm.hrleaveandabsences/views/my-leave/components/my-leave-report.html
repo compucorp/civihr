@@ -211,8 +211,8 @@
                             <td ng-repeat="absenceType in report.absenceTypes track by $index">
                               {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                             </td>
-                            <td ng-if="report.actionsFor(request).length">
-                              <div uib-dropdown dropdown-append-to-body>
+                            <td>
+                              <div uib-dropdown dropdown-append-to-body ng-if="report.actionsFor(request).length">
                                 <a href class="btn btn-default btn-inline" uib-dropdown-toggle>
                                   <i class="fa fa-ellipsis-v"></i>
                                 </a>
@@ -373,8 +373,8 @@
                           <td ng-repeat="absenceType in report.absenceTypes track by $index">
                             {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                           </td>
-                          <td ng-if="report.actionsFor(request).length">
-                            <div uib-dropdown dropdown-append-to-body>
+                          <td>
+                            <div uib-dropdown dropdown-append-to-body ng-if="report.actionsFor(request).length">
                               <a href class="btn btn-default btn-inline" uib-dropdown-toggle>
                                 <i class="fa fa-ellipsis-v"></i>
                               </a>
@@ -460,18 +460,6 @@
                           <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
                           <td ng-repeat="absenceType in report.absenceTypes track by $index">
                             {{(request.type_id == absenceType.id ? request.balance_change : '')}}
-                          </td>
-                          <td ng-if="report.actionsFor(request).length">
-                            <div uib-dropdown dropdown-append-to-body>
-                              <a href class="btn btn-default btn-inline" uib-dropdown-toggle>
-                                <i class="fa fa-ellipsis-v"></i>
-                              </a>
-                              <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-                                <li ng-repeat="action in report.actionsFor(request)">
-                                  <a href ng-click="report.action(request, action)">{{action}}</a>
-                                </li>
-                              </ul>
-                            </div>
                           </td>
                           <td></td>
                         </tr>

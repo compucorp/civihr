@@ -74,7 +74,10 @@ define([
           copyCancel: 'Cancel',
           copyConfirm: 'Confirm',
           classConfirm: 'btn-danger',
-          msg: 'This cannot be undone'
+          msg: 'This cannot be undone',
+          onConfirm: function () {
+            return leaveRequest.cancel();
+          }
         })
         .then(function (response) {
           !!response && cancelRequest(leaveRequest);
@@ -175,35 +178,33 @@ define([
      * sections where a leave request can be cancelled), and moves it to the
      * "other" section (if it has already cached data)
      *
-     * It also reloads the entitlements (to get the updated remainders) and the
-     * balance changes so that the numbers add up
+     * It also updates the balance change and remainder data registered on the
+     * absence type that the leave request belongs to, so that the numbers add up
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function cancelRequest(leaveRequest) {
-      vm.loading.content = true;
+      var sectionBelonged, sectionsAllowed = ['approved', 'pending'];
 
-      leaveRequest.cancel()
+      $q.resolve()
         .then(function () {
-          [vm.sections.approved, vm.sections.pending].forEach(function (section) {
-            _.remove(section.data, function (dataEntry) {
+          sectionsAllowed.forEach(function (sectionName) {
+            var removed = _.remove(vm.sections[sectionName].data, function (dataEntry) {
               return dataEntry.id === leaveRequest.id;
             });
+
+            removed.length && (sectionBelonged = sectionName);
           });
         })
         .then(function () {
-          if (vm.sections.other.data.length) {
-            vm.sections.other.data.push(leaveRequest);
-          }
+          vm.sections.other.data.length && vm.sections.other.data.push(leaveRequest);
         })
         .then(function () {
-          return $q.all([
-            loadEntitlements(),
-            loadBalanceChanges()
-          ]);
-        })
-        .then(function () {
-          vm.loading.content = false;
+          var absenceType = vm.absenceTypes[leaveRequest.type_id];
+          var remainderType = (sectionBelonged === 'pending') ? 'future' : 'current';
+
+          absenceType.balanceChanges[sectionBelonged] -= leaveRequest.balance_change;
+          absenceType.remainder[remainderType] -= leaveRequest.balance_change;
         });
     }
 
