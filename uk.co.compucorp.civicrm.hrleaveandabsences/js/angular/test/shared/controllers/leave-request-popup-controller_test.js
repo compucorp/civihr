@@ -63,7 +63,6 @@
 
       describe('when initialized', function () {
         describe('before date selected', function () {
-
           beforeEach(function () {
             $scope.$digest();
           });
@@ -392,7 +391,6 @@
           });
 
           it('should fail', function () {
-            console.log($ctrl.error);
             expect($ctrl.error).toEqual(jasmine.any(Object));
           });
 

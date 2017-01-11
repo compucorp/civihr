@@ -487,7 +487,7 @@ define([
        * sets dates and types for vm.leaveRequest from UI
        */
       function setDateAndTypes() {
-        /*if (vm.uiOptions.selectedToType) {
+        if (vm.uiOptions.selectedToType) {
           vm.leaveRequest.to_date_type = vm.uiOptions.selectedToType.name;
         }
 
@@ -497,7 +497,7 @@ define([
           if (!vm.uiOptions.multipleDays) {
             vm.leaveRequest.to_date_type = vm.leaveRequest.from_date_type;
           }
-        }*/
+        }
 
         vm.leaveRequest.from_date = convertDateFormatToServer(vm.uiOptions.fromDate);
         vm.leaveRequest.to_date = convertDateFormatToServer(vm.uiOptions.toDate);

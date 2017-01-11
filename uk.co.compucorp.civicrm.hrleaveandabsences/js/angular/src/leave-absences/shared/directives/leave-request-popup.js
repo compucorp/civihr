@@ -16,14 +16,15 @@ define([
         link: function (scope, element) {
 
           element.on('click', function (event) {
-
             $modal.open({
               templateUrl: settings.pathTpl + 'directives/leave-request-popup.html',
               animation: scope.animationsEnabled,
               controller: 'LeaveRequestPopupCtrl',
               controllerAs: '$ctrl',
               resolve: {
-                contactId: scope.contactId,
+                contactId: function () {
+                  return scope.contactId
+                },
                 //to set HR_settings DateFormat
                 format: ['DateFormat', function (DateFormat) {
                   // stores the data format in HR_setting.DATE_FORMAT
