@@ -12,13 +12,12 @@ define([
     }],
     controllerAs: 'report',
     controller: [
-      '$log', '$q', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest',
+      '$log', '$q', '$rootScope', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest',
       'OptionGroup', 'dialog', 'HR_settings', controller
     ]
   });
 
-
-  function controller($log, $q, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HR_settings) {
+  function controller($log, $q, $rootScope, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HR_settings) {
     $log.debug('Component: my-leave-report');
 
     var vm = Object.create(this);
@@ -148,6 +147,10 @@ define([
       })
       .then(function () {
         vm.loading.content = false;
+      });
+
+      $rootScope.$on('LeaveRequest::new', function () {
+        vm.refresh();
       });
     })();
 

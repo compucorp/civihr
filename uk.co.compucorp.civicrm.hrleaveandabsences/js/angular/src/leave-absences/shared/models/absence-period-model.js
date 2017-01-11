@@ -36,8 +36,7 @@ define([
          * @return {Object} Absence period instance or null if not found
          */
         current: function () {
-          var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
-          var today = moment().format(dateFormat);
+          var today = moment().format('YYYY-MM-DD');
 
           var params = {
             "start_date": {
@@ -50,7 +49,8 @@ define([
 
           return absencePeriodAPI.all(params)
             .then(function (absencePeriods) {
-              if (absencePeriods.length) {
+
+              if (absencePeriods && absencePeriods.length) {
                 return instance.init(absencePeriods[0], true);
               }
 

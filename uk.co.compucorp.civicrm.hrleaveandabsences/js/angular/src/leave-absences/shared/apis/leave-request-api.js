@@ -7,6 +7,16 @@ define([
   apis.factory('LeaveRequestAPI', ['$log', 'api', '$q', function ($log, api, $q) {
     $log.debug('LeaveRequestAPI');
 
+    /**
+     * Checks if error is returned from server
+     *
+     * @param {Object} dataFromServer
+     * @return {Boolean}
+     */
+    function checkError(dataFromServer) {
+      return dataFromServer && !!dataFromServer.is_error;
+    }
+
     return api.extend({
 
       /**
@@ -52,10 +62,14 @@ define([
           public_holiday: isPublicHoliday || false
         };
 
-        deferred.resolve(this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params, false)
+        this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params, false)
           .then(function (data) {
-            return data.values;
-          }));
+            if (checkError(data)) {
+              deferred.reject(data.error_message);
+            }
+
+            deferred.resolve(data.values);
+          });
 
         return deferred.promise;
       },
@@ -67,18 +81,22 @@ define([
        * @return {Promise} Resolved with {Object} Updated Leave request
        */
       update: function (params) {
-        $log.debug('LeaveRequestAPI.update');
+        $log.debug('LeaveRequestAPI.update', params);
         var deferred = $q.defer();
 
         if (!params.id) {
           deferred.reject('id is mandatory field');
         }
 
-        deferred.resolve(this.sendPOST('LeaveRequest', 'create', params)
+        this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
+            if (checkError(data)) {
+              deferred.reject(data.error_message);
+            }
+
             //returns array of single object hence getting first object
-            return data.values[0];
-          }));
+            deferred.resolve(data.values[0]);
+          });
 
         return deferred.promise;
       },
@@ -88,23 +106,27 @@ define([
        * API will create and return the detailed breakdown of it in days.
        *
        * @param {Object} params matched the API end point params like
-       * mandatory values for contact_id, from_date, from_date_type and optional values for
+       * mandatory values for contact_id, from_date, from_type and optional values for
        * to_date and to_type.
        *
        * @return {Promise} containing the detailed breakdown of balance leaves
        */
       calculateBalanceChange: function (params) {
-        $log.debug('LeaveRequestAPI.calculateBalanceChange');
+        $log.debug('LeaveRequestAPI.calculateBalanceChange', params);
         var deferred = $q.defer();
 
-        if (params && (!params.contact_id || !params.from_date || !params.from_date_type)) {
-          deferred.reject('contact_id, from_date and from_date_type in params are mandatory');
+        if (params && (!params.contact_id || !params.from_date || !params.from_type)) {
+          deferred.reject('contact_id, from_date and from_type in params are mandatory');
         }
 
-        deferred.resolve(this.sendGET('LeaveRequest', 'calculatebalancechange', params)
+        this.sendPOST('LeaveRequest', 'calculatebalancechange', params)
           .then(function (data) {
-            return data.values;
-          }));
+            if (checkError(data)) {
+              deferred.reject(data.error_message);
+            }
+
+            deferred.resolve(data.values);
+          });
 
         return deferred.promise;
       },
@@ -121,23 +143,25 @@ define([
        * else rejects the promise with error data
        */
       create: function (params) {
-        $log.debug('LeaveRequestAPI.calculateBalanceChange');
+        $log.debug('LeaveRequestAPI.create', params);
         var deferred = $q.defer();
 
         if (params) {
           if (params.to_date && !params.to_date_type) {
             deferred.reject('to_date_type is mandatory');
-          }
-          else if (!params.contact_id || !params.from_date || !params.from_date_type || !params.status_id) {
+          } else if (!params.contact_id || !params.from_date || !params.from_date_type || !params.status_id) {
             deferred.reject('contact_id, from_date, status_id and from_date_type params are mandatory');
           }
         }
 
-        deferred.resolve(this.sendPOST('LeaveRequest', 'create', params)
+        this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
+            if (checkError(data)) {
+              deferred.reject(data.error_message);
+            }
             //returns array of single object hence getting first object
-            return data.values[0];
-          }));
+            deferred.resolve(data.values[0]);
+          });
 
         return deferred.promise;
       },
@@ -152,7 +176,7 @@ define([
        * @return {Promise} returns an array of errors for invalid data else empty array
        */
       isValid: function (params) {
-        $log.debug('LeaveRequestAPI.isValid');
+        $log.debug('LeaveRequestAPI.isValid', params);
         var deferred = $q.defer();
 
         this.sendGET('LeaveRequest', 'isValid', params)

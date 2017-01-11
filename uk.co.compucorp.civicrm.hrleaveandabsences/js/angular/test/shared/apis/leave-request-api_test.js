@@ -29,16 +29,15 @@ define([
       $httpBackend.whenGET(/action\=getbalancechangebyabsencetype&entity\=LeaveRequest/)
         .respond(mockData.balanceChangeByAbsenceType());
 
-      //Intercept backend calls for LeaveRequest.calculateBalanceChange
-      $httpBackend.whenGET(/action\=calculatebalancechange&entity\=LeaveRequest/)
-        .respond(mockData.calculateBalanceChange());
-
       //Intercept backend calls for LeaveRequest.create in POST
       $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)
         .respond(function (method, url, data, headers, params) {
 
           if (helper.isEntityActionInPost(data, 'LeaveRequest', 'create')) {
             return [201, mockData.all()];
+          }
+          else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'calculatebalancechange')) {
+            return [200, mockData.calculateBalanceChange()];
           }
         });
 
@@ -149,7 +148,18 @@ define([
 
       beforeEach(function () {
         requestData = helper.createRandomLeaveRequest();
-        spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+        //todo --> will be removed once from_type will change to from_date_type
+        requestData = _.mapKeys(requestData, function (value, key) {
+          if (key === 'from_date_type') {
+            return 'from_type';
+          } else if (key === 'to_date_type') {
+            return 'to_type';
+          }
+
+          return key;
+        });
+
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
         promise = LeaveRequestAPI.calculateBalanceChange(requestData);
       });
 
@@ -159,8 +169,8 @@ define([
 
       it('calls endpoint', function () {
         promise.then(function (result) {
-          expect(LeaveRequestAPI.sendGET).toHaveBeenCalled();
-          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith(jasmine.any(String),
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
             jasmine.any(String), jasmine.any(Object));
         });
       });
@@ -201,7 +211,7 @@ define([
       describe('when mandatory field is missing', function () {
 
         beforeEach(function () {
-          errorMessage = 'contact_id, from_date and from_date_type in params are mandatory';
+          errorMessage = 'contact_id, from_date and from_type in params are mandatory';
           requestData = {};
           promise = LeaveRequestAPI.calculateBalanceChange(requestData);
         });

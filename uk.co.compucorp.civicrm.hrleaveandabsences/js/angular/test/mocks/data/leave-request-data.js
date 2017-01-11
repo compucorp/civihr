@@ -173,6 +173,48 @@ define([
       "version": 3,
       "count": 1,
       "values": true
+    },
+    half_day_am_calculateBalanceChange: {
+      "is_error": 0,
+      "version": 3,
+      "count": 2,
+      "values": {
+        "amount": -0.5,
+        "breakdown": [{
+          "date": "2017-01-04",
+          "amount": 0.5,
+          "type": {
+            "id": 2,
+            "value": 2,
+            "label": "1/2 AM"
+          }
+        }]
+      }
+    },
+    all_day_calculateBalanceChange: {
+      "is_error": 0,
+      "version": 3,
+      "count": 2,
+      "values": {
+        "amount": -2,
+        "breakdown": [{
+          "date": "2017-01-04",
+          "amount": 1,
+          "type": {
+            "id": 1,
+            "value": 1,
+            "label": "All Day"
+          }
+        }, {
+          "date": "2017-01-05",
+          "amount": 1,
+          "type": {
+            "id": 1,
+            "value": 1,
+            "label": "All Day"
+          }
+        }]
+      }
     }
   };
 
@@ -200,6 +242,12 @@ define([
     },
     isManagedBy: function () {
       return mockData.isManagedByData;
+    },
+    singleDayCalculateBalanceChange: function () {
+      return mockData.half_day_am_calculateBalanceChange;
+    },
+    multipleDayCalculateBalanceChange: function () {
+      return mockData.all_day_calculateBalanceChange;
     }
   };
 });

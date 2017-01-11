@@ -3,16 +3,15 @@ define([
   'mocks/data/absence-period-data',
   'common/moment',
   'common/angularMocks',
-  'common/mocks/services/hr-settings-mock',
 ], function (mocks, mockData, moment) {
   'use strict';
 
-  mocks.factory('AbsencePeriodAPIMock', ['$q', 'HR_settingsMock', function ($q, HR_settingsMock) {
+  mocks.factory('AbsencePeriodAPIMock', ['$q', function ($q) {
     return {
       all: function (params) {
         return $q(function (resolve, reject) {
           if (params && 'start_date' in params) {
-            var dateFormat = HR_settingsMock.DATE_FORMAT.toUpperCase();
+            var dateFormat = 'YYYY-MM-DD';
             //find if dates are in range else return null
             var checkDate = moment(params.start_date['<='], dateFormat);
 
