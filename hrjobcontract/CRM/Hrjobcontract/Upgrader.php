@@ -518,14 +518,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       );
     }
 
-
     foreach ($jobContractOptionsMenuTree as $key => $menuItems) {
       $menuItems['is_active'] = 1;
       CRM_Core_BAO_Navigation::add($menuItems);
     }
 
     CRM_Core_BAO_Navigation::resetNavigation();
-
 
     $this->upgrade_1001();
     $this->upgrade_1002();
@@ -544,6 +542,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1020();
     $this->upgrade_1025();
     $this->upgrade_1026();
+    $this->upgrade_1027();
   }
 
   function upgrade_1001() {
@@ -1072,6 +1071,64 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
 
     return TRUE;
+  }
+
+  /**
+   * Changes Pension Provider to be a contact.
+   * 
+   * @return true
+   */
+  function upgrade_1027() {
+    // Create pension provider contact type
+    $pensionProviderType = civicrm_api3('ContactType', 'create', [
+      'name' => 'pension_provider',
+      'label' => 'Pension Provider',
+      'parent_id' => 'Organization',
+      'is_active' => 1,
+      'is_reserved' => 1,
+    ]);
+
+    // Fetch pension provider type option values and create a contact
+    // for each pension provider type
+    $pensionTypeOptions = civicrm_api3('OptionValue', 'get', [
+      'sequential' => 1,
+      'return' => ['name', 'label', 'value'],
+      'option_group_id' => 'hrjc_pension_type',
+    ]);
+
+    $pensionTypesMapping = [];
+    foreach($pensionTypeOptions['values'] as $pensionType) {
+      $contact = civicrm_api3('Contact', 'create', [
+        'first_name' => $pensionType['label'],
+        'display_name' => $pensionType['label'],
+        'source' => $pensionType['name'] . ',' .$pensionType['value'],
+        'contact_type' => "Organization",
+        'contact_sub_type' => "pension_provider",
+      ]);
+
+      $pensionTypesMapping[$pensionType['value']] = $contact['id'];
+    }
+
+    // Replace pension_type value to the corssponding contact ID
+    if (!empty($pensionTypesMapping)) {
+      $pensionsTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
+
+      foreach ($pensionTypesMapping as $optionValue => $contactID) {
+        $sql = "UPDATE {$pensionsTableName}
+                SET (pension_type) VALUES ({$contactID})
+                WHERE pension_type = '{$optionValue}'";
+        CRM_Core_DAO::executeQuery($sql);
+      }
+    }
+
+    // Remove pension type option group
+    civicrm_api3('OptionGroup', 'get', [
+      'sequential' => 1,
+      'name' => "hrjc_pension_type",
+      'api.OptionGroup.delete' => ['id' => '\$value.id'],
+    ]);
+
+    return true;
   }
 
   /**
