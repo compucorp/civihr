@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<extension key="uk.co.compucorp.civicrm.hrcomments" type="module">
+  <file>hrcomments</file>
+  <name>HR Comments</name>
+  <description>This extension provides Commenting functionality for CiviHR</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>Compucorp Ltd</author>
+    <email>info@compucorp.co.uk</email>
+  </maintainer>
+  <releaseDate>2017-01-12</releaseDate>
+  <version>1.6.4</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.2</ver>
+  </compatibility>
+  <comments></comments>
+  <civix>
+    <namespace>CRM/HRComments</namespace>
+  </civix>
+</extension>
