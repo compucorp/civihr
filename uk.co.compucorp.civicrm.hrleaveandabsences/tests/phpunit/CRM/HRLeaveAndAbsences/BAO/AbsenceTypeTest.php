@@ -4,6 +4,12 @@ use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException as InvalidAbsenceTypeException;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
+use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
+use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest
@@ -680,5 +686,90 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $date = new DateTime('2016-11-10');
     $expiry = $absenceType2->calculateToilExpiryDate($date);
     $this->assertEquals('2017-09-10', $expiry->format('Y-m-d'));
+  }
+
+  public function testNonExpiredToilRequestsAreDeletedAndExpiredToilRequestsNotDeletedWhenToilIsDisabledForAbsenceType() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 days'),
+      'end_date' => CRM_Utils_Date::processDate('+ 300days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 1,
+    ]);
+
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+3 days'),
+      'to_date' => CRM_Utils_Date::processDate('+3 days'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    $toilRequest2 = TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+1 day'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('2016-12-10')
+    ]);
+
+    //assert the records exist first before updating absence type
+    $balanceChanges = new LeaveBalanceChange();
+    $balanceChanges->find();
+    $this->assertEquals($balanceChanges->N, 2);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals($leaveRequest->N, 2);
+
+    $leaveRequestDate = new LeaveRequestDate();
+    $leaveRequestDate->find();
+    $this->assertEquals($leaveRequestDate->N, 2);
+
+    $toilRequest = new ToilRequest();
+    $toilRequest->find();
+    $this->assertEquals($toilRequest->N, 2);
+
+    //disable TOIL
+    AbsenceType::create([
+      'id' => $absenceType->id,
+      'allow_accruals_request' => false,
+      'color' => '#000000'
+    ]);
+
+    //confirm the balance change for the expired TOIL balance was not deleted
+    $balanceChanges = new LeaveBalanceChange();
+    $balanceChanges->find();
+    $this->assertEquals($balanceChanges->N, 1);
+    $balanceChanges->fetch();
+    $this->assertEquals($balanceChanges->source_id, $toilRequest2->id);
+
+    //confirm the leave request for the expired TOIL balance was not deleted
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals($leaveRequest->N, 1);
+    $leaveRequest->fetch();
+    $this->assertEquals($leaveRequest->id, $toilRequest2->leave_request_id);
+
+    //confirm the leave request dates for the expired TOIL balance was not deleted
+    $leaveRequestDate = new LeaveRequestDate();
+    $leaveRequestDate->find();
+    $this->assertEquals($leaveRequestDate->N, 1);
+    $leaveRequestDate->fetch();
+    $date = date('Y-m-d', strtotime('+1 day'));
+    $this->assertEquals($leaveRequestDate->date, $date);
+
+    //confirm the TOIL Request for the expired TOIL balance was not deleted
+    $toilRequest = new ToilRequest();
+    $toilRequest->find();
+    $this->assertEquals($toilRequest->N, 1);
+    $toilRequest->fetch();
+    $this->assertEquals($toilRequest->id, $toilRequest2->id);
   }
 }

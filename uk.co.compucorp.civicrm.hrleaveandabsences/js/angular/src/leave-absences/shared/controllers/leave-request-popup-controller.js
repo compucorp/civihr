@@ -11,14 +11,15 @@ define([
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/shared/models/public-holiday-model',
   'leave-absences/shared/models/instances/leave-request-instance',
+  'common/models/contact',
 ], function (components, _, moment) {
   'use strict';
 
   components.controller('LeaveRequestPopupCtrl', [
-    '$log', '$q', '$rootScope', '$uibModalInstance', 'AbsencePeriod', 'AbsenceType',
+    '$log', '$q', '$rootScope', '$uibModalInstance', 'Contact', 'AbsencePeriod', 'AbsenceType',
     'api.optionGroup', 'directiveOptions', 'Calendar', 'Entitlement', 'HR_settings',
     'LeaveRequest', 'LeaveRequestInstance', 'PublicHoliday',
-    function ($log, $q, $rootScope, $modalInstance, AbsencePeriod, AbsenceType,
+    function ($log, $q, $rootScope, $modalInstance, Contact, AbsencePeriod, AbsenceType,
       OptionGroup, directiveOptions, Calendar, Entitlement, HR_settings,
       LeaveRequest, LeaveRequestInstance, PublicHoliday
     ) {
@@ -68,6 +69,7 @@ define([
         isEdit: false, //when the dialog is opened by the owner
         isChangeExpanded: false,
         multipleDays: true,
+        contact: '',
         showDatePickerFrom: false,
         showDatePickerTo: false,
         userDateFormat: HR_settings.DATE_FORMAT,
@@ -211,6 +213,11 @@ define([
         }
 
         vm.error = undefined;
+        //update leaverequest
+        if(updateRequest()) {
+          return;
+        }
+
         vm.leaveRequest.isValid()
           .then(function () {
             vm.leaveRequest.create()
@@ -267,7 +274,6 @@ define([
       };
 
       (function initController() {
-console.log('directiveOptions.leaveRequest', directiveOptions.leaveRequest);
         vm.uiOptions.isAdmin = directiveOptions.leaveRequest != undefined;
 
         if (vm.uiOptions.isAdmin) {
@@ -466,7 +472,6 @@ console.log('directiveOptions.leaveRequest', directiveOptions.leaveRequest);
         var collection = vm.leaveRequestStatuses,
           key = 'value';
         return _.find(collection, function (collectionItem) {
-          console.log(collectionItem[key], value);
           return collectionItem[key] === value;
         });
       }
@@ -682,6 +687,14 @@ console.log('directiveOptions.leaveRequest', directiveOptions.leaveRequest);
         else{
           vm.leaveRequest.status_id = valueOfRequestStatus('waiting_approval');
         }
+        initContact();
+      }
+
+      function initContact() {
+        return Contact.find(vm.leaveRequest.contact_id)
+          .then(function (contact) {
+            vm.uiOptions.contact = contact;
+          });
       }
 
       function setStatusesForManager() {
@@ -690,6 +703,93 @@ console.log('directiveOptions.leaveRequest', directiveOptions.leaveRequest);
             return status.name === 'approved' || status.name === 'more_information_requested' || status.name === 'cancelled';
           });
         }
+      }
+
+      function updateRequest() {
+        if(vm.uiOptions.isAdmin) {
+          vm.leaveRequest.update()
+            .then(function (result) {
+              vm.error = undefined;
+              // close the modal
+              vm.ok();
+            })
+            .catch(function (errors) {
+              // show errors
+              if (errors.error_message)
+                vm.error = errors.error_message;
+              else {
+                vm.error = errors;
+              }
+            });
+          /*if(vm.uiOptions.selectedStatus.name === 'cancelled' ){
+            vm.leaveRequest.cancel()
+              .then(function () {
+                vm.error = undefined;
+                // close the modal
+                vm.ok();
+              })
+              .catch(function (errors) {
+                // show errors
+                if (errors.error_message)
+                  vm.error = errors.error_message;
+                else {
+                  vm.error = errors;
+                }
+              });
+          }
+          else if(vm.uiOptions.selectedStatus.name === 'approved' ){
+            vm.leaveRequest.approve()
+              .then(function () {
+                vm.error = undefined;
+                // close the modal
+                vm.ok();
+              })
+              .catch(function (errors) {
+                // show errors
+                if (errors.error_message)
+                  vm.error = errors.error_message;
+                else {
+                  vm.error = errors;
+                }
+              });
+          }
+          else if(vm.uiOptions.selectedStatus.name === 'rejected' ){
+            vm.leaveRequest.reject()
+              .then(function () {
+                vm.error = undefined;
+                // close the modal
+                vm.ok();
+              })
+              .catch(function (errors) {
+                // show errors
+                if (errors.error_message)
+                  vm.error = errors.error_message;
+                else {
+                  vm.error = errors;
+                }
+              });
+          }
+          else if(vm.uiOptions.selectedStatus.name === 'more_information_requested' ){
+            vm.leaveRequest.sendBack()
+              .then(function () {
+                vm.error = undefined;
+                // close the modal
+                vm.ok();
+              })
+              .catch(function (errors) {
+                // show errors
+                if (errors.error_message)
+                  vm.error = errors.error_message;
+                else {
+                  vm.error = errors;
+                }
+              });
+          }*/
+
+          return true;
+        }
+
+        return false;
       }
 
       return vm;

@@ -705,27 +705,21 @@
         });
 
         describe('when the user confirms', function () {
-          var oldData;
+          var oldBalanceChange, oldList, oldRemainder;
 
           describe('basic tests', function () {
             beforeEach(function () {
-              oldData = controller.sections.pending.data;
+              oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+              oldList = controller.sections.pending.data;
+              oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
+            });
 
-              resolveDialogWith(true);
-              controller.action(leaveRequest1, 'cancel');
-              $rootScope.$digest();
+            beforeEach(function () {
+              cancelRequest(leaveRequest1);
             });
 
             it('sends the cancellation request', function () {
               expect(leaveRequest1.cancel).toHaveBeenCalled();
-            });
-
-            it('refreshes the entitlements to reload the remainders', function () {
-              expect(Entitlement.all).toHaveBeenCalled();
-            });
-
-            it('refreshes the balance changes', function () {
-              expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalled();
             });
 
             it('removes the leave request from the current section', function () {
@@ -733,7 +727,41 @@
             });
 
             it('remove the leave request without creating a new array', function () {
-              expect(controller.sections.pending.data).toBe(oldData);
+              expect(controller.sections.pending.data).toBe(oldList);
+            });
+
+            describe('balance changes', function () {
+              var newBalanceChange;
+
+              beforeEach(function () {
+                newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+              });
+
+              it('updates the balance changes for the section the leave request was in', function () {
+                expect(newBalanceChange).not.toBe(oldBalanceChange);
+                expect(newBalanceChange).toBe(oldBalanceChange - leaveRequest1.balance_change);
+              });
+
+              it('does not send a request to the backend to fetch the updated balance changes', function () {
+                expect(LeaveRequest.balanceChangeByAbsenceType).not.toHaveBeenCalled();
+              });
+            });
+
+            describe('remainders', function () {
+              var newRemainder;
+
+              beforeEach(function () {
+                newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
+              });
+
+              it('updates the remainder of the entitlement of the absence type the leave request was for', function () {
+                expect(newRemainder).not.toBe(oldRemainder);
+                expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
+              });
+
+              it('does not send a request to the backend to fetch the updated remainders', function () {
+                expect(Entitlement.all).not.toHaveBeenCalled();
+              });
             });
           });
 
@@ -743,9 +771,7 @@
                 var alreadyRejected = LeaveRequestInstance.init(helper.createRandomLeaveRequest(), true);
                 controller.sections.other.data = [alreadyRejected];
 
-                resolveDialogWith(true);
-                controller.action(leaveRequest1, 'cancel');
-                $rootScope.$digest();
+                cancelRequest(leaveRequest1);
               });
 
               it('moves the leave request in it', function () {
@@ -757,9 +783,7 @@
               beforeEach(function () {
                 controller.sections.other.data = [];
 
-                resolveDialogWith(true);
-                controller.action(leaveRequest1, 'cancel');
-                $rootScope.$digest();
+                cancelRequest(leaveRequest1);
               });
 
               it('does not move the leave request in it', function () {
@@ -767,6 +791,18 @@
               });
             });
           });
+
+          /**
+           * Set up the confirmation dialog to be confirmed and then
+           * triggers the leave request cancellation
+           *
+           * @param  {LeaveRequestInstance} leaveRequest
+           */
+          function cancelRequest(leaveRequest) {
+            resolveDialogWith(true);
+            controller.action(leaveRequest1, 'cancel');
+            $rootScope.$digest();
+          }
         });
 
         describe('when the user does not confirm', function () {
@@ -781,20 +817,8 @@
             expect(leaveRequest1.cancel).not.toHaveBeenCalled();
           });
 
-          it('does not refresh the entitlements', function () {
-            expect(Entitlement.all).not.toHaveBeenCalled();
-          });
-
-          it('does not refresh the balance changes', function () {
-            expect(LeaveRequest.balanceChangeByAbsenceType).not.toHaveBeenCalled();
-          });
-
           it('does not remove the leave request from the current section', function () {
             expect(controller.sections.pending.data).toContain(leaveRequest1);
-          });
-
-          it('does not move the leave request to the "Other" section', function () {
-            expect(controller.sections.other.data).not.toContain(leaveRequest1);
           });
         });
 
@@ -822,11 +846,14 @@
             spy = spyOn(dialog, 'open');
           }
 
-          spy.and.callFake(function () {
-            var deferred = $q.defer();
-            deferred.resolve(value);
-
-            return deferred.promise;
+          spy.and.callFake(function (options) {
+            return $q.resolve()
+              .then(function () {
+                return options.onConfirm && value ? options.onConfirm() : null;
+              })
+              .then(function () {
+                return value;
+              });
           });;
         }
       });

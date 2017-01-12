@@ -5,6 +5,9 @@ use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest
@@ -451,5 +454,363 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
     // but the expiry date passed to create was 100 days, so that should be the
     // date used
     $this->assertEquals($expiryDate->format('Y-m-d'), $toilBalanceChange->expiry_date);
+  }
+
+  public function testOpenToilRequestWillNotBeUpdatedIfRequestedAmountIsMoreThanMaxLeaveAccrual() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'max_leave_accrual' => 3,
+      'allow_accruals_request' => true,
+      'is_active' => 1,
+    ]);
+
+    $toilRequest = TOILRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => date('YmdHis'),
+      'to_date' => date('YmdHis'),
+      'toil_to_accrue' => $this->toilAmounts['3 Days']['value'],
+      'duration' => 300,
+    ], false);
+
+    // decrease the max leave accrual
+    AbsenceType::create([
+      'id' => $absenceType->id,
+      'max_leave_accrual' => 1,
+      'allow_accruals_request' => true,
+      'color' => '#000000'
+    ]);
+
+    $this->setExpectedException('CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException', 'The TOIL amount requested for is greater than the maximum for this Absence Type');
+
+    // update the TOIL request status
+    TOILRequest::validateParams([
+      'id' => $toilRequest->id,
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => date('YmdHis'),
+      'to_date' => date('YmdHis'),
+      'toil_to_accrue' => $this->toilAmounts['3 Days']['value'],
+      'duration' => 300,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+  }
+
+  public function testDeleteForAbsenceTypeWithinAGivenDateRangeWhenNonExpiredOnlyFlagIsFalse() {
+    $absenceType = 1;
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-10'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-13'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-04-10'),
+      'to_date' => CRM_Utils_Date::processDate('2016-04-12'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('2016-12-10')
+    ]);
+
+    $toilRequest3 = TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-03-10'),
+      'to_date' => CRM_Utils_Date::processDate('2015-03-11'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('2015-10-03')
+    ]);
+
+    //assert the records exist first before deletion
+    $balanceChanges = new LeaveBalanceChange();
+    $balanceChanges->find();
+    $this->assertEquals($balanceChanges->N, 3);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals($leaveRequest->N, 3);
+
+    $leaveRequestDate = new LeaveRequestDate();
+    $leaveRequestDate->find();
+    $this->assertEquals($leaveRequestDate->N, 9);
+
+    $toilRequest = new ToilRequest();
+    $toilRequest->find();
+    $this->assertEquals($toilRequest->N, 3);
+
+    //The two balance changes within the given period will be deleted
+    //the two leave requests and the TOIL requests within the given period will be deleted
+    //the leave request dates within the given period will be deleted
+    $startDate = new DateTime('2016-01-01');
+    $endDate = new DateTime('2016-12-31');
+    TOILRequest::deleteAllForAbsenceType($absenceType, $startDate, $endDate);
+
+    $balanceChanges = new LeaveBalanceChange();
+    $balanceChanges->find();
+    $this->assertEquals($balanceChanges->N, 1);
+    $balanceChanges->fetch();
+
+    //this balance change is not within the given period
+    $this->assertEquals($balanceChanges->source_id, $toilRequest3->id);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals($leaveRequest->N, 1);
+    $leaveRequest->fetch();
+
+    //this leave request is not within the given period
+    $this->assertEquals($leaveRequest->id, $toilRequest3->leave_request_id);
+
+    $leaveRequestDate = new LeaveRequestDate();
+    $leaveRequestDate->find();
+    $this->assertEquals($leaveRequestDate->N, 2);
+    $leaveRequestDate->fetch();
+
+    //these leave request dates are not within the given period
+    $this->assertEquals($leaveRequestDate->date, '2015-03-10');
+    $leaveRequestDate->fetch();
+    $this->assertEquals($leaveRequestDate->date, '2015-03-11');
+
+    $toilRequest = new ToilRequest();
+    $toilRequest->find();
+    $this->assertEquals($toilRequest->N, 1);
+    $toilRequest->fetch();
+
+    //this toil request is not within the given period
+    $this->assertEquals($toilRequest->id, $toilRequest3->id);
+  }
+
+  public function testDeleteForAbsenceTypeWithinAGivenDateRangeWhenNonExpiredOnlyFlagIsTrue() {
+    $absenceType = 1;
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-10'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-13'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    $toilRequest2 = TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-10'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-10'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('2016-12-10')
+    ]);
+
+    $toilRequest3 = TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-04-10'),
+      'to_date' => CRM_Utils_Date::processDate('2016-04-10'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('2016-10-03')
+    ]);
+
+    //assert the records exist first before deletion
+    $balanceChanges = new LeaveBalanceChange();
+    $balanceChanges->find();
+    $this->assertEquals($balanceChanges->N, 3);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals($leaveRequest->N, 3);
+
+    $leaveRequestDate = new LeaveRequestDate();
+    $leaveRequestDate->find();
+    $this->assertEquals($leaveRequestDate->N, 6);
+
+    $toilRequest = new ToilRequest();
+    $toilRequest->find();
+    $this->assertEquals($toilRequest->N, 3);
+
+    //Only the first toil request is valid and not expired, so will be deleted
+    $startDate = new DateTime('2016-01-01');
+    $endDate = new DateTime('2016-12-31');
+    TOILRequest::deleteAllForAbsenceType($absenceType, $startDate, $endDate, true);
+
+    //the expired balance changes for the other two TOILS will not be deleted
+    $balanceChanges = new LeaveBalanceChange();
+    $balanceChanges->find();
+    $this->assertEquals($balanceChanges->N, 2);
+    $balanceChanges->fetch();
+
+    $this->assertEquals($balanceChanges->source_id, $toilRequest2->id);
+    $balanceChanges->fetch();
+    $this->assertEquals($balanceChanges->source_id, $toilRequest3->id);
+
+    //the leave requests for the other two TOILS linked to expired balance changes will not be deleted
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals($leaveRequest->N, 2);
+    $leaveRequest->fetch();
+
+    $this->assertEquals($leaveRequest->id, $toilRequest2->leave_request_id);
+    $leaveRequest->fetch();
+    $this->assertEquals($leaveRequest->id, $toilRequest3->leave_request_id);
+
+    $leaveRequestDate = new LeaveRequestDate();
+    $leaveRequestDate->find();
+    $this->assertEquals($leaveRequestDate->N, 2);
+    $leaveRequestDate->fetch();
+
+    //these leave request dates are for the other two TOILS linked to expired balance changes will not be deleted
+    $this->assertEquals($leaveRequestDate->date, '2016-03-10');
+    $leaveRequestDate->fetch();
+    $this->assertEquals($leaveRequestDate->date, '2016-04-10');
+
+    $toilRequest = new ToilRequest();
+    $toilRequest->find();
+    $this->assertEquals($toilRequest->N, 2);
+    $toilRequest->fetch();
+    $this->assertEquals($toilRequest->id, $toilRequest2->id);
+    $toilRequest->fetch();
+    $this->assertEquals($toilRequest->id, $toilRequest3->id);
+  }
+
+  public function testDeleteForAbsenceTypeWithNoEndDateWhenNonExpiredOnlyFlagIsTrue() {
+    $absenceType = 1;
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-10'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-13'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    $toilRequest2 = TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-04-10'),
+      'to_date' => CRM_Utils_Date::processDate('2016-04-10'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('2016-12-10')
+    ]);
+
+    //assert the records exist first before deletion
+    $balanceChanges = new LeaveBalanceChange();
+    $balanceChanges->find();
+    $this->assertEquals($balanceChanges->N, 2);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals($leaveRequest->N, 2);
+
+    $leaveRequestDate = new LeaveRequestDate();
+    $leaveRequestDate->find();
+    $this->assertEquals($leaveRequestDate->N, 5);
+
+    $toilRequest = new ToilRequest();
+    $toilRequest->find();
+    $this->assertEquals($toilRequest->N, 2);
+
+    //Only the first toil request is valid and not expired, so will be deleted
+    $startDate = new DateTime('2016-03-10');
+    TOILRequest::deleteAllForAbsenceType($absenceType, $startDate, null, true);
+
+    //the expired balance change for the other TOIL will not be deleted
+    $balanceChanges = new LeaveBalanceChange();
+    $balanceChanges->find();
+    $this->assertEquals($balanceChanges->N, 1);
+    $balanceChanges->fetch();
+
+    $this->assertEquals($balanceChanges->source_id, $toilRequest2->id);
+
+    //the leave request for the other TOIL linked to expired balance changes will not be deleted
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals($leaveRequest->N, 1);
+    $leaveRequest->fetch();
+
+    $this->assertEquals($leaveRequest->id, $toilRequest2->leave_request_id);
+
+    $leaveRequestDate = new LeaveRequestDate();
+    $leaveRequestDate->find();
+    $this->assertEquals($leaveRequestDate->N, 1);
+    $leaveRequestDate->fetch();
+
+    //the leave request date for the other TOIL linked to expired balance changes will not be deleted
+    $this->assertEquals($leaveRequestDate->date, '2016-04-10');
+
+    $toilRequest = new ToilRequest();
+    $toilRequest->find();
+    $this->assertEquals($toilRequest->N, 1);
+    $toilRequest->fetch();
+    $this->assertEquals($toilRequest->id, $toilRequest2->id);
+  }
+
+  public function testDeleteForAbsenceTypeWithNoEndDateWhenNonExpiredOnlyFlagIsFalse() {
+    $absenceType = 1;
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-10'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-13'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-04-10'),
+      'to_date' => CRM_Utils_Date::processDate('2016-04-10'),
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('2016-12-10')
+    ]);
+
+    //assert the records exist first before deletion
+    $balanceChanges = new LeaveBalanceChange();
+    $balanceChanges->find();
+    $this->assertEquals($balanceChanges->N, 2);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals($leaveRequest->N, 2);
+
+    $leaveRequestDate = new LeaveRequestDate();
+    $leaveRequestDate->find();
+    $this->assertEquals($leaveRequestDate->N, 5);
+
+    $toilRequest = new ToilRequest();
+    $toilRequest->find();
+    $this->assertEquals($toilRequest->N, 2);
+
+    $startDate = new DateTime('2016-03-10');
+    TOILRequest::deleteAllForAbsenceType($absenceType, $startDate, null, false);
+
+    $balanceChanges = new LeaveBalanceChange();
+    $balanceChanges->find();
+    $this->assertEquals($balanceChanges->N, 0);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals($leaveRequest->N, 0);
+
+    $leaveRequestDate = new LeaveRequestDate();
+    $leaveRequestDate->find();
+    $this->assertEquals($leaveRequestDate->N, 0);
+
+    $toilRequest = new ToilRequest();
+    $toilRequest->find();
+    $this->assertEquals($toilRequest->N, 0);
   }
 }

@@ -89,7 +89,7 @@ define([
         }
 
         this.sendPOST('LeaveRequest', 'create', params)
-          .then(function (data) {
+          .then(function (data) {       
             if (checkError(data)) {
               deferred.reject(data.error_message);
             }
