@@ -30,10 +30,10 @@ define([
        * @param  {Object} params
        * @return {Promise} Resolved with {Object} All leave requests
        */
-      all: function (filters, pagination, sort, params) {
+      all: function (filters, pagination, sort, params, cache) {
         $log.debug('LeaveRequestAPI.all');
 
-        return this.getAll('LeaveRequest', filters, pagination, sort, params, 'getFull');
+        return this.getAll('LeaveRequest', filters, pagination, sort, params, 'getFull', cache);
       },
 
       /**
@@ -89,7 +89,7 @@ define([
         }
 
         this.sendPOST('LeaveRequest', 'create', params)
-          .then(function (data) {       
+          .then(function (data) {
             if (checkError(data)) {
               deferred.reject(data.error_message);
             }

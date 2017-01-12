@@ -126,9 +126,9 @@ define([
       }
     };
 
-    vm.refresh = function (page) {
+    vm.refresh = function (page, cache) {
       page = page ? page : 1;
-      loadAllRequests(page);
+      loadAllRequests(page, cache);
     };
 
     vm.refreshWithFilter = function (status) {
@@ -158,7 +158,7 @@ define([
         })
 
         $rootScope.$on('LeaveRequest::updatedByManager', function () {
-          vm.refresh();
+          vm.refresh(null, false);
         });
     })();
 
@@ -194,7 +194,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadAllRequests(page) {
+    function loadAllRequests(page, cache) {
       vm.pagination.page = page;
       vm.loading.content = true;
       Contact.all(contactFilters())
@@ -202,8 +202,8 @@ define([
           vm.filteredUsers = data.list;
 
           $q.all([
-            loadLeaveRequest('table'),
-            loadLeaveRequest('filter')
+            loadLeaveRequest('table', cache),
+            loadLeaveRequest('filter', cache)
           ])
             .then(function () {
               vm.loading.content = false;
@@ -212,13 +212,12 @@ define([
         });
     }
 
-    function loadLeaveRequest(type) {
-      debugger;
+    function loadLeaveRequest(type, cache) {
       var filterByStatus = type !== 'filter',
         pagination = type === 'filter' ? {} : vm.pagination;
-      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination)
+
+      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, null, cache)
         .then(function (leaveRequests) {
-          debugger;
           vm.leaveRequests[type] = leaveRequests;
         });
     }
