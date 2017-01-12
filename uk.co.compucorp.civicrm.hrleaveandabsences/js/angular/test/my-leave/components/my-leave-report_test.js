@@ -444,7 +444,7 @@
           });
 
           it('fetches all pending leave requests', function () {
-            expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+            expect(LeaveRequest.all.calls.argsFor(0)[0]).toEqual(jasmine.objectContaining({
               status_id: { in: [
                 valueOfRequestStatus('waiting_approval'),
                 valueOfRequestStatus('more_information_requested')
