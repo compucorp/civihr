@@ -12,12 +12,12 @@ define([
       return settings.pathTpl + 'components/manager-leave-requests.html';
     }],
     controllerAs: 'ctrl',
-    controller: ['$log', '$q', 'Contact', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
+    controller: ['$log', '$q', '$rootScope', 'Contact', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
       'OptionGroup', controller]
   });
 
 
-  function controller($log, $q, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup) {
+  function controller($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup) {
     $log.debug('Component: manager-leave-requests');
 
     var vm = Object.create(this);
@@ -156,6 +156,10 @@ define([
           vm.loading.page = false;
           loadAllRequests(1);
         })
+
+        $rootScope.$on('LeaveRequest::updatedByManager', function () {
+          vm.refresh();
+        });
     })();
 
     /**

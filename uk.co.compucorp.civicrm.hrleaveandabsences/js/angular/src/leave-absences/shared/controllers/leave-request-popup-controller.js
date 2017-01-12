@@ -277,7 +277,10 @@ define([
         vm.uiOptions.isAdmin = directiveOptions.leaveRequest != undefined;
 
         if (vm.uiOptions.isAdmin) {
-          vm.leaveRequest = directiveOptions.leaveRequest;
+          //get a clone
+          var clone = _.cloneDeep(directiveOptions.leaveRequest);
+          //vm.leaveRequest = directiveOptions.leaveRequest;
+          vm.leaveRequest = LeaveRequestInstance.init(clone, true);
         }
         else {
           // Create an empty leave request
@@ -507,7 +510,7 @@ define([
        * @return {Date} Javascript date
        */
       function convertDateFormatFromServer(date) {
-        return moment(date, serverDateFormat).toDate();
+        return moment(date, serverDateFormat).clone().toDate();
       }
 
       /**
@@ -649,6 +652,7 @@ define([
       function initDates() {
         initStatus();
         initDayTypes();
+
         if(vm.uiOptions.isAdmin) {
           vm.uiOptions.fromDate = convertDateFormatFromServer(vm.leaveRequest.from_date);
           vm.onDateChange(vm.uiOptions.fromDate, 'from');
@@ -662,7 +666,8 @@ define([
           vm.uiOptions.selectedFromType = getDateTypeFromValue(vm.leaveRequest.from_date_type);
           vm.uiOptions.selectedToType = getDateTypeFromValue(vm.leaveRequest.to_date_type);
         }
-        initBalanceChange();
+
+        //initBalanceChange();//resets dates?
       }
 
       function initBalanceChange() {
@@ -709,6 +714,7 @@ define([
         if(vm.uiOptions.isAdmin) {
           vm.leaveRequest.update()
             .then(function (result) {
+              $rootScope.$emit('LeaveRequest::updatedByManager', vm.leaveRequest);
               vm.error = undefined;
               // close the modal
               vm.ok();

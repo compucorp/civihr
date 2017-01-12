@@ -15,6 +15,7 @@
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
     'mocks/apis/public-holiday-api-mock',
+    'common/mocks/services/api/contact-mock',
     'leave-absences/shared/controllers/leave-request-popup-controller',
   ], function (_, moment, angular, optionGroupMock, mockData) {
     'use strict';
@@ -464,7 +465,7 @@
         });
 
         it('should allow to view staff details', function() {
-          
+
         });
 
         it('should allow to respond to leave request', function() {
