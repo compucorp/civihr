@@ -35,15 +35,15 @@ define([
     };
     vm.filters = {
       contactFilters: {
-        region: '',
-        department: '',
-        level_type: '',
-        location: ''
+        region: null,
+        department: null,
+        level_type: null,
+        location: null
       },
       leaveRequestFilters: {
-        selectedPeriod: "",
-        selectedAbsenceTypes: "",
-        leaveStatus: "",
+        selectedPeriod: null,
+        selectedAbsenceTypes: null,
+        leaveStatus: null,
         pending_requests: false
       }
     };
@@ -224,7 +224,7 @@ define([
       return {
         managed_by: vm.contactId,
         type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
-        status_id: (filterByStatus && filters.leaveStatus) ? filters.leaveStatus.value : null,
+        status_id: prepareStatusFilter(filterByStatus),
         from_date: {
           from: filters.selectedPeriod.start_date
         },
@@ -237,6 +237,28 @@ define([
             }) : ["user_contact_id"]
         }
       };
+    }
+
+    function prepareStatusFilter(filterByStatus) {
+      var filters = vm.filters.leaveRequestFilters,
+        statusFilter = [],
+        waitingApprovalID = vm.leaveRequestStatuses.find(function (data) {
+          return data.name === 'waiting_approval';
+        }).value;
+
+      if(filterByStatus && filters.leaveStatus && filters.leaveStatus.value) {
+        statusFilter.push(filters.leaveStatus.value);
+      }
+
+      if(filters.pending_requests && waitingApprovalID) {
+        statusFilter.push(waitingApprovalID);
+      }
+
+      if(statusFilter.length) {
+        return {
+          "IN": statusFilter
+        }
+      }
     }
 
     function contactFilters() {

@@ -66,7 +66,9 @@
       </div>
       <div class="checkbox">
         <label>
-          <input type="checkbox" ng-model="ctrl.filters.leaveRequestFilters.pending_requests"> Show pending requests
+          <input type="checkbox"
+                 ng-change = "ctrl.refresh()"
+                 ng-model="ctrl.filters.leaveRequestFilters.pending_requests"> Show pending requests
           only
         </label>
       </div>
