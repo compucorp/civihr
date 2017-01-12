@@ -2,6 +2,47 @@
  * Ensures that there is the same top padding regardless whether
  * the user can see the admin toolbar or not
  */
+@font-face {
+  font-family: 'icomoon';
+  src:url('../fonts/icomoon.eot?iqn065');
+  src:url('../fonts/icomoon.eot?#iefixiqn065') format('embedded-opentype'),
+  url('../fonts/icomoon.woff?iqn065') format('woff'),
+  url('../fonts/icomoon.ttf?iqn065') format('truetype'),
+  url('../fonts/icomoon.svg?iqn065#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  @font-face {
+    font-family: 'icomoon';
+    src: url('../fonts/icomoon.svg?iqn065#icomoon') format('svg');
+  }
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  font-family: 'icomoon';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-logo:before {
+  content: "\e600";
+}
+
+.icon-logo-full:before {
+  content: "\e601";
+}
+
 body:not(.toolbar-drawer) {
   padding-top: 30px;
 }
@@ -13,3 +54,4 @@ body:not(.toolbar-drawer) {
 #crm-main-content-wrapper #contactDetails #govID span {
   margin-right: 1%;
 }
+
