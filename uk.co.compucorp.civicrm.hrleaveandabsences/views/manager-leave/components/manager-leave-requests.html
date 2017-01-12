@@ -110,11 +110,11 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
+        <tr ng-repeat="lr in requests.leaveRequests">{{lr}}
           <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
+          <td>Vacation {{lr.type_id}}</td>
+          <td>15/9/2015 - 30/09/2015 {{lr.from_date}} - {{lr.to_date}}</td>
+          <td>More Information Required {{lr.status_id}}</td>
           <td class="text-center">
             <div class="btn-group">
               <button type="button"
@@ -125,127 +125,7 @@
                 <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
               </button>
               <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
+                <li><a href='#' leave-request-popup leave-request='lr' contact-id="203">Respond</a></li>
               </ul>
             </div>
           </td>

@@ -10,7 +10,8 @@ define([
 
       return {
         scope: {
-          contactId: '<'
+          contactId: '<',
+          leaveRequest: '<'
         },
         restrict: 'EA',
         link: function (scope, element) {
@@ -22,8 +23,11 @@ define([
               controller: 'LeaveRequestPopupCtrl',
               controllerAs: '$ctrl',
               resolve: {
-                contactId: function () {
-                  return scope.contactId
+                directiveOptions: function () {
+                  return {
+                    contactId: scope.contactId,
+                    leaveRequest: scope.leaveRequest
+                  }
                 },
                 //to set HR_settings DateFormat
                 format: ['DateFormat', function (DateFormat) {

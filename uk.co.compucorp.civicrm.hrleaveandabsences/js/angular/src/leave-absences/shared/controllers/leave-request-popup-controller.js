@@ -16,10 +16,10 @@ define([
 
   components.controller('LeaveRequestPopupCtrl', [
     '$log', '$q', '$rootScope', '$uibModalInstance', 'AbsencePeriod', 'AbsenceType',
-    'api.optionGroup', 'contactId', 'Calendar', 'Entitlement', 'HR_settings',
+    'api.optionGroup', 'directiveOptions', 'Calendar', 'Entitlement', 'HR_settings',
     'LeaveRequest', 'LeaveRequestInstance', 'PublicHoliday',
     function ($log, $q, $rootScope, $modalInstance, AbsencePeriod, AbsenceType,
-      OptionGroup, contactId, Calendar, Entitlement, HR_settings,
+      OptionGroup, directiveOptions, Calendar, Entitlement, HR_settings,
       LeaveRequest, LeaveRequestInstance, PublicHoliday
     ) {
       $log.debug('LeaveRequestPopupCtrl');
@@ -64,13 +64,16 @@ define([
         }
       };
       vm.uiOptions = {
-        isAdmin: false,
+        isAdmin: false, //when the dialog is opened by manager or admin
+        isEdit: false, //when the dialog is opened by the owner
         isChangeExpanded: false,
         multipleDays: true,
         showDatePickerFrom: false,
         showDatePickerTo: false,
         userDateFormat: HR_settings.DATE_FORMAT,
+        selectedStatus: undefined,
         showBalance: false,
+        statusLabel: '',
         datePickerOptions: {
           startingDay: 1,
           showWeeks: false
@@ -146,6 +149,14 @@ define([
       };
 
       /**
+       * Updates leave request to currently selected status
+       *
+       */
+      vm.onStatusChanged = function () {
+        vm.leaveRequest.status_id = vm.uiOptions.selectedStatus.value;
+      }
+
+      /**
        * Calculate change in balance, it updates local balance variables
        *
        * @return {Promise}
@@ -178,8 +189,13 @@ define([
        * @returns {Boolean}
        */
       vm.canSubmit = function () {
-        return vm.leaveRequest.from_date && vm.leaveRequest.to_date &&
+        var canSubmit = vm.leaveRequest.from_date && vm.leaveRequest.to_date &&
           vm.leaveRequest.to_date_type && vm.leaveRequest.from_date_type;
+
+        if(vm.uiOptions.isAdmin) {
+          canSubmit = canSubmit && vm.uiOptions.selectedStatus;
+        }
+        return canSubmit;
       };
 
       /**
@@ -250,11 +266,22 @@ define([
         vm.error = undefined;
       };
 
-      (function () {
-        // Create an empty leave request
-        vm.leaveRequest = LeaveRequestInstance.init({
-          contact_id: contactId //resolved from directive
-        }, false);
+      (function initController() {
+console.log('directiveOptions.leaveRequest', directiveOptions.leaveRequest);
+        vm.uiOptions.isAdmin = directiveOptions.leaveRequest != undefined;
+
+        if (vm.uiOptions.isAdmin) {
+          vm.leaveRequest = directiveOptions.leaveRequest;
+        }
+        else {
+          // Create an empty leave request
+          vm.leaveRequest = LeaveRequestInstance.init({
+            contact_id: directiveOptions.contactId //resolved from directive
+          }, false);
+        }
+
+        //check if viewed by manager
+        isManagedBy(directiveOptions.contactId);
 
         vm.loading.absenceTypes = true;
         AbsencePeriod.current()
@@ -265,10 +292,14 @@ define([
             return initAbsenceTypesAndEntitlements();
           })
           .then(function () {
+            initAbsenceType();
             vm.loading.absenceTypes = false;
           })
           .then(function () {
-            initDayTypesAndStatus();
+            return initDayTypesAndStatus();
+          })
+          .then(function () {
+            initDates();
           });
       })();
 
@@ -340,7 +371,7 @@ define([
 
             // And then for each of them get the remaining balance from the
             // entitlements linked to them
-            Entitlement.all({
+            return Entitlement.all({
               contact_id: vm.leaveRequest.contact_id,
               period_id: vm.period.id,
               type_id: { in: absenceTypesIds }
@@ -348,12 +379,6 @@ define([
               .then(function (entitlements) {
                 // create a list of absence types with a `balance` property
                 vm.absenceTypes = filterAbsenceTypes(absenceTypes, entitlements);
-
-                // Assign the first absence type to the leave request
-                vm.selectedAbsenceType = vm.absenceTypes[0];
-                vm.leaveRequest.type_id = vm.selectedAbsenceType.id;
-                // Init the `balance` object based on the first absence type
-                vm.balance.opening = vm.selectedAbsenceType.remainder;
               });
           });
       }
@@ -402,7 +427,6 @@ define([
             return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
               .then(function (optionValues) {
                 vm.leaveRequestStatuses = optionValues;
-                vm.leaveRequest.status_id = valueOfRequestStatus('waiting_approval');
               });
           });
       }
@@ -433,6 +457,35 @@ define([
       }
 
       /**
+       * Pick a specific leave request day type
+       *
+       * @param {string} value - The leave request day type value to match
+       * @return {object}
+       */
+      function getStatusFromValue(value) {
+        var collection = vm.leaveRequestStatuses,
+          key = 'value';
+        return _.find(collection, function (collectionItem) {
+          console.log(collectionItem[key], value);
+          return collectionItem[key] === value;
+        });
+      }
+
+      /**
+       * Pick a specific leave request day type
+       *
+       * @param {string} value - The leave request day type value to match
+       * @return {object}
+       */
+      function getDateTypeFromValue(value) {
+        var collection = vm.leaveRequestDayTypes,
+          key = 'value';
+        return _.find(collection, function (collectionItem) {
+          return collectionItem[key] === value;
+        });
+      }
+
+      /**
        * Converts given date to server format
        *
        * @param {Date} date
@@ -440,6 +493,16 @@ define([
        */
       function convertDateFormatToServer(date) {
         return moment(date).format(serverDateFormat);
+      }
+
+      /**
+       * Converts given date to javascript date as expected by uib-datepicker
+       *
+       * @param {Date} date
+       * @return {Date} Javascript date
+       */
+      function convertDateFormatFromServer(date) {
+        return moment(date, serverDateFormat).toDate();
       }
 
       /**
@@ -550,6 +613,83 @@ define([
       function canCalculateChange() {
         return vm.leaveRequest.from_date && vm.leaveRequest.to_date &&
           vm.leaveRequest.from_date_type && vm.leaveRequest.to_date_type;
+      }
+
+      function isManagedBy(managerContactId) {
+        vm.leaveRequest.roleOf({id : managerContactId})
+          .then(function (role) {
+            if(role === 'manager') {
+              vm.uiOptions.isAdmin = true;
+            }
+          });
+      }
+
+      function initAbsenceType() {
+        if(vm.uiOptions.isAdmin) {
+          vm.selectedAbsenceType = _.find(vm.absenceTypes, function (absenceType) {
+            return absenceType.id == vm.leaveRequest.type_id;
+          });
+        }
+        else{
+        // Assign the first absence type to the leave request
+          vm.selectedAbsenceType = vm.absenceTypes[0];
+        }
+
+        //vm.selectedAbsenceType = initAbsenceType();
+        vm.leaveRequest.type_id = vm.selectedAbsenceType.id;
+        // Init the `balance` object based on the first absence type
+        vm.balance.opening = vm.selectedAbsenceType.remainder;
+      }
+
+      function initDates() {
+        initStatus();
+        initDayTypes();
+        if(vm.uiOptions.isAdmin) {
+          vm.uiOptions.fromDate = convertDateFormatFromServer(vm.leaveRequest.from_date);
+          vm.onDateChange(vm.uiOptions.fromDate, 'from');
+          vm.uiOptions.toDate = convertDateFormatFromServer(vm.leaveRequest.to_date);
+          vm.onDateChange(vm.uiOptions.fromDate, 'to');
+        }
+      }
+
+      function initDayTypes() {
+        if(vm.uiOptions.isAdmin) {
+          vm.uiOptions.selectedFromType = getDateTypeFromValue(vm.leaveRequest.from_date_type);
+          vm.uiOptions.selectedToType = getDateTypeFromValue(vm.leaveRequest.to_date_type);
+        }
+        initBalanceChange();
+      }
+
+      function initBalanceChange() {
+        if(vm.uiOptions.isAdmin) {
+          vm.uiOptions.showBalance = true;
+          if (canCalculateChange()) {
+            vm.loading.calculateBalanceChange = true;
+            vm.calculateBalanceChange().then(function () {
+              vm.loading.calculateBalanceChange = false;
+            });
+          }
+        }
+      }
+
+      function initStatus() {
+        if(vm.uiOptions.isAdmin) {
+          vm.uiOptions.statusLabel = getStatusFromValue(vm.leaveRequest.status_id).label;
+          //waiting_approval is removed below so call the above before it
+          setStatusesForManager();
+          //vm.uiOptions.selectedStatus = getStatusFromValue(vm.leaveRequest.status_id);
+        }
+        else{
+          vm.leaveRequest.status_id = valueOfRequestStatus('waiting_approval');
+        }
+      }
+
+      function setStatusesForManager() {
+        if(vm.uiOptions.isAdmin) {
+          vm.leaveRequestStatuses = vm.leaveRequestStatuses.filter(function (status){
+            return status.name === 'approved' || status.name === 'more_information_requested' || status.name === 'cancelled';
+          });
+        }
       }
 
       return vm;

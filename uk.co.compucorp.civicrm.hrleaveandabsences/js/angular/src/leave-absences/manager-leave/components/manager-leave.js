@@ -14,6 +14,7 @@ define([
       $log.debug('Component: manager-leave');
 
       var vm = {};
+      vm.contactId = this.contactId;
 
       return vm;
     }]

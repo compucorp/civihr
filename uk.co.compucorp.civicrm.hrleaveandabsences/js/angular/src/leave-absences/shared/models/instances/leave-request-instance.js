@@ -175,7 +175,7 @@ define([
             deferred.resolve('owner');
           } else {
             LeaveRequestAPI.isManagedBy(this.id, contact.id)
-              .then(function (response) {
+              .then(function (response) {             
                 //TODO Implement check for Admin in MS5
                 if (!!response) {
                   deferred.resolve('manager');

@@ -4,6 +4,7 @@
     'common/moment',
     'common/angular',
     'mocks/data/option-group-mock-data',
+    'mocks/data/leave-request-data',
     'common/angularMocks',
     'leave-absences/shared/config',
     'common/mocks/services/hr-settings-mock',
@@ -15,7 +16,7 @@
     'mocks/apis/option-group-api-mock',
     'mocks/apis/public-holiday-api-mock',
     'leave-absences/shared/controllers/leave-request-popup-controller',
-  ], function (_, moment, angular, optionGroupMock) {
+  ], function (_, moment, angular, optionGroupMock, mockData) {
     'use strict';
 
     describe('LeaveRequestPopupCtrl', function () {
@@ -458,6 +459,18 @@
         });
       });
 
+      describe('when manager opens leave request popup', function() {
+        beforeEach(function() {
+        });
+
+        it('should allow to view staff details', function() {
+          
+        });
+
+        it('should allow to respond to leave request', function() {
+
+        });
+      });
       /**
        * Initialize the controller
        *
@@ -467,11 +480,19 @@
         $scope = $rootScope.$new();
         $q = $q;
 
+        var leaveRequest = LeaveRequestInstance.init(mockData.all().values[0]);
+
         $ctrl = $controller('LeaveRequestPopupCtrl', {
           $scope: $scope,
           $uibModalInstance: modalInstanceSpy,
-          contactId: CRM.vars.leaveAndAbsences.contactId
+          directiveOptions:{
+            managerContactId: '203',
+            leaveRequest: leaveRequest
+          }
         });
+
+        //$scope.staffContactId = 202;
+
         $scope.$digest();
       }
     });
