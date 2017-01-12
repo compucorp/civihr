@@ -583,7 +583,6 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       case 'HRJobPay-pay_scale':
       case 'HRJobPay-pay_currency':
       case 'HRJobContractRevision-change_reason':
-      case 'HRJobPension-pension_type':
       case 'HRJobDetails-contract_type':
       case 'HRJobHour-hours_type':
       case 'HRJobPay-pay_cycle':
@@ -623,14 +622,15 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
           $errorMessage = "{$this->_fields[$key]->_title} is not a valid date";
         }
         break;
+      case 'HRJobPension-pension_type':
+        $contactTypeMapping[$key] = 'pension_provider';
       case 'HRJobHealth-provider':
+        $contactTypeMapping[$key] = 'Health_Insurance_Provider';
       case 'HRJobHealth-provider_life_insurance':
-        $providerType = 'Health_Insurance_Provider';
-        if ($key == 'HRJobHealth-provider_life_insurance')  {
-          $providerType = 'Life_Insurance_Provider';
-        }
+        $contactTypeMapping[$key] = 'Life_Insurance_Provider';
+
         $convertedValue = NULL;
-        $result = CRM_Hrjobcontract_BAO_HRJobHealth::checkProvider($value, $providerType);
+        $result = CRM_Hrjobcontract_BAO_HRJobHealth::checkProvider($value, $contactTypeMapping[$key]);
         if ($result != 0)  {
           $convertedValue = $result;
         }
