@@ -2,6 +2,7 @@
   define([
     'common/angular',
     'mocks/data/option-group-mock-data',
+    'mocks/data/absence-type-data',
     'mocks/data/leave-request-data',
     'leave-absences/shared/config',
     'leave-absences/manager-leave/app',
@@ -9,7 +10,7 @@
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/leave-request-api-mock',
     'common/mocks/services/api/contact-mock'
-  ], function (angular, optionGroupMock, leaveRequestData) {
+  ], function (angular, optionGroupMock, absenceTypeData, leaveRequestData) {
     'use strict';
 
     describe('managerLeaveReport', function () {
@@ -72,8 +73,6 @@
         compileComponent();
       });
 
-
-
       it('is initialized', function () {
         expect($log.debug).toHaveBeenCalled();
       });
@@ -82,20 +81,6 @@
 
         it('the filter section is closed', function () {
           expect(controller.isFilterExpanded).toBe(false);
-        });
-
-        it('the filters are reset', function () {
-          expect(controller.filters).toEqual({
-            contactFilters: {
-              region: '',
-              department: '',
-              level_type: '',
-              location: ''
-            },
-            leaveRequestFilters: {
-              pending_requests: false
-            }
-          })
         });
 
         describe('pagination', function () {
@@ -186,35 +171,73 @@
           });
 
           it('leaveRequests have loaded', function () {
-            expect(controller.leaveRequests.list).toEqual(leaveRequestData.all().values);
+            expect(controller.leaveRequests.table.list).toEqual(leaveRequestData.all().values);
+            expect(controller.leaveRequests.filter.list).toEqual(leaveRequestData.all().values);
           });
         });
       });
 
       describe('pagination', function () {
-        //TODO create directive for this
 
-        it('next button increases the page no', function () {
+        describe('totalNoOfPages', function () {
 
+          var returnValue;
+
+          beforeEach(function () {
+            controller.leaveRequests.table.total = 20;
+            controller.pagination.size = 5;
+            returnValue = controller.totalNoOfPages();
+          });
+
+          it('returns correct number of pages', function () {
+            expect(returnValue).toBe(4);
+          });
         });
 
-        it('last button sets the page no the last', function () {
+        describe('nextPage', function () {
 
-        });
+          beforeEach(function () {
+            spyOn(controller, 'totalNoOfPages').and.returnValue(2);
+            spyOn(controller, 'refresh');
+          });
 
-        it('last button sets the page no the last', function () {
+          describe('current page is less than total page number', function () {
 
+            beforeEach(function () {
+              controller.pagination.page = 1;
+              controller.totalNoOfPages.and.returnValue(2);
+              controller.nextPage();
+            });
+
+            it('page no gets increased', function () {
+              expect(controller.pagination.page).toBe(2);
+            });
+
+            it('calls refresh', function () {
+              expect(controller.refresh).toHaveBeenCalledWith(2);
+            });
+          });
+
+          describe('current page is not less than total page number', function () {
+
+            beforeEach(function () {
+              controller.pagination.page = 3;
+              controller.totalNoOfPages.and.returnValue(3);
+              controller.nextPage();
+            });
+
+            it('does not increase page no', function () {
+              expect(controller.pagination.page).toBe(3);
+            });
+
+            it('calls refresh', function () {
+              expect(controller.refresh).not.toHaveBeenCalled();
+            });
+          });
         });
       });
 
-      describe('status type', function () {
-
-        it('sets active status type', function () {
-
-        });
-      });
-
-      describe('filters', function () {
+      xdescribe('filters', function () {
 
         it('staff member filter is set', function () {
 
@@ -238,6 +261,220 @@
 
         it('pending requests filter is set', function () {
 
+        });
+      });
+
+      describe('period label', function () {
+        var label, period;
+
+        describe('when the period is current', function () {
+          beforeEach(function () {
+            period = _(controller.absencePeriods).find(function (period) {
+              return period.current;
+            });
+            label = controller.labelPeriod(period);
+          });
+
+          it('labels it as such', function () {
+            expect(label).toBe('Current Period (' + period.title + ')');
+          });
+        });
+
+        describe('when the period is not current', function () {
+          beforeEach(function () {
+            period = _(controller.absencePeriods).filter(function (period) {
+              return !period.current;
+            }).sample();
+            label = controller.labelPeriod(period);
+          });
+
+          it('returns the title as it is', function () {
+            expect(label).toBe(period.title);
+          });
+        });
+      });
+
+      describe('getLeaveStatusByValue', function () {
+
+        var status,
+          returnValue;
+
+        beforeEach(function () {
+          status = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
+          returnValue = controller.getLeaveStatusByValue(status.value)
+        });
+
+        it('returns label of the status', function () {
+          expect(returnValue).toBe(status.label);
+        })
+      });
+
+      describe('getAbsenceTypesByID', function () {
+
+        var absence,
+          returnValue;
+
+        describe('when id is passed', function () {
+
+          beforeEach(function () {
+            absence = absenceTypeData.all().values[0];
+            returnValue = controller.getAbsenceTypesByID(absence.id)
+          });
+
+          it('returns title of the absence', function () {
+            expect(returnValue).toBe(absence.title);
+          })
+        });
+
+        describe('when id is not passed', function () {
+
+          beforeEach(function () {
+            returnValue = controller.getAbsenceTypesByID()
+          });
+
+          it('returns title of the absence', function () {
+            expect(returnValue).toBeUndefined();
+          })
+        });
+
+      });
+
+      describe('filterLeaveRequestByStatus', function () {
+
+        var returnValue;
+
+        describe('when status is blank', function () {
+
+          beforeEach(function () {
+            returnValue = controller.filterLeaveRequestByStatus('');
+          });
+
+          it('returns all data', function () {
+            expect(returnValue).toEqual(controller.leaveRequests.filter.list);
+          });
+        });
+
+        describe('when status is all', function () {
+
+          beforeEach(function () {
+            returnValue = controller.filterLeaveRequestByStatus({
+              name: 'all'
+            });
+          });
+
+          it('returns all data', function () {
+            expect(returnValue).toEqual(controller.leaveRequests.filter.list);
+          });
+        });
+
+        describe('for any other status', function () {
+
+          var status,
+            expectedValue;
+
+          beforeEach(function () {
+            status = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
+            returnValue = controller.filterLeaveRequestByStatus(status);
+            expectedValue = controller.leaveRequests.filter.list.filter(function (request) {
+              return request.status_id == status.value;
+            });
+          });
+
+          it('returns all data', function () {
+            expect(returnValue).toEqual(expectedValue);
+          });
+        });
+      });
+
+      describe('getNavBadge', function () {
+
+        var returnValue;
+
+        describe('when status is approved', function () {
+
+          beforeEach(function () {
+            returnValue = controller.getNavBadge('approved')
+          });
+
+          it('returns badge-success', function () {
+            expect(returnValue).toBe('badge-success');
+          })
+        });
+
+        describe('when status is rejected', function () {
+
+          beforeEach(function () {
+            returnValue = controller.getNavBadge('rejected')
+          });
+
+          it('returns badge-danger', function () {
+            expect(returnValue).toBe('badge-danger');
+          })
+        });
+
+        describe('when status is cancelled', function () {
+
+          beforeEach(function () {
+            returnValue = controller.getNavBadge('cancelled')
+          });
+
+          it('returns blank string', function () {
+            expect(returnValue).toBe('');
+          })
+        });
+
+        describe('when status is all', function () {
+
+          beforeEach(function () {
+            returnValue = controller.getNavBadge('all')
+          });
+
+          it('returns blank string', function () {
+            expect(returnValue).toBe('');
+          })
+        });
+
+        describe('when status is some other value', function () {
+
+          beforeEach(function () {
+            returnValue = controller.getNavBadge(jasmine.any(String))
+          });
+
+          it('returns blank string', function () {
+            expect(returnValue).toBe('badge-primary');
+          })
+        });
+      });
+
+      describe('refreshWithFilter', function () {
+
+        var mockStatus;
+
+        beforeEach(function () {
+          spyOn(controller, 'refresh');
+          mockStatus = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];;
+          controller.refreshWithFilter(mockStatus);
+        });
+
+        it('refreshes the data', function () {
+          expect(controller.refresh).toHaveBeenCalled();
+        });
+
+        it('sets the leaveStatus', function () {
+          expect(controller.filters.leaveRequestFilters.leaveStatus).toEqual(mockStatus);
+        });
+      });
+
+      describe('getUserNameByID', function () {
+
+        var returnValue;
+
+        beforeEach(function () {
+          returnValue = controller.getUserNameByID(controller.filteredUsers[0].id);
+        });
+
+        it('returns name of the user', function () {
+          expect(returnValue).toBe(controller.filteredUsers[0].display_name);
         });
       });
 

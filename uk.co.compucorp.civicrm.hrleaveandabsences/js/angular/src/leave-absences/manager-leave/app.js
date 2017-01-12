@@ -2,7 +2,6 @@ define([
   'common/angular',
   'common/angularBootstrap',
   'common/directives/loading',
-  // 'common/models/contact',
   'leave-absences/shared/ui-router',
   'leave-absences/manager-leave/modules/config',
   'leave-absences/manager-leave/components/manager-leave',
@@ -19,12 +18,13 @@ define([
     'ui.bootstrap',
     'common.models',
     'common.mocks',
+    'common.directives',
     'manager-leave.config',
     'manager-leave.components',
     'leave-absences.models',
   ])
   .run(['$log', function ($log) {
-    // $log.debug('app.run');
+    $log.debug('app.run');
   }]);
 
   return angular;

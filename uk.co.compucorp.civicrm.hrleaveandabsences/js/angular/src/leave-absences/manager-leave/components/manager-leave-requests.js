@@ -21,17 +21,18 @@ define([
 
     var vm = Object.create(this);
 
-    vm.isFilterExpanded = true;
+    vm.isFilterExpanded = false;
     vm.absencePeriods = [];
-
+    vm.filteredUsers = [];
     vm.absenceTypes = [];
-
-    vm.selectedLeaveStatus = "";
-
     vm.leaveRequests = {
-      list: []
+      table: {
+        list: []
+      },
+      filter: {
+        list: []
+      }
     };
-
     vm.filters = {
       contactFilters: {
         region: '',
@@ -42,13 +43,102 @@ define([
       leaveRequestFilters: {
         selectedPeriod: "",
         selectedAbsenceTypes: "",
+        leaveStatus: "",
         pending_requests: false
       }
     };
-
     vm.pagination = {
       page: 1,
       size: 7
+    };
+    vm.loading = {
+      content: true,
+      page: true
+    };
+
+    /**
+     * Labels the given period according to whether it's current or not
+     *
+     * @param  {AbsencePeriodInstance} period
+     * @return {string}
+     */
+    vm.labelPeriod = function (period) {
+      return period.current ? 'Current Period (' + period.title + ')' : period.title;
+    };
+
+    vm.getLeaveStatusByValue = function (id) {
+      if (vm.leaveRequestStatuses.length) {
+        return vm.leaveRequestStatuses.find(function (status) {
+          return status.value == id;
+        }).label;
+      }
+    };
+
+    vm.getAbsenceTypesByID = function (id) {
+      if (vm.absenceTypes && id) {
+        var type,
+          i;
+        for (i in vm.absenceTypes) {
+          type = vm.absenceTypes[i];
+          if (type.id == id) {
+            return type.title;
+          }
+        }
+      }
+    };
+
+    vm.filterLeaveRequestByStatus = function (status) {
+      if (status.name === 'all' || status === '') {
+        return vm.leaveRequests.filter.list;
+      }
+
+      return vm.leaveRequests.filter.list.filter(function (request) {
+        return request.status_id == status.value;
+      })
+    };
+
+    vm.getNavBadge = function (name) {
+      if (name === 'approved') {
+        return 'badge-success';
+      } else if (name === 'rejected') {
+        return 'badge-danger';
+      } else if (name === 'cancelled' || name === 'all') {
+        return '';
+      } else {
+        return 'badge-primary';
+      }
+    };
+
+    vm.range = function (n) {
+      if (n) {
+        return new Array(n);
+      }
+    };
+
+    vm.totalNoOfPages = function () {
+      return Math.ceil(vm.leaveRequests.table.total / vm.pagination.size);
+    };
+
+    vm.nextPage = function () {
+      if (vm.pagination.page < vm.totalNoOfPages()) {
+        vm.refresh(++vm.pagination.page);
+      }
+    };
+
+    vm.refresh = function (page) {
+      page = page ? page : 1;
+      loadAllRequests(page);
+    };
+
+    vm.refreshWithFilter = function (status) {
+      vm.filters.leaveRequestFilters.leaveStatus = status;
+      vm.refresh();
+    };
+
+    vm.getUserNameByID = function (id) {
+      return vm.filteredUsers.find(function (data) {
+        return data.contact_id == id;
+      }).display_name;
     };
 
     (function init() {
@@ -62,6 +152,7 @@ define([
         loadStatuses()
       ])
         .then(function () {
+          vm.loading.page = false;
           loadAllRequests(1);
         })
     })();
@@ -100,27 +191,40 @@ define([
      */
     function loadAllRequests(page) {
       vm.pagination.page = page;
+      vm.loading.content = true;
       Contact.all(contactFilters())
         .then(function (data) {
-          // console.log('data', data);
           vm.filteredUsers = data.list;
 
-          return LeaveRequest.all(leaveRequestFilters(), vm.pagination)
-            .then(function (leaveRequests) {
-              // console.log(leaveRequests);
-              vm.leaveRequests = leaveRequests;
-            });
-        });
-      // console.log("contactId", vm.contactId);
+          $q.all([
+            loadLeaveRequest('table'),
+            loadLeaveRequest('filter')
+          ])
+            .then(function () {
+              vm.loading.content = false;
+            })
 
+        });
     }
 
-    function leaveRequestFilters() {
+    function loadLeaveRequest(type) {
+      debugger;
+      var filterByStatus = type !== 'filter',
+        pagination = type === 'filter' ? {} : vm.pagination;
+      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination)
+        .then(function (leaveRequests) {
+          debugger;
+          vm.leaveRequests[type] = leaveRequests;
+        });
+    }
 
+    function leaveRequestFilters(filterByStatus) {
       var filters = vm.filters.leaveRequestFilters;
+
       return {
         managed_by: vm.contactId,
         type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
+        status_id: (filterByStatus && filters.leaveStatus) ? filters.leaveStatus.value : null,
         from_date: {
           from: filters.selectedPeriod.start_date
         },
@@ -128,15 +232,16 @@ define([
           to: filters.selectedPeriod.end_date
         },
         contact_id: {
-            "IN": vm.filteredUsers.length ? vm.filteredUsers.map(function (data) {
+          "IN": vm.filteredUsers.length ? vm.filteredUsers.map(function (data) {
               return data.contact_id;
             }) : ["user_contact_id"]
-          }
+        }
       };
     }
 
     function contactFilters() {
       var filters = vm.filters.contactFilters;
+
       return {
         region: filters.region ? filters.region.id : null,
         department: filters.department ? filters.department.id : null,
@@ -153,14 +258,12 @@ define([
             label: 'All'
           });
           vm.leaveRequestStatuses = statuses;
-          // console.log('Status', vm.leaveRequestStatuses)
         });
     }
 
     function loadRegions() {
       return OptionGroup.valuesOf('hrjc_region')
         .then(function (regions) {
-          // console.log('regions', regions);
           vm.regions = regions;
         });
     }
@@ -168,7 +271,6 @@ define([
     function loadDepartments() {
       return OptionGroup.valuesOf('hrjc_department')
         .then(function (departments) {
-          // console.log('departments', departments);
           vm.departments = departments;
         });
     }
@@ -176,7 +278,6 @@ define([
     function loadLocations() {
       return OptionGroup.valuesOf('hrjc_location')
         .then(function (locations) {
-          // console.log('locations', locations);
           vm.locations = locations;
         });
     }
@@ -184,73 +285,9 @@ define([
     function loadLevelTypes() {
       return OptionGroup.valuesOf('hrjc_level_type')
         .then(function (levels) {
-          // console.log('levels', levels);
           vm.levelTypes = levels;
         });
     }
-
-    /**
-     * Labels the given period according to whether it's current or not
-     *
-     * @param  {AbsencePeriodInstance} period
-     * @return {string}
-     */
-    vm.labelPeriod = function (period) {
-      return period.current ? 'Current Period (' + period.title + ')' : period.title;
-    };
-
-    vm.getLeaveStatusByID = function (id) {
-      if (vm.leaveRequestStatuses.length) {
-        return vm.leaveRequestStatuses.find(function (status) {
-          return status.value == id;
-        }).label;
-      }
-    };
-
-    vm.getAbsenceTypesByID = function (id) {
-      if (vm.absenceTypes && id) {
-        var type,
-          i;
-        for (i in vm.absenceTypes) {
-          type = vm.absenceTypes[i];
-          if (type.id == id) {
-            return type.title;
-          }
-        }
-      }
-    };
-
-    vm.filterLeaveRequestByStatus = function (status) {
-      if (status.name === 'all') {
-        return vm.leaveRequests.list;
-      }
-
-      return vm.leaveRequests.list.filter(function (request) {
-        return request.status_id == status.value;
-      })
-    };
-
-    vm.getNavBadge = function (name) {
-      if (name === 'approved') {
-        return 'badge-success'
-      } else if (name === 'rejected') {
-        return 'badge-danger'
-      } else if (name === 'cancelled' || name === 'all') {
-        return ''
-      } else {
-        return 'badge-primary'
-      }
-    };
-
-    vm.range = function (n) {
-      if (n) {
-        return new Array(Math.ceil(n));
-      }
-    };
-
-    vm.refresh = function () {
-      loadAllRequests(1);
-    };
 
     return vm;
   }

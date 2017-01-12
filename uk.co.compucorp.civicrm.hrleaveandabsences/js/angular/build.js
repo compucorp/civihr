@@ -4,6 +4,8 @@
   wrapShim: true,
   modules: [{
     name: 'my-leave'
+  }, {
+    name: 'manager-leave'
   }],
   mainConfigFile: 'src/leave-absences/shared/config.js',
   paths: {
