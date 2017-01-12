@@ -1288,6 +1288,91 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(-3, $expirationRecord->amount);
   }
 
+  public function testGetLeavePeriodEntitlementCanReturnThePeriodEntitlementWhenTheSourceTypeIsEntitlement() {
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => 1,
+      'type_id' => 1,
+    ]);
+
+    $balanceChange = LeaveBalanceChangeFabricator::fabricate([
+      'source_id' => $periodEntitlement->id,
+      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
+      'amount' => 10
+    ]);
+
+    $balanceChangePeriodEntitlement = $balanceChange->getLeavePeriodEntitlement();
+
+    $this->assertInstanceOf(LeavePeriodEntitlement::class, $balanceChangePeriodEntitlement);
+    $this->assertEquals($balanceChangePeriodEntitlement->id, $periodEntitlement->id);
+  }
+
+  public function testGetLeavePeriodEntitlementCanReturnThePeriodEntitlementWhenTheSourceTypeIsToilRequest() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $period->id,
+      'type_id' => 1,
+    ]);
+
+    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'toil_to_accrue' => 1,
+      'duration' => 200,
+      'expiry_date' => CRM_Utils_Date::processDate('2016-01-30'),
+    ]);
+
+    $balanceChange = $this->findToilRequestBalanceChange($toilRequest->id);
+
+    $balanceChangePeriodEntitlement = $balanceChange->getLeavePeriodEntitlement();
+
+    $this->assertInstanceOf(LeavePeriodEntitlement::class, $balanceChangePeriodEntitlement);
+    $this->assertEquals($balanceChangePeriodEntitlement->id, $periodEntitlement->id);
+  }
+
+  public function testGetLeavePeriodEntitlementCanReturnThePeriodEntitlementWhenTheSourceTypeLeaveRequestDay() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $period->id,
+      'type_id' => 1,
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ], true);
+
+    $balanceChange = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest)[0];
+
+    $balanceChangePeriodEntitlement = $balanceChange->getLeavePeriodEntitlement();
+
+    $this->assertInstanceOf(LeavePeriodEntitlement::class, $balanceChangePeriodEntitlement);
+    $this->assertEquals($balanceChangePeriodEntitlement->id, $periodEntitlement->id);
+  }
+
+  public function testGetLeavePeriodEntitlementThrowsAnErrorIfTheSourceTypeIsUnknown() {
+    $balanceChange = new LeaveBalanceChange();
+    $sourceType = uniqid('bla', true);
+    $balanceChange->source_type = $sourceType;
+
+    $this->setExpectedException(RuntimeException::class, "'{$sourceType}' is not a valid Balance Change source type");
+
+    $balanceChange->getLeavePeriodEntitlement();
+  }
   public function testCreateExpirationRecordsDoesNotCreateRecordsForBalanceChangesThatNeverExpire() {
     // A Brought Forward without an expiry date will never expire
     $this->createBroughtForwardBalanceChange(1, 5);

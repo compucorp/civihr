@@ -17,7 +17,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *
    * @param array $params key-value pairs
    *
-   * @return CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange|NULL
+   * @return CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange|NULL
    */
   public static function create($params) {
     $entityName = 'LeaveBalanceChange';
@@ -487,7 +487,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     $balanceChange->amount = (float)$balanceChange->amount;
 
-    $entitlement = LeavePeriodEntitlement::findById($balanceChange->source_id);
+    $entitlement = $balanceChange->getLeavePeriodEntitlement();
     $expiredAmount = self::getLeaveRequestBalanceForEntitlement(
       $entitlement,
       $approvedStatuses,
@@ -498,6 +498,62 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     // Since the the Leave Request Balance is negative, when we add it
     // to the amount we're actually subtracting the value
     return $balanceChange->amount + $expiredAmount;
+  }
+
+  /**
+   * Returns the LeavePeriodEntitlement of this LeaveBalanceChange.
+   *
+   * If the source type is entitlement, then we return the LeavePeriodEntitlement
+   * with the same id as the source_id. If source type is toil_request, then we
+   * return the LeavePeriodEntitlement for the TOILRequest associated LeaveRequest.
+   * Finally, if it's leave_request_day, then we return the
+   * LeavePeriodEntitlement associated with the LeaveRequestDate associated
+   * LeaveRequest.
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement
+   *
+   * @throws \RuntimeException
+   */
+  public function getLeavePeriodEntitlement() {
+    switch ($this->source_type) {
+      case self::SOURCE_ENTITLEMENT:
+        return LeavePeriodEntitlement::findById($this->source_id);
+
+      case self::SOURCE_TOIL_REQUEST:
+        $leaveRequest = $this->getTOILRequestLeaveRequest($this->source_id);
+        return LeavePeriodEntitlement::getForLeaveRequest($leaveRequest);
+
+      case self::SOURCE_LEAVE_REQUEST_DAY:
+        $leaveRequest = $this->getLeaveRequestDateLeaveRequest($this->source_id);
+        return LeavePeriodEntitlement::getForLeaveRequest($leaveRequest);
+
+      default:
+        throw new RuntimeException("'{$this->source_type}' is not a valid Balance Change source type");
+    }
+  }
+
+  /**
+   * Returns the LeaveRequest associated with TOILRequest of the given ID
+   *
+   * @param int $toilRequestID
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
+   */
+  private function getTOILRequestLeaveRequest($toilRequestID) {
+    $toilRequest = TOILRequest::findById($toilRequestID);
+    return LeaveRequest::findById($toilRequest->leave_request_id);
+  }
+
+  /**
+   * Returns the LeaveRequest associated with LeaveRequestDate of the given ID
+   *
+   * @param int $leaveRequestDateID
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
+   */
+  private function getLeaveRequestDateLeaveRequest($leaveRequestDateID) {
+    $leaveRequestDate = LeaveRequestDate::findById($leaveRequestDateID);
+    return LeaveRequest::findById($leaveRequestDate->leave_request_id);
   }
 
   /**
