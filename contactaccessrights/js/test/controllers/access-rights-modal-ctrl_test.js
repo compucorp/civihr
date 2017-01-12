@@ -223,6 +223,31 @@ define([
           });
         });
 
+        describe("when location changes", function () {
+          it("cannot submit without change", function () {
+            expect(ctrl.canSubmit).toBe(false);
+          });
+
+          it("can submit when location and region changes", function () {
+
+            ctrl.selectedData.locations.push({
+              name: "Home",
+              label: "Home"
+            });
+
+            ctrl.selectedData.regions.push({
+              name: "Home",
+              label: "Home"
+            });
+
+            ctrl.selection();
+
+            expect(ctrl.canSubmit).toBe(true);
+          });
+
+
+        });
+
         describe('prevent multiple save', function () {
           beforeEach(function () {
             ctrl.submit();
