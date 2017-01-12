@@ -21,7 +21,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
           LeaveBalanceChange::create([
             'source_id' => $date->id,
             'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
-            'amount' => $balanceChange['amount'],
+            'amount' => $balanceChange['amount'] * -1,
             'type_id' => $balanceChangeTypes['debit']
           ]);
         }

@@ -35,16 +35,16 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'contact_id' => $contact['id'],
       'status_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
     ], false);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // Since the 40 hours work pattern was used, and it this is a week long
-    // leave request, the balance will be 5 (for the 5 working days)
-    $this->assertEquals(5, $balance);
+    // leave request, the balance will be -5 (for the 5 working days)
+    $this->assertEquals(-5, $balance);
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
     // Even though the balance is 5, we must have 7 balance changes, one for
@@ -64,6 +64,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestService = new LeaveRequestService(new LeaveBalanceChangeService());
 
+    // a 7 days leave request, from friday to thursday
     $params = [
       'type_id' => 1,
       'contact_id' => $contact['id'],
@@ -74,13 +75,12 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
     ];
 
-    // a 7 days leave request, from monday to sunday
     $leaveRequest = $leaveRequestService->create($params, false);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // Since the 40 hours work pattern was used, and it this is a week long
     // leave request, the balance will be 5 (for the 5 working days)
-    $this->assertEquals(5, $balance);
+    $this->assertEquals(-5, $balance);
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
     // Even though the balance is 5, we must have 7 balance changes, one for
@@ -94,7 +94,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // 5 from before + 2 (from the 2 new working days)
-    $this->assertEquals(7, $balance);
+    $this->assertEquals(-7, $balance);
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
     // 7 from before + 4 from the new period

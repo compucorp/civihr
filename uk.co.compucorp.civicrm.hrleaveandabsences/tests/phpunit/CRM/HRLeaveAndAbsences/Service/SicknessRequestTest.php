@@ -38,14 +38,14 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
 
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason', 'validate'));
 
-    // a 7 days request, from friday to thursday
+    // a 9 days request, from thursday to friday next week
     $sicknessRequest = $service->create([
       'type_id' => 1,
       'contact_id' => $contact['id'],
       'status_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date' => CRM_Utils_Date::processDate('2016-02-11'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'to_date' => CRM_Utils_Date::processDate('2016-02-19'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'reason' => $sicknessReasons['accident']
     ], false);
@@ -53,14 +53,14 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
     $leaveRequest = LeaveRequest::findById($sicknessRequest->leave_request_id);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
-    // Since the 40 hours work pattern was used, and it this is a week long
-    // leave request, the balance will be 5 (for the 5 working days)
-    $this->assertEquals(5, $balance);
+    // Since the 40 hours work pattern was used and there are 7 working days during
+    // the 9 days period of the requests, the balance will be -7
+    $this->assertEquals(-7, $balance);
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
-    // Even though the balance is 5, we must have 7 balance changes, one for
+    // Even though the balance is -7, we must have 9 balance changes, one for
     // each date
-    $this->assertCount(7, $balanceChanges);
+    $this->assertCount(9, $balanceChanges);
   }
 
   public function testCreateDoesNotDuplicateLeaveBalanceChangesOnUpdate() {
@@ -92,18 +92,18 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
       'reason' => $sicknessReasons['accident']
     ];
 
-    // a 7 days leave request, from monday to sunday
+    // a 7 days leave request, from friday to thursday
     $sicknessRequest = $service->create($params, false);
 
     $leaveRequest = LeaveRequest::findById($sicknessRequest->leave_request_id);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // Since the 40 hours work pattern was used, and it this is a week long
-    // leave request, the balance will be 5 (for the 5 working days)
-    $this->assertEquals(5, $balance);
+    // leave request, the balance will be -5 (for the 5 working days)
+    $this->assertEquals(-5, $balance);
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
-    // Even though the balance is 5, we must have 7 balance changes, one for
+    // Even though the balance is -5, we must have 7 balance changes, one for
     // each date
     $this->assertCount(7, $balanceChanges);
 
@@ -116,8 +116,8 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
     $this->assertEquals($leaveRequest->id, $sicknessRequest->leave_request_id);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
-    // 5 from before + 2 (from the 2 new working days)
-    $this->assertEquals(7, $balance);
+    // -5 from before - 2 (from the 2 new working days)
+    $this->assertEquals(-7, $balance);
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
     // 7 from before + 4 from the new period
