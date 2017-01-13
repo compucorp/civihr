@@ -298,17 +298,14 @@ define([
             vm.period = apInstance;
           })
           .then(function () {
-            return initAbsenceTypesAndEntitlements();
+            return $q.all([initAbsenceTypesAndEntitlements(), initDayTypesAndStatus()]);
           })
           .then(function () {
             initAbsenceType();
-            vm.loading.absenceTypes = false;
-          })
-          .then(function () {
-            return initDayTypesAndStatus();
-          })
-          .then(function () {
             initDates();
+          })
+          .then(function () {
+            vm.loading.absenceTypes = false;
           });
       })();
 
