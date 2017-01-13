@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRComments</base>
+  <class>Comment</class>
+  <name>civicrm_hrcomments_comment</name>
+  <comment>Comments</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique Comment ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>entity_name</name>
+    <type>varchar</type>
+    <length>50</length>
+    <required>true</required>
+    <comment>The Entity name associated with the comment</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>entity_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>The Entity ID associated with the comment</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>text</name>
+    <type>text</type>
+    <required>true</required>
+    <comment>The comment field</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to the contact who made the comment</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>created_at</name>
+    <type>datetime</type>
+    <required>true</required>
+    <comment>The date and time the comment was added</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>is_deleted</name>
+    <type>boolean</type>
+    <default>0</default>
+    <comment>Whether this comment has been deleted or not</comment>
+    <add>4.4</add>
+  </field>
+
+  <!-- Since these are not real FKs, it's important to have an index for these field for a better performance in SQL JOINs -->
+  <index>
+    <name>index_entity_id</name>
+    <fieldName>entity_id</fieldName>
+    <fieldName>entity_name</fieldName>
+    <add>4.4</add>
+  </index>
+
+</table>

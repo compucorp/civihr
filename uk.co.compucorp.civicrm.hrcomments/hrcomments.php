@@ -134,31 +134,13 @@ function hrcomments_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 }
 
 /**
- * Functions below this ship commented out. Uncomment as required.
- *
+ * Implementation of hook_civicrm_entityTypes
+ */
+function hrcomments_civicrm_entityTypes(&$entityTypes) {
+  $entityTypes[] = [
+    'name'  => 'Comment',
+    'class' => 'CRM_HRComments_DAO_Comment',
+    'table' => 'civicrm_hrcomments_comment',
+  ];
+}
 
-/**
- * Implements hook_civicrm_preProcess().
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_preProcess
- *
-function hrcomments_civicrm_preProcess($formName, &$form) {
-
-} // */
-
-/**
- * Implements hook_civicrm_navigationMenu().
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
- *
-function hrcomments_civicrm_navigationMenu(&$menu) {
-  _hrcomments_civix_insert_navigation_menu($menu, NULL, array(
-    'label' => ts('The Page', array('domain' => 'uk.co.compucorp.civicrm.hrcomments')),
-    'name' => 'the_page',
-    'url' => 'civicrm/the-page',
-    'permission' => 'access CiviReport,access CiviContribute',
-    'operator' => 'OR',
-    'separator' => 0,
-  ));
-  _hrcomments_civix_navigationMenu($menu);
-} // */
