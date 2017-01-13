@@ -295,7 +295,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
      */
     private function getLocationOptions() {
         if(empty($this->locationOptions)) {
-            $this->locationOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'location');
+            $this->locationOptions = $this->getOptionsWithValueAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'location');
         }
 
         return $this->locationOptions;
@@ -306,7 +306,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
      */
     private function getRegionOptions() {
         if(empty($this->regionOptions)) {
-            $this->regionOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'region');
+            $this->regionOptions = $this->getOptionsWithValueAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'region');
         }
 
         return $this->regionOptions;
@@ -317,7 +317,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
      */
     private function getDepartmentOptions() {
         if(empty($this->departmentOptions)) {
-            $this->departmentOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'department');
+            $this->departmentOptions = $this->getOptionsWithValueAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'department');
         }
 
         return $this->departmentOptions;
@@ -328,14 +328,14 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
      */
     private function getLevelTypeOptions() {
         if(empty($this->levelTypeOptions)) {
-            $this->levelTypeOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'level_type');
+            $this->levelTypeOptions = $this->getOptionsWithValueAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'level_type');
         }
 
         return $this->levelTypeOptions;
     }
 
-    private function getOptionsWithIDAsKeyFor($daoName, $field) {
-        return CRM_Core_PseudoConstant::get($daoName, $field, array('keyColumn' => 'id'));
+    private function getOptionsWithValueAsKeyFor($daoName, $field) {
+        return CRM_Core_PseudoConstant::get($daoName, $field, array('keyColumn' => 'value'));
     }
 
     private function buildMultiValueClause(&$query, $value, $options, $fieldTitle, $grouping, $whereField) {
@@ -349,7 +349,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         }
         $op = 'IN';
         $query->_qill[$grouping][] = "Job Role $fieldTitle IN " . implode(' or ', $qillValues);
-        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause($whereField, $op, $value, "Integer");
+        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause($whereField, $op, $value, "String");
         $query->_tables['civicrm_hrjobroles'] = $query->_whereTables['civicrm_hrjobroles'] = 1;
     }
 
