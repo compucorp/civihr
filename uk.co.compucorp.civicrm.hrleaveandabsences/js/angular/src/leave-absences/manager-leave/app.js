@@ -15,6 +15,7 @@ define([
     'ngResource',
     'ngAnimate',
     'ui.router',
+    'ui.select',
     'ui.bootstrap',
     'common.models',
     'common.mocks',
