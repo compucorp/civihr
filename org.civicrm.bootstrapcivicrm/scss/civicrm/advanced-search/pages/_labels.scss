@@ -1,3 +1,7 @@
+label {
+  font-weight: normal !important;
+}
+
 #{$basic-criteria} {
   input[type='checkbox'],
   input[type='radio'] {
@@ -25,7 +29,6 @@
     margin-right: 15px;
     display: flex;
     align-items: center;
-    height: 45px;
   }
 
   label:first-of-type {
@@ -43,11 +46,6 @@
 
   .crm-field-wrapper {
     clear: left;
-
-    > div:not(.select2-container):first-of-type,
-    .postal_code-wrapper {
-      @extend label;
-    }
   }
 
   .crm-field-wrapper > div:not(:first-of-type) {
@@ -88,31 +86,22 @@
 }
 
 #{$search-settings} {
-  label {
-    float: left;
-    line-height: 20px;
-    margin-right: 10px;
-    display: flex;
-    align-items: center;
-    height: 45px;
-  }
-
-  input[type='checkbox'],
-  input[type='radio'] {
-    height: 45px;
-  }
-
   td {
     width: 30% !important;
 
     &:nth-child(1) {
       margin-right: 35px;
+      max-width: 130px;
     }
 
-    .helpicon::before {
-      position: relative;
-      top: 15px;
-      left: initial;
+    .helpicon {
+      right: 0;
+      top: 8px;
+
+      &::before {
+        position: relative;
+        left: initial;
+      }
     }
   }
 }
@@ -122,10 +111,6 @@
     display: flex;
     flex-flow: row wrap;
     align-items: center;
-
-    label {
-      flex: 1 1 8vw;
-    }
 
     .helpicon {
       padding-right: 10px;
