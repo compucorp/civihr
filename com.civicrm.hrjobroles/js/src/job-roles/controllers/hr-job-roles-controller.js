@@ -22,11 +22,7 @@ define([
 
       $scope.present_job_roles = [];
       $scope.past_job_roles = [];
-      $scope.templateLoaded = false;
-
-      $scope.loaded = function(){
-        $scope.templateLoaded = true;
-      }
+      $scope.job_roles_loaded = false;
 
       $scope.dpOpen = function ($event) {
         $event.preventDefault();
@@ -937,6 +933,7 @@ define([
 
           job_roles.present_job_roles = [];
           job_roles.past_job_roles = [];
+          $scope.job_roles_loaded = true;
 
           data.values.forEach(function (object_data) {
             var todaysDate = moment().startOf('day');
