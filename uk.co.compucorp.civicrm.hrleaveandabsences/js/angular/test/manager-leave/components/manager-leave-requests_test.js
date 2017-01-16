@@ -237,33 +237,6 @@
         });
       });
 
-      xdescribe('filters', function () {
-
-        it('staff member filter is set', function () {
-
-        });
-
-        it('region filter is set', function () {
-
-        });
-
-        it('department filter is set', function () {
-
-        });
-
-        it('level type filter is set', function () {
-
-        });
-
-        it('location filter is set', function () {
-
-        });
-
-        it('pending requests filter is set', function () {
-
-        });
-      });
-
       describe('period label', function () {
         var label, period;
 
@@ -452,7 +425,8 @@
 
         beforeEach(function () {
           spyOn(controller, 'refresh');
-          mockStatus = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];;
+          mockStatus = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
+          ;
           controller.refreshWithFilter(mockStatus);
         });
 
@@ -475,6 +449,444 @@
 
         it('returns name of the user', function () {
           expect(returnValue).toBe(controller.filteredUsers[0].display_name);
+        });
+      });
+
+      describe('refresh', function () {
+
+        describe('page no', function () {
+
+          describe('when no page no is sent', function () {
+
+            beforeEach(function () {
+              controller.refresh();
+            });
+
+            it('page no is set to 1', function () {
+              expect(controller.pagination.page).toBe(1);
+            });
+          });
+
+          describe('when page no is sent', function () {
+
+            var pageNo = 5;
+            beforeEach(function () {
+              controller.refresh(pageNo);
+            });
+
+            it('page no is set to 1', function () {
+              expect(controller.pagination.page).toBe(pageNo);
+            });
+          });
+        });
+
+        describe('content loading', function () {
+
+          beforeEach(function () {
+            controller.refresh();
+          });
+
+          it('shows the content loading', function () {
+            expect(controller.loading.content).toBe(true);
+          });
+        });
+
+        describe('contactFilters', function () {
+
+          describe('region', function () {
+
+            describe('when region filter has value', function () {
+
+              var mockRegion = {
+                value: 'mockvalue'
+              };
+
+              beforeEach(function () {
+                controller.filters.contactFilters.region = mockRegion;
+                controller.refresh();
+              });
+
+              it('ContactAPI gets called with region value', function () {
+                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  region: mockRegion.value
+                }))
+              });
+            });
+
+            describe('when region filter has no value', function () {
+
+              beforeEach(function () {
+                controller.filters.contactFilters.region = null;
+                controller.refresh();
+              });
+
+              it('ContactAPI gets called with null', function () {
+                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  region: null
+                }))
+              });
+            });
+          });
+
+          describe('department', function () {
+
+            describe('when department filter has value', function () {
+
+              var mockDepartment = {
+                value: 'mockvalue'
+              };
+
+              beforeEach(function () {
+                controller.filters.contactFilters.department = mockDepartment;
+                controller.refresh();
+              });
+
+              it('ContactAPI gets called with department value', function () {
+                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  department: mockDepartment.value
+                }))
+              });
+            });
+
+            describe('when department filter has no value', function () {
+
+              beforeEach(function () {
+                controller.filters.contactFilters.department = null;
+                controller.refresh();
+              });
+
+              it('ContactAPI gets called with null', function () {
+                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  department: null
+                }))
+              });
+            });
+          });
+
+          describe('location', function () {
+
+            describe('when location filter has value', function () {
+
+              var mockLocation = {
+                value: 'mockvalue'
+              };
+
+              beforeEach(function () {
+                controller.filters.contactFilters.location = mockLocation;
+                controller.refresh();
+              });
+
+              it('ContactAPI gets called with location value', function () {
+                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  location: mockLocation.value
+                }))
+              });
+            });
+
+            describe('when location filter has no value', function () {
+
+              beforeEach(function () {
+                controller.filters.contactFilters.location = null;
+                controller.refresh();
+              });
+
+              it('ContactAPI gets called with null', function () {
+                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  location: null
+                }))
+              });
+            });
+          });
+
+          describe('level_type', function () {
+
+            describe('when level_type filter is an empty array', function () {
+
+              beforeEach(function () {
+                controller.filters.contactFilters.level_type = [];
+                controller.refresh();
+              });
+
+              it('ContactAPI gets called with null', function () {
+                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  level_type: null
+                }))
+              });
+            });
+
+            describe('when level_type filter is not empty', function () {
+
+              var mockLevelType = [{
+                value: 'mockvalue'
+              }];
+
+              beforeEach(function () {
+                controller.filters.contactFilters.level_type = mockLevelType;
+                controller.refresh();
+              });
+
+              it('ContactAPI gets called with level types', function () {
+                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  level_type: {
+                    "IN": ['mockvalue']
+                  }
+                }))
+              });
+            });
+          });
+        });
+
+        describe('leaveRequestFilters', function () {
+
+          var promise,
+            defer;
+          beforeEach(function () {
+            defer = $q.defer();
+            spyOn(LeaveRequest, 'all').and.callThrough();
+            spyOn(controller, 'getUserNameByID');
+            Contact.all.and.returnValue(defer.promise);
+            promise = defer.promise;
+          });
+
+          afterEach(function () {
+            $rootScope.$apply();
+          });
+
+          describe('managed_by', function () {
+
+            beforeEach(function () {
+              controller.refresh();
+              defer.resolve({
+                list: []
+              });
+            });
+
+            it('filtered by managed_by', function () {
+              promise.then(function () {
+                expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  managed_by: 202
+                }), jasmine.any(Object));
+              });
+            })
+          });
+
+          describe('type_id', function () {
+
+            describe('when selectedAbsenceTypes has value', function () {
+
+              var mockAbsenceType = {
+                id: 'mockedvalue'
+              };
+
+              beforeEach(function () {
+                controller.filters.leaveRequestFilters.selectedAbsenceTypes = mockAbsenceType;
+                controller.refresh();
+                defer.resolve({
+                  list: []
+                });
+              });
+
+              it('filtered by type_id', function () {
+                promise.then(function () {
+                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    type_id: 'mockedvalue'
+                  }), jasmine.any(Object));
+                });
+              });
+            });
+
+            describe('when selectedAbsenceTypes has no value', function () {
+
+              var mockAbsenceType = null;
+
+              beforeEach(function () {
+                controller.filters.leaveRequestFilters.selectedAbsenceTypes = mockAbsenceType;
+                controller.refresh();
+                defer.resolve({
+                  list: []
+                });
+              });
+
+              it('not filtered by type_id', function () {
+                promise.then(function () {
+                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    type_id: null
+                  }), jasmine.any(Object));
+                });
+              });
+            });
+          });
+
+          describe('from_date', function () {
+
+            var mockFromDate = new Date();
+
+            beforeEach(function () {
+              controller.filters.leaveRequestFilters.selectedPeriod.start_date = mockFromDate;
+              controller.refresh();
+              defer.resolve({
+                list: []
+              });
+            });
+
+            it('filtered by from_date', function () {
+              promise.then(function () {
+                expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  from_date: {
+                    from: mockFromDate
+                  }
+                }), jasmine.any(Object));
+              });
+            });
+          });
+
+          describe('to_date', function () {
+
+            var mockToDate = new Date();
+
+            beforeEach(function () {
+              controller.filters.leaveRequestFilters.selectedPeriod.end_date = mockToDate;
+              controller.refresh();
+              defer.resolve({
+                list: []
+              });
+            });
+
+            it('filtered by to_date', function () {
+              promise.then(function () {
+                expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  to_date: {
+                    to: mockToDate
+                  }
+                }), jasmine.any(Object));
+              });
+            });
+          });
+
+          describe('contact_id', function () {
+
+            describe('when selectedUsers has value', function () {
+
+              var mockUser = {
+                contact_id: '202'
+              };
+
+              beforeEach(function () {
+                controller.filters.leaveRequestFilters.selectedUsers = mockUser;
+                controller.refresh();
+                defer.resolve({
+                  list: []
+                });
+              });
+
+              it('filtered by contact_id', function () {
+                promise.then(function () {
+                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    contact_id: mockUser.contact_id
+                  }), jasmine.any(Object));
+                });
+              });
+            });
+
+            describe('when selectedUsers is null and filteredUsers has value', function () {
+
+              var mockUsers = [{
+                contact_id: '202'
+              }];
+
+              beforeEach(function () {
+                controller.filters.leaveRequestFilters.selectedUsers = null;
+                controller.refresh();
+                defer.resolve({
+                  list: mockUsers
+                });
+              });
+
+              it('filtered by filteredUsers', function () {
+                promise.then(function () {
+                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    contact_id: {
+                      "IN": [mockUsers[0].contact_id]
+                    }
+                  }), jasmine.any(Object));
+                });
+              });
+            });
+
+            describe('when selectedUsers is null and filteredUsers is null', function () {
+
+              beforeEach(function () {
+                controller.filters.leaveRequestFilters.selectedUsers = null;
+                controller.refresh();
+                defer.resolve({
+                  list: []
+                });
+              });
+
+              it('is not filtered by contact_id', function () {
+                promise.then(function () {
+                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    contact_id: {
+                      "IN": ['user_contact_id']
+                    }
+                  }), jasmine.any(Object));
+                });
+              });
+            });
+          });
+
+          describe('status_id', function () {
+
+            describe('when leaveStatus has value', function () {
+
+              var mockStatus = {
+                value: 'mockvalue'
+              };
+
+              beforeEach(function () {
+                controller.filters.leaveRequestFilters.leaveStatus = mockStatus;
+                controller.refresh();
+                defer.resolve({
+                  list: []
+                });
+              });
+
+              it('filtered by selected leaveStatus', function () {
+                promise.then(function () {
+                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    status_id: {
+                      IN: ['mockvalue']
+                    }
+                  }), jasmine.any(Object));
+                });
+              });
+            });
+
+            describe('when pending_requests is true', function () {
+
+              var waitingApprovalValue = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status').find(function (data) {
+                return data.name === 'waiting_approval';
+              }).value;
+
+              beforeEach(function () {
+                controller.filters.leaveRequestFilters.pending_requests = true;
+                controller.refresh();
+                defer.resolve({
+                  list: []
+                });
+              });
+
+              it('filtered by waiting_approval', function () {
+                promise.then(function () {
+                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    status_id: {
+                      IN: [waitingApprovalValue]
+                    }
+                  }), jasmine.any(Object));
+                });
+              });
+            });
+          });
         });
       });
 

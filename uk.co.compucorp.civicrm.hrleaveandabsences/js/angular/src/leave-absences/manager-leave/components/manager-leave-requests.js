@@ -350,7 +350,7 @@ define([
         statusFilter.push(filters.leaveStatus.value);
       }
 
-      //if pending_requests is true then add the waitingApprovalID to be used in the leave request api
+      //if pending_requests is true then add the waiting_approval to be used in the leave request api
       if (filters.pending_requests && waitingApprovalID) {
         statusFilter.push(waitingApprovalID);
       }
