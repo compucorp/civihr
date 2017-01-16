@@ -78,7 +78,7 @@
 
   <!-- Since these are not real FKs, it's important to have an index for these field for a better performance in SQL JOINs -->
   <index>
-    <name>index_entity_id</name>
+    <name>index_entity_id_entity_name</name>
     <fieldName>entity_id</fieldName>
     <fieldName>entity_name</fieldName>
     <add>4.4</add>
