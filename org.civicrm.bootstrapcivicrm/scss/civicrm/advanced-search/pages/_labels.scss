@@ -121,9 +121,7 @@
   td {
     display: flex;
     flex-flow: row wrap;
-    justify-content: space-around;
     align-items: center;
-    width: 30%;
 
     label {
       flex: 1 1 8vw;
@@ -131,6 +129,7 @@
 
     .helpicon {
       padding-right: 10px;
+      padding-left: 5px;
     }
   }
 }
