@@ -1,323 +1,294 @@
 <?xml version="1.0" encoding="iso-8859-1" ?>
 
 <table>
-    <base>CRM/Hrjobroles</base>
-    <class>HrJobRoles</class>
-    <name>civicrm_hrjobroles</name>
-    <comment>HR Job Roles</comment>
+  <base>CRM/Hrjobroles</base>
+  <class>HrJobRoles</class>
+  <name>civicrm_hrjobroles</name>
+  <comment>HR Job Roles</comment>
+  <add>4.5</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <title>Job Role ID</title>
+    <required>true</required>
+    <comment>Unique HrJobRoles ID</comment>
+    <export>false</export>
+    <import>false</import>
     <add>4.5</add>
-    <log>true</log>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
 
-    <field>
-        <name>id</name>
-        <type>Job Role ID</type>
-        <type>int unsigned</type>
-        <required>true</required>
-        <comment>Unique HrJobRoles ID</comment>
-        <export>true</export>
-        <add>4.5</add>
-    </field>
-    <primaryKey>
-        <name>id</name>
-        <autoincrement>true</autoincrement>
-    </primaryKey>
+  <field>
+    <name>job_contract_id</name>
+    <title>Job ID</title>
+    <type>int unsigned</type>
+    <required>true</required>
+    <export>true</export>
+    <import>true</import>
+    <comment>FK to Contract</comment>
+  </field>
+  <index>
+    <name>index_job_contract_id</name>
+    <fieldName>job_contract_id</fieldName>
+  </index>
 
-    <field>
-        <name>job_contract_id</name>
-        <title>Job ID</title>
-        <type>int unsigned</type>
-        <required>true</required>
-        <comment>FK to Contract</comment>
-    </field>
-    <foreignKey>
-        <name>job_contract_id</name>
-        <table>civicrm_hrjobcontract</table>
-        <key>id</key>
-        <onDelete>CASCADE</onDelete>
-    </foreignKey>
+  <field>
+    <name>title</name>
+    <type>varchar</type>
+    <title>Job Role Title</title>
+    <length>255</length>
+    <default>NULL</default>
+    <comment>Title or Project name for the Job Role.</comment>
+    <add>4.5</add>
+    <export>true</export>
+    <import>true</import>
+  </field>
 
-    <field>
-        <name>title</name>
-        <type>varchar</type>
-        <title>Job Role Title</title>
-        <length>255</length>
-        <default>NULL</default>
-        <comment>Title or Project name for the Job Role.</comment>
-        <add>4.5</add>
-        <export>true</export>
-    </field>
+  <field>
+    <name>description</name>
+    <title>Job Role Description</title>
+    <type>text</type>
+    <comment>Negotiated name for the role</comment>
+    <export>true</export>
+    <import>true</import>
+  </field>
 
-    <field>
-        <name>description</name>
-        <title>Job Role Description</title>
-        <type>text</type>
-        <comment>Negotiated name for the role</comment>
-        <export>true</export>
-    </field>
+  <field>
+    <name>status</name>
+    <type>varchar</type>
+    <title>Job Role Status</title>
+    <length>255</length>
+    <default>NULL</default>
+    <comment>Job Role Status (Active / Inactive)</comment>
+    <export>true</export>
+    <add>4.5</add>
+  </field>
 
-    <field>
-        <name>status</name>
-        <type>varchar</type>
-        <title>Job Role Status</title>
-        <length>255</length>
-        <default>NULL</default>
-        <comment>Job Role Status (Active / Inactive)</comment>
-        <export>true</export>
-        <add>4.5</add>
-    </field>
+  <field>
+    <name>region</name>
+    <title>Job Role Region</title>
+    <type>varchar</type>
+    <length>127</length>
+    <export>true</export>
+    <import>true</import>
+    <comment>Role region value.</comment>
+    <uniqueName>hrjc_region</uniqueName>
+    <pseudoconstant>
+      <optionGroupName>hrjc_region</optionGroupName>
+    </pseudoconstant>
+  </field>
+  <index>
+    <name>index_region</name>
+    <fieldName>region</fieldName>
+  </index>
 
-    <field>
-        <name>hours</name>
-        <title>Job Role Hours</title>
-        <type>float</type>
-        <default>0</default>
-        <comment>Amount of time allocated for work (in a given week)</comment>
-        <export>true</export>
-        <uniqueName>hrjc_role_hours</uniqueName>
-    </field>
+  <field>
+    <name>department</name>
+    <title>Job Role Department</title>
+    <type>varchar</type>
+    <length>127</length>
+    <export>true</export>
+    <import>true</import>
+    <comment>Role department.</comment>
+    <uniqueName>hrjc_role_department</uniqueName>
+    <pseudoconstant>
+      <optionGroupName>hrjc_department</optionGroupName>
+    </pseudoconstant>
+  </field>
+  <index>
+    <name>index_department</name>
+    <fieldName>department</fieldName>
+  </index>
 
-    <field>
-        <name>role_hours_unit</name>
-        <title>Job Role Hours Unit</title>
-        <type>varchar</type>
-        <length>63</length>
-        <comment>Period during which hours are allocated (eg 5 hours per day; 5 hours per week)</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_role_unit</uniqueName>
-    </field>
+  <field>
+    <name>level_type</name>
+    <title>Job Role Level</title>
+    <type>varchar</type>
+    <length>63</length>
+    <comment>Junior manager, senior manager, etc.</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjc_level_type</uniqueName>
+    <pseudoconstant>
+      <optionGroupName>hrjc_level_type</optionGroupName>
+    </pseudoconstant>
+  </field>
+  <index>
+    <name>index_level_type</name>
+    <fieldName>level_type</fieldName>
+  </index>
 
-    <field>
-        <name>region</name>
-        <title>Job Role Region</title>
-        <type>varchar</type>
-        <length>127</length>
-        <export>true</export>
-        <import>true</import>
-        <comment>Role region value.</comment>
-        <uniqueName>hrjc_region</uniqueName>
-        <pseudoconstant>
-            <optionGroupName>hrjc_region</optionGroupName>
-        </pseudoconstant>
-    </field>
-    <index>
-        <name>index_region</name>
-        <fieldName>region</fieldName>
-    </index>
+  <field>
+    <name>manager_contact_id</name>
+    <title>Manager Contact Id</title>
+    <type>int unsigned</type>
+    <comment>FK to Contact ID</comment>
+  </field>
+  <foreignKey>
+    <name>manager_contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
 
-    <field>
-        <name>department</name>
-        <title>Job Role Department</title>
-        <type>varchar</type>
-        <length>127</length>
-        <export>true</export>
-        <import>true</import>
-        <comment>Role department.</comment>
-        <uniqueName>hrjc_role_department</uniqueName>
-        <pseudoconstant>
-            <optionGroupName>hrjc_department</optionGroupName>
-        </pseudoconstant>
-    </field>
-    <index>
-        <name>index_department</name>
-        <fieldName>department</fieldName>
-    </index>
+  <field>
+    <name>organization</name>
+    <title>Job Role Organization</title>
+    <type>varchar</type>
+    <length>127</length>
+    <export>true</export>
+  </field>
+  <index>
+    <name>index_organization</name>
+    <fieldName>organization</fieldName>
+  </index>
 
-    <field>
-        <name>level_type</name>
-        <title>Job Role Level</title>
-        <type>varchar</type>
-        <length>63</length>
-        <comment>Junior manager, senior manager, etc.</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_level_type</uniqueName>
-        <pseudoconstant>
-            <optionGroupName>hrjc_level_type</optionGroupName>
-        </pseudoconstant>
-    </field>
-    <index>
-        <name>index_level_type</name>
-        <fieldName>level_type</fieldName>
-    </index>
+  <field>
+    <name>cost_center</name>
+    <title>Job Role Cost Center</title>
+    <type>varchar</type>
+    <length>255</length>
+    <comment>List of Cost Center option group values</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjc_cost_center</uniqueName>
+  </field>
+  <index>
+    <name>index_cost_center</name>
+    <fieldName>cost_center</fieldName>
+  </index>
 
-    <field>
-        <name>manager_contact_id</name>
-        <title>Manager Contact Id</title>
-        <type>int unsigned</type>
-        <comment>FK to Contact ID</comment>
-    </field>
-    <foreignKey>
-        <name>manager_contact_id</name>
-        <table>civicrm_contact</table>
-        <key>id</key>
-        <onDelete>SET NULL</onDelete>
-    </foreignKey>
+  <field>
+    <name>cost_center_val_type</name>
+    <title>Job Role Cost Center value type</title>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Cost Center value type (fixed or %)</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjc_cost_center_val_type</uniqueName>
+  </field>
+  <index>
+    <name>index_cost_center_val_type</name>
+    <fieldName>cost_center_val_type</fieldName>
+  </index>
 
-    <field>
-        <name>functional_area</name>
-        <title>Job Role Functional Area</title>
-        <type>varchar</type>
-        <length>127</length>
-        <export>true</export>
-    </field>
-    <index>
-        <name>index_functional_area</name>
-        <fieldName>functional_area</fieldName>
-    </index>
+  <field>
+    <name>percent_pay_cost_center</name>
+    <title>Job Role Percent of Pay Assigned to this cost center</title>
+    <type>varchar</type>
+    <length>255</length>
+    <default>0</default>
+    <comment>Percentage of Pay Assigned to this cost center</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjc_role_percent_pay_cost_center</uniqueName>
+  </field>
 
-    <field>
-        <name>organization</name>
-        <title>Job Role Organization</title>
-        <type>varchar</type>
-        <length>127</length>
-        <export>true</export>
-    </field>
-    <index>
-        <name>index_organization</name>
-        <fieldName>organization</fieldName>
-    </index>
+  <field>
+    <name>amount_pay_cost_center</name>
+    <title>Job Role Amount of Pay Assigned to this cost center</title>
+    <type>varchar</type>
+    <length>255</length>
+    <default>0</default>
+    <comment>Amount of Pay Assigned to this cost center</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjc_role_amount_pay_cost_center</uniqueName>
+  </field>
 
-    <field>
-        <name>cost_center</name>
-        <title>Job Role Cost Center</title>
-        <type>varchar</type>
-        <length>255</length>
-        <comment>List of Cost Center option group values</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_cost_center</uniqueName>
-    </field>
-    <index>
-        <name>index_cost_center</name>
-        <fieldName>cost_center</fieldName>
-    </index>
+  <field>
+    <name>funder</name>
+    <title>Job Role Funders</title>
+    <type>varchar</type>
+    <length>255</length>
+    <default>0</default>
+    <comment>List of attached Funder contact IDs</comment>
+    <export>true</export>
+    <import>true</import>
+  </field>
 
-    <field>
-        <name>cost_center_val_type</name>
-        <title>Job Role Cost Center value type</title>
-        <type>varchar</type>
-        <length>127</length>
-        <comment>Cost Center value type (fixed or %)</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_cost_center_val_type</uniqueName>
-    </field>
-    <index>
-        <name>index_cost_center_val_type</name>
-        <fieldName>cost_center_val_type</fieldName>
-    </index>
+  <field>
+    <name>funder_val_type</name>
+    <title>Job Role Funder value type</title>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Funder value type (fixed or %)</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjc_funder_val_type</uniqueName>
+  </field>
+  <index>
+    <name>index_funder_val_type</name>
+    <fieldName>funder_val_type</fieldName>
+  </index>
 
-    <field>
-        <name>percent_pay_cost_center</name>
-        <title>Job Role Percent of Pay Assigned to this cost center</title>
-        <type>varchar</type>
-        <length>255</length>
-        <default>0</default>
-        <comment>Percentage of Pay Assigned to this cost center</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_role_percent_pay_cost_center</uniqueName>
-    </field>
+  <field>
+    <name>percent_pay_funder</name>
+    <title>Job Role Percent of Pay Assigned to this funder</title>
+    <type>varchar</type>
+    <length>255</length>
+    <default>0</default>
+    <comment>Percentage of Pay Assigned to this funder</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjc_role_percent_pay_funder</uniqueName>
+  </field>
 
-    <field>
-        <name>amount_pay_cost_center</name>
-        <title>Job Role Amount of Pay Assigned to this cost center</title>
-        <type>varchar</type>
-        <length>255</length>
-        <default>0</default>
-        <comment>Amount of Pay Assigned to this cost center</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_role_amount_pay_cost_center</uniqueName>
-    </field>
+  <field>
+    <name>amount_pay_funder</name>
+    <title>Job Role Amount of Pay Assigned to this funder</title>
+    <type>varchar</type>
+    <length>255</length>
+    <default>0</default>
+    <comment>Amount of Pay Assigned to this funder</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjc_role_amount_pay_funder</uniqueName>
+  </field>
 
-    <field>
-        <name>funder</name>
-        <title>Job Role Funders</title>
-        <type>varchar</type>
-        <length>255</length>
-        <default>0</default>
-        <comment>List of attached Funder contact IDs</comment>
-        <export>true</export>
-    </field>
+  <field>
+    <name>location</name>
+    <title>Job Role Location</title>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Main work location</comment>
+    <export>true</export>
+    <import>true</import>
+    <pseudoconstant>
+      <optionGroupName>hrjc_location</optionGroupName>
+    </pseudoconstant>
+  </field>
+  <index>
+    <name>index_location</name>
+    <fieldName>location</fieldName>
+  </index>
 
-    <field>
-        <name>funder_val_type</name>
-        <title>Job Role Funder value type</title>
-        <type>varchar</type>
-        <length>127</length>
-        <comment>Funder value type (fixed or %)</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_funder_val_type</uniqueName>
-    </field>
-    <index>
-        <name>index_funder_val_type</name>
-        <fieldName>funder_val_type</fieldName>
-    </index>
+  <field>
+    <name>start_date</name>
+    <title>Job Role Start Date</title>
+    <type>datetime</type>
+    <default>NULL</default>
+    <comment>Start Date of the job role</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjc_role_start_date</uniqueName>
+  </field>
 
-    <field>
-        <name>percent_pay_funder</name>
-        <title>Job Role Percent of Pay Assigned to this funder</title>
-        <type>varchar</type>
-        <length>255</length>
-        <default>0</default>
-        <comment>Percentage of Pay Assigned to this funder</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_role_percent_pay_funder</uniqueName>
-    </field>
-
-    <field>
-        <name>amount_pay_funder</name>
-        <title>Job Role Amount of Pay Assigned to this funder</title>
-        <type>varchar</type>
-        <length>255</length>
-        <default>0</default>
-        <comment>Amount of Pay Assigned to this funder</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_role_amount_pay_funder</uniqueName>
-    </field>
-
-    <field>
-        <name>location</name>
-        <title>Job Role Location</title>
-        <type>varchar</type>
-        <length>127</length>
-        <comment>Main work location</comment>
-        <export>true</export>
-        <import>true</import>
-        <pseudoconstant>
-            <optionGroupName>hrjc_location</optionGroupName>
-        </pseudoconstant>
-    </field>
-    <index>
-        <name>index_location</name>
-        <fieldName>location</fieldName>
-    </index>
-
-    <field>
-        <name>start_date</name>
-        <title>Job Role Start Date</title>
-        <type>datetime</type>
-        <default>NULL</default>
-        <comment>Start Date of the job role</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_role_start_date</uniqueName>
-    </field>
-
-    <field>
-        <name>end_date</name>
-        <title>Job Role End Date</title>
-        <type>datetime</type>
-        <default>NULL</default>
-        <comment>End Date of the job role</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_role_end_date</uniqueName>
-    </field>
+  <field>
+    <name>end_date</name>
+    <title>Job Role End Date</title>
+    <type>datetime</type>
+    <default>NULL</default>
+    <comment>End Date of the job role</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjc_role_end_date</uniqueName>
+  </field>
 
 </table>

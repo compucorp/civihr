@@ -46,6 +46,27 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
   }
 
   /**
+   * 1- Drops (functional_area, hours & role_hours_unit) columns.
+   * 2- Removes foreign key from job_contract_id field and adds
+   * index to it instead due to some issues with generating DAOs from XML.
+   * @ToDo: Fix DAO generation script and regenerate the DAOs.
+   *
+   * @return bool
+   */
+  public function upgrade_1005() {
+    CRM_Core_DAO::executeQuery(
+      'ALTER TABLE `civicrm_hrjobroles`
+         DROP COLUMN functional_area,
+         DROP COLUMN hours,
+         DROP COLUMN role_hours_unit
+         DROP FOREIGN KEY FK_civicrm_hrjobroles_job_contract_id
+         ADD INDEX `job_contract_id` (`job_contract_id`)'
+    );
+
+    return TRUE;
+  }
+
+  /**
    * Creates new Option Group for Cost Centres
    */
   public function installCostCentreTypes() {
