@@ -128,14 +128,14 @@ function _hrcomments_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 /**
- * @return CRM_Hrcomments_Upgrader
+ * @return CRM_HRComments_Upgrader
  */
 function _hrcomments_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/Hrcomments/Upgrader.php')) {
+  if (!file_exists(__DIR__.'/CRM/HRComments/Upgrader.php')) {
     return NULL;
   }
   else {
-    return CRM_Hrcomments_Upgrader_Base::instance();
+    return CRM_HRComments_Upgrader_Base::instance();
   }
 }
 
