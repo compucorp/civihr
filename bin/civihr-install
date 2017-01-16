@@ -286,9 +286,9 @@ function _amp_install_cms() {
   else
     amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --output-file="$amp_vars_file_path" --perm="$CMS_DB_PERM"
   fi
-  echo $amp_vars_file_path;exit
   source "$amp_vars_file_path"
-  rm -f "$amp_vars_file_path"
+
+  #rm -f "$amp_vars_file_path"
 }
 
 function _amp_install_civi() {
@@ -580,11 +580,18 @@ function civihr_parse() {
       #   
       #   ;;
 
-      --type)
-        SITE_TYPE="$1"
+      --dbuser)
+        DB_USER="$1"
         shift
         ;;
-
+      --dbpass)
+        DB_PASS="$1"
+        shift
+        ;;
+      --dbport)
+        DB_PORT="$1"
+        shift
+        ;;
       --url)
         CMS_URL="$1"
         shift
@@ -598,17 +605,14 @@ function civihr_parse() {
     esac
   done
 
-#[ -z "$CACHE_DIR" ]          && CACHE_DIR="$TMPDIR/git-cache"
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
 [ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(civihr_makepasswd 16)
 [ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(civihr_makepasswd 12)
 [ -z "$DEMO_PASS" ]          && DEMO_PASS=$(civihr_makepasswd 12)
-[ -z "$SITE_TYPE" ]          && SITE_TYPE="$SITE_NAME"
 [ -z "$CMS_TITLE" ]          && CMS_TITLE="$SITE_NAME"
 [ -z "$CMS_HOSTNAME" ]       && CMS_HOSTNAME=$(php -r '$p = parse_url($argv[1]); echo $p["host"];' "$CMS_URL")
 [ -z "$CMS_PORT" ]           && CMS_PORT=$(php -r '$p = parse_url($argv[1]); echo $p["port"];' "$CMS_URL")
-[ -z "$SITE_CONFIG_DIR" ]    && SITE_CONFIG_DIR="$PRJDIR/app/config/$SITE_TYPE"
 [ -z "$SITE_TOKEN" ]         && SITE_TOKEN=$(civihr_makepasswd 16)
 
 }
@@ -777,7 +781,7 @@ EOSQL
 ###############################################################################
 ## Run the download scripts if necessary
 function civihr_app_download() {
-  civihr_assertvars civihr_app_download WEB_ROOT PRJDIR SITE_NAME SITE_TYPE TMPDIR #CACHE_DIR
+  civihr_assertvars civihr_app_download WEB_ROOT PRJDIR SITE_NAME TMPDIR #CACHE_DIR
 
   echo "[[Download $SITE_NAME ( in '$WEB_ROOT')]]"
 
@@ -799,7 +803,7 @@ function civihr_app_download() {
 ###############################################################################
 ## Runs the installation process for CMS, CiviCRM and CiviHR.
 function civihr_app_install() {
-  civihr_assertvars civihr_app_install WEB_ROOT  SITE_NAME SITE_ID SITE_TYPE
+  civihr_assertvars civihr_app_install WEB_ROOT  SITE_NAME SITE_ID
 
   echo "[[Install $SITE_NAME ( in '$WEB_ROOT')]]"
 
