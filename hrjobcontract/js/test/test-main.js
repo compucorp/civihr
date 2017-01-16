@@ -1,7 +1,7 @@
 var TEST_REGEXP = /(spec|test)\.js$/i;
 var allTestFiles = [];
-var mocksPath = CRM.jobContractTabApp.path + '/js/test/mocks';
-var srcPath = CRM.jobContractTabApp.path + '/js/src/job-contract';
+var mocksPath = CRM.jobContractTabApp.path + 'js/test/mocks';
+var srcPath = CRM.jobContractTabApp.path + 'js/src/job-contract';
 
 Object.keys(window.__karma__.files).forEach(function(file) {
   if (TEST_REGEXP.test(file)) {
