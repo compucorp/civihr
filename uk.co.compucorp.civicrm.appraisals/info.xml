@@ -8,8 +8,8 @@
     <author>coldrunKacper</author>
     <email>kacper@coldrun.pl</email>
   </maintainer>
-  <releaseDate>2016-12-02</releaseDate>
-  <version>1.6.4</version>
+  <releaseDate>2017-01-16</releaseDate>
+  <version>1.6.5</version>
   <develStage>alpha</develStage>
   <compatibility>
     <ver>4.7</ver>

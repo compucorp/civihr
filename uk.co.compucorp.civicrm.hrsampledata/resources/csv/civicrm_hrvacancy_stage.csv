@@ -1,0 +1,13 @@
+case_status_id,vacancy_id,weight
+Open,2,1
+Manager_Interview,2,2
+Phone_Interview,2,3
+Hired,3,1
+Offer,3,2
+Psych_Exam,3,3
+Group_Interview,3,4
+Board_Interview,3,5
+Manager_Interview,3,6
+Phone_Interview,3,7
+Open,3,8
+Apply,3,9

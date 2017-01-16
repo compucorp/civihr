@@ -1,0 +1,72 @@
+id,source_record_id,activity_type_id,subject,activity_date_time,duration,details,status_id,priority_id,source_contact_id,assignee_id,target_id
+39,,Sick,,2016-09-02 10:56:24,,,Scheduled,Normal,288,324,288
+41,,TOIL (Credit),,2016-09-02 10:58:46,,,Scheduled,Normal,288,324,288
+86,,Vacation,,2016-09-02 11:42:57,,,Scheduled,Normal,288,324,288
+90,,Sick,,2016-09-02 11:45:56,,,Scheduled,Normal,324,306,324
+92,,Vacation,,2016-09-02 11:48:22,,,Scheduled,Normal,306,269,306
+95,,Sick,,2016-09-02 11:49:41,,,Scheduled,Normal,306,269,306
+97,,Schedule Exit Interview,,2016-11-07 00:00:00,,"
+                    ",Scheduled,Normal,306,324,257
+98,,"Get ""No Dues"" certification",,2016-11-08 00:00:00,,"
+                    ",Completed,Normal,306,324,257
+99,,Conduct Exit Interview,,2016-11-14 00:00:00,,"
+                    ",Scheduled,Normal,306,306,257
+100,,Paternity,,2016-09-07 18:16:00,,,Completed,Normal,306,,306
+109,,Paternity,,2016-09-07 18:16:02,,,Completed,Normal,306,,306
+118,,Paternity,,2016-09-07 18:17:08,,,Completed,Normal,306,,306
+120,,Government Photo ID,,2016-09-08 00:00:00,,"
+                    ",Scheduled,Normal,306,306,306
+121,,Driving licence,,2016-09-07 00:00:00,,"
+                    ",Scheduled,Normal,306,306,306
+122,,VISA,,2016-09-17 00:00:00,,"
+                    ",Scheduled,Normal,306,324,324
+125,,Vacation,,2016-09-07 21:24:43,,,Scheduled,Normal,324,306,324
+127,,Probation appraisal (start probation workflow),test,2016-09-07 00:00:00,,<p>test</p>,Completed,Normal,306,288,288
+128,,Vacation,,2016-09-07 22:08:25,,,Completed,Normal,306,269,306
+142,,Program and work induction by program supervisor,,2016-09-06 00:00:00,,"
+                    ",Scheduled,Normal,306,324,235
+143,,Block work email ID,,2016-11-15 00:00:00,,"
+                    ",Scheduled,Normal,306,306,257
+144,,"Get ""No Dues"" certification",,2016-11-10 00:00:00,,"
+                    ",Completed,Normal,306,288,257
+145,,Vacation,,2016-09-29 14:05:13,,Leave request. ,Scheduled,Normal,288,324,288
+40,39,Absence,,2016-09-02 00:00:00,240,,Scheduled,Normal,288,,
+42,41,Absence,,2016-09-09 00:00:00,240,,Scheduled,Normal,288,,
+87,86,Absence,,2016-11-01 00:00:00,480,,Scheduled,Normal,288,,
+88,86,Absence,,2016-11-02 00:00:00,480,,Scheduled,Normal,288,,
+89,86,Absence,,2016-11-03 00:00:00,480,,Scheduled,Normal,288,,
+91,90,Absence,,2016-08-30 00:00:00,480,,Scheduled,Normal,324,,
+93,92,Absence,,2016-11-22 00:00:00,480,,Scheduled,Normal,306,,
+94,92,Absence,,2016-11-23 00:00:00,480,,Scheduled,Normal,306,,
+96,95,Absence,,2016-08-25 00:00:00,480,,Scheduled,Normal,306,,
+101,100,Absence,,2016-09-07 00:00:00,480,,Completed,Normal,306,,
+102,100,Absence,,2016-09-08 00:00:00,480,,Completed,Normal,306,,
+103,100,Absence,,2016-09-09 00:00:00,480,,Completed,Normal,306,,
+104,100,Absence,,2016-09-10 00:00:00,0,,Completed,Normal,306,,
+105,100,Absence,,2016-09-11 00:00:00,0,,Completed,Normal,306,,
+106,100,Absence,,2016-09-12 00:00:00,480,,Completed,Normal,306,,
+107,100,Absence,,2016-09-13 00:00:00,480,,Completed,Normal,306,,
+108,100,Absence,,2016-09-14 00:00:00,480,,Completed,Normal,306,,
+110,109,Absence,,2016-09-07 00:00:00,480,,Completed,Normal,306,,
+111,109,Absence,,2016-09-08 00:00:00,480,,Completed,Normal,306,,
+112,109,Absence,,2016-09-09 00:00:00,480,,Completed,Normal,306,,
+113,109,Absence,,2016-09-10 00:00:00,0,,Completed,Normal,306,,
+114,109,Absence,,2016-09-11 00:00:00,0,,Completed,Normal,306,,
+115,109,Absence,,2016-09-12 00:00:00,480,,Completed,Normal,306,,
+116,109,Absence,,2016-09-13 00:00:00,480,,Completed,Normal,306,,
+117,109,Absence,,2016-09-14 00:00:00,480,,Completed,Normal,306,,
+119,118,Absence,,2016-09-07 00:00:00,480,,Completed,Normal,306,,
+126,125,Absence,,2016-10-10 00:00:00,240,,Scheduled,Normal,324,,
+129,128,Absence,,2016-09-13 00:00:00,480,,Completed,Normal,306,,
+130,128,Absence,,2016-09-14 00:00:00,480,,Completed,Normal,306,,
+131,128,Absence,,2016-09-15 00:00:00,480,,Completed,Normal,306,,
+132,128,Absence,,2016-09-16 00:00:00,480,,Completed,Normal,306,,
+133,128,Absence,,2016-09-17 00:00:00,0,,Completed,Normal,306,,
+134,128,Absence,,2016-09-18 00:00:00,0,,Completed,Normal,306,,
+135,128,Absence,,2016-09-19 00:00:00,480,,Completed,Normal,306,,
+136,128,Absence,,2016-09-20 00:00:00,480,,Completed,Normal,306,,
+146,145,Absence,,2016-10-06 00:00:00,480,,Scheduled,Normal,288,,
+147,145,Absence,,2016-10-07 00:00:00,240,,Scheduled,Normal,288,,
+148,145,Absence,,2016-10-08 00:00:00,0,,Scheduled,Normal,288,,
+149,145,Absence,,2016-10-09 00:00:00,0,,Scheduled,Normal,288,,
+150,145,Absence,,2016-10-10 00:00:00,480,,Scheduled,Normal,288,,

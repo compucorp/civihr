@@ -118,7 +118,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         $display = $options = $value;
         if (is_array($value) && count($value) >= 1) {
           $op      = 'IN';
-          $options = "('" . implode("','", $value) . "')";
+          $options = array_map('trim', $value);
           $display = implode(' ' . ts('or') . ' ', $value);
         }
         $query->_qill[$grouping][]  = ts('%1 %2', array(1 => $fields[$name]['title'], 2 => $op)) . ' ' . $display;
@@ -131,7 +131,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         $display = $options = $value;
         if (is_array($value) && count($value) >= 1) {
           $op      = 'IN';
-          $options = "('" . implode("','", $value) . "')";
+          $options = array_map('trim', $value);
           $display = implode(' ' . ts('or') . ' ', $value);
         }
         $query->_qill[$grouping][]  = ts('%1 %2', array(1 => $fields[$name]['title'], 2 => $op)) . ' ' . $display;
@@ -286,7 +286,14 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
           return;
         }
         $whereTable = $fields[$name];
-        $value      = trim($value);
+
+        if (is_array($value)) {
+          $value = array_map('trim', $value);
+          $quoteValue = "('" . implode("', '", $value) . "')";
+        } else {
+          $value = trim($value);
+        }
+
         $dataType   = "String";
 
         if (in_array($name, array(
