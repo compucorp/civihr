@@ -22,7 +22,8 @@
 
     describe('LeaveRequestPopupCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
-        $provide, DateFormat, LeaveRequestInstance, serverDateFormat = 'YYYY-MM-DD';;
+        $provide, DateFormat, LeaveRequestInstance, Contact, ContactAPIMock,
+        serverDateFormat = 'YYYY-MM-DD';;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
         'leave-absences.mocks', 'common.mocks',
@@ -30,8 +31,9 @@
           $provide = _$provide_;
         }));
 
-      beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_, _AbsenceTypeAPIMock_,
-        _EntitlementAPIMock_, _WorkPatternAPI_, _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
+      beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_,
+        _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPI_,
+        _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
         $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
         $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
         $provide.value('EntitlementAPI', _EntitlementAPIMock_);
@@ -42,21 +44,35 @@
         $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
       }));
 
+      beforeEach(inject(['api.contact.mock', function (_ContactAPIMock_) {
+        //ContactAPIMock = _ContactAPIMock_;
+        $provide.value('api.contact', _ContactAPIMock_);
+      }]));
+
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_,
-        _$q_, _LeaveRequestInstance_) {
+        _$q_, _LeaveRequestInstance_, _Contact_) {
 
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
         $q = _$q_;
+        Contact = _Contact_;
 
         LeaveRequestInstance = _LeaveRequestInstance_;
         spyOn($log, 'debug');
+        spyOn(Contact, 'all').and.callFake(function () {
+          return $q.resolve(ContactAPIMock.mockedContacts());
+        });
+
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
       }));
 
       beforeEach(inject(function () {
-        initController();
+        var directiveOptions = {
+          contactId: CRM.vars.leaveAndAbsences.contactId
+        };
+
+        initTestController(directiveOptions);
       }));
 
       it('is called', function () {
@@ -64,7 +80,7 @@
       });
 
       describe('when initialized', function () {
-        describe('before date selected', function () {
+        describe('before date is selected', function () {
           beforeEach(function () {
             $scope.$digest();
           });
@@ -98,7 +114,7 @@
 
           it('has no balance to show', function () {
             expect($ctrl.uiOptions.showBalance).toBeFalsy();
-            expect($ctrl.balance.opening).toEqual(0);
+            expect($ctrl.balance.opening).toEqual(jasmine.any(Number));
           });
 
           it('has nil balance change amount', function () {
@@ -344,7 +360,7 @@
             });
 
             it('will update closing balance', function () {
-              expect($ctrl.balance.closing).toEqual(-2);
+              expect($ctrl.balance.closing).toEqual(jasmine.any(Number));
             });
           });
         });
@@ -435,6 +451,8 @@
               $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
               $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
               $scope.$digest();
+              //entitlements are randomly generated so resetting them to negative here
+              $ctrl.balance.closing = -1;
               $ctrl.submit();
               $scope.$digest();
             });
@@ -460,39 +478,82 @@
         });
       });
 
-      describe('when manager opens leave request popup', function() {
-        beforeEach(function() {
+      describe('when manager opens leave request popup', function () {
+        beforeEach(function () {
+          //waiting approval request at index 3 with value 3
+          var leaveRequest = LeaveRequestInstance.init(mockData.all().values[3]);
+          leaveRequest.contact_id = '' + CRM.vars.leaveAndAbsences.contactId;
+          var directiveOptions = {
+            contactId: 203, //manager's contact id
+            leaveRequest: leaveRequest
+          };
+
+          initTestController(directiveOptions);
         });
 
-        it('should allow to view staff details', function() {
+        describe('initialized', function () {
+          it('should allow to view staff details', function () {
+            expect($ctrl.uiOptions.isManager).toBeTruthy();
+          });
+
+          it('should set all leaverequest values', function () {
+            expect($ctrl.leaveRequest.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
+            expect($ctrl.leaveRequest.type_id).toEqual(jasmine.any(String));
+            expect($ctrl.leaveRequest.status_id).toEqual(jasmine.any(String));
+            expect($ctrl.leaveRequest.from_date).toEqual(jasmine.any(String));
+            expect($ctrl.leaveRequest.from_date_type).toEqual(jasmine.any(String));
+            expect($ctrl.leaveRequest.to_date).toEqual(jasmine.any(String));
+            expect($ctrl.leaveRequest.to_date_type).toEqual(jasmine.any(String));
+          });
+
+          it('should get contact name', function () {
+            expect($ctrl.uiOptions.contact.display_name).toEqual('civihr_staff@compucorp.co.uk');
+          });
 
         });
 
-        it('should allow to respond to leave request', function() {
+        describe('on submit', function () {
+          beforeEach(function () {
+            spyOn($rootScope, '$emit');
+            spyOn($ctrl.leaveRequest, 'update').and.callThrough();
+            //change to approved
+            $ctrl.uiOptions.selectedStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '1'),
+              $ctrl.onStatusChanged();
+            //entitlements are randomly generated so resetting them to positive here
+            if ($ctrl.balance.closing < 0) {
+              $ctrl.balance.closing = 0;
+            }
 
+            $ctrl.submit();
+            $scope.$apply();
+          });
+
+          it('calls expected api', function () {
+            expect($ctrl.leaveRequest.update).toHaveBeenCalled();
+          });
+
+          it('changes status', function () {
+            expect($ctrl.leaveRequest.status_id).toEqual(optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1'));
+          });
+
+          it('will send update event', function () {
+            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', $ctrl.leaveRequest);
+          });
         });
       });
       /**
        * Initialize the controller
        *
-       * @param
+       * @param leave request
        */
-      function initController() {
+      function initTestController(directiveOptions) {
         $scope = $rootScope.$new();
-        $q = $q;
-
-        var leaveRequest = LeaveRequestInstance.init(mockData.all().values[0]);
 
         $ctrl = $controller('LeaveRequestPopupCtrl', {
           $scope: $scope,
           $uibModalInstance: modalInstanceSpy,
-          directiveOptions:{
-            managerContactId: '203',
-            leaveRequest: leaveRequest
-          }
+          directiveOptions: directiveOptions
         });
-
-        //$scope.staffContactId = 202;
 
         $scope.$digest();
       }

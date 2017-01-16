@@ -8,7 +8,7 @@
   <h4 class="modal-title">Leave Request</h4>
 </div>
 <crm-loading show="!$ctrl.loading.absenceTypes">
-  <div ng-show="$ctrl.uiOptions.isAdmin"
+  <div ng-show="$ctrl.uiOptions.isManager"
       class="row chr_leave-request-modal__user-info">
     <span class="col-xs-6">{{$ctrl.uiOptions.contact.display_name}}</span>
     <span class="col-xs-6">{{$ctrl.uiOptions.statusLabel}}</span>
@@ -20,7 +20,7 @@
       <div class="col-xs-12">
         <div class="chr_custom-select chr_custom-select--full">
           <select name="absenceTypeSelect"
-              ng-options="option.title for option in $ctrl.absenceTypes track by option.id"
+              ng-options="absenceType.title for absenceType in $ctrl.absenceTypes track by absenceType.id"
               ng-model="$ctrl.selectedAbsenceType"
               ng-change="$ctrl.onAbsenceTypeChange()"></select>
         </div>
@@ -192,7 +192,7 @@
         </uib-tabset>
       </div>
     </div>
-    <div ng-show="$ctrl.uiOptions.isAdmin"
+    <div ng-show="$ctrl.uiOptions.isManager"
         class="row chr_leave-request-modal__response">
       <div class="col-xs-12 form-horizontal">
         <div class="form-group">

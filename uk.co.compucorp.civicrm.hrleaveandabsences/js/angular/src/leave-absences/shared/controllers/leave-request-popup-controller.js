@@ -65,9 +65,9 @@ define([
         }
       };
       vm.uiOptions = {
-        isAdmin: false, //when the dialog is opened by manager or admin
-        isEdit: false, //when the dialog is opened by the owner
         isChangeExpanded: false,
+        isManager: false, //when the dialog is opened by manager or admin
+        isOwner: false, //when the dialog is opened by the owner
         multipleDays: true,
         contact: '',
         showDatePickerFrom: false,
@@ -194,7 +194,7 @@ define([
         var canSubmit = vm.leaveRequest.from_date && vm.leaveRequest.to_date &&
           vm.leaveRequest.to_date_type && vm.leaveRequest.from_date_type;
 
-        if(vm.uiOptions.isAdmin) {
+        if (canEdit()) {
           canSubmit = canSubmit && vm.uiOptions.selectedStatus;
         }
         return canSubmit;
@@ -202,7 +202,8 @@ define([
 
       /**
        * Submits the form, only if the leave request is valid, also emits event
-       * to listeners that leaverequest is created
+       * to listeners that leaverequest is created.
+       * Also, checks if its an update request from manager and accordingly updates leave request
        */
       vm.submit = function () {
         /* current absence type (vm.leaveRequest.type_id) doesn't allow that */
@@ -214,7 +215,7 @@ define([
 
         vm.error = undefined;
         //update leaverequest
-        if(updateRequest()) {
+        if (updateRequest()) {
           return;
         }
 
@@ -273,23 +274,29 @@ define([
         vm.error = undefined;
       };
 
+      /**
+       * initializes the controller on loading the dialog
+       */
       (function initController() {
-        vm.uiOptions.isAdmin = directiveOptions.leaveRequest != undefined;
+        if (directiveOptions.leaveRequest) {
+          //manager is responding to leave request
+          vm.uiOptions.isManager = directiveOptions.leaveRequest.contact_id != directiveOptions.contactId;
+          //owner is editing popup
+          vm.uiOptions.isOwner = directiveOptions.leaveRequest.contact_id == directiveOptions.contactId;
+        }
 
-        if (vm.uiOptions.isAdmin) {
+        if (canEdit()) {
           //get a clone
           var clone = _.cloneDeep(directiveOptions.leaveRequest);
-          //vm.leaveRequest = directiveOptions.leaveRequest;
           vm.leaveRequest = LeaveRequestInstance.init(clone, true);
-        }
-        else {
+        } else {
           // Create an empty leave request
           vm.leaveRequest = LeaveRequestInstance.init({
             contact_id: directiveOptions.contactId //resolved from directive
           }, false);
         }
 
-        //check if viewed by manager
+        //check if allowed to be viewed by manager
         isManagedBy(directiveOptions.contactId);
 
         vm.loading.absenceTypes = true;
@@ -381,7 +388,7 @@ define([
               contact_id: vm.leaveRequest.contact_id,
               period_id: vm.period.id,
               type_id: { in: absenceTypesIds }
-            }, true) // `true` because we want to use the 'future' balance for calculation
+              }, true) // `true` because we want to use the 'future' balance for calculation
               .then(function (entitlements) {
                 // create a list of absence types with a `balance` property
                 vm.absenceTypes = filterAbsenceTypes(absenceTypes, entitlements);
@@ -417,6 +424,10 @@ define([
        * @returns {Promise}
        */
       function initDayTypesAndStatus() {
+        if (vm.leaveRequestDayTypes.length && vm.leaveRequestStatuses.length) {
+          return $q.resolve();
+        }
+
         // Fetch the full calendar for the current user and the current period
         return Calendar.get(vm.leaveRequest.contact_id, vm.period.id)
           .then(function (usersCalendar) {
@@ -537,7 +548,8 @@ define([
        * @returns {Object} containing required keys for leave request
        */
       function getParamsForBalanceChange() {
-        var params = _.pick(vm.leaveRequest, ['contact_id', 'from_date', 'from_date_type', 'to_date', 'to_date_type']);
+        var params = _.pick(vm.leaveRequest, ['contact_id', 'from_date',
+          'from_date_type', 'to_date', 'to_date_type']);
 
         //todo to remove in future when this call is consistent with leaverequest db fields name
         return _.mapKeys(params, function (value, key) {
@@ -613,102 +625,136 @@ define([
       /**
        * checks if all params are set to calculate balance
        *
-       * @param {Array} listOfDayTypes collection of available day types
+       * @param {Boolean} true if all present else false
        */
       function canCalculateChange() {
         return vm.leaveRequest.from_date && vm.leaveRequest.to_date &&
           vm.leaveRequest.from_date_type && vm.leaveRequest.to_date_type;
       }
 
+      /**
+       * checks if leaverequest is managed by given manager id
+       *
+       * @param {String} managerContactId
+       * @returns {Promise}
+       */
       function isManagedBy(managerContactId) {
-        vm.leaveRequest.roleOf({id : managerContactId})
+        return vm.leaveRequest.roleOf({
+            id: managerContactId
+          })
           .then(function (role) {
-            if(role === 'manager') {
-              vm.uiOptions.isAdmin = true;
+            if (role === 'manager') {
+              vm.uiOptions.isManager = true;
+            } else {
+              vm.uiOptions.isManager = false;
             }
           });
       }
 
+      /**
+       * initialize absence types
+       *
+       */
       function initAbsenceType() {
-        if(vm.uiOptions.isAdmin) {
+        if (canEdit()) {
           vm.selectedAbsenceType = _.find(vm.absenceTypes, function (absenceType) {
             return absenceType.id == vm.leaveRequest.type_id;
           });
-        }
-        else{
-        // Assign the first absence type to the leave request
+        } else {
+          // Assign the first absence type to the leave request
           vm.selectedAbsenceType = vm.absenceTypes[0];
         }
 
-        //vm.selectedAbsenceType = initAbsenceType();
         vm.leaveRequest.type_id = vm.selectedAbsenceType.id;
         // Init the `balance` object based on the first absence type
         vm.balance.opening = vm.selectedAbsenceType.remainder;
       }
 
+      /**
+       * initialize from and to dates, day types and contact
+       *
+       */
       function initDates() {
         initStatus();
         initDayTypes();
+        initContact();
 
-        if(vm.uiOptions.isAdmin) {
+        if (canEdit()) {
           vm.uiOptions.fromDate = convertDateFormatFromServer(vm.leaveRequest.from_date);
           vm.onDateChange(vm.uiOptions.fromDate, 'from');
           vm.uiOptions.toDate = convertDateFormatFromServer(vm.leaveRequest.to_date);
-          vm.onDateChange(vm.uiOptions.fromDate, 'to');
+          vm.onDateChange(vm.uiOptions.toDate, 'to');
         }
       }
 
+      /**
+       * initialize day types
+       *
+       */
       function initDayTypes() {
-        if(vm.uiOptions.isAdmin) {
+        if (canEdit()) {
           vm.uiOptions.selectedFromType = getDateTypeFromValue(vm.leaveRequest.from_date_type);
           vm.uiOptions.selectedToType = getDateTypeFromValue(vm.leaveRequest.to_date_type);
         }
-
-        //initBalanceChange();//resets dates?
       }
 
-      function initBalanceChange() {
-        if(vm.uiOptions.isAdmin) {
-          vm.uiOptions.showBalance = true;
-          if (canCalculateChange()) {
-            vm.loading.calculateBalanceChange = true;
-            vm.calculateBalanceChange().then(function () {
-              vm.loading.calculateBalanceChange = false;
-            });
-          }
-        }
-      }
-
+      /**
+       * initialize status
+       *
+       */
       function initStatus() {
-        if(vm.uiOptions.isAdmin) {
+        if (canEdit()) {
           vm.uiOptions.statusLabel = getStatusFromValue(vm.leaveRequest.status_id).label;
           //waiting_approval is removed below so call the above before it
-          setStatusesForManager();
-          //vm.uiOptions.selectedStatus = getStatusFromValue(vm.leaveRequest.status_id);
-        }
-        else{
+          if (vm.uiOptions.isManager) {
+            setStatusesForManager();
+          }
+        } else {
           vm.leaveRequest.status_id = valueOfRequestStatus('waiting_approval');
         }
-        initContact();
       }
 
+      /**
+       * initialize contact
+       *
+       * {Promise}
+       */
       function initContact() {
-        return Contact.find(vm.leaveRequest.contact_id)
-          .then(function (contact) {
-            vm.uiOptions.contact = contact;
-          });
+        if (canEdit()) {
+          return Contact.find(vm.leaveRequest.contact_id)
+            .then(function (contact) {
+              vm.uiOptions.contact = contact;
+            });
+        } else {
+          return $q.resolve({});
+        }
       }
 
+      /**
+       * sets leave requestion statuses for manager
+       *
+       */
       function setStatusesForManager() {
-        if(vm.uiOptions.isAdmin) {
-          vm.leaveRequestStatuses = vm.leaveRequestStatuses.filter(function (status){
-            return status.name === 'approved' || status.name === 'more_information_requested' || status.name === 'cancelled';
+        var allowed_statuses = ['approved', 'more_information_requested', 'cancelled'];
+        if (vm.uiOptions.isManager) {
+          //remove current status of leaverequest
+          _.remove(allowed_statuses, function (status) {
+            return status == getStatusFromValue(vm.leaveRequest.status_id).name;
+          });
+
+          vm.leaveRequestStatuses = vm.leaveRequestStatuses.filter(function (status) {
+            return _.includes(allowed_statuses, status.name);
           });
         }
       }
 
+      /**
+       * updates the leaverequest
+       *
+       * @returns {Boolean} true if updating request else false
+       */
       function updateRequest() {
-        if(vm.uiOptions.isAdmin) {
+        if (canEdit()) {
           vm.leaveRequest.update()
             .then(function (result) {
               $rootScope.$emit('LeaveRequest::updatedByManager', vm.leaveRequest);
@@ -724,75 +770,19 @@ define([
                 vm.error = errors;
               }
             });
-          /*if(vm.uiOptions.selectedStatus.name === 'cancelled' ){
-            vm.leaveRequest.cancel()
-              .then(function () {
-                vm.error = undefined;
-                // close the modal
-                vm.ok();
-              })
-              .catch(function (errors) {
-                // show errors
-                if (errors.error_message)
-                  vm.error = errors.error_message;
-                else {
-                  vm.error = errors;
-                }
-              });
-          }
-          else if(vm.uiOptions.selectedStatus.name === 'approved' ){
-            vm.leaveRequest.approve()
-              .then(function () {
-                vm.error = undefined;
-                // close the modal
-                vm.ok();
-              })
-              .catch(function (errors) {
-                // show errors
-                if (errors.error_message)
-                  vm.error = errors.error_message;
-                else {
-                  vm.error = errors;
-                }
-              });
-          }
-          else if(vm.uiOptions.selectedStatus.name === 'rejected' ){
-            vm.leaveRequest.reject()
-              .then(function () {
-                vm.error = undefined;
-                // close the modal
-                vm.ok();
-              })
-              .catch(function (errors) {
-                // show errors
-                if (errors.error_message)
-                  vm.error = errors.error_message;
-                else {
-                  vm.error = errors;
-                }
-              });
-          }
-          else if(vm.uiOptions.selectedStatus.name === 'more_information_requested' ){
-            vm.leaveRequest.sendBack()
-              .then(function () {
-                vm.error = undefined;
-                // close the modal
-                vm.ok();
-              })
-              .catch(function (errors) {
-                // show errors
-                if (errors.error_message)
-                  vm.error = errors.error_message;
-                else {
-                  vm.error = errors;
-                }
-              });
-          }*/
 
           return true;
         }
-
         return false;
+      }
+
+      /**
+       * checks if user is owner or manager for the leaverequest
+       *
+       * @returns {Boolean}
+       */
+      function canEdit() {
+        return vm.uiOptions.isOwner || vm.uiOptions.isManager;
       }
 
       return vm;
