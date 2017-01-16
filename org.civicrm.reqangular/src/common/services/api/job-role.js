@@ -9,12 +9,26 @@ define([
 
     return api.extend({
 
+      /**
+       * Returns the list of job roles
+       *
+       * @param {object} filters
+       * @param {object} pagination
+       * @param {string} sort
+       * @return {Promise}
+       */
       all: function (filters, pagination, sort, additionalParams) {
         $log.debug('api.jobRole.api');
 
         return this.getAll('HRJobRole', filters, pagination, sort, additionalParams);
       },
 
+      /**
+       * Finds the job role with the given id
+       *
+       * @param {string/int} id
+       * @return {Promise} resolves to the found contact
+       */
       find: function (id) {
         $log.debug('api.jobRole.find');
 

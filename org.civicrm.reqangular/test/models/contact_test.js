@@ -120,8 +120,7 @@ define([
 
                     it('passes to its api the ids of the contacts whose job roles match the filters', function () {
                         expect(contactAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                            display_name: 'foo',
-                            id: { 'IN': jasmine.any(Array) }
+                            display_name: 'foo'
                         }), undefined);
                     });
                 });
