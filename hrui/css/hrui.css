@@ -35,16 +35,32 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-logo:before {
-  content: "\e600";
-}
-
 .icon-logo-full:before {
   content: "\e601";
 }
 
+.icon-logo-full:before {
+  color: #727f8a;
+  font-size: 22px;
+}
+
 body:not(.toolbar-drawer) {
   padding-top: 30px;
+}
+
+#civicrm-footer {
+  height: 300px;
+  background-color: #e8eef0 !important;
+  color: #727e8a;
+  border-top: 1px solid #ddd;
+  padding-top: 175px;
+  font-size: 13px;
+  line-height: 2;
+}
+
+
+.footer-logo {
+  margin-top: 25px;
 }
 
 .crm-tooltip table td {
