@@ -69,26 +69,22 @@ CMS_ROOT=
 
 ## DB credentials for CMS
 CMS_DB_DSN=
-CMS_DB_ARGS=
 CMS_DB_HOST=127.0.0.1
 CMS_DB_NAME=
 CMS_DB_PASS=
 CMS_DB_PORT=3306
 CMS_DB_USER=
-CMS_DB_PERM=admin
 
 ## Path to the civicrm-core tree
 CIVI_CORE=
 
 ## DB credentials for Civi
 CIVI_DB_DSN=
-CIVI_DB_ARGS=
 CIVI_DB_HOST=127.0.0.1
 CIVI_DB_NAME=
 CIVI_DB_PASS=
 CIVI_DB_PORT=3306
 CIVI_DB_USER=
-CIVI_DB_PERM=super
 
 ## Path to the civicrm.settings.php
 CIVI_SETTINGS=
@@ -137,7 +133,7 @@ function civihr_makepasswd() {
 ?>
 EOF
 # Calling temp make password php file.
-php "$TMPDIR/mkpasswd.php" $1
+php "$TMPDIR/mkpasswd.php" "$1"
 }
 
 ###############################################################################
@@ -166,7 +162,7 @@ function civihr_assertvars() {
 ## Summarize the content of key environment variables
 function civihr_summary() {
   if [ -n "$1" ]; then
-    echo $1
+    echo "$1"
   fi
   shift
 
@@ -281,12 +277,12 @@ function civicrm_install() {
 
   pushd "$CIVI_CORE" >> /dev/null
     if [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" ]; then
-      cat sql/civicrm.mysql sql/civicrm_generated.mysql | mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS $CIVI_DB_NAME
+      cat sql/civicrm.mysql sql/civicrm_generated.mysql | mysql -u"$CIVI_DB_USER" -p"$CIVI_DB_PASS" "$CIVI_DB_NAME"
     else
       echo "Failed to locate civi SQL files"
     fi
   popd >> /dev/null
-  eval mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS $CIVI_DB_NAME <<EOSQL
+  eval mysql -u"$CIVI_DB_USER" -p"$CIVI_DB_PASS" "$CIVI_DB_NAME" <<EOSQL
     UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
     SELECT @option_group_id := id
       FROM civicrm_option_group n
@@ -417,7 +413,7 @@ function git_cache_setup() {
   ## TODO: defensive programming: $cachedir should not end in "/"
 
   if [ -d "$cachedir" -a -f "$lastrun" -a -z "$FORCE_DOWNLOAD" ]; then
-    if php -r 'exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);' -- $CACHE_TTL "$lastrun" ; then
+    if php -r "exit($argv[1] + file_get_contents($argv[2]) < time() ? 1 : 0);" -- $CACHE_TTL "$lastrun" ; then
       echo "SKIP: git_caccaches.shhe_setup '$url' $cachedir' (recently updated; ttl=$CACHE_TTL)"
       return
     fi
@@ -425,7 +421,7 @@ function git_cache_setup() {
 
   civihr_makeparent "$lock"
   if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
-    php -r 'echo time();' > $lastrun
+    php -r 'echo time();' > "$lastrun"
     if [ ! -d "$cachedir" ]; then
       ## clone
       echo "[[Initialize cache dir: $cachedir]]"
@@ -445,7 +441,7 @@ function git_cache_setup() {
 
     rm -f "$lock"
   else
-    echo "ERROR: git_cache_setup '$url' '$cachdir': failed to acquire lock"
+    echo "ERROR: git_cache_setup '$url' '$cachedir': failed to acquire lock"
   fi
 }
 
@@ -495,7 +491,6 @@ function default_cache_setup() {
 
 ###############################################################################
 ## Parse options
-declare -a ARGS=()
 function civihr_parse() {
 
   civihr_mkdir "$TMPDIR" "$BLDDIR"
@@ -563,13 +558,13 @@ echo 'CiviHR Install script';
 echo '******************************************';
 
 function absdirname() {
-  pushd $(dirname $0) >> /dev/null
+  pushd $(dirname "$0") >> /dev/null
     pwd
   popd >> /dev/null
 }
 
 BINDIR=$(absdirname "$0")
-PRJDIR=`pwd`
+PRJDIR=$(pwd)
 TMPDIR="$PRJDIR/temp"
 BLDDIR="$PRJDIR"
 
@@ -624,7 +619,7 @@ function create_personal_location_type() {
 function delete_name_and_address_profile() {
   PROFILE_ID=`[[ $(drush cvapi UFGroup.getsingle return="id" title="Name and address") =~ \[id\].+([1-9]) ]] && echo ${BASH_REMATCH[1]}`
 
-  drush cvapi UFGroup.delete sequential=1 id=$PROFILE_ID
+  drush cvapi UFGroup.delete sequential=1 id="$PROFILE_ID"
 }
 
 ##
@@ -664,11 +659,9 @@ function civihr_install_site(){
   database_install
 
   ## Grant access for the Drupal database user to access the Civi Database too.
-eval mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS <<EOSQL
+eval mysql -u"$CIVI_DB_USER" -p"$CIVI_DB_PASS" <<EOSQL
     GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'%';
 EOSQL
-
-  #mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS -e "GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'$CIVI_DB_HOSTPORT' IDENTIFIED BY '$CMS_DB_PASS'";
   
   ## Setup Drupal (config files, database tables)
   drupal_install
@@ -776,7 +769,7 @@ function civihr_app_show() {
 ## Displays Site Summary
 function civihr_app_show_summary() {
   civihr_assertvars civi_app_show_summary SITE_NAME TMPDIR "$@"
-  civihr_summary "[[Show site summary ($SITE_NAME)]]" $@
+  civihr_summary "[[Show site summary ($SITE_NAME)]]" "$@"
   echo "[[General notes]]"
   echo " - You may need to restart httpd."
   echo " - You may need to add the hostname and IP to /etc/hosts or DNS."
