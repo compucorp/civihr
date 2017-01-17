@@ -47,9 +47,6 @@ IS_INSTALLED=
 ADMIN_EMAIL="admin@example.com"
 ADMIN_PASS=
 ADMIN_USER="admin"
-DEMO_EMAIL="demo@example.com"
-DEMO_PASS="demo"
-DEMO_USER="demo"
 
 ## Printable name of the site (default: $SITE_NAME)
 CMS_TITLE=
@@ -102,7 +99,7 @@ CIVI_FILES=
 ## Path to the civicrm templates_c cache directory
 CIVI_TEMPLATEC=
 
-## Name of the CiviCRM UF (Drupal, Drupal6, Joomla, WordPress)
+## Name of the CiviCRM UF (Drupal)
 CIVI_UF=
 
 ## The name of the organization (for inclusion in footers, etc)
@@ -114,7 +111,7 @@ CIVI_DOMAIN_EMAIL=
 ## Path to the web-managed extension folder (optional)
 CIVI_EXT_DIR=
 
-## URL of the web-managed extension folder (required iff CIVI_EXT_DIR is set)
+## URL of the web-managed extension folder (required if CIVI_EXT_DIR is set)
 CIVI_EXT_URL=
 
 ###############################################################################
@@ -283,8 +280,8 @@ function database_install() {
 function _database_install_cms() {
 
   echo "[[Setup MySQL for CMS]]"
-  civihr_assertvars _amp_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
-  
+  civihr_assertvars _database_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
+
   mysql -u$DB_USER -p$DB_PASS -e "create database $CMSdbName" >/dev/null 2>&1 || { echo "[[Please provide CMS database name ( i.e --crmdb ) or Check if its already exists.]]";exit 1;  }
 
   [ -z "$CMS_DB_USER" ]           && CMS_DB_USER="$DB_USER"
@@ -298,7 +295,7 @@ function _database_install_cms() {
 function _database_install_civi() {
 
   echo "[[Setup MySQL for Civi]]"
-  civihr_assertvars _amp_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
+  civihr_assertvars _database_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
 
   mysql -u$DB_USER -p$DB_PASS -e "create database $CIVIdbName" >/dev/null 2>&1 || { echo "[[Please provide CRM database name ( i.e --crmdb ) or Check if its already exists.]]";exit 1;  }
 
@@ -605,7 +602,6 @@ function civihr_parse() {
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
 [ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(civihr_makepasswd 16)
 [ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(civihr_makepasswd 12)
-[ -z "$DEMO_PASS" ]          && DEMO_PASS=$(civihr_makepasswd 12)
 [ -z "$CMS_TITLE" ]          && CMS_TITLE="$SITE_NAME"
 [ -z "$CMS_HOSTNAME" ]       && CMS_HOSTNAME=$(php -r '$p = parse_url($argv[1]); echo $p["host"];' "$CMS_URL")
 [ -z "$CMS_PORT" ]           && CMS_PORT=$(php -r '$p = parse_url($argv[1]); echo $p["port"];' "$CMS_URL")
@@ -643,7 +639,7 @@ function civihr_setup_structure() {
 
   MAKEFILE="${TMPDIR}/${SITE_NAME}/${SITE_ID}.make"
   civihr_makeparent "$MAKEFILE"
-  curl https://raw.githubusercontent.com/compucorp/civihr-employee-portal/PCHR-1666-install-script/drush.make \
+  curl https://raw.githubusercontent.com/civicrm/civihr/PCHR-1666/bin/drush.make \
     | sed "s;%%CACHE_DIR%%;${CACHE_DIR};" \
     | sed "s;%%CIVI_VERSION%%;${CIVI_VERSION};" \
     | sed "s;%%CMS_VERSION%%;${CMS_VERSION};" \
@@ -826,7 +822,7 @@ function civihr_app_show() {
     civihr_app_show_summary \
       CMS_ROOT CMS_URL CMS_DB_DSN \
       CIVI_DB_DSN \
-      ADMIN_USER ADMIN_PASS DEMO_USER DEMO_PASS
+      ADMIN_USER ADMIN_PASS
 }
 
 ###############################################################################
