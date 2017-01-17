@@ -249,3 +249,65 @@ label {
     }
   }
 }
+
+#{$address-fields} {
+  .form-layout {
+    td {
+      &:nth-child(1) {
+        .crm-field-wrapper {
+          flex-direction: column;
+          align-items: flex-start;
+
+          label,
+          input:not([type='radio']):not([type='checkbox']),
+          .select2-container {
+            width: 100% !important;
+            flex: 1 auto;
+          }
+        }
+      }
+
+      &:nth-child(2) {
+        .crm-field-wrapper {
+          flex-direction: column;
+          align-items: flex-start;
+
+          &:nth-child(2) {
+            display: block;
+
+            [for="postal-code-range-toggle"] {
+              position: relative;
+
+              &:after {
+                left: 2px;
+                top: 2px;
+              }
+            }
+          }
+        }
+      }
+
+      @media (max-width: $screen-sm-min) {
+        margin-right: 0 !important;
+        width: 100%;
+
+        .crm-field-wrapper {
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: flex-start;
+
+          .select2-container {
+            width: 100% !important;
+          }
+
+          .postal_code_range-wrapper {
+            .crm-form-text {
+              width: 1% !important;
+              min-width: 1% !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
