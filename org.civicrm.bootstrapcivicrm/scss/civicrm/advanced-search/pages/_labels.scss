@@ -2,7 +2,6 @@
   flex-direction: column;
 
   td {
-    // flex-direction: column;
     width: 100%;
     margin-right: 0 !important;
     margin-left: 0 !important;
@@ -159,6 +158,12 @@ input[type='checkbox'] + label {
         position: relative;
         left: initial;
       }
+    }
+  }
+
+  @media (max-width: $screen-sm-min) {
+    td {
+      width: 100% !important;
     }
   }
 }
@@ -334,13 +339,6 @@ input[type='checkbox'] + label {
       flex-direction: column;
     }
 
-    input:not([type='radio']):not([type='checkbox']),
-    .select2-container {
-      width: 100% !important;
-      flex: 1 auto;
-      margin-right: 0 !important;
-    }
-
     tr:nth-child(4) {
       td:last-child {
         display: none;
@@ -349,9 +347,7 @@ input[type='checkbox'] + label {
   }
 }
 
-#{$notes},
-#{$changelog},
-#{$mailings} {
+.crm-accordion-body {
   @media (max-width: $screen-sm-min) {
     tr {
       display: flex;
@@ -363,6 +359,10 @@ input[type='checkbox'] + label {
       width: 100% !important;
       flex: 1 auto;
       margin-right: 0 !important;
+    }
+
+    .float-left + .float-left {
+      margin-left: 0;
     }
   }
 }
@@ -384,6 +384,17 @@ input[type='checkbox'] + label {
         td {
           padding-left: 0;
         }
+      }
+    }
+  }
+}
+
+#{$membership} {
+  tr {
+    &:nth-child(3) {
+      td {
+        display: flex;
+        flex-direction: column;
       }
     }
   }
