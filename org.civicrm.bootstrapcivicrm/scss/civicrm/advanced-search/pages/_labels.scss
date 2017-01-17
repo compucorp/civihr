@@ -3,6 +3,61 @@ label {
 }
 
 #{$basic-criteria} {
+  .form-layout > tbody {
+    > tr {
+      display: flex;
+
+      td {
+        width: calc(100% / 3);
+        box-sizing: border-box;
+        padding-right: 15px;
+        padding-left: 0;
+
+        input:not([type='radio']):not([type='checkbox']),
+        .select2-container {
+          width: 100% !important;
+          flex: 1 auto;
+        }
+
+        .helpicon {
+          position: relative;
+          top: -15px;
+          left: 12px;
+        }
+      }
+
+      &:nth-child(2) {
+        td {
+          &:nth-child(4),
+          &:nth-child(5) {
+            display: none;
+          }
+        }
+      }
+    }
+
+    @media (max-width: $screen-sm-min) {
+      > tr {
+        flex-direction: column;
+
+        td {
+          flex-direction: column;
+          width: 100%;
+
+          .crm-form-text,
+          .crm-select2,
+          .select2-container-multi,
+          #groupselect,
+          > div {
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+          }
+        }
+      }
+    }
+  }
+
   input[type='checkbox'],
   input[type='radio'] {
     margin-top: 15px;
@@ -32,13 +87,6 @@ label {
   }
 
   label:first-of-type {
-    @media (min-width: $screen-sm-min) {
-      width: 100% !important;
-    }
-    @media (min-width: $screen-lg-min) {
-      width: 11vw !important;
-    }
-
     & ~ div:not(.select2-container) {
       clear: left;
     }
@@ -77,11 +125,6 @@ label {
         }
       }
     }
-  }
-
-  input + label + .helpicon {
-    top: 4px;
-    margin-left: 10px;
   }
 }
 
