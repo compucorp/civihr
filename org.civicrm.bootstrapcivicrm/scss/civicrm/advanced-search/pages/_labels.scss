@@ -30,6 +30,10 @@ input[type='checkbox'] + label {
   }
 }
 
+.select2-container {
+  margin-top: 5px !important;
+}
+
 #{$basic-criteria} {
   .form-layout > tbody {
     > tr {
@@ -45,6 +49,7 @@ input[type='checkbox'] + label {
         .select2-container {
           width: 100% !important;
           flex: 1 auto;
+          margin-top: 0 !important;
         }
 
         .helpicon {
@@ -164,6 +169,25 @@ input[type='checkbox'] + label {
   @media (max-width: $screen-sm-min) {
     td {
       width: 100% !important;
+    }
+  }
+}
+
+#{$activities},
+#{$relationship} {
+  tr {
+    &:nth-child(3),
+    &:nth-child(5) {
+      td {
+        padding-bottom: 0;
+      }
+    }
+
+    &:nth-child(4),
+    &:last-child {
+      td {
+        padding-top: 0;
+      }
     }
   }
 }
@@ -334,6 +358,27 @@ input[type='checkbox'] + label {
     }
   }
 
+  tr {
+    &:first-child,
+    &:nth-child(6) {
+      td {
+        padding-bottom: 0;
+      }
+    }
+
+    &:nth-child(2),
+    &:nth-child(7) {
+      td {
+        padding-top: 0;
+      }
+    }
+
+    #age_low,
+    #age_high {
+      margin-top: 5px !important;
+    }
+  }
+
   @media (max-width: $screen-sm-min) {
     .crm-age-range {
       flex-direction: column;
@@ -342,6 +387,29 @@ input[type='checkbox'] + label {
     tr:nth-child(4) {
       td:last-child {
         display: none;
+      }
+    }
+  }
+}
+
+#{$notes},
+#{$changelog} {
+  .crm-form-text {
+    margin-top: 5px !important;
+  }
+}
+
+#{$changelog} {
+  tr {
+    &:nth-child(2) {
+      td {
+        padding-bottom: 0;
+      }
+    }
+
+    &:last-child {
+      td {
+        padding-top: 0;
       }
     }
   }
@@ -385,6 +453,18 @@ input[type='checkbox'] + label {
           padding-left: 0;
         }
       }
+
+      &:nth-child(2) {
+        td {
+          padding-bottom: 0;
+        }
+      }
+
+      &:nth-child(3) {
+        td {
+          padding-top: 0;
+        }
+      }
     }
   }
 }
@@ -397,17 +477,96 @@ input[type='checkbox'] + label {
         flex-direction: column;
       }
     }
+
+    &:nth-child(4),
+    &:nth-child(6),
+    &:nth-child(8) {
+      td {
+        padding-bottom: 0;
+      }
+    }
+
+    &:nth-child(5),
+    &:nth-child(7),
+    &:nth-child(9) {
+      td {
+        padding-top: 0;
+      }
+    }
   }
 }
 
 #{$contributions} {
-  tr:not(:first-child) {
-    display: flex;
-    flex-direction: column;
-    margin-top: 10px;
+  tr {
+    &:not(:first-child) {
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+    }
+
+    &:first-child {
+      td {
+        padding-bottom: 0;
+      }
+    }
+
+    &:nth-child(2) {
+      td {
+        padding-top: 0;
+      }
+    }
   }
 
   td {
     color: $gray-darker;
+  }
+
+  .crm-form-text,
+  #s2id_contribution_or_softcredits {
+    margin-top: 5px !important;
+  }
+}
+
+#{$pledges} {
+  tr {
+    &:first-child,
+    &:nth-child(5),
+    &:nth-child(7),
+    &:nth-child(9) {
+      td {
+        padding-bottom: 0;
+      }
+    }
+
+    &:nth-child(2),
+    &:nth-child(6),
+    &:nth-child(8),
+    &:nth-child(10) {
+      td {
+        padding-top: 0;
+      }
+    }
+  }
+
+  .select2-container {
+    margin-top: 5px !important;
+  }
+}
+
+#{$events} {
+  tr {
+    &:nth-child(2),
+    &:nth-child(4) {
+      td {
+        padding-bottom: 0;
+      }
+    }
+
+    &:nth-child(3),
+    &:nth-child(5) {
+      td {
+        padding-top: 0;
+      }
+    }
   }
 }
