@@ -122,6 +122,7 @@ define([
             .then(function (filters) {
               var defer = $q.defer();
 
+              //if ID is empty array directly resolve the promise without calling the API
               if (filters && filters.id && !filters.id.IN.length) {
                 defer.resolve({
                   list: []

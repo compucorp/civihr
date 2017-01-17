@@ -16,7 +16,6 @@
             ng-options="period as ctrl.labelPeriod(period) for period in ctrl.absencePeriods track by period.id"
             ng-model="ctrl.filters.leaveRequestFilters.selectedPeriod"
             ng-change="ctrl.refresh()">
-            <option value="">Periods</option>
           </select>
         </div>
         <span class="chr_manager_dashboard__filter pointer" ng-click="ctrl.isFilterExpanded = !ctrl.isFilterExpanded">
