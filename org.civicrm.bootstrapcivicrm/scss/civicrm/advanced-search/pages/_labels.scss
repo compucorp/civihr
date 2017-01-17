@@ -21,6 +21,14 @@
 
 label {
   font-weight: normal !important;
+  position: relative;
+}
+
+input[type='checkbox'] + label {
+  &:after {
+    left: 2px !important;
+    top: 0 !important;
+  }
 }
 
 #{$basic-criteria} {
@@ -342,7 +350,8 @@ label {
 }
 
 #{$notes},
-#{$changelog} {
+#{$changelog},
+#{$mailings} {
   @media (max-width: $screen-sm-min) {
     tr {
       display: flex;
@@ -354,6 +363,28 @@ label {
       width: 100% !important;
       flex: 1 auto;
       margin-right: 0 !important;
+    }
+  }
+}
+
+#{$mailings} {
+  tbody {
+    > tr {
+      &:first-child {
+        td:first-child {
+          display: none;
+        }
+      }
+
+      [for="mailing_bounce_types"] {
+        display: block;
+      }
+
+      &:nth-child(6) {
+        td {
+          padding-left: 0;
+        }
+      }
     }
   }
 }
