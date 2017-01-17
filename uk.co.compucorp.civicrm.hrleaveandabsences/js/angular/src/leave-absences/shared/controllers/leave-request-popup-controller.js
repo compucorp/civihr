@@ -720,7 +720,7 @@ define([
        * {Promise}
        */
       function initContact() {
-        if (canEdit()) {
+        if (canEdit()) {         
           return Contact.find(vm.leaveRequest.contact_id)
             .then(function (contact) {
               vm.uiOptions.contact = contact;

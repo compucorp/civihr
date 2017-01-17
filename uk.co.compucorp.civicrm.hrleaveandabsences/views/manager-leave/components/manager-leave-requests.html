@@ -30,7 +30,20 @@
     </div>
     <div class="panel-subheading chr_manager_dashboard__sub-header" ng-show="ctrl.isFilterExpanded">
       <div>
-        <input type="text" class="form-control" placeholder="Staff Member">
+
+        <ui-select ng-change="ctrl.refresh()"
+                   ng-model="ctrl.filters.leaveRequestFilters.selectedUsers">
+          <ui-select-match placeholder="Staff Member">
+            <span ng-bind="$select.selected.display_name"></span>
+          </ui-select-match>
+          <ui-select-choices repeat="user in (ctrl.filteredUsers | filter: $select.search) track by user.id">
+            <span ng-bind="user.display_name"></span>
+          </ui-select-choices>
+        </ui-select>
+        <i ng-show="ctrl.filters.leaveRequestFilters.selectedUsers"
+           ng-click="ctrl.clearStaffSelection()"
+           class="fa fa-times-circle" aria-hidden="true"></i>
+
       </div>
       <div class="chr_custom-select">
         <select
@@ -48,13 +61,16 @@
           <option value="">Department</option>
         </select>
       </div>
-      <div class="chr_custom-select">
-        <select
-          ng-options="level.label for level in ctrl.levelTypes track by level.id"
-          ng-model="ctrl.filters.contactFilters.level_type"
-          ng-change="ctrl.refresh()">
-          <option value="">Level Types</option>
-        </select>
+      <div>
+        <ui-select multiple ng-change="ctrl.refresh()"
+                   ng-model="ctrl.filters.contactFilters.level_type">
+          <ui-select-match placeholder="Leave Type">
+            <span ng-bind="$item.value"></span>
+          </ui-select-match>
+          <ui-select-choices repeat="level in (ctrl.levelTypes | filter: $select.search) track by level.id">
+            <span ng-bind="level.value"></span>
+          </ui-select-choices>
+        </ui-select>
       </div>
       <div class="chr_custom-select">
         <select
@@ -68,13 +84,13 @@
         <label>
           <input type="checkbox"
                  ng-change = "ctrl.refresh()"
-                 ng-model="ctrl.filters.leaveRequestFilters.pending_requests"> Show pending requests
-          only
+                 ng-model="ctrl.filters.leaveRequestFilters.pending_requests"> Show pending requests only
         </label>
       </div>
     </div>
     <crm-loading show="!ctrl.loading.content">
-      <div class="panel-body row chr_manager_dashboard__panel_body">
+      <div ng-show="ctrl.leaveRequests.table.list.length"
+           class="panel-body row chr_manager_dashboard__panel_body">
         <ul class="col-xs-3 nav nav-pills nav-stacked chr_vertical_tabs">
           <li ng-repeat="status in ctrl.leaveRequestStatuses track by status.value"
               ng-hide="ctrl.filterLeaveRequestByStatus(status).length === 0"
@@ -148,6 +164,10 @@
             </tfoot>
           </table>
         </div>
+      </div>
+      <div class="text-center"
+            ng-hide="ctrl.leaveRequests.table.list.length">
+        No Leave Requests available
       </div>
     </crm-loading>
   </crm-loading>

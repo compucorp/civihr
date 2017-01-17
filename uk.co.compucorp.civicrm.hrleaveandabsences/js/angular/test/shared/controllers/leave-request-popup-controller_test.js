@@ -492,6 +492,10 @@
         });
 
         describe('initialized', function () {
+          beforeEach(function () {
+            $scope.$apply();
+          });
+
           it('should allow to view staff details', function () {
             expect($ctrl.uiOptions.isManager).toBeTruthy();
           });
@@ -507,9 +511,8 @@
           });
 
           it('should get contact name', function () {
-            expect($ctrl.uiOptions.contact.display_name).toEqual('civihr_staff@compucorp.co.uk');
+            expect($ctrl.uiOptions.contact.display_name).toEqual(jasmine.any(String));
           });
-
         });
 
         describe('on submit', function () {
