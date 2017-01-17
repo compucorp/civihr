@@ -509,7 +509,7 @@
               it('ContactAPI gets called with region value', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   region: mockRegion.value
-                }))
+                }), jasmine.any(Object));
               });
             });
 
@@ -523,7 +523,7 @@
               it('ContactAPI gets called with null', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   region: null
-                }))
+                }), jasmine.any(Object));
               });
             });
           });
@@ -544,7 +544,7 @@
               it('ContactAPI gets called with department value', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   department: mockDepartment.value
-                }))
+                }), jasmine.any(Object));
               });
             });
 
@@ -558,7 +558,7 @@
               it('ContactAPI gets called with null', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   department: null
-                }))
+                }), jasmine.any(Object));
               });
             });
           });
@@ -579,7 +579,7 @@
               it('ContactAPI gets called with location value', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   location: mockLocation.value
-                }))
+                }), jasmine.any(Object));
               });
             });
 
@@ -593,7 +593,7 @@
               it('ContactAPI gets called with null', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   location: null
-                }))
+                }), jasmine.any(Object));
               });
             });
           });
@@ -610,7 +610,7 @@
               it('ContactAPI gets called with null', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   level_type: null
-                }))
+                }), jasmine.any(Object));
               });
             });
 
@@ -630,7 +630,7 @@
                   level_type: {
                     "IN": ['mockvalue']
                   }
-                }))
+                }), jasmine.any(Object));
               });
             });
           });

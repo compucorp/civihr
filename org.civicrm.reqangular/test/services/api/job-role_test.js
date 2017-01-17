@@ -50,7 +50,7 @@ define([
       });
 
       it("calls getAll method", function () {
-        expect(JobRoleAPI.getAll).toHaveBeenCalledWith('HRJobRole', jasmine.any(Object), jasmine.any(Object), jasmine.any(String), jasmine.any(Object));
+        expect(JobRoleAPI.getAll).toHaveBeenCalledWith('HrJobRoles', jasmine.any(Object), jasmine.any(Object), jasmine.any(String), jasmine.any(Object));
       });
     });
 

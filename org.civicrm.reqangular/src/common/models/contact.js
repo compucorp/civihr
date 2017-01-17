@@ -34,7 +34,11 @@ define([
        * @return {Promise} resolve to an array of contact ids
        */
       function jobRoleContactids(filters) {
-        return JobRole.all(filters)
+        return JobRole.all(_.assign(filters, {
+          "api.HRJobContract.getsingle": {
+            "id": "$value.id"
+          }
+        }))
           .then(function (jobRoles) {
             return jobRoles.list.map(function (jobRole) {
               return jobRole.contact_id;
@@ -60,8 +64,7 @@ define([
           .omit(groupFiltersKeys)
           .omit(jobRoleFiltersKeys)
           .assign({
-            id: _.intersection.apply(null, contactIds).length ?
-              { in: _.intersection.apply(null, contactIds) }: null
+            id: {in: _.intersection.apply(null, contactIds)}
           })
           .value();
       }
@@ -117,7 +120,20 @@ define([
         all: function (filters, pagination) {
           return processContactFilters.call(this, filters)
             .then(function (filters) {
-              return contactAPI.all(filters, pagination);
+              var defer = $q.defer();
+
+              if (filters && filters.id && !filters.id.IN.length) {
+                defer.resolve({
+                  list: []
+                });
+              } else {
+                contactAPI.all(filters, pagination)
+                  .then(function (data) {
+                    defer.resolve(data);
+                  });
+              }
+
+              return defer.promise;
             })
             .then(function (response) {
               response.list = response.list.map(function (contact) {

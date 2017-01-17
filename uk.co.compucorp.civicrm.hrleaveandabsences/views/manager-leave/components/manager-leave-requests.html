@@ -89,7 +89,8 @@
       </div>
     </div>
     <crm-loading show="!ctrl.loading.content">
-      <div class="panel-body row chr_manager_dashboard__panel_body">
+      <div ng-show="ctrl.leaveRequests.table.list.length"
+           class="panel-body row chr_manager_dashboard__panel_body">
         <ul class="col-xs-3 nav nav-pills nav-stacked chr_vertical_tabs">
           <li ng-repeat="status in ctrl.leaveRequestStatuses track by status.value"
               ng-hide="ctrl.filterLeaveRequestByStatus(status).length === 0"
@@ -163,6 +164,10 @@
             </tfoot>
           </table>
         </div>
+      </div>
+      <div class="text-center"
+            ng-hide="ctrl.leaveRequests.table.list.length">
+        No Leave Requests available
       </div>
     </crm-loading>
   </crm-loading>

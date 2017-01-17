@@ -20,7 +20,7 @@ define([
       all: function (filters, pagination, sort, additionalParams) {
         $log.debug('api.jobRole.api');
 
-        return this.getAll('HRJobRole', filters, pagination, sort, additionalParams);
+        return this.getAll('HrJobRoles', filters, pagination, sort, additionalParams);
       },
 
       /**

@@ -19,7 +19,11 @@ define([
   function controller($log, $q, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup) {
     $log.debug('Component: manager-leave-requests');
 
-    var vm = Object.create(this);
+    var vm = Object.create(this),
+      allStatus = {
+        name: 'all',
+        label: 'All'
+      };
 
     vm.isFilterExpanded = false;
     vm.absencePeriods = [];
@@ -46,7 +50,7 @@ define([
         selectedUsers: null,
         selectedPeriod: null,
         selectedAbsenceTypes: null,
-        leaveStatus: null,
+        leaveStatus: allStatus,
         pending_requests: false
       }
     };
@@ -258,7 +262,10 @@ define([
     function loadAllRequests(page) {
       vm.pagination.page = page;
       vm.loading.content = true;
-      Contact.all(contactFilters())
+      Contact.all(contactFilters(), {
+        page: 1,
+        size: 0
+      })
         .then(function (data) {
           vm.filteredUsers = data.list;
 
@@ -281,6 +288,7 @@ define([
     function loadLeaveRequest(type) {
       var filterByStatus = type !== 'filter',
         pagination = type === 'filter' ? {} : vm.pagination;
+
       return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination)
         .then(function (leaveRequests) {
           vm.leaveRequests[type] = leaveRequests;
@@ -390,10 +398,7 @@ define([
     function loadStatuses() {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
-          statuses = statuses.concat({
-            name: 'all',
-            label: 'All'
-          });
+          statuses = statuses.concat(allStatus);
           vm.leaveRequestStatuses = statuses;
         });
     }
