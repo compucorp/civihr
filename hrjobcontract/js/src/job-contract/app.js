@@ -84,7 +84,7 @@ define([
                     })
                     .when('/', {
                             controller: 'ContractListCtrl',
-                            templateUrl: settings.pathApp + 'views/contractList.html?v=' + (new Date().getTime()),
+                            templateUrl: settings.pathApp + 'views/contractList.html',
                             resolve: {
                                 contractList: ['ContractService', function (ContractService) {
                                     return ContractService.get()

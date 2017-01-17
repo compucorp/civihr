@@ -13,13 +13,15 @@ define([
         locStandHrs = {};
 
       $scope.hrsTypeDefined = false;
+      $scope.hrsAmountDefined = false;
       entityHour.location_standard_hours = entityHour.location_standard_hours || "1";
       locStandHrs = $filter('getObjById')(utilsHoursLocation, entityHour.location_standard_hours);
 
       function updateHours(locStandHrs, hrsTypeId) {
-        $scope.hrsTypeDefined = typeof entityHour.hours_type !== 'undefined' &&  entityHour.hours_type != null && entityHour.hours_type != '';
+        $scope.hrsTypeDefined = !!entityHour.hours_type;
+        $scope.hrsAmountDefined = !!entityHour.hours_amount;
 
-        if ($scope.hrsTypeDefined) {
+        if ($scope.hrsTypeDefined && !$scope.hrsAmountDefined) {
           entityHour.hours_unit = locStandHrs.periodicity;
 
           switch(+hrsTypeId) {
@@ -35,12 +37,10 @@ define([
             default:
               entityHour.hours_amount = '';
           }
-
-          return
+        } else if (!$scope.hrsAmountDefined && !$scope.hrsAmountDefined) {
+          entityHour.hours_amount = '';
+          entityHour.hours_unit = '';
         }
-
-        entityHour.hours_unit = '';
-        entityHour.hours_amount = '';
       }
 
       function updateFTE(hrsStandard, hrsAmount){

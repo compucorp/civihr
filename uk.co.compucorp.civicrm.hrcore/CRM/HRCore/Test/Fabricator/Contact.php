@@ -10,7 +10,7 @@ class CRM_HRCore_Test_Fabricator_Contact {
   ];
 
   public static function fabricate($params = []) {
-    $params                 = array_merge(self::$defaultParams, $params);
+    $params = array_merge(self::$defaultParams, $params);
     $params['display_name'] = "{$params['first_name']} {$params['last_name']}";
 
     $result = civicrm_api3(

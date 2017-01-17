@@ -13,22 +13,3 @@ body:not(.toolbar-drawer) {
 #crm-main-content-wrapper #contactDetails #govID span {
   margin-right: 1%;
 }
-
-/*CiviCRM Menu Buttons*/
-#civicrm-menu {
-  height: 32px;
-}
-
-#civicrm-menu > li.menumain {
-  height: 26px !important;
-  line-height: 26px;
-}
-
-#civicrm-menu #crm-qsearch {
-  line-height: 28px;
-  height: 30px !important;
-}
-
-div.crm-summary-block > div.crm-summary-row > div.crm-content a.user-record-link {
-  color: #42AFCB;
-}
