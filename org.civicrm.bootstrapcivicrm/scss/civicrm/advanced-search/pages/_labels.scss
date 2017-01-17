@@ -341,7 +341,8 @@ label {
   }
 }
 
-#{$notes} {
+#{$notes},
+#{$changelog} {
   @media (max-width: $screen-sm-min) {
     tr {
       display: flex;
