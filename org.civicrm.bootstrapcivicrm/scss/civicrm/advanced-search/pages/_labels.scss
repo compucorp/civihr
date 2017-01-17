@@ -340,3 +340,19 @@ label {
     }
   }
 }
+
+#{$notes} {
+  @media (max-width: $screen-sm-min) {
+    tr {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input:not([type='radio']):not([type='checkbox']),
+    .select2-container {
+      width: 100% !important;
+      flex: 1 auto;
+      margin-right: 0 !important;
+    }
+  }
+}
