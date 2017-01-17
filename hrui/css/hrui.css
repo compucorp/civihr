@@ -49,13 +49,25 @@ body:not(.toolbar-drawer) {
 }
 
 #civicrm-footer {
-  height: 300px;
+  height: 250px;
   background-color: #e8eef0 !important;
   color: #727e8a;
   border-top: 1px solid #ddd;
-  padding-top: 175px;
+  padding-top: 85px;
   font-size: 13px;
   line-height: 2;
+}
+
+#civicrm-footer a {
+  color: #42afcb;
+}
+
+#civicrm-footer a:hover {
+  color: #42afcb;
+}
+
+#civicrm-footer a:visited {
+  color: #42afcb;
 }
 
 
@@ -67,6 +79,7 @@ body:not(.toolbar-drawer) {
   width: 50%;
   word-wrap: break-word;
 }
+
 #crm-main-content-wrapper #contactDetails #govID span {
   margin-right: 1%;
 }
