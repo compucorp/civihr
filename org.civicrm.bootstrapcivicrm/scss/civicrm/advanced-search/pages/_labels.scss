@@ -1,3 +1,24 @@
+@mixin mx-responsive-search {
+  flex-direction: column;
+
+  td {
+    // flex-direction: column;
+    width: 100%;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+
+    .crm-form-text,
+    .crm-select2,
+    .select2-container-multi,
+    #groupselect,
+    > div {
+      width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+  }
+}
+
 label {
   font-weight: normal !important;
 }
@@ -38,22 +59,7 @@ label {
 
     @media (max-width: $screen-sm-min) {
       > tr {
-        flex-direction: column;
-
-        td {
-          flex-direction: column;
-          width: 100%;
-
-          .crm-form-text,
-          .crm-select2,
-          .select2-container-multi,
-          #groupselect,
-          > div {
-            width: 100% !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-          }
-        }
+        @include mx-responsive-search;
       }
     }
   }
@@ -150,14 +156,32 @@ label {
 }
 
 #{$display-settings-for-results} {
-  td {
-    display: flex;
-    flex-flow: row wrap;
-    align-items: center;
+  tr {
+    td {
+      width: calc(100% / 3);
+      box-sizing: border-box;
+      padding-right: 15px;
+      padding-left: 0;
 
-    .helpicon {
-      padding-right: 10px;
-      padding-left: 5px;
+      input:not([type='radio']):not([type='checkbox']),
+      .select2-container {
+        width: 100% !important;
+        flex: 1 auto;
+      }
+
+      .helpicon {
+        padding-right: 10px;
+        padding-left: 5px;
+      }
+    }
+
+
+    @media (max-width: $screen-sm-min) {
+      @include mx-responsive-search;
+
+      td {
+        margin-bottom: 10px;
+      }
     }
   }
 }
