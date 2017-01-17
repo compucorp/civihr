@@ -51,10 +51,6 @@ define([
        * Saves data and closes the modal
        */
       vm.submit = function () {
-        if (vm.submitting) {
-          return;
-        }
-
         vm.submitting = true;
         $q.all([persistValues('regions'), persistValues('locations')])
           .then(function () {
