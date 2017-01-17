@@ -160,4 +160,15 @@
       $('#crm-notification-container .crm-help').append('<p>Source is a useful field where data has been migrated to CiviHR from one or a number of other legacy systems. The Source field will indicate which legacy system the contact has come from.</p>');
     });
   });
+
+  // Remove the arrow for menu items with sub-items, and replaces it
+  // with a font awesome caret
+  $(document).ready(function () {
+    $('#root-menu-div .menu-item-arrow').each(function ($element) {
+      var $arrow = $(this);
+
+      $arrow.before('<i class="fa fa-caret-right menu-item-arrow"></i>');
+      $arrow.remove();
+    });
+  });
 }(CRM.$, CRM._));

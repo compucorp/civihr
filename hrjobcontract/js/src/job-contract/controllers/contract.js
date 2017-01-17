@@ -1,4 +1,5 @@
 define([
+    'common/moment',
     'job-contract/controllers/controllers',
     'job-contract/services/contract-details',
     'job-contract/services/contract-hour',
@@ -9,18 +10,18 @@ define([
     'job-contract/services/contact',
     'job-contract/services/utils',
     'common/filters/angular-date/format-date'
-], function (controllers) {
+], function (moment, controllers) {
     'use strict';
 
     controllers.controller('ContractCtrl', [
         '$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', '$window', 'settings', 'API',
-        'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
+        'ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'ContactService', '$log',
-        'UtilsService', 'ContractService',
+        'UtilsService',
         function ($scope, $route, $filter, $modal, $rootElement, $q, $window, settings, API,
-                  ContractDetailsService, ContractHourService, ContractPayService, ContractLeaveService,
+                  ContractService, ContractDetailsService, ContractHourService, ContractPayService, ContractLeaveService,
                   ContractHealthService, ContractPensionService, ContractFilesService, ContactService, $log,
-                  UtilsService, ContractService) {
+                  UtilsService) {
 
             $log.debug('Controller: ContractCtrl');
 
@@ -72,28 +73,25 @@ define([
                 });
             };
 
+            /**
+              * Updates the contract list view,
+              * by sorting the contract into current or past
+              * depending on the period end date of the contract.
+              *
+              * @param {string || date} newEndDate the date specified by the user
+            */
             function updateContractList(newEndDate){
-                var isCurrentContract;
+              var isCurrentContract = moment().diff(newEndDate, "day") <= 0;
 
-                //Is contract end date changed
-                if ($scope.details.period_end_date ?
-                new Date($scope.details.period_end_date).getTime() !== new Date(newEndDate).getTime() :
-                !!$scope.details.period_end_date !== !!newEndDate) {
-
-                    isCurrentContract = !newEndDate || new Date(newEndDate).setHours(0,0,0,0) >= new Date().setHours(0,0,0,0);
-
-                    if (isCurrentContract != !!+$scope.$parent.contract.is_current) {
-                        if (isCurrentContract) {
-                            $scope.$parent.contract.is_current = '1';
-                            $scope.$parent.$parent.contractCurrent.push($scope.$parent.contract);
-                            $scope.$parent.$parent.contractPast.splice($scope.$parent.$parent.contractPast.indexOf($scope.$parent.contract),1);
-                        } else {
-                            $scope.$parent.contract.is_current = '0';
-                            $scope.$parent.$parent.contractPast.push($scope.$parent.contract);
-                            $scope.$parent.$parent.contractCurrent.splice($scope.$parent.$parent.contractCurrent.indexOf($scope.$parent.contract),1)
-                        }
-                    }
-                }
+              if (isCurrentContract) {
+                $scope.$parent.contract.is_current = '1';
+                $scope.$parent.contractCurrent.push($scope.$parent.contract);
+                $scope.$parent.contractPast.splice($scope.$parent.contractPast.indexOf($scope.$parent.contract),1);
+              } else {
+                $scope.$parent.contract.is_current = '0';
+                $scope.$parent.contractPast.push($scope.$parent.contract);
+                $scope.$parent.contractCurrent.splice($scope.$parent.contractCurrent.indexOf($scope.$parent.contract),1)
+              }
             }
 
             function updateContractFiles(){
@@ -237,26 +235,21 @@ define([
 
                     ContractService.updateHeaderInfo();
                     updateContractView(results);
+                    updateContractList(results.details.period_end_date);
 
                     if (results.revisionCreated) {
 
-                        var dateEffectiveRevisionCreated = new Date(results.revisionCreated.effective_date).setHours(0, 0, 0, 0),
-                            dateEffectiveRevisionCurrent = new Date($scope.revisionCurrent.effective_date).setHours(0, 0, 0, 0),
-                            dateToday = new Date().setHours(0, 0, 0, 0),
+                        var dateEffectiveRevisionCreated = moment(new Date(results.revisionCreated.effective_date)),
+                            dateEffectiveRevisionCurrent = moment(new Date($scope.revisionCurrent.effective_date)),
+                            dateToday = moment(),
                             revisionData = {
                                 revisionEntityIdObj: results.revisionCreated,
                                 details: results.details,
                                 hour: results.hour,
                                 pay: results.pay
                             },
-                            isCurrentRevision = (dateEffectiveRevisionCreated <= dateToday &&
-                                dateEffectiveRevisionCreated >= dateEffectiveRevisionCurrent) ||
-                                (dateEffectiveRevisionCurrent > dateToday &&
-                                dateEffectiveRevisionCreated <= dateEffectiveRevisionCurrent);
+                            isCurrentRevision = dateEffectiveRevisionCurrent.diff(dateToday, "day") <= 0 || dateEffectiveRevisionCurrent.diff(dateEffectiveRevisionCreated, "day") <= 0;
 
-                        if (isCurrentRevision) {
-                            updateContractList(results.details.period_end_date);
-                        }
 
                         if (results.files) {
                             if (isCurrentRevision) {
@@ -277,8 +270,6 @@ define([
 
                     } else {
                         var revisionListEntitiesView = ['details','hour','pay'], i, objExt;
-
-                        updateContractList(results.details.period_end_date);
 
                         if ($scope.contract.is_primary != results.contract.is_primary) {
                             $scope.$parent.$parent.toggleIsPrimary($scope.contract.id);

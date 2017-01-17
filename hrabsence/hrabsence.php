@@ -293,6 +293,8 @@ function hrabsence_civicrm_uninstall() {
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE civicrm_option_value.id IN ({$absenceType})");
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_msg_template WHERE msg_title = 'Absence Email'");
 
+  _hrabsence_removeRelationshipTypes();
+
   return _hrabsence_civix_civicrm_uninstall();
 }
 
@@ -600,22 +602,35 @@ function _hrabsence_add_scheduled_jobs() {
 /**
  * Creates the scheduled job which process the entitlement recalculation queue
  */
-function _hrabsence_add_processentitlementrecalculationqueue_scheduled_job() {
-  $dao             = new CRM_Core_DAO_Job();
+function _hrabsence_add_processentitlementrecalculationqueue_scheduled_job()
+{
+  $dao = new CRM_Core_DAO_Job();
   $dao->api_entity = 'HRAbsenceEntitlement';
   $dao->api_action = 'processentitlementrecalculationqueue';
   $dao->find(TRUE);
 
   if (!$dao->id) {
-    $dao                = new CRM_Core_DAO_Job();
-    $dao->api_entity    = 'HRAbsenceEntitlement';
-    $dao->api_action    = 'processentitlementrecalculationqueue';
-    $dao->domain_id     = CRM_Core_Config::domainID();
+    $dao = new CRM_Core_DAO_Job();
+    $dao->api_entity = 'HRAbsenceEntitlement';
+    $dao->api_action = 'processentitlementrecalculationqueue';
+    $dao->domain_id = CRM_Core_Config::domainID();
     $dao->run_frequency = 'Hourly';
-    $dao->parameters    = NULL;
-    $dao->name          = 'Process the Entitlement Recalculation Queue';
-    $dao->description   = 'Recalculates the entitlement for newly added Absence Periods';
-    $dao->is_active     = 1;
+    $dao->parameters = NULL;
+    $dao->name = 'Process the Entitlement Recalculation Queue';
+    $dao->description = 'Recalculates the entitlement for newly added Absence Periods';
+    $dao->is_active = 1;
     $dao->save();
   }
+}
+
+/** Remove any defined relationship type by this extension
+ *
+ */
+function _hrabsence_removeRelationshipTypes() {
+  civicrm_api3('RelationshipType', 'get', array(
+    'sequential' => 1,
+    'return' => array("id"),
+    'name_a_b' => "has Leave Approved by",
+    'api.RelationshipType.delete' => array(),
+  ));
 }

@@ -1,7 +1,8 @@
 (function (CRM) {
     CRM.jobContractTabApp = {
-        path: '/base/tools/extensions/civihr/hrjobcontract',
+        path: '/base/tools/extensions/civihr/hrjobcontract/',
     };
+
 
     CRM.url({
         back: '/index.php?q=*path*&*query*',

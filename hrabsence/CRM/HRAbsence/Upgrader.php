@@ -15,8 +15,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     $this->installActivityTypes();
     $this->addDefaultPeriod();
     $this->installAbsenceTypes();
-
-    //$this->executeSqlFile('sql/myinstall.sql');
+    $this->installRelatioshipTypes();
   }
 
   public function installActivityTypes() {
@@ -201,6 +200,16 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
         civicrm_api3('OptionValue', 'create', $paramsOVal);
       }
     }
+  }
+
+  public function installRelatioshipTypes() {
+    civicrm_api3('RelationshipType', 'create', [
+      'sequential' => 1,
+      'name_a_b' => "has Leave Approved by",
+      'name_b_a' => "is Leave Approver of",
+      'contact_type_a' => "individual",
+      'contact_type_b' => "individual",
+    ]);
   }
 
   /**

@@ -53,6 +53,8 @@ function hrui_civicrm_pageRun($page) {
   }
 
   if (CRM_Core_Config::singleton()->debug) {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/civihr-popup/attrchange.js');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/civihr-popup/civihr-popup.js');
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/hrui.js');
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/perfect-scrollbar/perfect-scrollbar.min.js');
   } else {
@@ -104,6 +106,16 @@ function hrui_civicrm_buildForm($formName, &$form) {
       $default['GovernmentId'] = CRM_Utils_Array::value('typeNumber',$govVal);
     }
     $form->setDefaults($default);
+  }
+
+  if ($formName == 'CRM_Admin_Form_Extensions') {
+    $extensionKey= CRM_Utils_Request::retrieve('key', 'String', $this);
+    if ($extensionKey == 'uk.co.compucorp.civicrm.hrsampledata') {
+      $title = ts("Be Careful");
+      $message = ts("Installing/Uninstalling this extension will remove all existing data, so make sure to create a backup first !");
+
+      CRM_Core_Session::setStatus($message, $title, 'no-popup crm-error', ['expires' => 0]);
+    }
   }
 }
 
