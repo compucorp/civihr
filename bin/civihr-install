@@ -110,6 +110,30 @@ CIVI_EXT_DIR=
 ## URL of the web-managed extension folder (required if CIVI_EXT_DIR is set)
 CIVI_EXT_URL=
 
+
+
+###############################################################################
+## Display usage message
+function civihr_app_usage() {
+  APP=$(basename "$0")
+
+  php -r 'echo file_get_contents("php://stdin");' <<EOT
+Common options:
+  <site-name>        The name of the site-directory to build
+
+Syntax: $APP     <build-name> [options]
+Description: Download and/or install the application
+
+  --dbuser <mysql-username>     Username for mysql
+  --dbpass <mysql-password>     Password for mysql
+  --cmsdb  <cms-database-name>  Database name for Drupal CMS installation
+  --crmdb  <crm-database-name>  Database name for CiviCRM CRM installation
+  --url <url>         The public URL of the site
+EOT
+  exit 99;
+}
+
+
 ###############################################################################
 ## Creates random password.
 function civihr_makepasswd() {
@@ -455,12 +479,14 @@ function git_cache_deref_remotes() {
 
   local cachedir="$1"
   local builddir="$2"
-  find "$builddir" -type d -name .git | while read gitdir; do
+  find "$builddir" -type d -name .git | while read -r gitdir; do
     pushd "$gitdir" >> /dev/null
       pushd ".." >> /dev/null
-        local origin_old=$(git config --get remote.origin.url)
+        local origin_old
+        origin_old=$(git config --get remote.origin.url)
         if [[ $origin_old == ${cachedir}* || $origin_old == file://${cachedir}* || $origin_old == file:///${cachedir}*  ]]; then
-          local origin_path=$(echo "$origin_old" | sed 's;file://;;')
+          local origin_path
+          origin_path=$(echo "$origin_old" | sed 's;file://;;')
           pushd "$origin_path" >> /dev/null
             origin_new=$(git config --get remote.origin.url)
           popd >> /dev/null
@@ -501,9 +527,9 @@ function civihr_parse() {
     OPTION="$1"
     shift
     case "$OPTION" in
-      # -h|--help|-?)
-      #   
-      #   ;;
+      -h|--help|-?)
+        civihr_app_usage
+        ;;
 
       --dbuser)
         DB_USER="$1"
@@ -536,12 +562,14 @@ function civihr_parse() {
       *)
          if [ "${OPTION::1}" == "-" ]; then
            echo "Unrecognized option: $OPTION"
+           civihr_app_usage
            exit
          fi
         ;;
     esac
   done
 
+[ -z "$SITE_NAME" ] && civihr_app_usage
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
 [ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(civihr_makepasswd 16)
@@ -552,10 +580,6 @@ function civihr_parse() {
 [ -z "$SITE_TOKEN" ]         && SITE_TOKEN=$(civihr_makepasswd 16)
 
 }
-
-echo '******************************************';
-echo 'CiviHR Install script';
-echo '******************************************';
 
 function absdirname() {
   pushd $(dirname "$0") >> /dev/null
