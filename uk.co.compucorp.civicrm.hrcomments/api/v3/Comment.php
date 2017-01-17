@@ -20,7 +20,15 @@ function _civicrm_api3_comment_create_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_comment_create($params) {
-  return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $results =  _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+
+  if($results['count'] > 0){
+    array_walk($results['values'], function (&$item) {
+      unset($item['is_deleted']);
+    });
+  }
+
+  return $results;
 }
 
 /**
@@ -31,16 +39,23 @@ function civicrm_api3_comment_create($params) {
  * @throws API_Exception
  */
 function civicrm_api3_comment_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  civicrm_api3_verify_mandatory($params, NULL, ['id']);
+  CRM_HRComments_BAO_Comment::softDelete($params['id']);
 }
 
 /**
  * Comment.get API
+ * This API returns comments that are not deleted
+ * i.e comments with is_deleted flag false.
  *
  * @param array $params
+ *
  * @return array API result descriptor
+ *
  * @throws API_Exception
  */
 function civicrm_api3_comment_get($params) {
-  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $query = new CRM_HRComments_API_Query_CommentSelect($params);
+  return civicrm_api3_create_success($query->run(), $params, '', 'get');
 }
+

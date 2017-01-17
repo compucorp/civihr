@@ -20,6 +20,7 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
       self::validateParams($params);
     }
     unset($params['created_at']);
+    unset($params['is_deleted']);
 
     $instance = new self();
     $instance->copyValues($params);
@@ -44,6 +45,26 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
    */
   public static function validateParams($params) {
     self::validateMandatory($params);
+    self::validateCommentSoftDeleteDuringUpdate($params);
+  }
+
+  /**
+   * A method for validating that a comment cannot be soft deleted
+   * during an update on the BAO
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRComments_Exception_InvalidCommentException
+   */
+  public static function validateCommentSoftDeleteDuringUpdate($params) {
+    if (isset($params['id']) && $params['is_deleted'] == 1) {
+      throw new InvalidCommentException(
+        'Comment can not be soft deleted during an update, use the delete method instead!',
+        'comment_cannot_soft_delete_comment',
+        'is_deleted'
+      );
+    }
   }
 
   /**
@@ -87,5 +108,18 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
         'contact_id'
       );
     }
+  }
+
+  /**
+   * Soft Deletes the comment with the given ID by setting the is_deleted column to 1
+   *
+   * @param int $id The ID of the comment to be soft deleted
+   *
+   * @return boolean
+   */
+  public static function softDelete($id) {
+    $comment = self::findById($id);
+    $comment->is_deleted = 1;
+    $comment->save();
   }
 }
