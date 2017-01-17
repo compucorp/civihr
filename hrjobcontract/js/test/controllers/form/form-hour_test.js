@@ -20,34 +20,23 @@ define([
       describe('updateHours', function() {
         it('should always change the hours_amount based on hours_type', function() {
           expect($scope.entity.hour.hours_amount).toBe('');
-
           $scope.entity.hour.hours_type = '8';
           $scope.$digest();
           expect($scope.entity.hour.hours_amount).toBe('40.00');
 
-          $scope.entity.hour.hours_type = '4';
-          $scope.$digest();
-          expect($scope.entity.hour.hours_amount).toBe(20);
+        });
+        
+        it('should not change the hours_amount if it had been set', function() {
+          expect($scope.entity.hour.hours_amount).toBe('');
 
-          $scope.entity.hour.hours_type = '8';
-          $scope.$digest();
-          expect($scope.entity.hour.hours_amount).toBe('40.00');
+          $scope.entity.hour.hours_amount = '25';
+          $scope.entity.hour.hours_type = '20';
 
-          $scope.entity.hour.hours_type = '0';
           $scope.$digest();
-          expect($scope.entity.hour.hours_amount).toBe(0);
-
-          $scope.entity.hour.hours_type = '4';
-          $scope.$digest();
-          expect($scope.entity.hour.hours_amount).toBe(20);
-
-          $scope.entity.hour.hours_type = '0';
-          $scope.$digest();
-          expect($scope.entity.hour.hours_amount).toBe(0);
+          expect($scope.entity.hour.hours_amount).toBe('25');
         });
       });
     });
-
     /**
      * Initializes the form controller
      *

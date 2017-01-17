@@ -72,5 +72,5 @@ individually:
 
 Finally, these two extensions build on top of the others:
 
- * org.civicrm.hrsampledata: Generate random example data
+ * uk.co.compucorp.civicrm.hrsampledata: Generate random example data
  * org.civicrm.hrui: Trim/revise CiviCRM UI for CiviHR users
