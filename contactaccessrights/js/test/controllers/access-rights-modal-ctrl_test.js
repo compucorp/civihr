@@ -223,13 +223,14 @@ define([
           });
         });
 
-        describe("when location changes", function () {
-          it("cannot submit without change", function () {
-            expect(ctrl.canSubmit).toBe(false);
+        describe('when location and region is not set', function () {
+          it("cannot submit without selecting location", function () {
+            expect(ctrl.hasSelected).toBe(false);
           });
+        });
 
-          it("can submit when location and region changes", function () {
-
+        describe('when location and region is set', function () {
+          beforeEach(function () {
             ctrl.selectedData.locations.push({
               name: "Home",
               label: "Home"
@@ -241,11 +242,12 @@ define([
             });
 
             ctrl.selection();
-
-            expect(ctrl.canSubmit).toBe(true);
           });
 
-
+          it("can submit when location and region is set", function () {
+            ctrl.selection();
+            expect(ctrl.hasSelected).toBe(true);
+          });
         });
 
         describe('prevent multiple save', function () {
@@ -255,10 +257,6 @@ define([
 
           it('submitting should be true', function () {
             expect(ctrl.submitting).toBe(true);
-          });
-
-          xit('submitting should be false when promise has finished', function () {
-            // TODO
           });
         });
       });
