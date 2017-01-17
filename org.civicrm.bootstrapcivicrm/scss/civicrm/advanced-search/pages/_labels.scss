@@ -399,3 +399,15 @@ input[type='checkbox'] + label {
     }
   }
 }
+
+#{$contributions} {
+  tr:not(:first-child) {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+
+  td {
+    color: $gray-darker;
+  }
+}
