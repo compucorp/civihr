@@ -10,7 +10,7 @@ define([
       var vm = this;
 
       vm.submitting = false;
-      vm.canSubmit = false;
+      vm.hasSelected= false;
 
       vm.availableData = {
         regions: [],
@@ -35,8 +35,9 @@ define([
        * Change save button state
        */
       vm.selection = function () {
-        if (vm.selectedData.locations.length > 0 && vm.selectedData.regions.length > 0)
-          vm.canSubmit = true;
+        if (vm.selectedData.locations.length > 0 && vm.selectedData.regions.length > 0) {
+          vm.hasSelected = true;
+        }
       };
 
       /**
