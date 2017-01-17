@@ -9,6 +9,11 @@
         text-align: left;
         font-size: 13px;
         color: #4d5663;
+
+        &,
+        > label {
+          font-weight: normal !important;
+        }
       }
     }
   }
