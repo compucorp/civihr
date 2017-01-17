@@ -71,13 +71,12 @@ CMS_URL=
 CMS_ROOT=
 
 ## DB credentials for CMS
-## (suggested: autogenerate via 'amp create -f --root="$WEB_ROOT" --prefix=CMS_ --url="$CMS_URL"')
 CMS_DB_DSN=
 CMS_DB_ARGS=
-CMS_DB_HOST=
+CMS_DB_HOST=127.0.0.1
 CMS_DB_NAME=
 CMS_DB_PASS=
-CMS_DB_PORT=
+CMS_DB_PORT=3306
 CMS_DB_USER=
 CMS_DB_PERM=admin
 
@@ -85,13 +84,12 @@ CMS_DB_PERM=admin
 CIVI_CORE=
 
 ## DB credentials for Civi
-## (suggested: autogenerate via 'amp create -f --root="$WEB_ROOT" --name=civi --prefix=CIVI_ --skip-url')
 CIVI_DB_DSN=
 CIVI_DB_ARGS=
-CIVI_DB_HOST=
+CIVI_DB_HOST=127.0.0.1
 CIVI_DB_NAME=
 CIVI_DB_PASS=
-CIVI_DB_PORT=
+CIVI_DB_PORT=3306
 CIVI_DB_USER=
 CIVI_DB_PERM=super
 
@@ -205,6 +203,18 @@ function civihr_mkdir() {
 }
 
 ###############################################################################
+## Creates host and port to a single string
+function civihr_build_hostport() {
+  local host=$1
+  local port=$2
+  if [ -z "$port" ]; then
+    echo "$host"
+  else
+    echo "$host:$port"
+  fi
+}
+
+###############################################################################
 ## Appends the civibuild settings directives to a file
 ## usage: civihr_inject_settings <php-file> <settings-dir-name>
 ## example: civihr_inject_settings "/var/www/build/drupal/sites/foo/civicrm.settings.php" "civicrm.settings.d"
@@ -264,46 +274,42 @@ EOF
 }
 
 ###############################################################################
-## Setup HTTP and MySQL services
-## This outputs several variables: CMS_URL, CMS_DB_*, CIVI_DB_*, and TEST_DB_*
-function amp_install() {
-  _amp_install_cms
-  _amp_install_civi
+## Setup MySQL services
+function database_install() {
+  _database_install_cms
+  _database_install_civi
 }
 
-function _amp_install_cms() {
-  echo "[[Setup MySQL and HTTP for CMS]]"
+function _database_install_cms() {
+
+  echo "[[Setup MySQL for CMS]]"
   civihr_assertvars _amp_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
+  
+  mysql -u$DB_USER -p$DB_PASS -e "create database $CMSdbName" >/dev/null 2>&1 || { echo "[[Please provide CMS database name ( i.e --crmdb ) or Check if its already exists.]]";exit 1;  }
 
-  civihr_maketempfile
+  [ -z "$CMS_DB_USER" ]           && CMS_DB_USER="$DB_USER"
+  [ -z "$CMS_DB_PASS" ]           && CMS_DB_PASS="$DB_PASS"
+  [ -z "$CMS_DB_NAME" ]           && CMS_DB_NAME="$CMSdbName"
 
-  local amp_vars_file_path=$(php $TMPDIR/mktemp.php ampvar)
-  local amp_name="cms$SITE_ID"
-  [ "$SITE_ID" == "default" ] && amp_name=cms
-
-  if [ -n "$CMS_URL" ]; then
-    amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --url="$CMS_URL" --output-file="$amp_vars_file_path" --perm="$CMS_DB_PERM"
-  else
-    amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CMS_ --output-file="$amp_vars_file_path" --perm="$CMS_DB_PERM"
-  fi
-  source "$amp_vars_file_path"
-
-  #rm -f "$amp_vars_file_path"
+  CMS_DB_HOSTPORT=$(civihr_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
+  [ -z "$CMS_DB_DSN" ]           && CMS_DB_DSN="mysql://${DB_USER}:${DB_PASS}@${CMS_DB_HOSTPORT}/${CMSdbName}?new_link=true"
 }
 
-function _amp_install_civi() {
+function _database_install_civi() {
+
   echo "[[Setup MySQL for Civi]]"
   civihr_assertvars _amp_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
 
-  local amp_vars_file_path=$(php $TMPDIR/mktemp.php ampvar)
-  local amp_name="civi$SITE_ID"
-  [ "$SITE_ID" == "default" ] && amp_name=civi
+  mysql -u$DB_USER -p$DB_PASS -e "create database $CIVIdbName" >/dev/null 2>&1 || { echo "[[Please provide CRM database name ( i.e --crmdb ) or Check if its already exists.]]";exit 1;  }
 
-  amp create -f --root="$CMS_ROOT" --name="$amp_name" --prefix=CIVI_ --skip-url --output-file="$amp_vars_file_path" --perm="$CIVI_DB_PERM"
+  [ -z "$CIVI_DB_USER" ]           && CIVI_DB_USER="$DB_USER"
+  [ -z "$CIVI_DB_PASS" ]           && CIVI_DB_PASS="$DB_PASS"
+  [ -z "$CIVI_DB_NAME" ]           && CIVI_DB_NAME="$CIVIdbName"
 
-  source "$amp_vars_file_path"
-  rm -f "$amp_vars_file_path"
+  CIVI_DB_HOSTPORT=$(civihr_build_hostport "$CIVI_DB_HOST" "$CIVI_DB_PORT")
+  [ -z "$CIVI_DB_DSN" ]           && CIVI_DB_DSN="mysql://${DB_USER}:${DB_PASS}@${CIVI_DB_HOSTPORT}/${CIVIdbName}?new_link=true"
 }
+
 
 ###############################################################################
 ## Generate config files and setup database
@@ -313,30 +319,24 @@ function civicrm_install() {
     echo "Failed to locate valid civi root: $CIVI_CORE"
     exit 1
   fi
-
   ## Create CiviCRM data dirs
-  amp datadir "$CIVI_FILES" "$CIVI_TEMPLATEC"
+  civihr_mkdir "$CIVI_FILES" "$CIVI_TEMPLATEC"
   if [ -n "$CIVI_EXT_DIR" ]; then
-    amp datadir "$CIVI_EXT_DIR"
+    civihr_mkdir "$CIVI_EXT_DIR"
   fi
 
   ## Create CiviCRM config files
   civicrm_make_settings_php
   civicrm_make_setup_conf
-  
 
   pushd "$CIVI_CORE" >> /dev/null
-    ## Does this build include development support (eg git or tarball-based)?
-    if [ -e "xml" -a -e "bin/setup.sh" ]; then
-      env SITE_ID="$SITE_ID" bash ./bin/setup.sh
-    elif [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" ]; then
-      cat sql/civicrm.mysql sql/civicrm_generated.mysql | eval mysql $CIVI_DB_ARGS
+    if [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" ]; then
+      cat sql/civicrm.mysql sql/civicrm_generated.mysql | mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS $CIVI_DB_NAME
     else
       echo "Failed to locate civi SQL files"
     fi
   popd >> /dev/null
-
-  eval mysql $CIVI_DB_ARGS <<EOSQL
+  eval mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS $CIVI_DB_NAME <<EOSQL
     UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
     SELECT @option_group_id := id
       FROM civicrm_option_group n
@@ -348,17 +348,7 @@ function civicrm_install() {
 EOSQL
 }
 
-###############################################################################
-## Creates host and port to a single string
-function civihr_build_hostport() {
-  local host=$1
-  local port=$2
-  if [ -z "$port" ]; then
-    echo "$host"
-  else
-    echo "$host:$port"
-  fi
-}
+
 
 ###############################################################################
 ## Generate a "civicrm.settings.php" file
@@ -416,26 +406,19 @@ function civicrm_make_setup_conf() {
   civihr_assertvars civicrm_make_setup_conf PRJDIR CMS_ROOT CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS
 
   cat > "$CIVI_CORE/bin/setup.conf" << EOF
-    ## INFRA-114
     PRJDIR="$PRJDIR"
     CMS_ROOT="$CMS_ROOT"
-    SITE_ID="\${SITE_ID:-$SITE_ID}"
-    AMP_NAME=civi\${SITE_ID}
-    [ "\$SITE_ID" == "default" ] && AMP_NAME=civi
-    eval \`\$PRJDIR/bin/amp export --root="\$CMS_ROOT" -N\${AMP_NAME}\`
-    DBNAME="\$AMP_DB_NAME"
-    DBUSER="\$AMP_DB_USER"
-    DBPASS="\$AMP_DB_PASS"
-    DBHOST="\$AMP_DB_HOST"
-    DBPORT="\$AMP_DB_PORT"
-    ##
+    DBNAME="$CIVI_DB_NAME"
+    DBUSER="$CIVI_DB_USER"
+    DBPASS="$CIVI_DB_PASS"
+    DBHOST="$CIVI_DB_HOST"
+    DBPORT="$CIVI_DB_PORT"
     SVNROOT="$CIVI_CORE"
     CIVISOURCEDIR="$CIVI_CORE"
     SCHEMA=schema/Schema.xml
     DBARGS=""
-    PHP5PATH=
+    PHP5PATH=""
     DBLOAD="$DBLOAD"
-    # DBADD=
     GENCODE_CMS="$CIVI_UF"
 EOF
 }
@@ -454,6 +437,7 @@ function drupal7_install() {
   DRUPAL_SITE_DIR="$SITE_ID"
 
   CMS_DB_HOSTPORT=$(civihr_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
+
   pushd "$CMS_ROOT" >> /dev/null
     [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
@@ -470,7 +454,7 @@ function drupal7_install() {
     chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
 
     ## Setup extra directories
-    amp datadir "sites/${DRUPAL_SITE_DIR}/files"
+    civihr_mkdir "sites/${DRUPAL_SITE_DIR}/files"
     civihr_mkdir "sites/${DRUPAL_SITE_DIR}/modules"
   
   popd >> /dev/null
@@ -592,6 +576,17 @@ function civihr_parse() {
         DB_PORT="$1"
         shift
         ;;
+
+      --cmsdb)
+        CMSdbName="$1"
+        shift
+        ;;
+
+      --crmdb)
+        CIVIdbName="$1"
+        shift
+        ;;
+
       --url)
         CMS_URL="$1"
         shift
@@ -600,6 +595,7 @@ function civihr_parse() {
       *)
          if [ "${OPTION::1}" == "-" ]; then
            echo "Unrecognized option: $OPTION"
+           exit
          fi
         ;;
     esac
@@ -634,7 +630,8 @@ BLDDIR="$PRJDIR"
 
 export PATH="$PATH:$BINDIR"
 civihr_parse "$@"
-command -v drush >/dev/null 2>&1 || ( echo "[[Downloading dependencies.........]]" && curl -Lo "$TMPDIR/drush" "https://github.com/drush-ops/drush/releases/download/8.1.8/drush.phar"  && chmod +x "$TMPDIR/drush" && export PATH="$PATH:$TMPDIR" )
+
+command -v drush >/dev/null 2>&1 || ( echo "[[Downloading dependencies.........]]" && curl -Lo "$TMPDIR/drush" "https://github.com/drush-ops/drush/releases/download/8.1.8/drush.phar"  && chmod +x "$TMPDIR/drush" && export PATH="$PATH:$TMPDIR/drush" )
 
 ###############################################################################
 ## Runs download script - Download Drupal and CiviCRM
@@ -696,11 +693,7 @@ function disabled_unused_blocks() {
 ##
 # Installs CiviHR extensions
 function install_civihr() {
-  ## (no sample data as default)
   bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh ${CIVI_CORE}
-
-  ## (with sample data - if required)
-  # bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
 }
 
 ##
@@ -721,13 +714,16 @@ function setup_themes {
 function civihr_install_site(){
 
   ## Create virtual-host and databases
-  amp_install
+  database_install
 
   ## Grant access for the Drupal database user to access the Civi Database too
-eval mysql $CIVI_DB_ARGS <<EOSQL
+eval mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS <<EOSQL
     GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'%';
 EOSQL
 
+## Grant access for the Drupal database user to access the Civi Database too
+#mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS -e "GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'$CIVI_DB_HOSTPORT' IDENTIFIED BY '$CMS_DB_PASS'";
+  
   ## Setup Drupal (config files, database tables)
   drupal_install
 
@@ -746,6 +742,7 @@ EOSQL
     CIVI_EXT_DIR="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/ext"
     CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
   fi
+
 
   civicrm_install
 
