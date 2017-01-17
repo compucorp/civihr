@@ -229,13 +229,14 @@ function database_install() {
   _database_install_civi
 }
 
+## Setting up Database for CMS i.e Drupal
 function _database_install_cms() {
 
   echo "[[Setup MySQL for CMS]]"
   civihr_assertvars _database_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
-
+  # Create database.
   mysql -u$DB_USER -p$DB_PASS -e "create database $CMSdbName" >/dev/null 2>&1 || { echo "[[Please provide CMS database name ( i.e --crmdb ) or Check if its already exists.]]";exit 1;  }
-
+  # Assign values to global variables.
   [ -z "$CMS_DB_USER" ]           && CMS_DB_USER="$DB_USER"
   [ -z "$CMS_DB_PASS" ]           && CMS_DB_PASS="$DB_PASS"
   [ -z "$CMS_DB_NAME" ]           && CMS_DB_NAME="$CMSdbName"
@@ -244,13 +245,14 @@ function _database_install_cms() {
   [ -z "$CMS_DB_DSN" ]           && CMS_DB_DSN="mysql://${DB_USER}:${DB_PASS}@${CMS_DB_HOSTPORT}/${CMSdbName}?new_link=true"
 }
 
+## Setting up Database for CRM i.e CiviHR
 function _database_install_civi() {
 
   echo "[[Setup MySQL for Civi]]"
   civihr_assertvars _database_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
-
+  # Create database.
   mysql -u$DB_USER -p$DB_PASS -e "create database $CIVIdbName" >/dev/null 2>&1 || { echo "[[Please provide CRM database name ( i.e --crmdb ) or Check if its already exists.]]";exit 1;  }
-
+  # Assign values to global variables.
   [ -z "$CIVI_DB_USER" ]           && CIVI_DB_USER="$DB_USER"
   [ -z "$CIVI_DB_PASS" ]           && CIVI_DB_PASS="$DB_PASS"
   [ -z "$CIVI_DB_NAME" ]           && CIVI_DB_NAME="$CIVIdbName"
@@ -258,7 +260,6 @@ function _database_install_civi() {
   CIVI_DB_HOSTPORT=$(civihr_build_hostport "$CIVI_DB_HOST" "$CIVI_DB_PORT")
   [ -z "$CIVI_DB_DSN" ]           && CIVI_DB_DSN="mysql://${DB_USER}:${DB_PASS}@${CIVI_DB_HOSTPORT}/${CIVIdbName}?new_link=true"
 }
-
 
 ###############################################################################
 ## Generate config files and setup database
@@ -297,10 +298,8 @@ function civicrm_install() {
 EOSQL
 }
 
-
-
 ###############################################################################
-## Generate a "civicrm.settings.php" file
+## Generate Civicrm "civicrm.settings.php" file.
 function civicrm_make_settings_php() {
   civihr_assertvars civicrm_make_settings_php CIVI_SETTINGS CIVI_CORE CIVI_UF CIVI_TEMPLATEC CMS_URL CIVI_SITE_KEY
   civihr_assertvars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
@@ -349,7 +348,7 @@ EOF
 }
 
 ###############################################################################
-## Generate a "setup.conf" file
+## Generate Civicrm "setup.conf" file.
 function civicrm_make_setup_conf() {
   civihr_assertvars civicrm_make_setup_conf PRJDIR CMS_ROOT CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS
 
@@ -577,10 +576,12 @@ BLDDIR="$PRJDIR"
 export PATH="$PATH:$BINDIR"
 civihr_parse "$@"
 
+# Checking for Drush dependencies if not present downloading into temp.
 command -v drush >/dev/null 2>&1 || ( echo "[[Downloading dependencies.........]]" && curl -Lo "$TMPDIR/drush" "https://github.com/drush-ops/drush/releases/download/8.1.8/drush.phar"  && chmod +x "$TMPDIR/drush" && export PATH="$PATH:$TMPDIR/drush" )
 
+
 ###############################################################################
-## Runs download script - Download Drupal and CiviCRM
+## Downloads Drupal,CiviCRM and CiviHR from remote drush.make file.
 function civihr_setup_structure() {
 
   [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
@@ -599,7 +600,7 @@ function civihr_setup_structure() {
   drush -y make --concurrency=5 --working-copy "$MAKEFILE" "$WEB_ROOT"
 }
 
-##
+
 # Creates the default CiviHR users
 function create_default_users() {
   drush -y user-create --password="civihr_staff" --mail="civihr_staff@compucorp.co.uk" "civihr_staff"
@@ -659,10 +660,10 @@ function setup_themes {
 ## Create config files and databases; fill the databases
 function civihr_install_site(){
 
-  ## Create virtual-host and databases
+  ## Creating databases for Drupal and CIVICRM.
   database_install
 
-  ## Grant access for the Drupal database user to access the Civi Database too
+  ## Grant access for the Drupal database user to access the Civi Database too.
 eval mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS <<EOSQL
     GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'%';
 EOSQL
@@ -687,7 +688,6 @@ EOSQL
     CIVI_EXT_DIR="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/ext"
     CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
   fi
-
 
   civicrm_install
 
@@ -721,9 +721,9 @@ EOSQL
 }
 
 ###############################################################################
-## Run the download scripts if necessary
+## Downloads all the required repos for Drupal , CiviCRM and CiviHR.
 function civihr_app_download() {
-  civihr_assertvars civihr_app_download WEB_ROOT PRJDIR SITE_NAME TMPDIR #CACHE_DIR
+  civihr_assertvars civihr_app_download WEB_ROOT PRJDIR SITE_NAME TMPDIR
 
   echo "[[Download $SITE_NAME ( in '$WEB_ROOT')]]"
 
