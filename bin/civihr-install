@@ -190,7 +190,6 @@ function civihr_makeparent() {
 
 ###############################################################################
 ## Checks whether directory exists, if not then create it.
-## civihr_mkdir <dir1> <dir2> ...
 function civihr_mkdir() {
   for a in "$@" ; do
     if [ ! -d "$a" ]; then
@@ -200,7 +199,7 @@ function civihr_mkdir() {
 }
 
 ###############################################################################
-## Creates host and port to a single string
+## Creates host and port to a single string.
 function civihr_build_hostport() {
   local host=$1
   local port=$2
@@ -209,53 +208,6 @@ function civihr_build_hostport() {
   else
     echo "$host:$port"
   fi
-}
-
-###############################################################################
-## Appends the civibuild settings directives to a file
-## usage: civihr_inject_settings <php-file> <settings-dir-name>
-## example: civihr_inject_settings "/var/www/build/drupal/sites/foo/civicrm.settings.php" "civicrm.settings.d"
-function civihr_inject_settings() {
-  local FILE="$1"
-  local NAME="$2"
-  civihr_assertvars civihr_inject_settings PRJDIR SITE_NAME SITE_ID SITE_TOKEN FILE NAME
-
-  ## Prepare temp file
-  local TMPFILE="${TMPDIR}/${SITE_NAME}/${SITE_ID}.settings.tmp"
-  civihr_makeparent "$TMPFILE"
-
-  cat > "$TMPFILE" << EOF
-<?php
-    #### If deployed via civibuild, include any "pre" scripts
-    global \$civibuild;
-    \$civibuild['PRJDIR'] = '$PRJDIR';
-    \$civibuild['SITE_NAME'] = '$SITE_NAME';
-    \$civibuild['SITE_ID'] = '$SITE_ID';
-    \$civibuild['SITE_TOKEN'] = '$SITE_TOKEN';
-    \$civibuild['WEB_ROOT'] = '$WEB_ROOT';
-    \$civibuild['CMS_ROOT'] = '$CMS_ROOT';
-
-    if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
-      require_once \$civibuild['PRJDIR'].'/src/civibuild.settings.php';
-      _civibuild_settings(__FILE__, '$NAME', \$civibuild, 'pre');
-    }
-
-EOF
-
-  # Don't know if FILE has good newlines, so prefix/postfix both have extras
-  sed 's/^<?php//' < "$FILE" >> "$TMPFILE"
-
-  cat >> "$TMPFILE" << EOF
-
-    #### If deployed via civibuild, include any "post" scripts
-    if (file_exists(\$civibuild['PRJDIR'].'/src/civibuild.settings.php')) {
-      require_once \$civibuild['PRJDIR'].'/src/civibuild.settings.php';
-      _civibuild_settings(__FILE__, '$NAME', \$civibuild, 'post');
-    }
-EOF
-
-  ## Replace main file with temp file
-  cat < "$TMPFILE" > "$FILE"
 }
 
 ###############################################################################
@@ -393,8 +345,7 @@ function civicrm_make_settings_php() {
     \$civicrm_setting['URL Preferences']['extensionsURL'] = '$CIVI_EXT_URL';
 EOF
   fi
-
-  civihr_inject_settings "$CIVI_SETTINGS" "civicrm.settings.d"
+  
 }
 
 ###############################################################################
@@ -447,7 +398,6 @@ function drupal7_install() {
       --sites-subdir="$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php"
-    civihr_inject_settings "$CMS_ROOT/sites/$DRUPAL_SITE_DIR/settings.php" "drupal.settings.d"
     chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
 
     ## Setup extra directories
@@ -717,8 +667,7 @@ eval mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS <<EOSQL
     GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'%';
 EOSQL
 
-## Grant access for the Drupal database user to access the Civi Database too
-#mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS -e "GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'$CIVI_DB_HOSTPORT' IDENTIFIED BY '$CMS_DB_PASS'";
+  #mysql -u$CIVI_DB_USER -p$CIVI_DB_PASS -e "GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'$CIVI_DB_HOSTPORT' IDENTIFIED BY '$CMS_DB_PASS'";
   
   ## Setup Drupal (config files, database tables)
   drupal_install
@@ -781,9 +730,7 @@ function civihr_app_download() {
   if [ ! -d "$WEB_ROOT" ]; then
     IS_INSTALLED=
     pushd "$PRJDIR" > /dev/null
-     # default_cache_setup
       civihr_setup_structure
-     # git_cache_deref_remotes "$CACHE_DIR" "$WEB_ROOT"
     if [ ! -d "$WEB_ROOT" ]; then
       echo "Download failed to create directory"
       exit 97
