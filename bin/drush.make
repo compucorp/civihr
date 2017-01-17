@@ -22,20 +22,6 @@ projects[] = drupal
 ; This will make it easier to submit pull-requests for patches.
 ; see: http://wiki.civicrm.org/confluence/display/CRMDOC/Github+for+CiviCRM
 
-;libraries[civicrmdrupal][destination] = modules
-;libraries[civicrmdrupal][directory_name] = civicrm/drupal
-;libraries[civicrmdrupal][download][type] = git
-;libraries[civicrmdrupal][download][url] = %%CACHE_DIR%%/civicrm/civicrm-drupal.git
-;libraries[civicrmdrupal][download][tag] = 7.x-%%CIVI_VERSION%%
-;libraries[civicrmdrupal][overwrite] = TRUE
-
-;libraries[civicrmpackages][destination] = modules
-;libraries[civicrmpackages][directory_name] = civicrm/packages
-;libraries[civicrmpackages][download][type] = git
-;libraries[civicrmpackages][download][url] = %%CACHE_DIR%%/civicrm/civicrm-packages.git
-;libraries[civicrmpackages][download][tag] = %%CIVI_VERSION%%
-;libraries[civicrmpackages][overwrite] = TRUE
-
 libraries[civicrm][destination] = modules
 libraries[civicrm][directory_name] = civicrm
 libraries[civicrm][download][type] = get
