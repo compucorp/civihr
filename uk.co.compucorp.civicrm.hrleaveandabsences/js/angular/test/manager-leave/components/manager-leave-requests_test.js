@@ -9,6 +9,7 @@
     'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/leave-request-api-mock',
+    'mocks/apis/option-group-api-mock',
     'common/mocks/services/api/contact-mock'
   ], function (angular, optionGroupMock, absenceTypeData, leaveRequestData) {
     'use strict';
@@ -26,7 +27,8 @@
         AbsencePeriod,
         LeaveRequest,
         Contact,
-        ContactAPIMock;
+        ContactAPIMock,
+        OptionGroupAPIMock;
 
       beforeEach(module('leave-absences.templates', 'manager-leave', 'leave-absences.mocks', function (_$provide_) {
         $provide = _$provide_;
@@ -42,11 +44,13 @@
         ContactAPIMock = _ContactAPIMock_;
       }]));
 
-      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$q_, _OptionGroup_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_) {
+      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$q_, _OptionGroup_, _OptionGroupAPIMock_,
+                                  _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_) {
         $compile = _$compile_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
+        OptionGroupAPIMock = _OptionGroupAPIMock_;
         OptionGroup = _OptionGroup_;
         AbsenceType = _AbsenceType_;
         AbsencePeriod = _AbsencePeriod_;
@@ -65,7 +69,7 @@
         });
 
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
-          return $q.resolve(optionGroupMock.getCollection(name));
+          return OptionGroupAPIMock.valuesOf(name);
         });
       });
 
