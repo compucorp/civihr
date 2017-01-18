@@ -143,6 +143,7 @@
               name: 'all',
               label: 'All'
             });
+
             expect(controller.leaveRequestStatuses).toEqual(expectedResult);
           });
 
@@ -438,7 +439,7 @@
         });
 
         it('sets the leaveStatus', function () {
-          expect(controller.filters.leaveRequestFilters.leaveStatus).toEqual(mockStatus);
+          expect(controller.filters.leaveRequest.leaveStatus).toEqual(mockStatus);
         });
       });
 
@@ -505,7 +506,7 @@
               };
 
               beforeEach(function () {
-                controller.filters.contactFilters.region = mockRegion;
+                controller.filters.contact.region = mockRegion;
                 controller.refresh();
               });
 
@@ -519,7 +520,7 @@
             describe('when region filter has no value', function () {
 
               beforeEach(function () {
-                controller.filters.contactFilters.region = null;
+                controller.filters.contact.region = null;
                 controller.refresh();
               });
 
@@ -540,7 +541,7 @@
               };
 
               beforeEach(function () {
-                controller.filters.contactFilters.department = mockDepartment;
+                controller.filters.contact.department = mockDepartment;
                 controller.refresh();
               });
 
@@ -554,7 +555,7 @@
             describe('when department filter has no value', function () {
 
               beforeEach(function () {
-                controller.filters.contactFilters.department = null;
+                controller.filters.contact.department = null;
                 controller.refresh();
               });
 
@@ -575,7 +576,7 @@
               };
 
               beforeEach(function () {
-                controller.filters.contactFilters.location = mockLocation;
+                controller.filters.contact.location = mockLocation;
                 controller.refresh();
               });
 
@@ -589,7 +590,7 @@
             describe('when location filter has no value', function () {
 
               beforeEach(function () {
-                controller.filters.contactFilters.location = null;
+                controller.filters.contact.location = null;
                 controller.refresh();
               });
 
@@ -606,7 +607,7 @@
             describe('when level_type filter is an empty array', function () {
 
               beforeEach(function () {
-                controller.filters.contactFilters.level_type = [];
+                controller.filters.contact.level_type = [];
                 controller.refresh();
               });
 
@@ -624,7 +625,7 @@
               }];
 
               beforeEach(function () {
-                controller.filters.contactFilters.level_type = mockLevelType;
+                controller.filters.contact.level_type = mockLevelType;
                 controller.refresh();
               });
 
@@ -666,9 +667,9 @@
 
             it('filtered by managed_by', function () {
               promise.then(function () {
-                expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  managed_by: 202
-                }), jasmine.any(Object));
+                expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
+                  managed_by: CRM.vars.leaveAndAbsences.contactId
+                }));
               });
             })
           });
@@ -682,7 +683,7 @@
               };
 
               beforeEach(function () {
-                controller.filters.leaveRequestFilters.selectedAbsenceTypes = mockAbsenceType;
+                controller.filters.leaveRequest.selectedAbsenceTypes = mockAbsenceType;
                 controller.refresh();
                 defer.resolve({
                   list: []
@@ -691,9 +692,9 @@
 
               it('filtered by type_id', function () {
                 promise.then(function () {
-                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     type_id: 'mockedvalue'
-                  }), jasmine.any(Object));
+                  }));
                 });
               });
             });
@@ -703,7 +704,7 @@
               var mockAbsenceType = null;
 
               beforeEach(function () {
-                controller.filters.leaveRequestFilters.selectedAbsenceTypes = mockAbsenceType;
+                controller.filters.leaveRequest.selectedAbsenceTypes = mockAbsenceType;
                 controller.refresh();
                 defer.resolve({
                   list: []
@@ -712,9 +713,9 @@
 
               it('not filtered by type_id', function () {
                 promise.then(function () {
-                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     type_id: null
-                  }), jasmine.any(Object));
+                  }));
                 });
               });
             });
@@ -725,7 +726,7 @@
             var mockFromDate = new Date();
 
             beforeEach(function () {
-              controller.filters.leaveRequestFilters.selectedPeriod.start_date = mockFromDate;
+              controller.filters.leaveRequest.selectedPeriod.start_date = mockFromDate;
               controller.refresh();
               defer.resolve({
                 list: []
@@ -734,11 +735,11 @@
 
             it('filtered by from_date', function () {
               promise.then(function () {
-                expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                   from_date: {
                     from: mockFromDate
                   }
-                }), jasmine.any(Object));
+                }));
               });
             });
           });
@@ -748,7 +749,7 @@
             var mockToDate = new Date();
 
             beforeEach(function () {
-              controller.filters.leaveRequestFilters.selectedPeriod.end_date = mockToDate;
+              controller.filters.leaveRequest.selectedPeriod.end_date = mockToDate;
               controller.refresh();
               defer.resolve({
                 list: []
@@ -757,11 +758,11 @@
 
             it('filtered by to_date', function () {
               promise.then(function () {
-                expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                   to_date: {
                     to: mockToDate
                   }
-                }), jasmine.any(Object));
+                }));
               });
             });
           });
@@ -775,7 +776,7 @@
               };
 
               beforeEach(function () {
-                controller.filters.leaveRequestFilters.selectedUsers = mockUser;
+                controller.filters.leaveRequest.selectedUsers = mockUser;
                 controller.refresh();
                 defer.resolve({
                   list: []
@@ -784,9 +785,9 @@
 
               it('filtered by contact_id', function () {
                 promise.then(function () {
-                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     contact_id: mockUser.contact_id
-                  }), jasmine.any(Object));
+                  }));
                 });
               });
             });
@@ -798,7 +799,7 @@
               }];
 
               beforeEach(function () {
-                controller.filters.leaveRequestFilters.selectedUsers = null;
+                controller.filters.leaveRequest.selectedUsers = null;
                 controller.refresh();
                 defer.resolve({
                   list: mockUsers
@@ -807,11 +808,11 @@
 
               it('filtered by filteredUsers', function () {
                 promise.then(function () {
-                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     contact_id: {
                       "IN": [mockUsers[0].contact_id]
                     }
-                  }), jasmine.any(Object));
+                  }));
                 });
               });
             });
@@ -819,7 +820,7 @@
             describe('when selectedUsers is null and filteredUsers is null', function () {
 
               beforeEach(function () {
-                controller.filters.leaveRequestFilters.selectedUsers = null;
+                controller.filters.leaveRequest.selectedUsers = null;
                 controller.refresh();
                 defer.resolve({
                   list: []
@@ -828,11 +829,11 @@
 
               it('is not filtered by contact_id', function () {
                 promise.then(function () {
-                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     contact_id: {
                       "IN": ['user_contact_id']
                     }
-                  }), jasmine.any(Object));
+                  }));
                 });
               });
             });
@@ -847,7 +848,7 @@
               };
 
               beforeEach(function () {
-                controller.filters.leaveRequestFilters.leaveStatus = mockStatus;
+                controller.filters.leaveRequest.leaveStatus = mockStatus;
                 controller.refresh();
                 defer.resolve({
                   list: []
@@ -860,7 +861,7 @@
                     status_id: {
                       IN: ['mockvalue']
                     }
-                  }), jasmine.any(Object));
+                  }), jasmine.any(Object), null, jasmine.any(Object));
                 });
               });
             });
@@ -872,7 +873,7 @@
               }).value;
 
               beforeEach(function () {
-                controller.filters.leaveRequestFilters.pending_requests = true;
+                controller.filters.leaveRequest.pending_requests = true;
                 controller.refresh();
                 defer.resolve({
                   list: []
@@ -881,11 +882,11 @@
 
               it('filtered by waiting_approval', function () {
                 promise.then(function () {
-                  expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     status_id: {
                       IN: [waitingApprovalValue]
                     }
-                  }), jasmine.any(Object));
+                  }));
                 });
               });
             });

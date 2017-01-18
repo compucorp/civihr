@@ -27,16 +27,14 @@ define([
 
     describe("all()", function () {
       var jobRoleApiPromise,
-        defer;
+        filters = {key: "filters"},
+        pagination = {key: "pagination"},
+        sort = "sort",
+        additionalParams = {key: "additionalParams"};
 
       beforeEach(function () {
-        defer = $q.defer();
-        spyOn(JobRoleAPI, 'getAll').and.returnValue(defer.promise);
-      });
-
-      beforeEach(function () {
-        jobRoleApiPromise = JobRoleAPI.all(jasmine.any(Object), jasmine.any(Object), jasmine.any(String), jasmine.any(Object));
-        defer.resolve(JobRoleAPIMock.mockedJobRoles);
+        spyOn(JobRoleAPI, 'getAll').and.returnValue($q.resolve(JobRoleAPIMock.mockedJobRoles));
+        jobRoleApiPromise = JobRoleAPI.all(filters, pagination, sort, additionalParams);
       });
 
       afterEach(function () {
@@ -50,25 +48,19 @@ define([
       });
 
       it("calls getAll method", function () {
-        expect(JobRoleAPI.getAll).toHaveBeenCalledWith('HrJobRoles', jasmine.any(Object), jasmine.any(Object), jasmine.any(String), jasmine.any(Object));
+        expect(JobRoleAPI.getAll).toHaveBeenCalledWith('HrJobRoles', filters, pagination, sort, additionalParams);
       });
     });
 
     describe("find()", function () {
       var jobRoleApiPromise,
-        defer,
-        mockID = '2';
+        jobRoleID = '2';
 
       beforeEach(function () {
-        defer = $q.defer();
-        spyOn(JobRoleAPI, 'sendGET').and.returnValue(defer.promise);
-      });
-
-      beforeEach(function () {
-        jobRoleApiPromise = JobRoleAPI.find(mockID);
-        defer.resolve({
+        spyOn(JobRoleAPI, 'sendGET').and.returnValue($q.resolve({
           values: JobRoleAPIMock.mockedJobRoles.list
-        });
+        }));
+        jobRoleApiPromise = JobRoleAPI.find(jobRoleID);
       });
 
       afterEach(function () {
@@ -82,7 +74,7 @@ define([
       });
 
       it("calls sendGET method", function () {
-        expect(JobRoleAPI.sendGET).toHaveBeenCalledWith('HRJobRole', 'get', {id: '' + mockID}, false);
+        expect(JobRoleAPI.sendGET).toHaveBeenCalledWith('HRJobRole', 'get', {id: '' + jobRoleID}, false);
       });
     });
   });

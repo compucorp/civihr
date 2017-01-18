@@ -21,7 +21,11 @@
               resolve: {
                 contactId: function () {
                   return CRM.vars.leaveAndAbsences.contactId;
-                }
+                },
+                format: ['DateFormat', function (DateFormat) {
+                  // stores the data format in HR_setting.DATE_FORMAT
+                  return DateFormat.getDateFormat();
+                }]
               }
             })
             .state('manager-leave.requests', {
