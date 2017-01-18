@@ -1,0 +1,76 @@
+.page-civicrm-activity {
+  .CRM_Activity_Form_Activity {
+    .crm-activity-form-block {
+      padding: 20px;
+    }
+
+    .crm-form-block > .crm-submit-buttons {
+      margin: 0 0 20px 0 !important;
+
+      > .crm-button {
+        margin-left: 0 !important;
+        margin-right: 10px !important;
+      }
+    }
+
+    .helpicon {
+      position: relative;
+      top: -3px;
+      left: 7px;
+    }
+
+    table.form-layout {
+      tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+
+        &.crm-activity-form-block-attachment,
+        &.crm-activity-form-block-recurring_activity,
+        &.crm-activity-form-block-schedule_followup {
+          margin-bottom: 0;
+        }
+
+        > td {
+          padding: 0;
+
+          > .select2-container,
+          > .crm-form-text {
+            margin-top: 5px !important;
+            margin-bottom: 0 !important;
+
+            &:after {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+
+    .label,
+    label {
+      color: $gray-darker;
+      font-weight: normal !important;
+      font-size: 13px;
+      margin-bottom: 0 !important;
+    }
+
+    [for="activity_date_time_time"] {
+      position: relative;
+      top: -4px;
+    }
+
+    #activity_date_time_time {
+      margin-top: -12px !important;
+    }
+
+    .addon.fa-calendar {
+      background-color: #f3f3f6;
+      border: 1px solid #c2cfd8;
+      position: relative;
+      left: -2px;
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
+    }
+  }
+}
