@@ -466,6 +466,35 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
+   * Returns the LeavePeriodEntitlement for the given LeaveRequest. That is,
+   * the LeavePeriodEntitlement with the same contact and absence type as of
+   * the given LeaveRequest and for the Absence Period which contains the
+   * LeaveRequest dates.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement|null
+   *
+   * @throws \RuntimeException
+   */
+  public static function getForLeaveRequest(LeaveRequest $leaveRequest) {
+    $absencePeriod = AbsencePeriod::getPeriodContainingDates(
+      new DateTime($leaveRequest->from_date),
+      new DateTime($leaveRequest->to_date)
+    );
+
+    if($absencePeriod === null) {
+      throw new RuntimeException('It was not possible to find an AbsencePeriod containing the given LeaveRequest');
+    }
+
+    return self::getPeriodEntitlementForContact(
+      $leaveRequest->contact_id,
+      $absencePeriod->id,
+      $leaveRequest->type_id
+    );
+  }
+
+  /**
    * Returns the entitlement (number of days) for this LeavePeriodEntitlement.
    *
    * This is basic the sum of the amounts of the LeaveBalanceChanges that are

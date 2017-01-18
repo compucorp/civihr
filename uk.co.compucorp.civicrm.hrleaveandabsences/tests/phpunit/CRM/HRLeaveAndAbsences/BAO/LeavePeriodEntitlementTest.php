@@ -9,6 +9,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest
@@ -1230,6 +1231,76 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     ]);
 
     $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testGetForLeaveRequestReturnsTheLeavePeriodEntitlementForAGivenLeaveRequest() {
+    $absencePeriod1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('-1 day'),
+    ]);
+
+    $absencePeriod2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod1->id,
+      'type_id' =>  1
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod2->id,
+      'type_id' =>  1
+    ]);
+
+    $periodEntitlement3 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod2->id,
+      'type_id' =>  2
+    ]);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement1->contact_id,
+      'type_id' => $periodEntitlement1->type_id,
+      'from_date' => CRM_Utils_Date::processDate('-5 days'),
+      'to_date' => CRM_Utils_Date::processDate('-3 days'),
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement2->contact_id,
+      'type_id' => $periodEntitlement2->type_id,
+      'from_date' => CRM_Utils_Date::processDate('+2 days'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+    ]);
+
+    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement3->contact_id,
+      'type_id' => $periodEntitlement3->type_id,
+      'from_date' => CRM_Utils_Date::processDate('+9 days'),
+      'to_date' => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    $this->assertEquals($periodEntitlement1->id, LeavePeriodEntitlement::getForLeaveRequest($leaveRequest1)->id);
+    $this->assertEquals($periodEntitlement2->id, LeavePeriodEntitlement::getForLeaveRequest($leaveRequest2)->id);
+    $this->assertEquals($periodEntitlement3->id, LeavePeriodEntitlement::getForLeaveRequest($leaveRequest3)->id);
+  }
+
+  /**
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage It was not possible to find an AbsencePeriod containing the given LeaveRequest
+   */
+  public function testGetForLeaveRequestShouldThrowAnExceptionIfThereIsNoAbsencePeriodContainingTheGivenLeaveRequestDates() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+9 days'),
+      'to_date' => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    LeavePeriodEntitlement::getForLeaveRequest($leaveRequest);
   }
 
   /**
