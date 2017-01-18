@@ -1417,7 +1417,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $broughtForwardBalanceChange = LeaveBalanceChangeFabricator::fabricate([
       'source_id' => $periodEntitlement->id,
-      'source_type' => CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::SOURCE_ENTITLEMENT,
+      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
       'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
@@ -1505,7 +1505,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $broughtForwardBalanceChange = LeaveBalanceChangeFabricator::fabricate([
       'source_id' => $periodEntitlement->id,
-      'source_type' => CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::SOURCE_ENTITLEMENT,
+      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
       'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
@@ -1568,7 +1568,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $broughtForwardBalanceChange = LeaveBalanceChangeFabricator::fabricate([
       'source_id' => $periodEntitlement->id,
-      'source_type' => CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::SOURCE_ENTITLEMENT,
+      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
       'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
@@ -1618,7 +1618,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $broughtForwardBalanceChange = LeaveBalanceChangeFabricator::fabricate([
       'source_id' => $periodEntitlement->id,
-      'source_type' => CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::SOURCE_ENTITLEMENT,
+      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
       'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
