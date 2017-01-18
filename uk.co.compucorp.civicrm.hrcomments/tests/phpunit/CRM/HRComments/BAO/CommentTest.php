@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRComments_BAO_Comment as Comment;
+use CRM_HRComments_Test_Fabricator_Comment as CommentFabricator;
 
 /**
  * Class CRM_HRComments_BAO_CommentTest
@@ -76,6 +77,25 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
     ]);
   }
 
+  public function testTryingToSoftDeleteCommentOnUpdateThrowsException() {
+    $comment1 = Comment::create([
+      'entity_id' => 1,
+      'entity_name' => 'LeaveRequest',
+      'text' => 'This is a sample comment',
+      'contact_id' => 1,
+    ]);
+
+    $this->setExpectedException('CRM_HRComments_Exception_InvalidCommentException', 'Comment can not be soft deleted during an update, use the delete method instead!');
+    Comment::create([
+      'id' => $comment1->id,
+      'entity_id' => 1,
+      'entity_name' => 'LeaveRequest',
+      'text' => 'This is a sample comment',
+      'contact_id' => 1,
+      'is_deleted' => 1
+    ]);
+  }
+
   public function testCreatedDateIsInsertedCorrectly() {
     $comment = Comment::create([
       'entity_id' => 1,
@@ -126,5 +146,74 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
     $timestampNow = new DateTime('now');
 
     $this->assertEquals($timestampNow, $createdDateTimestamp, '', 10);
+  }
+
+  public function testSoftDeleteDoesNotDeleteCommentsFromCommentsTableButSetsIsDeletedFlagToOne() {
+    $comment1 = CommentFabricator::fabricate([
+      'entity_id' => 1,
+      'contact_id' => 1,
+    ]);
+
+    $comment2 = CommentFabricator::fabricate([
+      'entity_id' => 2,
+      'contact_id' => 2,
+    ]);
+
+    Comment::softDelete($comment1->id);
+
+    $comment = new Comment();
+    $comment->find();
+    $this->assertEquals($comment->N, 2);
+
+    $comment->fetch();
+    $this->assertEquals($comment->id, $comment1->id);
+    $this->assertEquals(1, $comment->is_deleted);
+
+    $comment->fetch();
+    $this->assertEquals($comment->id, $comment2->id);
+    $this->assertEquals(0, $comment->is_deleted);
+  }
+
+  public function testIsDeletedWillBeZeroIrrespectiveOfTheValuePassedViaIsDeletedParameterOnCreate() {
+    Comment::create([
+      'entity_id' => 1,
+      'entity_name' => 'LeaveRequest',
+      'text' => 'This is a sample comment',
+      'contact_id' => 1,
+      'is_deleted' => 1
+    ]);
+
+    $comment = new Comment();
+    $comment->find();
+    $this->assertEquals($comment->N, 1);
+    $comment->fetch();
+
+    $this->assertEquals(0, $comment->is_deleted);
+  }
+
+  public function testIsDeletedCannotBeChangedWhenUpdatingExistingComment() {
+    $comment1 = Comment::create([
+      'entity_id' => 1,
+      'entity_name' => 'LeaveRequest',
+      'text' => 'This is a sample comment',
+      'contact_id' => 1,
+    ]);
+
+    Comment::create([
+      'id' => $comment1->id,
+      'created_at' => CRM_Utils_Date::processDate('2016-01-01'),
+      'entity_name' => 'SickRequest',
+      'text' => 'This is a random sample comment',
+      'is_deleted' => 1
+    ], false);
+
+    $comment = new Comment();
+    $comment->find();
+    $this->assertEquals($comment->N, 1);
+    $comment->fetch();
+
+    $this->assertEquals(0, $comment->is_deleted);
+    $this->assertEquals('SickRequest', $comment->entity_name);
+    $this->assertEquals('This is a random sample comment', $comment->text);
   }
 }
