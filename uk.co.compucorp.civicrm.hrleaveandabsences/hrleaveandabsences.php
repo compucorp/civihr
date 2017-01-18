@@ -158,25 +158,27 @@ function _hrleaveandabsences_add_navigation_menu($params)
  * Adds the scheduled jobs for this extension
  */
 function _hrleaveandabsences_add_scheduled_jobs() {
-  _hrleaveandabsences_add_create_expiration_records_scheduled_job();
+  _hrleaveandabsences_add_create_expiry_records_scheduled_job();
   _hrleaveandabsences_add_process_public_holiday_leave_requests_updates_scheduled_job();
 }
 
 /**
  * Adds the "Create expiration records for expired LeaveBalanceChange records" scheduled job.
  */
-function _hrleaveandabsences_add_create_expiration_records_scheduled_job() {
+function _hrleaveandabsences_add_create_expiry_records_scheduled_job() {
   $dao             = new CRM_Core_DAO_Job();
   $dao->api_entity = 'LeaveBalanceChange';
-  $dao->api_action = 'createexpirationrecords';
+  $dao->api_action = 'create_expiry_records';
   $dao->find(TRUE);
   if (!$dao->id) {
     $dao                = new CRM_Core_DAO_Job();
+    $dao->api_entity    = 'LeaveBalanceChange';
+    $dao->api_action    = 'create_expiry_records';
     $dao->domain_id     = CRM_Core_Config::domainID();
     $dao->run_frequency = 'Daily';
     $dao->parameters    = NULL;
-    $dao->name          = 'Create expiration records for expired LeaveBalanceChange records';
-    $dao->description   = 'Creates a record with a negative balance for any balance change';
+    $dao->name          = 'Create expiry records for expired LeaveBalanceChanges';
+    $dao->description   = 'Checks the number of days taken as leave during the LeaveBalanceChange period and add a negative balance change to expire the number of days not used';
     $dao->is_active     = 1;
     $dao->save();
   }

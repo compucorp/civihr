@@ -1076,7 +1076,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertCount(0, $balanceChanges);
   }
 
-  public function testCreateExpirationRecordsCreatesRecordsForExpiredBalanceChanges() {
+  public function testCreateExpiryRecordsCreatesRecordsForExpiredBalanceChanges() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
       'end_date' => CRM_Utils_Date::processDate('+10 days')
@@ -1106,14 +1106,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       CRM_Utils_Date::processDate('-8 days')
     );
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(2, $numberOfCreatedRecords);
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(0, $numberOfCreatedRecords);
   }
 
-  public function testCreateExpirationRecordsCreatesRecordsEntitlementsWithMultipleExpiredBalanceChanges() {
+  public function testCreateExpiryRecordsCreatesRecordsEntitlementsWithMultipleExpiredBalanceChanges() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
       'end_date' => CRM_Utils_Date::processDate('+10 days')
@@ -1144,14 +1144,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       CRM_Utils_Date::processDate('-8 days')
     );
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(2, $numberOfCreatedRecords);
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(0, $numberOfCreatedRecords);
   }
 
-  public function testCreateExpirationRecordsCalculatesTheExpiredAmountBasedOnTheApprovedLeaveRequestBalance() {
+  public function testCreateExpiryRecordsCalculatesTheExpiredAmountBasedOnTheApprovedLeaveRequestBalance() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-30 days'),
       'end_date' => CRM_Utils_Date::processDate('+10 days')
@@ -1188,17 +1188,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       CRM_Utils_Date::processDate('-21 days')
     );
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(1, $numberOfCreatedRecords);
 
-    $expirationRecord = $this->getExpirationRecordForBalanceChange($balanceChange->id);
-    $this->assertNotNull($expirationRecord);
+    $expiryRecord = $this->getExpiryRecordForBalanceChange($balanceChange->id);
+    $this->assertNotNull($expiryRecord);
     // Since only the 1 day leave request was counted, 4 days expired
     // 5 - 1 = 4 (we store expired days as a negative number)
-    $this->assertEquals(-4, $expirationRecord->amount);
+    $this->assertEquals(-4, $expiryRecord->amount);
   }
 
-  public function testCreateExpirationRecordsPrioritizesAccordingToTheBalanceChangeExpiryDate() {
+  public function testCreateExpiryRecordsPrioritizesAccordingToTheBalanceChangeExpiryDate() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-30 days'),
       'end_date' => CRM_Utils_Date::processDate('+10 days')
@@ -1233,22 +1233,22 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       CRM_Utils_Date::processDate('-1 day')
     );
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(2, $numberOfCreatedRecords);
 
-    $expirationRecord2 = $this->getExpirationRecordForBalanceChange($balanceChange2->id);
+    $expiryRecord2 = $this->getExpiryRecordForBalanceChange($balanceChange2->id);
     // Balance change 2 expires first, so we also handle it first
     // 3 days of leave request are deducted from it, so 2 days should expire
-    $this->assertEquals(-2, $expirationRecord2->amount);
+    $this->assertEquals(-2, $expiryRecord2->amount);
 
-    $expirationRecord1 = $this->getExpirationRecordForBalanceChange($balanceChange1->id);
+    $expiryRecord1 = $this->getExpiryRecordForBalanceChange($balanceChange1->id);
     // Now we handle the balance change 1, which expires after balance change 2
     // Since we already deducted 3 days, now we just deduct the remaining 4 days
     // meaning only 1 day will expire
-    $this->assertEquals(-1, $expirationRecord1->amount);
+    $this->assertEquals(-1, $expiryRecord1->amount);
   }
 
-  public function testCreateExpirationRecordsCalculatesTheExpiredAmountBasedOnlyOnTheApprovedLeaveRequestBalancePriorToTheExpiryDate() {
+  public function testCreateExpiryRecordsCalculatesTheExpiredAmountBasedOnlyOnTheApprovedLeaveRequestBalancePriorToTheExpiryDate() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-30 days'),
       'end_date' => CRM_Utils_Date::processDate('+10 days')
@@ -1278,14 +1278,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       CRM_Utils_Date::processDate('+5 days')
     );
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(1, $numberOfCreatedRecords);
 
-    $expirationRecord = $this->getExpirationRecordForBalanceChange($balanceChange->id);
-    $this->assertNotNull($expirationRecord);
+    $expiryRecord = $this->getExpiryRecordForBalanceChange($balanceChange->id);
+    $this->assertNotNull($expiryRecord);
     // Since only two days were taken before the brought forward
     // expiry date, the other 3 days will expire
-    $this->assertEquals(-3, $expirationRecord->amount);
+    $this->assertEquals(-3, $expiryRecord->amount);
   }
 
   public function testGetLeavePeriodEntitlementCanReturnThePeriodEntitlementWhenTheSourceTypeIsEntitlement() {
@@ -1374,7 +1374,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $balanceChange->getLeavePeriodEntitlement();
   }
 
-  public function testCreateExpirationRecordsCanExpireTOILRequests() {
+  public function testCreateExpiryRecordsCanExpireTOILRequests() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
     $absencePeriod = AbsencePeriodFabricator::fabricate([
@@ -1399,11 +1399,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'expiry_date' => CRM_Utils_Date::processDate('-10 days'),
     ]);
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(1, $numberOfCreatedRecords);
   }
 
-  public function testCreateExpirationRecordsCanExpireTOILRequestOverlappingBroughtForward() {
+  public function testCreateExpiryRecordsCanExpireTOILRequestOverlappingBroughtForward() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31')
@@ -1475,23 +1475,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date' => CRM_Utils_Date::processDate('2016-02-28'),
     ], true);
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(3, $numberOfCreatedRecords);
 
-    $expiredBroughtForward = $this->getExpirationRecordForBalanceChange($broughtForwardBalanceChange->id);
+    $expiredBroughtForward = $this->getExpiryRecordForBalanceChange($broughtForwardBalanceChange->id);
     // Original 5 days. 3 days used (1 from the first leave request and 2 from the last one). 2 expired
     $this->assertEquals(-2, $expiredBroughtForward->amount);
 
-    $expiredToilRequest1 = $this->getExpirationRecordForToilRequest($toilRequest1->id);
+    $expiredToilRequest1 = $this->getExpiryRecordForToilRequest($toilRequest1->id);
     // Original 1 day. 1 day used from the second leave request. None expired.
     $this->assertEquals(0, $expiredToilRequest1->amount);
 
     // Original 2 days. 1 day used from the third leave request. 1 day expired
-    $expiredToilRequest2 = $this->getExpirationRecordForToilRequest($toilRequest2->id);
+    $expiredToilRequest2 = $this->getExpiryRecordForToilRequest($toilRequest2->id);
     $this->assertEquals(-1, $expiredToilRequest2->amount);
   }
 
-  public function testCreateExpirationRecordsCanCalculateTheExpiryAmounWhenTheNumberOfDaysTakenBeforeTheExpiryDateIsBiggerThanTheBalanceChangeAmount() {
+  public function testCreateExpiryRecordsCanCalculateTheExpiryAmounWhenTheNumberOfDaysTakenBeforeTheExpiryDateIsBiggerThanTheBalanceChangeAmount() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31')
@@ -1530,10 +1530,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date' => CRM_Utils_Date::processDate('2016-02-26'),
     ], true);
 
-    $numberOfRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfRecords = LeaveBalanceChange::createExpiryRecords();
 
-    $expiredBroughtForward = $this->getExpirationRecordForBalanceChange($broughtForwardBalanceChange->id);
-    $expiredTOILBalanceChange = $this->getExpirationRecordForToilRequest($toilRequest1->id);
+    $expiredBroughtForward = $this->getExpiryRecordForBalanceChange($broughtForwardBalanceChange->id);
+    $expiredTOILBalanceChange = $this->getExpiryRecordForToilRequest($toilRequest1->id);
 
     $this->assertEquals(2, $numberOfRecords);
 
@@ -1554,7 +1554,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(-1, $periodBalance);
   }
 
-  public function testCreateExpirationRecordsCanExpireFractionalDays() {
+  public function testCreateExpiryRecordsCanExpireFractionalDays() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31')
@@ -1597,14 +1597,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
     ]);
 
-    $numberOfRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(1, $numberOfRecords);
 
-    $expiredBroughtForward = $this->getExpirationRecordForBalanceChange($broughtForwardBalanceChange->id);
+    $expiredBroughtForward = $this->getExpiryRecordForBalanceChange($broughtForwardBalanceChange->id);
     $this->assertEquals(-4.3, $expiredBroughtForward->amount);
   }
 
-  public function testCreateExpirationRecordsOnlyDeductsFromOneBalanceChangeWhenBothTOILAndBroughtForwardExpireOnTheSameDay() {
+  public function testCreateExpiryRecordsOnlyDeductsFromOneBalanceChangeWhenBothTOILAndBroughtForwardExpireOnTheSameDay() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31')
@@ -1643,10 +1643,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date' => CRM_Utils_Date::processDate('2016-02-26'),
     ], true);
 
-    $numberOfRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfRecords = LeaveBalanceChange::createExpiryRecords();
 
-    $expiredBroughtForward = $this->getExpirationRecordForBalanceChange($broughtForwardBalanceChange->id);
-    $expiredTOILBalanceChange = $this->getExpirationRecordForToilRequest($toilRequest1->id);
+    $expiredBroughtForward = $this->getExpiryRecordForBalanceChange($broughtForwardBalanceChange->id);
+    $expiredTOILBalanceChange = $this->getExpiryRecordForToilRequest($toilRequest1->id);
 
     $this->assertEquals(2, $numberOfRecords);
 
@@ -1658,7 +1658,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(-1, $expiredTOILBalanceChange->amount);
   }
 
-  public function testCreateExpirationRecordsConsidersOnlyTheApprovedLeaveRequestsBetweenTheTOILRequestDateAndTOILExpiryDateToExpireTOILRequests() {
+  public function testCreateExpiryRecordsConsidersOnlyTheApprovedLeaveRequestsBetweenTheTOILRequestDateAndTOILExpiryDateToExpireTOILRequests() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
     $absencePeriod = AbsencePeriodFabricator::fabricate([
@@ -1699,32 +1699,32 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date' => CRM_Utils_Date::processDate('-13 days'),
     ], true);
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(1, $numberOfCreatedRecords);
 
-    $expiredBalanceChange = $this->getExpirationRecordForToilRequest($toilRequest->id);
+    $expiredBalanceChange = $this->getExpiryRecordForToilRequest($toilRequest->id);
     $this->assertEquals(-1, $expiredBalanceChange->amount);
   }
 
-  public function testCreateExpirationRecordsDoesNotCreateRecordsForBalanceChangesThatNeverExpire() {
+  public function testCreateExpiryRecordsDoesNotCreateRecordsForBalanceChangesThatNeverExpire() {
     // A Brought Forward without an expiry date will never expire
     $this->createBroughtForwardBalanceChange(1, 5);
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(0, $numberOfCreatedRecords);
   }
 
-  public function testCreateExpirationRecordsDoesNotCreateRecordsForNonExpiredBalanceChanges() {
+  public function testCreateExpiryRecordsDoesNotCreateRecordsForNonExpiredBalanceChanges() {
     $this->createBroughtForwardBalanceChange(1, 5, date('YmdHis', strtotime('+1 day')));
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(0, $numberOfCreatedRecords);
   }
 
-  public function testCreateExpirationRecordsDoesCreatesRecordsForAlreadyExpiredBalanceChanges() {
+  public function testCreateExpiryRecordsDoesCreatesRecordsForAlreadyExpiredBalanceChanges() {
     $this->createExpiredBroughtForwardBalanceChange(1, 5, 10);
 
-    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
     $this->assertEquals(0, $numberOfCreatedRecords);
   }
 
@@ -1736,7 +1736,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ]);
   }
 
-  private function getExpirationRecordForBalanceChange($balanceChangeID) {
+  private function getExpiryRecordForBalanceChange($balanceChangeID) {
     $record = new LeaveBalanceChange();
     $record->expired_balance_change_id = $balanceChangeID;
     $record->find();
@@ -1748,7 +1748,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     return null;
   }
 
-  private function getExpirationRecordForToilRequest($toilRequestID) {
+  private function getExpiryRecordForToilRequest($toilRequestID) {
     $record = new LeaveBalanceChange();
     $record->source_id = $toilRequestID;
     $record->source_type = LeaveBalanceChange::SOURCE_TOIL_REQUEST;

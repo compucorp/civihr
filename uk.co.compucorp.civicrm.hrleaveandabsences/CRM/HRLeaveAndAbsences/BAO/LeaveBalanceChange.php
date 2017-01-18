@@ -411,7 +411,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *
    * @return int The number of records created
    */
-  public static function createExpirationRecords() {
+  public static function createExpiryRecords() {
     $numberOfRecordsCreated = 0;
 
     $balanceChangesToExpire = self::getBalanceChangesToExpire();
