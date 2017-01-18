@@ -25,10 +25,25 @@ define([
         label: 'All'
       };
 
-    vm.isFilterExpanded = false;
     vm.absencePeriods = [];
-    vm.filteredUsers = [];
     vm.absenceTypes = [];
+    vm.filters = {
+      contactFilters: {
+        department: null,
+        level_type: [],
+        location: null,
+        region: null
+      },
+      leaveRequestFilters: {
+        leaveStatus: allStatus,
+        pending_requests: false,
+        selectedUsers: null,
+        selectedPeriod: null,
+        selectedAbsenceTypes: null
+      }
+    };
+    vm.filteredUsers = [];
+    vm.isFilterExpanded = false;
     //leaveRequests.table - to handle table data
     //leaveRequests.filter - to handle left nav filter data
     vm.leaveRequests = {
@@ -39,28 +54,13 @@ define([
         list: []
       }
     };
-    vm.filters = {
-      contactFilters: {
-        region: null,
-        department: null,
-        level_type: [],
-        location: null
-      },
-      leaveRequestFilters: {
-        selectedUsers: null,
-        selectedPeriod: null,
-        selectedAbsenceTypes: null,
-        leaveStatus: allStatus,
-        pending_requests: false
-      }
+    vm.loading = {
+      content: true,
+      page: true
     };
     vm.pagination = {
       page: 1,
       size: 7
-    };
-    vm.loading = {
-      content: true,
-      page: true
     };
 
     /**
@@ -81,9 +81,11 @@ define([
      */
     vm.getLeaveStatusByValue = function (id) {
       if (vm.leaveRequestStatuses.length) {
-        return vm.leaveRequestStatuses.find(function (status) {
+        var status = vm.leaveRequestStatuses.find(function (status) {
           return status.value == id;
-        }).label;
+        });
+
+        return status ? status.label : null;
       }
     };
 
@@ -96,9 +98,9 @@ define([
     vm.getAbsenceTypesByID = function (id) {
       if (vm.absenceTypes && id) {
         var type,
-          i;
-        for (i in vm.absenceTypes) {
-          type = vm.absenceTypes[i];
+          iterator;
+        for (iterator in vm.absenceTypes) {
+          type = vm.absenceTypes[iterator];
           if (type.id == id) {
             return type.title;
           }
@@ -257,6 +259,7 @@ define([
     /**
      * Loads all requests
      *
+     * @param {int} page - page number
      * @return {Promise}
      */
     function loadAllRequests(page) {
@@ -266,16 +269,16 @@ define([
         page: 1,
         size: 0
       })
-        .then(function (data) {
-          vm.filteredUsers = data.list;
+        .then(function (users) {
+          vm.filteredUsers = users.list;
 
           $q.all([
             loadLeaveRequest('table'),
             loadLeaveRequest('filter')
           ])
-          .then(function () {
-            vm.loading.content = false;
-          })
+            .then(function () {
+              vm.loading.content = false;
+            })
         });
     }
 
@@ -300,7 +303,7 @@ define([
      *
      * @param {boolean} filterByStatus - if true then leave request api will be filtered using
      * selected leave request status in the left navigation bar, which would be used to show the
-     * numbers of different status's
+     * numbers of different statuses
      * @return {Object}
      */
     function leaveRequestFilters(filterByStatus) {

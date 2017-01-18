@@ -25,7 +25,6 @@
         'common/d3': 'common/vendor/d3.min',
         'common/lodash': 'common/vendor/lodash.min',
         'common/moment': 'common/vendor/moment.min',
-        'common/ui-select': 'common/vendor/select',
         'common/mocks': '../test/mocks',
         'common/vendor/perfect-scrollbar': 'common/vendor/perfect-scrollbar.min'
     },

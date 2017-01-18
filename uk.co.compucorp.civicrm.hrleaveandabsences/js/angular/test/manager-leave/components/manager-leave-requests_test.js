@@ -77,7 +77,7 @@
         expect($log.debug).toHaveBeenCalled();
       });
 
-      describe('initial data', function () {
+      describe('initially', function () {
 
         it('the filter section is closed', function () {
           expect(controller.isFilterExpanded).toBe(false);
@@ -85,17 +85,17 @@
 
         describe('pagination', function () {
 
-          it('page is set to 1', function () {
+          it('is set to page 1', function () {
             expect(controller.pagination.page).toBe(1);
           });
 
-          it('page size is 7', function () {
+          it('has page size set to 7', function () {
             expect(controller.pagination.size).toBe(7);
           });
         });
       });
 
-      describe('data loading', function () {
+      describe('data loading::', function () {
 
         //TODO need to figure out how to test variables which are changed when controller gets initialized
         xdescribe('before loading starts', function () {
@@ -121,20 +121,20 @@
           });
         });
 
-        describe('when data is loaded', function () {
+        describe('after data loading is complete', function () {
 
           describe('loading', function () {
 
-            it('page loader should be hidden', function () {
+            it('should be hidden for page', function () {
               expect(controller.loading.page).toBe(false);
             });
 
-            it('controller loader should be hidden', function () {
+            it('should be hidden for content', function () {
               expect(controller.loading.content).toBe(false);
             });
           });
 
-          it('leave requests status is loaded', function () {
+          it('leave requests status should load', function () {
             var expectedResult = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status').concat({
               name: 'all',
               label: 'All'
@@ -142,27 +142,27 @@
             expect(controller.leaveRequestStatuses).toEqual(expectedResult);
           });
 
-          it('regions are loaded', function () {
+          it('regions should load', function () {
             expect(controller.regions).toEqual(optionGroupMock.getCollection('hrjc_region'));
           });
 
-          it('departments are loaded', function () {
+          it('departments should load', function () {
             expect(controller.departments).toEqual(optionGroupMock.getCollection('hrjc_department'));
           });
 
-          it('locations are loaded', function () {
+          it('locations should load', function () {
             expect(controller.locations).toEqual(optionGroupMock.getCollection('hrjc_location'));
           });
 
-          it('levelTypes are loaded', function () {
+          it('levelTypes should load', function () {
             expect(controller.levelTypes).toEqual(optionGroupMock.getCollection('hrjc_level_type'));
           });
 
-          it('absencePeriods are loaded', function () {
+          it('absencePeriods should load', function () {
             expect(controller.absencePeriods.length).not.toBe(0);
           });
 
-          it('absenceTypes have data', function () {
+          it('absenceTypes have loaded', function () {
             expect(controller.absenceTypes.length).not.toBe(0);
           });
 
@@ -177,7 +177,7 @@
         });
       });
 
-      describe('pagination', function () {
+      describe('pagination::', function () {
 
         describe('totalNoOfPages', function () {
 
@@ -194,14 +194,14 @@
           });
         });
 
-        describe('nextPage', function () {
+        describe('nextPage::', function () {
 
           beforeEach(function () {
             spyOn(controller, 'totalNoOfPages').and.returnValue(2);
             spyOn(controller, 'refresh');
           });
 
-          describe('current page is less than total page number', function () {
+          describe('when current page is less than total page number', function () {
 
             beforeEach(function () {
               controller.pagination.page = 1;
@@ -213,12 +213,12 @@
               expect(controller.pagination.page).toBe(2);
             });
 
-            it('calls refresh', function () {
+            it('refresh is called', function () {
               expect(controller.refresh).toHaveBeenCalledWith(2);
             });
           });
 
-          describe('current page is not less than total page number', function () {
+          describe('when current page is not less than total page number', function () {
 
             beforeEach(function () {
               controller.pagination.page = 3;
@@ -226,18 +226,18 @@
               controller.nextPage();
             });
 
-            it('does not increase page no', function () {
+            it('page no does not get increased', function () {
               expect(controller.pagination.page).toBe(3);
             });
 
-            it('calls refresh', function () {
+            it('refresh is called', function () {
               expect(controller.refresh).not.toHaveBeenCalled();
             });
           });
         });
       });
 
-      describe('period label', function () {
+      describe('period label::', function () {
         var label, period;
 
         describe('when the period is current', function () {
@@ -248,7 +248,7 @@
             label = controller.labelPeriod(period);
           });
 
-          it('labels it as such', function () {
+          it('adds Current Period to the label', function () {
             expect(label).toBe('Current Period (' + period.title + ')');
           });
         });
@@ -282,7 +282,7 @@
         })
       });
 
-      describe('getAbsenceTypesByID', function () {
+      describe('getAbsenceTypesByID::', function () {
 
         var absence,
           returnValue;
@@ -359,7 +359,7 @@
         });
       });
 
-      describe('getNavBadge', function () {
+      describe('getNavBadge::', function () {
 
         var returnValue;
 
@@ -426,7 +426,6 @@
         beforeEach(function () {
           spyOn(controller, 'refresh');
           mockStatus = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
-          ;
           controller.refreshWithFilter(mockStatus);
         });
 
@@ -452,9 +451,9 @@
         });
       });
 
-      describe('refresh', function () {
+      describe('refresh::', function () {
 
-        describe('page no', function () {
+        describe('page no::', function () {
 
           describe('when no page no is sent', function () {
 
@@ -486,14 +485,14 @@
             controller.refresh();
           });
 
-          it('shows the content loading', function () {
+          it('is shown', function () {
             expect(controller.loading.content).toBe(true);
           });
         });
 
-        describe('contactFilters', function () {
+        describe('contactFilters::', function () {
 
-          describe('region', function () {
+          describe('region::', function () {
 
             describe('when region filter has value', function () {
 
@@ -528,7 +527,7 @@
             });
           });
 
-          describe('department', function () {
+          describe('department::', function () {
 
             describe('when department filter has value', function () {
 
@@ -563,7 +562,7 @@
             });
           });
 
-          describe('location', function () {
+          describe('location::', function () {
 
             describe('when location filter has value', function () {
 
@@ -598,7 +597,7 @@
             });
           });
 
-          describe('level_type', function () {
+          describe('level_type::', function () {
 
             describe('when level_type filter is an empty array', function () {
 
@@ -670,7 +669,7 @@
             })
           });
 
-          describe('type_id', function () {
+          describe('type_id::', function () {
 
             describe('when selectedAbsenceTypes has value', function () {
 
@@ -835,7 +834,7 @@
             });
           });
 
-          describe('status_id', function () {
+          describe('status_id::', function () {
 
             describe('when leaveStatus has value', function () {
 
