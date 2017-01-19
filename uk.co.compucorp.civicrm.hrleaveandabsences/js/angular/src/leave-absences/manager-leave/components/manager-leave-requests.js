@@ -1,7 +1,8 @@
 define([
+  'common/lodash',
   'leave-absences/manager-leave/modules/components',
   'common/models/contact',
-], function (components) {
+], function (_, components) {
 
   components.component('managerLeaveRequests', {
     bindings: {
@@ -30,7 +31,7 @@ define([
     vm.filters = {
       contact: {
         department: null,
-        level_type: [],
+        level_type: null,
         location: null,
         region: null
       },
@@ -109,14 +110,14 @@ define([
     };
 
     /**
-     * Returns the name(label) of a Leave request when id is given
+     * Returns the name(label) of a Leave request status when id is given
      *
      * @param {string} id - id of the leave request
      * @return {string}
      */
-    vm.getLeaveStatusByValue = function (id) {
-      var status = vm.leaveRequestStatuses.find(function (status) {
-        return status.value == id;
+    vm.getLeaveStatusByValue = function (value) {
+      var status = _.find(vm.leaveRequestStatuses, function (status) {
+        return status.value == value;
       });
 
       return status ? status.label : null;
@@ -141,26 +142,26 @@ define([
           return 'badge-primary';
       }
     };
+
     /**
      * Returns the username when id is given
      *
      * @param {string} id - id of the user
      * @return {string}
      */
-
     vm.getUserNameByID = function (id) {
-      var user = vm.filteredUsers.find(function (data) {
+      var user = _.find(vm.filteredUsers, function (data) {
         return data.contact_id == id;
       });
       return user ? user.display_name : null;
     };
+
     /**
      * Labels the given period according to whether it's current or not
      *
      * @param  {AbsencePeriodInstance} period
      * @return {string}
      */
-
     vm.labelPeriod = function (period) {
       return period.current ? 'Current Period (' + period.title + ')' : period.title;
     };
@@ -223,10 +224,10 @@ define([
         loadLevelTypes(),
         loadStatuses()
       ])
-        .then(function () {
-          vm.loading.page = false;
-          loadAllRequests(1);
-        })
+      .then(function () {
+        vm.loading.page = false;
+        loadAllRequests(1);
+      })
     })();
 
     /**
@@ -240,11 +241,7 @@ define([
       return {
         region: filters.region ? filters.region.value : null,
         department: filters.department ? filters.department.value : null,
-        level_type: filters.level_type.length ? {
-            "IN": filters.level_type.map(function (data) {
-              return data.value;
-            })
-          } : null,
+        level_type: filters.level_type ? filters.level_type.value : null,
         location: filters.location ? filters.location.value : null
       };
     }
@@ -435,7 +432,7 @@ define([
       var filters = vm.filters.leaveRequest,
         statusFilter = [],
         //get the value for the waiting_approval status
-        waitingApprovalID = vm.leaveRequestStatuses.find(function (data) {
+        waitingApprovalID = _.find(vm.leaveRequestStatuses, function (data) {
           return data.name === 'waiting_approval';
         }).value;
 
@@ -458,5 +455,4 @@ define([
 
     return vm;
   }
-})
-;
+});

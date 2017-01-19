@@ -29,20 +29,15 @@
     </div>
     <div class="panel-subheading chr_manager_dashboard__sub-header" ng-show="ctrl.isFilterExpanded">
       <div>
-
         <ui-select ng-change="ctrl.refresh()"
                    ng-model="ctrl.filters.leaveRequest.selectedUsers">
-          <ui-select-match placeholder="Staff Member">
+          <ui-select-match placeholder="Staff Member" allow-clear>
             <span ng-bind="$select.selected.display_name"></span>
           </ui-select-match>
           <ui-select-choices repeat="user in (ctrl.filteredUsers | filter: $select.search) track by user.id">
             <span ng-bind="user.display_name"></span>
           </ui-select-choices>
         </ui-select>
-        <i ng-show="ctrl.filters.leaveRequest.selectedUsers"
-           ng-click="ctrl.clearStaffSelection()"
-           class="fa fa-times-circle" aria-hidden="true"></i>
-
       </div>
       <div class="chr_custom-select">
         <select
@@ -60,16 +55,13 @@
           <option value="">Department</option>
         </select>
       </div>
-      <div>
-        <ui-select multiple ng-change="ctrl.refresh()"
-                   ng-model="ctrl.filters.contact.level_type">
-          <ui-select-match placeholder="Leave Type">
-            <span ng-bind="$item.value"></span>
-          </ui-select-match>
-          <ui-select-choices repeat="level in (ctrl.levelTypes | filter: $select.search) track by level.id">
-            <span ng-bind="level.value"></span>
-          </ui-select-choices>
-        </ui-select>
+      <div class="chr_custom-select">
+        <select
+          ng-options="levelType.value for levelType in ctrl.levelTypes track by levelType.id"
+          ng-model="ctrl.filters.contact.level_type"
+          ng-change="ctrl.refresh()">
+          <option value="">Level Type</option>
+        </select>
       </div>
       <div class="chr_custom-select">
         <select
@@ -140,9 +132,21 @@
             <tr>
               <td colspan="5" class="text-center">
                 <ul class="pagination">
+                  <li ng-click="ctrl.nextPage()"
+                      class="active">
+                    <a class="pointer" href="#">
+                      Next <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+                    </a>
+                  </li>
+                  <li ng-click="ctrl.nextPage()"
+                      class="active">
+                    <a class="pointer" href="#">
+                      Next <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    </a>
+                  </li>
                   <li ng-class="{'active': ctrl.pagination.page - 1 === $index}"
                       ng-click="ctrl.refresh($index + 1)"
-                      ng-repeat="a in ctrl.range(ctrl.totalNoOfPages()) track by $index">
+                      ng-repeat="a in ctrl.get(ctrl.totalNoOfPages()) track by $index">
                     <a href="#">{{$index + 1}}</a>
                   </li>
                   <li ng-click="ctrl.nextPage()"

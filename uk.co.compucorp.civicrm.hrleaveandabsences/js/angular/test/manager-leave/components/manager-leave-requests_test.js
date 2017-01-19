@@ -602,38 +602,36 @@
             });
           });
 
-          describe('level_type::', function () {
+          describe('levelTypes::', function () {
 
-            describe('when level_type filter is an empty array', function () {
+            describe('when levelTypes filter has value', function () {
 
-              beforeEach(function () {
-                controller.filters.contact.level_type = [];
-                controller.refresh();
-              });
-
-              it('ContactAPI gets called with null', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  level_type: null
-                }), jasmine.any(Object));
-              });
-            });
-
-            describe('when level_type filter is not empty', function () {
-
-              var mockLevelType = [{
+              var mockLevelType = {
                 value: 'mockvalue'
-              }];
+              };
 
               beforeEach(function () {
                 controller.filters.contact.level_type = mockLevelType;
                 controller.refresh();
               });
 
-              it('ContactAPI gets called with level types', function () {
+              it('ContactAPI gets called with levelTypes value', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  level_type: {
-                    "IN": ['mockvalue']
-                  }
+                  level_type: mockLevelType.value
+                }), jasmine.any(Object));
+              });
+            });
+
+            describe('when levelTypes filter has no value', function () {
+
+              beforeEach(function () {
+                controller.filters.contact.level_type = null;
+                controller.refresh();
+              });
+
+              it('ContactAPI gets called with null', function () {
+                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  level_type: null
                 }), jasmine.any(Object));
               });
             });
