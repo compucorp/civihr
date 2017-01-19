@@ -13,6 +13,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHo
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
+use CRM_HRComments_Test_Fabricator_Comment as CommentFabricator;
+use CRM_HRComments_BAO_Comment as Comment;
 
 /**
  * Class api_v3_LeaveRequestTest
@@ -2038,4 +2040,310 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     return $dates;
   }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_request_id
+   */
+  public function testAddCommentShouldThrowAnExceptionIfLeaveRequestIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'addcomment', [
+      'text' => 'Random Commenter',
+      'contact_id' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id
+   */
+  public function testAddCommentShouldThrowAnExceptionIfContactIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'addcomment', [
+      'leave_request_id' => 1,
+      'text' => 'Random Commenter',
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: text
+   */
+  public function testAddCommentShouldThrowAnExceptionIfTextIsMissing() {
+    civicrm_api3('LeaveRequest', 'addcomment', [
+      'leave_request_id' => 1,
+      'contact_id' => 1,
+    ]);
+  }
+
+  public function testAddCommentCanCreateAndUpdateCommentForLeaveRequest() {
+    $result = civicrm_api3('LeaveRequest', 'addcomment', [
+      'leave_request_id' => 1,
+      'text' => 'Random Commenter',
+      'contact_id' => 1,
+      'sequential' => 1
+    ]);
+
+    $comment = new Comment();
+    $comment->find();
+    $this->assertEquals(1, $comment->N);
+    $comment->fetch();
+
+    $date = new DateTime($comment->created_at);
+
+    $expected = [
+      [
+        'comment_id' => $comment->id,
+        'leave_request_id' => $comment->entity_id,
+        'text' => $comment->text,
+        'contact_id' => $comment->contact_id,
+        "created_at"=> $date->format('YmdHis')
+      ]
+    ];
+
+    $this->assertEquals($expected, $result['values']);
+
+    //update comment
+    $result2 = civicrm_api3('LeaveRequest', 'addcomment', [
+      'comment_id' => $comment->id,
+      'leave_request_id' => 1,
+      'text' => 'Test Commenter',
+      'contact_id' => 2,
+      'sequential' => 1
+    ]);
+
+    $expected2 = [
+      [
+        'comment_id' => $comment->id,
+        'leave_request_id' => $comment->entity_id,
+        'text' => 'Test Commenter',
+        'contact_id' => 2,
+        'created_at' => ''
+      ]
+    ];
+
+    $this->assertEquals($expected2, $result2['values']);
+  }
+
+  public function testGetCommentReturnsAssociatedCommentsForLeaveRequest() {
+    $entityName = 'LeaveRequest';
+    $comment1 = CommentFabricator::fabricate([
+      'entity_id' => 1,
+      'entity_name' => $entityName,
+      'contact_id' => 1,
+    ]);
+
+    $comment2 = CommentFabricator::fabricate([
+      'entity_id' => 2,
+      'entity_name' => $entityName,
+      'contact_id' => 1,
+    ]);
+
+    $comment3 = CommentFabricator::fabricate([
+      'entity_id' => 3,
+      'entity_name' => $entityName,
+      'contact_id' => 1,
+    ]);
+
+    //get comments for all leave requests entities
+    $result = civicrm_api3('LeaveRequest', 'getcomment', ['sequential' => 1]);
+
+    $comment1Date = new DateTime($comment1->created_at);
+    $comment2Date = new DateTime($comment2->created_at);
+    $comment3Date = new DateTime($comment3->created_at);
+
+    $expected1 = [
+      [
+        'comment_id' => $comment1->id,
+        'leave_request_id' => $comment1->entity_id,
+        'text' => $comment1->text,
+        'contact_id' => $comment1->contact_id,
+        'created_at' => $comment1Date->format('Y-m-d H:i:s')
+      ],
+      [
+        'comment_id' => $comment2->id,
+        'leave_request_id' => $comment2->entity_id,
+        'text' => $comment2->text,
+        'contact_id' => $comment2->contact_id,
+        'created_at' => $comment2Date->format('Y-m-d H:i:s')
+      ],
+      [
+        'comment_id' => $comment3->id,
+        'leave_request_id' => $comment3->entity_id,
+        'text' => $comment3->text,
+        'contact_id' => $comment3->contact_id,
+        'created_at' => $comment3Date->format('Y-m-d H:i:s')
+      ]
+    ];
+
+    $this->assertEquals($expected1, $result['values']);
+
+    //get comments for a single leave request entity
+    $result2 = civicrm_api3('LeaveRequest', 'getcomment', ['leave_request_id' =>1, 'sequential' => 1]);
+
+    $expected2 = [
+      [
+        'comment_id' => $comment1->id,
+        'leave_request_id' => $comment1->entity_id,
+        'text' => $comment1->text,
+        'contact_id' => $comment1->contact_id,
+        'created_at' => $comment1Date->format('Y-m-d H:i:s')
+      ]
+    ];
+
+    $this->assertEquals($expected2, $result2['values']);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: comment_id
+   */
+  public function testDeleteCommentShouldThrowAnExceptionIfCommentIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'deletecomment', []);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage You must either be an L&A admin or an approver to this leave request to be able to delete the comment
+   */
+  public function testDeleteCommentShouldThrowAnExceptionWhenLoggedInUserIsNotAnAdminOrLeaveApprover() {
+    $contact = ContactFabricator::fabricate();
+    $leaveContact = ContactFabricator::fabricate();
+
+    // Register contact in session and make sure that no permission is set
+    $this->registerCurrentLoggedInContactInSession($contact['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $leaveContact['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $comment = CommentFabricator::fabricate([
+      'entity_id' => $leaveRequest->id,
+      'entity_name' => 'LeaveRequest',
+      'contact_id' => $leaveRequest->contact_id,
+    ]);
+    civicrm_api3('LeaveRequest', 'deletecomment', ['comment_id' => $comment->id]);
+  }
+
+  public function testDeleteCommentShouldDeleteCommentWhenLoggedInUserIsAnAdmin() {
+    $contact = ContactFabricator::fabricate();
+    $leaveContact = ContactFabricator::fabricate();
+
+    // Register contact in session and set permission to admin
+    $this->registerCurrentLoggedInContactInSession($contact['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $leaveContact['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $comment = CommentFabricator::fabricate([
+      'entity_id' => $leaveRequest->id,
+      'entity_name' => 'LeaveRequest',
+      'contact_id' => $leaveRequest->contact_id,
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'deletecomment', ['comment_id' => $comment->id]);
+    $expected = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => 1,
+    ];
+
+    $this->assertEquals($expected, $result);
+  }
+
+  public function testDeleteCommentShouldDeleteCommentWhenLoggedInUserIsTheLeaveApprover() {
+    $manager = ContactFabricator::fabricate();
+    $leaveContact = ContactFabricator::fabricate();
+
+    // Set logged in user as manager of Contact who requested leave
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $leaveContact);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $leaveContact['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $comment = CommentFabricator::fabricate([
+      'entity_id' => $leaveRequest->id,
+      'entity_name' => 'LeaveRequest',
+      'contact_id' => $leaveRequest->contact_id,
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'deletecomment', ['comment_id' => $comment->id]);
+    $expected = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => 1,
+    ];
+
+    $this->assertEquals($expected, $result);
+  }
+
+  public function testDeleteCommentShouldThrowAnExceptionWhenCommentHasBeenDeletedBefore() {
+    $contact = ContactFabricator::fabricate();
+    $leaveContact = ContactFabricator::fabricate();
+
+    // Register contact in session and set permission to admin
+    $this->registerCurrentLoggedInContactInSession($contact['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $leaveContact['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $comment = CommentFabricator::fabricate([
+      'entity_id' => $leaveRequest->id,
+      'entity_name' => 'LeaveRequest',
+      'contact_id' => $leaveRequest->contact_id,
+    ]);
+
+    civicrm_api3('LeaveRequest', 'deletecomment', ['comment_id' => $comment->id]);
+    //try delete comment again
+    $this->setExpectedException('CiviCRM_API3_Exception', 'Comment does not exist or has been deleted already!');
+    civicrm_api3('LeaveRequest', 'deletecomment', ['comment_id' => $comment->id]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Comment does not exist or has been deleted already!
+   */
+  public function testDeleteCommentShouldThrowAnExceptionWhenCommentDoesNotExist() {
+    $contact = ContactFabricator::fabricate();
+
+    // Register contact in session and set permission to admin
+    $this->registerCurrentLoggedInContactInSession($contact['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+
+    civicrm_api3('LeaveRequest', 'deletecomment', ['comment_id' => 12]);
+  }
+
+  private function registerCurrentLoggedInContactInSession($contactID) {
+    $session = CRM_Core_Session::singleton();
+    $session->set('userID', $contactID);
+  }
+
 }
