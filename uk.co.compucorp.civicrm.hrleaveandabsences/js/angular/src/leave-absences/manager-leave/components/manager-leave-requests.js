@@ -1,7 +1,8 @@
 define([
+  'common/lodash',
   'leave-absences/manager-leave/modules/components',
-  'common/models/contact',
-], function (components) {
+  'common/models/contact'
+], function (_, components) {
 
   components.component('managerLeaveRequests', {
     bindings: {
@@ -15,20 +16,35 @@ define([
       'OptionGroup', controller]
   });
 
-
   function controller($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup) {
+    "use strict";
     $log.debug('Component: manager-leave-requests');
 
-    var vm = Object.create(this),
-      allStatus = {
-        name: 'all',
-        label: 'All'
-      };
+    var vm = Object.create(this);
 
-    vm.isFilterExpanded = false;
     vm.absencePeriods = [];
-    vm.filteredUsers = [];
     vm.absenceTypes = [];
+    vm.leaveRequestStatuses = [{
+      name: 'all',
+      label: 'All'
+    }];
+    vm.filters = {
+      contact: {
+        department: null,
+        level_type: null,
+        location: null,
+        region: null
+      },
+      leaveRequest: {
+        leaveStatus: vm.leaveRequestStatuses[0],
+        pending_requests: false,
+        contact: null,
+        selectedPeriod: null,
+        selectedAbsenceTypes: null
+      }
+    };
+    vm.filteredUsers = [];
+    vm.isFilterExpanded = false;
     //leaveRequests.table - to handle table data
     //leaveRequests.filter - to handle left nav filter data
     vm.leaveRequests = {
@@ -39,71 +55,21 @@ define([
         list: []
       }
     };
-    vm.filters = {
-      contactFilters: {
-        region: null,
-        department: null,
-        level_type: [],
-        location: null
-      },
-      leaveRequestFilters: {
-        selectedUsers: null,
-        selectedPeriod: null,
-        selectedAbsenceTypes: null,
-        leaveStatus: allStatus,
-        pending_requests: false
-      }
+    vm.loading = {
+      content: true,
+      page: true
     };
     vm.pagination = {
       page: 1,
       size: 7
     };
-    vm.loading = {
-      content: true,
-      page: true
-    };
 
     /**
-     * Labels the given period according to whether it's current or not
-     *
-     * @param  {AbsencePeriodInstance} period
-     * @return {string}
+     * Clears selected users and refreshes leave requests
      */
-    vm.labelPeriod = function (period) {
-      return period.current ? 'Current Period (' + period.title + ')' : period.title;
-    };
-
-    /**
-     * Returns the label of a Leave request when id is given
-     *
-     * @param {string} id - id of the leave request
-     * @return {string}
-     */
-    vm.getLeaveStatusByValue = function (id) {
-      if (vm.leaveRequestStatuses.length) {
-        return vm.leaveRequestStatuses.find(function (status) {
-          return status.value == id;
-        }).label;
-      }
-    };
-
-    /**
-     * Returns the title of a Absence type when id is given
-     *
-     * @param {string} id - id of the Absence type
-     * @return {string}
-     */
-    vm.getAbsenceTypesByID = function (id) {
-      if (vm.absenceTypes && id) {
-        var type,
-          i;
-        for (i in vm.absenceTypes) {
-          type = vm.absenceTypes[i];
-          if (type.id == id) {
-            return type.title;
-          }
-        }
-      }
+    vm.clearStaffSelection = function () {
+      vm.filters.leaveRequest.contact = null;
+      vm.refresh();
     };
 
     /**
@@ -119,7 +85,37 @@ define([
 
       return vm.leaveRequests.filter.list.filter(function (request) {
         return request.status_id == status.value;
-      })
+      });
+    };
+
+    /**
+     * Returns the title of a Absence type when id is given
+     *
+     * @param {string} id - id of the Absence type
+     * @return {string}
+     */
+    vm.getAbsenceTypesByID = function (id) {
+      if (vm.absenceTypes && id) {
+        var type = _.find(vm.absenceTypes, function (absenceType) {
+            return absenceType.id === id;
+          });
+
+        return type ? type.title : null;
+      }
+    };
+
+    /**
+     * Returns the name(label) of a Leave request status when id is given
+     *
+     * @param {string} id - id of the leave request
+     * @return {string}
+     */
+    vm.getLeaveStatusByValue = function (value) {
+      var status = _.find(vm.leaveRequestStatuses, function (status) {
+        return status.value == value;
+      });
+
+      return status ? status.label : null;
     };
 
     /**
@@ -129,65 +125,17 @@ define([
      * @return {string}
      */
     vm.getNavBadge = function (name) {
-      if (name === 'approved') {
-        return 'badge-success';
-      } else if (name === 'rejected') {
-        return 'badge-danger';
-      } else if (name === 'cancelled' || name === 'all') {
-        return '';
-      } else {
-        return 'badge-primary';
+      switch (name) {
+        case 'approved':
+          return 'badge-success';
+        case 'rejected':
+          return 'badge-danger';
+        case 'cancelled':
+        case 'all':
+          return '';
+        default:
+          return 'badge-primary';
       }
-    };
-
-    /**
-     * Returns an array of a given size
-     *
-     * @param {number} n - no of elements in the array
-     * @return {Array}
-     */
-    vm.range = function (n) {
-      if (n) {
-        return new Array(n);
-      }
-    };
-
-    /**
-     * Calculates the total number of pages for the pagination
-     *
-     * @return {number}
-     */
-    vm.totalNoOfPages = function () {
-      return Math.ceil(vm.leaveRequests.table.total / vm.pagination.size);
-    };
-
-    /**
-     * Loads the next page for pagination element based on current page no
-     */
-    vm.nextPage = function () {
-      if (vm.pagination.page < vm.totalNoOfPages()) {
-        vm.refresh(++vm.pagination.page);
-      }
-    };
-
-    /**
-     * Refreshes the leave request data
-     *
-     * @param {string} page - page number of the pagination element
-     */
-    vm.refresh = function (page, cache) {
-      page = page ? page : 1;
-      loadAllRequests(page, cache);
-    };
-
-    /**
-     * Refreshes the leave request data and also changes current selected leave status
-     *
-     * @param {string} status - status to be selected
-     */
-    vm.refreshWithFilter = function (status) {
-      vm.filters.leaveRequestFilters.leaveStatus = status;
-      vm.refresh();
     };
 
     /**
@@ -197,18 +145,61 @@ define([
      * @return {string}
      */
     vm.getUserNameByID = function (id) {
-      var user = vm.filteredUsers.find(function (data) {
-        return data.contact_id == id;
+      var user = _.find(vm.filteredUsers, function (contact) {
+        return contact.contact_id == id;
       });
       return user ? user.display_name : null;
     };
 
     /**
-     * Clears selected users and refreshes leave requests
+     * Labels the given period according to whether it's current or not
+     *
+     * @param  {AbsencePeriodInstance} period
+     * @return {string}
      */
-    vm.clearStaffSelection = function () {
-      vm.filters.leaveRequestFilters.selectedUsers = null;
+    vm.labelPeriod = function (period) {
+      return period.current ? 'Current Period (' + period.title + ')' : period.title;
+    };
+
+    /**
+     * Returns an array of a given size
+     *
+     * @param {number} n - no of elements in the array
+     * @return {Array}
+     */
+    vm.getArrayOfSize = function (n) {
+      return new Array(n || 0);
+    };
+
+    /**
+     * Refreshes the leave request data
+     *
+     * @param {int} page - page number of the pagination element
+     */
+    vm.refresh = function (page) {
+      if(page !== 0 || page <  vm.totalNoOfPages()) {
+        vm.pagination.page = page > 0 ? page : 1;
+        loadAllRequests();
+      }
+    };
+
+    /**
+     * Refreshes the leave request data and also changes current selected leave status
+     *
+     * @param {string} status - status to be selected
+     */
+    vm.refreshWithFilter = function (status) {
+      vm.filters.leaveRequest.leaveStatus = status;
       vm.refresh();
+    };
+
+    /**
+     * Calculates the total number of pages for the pagination
+     *
+     * @return {number}
+     */
+    vm.totalNoOfPages = function () {
+      return Math.ceil(vm.leaveRequests.table.total / vm.pagination.size);
     };
 
     (function init() {
@@ -221,15 +212,31 @@ define([
         loadLevelTypes(),
         loadStatuses()
       ])
-        .then(function () {
-          vm.loading.page = false;
-          loadAllRequests(1);
-        })
+      .then(function () {
+        vm.loading.page = false;
+        loadAllRequests();
+      });
 
-        $rootScope.$on('LeaveRequest::updatedByManager', function () {
-          vm.refresh(null, false);
-        });
+      $rootScope.$on('LeaveRequest::updatedByManager', function () {
+        vm.refresh(null, false);
+      });
     })();
+
+    /**
+     * Returns the filter object for contacts api
+     *
+     * @return {Object}
+     */
+    function contactFilters() {
+      var filters = vm.filters.contact;
+
+      return {
+        department: filters.department ? filters.department.value : null,
+        level_type: filters.level_type ? filters.level_type.value : null,
+        location: filters.location ? filters.location.value : null,
+        region: filters.region ? filters.region.value : null
+      };
+    }
 
     /**
      * Loads the absence periods
@@ -240,8 +247,8 @@ define([
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
           vm.absencePeriods = absencePeriods;
-          vm.filters.leaveRequestFilters.selectedPeriod = _.find(vm.absencePeriods, function (period) {
-            return period.current === true;
+          vm.filters.leaveRequest.selectedPeriod = _.find(vm.absencePeriods, function (period) {
+            return !!period.current;
           });
         });
     }
@@ -263,23 +270,33 @@ define([
      *
      * @return {Promise}
      */
-    function loadAllRequests(page, cache) {
-      vm.pagination.page = page;
+    function loadAllRequests() {
       vm.loading.content = true;
       Contact.all(contactFilters(), {
         page: 1,
         size: 0
       })
-        .then(function (data) {
-          vm.filteredUsers = data.list;
+      .then(function (users) {
+        vm.filteredUsers = users.list;
+        $q.all([
+          loadLeaveRequest('table'),
+          loadLeaveRequest('filter')
+        ])
+        .then(function () {
+          vm.loading.content = false;
+        });
+      });
+    }
 
-          $q.all([
-            loadLeaveRequest('table', cache),
-            loadLeaveRequest('filter', cache)
-          ])
-          .then(function () {
-            vm.loading.content = false;
-          })
+    /**
+     * Loads the departments option values
+     *
+     * @return {Promise}
+     */
+    function loadDepartments() {
+      return OptionGroup.valuesOf('hrjc_department')
+        .then(function (departments) {
+          vm.departments = departments;
         });
     }
 
@@ -289,13 +306,40 @@ define([
      * @param {string} type - load leave requests for the either the filter or the table
      * @return {Promise}
      */
-     function loadLeaveRequest(type, cache) {
-       var filterByStatus = type !== 'filter',
-         pagination = type === 'filter' ? {} : vm.pagination;
+    function loadLeaveRequest(type) {
+      var filterByStatus = type !== 'filter',
+        pagination = type === 'filter' ? {} : vm.pagination,
+        returnFields = type === 'filter' ? {
+            return: ['status_id']
+          } : {};
 
-       return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, null, cache)
+      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, returnFields)
         .then(function (leaveRequests) {
           vm.leaveRequests[type] = leaveRequests;
+        });
+    }
+
+    /**
+     * Loads the level types option values
+     *
+     * @return {Promise}
+     */
+    function loadLevelTypes() {
+      return OptionGroup.valuesOf('hrjc_level_type')
+        .then(function (levels) {
+          vm.levelTypes = levels;
+        });
+    }
+
+    /**
+     * Loads the locations option values
+     *
+     * @return {Promise}
+     */
+    function loadLocations() {
+      return OptionGroup.valuesOf('hrjc_location')
+        .then(function (locations) {
+          vm.locations = locations;
         });
     }
 
@@ -304,24 +348,48 @@ define([
      *
      * @param {boolean} filterByStatus - if true then leave request api will be filtered using
      * selected leave request status in the left navigation bar, which would be used to show the
-     * numbers of different status's
+     * numbers of different statuses
      * @return {Object}
      */
     function leaveRequestFilters(filterByStatus) {
-      var filters = vm.filters.leaveRequestFilters;
+      var filters = vm.filters.leaveRequest;
 
       return {
+        contact_id: prepareContactID(),
         managed_by: vm.contactId,
-        type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
         status_id: prepareStatusFilter(filterByStatus),
+        type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
         from_date: {
           from: filters.selectedPeriod.start_date
         },
         to_date: {
           to: filters.selectedPeriod.end_date
-        },
-        contact_id: prepareContactID()
+        }
       };
+    }
+
+    /**
+     * Loads the regions option values
+     *
+     * @return {Promise}
+     */
+    function loadRegions() {
+      return OptionGroup.valuesOf('hrjc_region')
+        .then(function (regions) {
+          vm.regions = regions;
+        });
+    }
+
+    /**
+     * Loads the status option values
+     *
+     * @return {Promise}
+     */
+    function loadStatuses() {
+      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
+        .then(function (statuses) {
+          vm.leaveRequestStatuses = statuses.concat(vm.leaveRequestStatuses);
+        });
     }
 
     /**
@@ -330,15 +398,15 @@ define([
      * @return {Object}
      */
     function prepareContactID() {
-      if (vm.filters.leaveRequestFilters.selectedUsers) {
-        return vm.filters.leaveRequestFilters.selectedUsers.contact_id;
+      if (vm.filters.leaveRequest.contact) {
+        return vm.filters.leaveRequest.contact.contact_id;
       }
 
-      return {
-        "IN": vm.filteredUsers.length ? vm.filteredUsers.map(function (data) {
-            return data.contact_id;
-          }) : ["user_contact_id"]
-      };
+      return vm.filteredUsers.length ? {
+        "IN": vm.filteredUsers.map(function (contact) {
+            return contact.contact_id;
+          })
+      } : null;
     }
 
     /**
@@ -350,11 +418,11 @@ define([
      * @return {Object}
      */
     function prepareStatusFilter(filterByStatus) {
-      var filters = vm.filters.leaveRequestFilters,
+      var filters = vm.filters.leaveRequest,
         statusFilter = [],
         //get the value for the waiting_approval status
-        waitingApprovalID = vm.leaveRequestStatuses.find(function (data) {
-          return data.name === 'waiting_approval';
+        waitingApprovalID = _.find(vm.leaveRequestStatuses, function (status) {
+          return status.name === 'waiting_approval';
         }).value;
 
       //if filterByStatus is true then add the leaveStatus to be used in the leave request api
@@ -372,87 +440,6 @@ define([
           "IN": statusFilter
         }
       }
-    }
-
-    /**
-     * Returns the filter object for contacts api
-     *
-     * @return {Object}
-     */
-    function contactFilters() {
-      var filters = vm.filters.contactFilters;
-
-      return {
-        region: filters.region ? filters.region.value : null,
-        department: filters.department ? filters.department.value : null,
-        level_type: filters.level_type.length ? {
-            "IN": filters.level_type.map(function (data) {
-              return data.value;
-            })
-          } : null,
-        location: filters.location ? filters.location.value : null
-      };
-    }
-
-    /**
-     * Loads the status option values
-     *
-     * @return {Promise}
-     */
-    function loadStatuses() {
-      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
-        .then(function (statuses) {
-          statuses = statuses.concat(allStatus);
-          vm.leaveRequestStatuses = statuses;
-        });
-    }
-
-    /**
-     * Loads the regions option values
-     *
-     * @return {Promise}
-     */
-    function loadRegions() {
-      return OptionGroup.valuesOf('hrjc_region')
-        .then(function (regions) {
-          vm.regions = regions;
-        });
-    }
-
-    /**
-     * Loads the departments option values
-     *
-     * @return {Promise}
-     */
-    function loadDepartments() {
-      return OptionGroup.valuesOf('hrjc_department')
-        .then(function (departments) {
-          vm.departments = departments;
-        });
-    }
-
-    /**
-     * Loads the locations option values
-     *
-     * @return {Promise}
-     */
-    function loadLocations() {
-      return OptionGroup.valuesOf('hrjc_location')
-        .then(function (locations) {
-          vm.locations = locations;
-        });
-    }
-
-    /**
-     * Loads the level types option values
-     *
-     * @return {Promise}
-     */
-    function loadLevelTypes() {
-      return OptionGroup.valuesOf('hrjc_level_type')
-        .then(function (levels) {
-          vm.levelTypes = levels;
-        });
     }
 
     return vm;

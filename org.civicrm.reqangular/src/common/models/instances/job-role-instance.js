@@ -17,7 +17,7 @@ define([
              * @param {string} key - The property name
              */
             fromAPIFilter: function (result, __, key) {
-                var dateFormat = HR_settings.DATE_FORMAT ? HR_settings.DATE_FORMAT.toUpperCase() : 'YYYY-MM-DD';
+                var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
 
                 if (_.endsWith(key, '_date')) {
                     result[key] = moment(this[key], 'YYYY-MM-DD HH:mm:ss').format(dateFormat);

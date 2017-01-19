@@ -27,16 +27,14 @@ define([
 
     describe("all()", function () {
       var contactApiPromise,
-        defer;
+        filters = {key: "filters"},
+        pagination = {key: "pagination"},
+        sort = "sort",
+        additionalParams = {key: "additionalParams"};
 
       beforeEach(function () {
-        defer = $q.defer();
-        spyOn(ContactAPI, 'getAll').and.returnValue(defer.promise);
-      });
-
-      beforeEach(function () {
-        contactApiPromise = ContactAPI.all(jasmine.any(Object), jasmine.any(Object), jasmine.any(String), jasmine.any(Object));
-        defer.resolve(ContactAPIMock.mockedContacts());
+        spyOn(ContactAPI, 'getAll').and.returnValue($q.resolve(ContactAPIMock.mockedContacts()));
+        contactApiPromise = ContactAPI.all(filters, pagination, sort, additionalParams);
       });
 
       afterEach(function () {
@@ -50,25 +48,21 @@ define([
       });
 
       it("calls getAll method", function () {
-        expect(ContactAPI.getAll).toHaveBeenCalledWith('Contact', jasmine.any(Object), jasmine.any(Object), jasmine.any(String), jasmine.any(Object));
+        expect(ContactAPI.getAll).toHaveBeenCalledWith('Contact', filters, pagination, sort, additionalParams);
       });
     });
 
     describe("find()", function () {
       var contactApiPromise,
-        defer,
-        mockID = '2';
+        contactId = '2',
+        contact;
 
       beforeEach(function () {
-        defer = $q.defer();
-        spyOn(ContactAPI, 'sendGET').and.returnValue(defer.promise);
-      });
-
-      beforeEach(function () {
-        contactApiPromise = ContactAPI.find(mockID);
-        defer.resolve({
-          values: ContactAPIMock.mockedContacts().list
-        });
+        contact = ContactAPIMock.mockedContacts().list[0];
+        spyOn(ContactAPI, 'sendGET').and.returnValue($q.resolve({
+          values: [contact]
+        }));
+        contactApiPromise = ContactAPI.find(contactId);
       });
 
       afterEach(function () {
@@ -77,12 +71,12 @@ define([
 
       it("returns a contact", function () {
         contactApiPromise.then(function (result) {
-          expect(result).toEqual(ContactAPIMock.mockedContacts().list[0]);
+          expect(result).toEqual(contact);
         });
       });
 
       it("calls sendGET method", function () {
-        expect(ContactAPI.sendGET).toHaveBeenCalledWith('Contact', 'get', {id: '' + mockID}, false);
+        expect(ContactAPI.sendGET).toHaveBeenCalledWith('Contact', 'get', {id: '' + contactId}, false);
       });
     });
   });
