@@ -96,16 +96,11 @@ define([
      */
     vm.getAbsenceTypesByID = function (id) {
       if (vm.absenceTypes && id) {
-        var type,
-          iterator;
+        var type = _.find(vm.absenceTypes, function (absenceType) {
+            return absenceType.id === id;
+          });
 
-        for (iterator in vm.absenceTypes) {
-          type = vm.absenceTypes[iterator];
-
-          if (type.id == id) {
-            return type.title;
-          }
-        }
+        return type ? type.title : null;
       }
     };
 
