@@ -1,7 +1,7 @@
 define([
   'common/lodash',
   'leave-absences/manager-leave/modules/components',
-  'common/models/contact',
+  'common/models/contact'
 ], function (_, components) {
 
   components.component('managerLeaveRequests', {
@@ -38,7 +38,7 @@ define([
       leaveRequest: {
         leaveStatus: vm.leaveRequestStatuses[0],
         pending_requests: false,
-        selectedUsers: null,
+        contact: null,
         selectedPeriod: null,
         selectedAbsenceTypes: null
       }
@@ -68,7 +68,7 @@ define([
      * Clears selected users and refreshes leave requests
      */
     vm.clearStaffSelection = function () {
-      vm.filters.leaveRequest.selectedUsers = null;
+      vm.filters.leaveRequest.contact = null;
       vm.refresh();
     };
 
@@ -150,8 +150,8 @@ define([
      * @return {string}
      */
     vm.getUserNameByID = function (id) {
-      var user = _.find(vm.filteredUsers, function (data) {
-        return data.contact_id == id;
+      var user = _.find(vm.filteredUsers, function (contact) {
+        return contact.contact_id == id;
       });
       return user ? user.display_name : null;
     };
@@ -167,32 +167,25 @@ define([
     };
 
     /**
-     * Loads the next page for pagination element based on current page no
-     */
-    vm.nextPage = function () {
-      if (vm.pagination.page < vm.totalNoOfPages()) {
-        vm.refresh(++vm.pagination.page);
-      }
-    };
-
-    /**
      * Returns an array of a given size
      *
      * @param {number} n - no of elements in the array
      * @return {Array}
      */
-    vm.range = function (n) {
+    vm.getArrayOfSize = function (n) {
       return new Array(n || 0);
     };
 
     /**
      * Refreshes the leave request data
      *
-     * @param {string} page - page number of the pagination element
+     * @param {int} page - page number of the pagination element
      */
     vm.refresh = function (page) {
-      page = page ? page : 1;
-      loadAllRequests(page);
+      if(page !== 0 || page <  vm.totalNoOfPages()) {
+        vm.pagination.page = page > 0 ? page : 1;
+        loadAllRequests();
+      }
     };
 
     /**
@@ -226,8 +219,8 @@ define([
       ])
       .then(function () {
         vm.loading.page = false;
-        loadAllRequests(1);
-      })
+        loadAllRequests();
+      });
     })();
 
     /**
@@ -239,10 +232,10 @@ define([
       var filters = vm.filters.contact;
 
       return {
-        region: filters.region ? filters.region.value : null,
         department: filters.department ? filters.department.value : null,
         level_type: filters.level_type ? filters.level_type.value : null,
-        location: filters.location ? filters.location.value : null
+        location: filters.location ? filters.location.value : null,
+        region: filters.region ? filters.region.value : null
       };
     }
 
@@ -256,7 +249,7 @@ define([
         .then(function (absencePeriods) {
           vm.absencePeriods = absencePeriods;
           vm.filters.leaveRequest.selectedPeriod = _.find(vm.absencePeriods, function (period) {
-            return period.current === true;
+            return !!period.current;
           });
         });
     }
@@ -276,27 +269,24 @@ define([
     /**
      * Loads all requests
      *
-     * @param {int} page - page number
      * @return {Promise}
      */
-    function loadAllRequests(page) {
-      vm.pagination.page = page;
+    function loadAllRequests() {
       vm.loading.content = true;
       Contact.all(contactFilters(), {
         page: 1,
         size: 0
       })
-        .then(function (users) {
-          vm.filteredUsers = users.list;
-
-          $q.all([
-            loadLeaveRequest('table'),
-            loadLeaveRequest('filter')
-          ])
-            .then(function () {
-              vm.loading.content = false;
-            })
+      .then(function (users) {
+        vm.filteredUsers = users.list;
+        $q.all([
+          loadLeaveRequest('table'),
+          loadLeaveRequest('filter')
+        ])
+        .then(function () {
+          vm.loading.content = false;
         });
+      });
     }
 
     /**
@@ -366,16 +356,16 @@ define([
       var filters = vm.filters.leaveRequest;
 
       return {
+        contact_id: prepareContactID(),
         managed_by: vm.contactId,
-        type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
         status_id: prepareStatusFilter(filterByStatus),
+        type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
         from_date: {
           from: filters.selectedPeriod.start_date
         },
         to_date: {
           to: filters.selectedPeriod.end_date
-        },
-        contact_id: prepareContactID()
+        }
       };
     }
 
@@ -409,15 +399,15 @@ define([
      * @return {Object}
      */
     function prepareContactID() {
-      if (vm.filters.leaveRequest.selectedUsers) {
-        return vm.filters.leaveRequest.selectedUsers.contact_id;
+      if (vm.filters.leaveRequest.contact) {
+        return vm.filters.leaveRequest.contact.contact_id;
       }
 
-      return {
-        "IN": vm.filteredUsers.length ? vm.filteredUsers.map(function (data) {
-            return data.contact_id;
-          }) : ["user_contact_id"]
-      };
+      return vm.filteredUsers.length ? {
+        "IN": vm.filteredUsers.map(function (contact) {
+            return contact.contact_id;
+          })
+      } : null;
     }
 
     /**
@@ -432,8 +422,8 @@ define([
       var filters = vm.filters.leaveRequest,
         statusFilter = [],
         //get the value for the waiting_approval status
-        waitingApprovalID = _.find(vm.leaveRequestStatuses, function (data) {
-          return data.name === 'waiting_approval';
+        waitingApprovalID = _.find(vm.leaveRequestStatuses, function (status) {
+          return status.name === 'waiting_approval';
         }).value;
 
       //if filterByStatus is true then add the leaveStatus to be used in the leave request api

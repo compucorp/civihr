@@ -30,7 +30,7 @@
     <div class="panel-subheading chr_manager_dashboard__sub-header" ng-show="ctrl.isFilterExpanded">
       <div>
         <ui-select ng-change="ctrl.refresh()"
-                   ng-model="ctrl.filters.leaveRequest.selectedUsers">
+                   ng-model="ctrl.filters.leaveRequest.contact">
           <ui-select-match placeholder="Staff Member" allow-clear>
             <span ng-bind="$select.selected.display_name"></span>
           </ui-select-match>
@@ -132,24 +132,24 @@
             <tr>
               <td colspan="5" class="text-center">
                 <ul class="pagination">
-                  <li ng-click="ctrl.nextPage()"
+                  <li ng-click="ctrl.refresh(1)"
                       class="active">
                     <a class="pointer" href="#">
-                      Next <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+                      <i class="fa fa-angle-double-left" aria-hidden="true"></i> First
                     </a>
                   </li>
-                  <li ng-click="ctrl.nextPage()"
+                  <li ng-click="ctrl.refresh($index)"
                       class="active">
                     <a class="pointer" href="#">
-                      Next <i class="fa fa-angle-left" aria-hidden="true"></i>
+                      <i class="fa fa-angle-left" aria-hidden="true"></i> Previous
                     </a>
                   </li>
                   <li ng-class="{'active': ctrl.pagination.page - 1 === $index}"
                       ng-click="ctrl.refresh($index + 1)"
-                      ng-repeat="a in ctrl.get(ctrl.totalNoOfPages()) track by $index">
+                      ng-repeat="a in ctrl.getArrayOfSize(ctrl.totalNoOfPages()) track by $index">
                     <a href="#">{{$index + 1}}</a>
                   </li>
-                  <li ng-click="ctrl.nextPage()"
+                  <li ng-click="ctrl.refresh($index + 2)"
                       class="active">
                     <a class="pointer" href="#">
                       Next <i class="fa fa-angle-right" aria-hidden="true"></i>

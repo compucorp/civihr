@@ -4,13 +4,13 @@
     'mocks/data/option-group-mock-data',
     'mocks/data/absence-type-data',
     'mocks/data/leave-request-data',
-    'leave-absences/shared/config',
-    'leave-absences/manager-leave/app',
     'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
-    'common/mocks/services/api/contact-mock'
+    'common/mocks/services/api/contact-mock',
+    'leave-absences/shared/config',
+    'leave-absences/manager-leave/app'
   ], function (angular, optionGroupMock, absenceTypeData, leaveRequestData) {
     'use strict';
 
@@ -44,8 +44,10 @@
         ContactAPIMock = _ContactAPIMock_;
       }]));
 
-      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$q_, _OptionGroup_, _OptionGroupAPIMock_,
-                                  _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_) {
+      beforeEach(inject(function (
+        _$compile_, _$log_, _$rootScope_, _$q_, _OptionGroup_, _OptionGroupAPIMock_,
+        _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_) {
+
         $compile = _$compile_;
         $log = _$log_;
         $q = _$q_;
@@ -55,7 +57,7 @@
         AbsenceType = _AbsenceType_;
         AbsencePeriod = _AbsencePeriod_;
         LeaveRequest = _LeaveRequest_;
-        Contact = _Contact_
+        Contact = _Contact_;
       }));
 
       beforeEach(function () {
@@ -82,13 +84,11 @@
       });
 
       describe('initially', function () {
-
         it('the filter section is closed', function () {
           expect(controller.isFilterExpanded).toBe(false);
         });
 
         describe('pagination', function () {
-
           it('is set to page 1', function () {
             expect(controller.pagination.page).toBe(1);
           });
@@ -99,46 +99,28 @@
         });
       });
 
-      describe('data loading::', function () {
-
+      describe('data loading', function () {
         //TODO need to figure out how to test variables which are changed when controller gets initialized
         xdescribe('before loading starts', function () {
-
-          it('loading should be hidden', function () {
-
-          });
-
-          it('leave requests are empty', function () {
-
-          });
-
-          it('absencePeriods are empty', function () {
-
-          });
-
-          it('absenceTypes are empty', function () {
-
-          });
-
-          it('statusCount is reset', function () {
-
-          });
+          it('loader is hidden', function () {});
+          it('leave requests are empty', function () {});
+          it('absencePeriods are empty', function () {});
+          it('absenceTypes are empty', function () {});
+          it('statusCount is reset', function () {});
         });
 
         describe('after data loading is complete', function () {
-
           describe('loading', function () {
-
-            it('should be hidden for page', function () {
+            it('loader is hidden for page', function () {
               expect(controller.loading.page).toBe(false);
             });
 
-            it('should be hidden for content', function () {
+            it('loader is hidden for content', function () {
               expect(controller.loading.content).toBe(false);
             });
           });
 
-          it('leave requests status should load', function () {
+          it('leave requests status have loaded', function () {
             var expectedResult = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status').concat({
               name: 'all',
               label: 'All'
@@ -147,45 +129,43 @@
             expect(controller.leaveRequestStatuses).toEqual(expectedResult);
           });
 
-          it('regions should load', function () {
+          it('regions have loaded', function () {
             expect(controller.regions).toEqual(optionGroupMock.getCollection('hrjc_region'));
           });
 
-          it('departments should load', function () {
+          it('departments have loaded', function () {
             expect(controller.departments).toEqual(optionGroupMock.getCollection('hrjc_department'));
           });
 
-          it('locations should load', function () {
+          it('locations have loaded', function () {
             expect(controller.locations).toEqual(optionGroupMock.getCollection('hrjc_location'));
           });
 
-          it('levelTypes should load', function () {
+          it('level types have loaded', function () {
             expect(controller.levelTypes).toEqual(optionGroupMock.getCollection('hrjc_level_type'));
           });
 
-          it('absencePeriods should load', function () {
+          it('absence periods have loaded', function () {
             expect(controller.absencePeriods.length).not.toBe(0);
           });
 
-          it('absenceTypes have loaded', function () {
+          it('absence types have loaded', function () {
             expect(controller.absenceTypes.length).not.toBe(0);
           });
 
-          it('users have loaded', function () {
+          it('filtered list of contacts have loaded', function () {
             expect(controller.filteredUsers).toEqual(ContactAPIMock.mockedContacts().list);
           });
 
-          it('leaveRequests have loaded', function () {
+          it('leave requests have loaded', function () {
             expect(controller.leaveRequests.table.list).toEqual(leaveRequestData.all().values);
             expect(controller.leaveRequests.filter.list).toEqual(leaveRequestData.all().values);
           });
         });
       });
 
-      describe('pagination::', function () {
-
+      describe('pagination', function () {
         describe('totalNoOfPages', function () {
-
           var returnValue;
 
           beforeEach(function () {
@@ -198,51 +178,9 @@
             expect(returnValue).toBe(4);
           });
         });
-
-        describe('nextPage::', function () {
-
-          beforeEach(function () {
-            spyOn(controller, 'totalNoOfPages').and.returnValue(2);
-            spyOn(controller, 'refresh');
-          });
-
-          describe('when current page is less than total page number', function () {
-
-            beforeEach(function () {
-              controller.pagination.page = 1;
-              controller.totalNoOfPages.and.returnValue(2);
-              controller.nextPage();
-            });
-
-            it('page no gets increased', function () {
-              expect(controller.pagination.page).toBe(2);
-            });
-
-            it('refresh is called', function () {
-              expect(controller.refresh).toHaveBeenCalledWith(2);
-            });
-          });
-
-          describe('when current page is not less than total page number', function () {
-
-            beforeEach(function () {
-              controller.pagination.page = 3;
-              controller.totalNoOfPages.and.returnValue(3);
-              controller.nextPage();
-            });
-
-            it('page no does not get increased', function () {
-              expect(controller.pagination.page).toBe(3);
-            });
-
-            it('refresh is called', function () {
-              expect(controller.refresh).not.toHaveBeenCalled();
-            });
-          });
-        });
       });
 
-      describe('period label::', function () {
+      describe('period label', function () {
         var label, period;
 
         describe('when the period is current', function () {
@@ -273,56 +211,49 @@
       });
 
       describe('getLeaveStatusByValue', function () {
-
         var status,
           returnValue;
 
         beforeEach(function () {
           status = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
-          returnValue = controller.getLeaveStatusByValue(status.value)
+          returnValue = controller.getLeaveStatusByValue(status.value);
         });
 
         it('returns label of the status', function () {
           expect(returnValue).toBe(status.label);
-        })
+        });
       });
 
-      describe('getAbsenceTypesByID::', function () {
-
+      describe('getAbsenceTypesByID', function () {
         var absence,
           returnValue;
 
         describe('when id is passed', function () {
-
           beforeEach(function () {
             absence = absenceTypeData.all().values[0];
-            returnValue = controller.getAbsenceTypesByID(absence.id)
+            returnValue = controller.getAbsenceTypesByID(absence.id);
           });
 
           it('returns title of the absence', function () {
             expect(returnValue).toBe(absence.title);
-          })
+          });
         });
 
         describe('when id is not passed', function () {
-
           beforeEach(function () {
-            returnValue = controller.getAbsenceTypesByID()
+            returnValue = controller.getAbsenceTypesByID();
           });
 
-          it('returns title of the absence', function () {
+          it('returns undefined value', function () {
             expect(returnValue).toBeUndefined();
-          })
+          });
         });
-
       });
 
       describe('filterLeaveRequestByStatus', function () {
-
         var returnValue;
 
         describe('when status is blank', function () {
-
           beforeEach(function () {
             returnValue = controller.filterLeaveRequestByStatus('');
           });
@@ -333,7 +264,6 @@
         });
 
         describe('when status is all', function () {
-
           beforeEach(function () {
             returnValue = controller.filterLeaveRequestByStatus({
               name: 'all'
@@ -346,86 +276,79 @@
         });
 
         describe('for any other status', function () {
-
           var status,
-            expectedValue;
+            filteredList;
 
           beforeEach(function () {
             status = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
             returnValue = controller.filterLeaveRequestByStatus(status);
-            expectedValue = controller.leaveRequests.filter.list.filter(function (request) {
+            filteredList = controller.leaveRequests.filter.list.filter(function (request) {
               return request.status_id == status.value;
             });
           });
 
-          it('returns all data', function () {
-            expect(returnValue).toEqual(expectedValue);
+          it('returns filtered data', function () {
+            expect(returnValue).toEqual(filteredList);
           });
         });
       });
 
-      describe('getNavBadge::', function () {
-
+      describe('getNavBadge', function () {
         var returnValue;
 
         describe('when status is approved', function () {
 
           beforeEach(function () {
-            returnValue = controller.getNavBadge('approved')
+            returnValue = controller.getNavBadge('approved');
           });
 
           it('returns badge-success', function () {
             expect(returnValue).toBe('badge-success');
-          })
+          });
         });
 
         describe('when status is rejected', function () {
-
           beforeEach(function () {
-            returnValue = controller.getNavBadge('rejected')
+            returnValue = controller.getNavBadge('rejected');
           });
 
           it('returns badge-danger', function () {
             expect(returnValue).toBe('badge-danger');
-          })
+          });
         });
 
         describe('when status is cancelled', function () {
-
           beforeEach(function () {
-            returnValue = controller.getNavBadge('cancelled')
+            returnValue = controller.getNavBadge('cancelled');
           });
 
           it('returns blank string', function () {
             expect(returnValue).toBe('');
-          })
+          });
         });
 
         describe('when status is all', function () {
-
           beforeEach(function () {
-            returnValue = controller.getNavBadge('all')
+            returnValue = controller.getNavBadge('all');
           });
 
           it('returns blank string', function () {
             expect(returnValue).toBe('');
-          })
+          });
         });
 
         describe('when status is some other value', function () {
-
           beforeEach(function () {
-            returnValue = controller.getNavBadge(jasmine.any(String))
+            returnValue = controller.getNavBadge(jasmine.any(String));
           });
 
-          it('returns blank string', function () {
+          it('returns badge-primary', function () {
             expect(returnValue).toBe('badge-primary');
-          })
+          });
         });
       });
 
       describe('refreshWithFilter', function () {
-
         var mockStatus;
 
         beforeEach(function () {
@@ -438,13 +361,12 @@
           expect(controller.refresh).toHaveBeenCalled();
         });
 
-        it('sets the leaveStatus', function () {
+        it('sets the leave status', function () {
           expect(controller.filters.leaveRequest.leaveStatus).toEqual(mockStatus);
         });
       });
 
       describe('getUserNameByID', function () {
-
         var returnValue;
 
         beforeEach(function () {
@@ -456,51 +378,43 @@
         });
       });
 
-      describe('refresh::', function () {
-
-        describe('page no::', function () {
-
-          describe('when no page no is sent', function () {
-
+      describe('refresh', function () {
+        describe('page number', function () {
+          describe('when no page number is sent', function () {
             beforeEach(function () {
               controller.refresh();
             });
 
-            it('page no is set to 1', function () {
+            it('page number is set to 1', function () {
               expect(controller.pagination.page).toBe(1);
             });
           });
 
-          describe('when page no is sent', function () {
-
+          describe('when page number is sent', function () {
             var pageNo = 5;
             beforeEach(function () {
               controller.refresh(pageNo);
             });
 
-            it('page no is set to 1', function () {
+            it('page number is set to 1', function () {
               expect(controller.pagination.page).toBe(pageNo);
             });
           });
         });
 
         describe('content loading', function () {
-
           beforeEach(function () {
             controller.refresh();
           });
 
-          it('is shown', function () {
+          it('loader is shown', function () {
             expect(controller.loading.content).toBe(true);
           });
         });
 
-        describe('contactFilters::', function () {
-
-          describe('region::', function () {
-
+        describe('contactFilters', function () {
+          describe('region', function () {
             describe('when region filter has value', function () {
-
               var mockRegion = {
                 value: 'mockvalue'
               };
@@ -510,7 +424,7 @@
                 controller.refresh();
               });
 
-              it('ContactAPI gets called with region value', function () {
+              it('Contact API gets called with region value', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   region: mockRegion.value
                 }), jasmine.any(Object));
@@ -518,13 +432,12 @@
             });
 
             describe('when region filter has no value', function () {
-
               beforeEach(function () {
                 controller.filters.contact.region = null;
                 controller.refresh();
               });
 
-              it('ContactAPI gets called with null', function () {
+              it('Contact API gets called with null', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   region: null
                 }), jasmine.any(Object));
@@ -532,10 +445,8 @@
             });
           });
 
-          describe('department::', function () {
-
+          describe('department', function () {
             describe('when department filter has value', function () {
-
               var mockDepartment = {
                 value: 'mockvalue'
               };
@@ -545,7 +456,7 @@
                 controller.refresh();
               });
 
-              it('ContactAPI gets called with department value', function () {
+              it('Contact API gets called with department value', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   department: mockDepartment.value
                 }), jasmine.any(Object));
@@ -553,13 +464,12 @@
             });
 
             describe('when department filter has no value', function () {
-
               beforeEach(function () {
                 controller.filters.contact.department = null;
                 controller.refresh();
               });
 
-              it('ContactAPI gets called with null', function () {
+              it('Contact API gets called with null', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   department: null
                 }), jasmine.any(Object));
@@ -567,10 +477,8 @@
             });
           });
 
-          describe('location::', function () {
-
+          describe('location', function () {
             describe('when location filter has value', function () {
-
               var mockLocation = {
                 value: 'mockvalue'
               };
@@ -580,7 +488,7 @@
                 controller.refresh();
               });
 
-              it('ContactAPI gets called with location value', function () {
+              it('Contact API gets called with location value', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   location: mockLocation.value
                 }), jasmine.any(Object));
@@ -588,7 +496,6 @@
             });
 
             describe('when location filter has no value', function () {
-
               beforeEach(function () {
                 controller.filters.contact.location = null;
                 controller.refresh();
@@ -602,10 +509,8 @@
             });
           });
 
-          describe('levelTypes::', function () {
-
+          describe('levelTypes', function () {
             describe('when levelTypes filter has value', function () {
-
               var mockLevelType = {
                 value: 'mockvalue'
               };
@@ -615,7 +520,7 @@
                 controller.refresh();
               });
 
-              it('ContactAPI gets called with levelTypes value', function () {
+              it('ContactAPI gets called with level types value', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   level_type: mockLevelType.value
                 }), jasmine.any(Object));
@@ -623,13 +528,12 @@
             });
 
             describe('when levelTypes filter has no value', function () {
-
               beforeEach(function () {
                 controller.filters.contact.level_type = null;
                 controller.refresh();
               });
 
-              it('ContactAPI gets called with null', function () {
+              it('Contact API gets called with null', function () {
                 expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
                   level_type: null
                 }), jasmine.any(Object));
@@ -639,9 +543,9 @@
         });
 
         describe('leaveRequestFilters', function () {
-
           var promise,
             defer;
+
           beforeEach(function () {
             defer = $q.defer();
             spyOn(LeaveRequest, 'all').and.callThrough();
@@ -655,7 +559,6 @@
           });
 
           describe('managed_by', function () {
-
             beforeEach(function () {
               controller.refresh();
               defer.resolve({
@@ -663,19 +566,17 @@
               });
             });
 
-            it('filtered by managed_by', function () {
+            it('fetches only the leave requests managed by the user', function () {
               promise.then(function () {
                 expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                   managed_by: CRM.vars.leaveAndAbsences.contactId
                 }));
               });
-            })
+            });
           });
 
-          describe('type_id::', function () {
-
-            describe('when selectedAbsenceTypes has value', function () {
-
+          describe('type_id', function () {
+            describe('when selected absence types has value', function () {
               var mockAbsenceType = {
                 id: 'mockedvalue'
               };
@@ -688,7 +589,7 @@
                 });
               });
 
-              it('filtered by type_id', function () {
+              it('filtered by type id', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     type_id: 'mockedvalue'
@@ -698,7 +599,6 @@
             });
 
             describe('when selectedAbsenceTypes has no value', function () {
-
               var mockAbsenceType = null;
 
               beforeEach(function () {
@@ -709,7 +609,7 @@
                 });
               });
 
-              it('not filtered by type_id', function () {
+              it('not filtered by type id', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     type_id: null
@@ -720,7 +620,6 @@
           });
 
           describe('from_date', function () {
-
             var mockFromDate = new Date();
 
             beforeEach(function () {
@@ -731,7 +630,7 @@
               });
             });
 
-            it('filtered by from_date', function () {
+            it('filtered by from date', function () {
               promise.then(function () {
                 expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                   from_date: {
@@ -743,7 +642,6 @@
           });
 
           describe('to_date', function () {
-
             var mockToDate = new Date();
 
             beforeEach(function () {
@@ -754,7 +652,7 @@
               });
             });
 
-            it('filtered by to_date', function () {
+            it('filtered by to date', function () {
               promise.then(function () {
                 expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                   to_date: {
@@ -766,22 +664,20 @@
           });
 
           describe('contact_id', function () {
-
-            describe('when selectedUsers has value', function () {
-
+            describe('when contact has value', function () {
               var mockUser = {
                 contact_id: '202'
               };
 
               beforeEach(function () {
-                controller.filters.leaveRequest.selectedUsers = mockUser;
+                controller.filters.leaveRequest.contact = mockUser;
                 controller.refresh();
                 defer.resolve({
                   list: []
                 });
               });
 
-              it('filtered by contact_id', function () {
+              it('filtered by contact id', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     contact_id: mockUser.contact_id
@@ -790,21 +686,20 @@
               });
             });
 
-            describe('when selectedUsers is null and filteredUsers has value', function () {
-
+            describe('when contact is null and filtered users has value', function () {
               var mockUsers = [{
                 contact_id: '202'
               }];
 
               beforeEach(function () {
-                controller.filters.leaveRequest.selectedUsers = null;
+                controller.filters.leaveRequest.contact = null;
                 controller.refresh();
                 defer.resolve({
                   list: mockUsers
                 });
               });
 
-              it('filtered by filteredUsers', function () {
+              it('filtered by filtered users', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     contact_id: {
@@ -815,32 +710,27 @@
               });
             });
 
-            describe('when selectedUsers is null and filteredUsers is null', function () {
-
+            describe('when contact is null and filtered users is null', function () {
               beforeEach(function () {
-                controller.filters.leaveRequest.selectedUsers = null;
+                controller.filters.leaveRequest.contact = null;
                 controller.refresh();
                 defer.resolve({
                   list: []
                 });
               });
 
-              it('is not filtered by contact_id', function () {
+              it('is not filtered by contact id', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                    contact_id: {
-                      "IN": ['user_contact_id']
-                    }
+                    contact_id: null
                   }));
                 });
               });
             });
           });
 
-          describe('status_id::', function () {
-
-            describe('when leaveStatus has value', function () {
-
+          describe('status_id', function () {
+            describe('when filtering by a specific status', function () {
               var mockStatus = {
                 value: 'mockvalue'
               };
@@ -853,7 +743,7 @@
                 });
               });
 
-              it('filtered by selected leaveStatus', function () {
+              it('filtered by selected leave status', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
                     status_id: {
@@ -864,8 +754,7 @@
               });
             });
 
-            describe('when pending_requests is true', function () {
-
+            describe('when only pending requests need to be loaded', function () {
               var waitingApprovalValue = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status').find(function (data) {
                 return data.name === 'waiting_approval';
               }).value;
@@ -878,7 +767,7 @@
                 });
               });
 
-              it('filtered by waiting_approval', function () {
+              it('filtered by waiting approval status', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     status_id: {
@@ -903,5 +792,5 @@
         controller = component.controller('managerLeaveRequests');
       }
     });
-  })
+  });
 })(CRM);
