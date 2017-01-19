@@ -41,6 +41,7 @@ function civicrm_api3_comment_create($params) {
 function civicrm_api3_comment_delete($params) {
   civicrm_api3_verify_mandatory($params, NULL, ['id']);
   CRM_HRComments_BAO_Comment::softDelete($params['id']);
+  return civicrm_api3_create_success();
 }
 
 /**
