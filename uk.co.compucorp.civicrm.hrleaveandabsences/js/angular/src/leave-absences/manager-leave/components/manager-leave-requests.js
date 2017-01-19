@@ -1,6 +1,5 @@
 define([
   'leave-absences/manager-leave/modules/components',
-  'leave-absences/shared/models/leave-request-model',
   'common/models/contact',
 ], function (components) {
 

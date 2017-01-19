@@ -12,6 +12,7 @@
   require([
       'leave-absences/shared/config',
       'leave-absences/manager-leave/app',
+      'leave-absences/shared/models/leave-request-model',      
     ],
     function (__, angular) {
       angular.bootstrap(document.querySelector('[data-leave-absences-manager-leave]'), ['manager-leave']);

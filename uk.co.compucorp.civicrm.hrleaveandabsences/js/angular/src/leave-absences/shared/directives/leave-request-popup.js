@@ -27,7 +27,7 @@ define([
                   return {
                     contactId: scope.contactId,
                     leaveRequest: scope.leaveRequest
-                  }
+                  };
                 },
                 //to set HR_settings DateFormat
                 format: ['DateFormat', function (DateFormat) {
