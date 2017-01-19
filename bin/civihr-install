@@ -118,17 +118,19 @@ function civihr_app_usage() {
   APP=$(basename "$0")
 
   php -r 'echo file_get_contents("php://stdin");' <<EOT
-Common options:
+
+Common Options :
   <site-name>        The name of the site-directory to build
 
-Syntax: $APP     <build-name> [options]
-Description: Download and/or install the application
+Syntax: $APP <site-name> [required-options]
+Description: Downloads and/or installs the application.
 
+Required options:
   --dbuser <mysql-username>     Username for mysql
   --dbpass <mysql-password>     Password for mysql
   --cmsdb  <cms-database-name>  Database name for Drupal CMS installation
   --crmdb  <crm-database-name>  Database name for CiviCRM CRM installation
-  --url <url>         The public URL of the site
+  --url    <url>                The public URL of the site
 EOT
   exit 99;
 }
@@ -252,10 +254,10 @@ function database_install() {
 ## Setting up Database for CMS i.e Drupal
 function _database_install_cms() {
 
-  echo "[[Setup MySQL for CMS]]"
+  echo "[[Setting up MySQL for CMS]]"
   civihr_assertvars _database_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
   # Create database.
-  mysql -u$DB_USER -p$DB_PASS -e "create database $CMSdbName" >/dev/null 2>&1 || { echo "[[Please provide CMS database name ( i.e --crmdb ) or Check if its already exists.]]";exit 1;  }
+  mysql -u$DB_USER -p$DB_PASS -e "create database $CMSdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
   # Assign values to global variables.
   [ -z "$CMS_DB_USER" ]           && CMS_DB_USER="$DB_USER"
   [ -z "$CMS_DB_PASS" ]           && CMS_DB_PASS="$DB_PASS"
@@ -268,10 +270,10 @@ function _database_install_cms() {
 ## Setting up Database for CRM i.e CiviHR
 function _database_install_civi() {
 
-  echo "[[Setup MySQL for Civi]]"
+  echo "[[Setting up MySQL for CiviCRM]]"
   civihr_assertvars _database_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
   # Create database.
-  mysql -u$DB_USER -p$DB_PASS -e "create database $CIVIdbName" >/dev/null 2>&1 || { echo "[[Please provide CRM database name ( i.e --crmdb ) or Check if its already exists.]]";exit 1;  }
+  mysql -u$DB_USER -p$DB_PASS -e "create database $CIVIdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
   # Assign values to global variables.
   [ -z "$CIVI_DB_USER" ]           && CIVI_DB_USER="$DB_USER"
   [ -z "$CIVI_DB_PASS" ]           && CIVI_DB_PASS="$DB_PASS"
@@ -520,8 +522,11 @@ function default_cache_setup() {
 function civihr_parse() {
 
   civihr_mkdir "$TMPDIR" "$BLDDIR"
+
+  # Checking for site-name parameter.
+  [ "${1::1}" == "-" ]  && echo "[[Please provide site-name]]" && civihr_app_usage && exit 1
   
-  [ -z "$SITE_NAME" ]          && SITE_NAME="$1"
+  [ -z "$SITE_NAME" ]  && SITE_NAME="$1"
 
   while [ -n "$1" ] ; do
     OPTION="$1"
@@ -532,10 +537,12 @@ function civihr_parse() {
         ;;
 
       --dbuser)
+        [ "${1::1}" == "-" ] && echo "[[Missing value for option --dbuser.]]" && civihr_app_usage && exit 1
         DB_USER="$1"
         shift
         ;;
       --dbpass)
+        [ "${1::1}" == "-" ] && echo "[[Missing value for option --dbpass.]]" && civihr_app_usage && exit 1
         DB_PASS="$1"
         shift
         ;;
@@ -545,11 +552,13 @@ function civihr_parse() {
         ;;
 
       --cmsdb)
+        [ "${1::1}" == "-" ] && echo "[[Missing value for option --cmsdb.]]" && civihr_app_usage && exit 1
         CMSdbName="$1"
         shift
         ;;
 
       --crmdb)
+        [ "${1::1}" == "-" ] && echo "[[Missing value for option --crmdb.]]" && civihr_app_usage && exit 1
         CIVIdbName="$1"
         shift
         ;;
@@ -561,7 +570,7 @@ function civihr_parse() {
 
       *)
          if [ "${OPTION::1}" == "-" ]; then
-           echo "Unrecognized option: $OPTION"
+           echo "[[Unrecognized option: $OPTION]]"
            civihr_app_usage
            exit
          fi
@@ -569,7 +578,11 @@ function civihr_parse() {
     esac
   done
 
-[ -z "$SITE_NAME" ] && civihr_app_usage
+# Checking for all required options/arguments.
+[ -z "$DB_USER" ] || [ -z "$DB_PASS" ] || [ -z "$CMSdbName" ] || [ -z "$CIVIdbName" ] || [ -z "$CMS_URL" ] && echo "[[Please provide missing options/agruments.]]" && civihr_app_usage && exit 99
+
+# Assigning values.
+[ -z "$SITE_NAME" ]          && civihr_app_usage && exit 99
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
 [ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(civihr_makepasswd 16)
@@ -596,8 +609,7 @@ export PATH="$PATH:$BINDIR"
 civihr_parse "$@"
 
 # Checking for Drush dependencies if not present downloading into temp.
-command -v drush >/dev/null 2>&1 || ( echo "[[Downloading dependencies.........]]" && curl -Lo "$TMPDIR/drush" "https://github.com/drush-ops/drush/releases/download/8.1.8/drush.phar"  && chmod +x "$TMPDIR/drush" && export PATH="$PATH:$TMPDIR/drush" )
-
+command -v drush >/dev/null 2>&1 || ( echo "[[Downloading dependencies.........]]" && curl -Lo "$TMPDIR/drush" "https://github.com/drush-ops/drush/releases/download/8.1.8/drush.phar" && chmod +x "$TMPDIR/drush" && export PATH="$TMPDIR:$PATH" )
 
 ###############################################################################
 ## Downloads Drupal,CiviCRM and CiviHR from remote drush.make file.
