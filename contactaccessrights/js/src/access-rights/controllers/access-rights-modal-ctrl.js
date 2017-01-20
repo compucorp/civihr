@@ -10,7 +10,6 @@ define([
       var vm = this;
 
       vm.submitting = false;
-      vm.hasSelected= false;
 
       vm.availableData = {
         regions: [],
@@ -30,15 +29,6 @@ define([
       vm.errorMsg = '';
 
       vm.dataLoaded = false;
-
-      /**
-       * Change save button state
-       */
-      vm.selection = function () {
-        if (vm.selectedData.locations.length > 0 && vm.selectedData.regions.length > 0) {
-          vm.hasSelected = true;
-        }
-      };
 
       /**
        * Closes the modal
