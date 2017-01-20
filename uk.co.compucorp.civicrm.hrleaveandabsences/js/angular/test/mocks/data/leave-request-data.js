@@ -254,6 +254,11 @@ define([
     },
     multipleDayCalculateBalanceChange: function () {
       return mockData.all_day_calculateBalanceChange;
+    },
+    findBy: function (key, value) {
+      return _.find(mockData.allData.values, function (leaveRequest) {
+        return leaveRequest[key] == value;
+      })
     }
   };
 });

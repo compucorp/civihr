@@ -417,8 +417,8 @@ define([
         status_id: { in: [
           valueOfRequestStatus('waiting_approval'),
           valueOfRequestStatus('more_information_requested')
-        ] }
-      })
+        ] },
+      }, null, null, null, false)
       .then(function (leaveRequests) {
         vm.sections.pending.data = leaveRequests.list;
       });

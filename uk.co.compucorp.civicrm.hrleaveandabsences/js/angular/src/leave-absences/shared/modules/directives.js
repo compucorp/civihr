@@ -8,6 +8,7 @@ define([
   return angular.module('leave-absences.directives', [
     'ui.bootstrap',
     'common.angularDate',
+    'common.mocks',
     'leave-absences.settings',
     'leave-absences.controllers',
   ]);

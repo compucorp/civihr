@@ -36,7 +36,7 @@ define([
              * @param {string} action - Action type to pass to the api
              * @return {Promise} resolves to an object with `list` and `total`
              */
-            getAll: function (entity, filters, pagination, sort, additionalParams, action) {
+            getAll: function (entity, filters, pagination, sort, additionalParams, action, cache) {
                 $log.debug('api.all');
 
                 filters = filters || {};
@@ -53,14 +53,14 @@ define([
                             params.options.limit = pagination.size;
                         }
 
-                        return this.sendGET(entity, action, params).then(function (data) {
+                        return this.sendGET(entity, action, params, cache).then(function (data) {
                             return data.values;
                         });
                     }.bind(this))(),
                     (function () {
                         var params = _.assign({}, filters, { 'return': 'id' });
 
-                        return this.sendGET(entity, action, params);
+                        return this.sendGET(entity, action, params, cache);
                     }.bind(this))()
                 ]).then(function (results) {
                     return {

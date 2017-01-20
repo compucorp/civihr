@@ -13,7 +13,7 @@ define([
       console.log('CRM id of the currently logged in user: ', this.contactId);
       $log.debug('Component: manager-leave');
 
-      var vm = {};
+      var vm = Object.create(this);
 
       return vm;
     }]

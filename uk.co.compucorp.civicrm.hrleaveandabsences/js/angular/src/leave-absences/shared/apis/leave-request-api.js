@@ -30,10 +30,10 @@ define([
        * @param  {Object} params
        * @return {Promise} Resolved with {Object} All leave requests
        */
-      all: function (filters, pagination, sort, params) {
+      all: function (filters, pagination, sort, params, cache) {
         $log.debug('LeaveRequestAPI.all');
 
-        return this.getAll('LeaveRequest', filters, pagination, sort, params, 'getFull');
+        return this.getAll('LeaveRequest', filters, pagination, sort, params, 'getFull', cache);
       },
 
       /**
@@ -179,7 +179,7 @@ define([
         $log.debug('LeaveRequestAPI.isValid', params);
         var deferred = $q.defer();
 
-        this.sendGET('LeaveRequest', 'isValid', params)
+        this.sendPOST('LeaveRequest', 'isValid', params)
           .then(function (data) {
             if (data.count > 0) {
               deferred.reject(data.values);
@@ -207,7 +207,7 @@ define([
           contact_id: contactID
         };
 
-        return this.sendGET('LeaveRequest', 'isManagedBy', params)
+        return this.sendPOST('LeaveRequest', 'isManagedBy', params)
           .then(function (response) {
             return response.values;
           });

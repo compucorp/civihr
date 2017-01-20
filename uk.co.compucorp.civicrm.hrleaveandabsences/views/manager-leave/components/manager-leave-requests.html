@@ -1,282 +1,177 @@
 <div class="panel panel-default">
-  <div class="panel-heading row chr_manager_dashboard__header">
-    <span class="panel-title">Manager Absence Approval</span>
-    <span class="pull-right">
+  <crm-loading show="!ctrl.loading.page">
+    <div class="panel-heading row chr_manager_dashboard__header">
+      <span class="panel-title">Manager Absence Approval</span>
+      <span class="pull-right">
+        <div class="chr_custom-select">
+          <select
+            ng-options="types.title for types in ctrl.absenceTypes track by types.id"
+            ng-model="ctrl.filters.leaveRequest.selectedAbsenceTypes"
+            ng-change="ctrl.refresh()">
+            <option value="">Leave Type</option>
+          </select>
+        </div>
+        <div class="chr_custom-select">
+          <select
+            ng-options="period as ctrl.labelPeriod(period) for period in ctrl.absencePeriods track by period.id"
+            ng-model="ctrl.filters.leaveRequest.selectedPeriod"
+            ng-change="ctrl.refresh()">
+          </select>
+        </div>
+        <span class="chr_manager_dashboard__filter pointer" ng-click="ctrl.isFilterExpanded = !ctrl.isFilterExpanded">
+          <i class="fa"
+             aria-hidden="true"
+             ng-class="{ 'fa-chevron-right': !isFilterExpanded, ' fa-chevron-down': isFilterExpanded }">
+          </i>
+          Filter
+      </span>
+      </span>
+    </div>
+    <div class="panel-subheading chr_manager_dashboard__sub-header" ng-show="ctrl.isFilterExpanded">
+      <div>
+        <ui-select ng-change="ctrl.refresh()"
+                   ng-model="ctrl.filters.leaveRequest.contact">
+          <ui-select-match placeholder="Staff Member" allow-clear>
+            <span ng-bind="$select.selected.display_name"></span>
+          </ui-select-match>
+          <ui-select-choices repeat="user in (ctrl.filteredUsers | filter: $select.search) track by user.id">
+            <span ng-bind="user.display_name"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
       <div class="chr_custom-select">
-        <select>
-          <option value="1">Leave Type</option>
-          <option value="2">Leave Type 1</option>
-          <option value="3">Leave Type 2</option>
+        <select
+          ng-options="region.label for region in ctrl.regions track by region.id"
+          ng-model="ctrl.filters.contact.region"
+          ng-change="ctrl.refresh(region)">
+          <option value="">Region</option>
         </select>
       </div>
       <div class="chr_custom-select">
-        <select>
-          <option value="1">Current Period</option>
-          <option value="2">Period 1</option>
-          <option value="3">Period 2</option>
+        <select
+          ng-options="department.label for department in ctrl.departments track by department.id"
+          ng-model="ctrl.filters.contact.department"
+          ng-change="ctrl.refresh()">
+          <option value="">Department</option>
         </select>
       </div>
-      <span class="chr_manager_dashboard__filter pointer" ng-click="isFilterExpanded = !isFilterExpanded">
-        <i class="fa"
-           aria-hidden="true"
-           ng-class="{ 'fa-chevron-right': !isFilterExpanded, ' fa-chevron-down': isFilterExpanded }">
-        </i>
-        Filter
-    </span>
-    </span>
-  </div>
-  <div class="panel-subheading chr_manager_dashboard__sub-header" ng-show="isFilterExpanded">
-    <div>
-      <input type="text" class="form-control" placeholder="Staff Member">
+      <div class="chr_custom-select">
+        <select
+          ng-options="levelType.value for levelType in ctrl.levelTypes track by levelType.id"
+          ng-model="ctrl.filters.contact.level_type"
+          ng-change="ctrl.refresh()">
+          <option value="">Level Type</option>
+        </select>
+      </div>
+      <div class="chr_custom-select">
+        <select
+          ng-options="location.label for location in ctrl.locations track by location.id"
+          ng-model="ctrl.filters.contact.location"
+          ng-change="ctrl.refresh()">
+          <option value="">Locations</option>
+        </select>
+      </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox"
+                 ng-change = "ctrl.refresh()"
+                 ng-model="ctrl.filters.leaveRequest.pending_requests"> Show pending requests only
+        </label>
+      </div>
     </div>
-    <div class="chr_custom-select">
-      <select>
-        <option value="1">Region</option>
-        <option value="2">Region 2</option>
-      </select>
-    </div>
-    <div class="chr_custom-select">
-      <select>
-        <option value="1">Department</option>
-        <option value="2">Department 2</option>
-      </select>
-    </div>
-    <div class="chr_custom-select">
-      <select>
-        <option value="1">Lorem Ipsum</option>
-        <option value="2">Lorem Ipsum 2</option>
-      </select>
-    </div>
-    <div class="chr_custom-select">
-      <select>
-        <option value="1">Location</option>
-        <option value="2">Location 2</option>
-      </select>
-    </div>
-    <div class="checkbox">
-      <label>
-        <input type="checkbox"> Show pending requests only
-      </label>
-    </div>
-  </div>
-  <div class="panel-body row chr_manager_dashboard__panel_body">
-    <ul class="col-xs-3 nav nav-pills nav-stacked chr_vertical_tabs">
-      <li>
-        <a href="#">
-          <span class="badge badge-primary pull-right">2</span>
-          Awaiting Approval
-        </a>
-      </li>
-      <li class="active">
-        <a href="#">
-          <span class="badge pull-right">1</span>
-          More Information Required
-        </a>
-      </li>
-      <li>
-        <a href="#">
-          <span class="badge badge-success pull-right">2</span>
-          Approved
-        </a>
-      </li>
-      <li>
-        <a href="#">
-          <span class="badge badge-danger pull-right">1</span>
-          Rejected
-        </a>
-      </li>
-      <li>
-        <a href="#">
-          <span class="badge pull-right">3</span>
-          Cancelled
-        </a>
-      </li>
-      <li>
-        <a href="#">
-          <span class="badge pull-right">9</span>
-          All
-        </a>
-      </li>
-    </ul>
-    <div class="col-xs-9">
-      <table class="table table-clean">
-        <thead>
-        <tr>
-          <th>Employee Name</th>
-          <th>Type</th>
-          <th>Dates</th>
-          <th>Status</th>
-          <th class="text-center">Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Jared Quinn</td>
-          <td>Vacation</td>
-          <td>15/9/2015 - 30/09/2015</td>
-          <td>More Information Required</td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button type="button"
-                      class="btn btn-default dropdown-toggle btn-inline"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Respond</a></li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        </tbody>
-        <tfoot>
-        <tr>
-          <td colspan="5" class="text-center">
-            <ul class="pagination">
-              <li class="active"><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-              <li><a href="#">5</a></li>
-              <li><a href="#">...</a></li>
-              <li><a href="#">10</a></li>
-              <li class="active">
-                <a class="pointer" href="#">
-                  Next <i class="fa fa-angle-right" aria-hidden="true"></i>
-                </a>
-              </li>
-              <li class="active">
-                <a class="pointer" href="#">
-                  Last <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                </a>
-              </li>
-            </ul>
-          </td>
-        </tr>
-        </tfoot>
-      </table>
-    </div>
-  </div>
+    <crm-loading show="!ctrl.loading.content">
+      <div ng-show="ctrl.leaveRequests.table.list.length"
+           class="panel-body row chr_manager_dashboard__panel_body">
+        <ul class="col-xs-3 nav nav-pills nav-stacked chr_vertical_tabs">
+          <li ng-repeat="status in ctrl.leaveRequestStatuses track by status.value"
+              ng-hide="ctrl.filterLeaveRequestByStatus(status).length === 0"
+              ng-click="ctrl.refreshWithFilter(status)"
+              ng-class="{'active': ctrl.filters.leaveRequest.leaveStatus.name === status.name}">
+            <a>
+          <span class="active badge {{ctrl.getNavBadge(status.name)}} pull-right">
+            {{ctrl.filterLeaveRequestByStatus(status).length}}
+          </span>
+              {{status.label}}
+            </a>
+          </li>
+        </ul>
+        <div class="col-xs-9">
+          <table class="table table-clean">
+            <thead>
+            <tr>
+              <th>Employee Name</th>
+              <th>Type</th>
+              <th>Dates</th>
+              <th>Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="request in ctrl.leaveRequests.table.list track by request.id">
+              <td style="width: 25%;">{{ctrl.getUserNameByID(request.contact_id)}}</td>
+              <td style="width: 20%;">{{ctrl.getAbsenceTypesByID(request.type_id)}}</td>
+              <td style="width: 25%;">{{request.from_date}} - {{request.to_date}}</td>
+              <td style="width: 20%;">{{ctrl.getLeaveStatusByValue(request.status_id)}}</td>
+              <td style="width: 10%;" class="text-center">
+                <div class="btn-group">
+                  <button type="button"
+                          class="btn btn-default dropdown-toggle btn-inline"
+                          data-toggle="dropdown"
+                          aria-haspopup="true"
+                          aria-expanded="false">
+                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a href='#' leave-request-popup leave-request='request' contact-id="ctrl.contactId">Respond</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+            <tfoot ng-show="ctrl.totalNoOfPages() > 1">
+            <tr>
+              <td colspan="5" class="text-center">
+                <ul class="pagination">
+                  <li ng-click="ctrl.refresh(1)"
+                      class="active">
+                    <a class="pointer">
+                      <i class="fa fa-angle-double-left" aria-hidden="true"></i> First
+                    </a>
+                  </li>
+                  <li ng-click="ctrl.refresh($index)"
+                      class="active">
+                    <a class="pointer">
+                      <i class="fa fa-angle-left" aria-hidden="true"></i> Previous
+                    </a>
+                  </li>
+                  <li ng-class="{'active': ctrl.pagination.page - 1 === $index}"
+                      ng-click="ctrl.refresh($index + 1)"
+                      ng-repeat="a in ctrl.getArrayOfSize(ctrl.totalNoOfPages()) track by $index">
+                    <a>{{$index + 1}}</a>
+                  </li>
+                  <li ng-click="ctrl.refresh($index + 2)"
+                      class="active">
+                    <a class="pointer">
+                      Next <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+                  </li>
+                  <li ng-click="ctrl.refresh(ctrl.totalNoOfPages())"
+                      class="active">
+                    <a class="pointer">
+                      Last <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                    </a>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="text-center"
+            ng-hide="ctrl.leaveRequests.table.list.length">
+        No Leave Requests available
+      </div>
+    </crm-loading>
+  </crm-loading>
 </div>

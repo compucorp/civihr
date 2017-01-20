@@ -39,19 +39,16 @@ define([
           else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'calculatebalancechange')) {
             return [200, mockData.calculateBalanceChange()];
           }
+          else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isValid')) {
+            return [200, mockData.getisValid()];
+          }
+          else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
+            return [200, mockData.isManagedBy()];
+          }
         });
-
-      //Intercept backend calls for LeaveRequest.isValid
-      $httpBackend.whenGET(/action\=isValid&entity\=LeaveRequest/)
-        .respond(mockData.getisValid());
-
-      //Intercept backend calls for LeaveRequest.isManagedBy
-      $httpBackend.whenGET(/action\=isManagedBy&entity\=LeaveRequest/)
-        .respond(mockData.isManagedBy());
     }));
 
     describe('all()', function () {
-
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'getAll').and.callThrough();
         promise = LeaveRequestAPI.all();
@@ -319,7 +316,7 @@ define([
 
         beforeEach(function () {
           requestData = helper.createRandomLeaveRequest();
-          spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+          spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
           promise = LeaveRequestAPI.isValid(requestData);
         });
 
@@ -329,8 +326,8 @@ define([
 
         it('calls endpoint', function () {
           promise.then(function (result) {
-            expect(LeaveRequestAPI.sendGET).toHaveBeenCalled();
-            expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith(jasmine.any(String),
+            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
+            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
               jasmine.any(String), jasmine.any(Object));
           });
         });
@@ -425,7 +422,7 @@ define([
         contactID = '102';
 
       beforeEach(function () {
-        spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
         promise = LeaveRequestAPI.isManagedBy(leaveRequestID, contactID);
       });
 
@@ -435,7 +432,7 @@ define([
 
       it('calls endpoint with leaveRequestID and contactID', function () {
         promise.then(function () {
-          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest',
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
             'isManagedBy', jasmine.objectContaining({
               leave_request_id: leaveRequestID,
               contact_id: contactID
