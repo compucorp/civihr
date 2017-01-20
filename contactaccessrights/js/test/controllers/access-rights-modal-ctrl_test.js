@@ -223,66 +223,6 @@ define([
           });
         });
 
-        describe('when location and region is not set', function () {
-          it("cannot submit without selecting location", function () {
-            expect(ctrl.hasSelected).toBe(false);
-          });
-        });
-
-        describe('when only region is set', function () {
-          beforeEach(function () {
-            ctrl.selectedData.locations = [];
-
-            ctrl.selectedData.regions.push({
-              name: "Home",
-              label: "Home"
-            });
-
-            ctrl.selection();
-          });
-
-          it("cannot submit when only region is set", function () {
-            expect(ctrl.hasSelected).toBe(false);
-          });
-        });
-
-        describe('when only location is set', function () {
-          beforeEach(function () {
-            ctrl.selectedData.locations.push({
-              name: "Home",
-              label: "Home"
-            });
-
-            ctrl.selectedData.regions.push = [];
-
-            ctrl.selection();
-          });
-
-          it("cannot submit when only location is set", function () {
-            expect(ctrl.hasSelected).toBe(false);
-          });
-        });
-
-        describe('when location and region is set', function () {
-          beforeEach(function () {
-            ctrl.selectedData.locations.push({
-              name: "Home",
-              label: "Home"
-            });
-
-            ctrl.selectedData.regions.push({
-              name: "Honme",
-              label: "Home"
-            });
-
-            ctrl.selection();
-          });
-
-          it("can submit when location and region is set", function () {
-            expect(ctrl.hasSelected).toBe(true);
-          });
-        });
-
         describe('prevent multiple save', function () {
           beforeEach(function () {
             ctrl.submit();
