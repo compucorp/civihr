@@ -32,7 +32,7 @@ define([
       vm.absenceTypes = [];
       vm.calendar = {};
       vm.contact = {};
-      vm.error = undefined;
+      vm.error = null;
       vm.leaveRequestDayTypes = [];
       vm.mode = ''; //can be edit, create, view
       vm.period = {};
@@ -156,7 +156,7 @@ define([
       vm.calculateBalanceChange = function () {
         setDateAndTypes();
 
-        vm.error = undefined;
+        vm.error = null;
         return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange())
           .then(function (balanceChange) {
             if (balanceChange) {
@@ -199,8 +199,9 @@ define([
           return;
         }
 
-        vm.error = undefined;
+        vm.error = null;
         //update leaverequest
+
         if (canEdit()) {
           updateRequest();
         } else {
@@ -231,7 +232,7 @@ define([
        * Closes the error alerts if any
        */
       vm.closeAlert = function () {
-        vm.error = undefined;
+        vm.error = null;
       };
 
       /**
@@ -409,8 +410,7 @@ define([
         return Entitlement.all({
           contact_id: vm.leaveRequest.contact_id,
           period_id: vm.period.id,
-          type_id: { in: absenceTypesAndIds.ids
-          }
+          type_id: { IN: absenceTypesAndIds.ids }
           }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
             // create a list of absence types with a `balance` property
@@ -521,11 +521,11 @@ define([
        * Resets data in dates, types, balance.
        */
       function reset() {
-        vm.uiOptions.fromDate = vm.uiOptions.toDate = undefined;
+        vm.uiOptions.fromDate = vm.uiOptions.toDate = null;
         vm.uiOptions.showBalance = false;
 
-        vm.leaveRequest.from_date_type = vm.leaveRequest.to_date_type = undefined;
-        vm.leaveRequest.from_date = vm.leaveRequest.to_date = undefined;
+        vm.leaveRequest.from_date_type = vm.leaveRequest.to_date_type = null;
+        vm.leaveRequest.from_date = vm.leaveRequest.to_date = null;
 
         vm.balance = {
           closing: 0,
@@ -704,17 +704,17 @@ define([
        * Sets leave requestion statuses
        */
       function setStatuses() {
-        var allowedStatuses = ['approved', 'more_information_requested', 'cancelled'];
+        var allowedStatuses = ['approved', 'more_information_requested', 'cancelled'], key, status;
 
         if (vm.role === 'manager') {
           //remove current status of leaverequest
           _.remove(allowedStatuses, function (status) {
-            return status == vm.leaveRequestStatuses[vm.leaveRequest.status_id].name;
+            return status === vm.leaveRequestStatuses[vm.leaveRequest.status_id].name;
           });
 
           //filter vm.leaveRequestStatuses to contain statues relevant for manager to act
-          for (var key in vm.leaveRequestStatuses) {
-            var status = vm.leaveRequestStatuses[key];
+          for (key in vm.leaveRequestStatuses) {
+            status = vm.leaveRequestStatuses[key];
 
             if (!_.includes(allowedStatuses, status.name)) {
               delete vm.leaveRequestStatuses[key];
@@ -757,7 +757,7 @@ define([
        */
       function postSubmit(eventName) {
         $rootScope.$emit(eventName, vm.leaveRequest);
-        vm.error = undefined;
+        vm.error = null;
         // close the modal
         vm.ok();
       }

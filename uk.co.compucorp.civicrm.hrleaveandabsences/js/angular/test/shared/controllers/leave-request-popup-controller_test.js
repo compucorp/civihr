@@ -23,7 +23,7 @@
     describe('LeaveRequestPopupCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
         $provide, DateFormat, LeaveRequestInstance, Contact, ContactAPIMock,
-        serverDateFormat = 'YYYY-MM-DD';;
+        serverDateFormat = 'YYYY-MM-DD';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
         'leave-absences.mocks', 'common.mocks',
@@ -45,7 +45,6 @@
       }));
 
       beforeEach(inject(['api.contact.mock', function (_ContactAPIMock_) {
-        //ContactAPIMock = _ContactAPIMock_;
         $provide.value('api.contact', _ContactAPIMock_);
       }]));
 
@@ -256,7 +255,7 @@
           });
 
           it('will hide to date and type', function () {
-            expect($ctrl.uiOptions.toDate).not.toBeDefined();
+            expect($ctrl.uiOptions.toDate).toBeNull();
             expect($ctrl.uiOptions.selectedToType).not.toBeDefined();
           });
 
@@ -296,7 +295,7 @@
           var expectedDayType;
 
           beforeEach(function () {
-            expectedDayType = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day')
+            expectedDayType = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
             $ctrl.onDateChange(new Date(), 'to');
             $scope.$digest();
           });
@@ -435,7 +434,7 @@
           });
 
           it('is successful', function () {
-            expect($ctrl.error).not.toBeDefined();
+            expect($ctrl.error).toBeNull();
             expect($ctrl.leaveRequest.id).toBeDefined();
           });
 
@@ -475,7 +474,7 @@
               });
 
               it('will save', function () {
-                expect($ctrl.error).not.toBeDefined();
+                expect($ctrl.error).toBeNull();
               });
             });
           });
@@ -485,8 +484,9 @@
       describe('when manager opens leave request popup', function () {
         beforeEach(function () {
           //waiting approval request at index 3 with value 3
-          var leaveRequest = LeaveRequestInstance.init(mockData.all().values[3]);
-          leaveRequest.contact_id = '' + CRM.vars.leaveAndAbsences.contactId;
+          var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+          var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+          leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
           var directiveOptions = {
             contactId: 203, //manager's contact id
             leaveRequest: leaveRequest
