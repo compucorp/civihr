@@ -87,7 +87,7 @@
               ng-hide="ctrl.filterLeaveRequestByStatus(status).length === 0"
               ng-click="ctrl.refreshWithFilter(status)"
               ng-class="{'active': ctrl.filters.leaveRequest.leaveStatus.name === status.name}">
-            <a href="#">
+            <a>
           <span class="active badge {{ctrl.getNavBadge(status.name)}} pull-right">
             {{ctrl.filterLeaveRequestByStatus(status).length}}
           </span>
@@ -122,7 +122,7 @@
                     <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                   </button>
                   <ul class="dropdown-menu">
-                    <li><a href="#">Respond</a></li>
+                    <li><a>Respond</a></li>
                   </ul>
                 </div>
               </td>
@@ -134,30 +134,30 @@
                 <ul class="pagination">
                   <li ng-click="ctrl.refresh(1)"
                       class="active">
-                    <a class="pointer" href="#">
+                    <a class="pointer">
                       <i class="fa fa-angle-double-left" aria-hidden="true"></i> First
                     </a>
                   </li>
                   <li ng-click="ctrl.refresh($index)"
                       class="active">
-                    <a class="pointer" href="#">
+                    <a class="pointer">
                       <i class="fa fa-angle-left" aria-hidden="true"></i> Previous
                     </a>
                   </li>
                   <li ng-class="{'active': ctrl.pagination.page - 1 === $index}"
                       ng-click="ctrl.refresh($index + 1)"
                       ng-repeat="a in ctrl.getArrayOfSize(ctrl.totalNoOfPages()) track by $index">
-                    <a href="#">{{$index + 1}}</a>
+                    <a>{{$index + 1}}</a>
                   </li>
                   <li ng-click="ctrl.refresh($index + 2)"
                       class="active">
-                    <a class="pointer" href="#">
+                    <a class="pointer">
                       Next <i class="fa fa-angle-right" aria-hidden="true"></i>
                     </a>
                   </li>
                   <li ng-click="ctrl.refresh(ctrl.totalNoOfPages())"
                       class="active">
-                    <a class="pointer" href="#">
+                    <a class="pointer">
                       Last <i class="fa fa-angle-double-right" aria-hidden="true"></i>
                     </a>
                   </li>

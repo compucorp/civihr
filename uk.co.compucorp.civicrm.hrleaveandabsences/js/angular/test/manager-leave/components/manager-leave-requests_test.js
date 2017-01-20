@@ -393,11 +393,27 @@
           describe('when page number is sent', function () {
             var pageNo = 5;
             beforeEach(function () {
+              spyOn(controller, 'totalNoOfPages').and.returnValue(pageNo + 1);
               controller.refresh(pageNo);
             });
 
             it('page number is set to 1', function () {
               expect(controller.pagination.page).toBe(pageNo);
+            });
+          });
+
+          describe('when sent page number is more than total no of pages', function () {
+            var pageNoParam = 5,
+              oldPageNo = 4;
+
+            beforeEach(function () {
+              controller.pagination.page = oldPageNo;
+              spyOn(controller, 'totalNoOfPages').and.returnValue(oldPageNo);
+              controller.refresh(pageNoParam);
+            });
+
+            it('page number did not change', function () {
+              expect(controller.pagination.page).toBe(oldPageNo);
             });
           });
         });
