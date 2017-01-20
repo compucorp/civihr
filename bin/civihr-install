@@ -127,10 +127,11 @@ Description: Downloads and/or installs the application.
 
 Required options:
   --dbuser <mysql-username>     Username for mysql
-  --dbpass <mysql-password>     Password for mysql
+  --dbpass <mysql-password>     Password for mysql ( Optional )
   --cmsdb  <cms-database-name>  Database name for Drupal CMS installation
   --crmdb  <crm-database-name>  Database name for CiviCRM CRM installation
   --url    <url>                The public URL of the site
+
 EOT
   exit 99;
 }
@@ -541,11 +542,15 @@ function civihr_parse() {
         DB_USER="$1"
         shift
         ;;
+
       --dbpass)
-        [ "${1::1}" == "-" ] && echo "[[Missing value for option --dbpass.]]" && civihr_app_usage && exit 1
+        echo -n "Enter Password for Mysql:"
+        read -s DB_PASS 
+        echo 
         DB_PASS="$1"
         shift
         ;;
+
       --dbport)
         DB_PORT="$1"
         shift
@@ -579,7 +584,7 @@ function civihr_parse() {
   done
 
 # Checking for all required options/arguments.
-[ -z "$DB_USER" ] || [ -z "$DB_PASS" ] || [ -z "$CMSdbName" ] || [ -z "$CIVIdbName" ] || [ -z "$CMS_URL" ] && echo "[[Please provide missing options/agruments.]]" && civihr_app_usage && exit 99
+[ -z "$DB_USER" ] || [ -z "$CMSdbName" ] || [ -z "$CIVIdbName" ] || [ -z "$CMS_URL" ] && echo "[[Please provide missing options/agruments.]]" && civihr_app_usage && exit 99
 
 # Assigning values.
 [ -z "$SITE_NAME" ]          && civihr_app_usage && exit 99
@@ -588,8 +593,6 @@ function civihr_parse() {
 [ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(civihr_makepasswd 16)
 [ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(civihr_makepasswd 12)
 [ -z "$CMS_TITLE" ]          && CMS_TITLE="$SITE_NAME"
-[ -z "$CMS_HOSTNAME" ]       && CMS_HOSTNAME=$(php -r '$p = parse_url($argv[1]); echo $p["host"];' "$CMS_URL")
-[ -z "$CMS_PORT" ]           && CMS_PORT=$(php -r '$p = parse_url($argv[1]); echo $p["port"];' "$CMS_URL")
 [ -z "$SITE_TOKEN" ]         && SITE_TOKEN=$(civihr_makepasswd 16)
 
 }
