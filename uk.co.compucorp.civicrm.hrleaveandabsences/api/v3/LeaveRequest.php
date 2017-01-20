@@ -436,14 +436,6 @@ function civicrm_api3_leave_request_ismanagedby($params) {
  * @param $spec
  */
 function _civicrm_api3_leave_request_addcomment_spec(&$spec) {
-  $spec['comment_id'] = [
-    'name' => 'comment_id',
-    'type' => CRM_Utils_Type::T_INT,
-    'title' => 'Comment ID',
-    'description' => 'The Comment ID',
-    'api.required' => 0
-  ];
-
   $spec['leave_request_id'] = [
     'name' => 'leave_request_id',
     'type' => CRM_Utils_Type::T_INT,
@@ -474,7 +466,7 @@ function _civicrm_api3_leave_request_addcomment_spec(&$spec) {
 /**
  * LeaveRequest.addComment API
  *
- * Uses the API exposed by the Comment entity (Comment.create)
+ * Uses the LeaveRequestComment Service
  * to create comments related to a LeaveRequest.
  *
  * @param $params
@@ -482,14 +474,8 @@ function _civicrm_api3_leave_request_addcomment_spec(&$spec) {
  * @return array
  */
 function civicrm_api3_leave_request_addcomment($params) {
-  _civicrm_api3_leave_request_prepare_parameters_for_comment_payload($params);
-  $results =  civicrm_api3('Comment', 'create', $params);
-
-  if($results['count'] > 0) {
-    _civicrm_api3_leave_request_filter_comment_return_data($results['values']);
-  }
-
-  return $results;
+  $leaveRequestCommentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestComment();
+  return $leaveRequestCommentService->add($params);
 }
 
 /**
@@ -511,7 +497,7 @@ function _civicrm_api3_leave_request_getcomment_spec(&$spec) {
     'type' => CRM_Utils_Type::T_INT,
     'title' => 'Leave Request ID',
     'description' => 'The ID of the Leave Request',
-    'api.required' => 0,
+    'api.required' => 1,
   ];
 
   $spec['contact_id'] = [
@@ -528,7 +514,7 @@ function _civicrm_api3_leave_request_getcomment_spec(&$spec) {
 /**
  * LeaveRequest.getComment API
  *
- * Uses the API exposed by the Comment entity (Comment.get)
+ * Uses the LeaveRequestComment Service
  * to fetch comments associated with a LeaveRequest
  *
  * @param $params
@@ -536,14 +522,8 @@ function _civicrm_api3_leave_request_getcomment_spec(&$spec) {
  * @return array
  */
 function civicrm_api3_leave_request_getcomment($params) {
-  _civicrm_api3_leave_request_prepare_parameters_for_comment_payload($params);
-  $results =  civicrm_api3('Comment', 'get', $params);
-
-  if($results['count'] > 0) {
-    _civicrm_api3_leave_request_filter_comment_return_data($results['values']);
-  }
-
-  return $results;
+  $leaveRequestCommentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestComment();
+  return $leaveRequestCommentService->get($params);
 }
 
 /**
@@ -553,7 +533,7 @@ function civicrm_api3_leave_request_getcomment($params) {
  */
 function _civicrm_api3_leave_request_deletecomment_spec(&$spec) {
   $spec['comment_id'] = [
-    'name' => 'id',
+    'name' => 'comment_id',
     'type' => CRM_Utils_Type::T_INT,
     'title' => 'Comment ID',
     'description' => 'The Comment ID',
@@ -564,63 +544,15 @@ function _civicrm_api3_leave_request_deletecomment_spec(&$spec) {
 /**
  * LeaveRequest.deleteComment API
  *
- * Uses the API exposed by the Comment entity (Comment.delete)
+ * Uses the LeaveRequestComment Service
  * to delete comments associated with a LeaveRequest.
- * This method also implement some checks to ensure that only the LeaveRequest Approver
- * or an Admin can delete a comment
  *
  * @param $params
  *
  * @return array
  */
 function civicrm_api3_leave_request_deletecomment($params) {
-  _civicrm_api3_leave_request_prepare_parameters_for_comment_payload($params);
-
-  $comments =  civicrm_api3('Comment', 'get', ['id' => $params['id'], 'sequential' => 1]);
-
-  if ($comments['count'] > 0){
-    $leaveRequest = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::findById($comments['values'][0]['entity_id']);
-    $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
-
-    if ($leaveManagerService->currentUserIsAdmin() || $leaveManagerService->currentUserIsLeaveManagerOf($leaveRequest->contact_id)) {
-      return civicrm_api3('Comment', 'delete', $params);
-    }
-
-    throw new UnexpectedValueException('You must either be an L&A admin or an approver to this leave request to be able to delete the comment');
-  }
-
-  throw new InvalidArgumentException('Comment does not exist or has been deleted already!');
+  $leaveRequestCommentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestComment();
+  return $leaveRequestCommentService->delete($params);
 }
 
-/**
- * Helper function used to format the parameters passed to LeaveRequest.deleteComment and
- * LeaveRequest.addComment API into a format expected by the Comment.create and Comment.delete API
- *
- * @param $params
- */
-function _civicrm_api3_leave_request_prepare_parameters_for_comment_payload(&$params) {
-  $params['entity_name'] = 'LeaveRequest';
-
-  if (!empty($params['comment_id'])) {
-    $params['id'] = $params['comment_id'];
-    unset($params['comment_id']);
-  }
-
-  if (!empty($params['leave_request_id'])) {
-    $params['entity_id'] = $params['leave_request_id'];
-    unset($params['leave_request_id']);
-  }
-}
-
-/**
- * Helper function used to process the return values of the Comment.get and Comment.create API
- * into a proper format.
- *
- * @param $values
- */
-function _civicrm_api3_leave_request_filter_comment_return_data(&$values) {
-  array_walk($values, function(&$item){
-    $item = ['comment_id' => $item['id'], 'leave_request_id' => $item['entity_id']] + $item;
-    unset($item['entity_id'], $item['id'], $item['entity_name']);
-  });
-}
