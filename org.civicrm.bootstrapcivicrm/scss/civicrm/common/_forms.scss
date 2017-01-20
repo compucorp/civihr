@@ -361,10 +361,11 @@ $control-height: 30px;
       &.label {
         display: flex;
         align-items: center;
+      }
 
-        label {
-          text-align: initial;
-        }
+      label {
+        padding: 15px 20px;
+        text-align: initial;
       }
 
       label ~ input ~ label ~ input {
@@ -595,6 +596,10 @@ $control-height: 30px;
 
   .crm-marker {
     color: $brand-danger;
+  }
+
+  .help {
+    padding: 15px 20px;
   }
 }
 

@@ -68,6 +68,22 @@
   .crm-accordion-header:not(.crm-master-accordion-header) + .crm-accordion-body,
   .section {
     padding: 15px !important;
+
+    td {
+      &.label {
+        padding: 15px;
+        font-weight: bold;
+        text-align: left;
+
+        label {
+          padding: 0;
+        }
+      }
+
+      label {
+        padding: 15px;
+      }
+    }
   }
 
   .crm-accordion-body {
