@@ -177,8 +177,9 @@ define([
      * @param {int} page - page number of the pagination element
      */
     vm.refresh = function (page) {
-      if(page !== 0 || page <  vm.totalNoOfPages()) {
-        vm.pagination.page = page > 0 ? page : 1;
+      page = page ? page : 1;
+      if(page <=  vm.totalNoOfPages()) {
+        vm.pagination.page = page;
         loadAllRequests();
       }
     };
