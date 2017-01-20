@@ -282,14 +282,14 @@ define([
        * @return {Promise} of array with day types
        */
       function filterLeaveRequestDayTypes(date, dayType) {
-        var deferred = $q.defer();
+        var deferred = $q.defer(), inCalendarList, listToReturn;
 
         if (!date) {
           deferred.reject([]);
         }
 
         // Make a copy of the list
-        var listToReturn = vm.leaveRequestDayTypes.slice(0);
+        listToReturn = vm.leaveRequestDayTypes.slice(0);
 
         date = convertDateFormatToServer(date);
         PublicHoliday.isPublicHoliday(date)
@@ -299,7 +299,7 @@ define([
                 return publicHoliday.name === 'public_holiday';
               });
             } else {
-              var inCalendarList = getDayTypesFromDate(date, listToReturn);
+              inCalendarList = getDayTypesFromDate(date, listToReturn);
 
               if (!inCalendarList.length) {
                 // 'All day', '1/2 AM', and '1/2 PM' options
