@@ -58,7 +58,7 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
    * @throws \CRM_HRComments_Exception_InvalidCommentException
    */
   public static function validateCommentSoftDeleteDuringUpdate($params) {
-    if (isset($params['id']) && $params['is_deleted'] == 1) {
+    if (isset($params['id']) && !empty($params['is_deleted'])) {
       throw new InvalidCommentException(
         'Comment can not be soft deleted during an update, use the delete method instead!',
         'comment_cannot_soft_delete_comment',

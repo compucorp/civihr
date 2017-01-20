@@ -30,9 +30,18 @@ class api_v3_CommentTest extends BaseHeadlessTest  {
     ]);
 
     //soft delete the first comment
-    civicrm_api3('Comment', 'delete', [
+    $result = civicrm_api3('Comment', 'delete', [
       'id' => $comment1->id,
     ]);
+
+    $expected = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => 1,
+    ];
+
+    $this->assertEquals($expected, $result);
 
     $comment = new Comment();
     $comment->find();

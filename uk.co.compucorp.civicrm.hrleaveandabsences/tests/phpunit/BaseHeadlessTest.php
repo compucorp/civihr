@@ -11,6 +11,7 @@ abstract class BaseHeadlessTest extends PHPUnit_Framework_TestCase implements
       ->installMe(__DIR__)
       ->install('uk.co.compucorp.civicrm.hrcore')
       ->install('org.civicrm.hrjobcontract')
+      ->install('uk.co.compucorp.civicrm.hrcomments')
       ->apply();
   }
 }

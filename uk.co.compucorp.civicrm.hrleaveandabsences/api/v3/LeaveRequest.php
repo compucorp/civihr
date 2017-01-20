@@ -429,3 +429,130 @@ function civicrm_api3_leave_request_ismanagedby($params) {
 
   return $result;
 }
+
+/**
+ * LeaveRequest.addComment API spec
+ *
+ * @param $spec
+ */
+function _civicrm_api3_leave_request_addcomment_spec(&$spec) {
+  $spec['leave_request_id'] = [
+    'name' => 'leave_request_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Leave Request ID',
+    'description' => 'The ID of the Leave Request',
+    'api.required' => 1,
+  ];
+
+  $spec['text'] = [
+    'name' => 'text',
+    'type' => CRM_Utils_Type::T_STRING,
+    'title' => 'Text',
+    'description' => 'The comment text',
+    'api.required' => 1,
+  ];
+
+  $spec['contact_id'] = [
+    'name' => 'contact_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Contact (Commenter)',
+    'description' => 'The contact who made the comment',
+    'api.required' => 1,
+    'FKClassName'  => 'CRM_Contact_DAO_Contact',
+    'FKApiName'    => 'Contact',
+  ];
+}
+
+/**
+ * LeaveRequest.addComment API
+ *
+ * Uses the LeaveRequestComment Service
+ * to create comments related to a LeaveRequest.
+ *
+ * @param $params
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_addcomment($params) {
+  $leaveRequestCommentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestComment();
+  return $leaveRequestCommentService->add($params);
+}
+
+/**
+ * LeaveRequest.getComment API spec
+ *
+ * @param $spec
+ */
+function _civicrm_api3_leave_request_getcomment_spec(&$spec) {
+  $spec['comment_id'] = [
+    'name' => 'comment_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Comment ID',
+    'description' => 'The Comment ID',
+    'api.required' => 0
+  ];
+
+  $spec['leave_request_id'] = [
+    'name' => 'leave_request_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Leave Request ID',
+    'description' => 'The ID of the Leave Request',
+    'api.required' => 1,
+  ];
+
+  $spec['contact_id'] = [
+    'name' => 'contact_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Contact (Commenter)',
+    'description' => 'The contact who made the comment',
+    'api.required' => 0,
+    'FKClassName'  => 'CRM_Contact_DAO_Contact',
+    'FKApiName'    => 'Contact',
+  ];
+}
+
+/**
+ * LeaveRequest.getComment API
+ *
+ * Uses the LeaveRequestComment Service
+ * to fetch comments associated with a LeaveRequest
+ *
+ * @param $params
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_getcomment($params) {
+  $leaveRequestCommentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestComment();
+  return $leaveRequestCommentService->get($params);
+}
+
+/**
+ * LeaveRequest.deleteComment API spec
+ *
+ * @param $spec
+ */
+function _civicrm_api3_leave_request_deletecomment_spec(&$spec) {
+  $spec['comment_id'] = [
+    'name' => 'comment_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Comment ID',
+    'description' => 'The Comment ID',
+    'api.required' => 1
+  ];
+}
+
+/**
+ * LeaveRequest.deleteComment API
+ *
+ * Uses the LeaveRequestComment Service
+ * to delete comments associated with a LeaveRequest.
+ *
+ * @param $params
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_deletecomment($params) {
+  $leaveRequestCommentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestComment();
+  return $leaveRequestCommentService->delete($params);
+}
+

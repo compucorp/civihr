@@ -13,6 +13,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHo
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
+use CRM_HRComments_Test_Fabricator_Comment as CommentFabricator;
+use CRM_HRComments_BAO_Comment as Comment;
 
 /**
  * Class api_v3_LeaveRequestTest
@@ -2037,5 +2039,54 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     }
 
     return $dates;
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_request_id
+   */
+  public function testAddCommentShouldThrowAnExceptionIfLeaveRequestIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'addcomment', [
+      'text' => 'Random Commenter',
+      'contact_id' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id
+   */
+  public function testAddCommentShouldThrowAnExceptionIfContactIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'addcomment', [
+      'leave_request_id' => 1,
+      'text' => 'Random Commenter',
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: text
+   */
+  public function testAddCommentShouldThrowAnExceptionIfTextIsMissing() {
+    civicrm_api3('LeaveRequest', 'addcomment', [
+      'leave_request_id' => 1,
+      'contact_id' => 1,
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_request_id
+   */
+  public function testGetCommentShouldThrowAnExceptionIfLeaveRequestIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'addcomment', []);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: comment_id
+   */
+  public function testDeleteCommentShouldThrowAnExceptionIfCommentIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'deletecomment', []);
   }
 }
