@@ -2,6 +2,13 @@
   .crm-contact-task-addtodonot-form-block {
     table.form-layout-compressed {
       margin: 0 25px;
+
+      label {
+        padding: 15px 0;
+      }
+      .crm-contact-task-addtodonot-form-block-pref label {
+        padding: 15px !important;
+      }
     }
   }
 }
