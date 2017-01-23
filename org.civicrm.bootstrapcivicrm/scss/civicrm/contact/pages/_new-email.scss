@@ -54,3 +54,15 @@
     }
   }
 }
+
+
+.CRM_Contact_Form_Task_Email {
+  .crm-contactEmail-form-block-recipient {
+    td {
+      &.label {
+        padding: 30px;
+        font-weight: bold;
+      }
+    }
+  }
+}

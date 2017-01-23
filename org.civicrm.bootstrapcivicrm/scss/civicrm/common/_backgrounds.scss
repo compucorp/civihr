@@ -19,7 +19,8 @@
     .crm-form-block {
       @extend %block-with-shadow;
       border-radius: 0;
-      padding: 15px 0;
+      padding: 0;
+      margin: 0;
 
       &.crm-api-import-uploadfile-form-block,
       .crm-form-block {
