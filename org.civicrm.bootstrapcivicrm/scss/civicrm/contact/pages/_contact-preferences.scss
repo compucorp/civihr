@@ -1,0 +1,27 @@
+.CRM_Contact_Form_Task_AlterPreferences {
+  .crm-contact-task-addtodonot-form-block {
+    table.form-layout-compressed {
+      margin: 0 25px;
+
+      label {
+        padding: 15px 0;
+        position: relative;
+
+        &:after {
+          top: 21px;
+          left: 4px;
+        }
+      }
+
+      .crm-contact-task-addtodonot-form-block-pref label {
+        padding: 15px !important;
+        position: relative;
+        
+        &:after {
+          left: 17px;
+          top: 17px;
+        }
+      }
+    }
+  }
+}
