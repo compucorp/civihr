@@ -1270,12 +1270,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_empty_from_date']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenContactIDIsEmpty() {
@@ -1289,12 +1290,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'contact_id' => ['leave_request_empty_contact_id']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenTypeIDIsEmpty() {
@@ -1308,12 +1310,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'type_id' => ['leave_request_empty_type_id']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenStatusIDIsEmpty() {
@@ -1327,12 +1330,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'status_id' => ['leave_request_empty_status_id']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenToDateIsNotEmptyAndToDateTypeIsEmpty() {
@@ -1349,12 +1353,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'to_date_type' => ['leave_request_empty_to_date_type']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenEndDateIsGreaterThanStartDate() {
@@ -1372,12 +1377,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_from_date_greater_than_end_date']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenThereAreOverlappingLeaveRequests() {
@@ -1430,12 +1436,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_overlaps_another_leave_request']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenBalanceChangeGreaterThanPeriodEntitlementBalanceChangeAndAllowOveruseFalse() {
@@ -1486,12 +1493,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'type_id' => ['leave_request_balance_change_greater_than_remaining_balance']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenLeaveRequestHasNoWorkingDay() {
@@ -1540,12 +1548,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_doesnt_have_working_day']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenTheDatesAreNotContainedInValidAbsencePeriod() {
@@ -1572,12 +1581,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_not_within_absence_period']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenTheDatesOverlapMoreThanOneContract() {
@@ -1639,12 +1649,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_overlapping_multiple_contracts']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenTheAbsenceTypeIsNotActive() {
@@ -1830,10 +1841,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 0,
       'values' => []
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testCreateAlsoCreatesTheBalanceChangesForTheLeaveRequest() {
