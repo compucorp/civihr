@@ -60,6 +60,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   public static function validateParams($params) {
     self::validateMandatory($params);
     self::validateStartDateNotGreaterThanEndDate($params);
+    self::validateAbsenceTypeIsActive($params);
+    self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params);
+    self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params);
     self::validateAbsencePeriod($params);
     self::validateNoOverlappingLeaveRequests($params);
     self::validateBalanceChange($params);
@@ -304,6 +307,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       );
     }
   }
+
   /**
    * This method checks that the start date of a leave request should not be
    * greater than the end date provided the request is for a non single day leave request.
@@ -326,6 +330,93 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         );
       }
   }
+
+  /**
+   * This method checks that the number of days for the Leave Request
+   * is not greater than the max_consecutive_leave_days for the absence type
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params) {
+    $absenceType = AbsenceType::findById($params['type_id']);
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
+
+    $interval = $toDate->diff($fromDate);
+    $intervalInDays = $interval->format("%a");
+
+    if (!empty($absenceType->max_consecutive_leave_days) && $intervalInDays > $absenceType->max_consecutive_leave_days) {
+      throw new InvalidLeaveRequestException(
+        'Leave Request days cannot be greater than maximum consecutive days for absence type',
+        'leave_request_days_greater_than_max_consecutive_days',
+        'type_id'
+      );
+    }
+  }
+
+  /**
+   * This method checks if the absence type allows cancellation in advance of start date and that the leave request from_date
+   * should not be in the past in the event of a leave request cancellation by a user.
+   *
+   * Also checks that a user's leave request should not be cancelled if the absence type does not
+   * allow leave request cancellation
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params) {
+    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
+    $leaveRequestIsForCurrentUser = CRM_Core_Session::getLoggedInContactID() == $params['contact_id'];
+    $isACancellationRequest = ($params['status_id'] == $leaveRequestStatuses['cancelled']);
+
+    if($leaveRequestIsForCurrentUser && $isACancellationRequest) {
+      $absenceType = AbsenceType::findById($params['type_id']);
+      $today = new DateTime('today');
+      $fromDate = new DateTime($params['from_date']);
+
+      if($absenceType->allow_request_cancelation == AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE && $fromDate < $today) {
+        throw new InvalidLeaveRequestException(
+          'Leave Request with past days cannot be cancelled',
+          'leave_request_past_days_cannot_be_cancelled',
+          'type_id'
+        );
+      }
+
+      if($absenceType->allow_request_cancelation == AbsenceType::REQUEST_CANCELATION_NO) {
+        throw new InvalidLeaveRequestException(
+          'Absence Type does not allow leave request cancellation',
+          'leave_request_absence_type_disallows_cancellation',
+          'type_id'
+        );
+      }
+    }
+  }
+
+  /**
+   * This method validates that the absence type is active
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateAbsenceTypeIsActive($params) {
+    $absenceType = AbsenceType::findById($params['type_id']);
+
+    if (!$absenceType->is_active) {
+      throw new InvalidLeaveRequestException(
+        'Absence Type is not active',
+        'leave_request_absence_type_not_active',
+        'type_id'
+      );
+    }
+  }
+
   /**
    * Returns a LeaveRequest instance representing the Public Holiday Leave Request
    * for the given $publicHoliday and assigned to the Contact with the given
