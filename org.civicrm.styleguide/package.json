@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "protractor tests/protractor/conf.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "civicrm-cv": "civicrm/cv-nodejs",
     "gulp": "^3.9.0",
     "gulp-sass": "^2.1.0",
     "gulp-sass-bulk-import": "^0.3.2",
