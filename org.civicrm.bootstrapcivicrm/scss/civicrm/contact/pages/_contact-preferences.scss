@@ -5,13 +5,22 @@
 
       label {
         padding: 15px 0;
+        position: relative;
+
         &:after {
-          display: none;
+          top: 21px;
+          left: 4px;
         }
       }
-      
+
       .crm-contact-task-addtodonot-form-block-pref label {
         padding: 15px !important;
+        position: relative;
+        
+        &:after {
+          left: 17px;
+          top: 17px;
+        }
       }
     }
   }

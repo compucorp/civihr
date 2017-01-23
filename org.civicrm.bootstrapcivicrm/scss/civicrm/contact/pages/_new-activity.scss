@@ -83,6 +83,12 @@
   .crm-is-multi-activity-wrapper {
     label {
       padding: 15px 0;
+      position: relative;
+
+      &:after {
+        left:0 !important;
+        top: 17px !important;
+      }
     }
   }
 }

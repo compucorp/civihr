@@ -366,6 +366,10 @@ $control-height: 30px;
       label {
         padding: 15px 20px;
         text-align: initial;
+        &:after {
+          top: 21px !important;
+          left: 24px !important;
+        }
       }
 
       label ~ input ~ label ~ input {
