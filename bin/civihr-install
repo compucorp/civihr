@@ -1,6 +1,8 @@
 #!/bin/bash
+#
+# Setups CiviHR site using Drupal CMS and CiviCRM.
 
-###############################################################################
+##########################################################
 ## Global variables
 
 ## The location of the Project tree
@@ -110,43 +112,62 @@ CIVI_EXT_DIR=
 ## URL of the web-managed extension folder (required if CIVI_EXT_DIR is set)
 CIVI_EXT_URL=
 
-###############################################################################
-## Display usage message
+##########################################################
+# Displays usage message
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function civihr_app_usage() {
   APP=$(basename "$0")
 
   cat <<EOT
 Common Options :
   <site-name>        The name of the site-directory to build
-Syntax: $APP <site-name> [required-parameters]
+Syntax: $APP [site-name] [required-parameters]
 Description: Downloads and/or installs the application.
 
 Required parameters:
-  --dbuser <mysql-username>     Username for mysql
-  --cmsdb  <cms-database-name>  Database name for Drupal CMS installation
-  --crmdb  <crm-database-name>  Database name for CiviCRM CRM installation
-  --url    <url>                The public URL of the site
+  --dbuser [mysql-username]     Username for mysql
+  --cmsdb  [cms-database-name]  Database name for Drupal CMS installation
+  --crmdb  [crm-database-name]  Database name for CiviCRM CRM installation
+  --url    [url]                The public URL of the site
 
 Optional parameters:
-  --dbpass <mysql-password>     Password for mysql
+  --dbpass [mysql-password]     Password for mysql
 EOT
   exit 99
 }
 
 
-###############################################################################
-## Creates random password.
+##########################################################
+# Creates random password.
+# Arguments:
+#   Length of the string
+# Returns:
+#   Random alphanumeric password string
+# Usage:
+#   civihr_make_passwd 12
+##########################################################
 function civihr_make_passwd() {
   if [ -n "$1" ]; then
     echo $(cat /dev/urandom | LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w "$1" | head -n 1)
   fi
 }
 
-###############################################################################
-## Assert that shell variables are defined. If not defined, exit with an error.
-##  If a variable missing, the application dies.
-function civihr_assertvars() {
-  _civihr_assertvars_back="$-"
+##########################################################
+# Assert that shell variables are defined. If not defined, exit with an error.
+# If a variable missing, the application dies.
+# Arguments:
+#   Global Variables
+# Returns:
+#   Value of the Global Variables.
+# Usage:
+#   civihr_assert_vars SITE_NAME
+##########################################################
+function civihr_assert_vars() {
+  _civihr_assert_vars_back="$-"
 
   set +x
   context="$1"
@@ -161,18 +182,25 @@ function civihr_assertvars() {
     shift
   done
 
-  set -${_civihr_assertvars_back} 
+  set -${_civihr_assert_vars_back} 
 }
 
-###############################################################################
-## Summarize the content of key environment variables
+##########################################################
+# Summarize the content of key environment variables.
+# Arguments:
+#   All the command line parameters i.e $@
+# Returns:
+#   Displays values for each of the parameter passed.
+# Usage:
+#   civihr_summary $@
+##########################################################
 function civihr_summary() {
   if [ -n "$1" ]; then
     echo "$1"
   fi
   shift
 
-  civihr_assertvars civihr_summary "$@"
+  civihr_assert_vars civihr_summary "$@"
   for var in "$@" ; do
     eval "val=\$$var"
     echo " - $var: $val"
@@ -180,18 +208,31 @@ function civihr_summary() {
 }
 
 
-###############################################################################
-## Creates and ensure parent directory exists.
-## civihr_makeparent <file>
-function civihr_makeparent() {
+##########################################################
+# Creates and ensure parent directory exists.
+# Arguments:
+#   File Name.
+# Returns:
+#   Creates Parent directory.
+# Usage:
+#   civihr_make_parent <file-name>
+##########################################################
+function civihr_make_parent() {
   parentdir=$(dirname "$1")
   if [ ! -d "$parentdir" ]; then
     mkdir -p "$parentdir"
   fi
 }
 
-###############################################################################
-## Checks whether directory exists, if not then create it.
+##########################################################
+# Checks whether directory exists, if not then create it.
+# Arguments:
+#   Folder Name.
+# Returns:
+#   Creates directory.
+# Usage:
+#   civihr_mkdir <directory-name>
+##########################################################
 function civihr_mkdir() {
   for a in "$@" ; do
     if [ ! -d "$a" ]; then
@@ -200,9 +241,16 @@ function civihr_mkdir() {
   done
 }
 
-###############################################################################
-## Creates host and port to a single string.
-function civihr_build_hostport() {
+##########################################################
+# Creates host and port to a single string.
+# Arguments:
+#   Folder Name.
+# Returns:
+#   Creates directory.
+# Usage:
+#   civihr_mkdir <directory-name>
+##########################################################
+function civihr_build_host_port() {
   local host=$1
   local port=$2
   if [ -z "$port" ]; then
@@ -212,30 +260,32 @@ function civihr_build_hostport() {
   fi
 }
 
-###############################################################################
-## Making Random temp files
-function civihr_maketempfile(){
- cat > "$TMPDIR/mktemp.php" << EOF
-<?php
-    \$prefix = empty(\$argv[1]) ? 'mktemp-' : \$argv[1];
-\$basedir = empty(\$argv[2]) ? sys_get_temp_dir() : \$argv[2];
-echo tempnam(\$basedir,  \$prefix);
-?>
-EOF
-}
-
-###############################################################################
-## Setup MySQL services
+##########################################################
+# Setup MySQL services
+# Arguments:
+#   None
+# Returns:
+#   None
+# Usage:
+#   database_install
+##########################################################
 function database_install() {
   _database_install_cms
   _database_install_civi
 }
 
-## Setting up Database for CMS i.e Drupal
+##########################################################
+# Creates empty Database for CMS.
+# Assign required values to Global Variables.
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function _database_install_cms() {
 
   echo "[[Setting up MySQL for CMS]]"
-  civihr_assertvars _database_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
+  civihr_assert_vars _database_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
   # Create database.
   mysql -u$DB_USER -p$DB_PASS -e "create database $CMSdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
   # Assign values to global variables.
@@ -243,15 +293,22 @@ function _database_install_cms() {
   [ -z "$CMS_DB_PASS" ]           && CMS_DB_PASS="$DB_PASS"
   [ -z "$CMS_DB_NAME" ]           && CMS_DB_NAME="$CMSdbName"
 
-  CMS_DB_HOSTPORT=$(civihr_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
+  CMS_DB_HOSTPORT=$(civihr_build_host_port "$CMS_DB_HOST" "$CMS_DB_PORT")
   [ -z "$CMS_DB_DSN" ]           && CMS_DB_DSN="mysql://${DB_USER}:${DB_PASS}@${CMS_DB_HOSTPORT}/${CMSdbName}?new_link=true"
 }
 
-## Setting up Database for CRM i.e CiviHR
+##########################################################
+# Creates empty Database for CRM ie CiviHR.
+# Assign required values to Global Variables.
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function _database_install_civi() {
 
   echo "[[Setting up MySQL for CiviCRM]]"
-  civihr_assertvars _database_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
+  civihr_assert_vars _database_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
   # Create database.
   mysql -u$DB_USER -p$DB_PASS -e "create database $CIVIdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
   # Assign values to global variables.
@@ -259,14 +316,19 @@ function _database_install_civi() {
   [ -z "$CIVI_DB_PASS" ]           && CIVI_DB_PASS="$DB_PASS"
   [ -z "$CIVI_DB_NAME" ]           && CIVI_DB_NAME="$CIVIdbName"
 
-  CIVI_DB_HOSTPORT=$(civihr_build_hostport "$CIVI_DB_HOST" "$CIVI_DB_PORT")
+  CIVI_DB_HOSTPORT=$(civihr_build_host_port "$CIVI_DB_HOST" "$CIVI_DB_PORT")
   [ -z "$CIVI_DB_DSN" ]           && CIVI_DB_DSN="mysql://${DB_USER}:${DB_PASS}@${CIVI_DB_HOSTPORT}/${CIVIdbName}?new_link=true"
 }
 
-###############################################################################
-## Generate config files and setup database
+##########################################################
+# Generate Configuration Files and Installs Civicrm.
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function civicrm_install() {
-  civihr_assertvars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
+  civihr_assert_vars civicrm_install CIVI_CORE CIVI_FILES CIVI_TEMPLATEC CIVI_DOMAIN_NAME CIVI_DOMAIN_EMAIL
   if [ ! -d "$CIVI_CORE/bin" -o ! -d "$CIVI_CORE/CRM" ]; then
     echo "Failed to locate valid civi root: $CIVI_CORE"
     exit 1
@@ -300,12 +362,17 @@ function civicrm_install() {
 EOSQL
 }
 
-###############################################################################
-## Generate Civicrm "civicrm.settings.php" file.
+##########################################################
+# Generates Civicrm "civicrm.settings.php" file.
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function civicrm_make_settings_php() {
-  civihr_assertvars civicrm_make_settings_php CIVI_SETTINGS CIVI_CORE CIVI_UF CIVI_TEMPLATEC CMS_URL CIVI_SITE_KEY
-  civihr_assertvars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
-  civihr_assertvars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
+  civihr_assert_vars civicrm_make_settings_php CIVI_SETTINGS CIVI_CORE CIVI_UF CIVI_TEMPLATEC CMS_URL CIVI_SITE_KEY
+  civihr_assert_vars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
+  civihr_assert_vars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
 
   local tpl
 
@@ -319,8 +386,8 @@ function civicrm_make_settings_php() {
     exit 96
   fi
 
-  CMS_DB_HOSTPORT=$(civihr_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
-  CIVI_DB_HOSTPORT=$(civihr_build_hostport "$CIVI_DB_HOST" "$CIVI_DB_PORT")
+  CMS_DB_HOSTPORT=$(civihr_build_host_port "$CMS_DB_HOST" "$CMS_DB_PORT")
+  CIVI_DB_HOSTPORT=$(civihr_build_host_port "$CIVI_DB_HOST" "$CIVI_DB_PORT")
 
   cat "$CIVI_CORE/$tpl" \
     | sed "s;%%baseURL%%;${CMS_URL};" \
@@ -346,13 +413,17 @@ function civicrm_make_settings_php() {
     \$civicrm_setting['URL Preferences']['extensionsURL'] = '$CIVI_EXT_URL';
 EOF
   fi
-  
 }
 
-###############################################################################
-## Generate Civicrm "setup.conf" file.
+##########################################################
+# Generate Civicrm "setup.conf" file.
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function civicrm_make_setup_conf() {
-  civihr_assertvars civicrm_make_setup_conf PRJDIR CMS_ROOT CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS
+  civihr_assert_vars civicrm_make_setup_conf PRJDIR CMS_ROOT CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS
 
   cat > "$CIVI_CORE/bin/setup.conf" << EOF
     PRJDIR="$PRJDIR"
@@ -372,20 +443,30 @@ function civicrm_make_setup_conf() {
 EOF
 }
 
-###############################################################################
-## Drupal -- Generate config files and setup database
+##########################################################
+# Calls Drupal installation process function.
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function drupal_install() {
   drupal7_install
 }
 
-###############################################################################
-## Drupal -- Generate config files and setup database
+##########################################################
+# Generate Configuration Files and Installs Drupal.
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function drupal7_install() {
-  civihr_assertvars drupal7_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
 
+  civihr_assert_vars drupal7_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
   DRUPAL_SITE_DIR="$SITE_ID"
 
-  CMS_DB_HOSTPORT=$(civihr_build_hostport "$CMS_DB_HOST" "$CMS_DB_PORT")
+  CMS_DB_HOSTPORT=$(civihr_build_host_port "$CMS_DB_HOST" "$CMS_DB_PORT")
 
   pushd "$CMS_ROOT" >> /dev/null
     [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
@@ -408,9 +489,14 @@ function drupal7_install() {
   popd >> /dev/null
 }
 
-###############################################################################
-## Initialize (or update) a cached copy of a git repo in $CACHE_DIR
-## usage: git_cache_setup <url> <cache-dir>
+##########################################################
+# Initialize (or update) a cached copy of a git repo in $CACHE_DIR.
+# Arguments:
+#   URL - Git Repo URL address.
+#   Cache Directory.
+# Usage:
+#   git_cache_setup <url> <cache-dir>
+##########################################################
 function git_cache_setup() {
   local url="$1"
   local cachedir="$2"
@@ -425,13 +511,13 @@ function git_cache_setup() {
     fi
   fi
 
-  civihr_makeparent "$lock"
+  civihr_make_parent "$lock"
   if pidlockfile.php "$lock" $$ $CACHE_LOCK_WAIT ; then
     php -r 'echo time();' > "$lastrun"
     if [ ! -d "$cachedir" ]; then
       ## clone
       echo "[[Initialize cache dir: $cachedir]]"
-      civihr_makeparent "$cachedir"
+      civihr_make_parent "$cachedir"
       timeout.php $SCM_TIMEOUT git clone --mirror "$url" "$cachedir"
     else
       ## update
@@ -451,10 +537,12 @@ function git_cache_setup() {
   fi
 }
 
-###############################################################################
-## Fix the remote configurations of any git repos in <build-dir>, changing any
-## references to <cache-base-dir> to proper remotes
-## usage: git_cache_deref_remotes <cache-base-dir> <build-dir>
+##########################################################
+# Fix the remote configurations of any git repos in <build-dir>, changing any
+# references to <cache-base-dir> to proper remotes
+# Usage:
+#   git_cache_deref_remotes <cache-base-dir> <build-dir>
+##########################################################
 function git_cache_deref_remotes() {
   local _shellopt="$-"
   set +x
@@ -483,23 +571,16 @@ function git_cache_deref_remotes() {
   set -${_shellopt}
 }
 
-###############################################################################
-## Update core/default caches
-function default_cache_setup() {
-  if [ -z "$OFFLINE" ]; then
-    echo "[[Update caches]]"
-    civihr_assertvars default_cache_setup PRJDIR
-    git_cache_setup "https://github.com/civicrm/civihr.git" "$CACHE_DIR/civicrm/civihr.git"
-    git_cache_setup "https://github.com/civicrm/civicrm-core.git" "$CACHE_DIR/civicrm/civicrm-core.git"
-    git_cache_setup "https://github.com/civicrm/civicrm-drupal.git"  "$CACHE_DIR/civicrm/civicrm-drupal.git"
-    git_cache_setup "https://github.com/civicrm/civicrm-packages.git" "$CACHE_DIR/civicrm/civicrm-packages.git"
-    git_cache_setup "https://github.com/eileenmcnaughton/civicrm_developer.git" "$CACHE_DIR/eileenmcnaughton/civicrm_developer.git"
-  fi
-}
-
-###############################################################################
-## Parse options
-function civihr_parse() {
+##########################################################
+# Parse provided options and assign values according.
+# Arguments:
+#   All the command line parameters i.e $@
+# Returns:
+#   None
+# Usage:
+#   civihr_parse_options "$@"
+##########################################################
+function civihr_parse_options() {
 
   civihr_mkdir "$TMPDIR" "$BLDDIR"
 
@@ -576,25 +657,42 @@ function civihr_parse() {
 
 }
 
-function absdirname() {
+##########################################################
+# Determine the absolute path of the directory with the file
+# Arguments:
+#   Name of the shell script i.e $0
+# Returns:
+#   None
+# Usage:
+#   civihr_absdirname <file-path>
+##########################################################
+function civihr_absdirname() {
   pushd $(dirname "$0") >> /dev/null
     pwd
   popd >> /dev/null
 }
 
-BINDIR=$(absdirname "$0")
+BINDIR=$(civihr_absdirname "$0")
 PRJDIR=$(pwd)
 TMPDIR="$PRJDIR/temp"
 BLDDIR="$PRJDIR"
 
 export PATH="$PATH:$BINDIR"
-civihr_parse "$@"
+
+civihr_parse_options "$@"
 
 # Checking for Drush dependencies if not present downloading into temp.
 command -v drush >/dev/null 2>&1 || ( echo "[[Downloading dependencies.........]]" && curl -Lo "$TMPDIR/drush" "https://github.com/drush-ops/drush/releases/download/8.1.8/drush.phar" && chmod +x "$TMPDIR/drush" && export PATH="$TMPDIR:$PATH" )
 
-###############################################################################
-## Downloads Drupal,CiviCRM and CiviHR from remote drush.make file.
+##########################################################
+# Downloads Drupal,CiviCRM and CiviHR from remote drush.make file.
+# Arguments:
+#   None
+# Returns:
+#   None
+# Usage:
+#   civihr_setup_structure
+##########################################################
 function civihr_setup_structure() {
 
   [ -z "$CMS_VERSION" ] && CMS_VERSION=7.x
@@ -602,7 +700,7 @@ function civihr_setup_structure() {
   [ -z "$HR_VERSION" ] && HR_VERSION=master
 
   MAKEFILE="${TMPDIR}/${SITE_NAME}/${SITE_ID}.make"
-  civihr_makeparent "$MAKEFILE"
+  civihr_make_parent "$MAKEFILE"
   curl https://raw.githubusercontent.com/civicrm/civihr/PCHR-1666/bin/drush.make \
     | sed "s;%%CACHE_DIR%%;${CACHE_DIR};" \
     | sed "s;%%CIVI_VERSION%%;${CIVI_VERSION};" \
@@ -613,9 +711,14 @@ function civihr_setup_structure() {
   drush -y make --concurrency=5 --working-copy "$MAKEFILE" "$WEB_ROOT"
 }
 
-
+##########################################################
 # Creates the default CiviHR users
-function create_default_users() {
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
+function _civihr_create_default_users() {
   drush -y user-create --password="civihr_staff" --mail="civihr_staff@compucorp.co.uk" "civihr_staff"
   drush -y user-add-role civihr_staff "civihr_staff"
 
@@ -626,23 +729,38 @@ function create_default_users() {
   drush -y user-add-role civihr_admin "civihr_admin"
 }
 
-##
+##########################################################
 # Creates the "Personal" Location Type
-function create_personal_location_type() {
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
+function _civihr_create_personal_location_type() {
   drush cvapi LocationType.create sequential=1 name="Personal" display_name="Personal" vcard_name="PERSONAL" description="Place of Residence"
 }
 
-##
+##########################################################
 # Deletes the "Name and address profile"
-function delete_name_and_address_profile() {
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
+function _civihr_delete_name_and_address_profile() {
   PROFILE_ID=`[[ $(drush cvapi UFGroup.getsingle return="id" title="Name and address") =~ \[id\].+([1-9]) ]] && echo ${BASH_REMATCH[1]}`
 
   drush cvapi UFGroup.delete sequential=1 id="$PROFILE_ID"
 }
 
-##
+##########################################################
 # Disables the unused drupal blocks, leaving only the "main content" one active
-function disabled_unused_blocks() {
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
+function _civihr_disabled_unused_blocks() {
   for block in 'navigation' 'form' 'powered-by' 'help' 'navigation' 'login' \
     '2' '3' '5' '7'
   do
@@ -650,15 +768,25 @@ function disabled_unused_blocks() {
   done
 }
 
-##
+##########################################################
 # Installs CiviHR extensions
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function install_civihr() {
   bash ${CIVI_CORE}/tools/extensions/civihr/bin/drush-install.sh ${CIVI_CORE}
 }
 
-##
+##########################################################
 # Sets up the themes
-function setup_themes {
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
+function _civihr_setup_themes() {
   ## Drupal theme
   drush -y en civihr_default_theme
   drush -y vset theme_default civihr_default_theme
@@ -669,8 +797,13 @@ function setup_themes {
   drush -y vset civicrmtheme_theme_public seven
 }
 
-###############################################################################
-## Create config files and databases; fill the databases
+##########################################################
+# Create config files and databases; fill the databases
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function civihr_install_site(){
 
   ## Creating databases for Drupal and CIVICRM.
@@ -713,14 +846,14 @@ EOSQL
 
     install_civihr
 
-     drush -y en civicrmtheme civihr_employee_portal_features civihr_default_permissions
-     drush -y features-revert civihr_employee_portal_features
+    drush -y en civicrmtheme civihr_employee_portal_features civihr_default_permissions
+    drush -y features-revert civihr_employee_portal_features
 
-    setup_themes
-    create_default_users
-    disabled_unused_blocks
-    create_personal_location_type
-    delete_name_and_address_profile
+    _civihr_setup_themes
+    _civihr_create_default_users
+    _civihr_disabled_unused_blocks
+    _civihr_create_personal_location_type
+    _civihr_delete_name_and_address_profile
 
     ## Create My Details and My Emergency Contact forms
     drush refresh-node-export-files
@@ -731,10 +864,15 @@ EOSQL
 
 }
 
-###############################################################################
-## Downloads all the required repos for Drupal , CiviCRM and CiviHR.
+##########################################################
+# Downloads all the required repos for Drupal , CiviCRM and CiviHR.
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function civihr_app_download() {
-  civihr_assertvars civihr_app_download WEB_ROOT PRJDIR SITE_NAME TMPDIR
+  civihr_assert_vars civihr_app_download WEB_ROOT PRJDIR SITE_NAME TMPDIR
 
   echo "[[Download $SITE_NAME ( in '$WEB_ROOT')]]"
 
@@ -751,10 +889,15 @@ function civihr_app_download() {
   fi
 }
 
-###############################################################################
-## Runs the installation process for CMS, CiviCRM and CiviHR.
+##########################################################
+# Runs the installation process for CMS, CiviCRM and CiviHR.
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function civihr_app_install() {
-  civihr_assertvars civihr_app_install WEB_ROOT  SITE_NAME SITE_ID
+  civihr_assert_vars civihr_app_install WEB_ROOT  SITE_NAME SITE_ID
 
   echo "[[Install $SITE_NAME ( in '$WEB_ROOT')]]"
 
@@ -773,8 +916,13 @@ function civihr_app_install() {
   fi
 }
 
-###############################################################################
-## Displays CMS,DB and Site User Credentials.
+##########################################################
+# Displays CMS,DB and Site User Credentials.
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function civihr_app_show() {
 
     civihr_app_show_summary \
@@ -783,10 +931,15 @@ function civihr_app_show() {
       ADMIN_USER ADMIN_PASS
 }
 
-###############################################################################
-## Displays Site Summary
+##########################################################
+# Displays Site Summary
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################################################
 function civihr_app_show_summary() {
-  civihr_assertvars civi_app_show_summary SITE_NAME TMPDIR "$@"
+  civihr_assert_vars civi_app_show_summary SITE_NAME TMPDIR "$@"
   civihr_summary "[[Show site summary ($SITE_NAME)]]" "$@"
   echo "[[General notes]]"
   echo " - You may need to restart httpd."
