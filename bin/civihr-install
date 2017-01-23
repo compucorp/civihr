@@ -110,57 +110,36 @@ CIVI_EXT_DIR=
 ## URL of the web-managed extension folder (required if CIVI_EXT_DIR is set)
 CIVI_EXT_URL=
 
-
-
 ###############################################################################
 ## Display usage message
 function civihr_app_usage() {
   APP=$(basename "$0")
 
-  php -r 'echo file_get_contents("php://stdin");' <<EOT
-
+  cat <<EOT
 Common Options :
   <site-name>        The name of the site-directory to build
-
-Syntax: $APP <site-name> [required-options]
+Syntax: $APP <site-name> [required-parameters]
 Description: Downloads and/or installs the application.
 
-Required options:
+Required parameters:
   --dbuser <mysql-username>     Username for mysql
-  --dbpass <mysql-password>     Password for mysql ( Optional )
   --cmsdb  <cms-database-name>  Database name for Drupal CMS installation
   --crmdb  <crm-database-name>  Database name for CiviCRM CRM installation
   --url    <url>                The public URL of the site
 
+Optional parameters:
+  --dbpass <mysql-password>     Password for mysql
 EOT
-  exit 99;
+  exit 99
 }
 
 
 ###############################################################################
 ## Creates random password.
-function civihr_makepasswd() {
-
-  cat > "$TMPDIR/mkpasswd.php" << EOF
-<?php
-    function createRandom(\$len, \$alphabet) {
-      \$alphabetSize = strlen(\$alphabet);
-      \$result = '';
-    for (\$i = 0; \$i < \$len; \$i++) {
-      \$result .= \$alphabet{rand(1, \$alphabetSize) - 1};
-    }
-    return \$result;
-  }
-  if (empty(\$argv[1])) {
-    \$len = 8;
-  } else {
-    \$len = \$argv[1];
-  }
-  print createRandom(\$len, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
-?>
-EOF
-# Calling temp make password php file.
-php "$TMPDIR/mkpasswd.php" "$1"
+function civihr_make_passwd() {
+  if [ -n "$1" ]; then
+    echo $(cat /dev/urandom | LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w "$1" | head -n 1)
+  fi
 }
 
 ###############################################################################
@@ -590,10 +569,10 @@ function civihr_parse() {
 [ -z "$SITE_NAME" ]          && civihr_app_usage && exit 99
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
-[ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(civihr_makepasswd 16)
-[ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(civihr_makepasswd 12)
+[ -z "$CIVI_SITE_KEY" ]      && CIVI_SITE_KEY=$(civihr_make_passwd 16)
+[ -z "$ADMIN_PASS" ]         && ADMIN_PASS=$(civihr_make_passwd 12)
 [ -z "$CMS_TITLE" ]          && CMS_TITLE="$SITE_NAME"
-[ -z "$SITE_TOKEN" ]         && SITE_TOKEN=$(civihr_makepasswd 16)
+[ -z "$SITE_TOKEN" ]         && SITE_TOKEN=$(civihr_make_passwd 16)
 
 }
 
