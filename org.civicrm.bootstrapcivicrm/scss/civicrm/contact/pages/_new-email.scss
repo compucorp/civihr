@@ -57,11 +57,29 @@
 
 
 .CRM_Contact_Form_Task_Email {
-  .crm-contactEmail-form-block-recipient {
-    td {
-      &.label {
-        padding: 30px;
-        font-weight: bold;
+  .crm-contactEmail-form-block {
+    .form-layout-compressed {
+      width: 100%;
+
+      .crm-contactEmail-form-block-recipient {
+        td {
+          &.label {
+            padding: 30px;
+            font-weight: bold;
+            color: $gray-darker;
+          }
+        }
+
+        .select2-container {
+          width: 100% !important;
+        }
+      }
+    }
+
+    .crm-html_email-accordion {
+      .helpIcon {
+        margin-bottom: 20px;
+        margin-right: 0;
       }
     }
   }

@@ -101,6 +101,11 @@ $control-height: 30px;
       display: inline-block;
     }
 
+    input.crm-form-file {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
     textarea {
       @extend %responsive;
     }
