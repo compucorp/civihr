@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_SicknessRequest as SicknessRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest
@@ -18,6 +19,7 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
 
     $this->requiredDocumentOptions = $this->getSicknessRequestRequiredDocumentsOptions();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
+    $this->sicknessRequestReasons = $this->getSicknessRequestReasons();
   }
 
   public function testCreateSicknessRequest() {
@@ -158,5 +160,51 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
       'from_date_type' => $fromType,
       'required_documents' => $requiredDocuments
     ], true);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidSicknessRequestException
+   * @expectedExceptionMessage This absence does not allow sickness request
+   */
+  public function testValidateSicknessRequestWhenAbsenceTypeDoesNotAllowSicknessRequest() {
+    $fromDate = new DateTime("2016-11-14");
+    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'is_sick' => 0
+    ]);
+
+    SicknessRequest::validateParams([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'reason' => $this->sicknessRequestReasons['Appointment'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $fromType,
+      'required_documents' => $requiredDocuments
+    ]);
+  }
+
+  /**
+   * @expectedException \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The type of From Date should not be empty
+   */
+  public function testValidateParamsCallsLeaveRequestValidateParams() {
+    $fromDate = new DateTime("2016-11-14");
+    $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'is_sick' => 1
+    ]);
+
+    SicknessRequest::validateParams([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'reason' => $this->sicknessRequestReasons['Appointment'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'required_documents' => $requiredDocuments
+    ]);
   }
 }

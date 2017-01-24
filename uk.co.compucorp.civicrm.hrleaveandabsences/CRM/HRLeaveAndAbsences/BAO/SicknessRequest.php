@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Exception_InvalidSicknessRequestException as InvalidSicknessRequestException;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_DAO_SicknessRequest {
 
@@ -31,13 +32,13 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
       if ($instance->leave_request_id) {
         $instance->copyValues($params);
         $params['id'] = $instance->leave_request_id;
-        LeaveRequest::create($params, $validate);
+        LeaveRequest::create($params, false);
         $instance->save();
       }
     }
 
     if ($hook == 'create') {
-      $leaveRequest = LeaveRequest::create($params, $validate);
+      $leaveRequest = LeaveRequest::create($params, false);
       $instance->copyValues($params);
       $instance->leave_request_id = $leaveRequest->id;
       $instance->save();
@@ -58,6 +59,10 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
    */
   public static function validateParams($params) {
     self::validateMandatory($params);
+    self::validateAbsenceTypeAllowsSicknessRequest($params);
+
+    //run LeaveRequest Validation after all validations on Sickness Request
+    LeaveRequest::validateParams($params);
   }
 
   /**
@@ -75,6 +80,30 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
         'Sickness Requests should have a reason',
         'sickness_request_empty_reason',
         'reason'
+      );
+    }
+  }
+
+  /**
+   * A method for validating that the absence type allows sickness request
+   * before allowing a sickness request to be created/updated
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidSicknessRequestException
+   */
+  private static function validateAbsenceTypeAllowsSicknessRequest($params) {
+    if (empty($params['type_id'])) {
+      return;
+    }
+
+    $absenceType = AbsenceType::findById($params['type_id']);
+    if (!$absenceType->is_sick) {
+      throw new InvalidSicknessRequestException(
+        'This absence does not allow sickness request',
+        'sickness_request_absence_type_does_not_allow_sickness_request',
+        'type_id'
       );
     }
   }
