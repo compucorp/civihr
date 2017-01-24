@@ -249,10 +249,14 @@ class SicknessRequestTest extends BaseHeadlessTest {
       ['period_start_date' => $startDate->format('Y-m-d')]
     );
 
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'is_sick' => true
+    ]);
+
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'contact_id' => $contact['id'],
       'period_id' => $period->id,
-      'type_id' => 1
+      'type_id' => $absenceType->id
     ]);
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 20);
@@ -263,7 +267,7 @@ class SicknessRequestTest extends BaseHeadlessTest {
 
     $result = civicrm_api3('SicknessRequest', 'create', [
       'contact_id' => $contact['id'],
-      'type_id' => 1,
+      'type_id' => $absenceType->id,
       'from_date' => $startDate->format('Y-m-d'),
       'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
       'to_date' => $endDate->format('Y-m-d'),
