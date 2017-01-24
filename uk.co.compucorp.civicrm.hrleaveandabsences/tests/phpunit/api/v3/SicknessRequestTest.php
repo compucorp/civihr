@@ -47,12 +47,13 @@ class SicknessRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'reason' => ['sickness_request_empty_reason']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testSicknessRequestIsValidReturnsErrorWhenAbsenceTypeDoesNotAllowSicknessRequest() {
@@ -76,12 +77,13 @@ class SicknessRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'type_id' => ['sickness_request_absence_type_does_not_allow_sickness_request']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testSicknessRequestIsValidReturnsLeaveRequestTypeErrorWhenLeaveRequestValidationFails() {
@@ -103,12 +105,13 @@ class SicknessRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date_type' => ['leave_request_empty_from_date_type']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testSicknessRequestIsValidShouldNotReturnErrorWhenValidationsPass() {
@@ -157,11 +160,12 @@ class SicknessRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 0,
       'values' => []
     ];
 
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testSicknessRequestGetShouldReturnAssociatedLeaveRequestData() {
