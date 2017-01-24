@@ -55,26 +55,104 @@ class SicknessRequestTest extends BaseHeadlessTest {
     $this->assertArraySubset($expectedResult, $result);
   }
 
-  public function testSicknessRequestIsValidShouldNotReturnErrorWhenValidationsPass() {
-    $contactID = 1;
+  public function testSicknessRequestIsValidReturnsErrorWhenAbsenceTypeDoesNotAllowSicknessRequest() {
     $fromDate = new DateTime("2016-11-14");
-    $toDate = new DateTime("2016-11-17");
     $fromType = $this->leaveRequestDayTypes['All Day']['id'];
-    $toType = $this->leaveRequestDayTypes['All Day']['id'];
     $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'is_sick' => 0
+    ]);
+
+    $result = civicrm_api3('SicknessRequest', 'isvalid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'reason' => $this->sicknessRequestReasons['Appointment'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $fromType,
+      'required_documents' => $requiredDocuments
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'type_id' => ['sickness_request_absence_type_does_not_allow_sickness_request']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testSicknessRequestIsValidReturnsLeaveRequestTypeErrorWhenLeaveRequestValidationFails() {
+    $fromDate = new DateTime("2016-11-14");
+    $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'is_sick' => 1
+    ]);
+
+    $result = civicrm_api3('SicknessRequest', 'isvalid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'reason' => $this->sicknessRequestReasons['Appointment'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'required_documents' => $requiredDocuments
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'count' => 1,
+      'values' => [
+        'from_date_type' => ['leave_request_empty_from_date_type']
+      ]
+    ];
+    $this->assertArraySubset($expectedResult, $result);
+  }
+
+  public function testSicknessRequestIsValidShouldNotReturnErrorWhenValidationsPass() {
+    $contact = ContactFabricator::fabricate();
+
+    $startDate = new DateTime();
+    $endDate = new DateTime('+5 days');
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $startDate->format('YmdHis'),
+      'end_date' => $endDate->format('YmdHis'),
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact['id']],
+      ['period_start_date' => $startDate->format('Y-m-d')]
+    );
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'is_sick' => 1
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $period->id,
+      'type_id' => $absenceType->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 20);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
 
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason'));
 
     $result = civicrm_api3('SicknessRequest', 'isvalid', [
-      'type_id' => 1,
-      'contact_id' => $contactID,
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => $startDate->format('Y-m-d'),
+      'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'to_date' => $endDate->format('Y-m-d'),
+      'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => $fromType,
-      'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType,
-      'reason' => $sicknessReasons['Appointment'],
-      'required_documents' => $requiredDocuments
+      'reason' => $sicknessReasons['Accident'],
+      'sequential' => 1,
     ]);
 
     $expectedResult = [
@@ -82,6 +160,7 @@ class SicknessRequestTest extends BaseHeadlessTest {
       'count' => 0,
       'values' => []
     ];
+
     $this->assertArraySubset($expectedResult, $result);
   }
 

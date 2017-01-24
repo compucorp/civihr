@@ -166,7 +166,7 @@ function civicrm_api3_sickness_request_isvalid($params) {
   try {
     CRM_HRLeaveAndAbsences_BAO_SicknessRequest::validateParams($params);
   }
-  catch (CRM_HRLeaveAndAbsences_Exception_InvalidSicknessRequestException $e) {
+  catch (CRM_HRLeaveAndAbsences_Exception_EntityValidationException $e) {
     $result[$e->getField()] = [$e->getExceptionCode()];
   }
 
