@@ -373,7 +373,12 @@ function civicrm_api3_leave_request_isvalid($params) {
     $result[$e->getField()] = [$e->getExceptionCode()];
   }
 
-  return civicrm_api3_create_success($result);
+  $results =  civicrm_api3_create_success($result);
+  if (isset($results['id'])) {
+    unset($results['id']);
+  }
+
+  return $results;
 }
 
 /**

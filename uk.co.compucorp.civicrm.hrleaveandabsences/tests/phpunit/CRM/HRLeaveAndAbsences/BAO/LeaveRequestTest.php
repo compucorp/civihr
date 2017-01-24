@@ -10,6 +10,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest
@@ -21,6 +22,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -664,6 +666,122 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
   }
 
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Absence Type is not active
+   */
+  public function testLeaveRequestShouldNotBeCreatedWhenAbsenceTypeIsNotActive() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'is_active' => 0
+    ]);
+
+    $fromDate = new DateTime();
+    $toDate = new DateTime('+4 days');
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Leave Request days cannot be greater than maximum consecutive days for absence type
+   */
+  public function testNumberOfDaysOfLeaveRequestShouldNotBeGreaterMaxConsecutiveLeaveDaysForAbsenceType() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'max_consecutive_leave_days' => 2
+    ]);
+
+    $fromDate = new DateTime();
+    $toDate = new DateTime('+4 days');
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+  }
+
+  public function testAUserCannotCancelOwnLeaveRequestWhenAbsenceTypeDoesNotAllowIt() {
+    $contactID = 5;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_NO
+    ]);
+
+    $fromDate = new DateTime();
+    $toDate = new DateTime('+4 days');
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    $this->setExpectedException('CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException', 'Absence Type does not allow leave request cancellation');
+    //cancel leave request
+    LeaveRequest::create([
+      'id' => $leaveRequest->id,
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+  }
+
+  public function testAUserCannotCancelOwnLeaveRequestWhenAbsenceTypeAllowsItInAdvanceOfStartDateAndFromDateIsLessThanToday() {
+    $contactID = 5;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE
+    ]);
+
+    $fromDate = new DateTime('-1 day');
+    $toDate = new DateTime('+4 days');
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    $this->setExpectedException('CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException', 'Leave Request with past days cannot be cancelled');
+    //cancel leave request
+    LeaveRequest::create([
+      'id' => $leaveRequest->id,
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+  }
+
   public function testFindOverlappingLeaveRequestsForOneOverlappingLeaveRequest() {
     $contactID = 1;
     $fromDate1 = new DateTime('2016-11-02');
@@ -1286,7 +1404,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $toType = $this->leaveRequestDayTypes['All Day']['id'];
 
     LeaveRequest::create([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
@@ -1317,7 +1435,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $toType = $this->leaveRequestDayTypes['All Day']['id'];
 
     LeaveRequest::create([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),

@@ -14,6 +14,7 @@ use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentSer
 class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
 
   private $leaveRequestCommentService;
 
@@ -290,10 +291,4 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
 
     $this->leaveRequestCommentService->delete(['comment_id' => 12]);
   }
-
-  private function registerCurrentLoggedInContactInSession($contactID) {
-    $session = CRM_Core_Session::singleton();
-    $session->set('userID', $contactID);
-  }
-
 }

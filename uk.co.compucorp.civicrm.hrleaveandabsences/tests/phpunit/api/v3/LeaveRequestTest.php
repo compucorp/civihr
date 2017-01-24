@@ -13,8 +13,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHo
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
-use CRM_HRComments_Test_Fabricator_Comment as CommentFabricator;
-use CRM_HRComments_BAO_Comment as Comment;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 /**
  * Class api_v3_LeaveRequestTest
@@ -27,6 +26,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
   use CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -1270,12 +1270,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_empty_from_date']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenContactIDIsEmpty() {
@@ -1289,12 +1290,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'contact_id' => ['leave_request_empty_contact_id']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenTypeIDIsEmpty() {
@@ -1308,12 +1310,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'type_id' => ['leave_request_empty_type_id']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenStatusIDIsEmpty() {
@@ -1327,12 +1330,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'status_id' => ['leave_request_empty_status_id']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenToDateIsNotEmptyAndToDateTypeIsEmpty() {
@@ -1349,12 +1353,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'to_date_type' => ['leave_request_empty_to_date_type']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenEndDateIsGreaterThanStartDate() {
@@ -1372,12 +1377,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_from_date_greater_than_end_date']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenThereAreOverlappingLeaveRequests() {
@@ -1430,12 +1436,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_overlaps_another_leave_request']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenBalanceChangeGreaterThanPeriodEntitlementBalanceChangeAndAllowOveruseFalse() {
@@ -1486,12 +1493,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'type_id' => ['leave_request_balance_change_greater_than_remaining_balance']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenLeaveRequestHasNoWorkingDay() {
@@ -1540,12 +1548,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_doesnt_have_working_day']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenTheDatesAreNotContainedInValidAbsencePeriod() {
@@ -1561,7 +1570,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $toType = $this->leaveRequestDayTypes['All Day']['id'];
 
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
@@ -1572,12 +1581,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_not_within_absence_period']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenTheDatesOverlapMoreThanOneContract() {
@@ -1639,12 +1649,160 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['leave_request_overlapping_multiple_contracts']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenTheAbsenceTypeIsNotActive() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'is_active' => 0
+    ]);
+
+    $fromDate = new DateTime();
+    $toDate = new DateTime('+4 days');
+
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'type_id' => ['leave_request_absence_type_not_active']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenLeaveDaysIsGreaterThanAbsenceTypeMaxConsecutiveLeaveDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'max_consecutive_leave_days' => 2
+    ]);
+
+    $fromDate = new DateTime();
+    $toDate = new DateTime('+4 days');
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'type_id' => ['leave_request_days_greater_than_max_consecutive_days']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenUserCancelsOwnLeaveRequestAndAbsenceTypeDoesNotAllowIt() {
+    $contactID = 5;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_NO
+    ]);
+
+    $fromDate = new DateTime();
+    $toDate = new DateTime('+4 days');
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    //cancel leave request
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'id' => $leaveRequest->id,
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'type_id' => ['leave_request_absence_type_disallows_cancellation']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenUserCancelsOwnLeaveRequestAndAbsenceTypeAllowsItInAdvanceOfStartDateAndLeaveRequestFromDateIsLessThanToday() {
+    $contactID = 5;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE
+    ]);
+
+    $fromDate = new DateTime('-1 day');
+    $toDate = new DateTime('+4 days');
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    //cancel leave request
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'id' => $leaveRequest->id,
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'type_id' => ['leave_request_past_days_cannot_be_cancelled']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldNotReturnErrorWhenValidationsPass() {
@@ -1683,10 +1841,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 0,
       'values' => []
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testCreateAlsoCreatesTheBalanceChangesForTheLeaveRequest() {
