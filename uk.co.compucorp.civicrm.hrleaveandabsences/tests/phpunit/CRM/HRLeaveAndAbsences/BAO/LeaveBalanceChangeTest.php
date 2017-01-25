@@ -301,7 +301,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       CRM_Utils_Date::processDate('-1 day'),
       2
     );
-    
+
     $statuses = [$leaveRequestStatuses['Approved']];
     // -5 (Expired Brought Forward) - 1 (Expired Approved TOIL)
     $this->assertEquals(-6, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
@@ -702,7 +702,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       new DateTime('today'),
       new DateTime('+100 days')
     );
-    
+
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
 
@@ -1783,6 +1783,111 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ]);
 
     $this->assertEquals(2, LeaveBalanceChange::getAmountForTOILRequest($toilRequest->id));
+  }
+
+  public function testGetTotalTOILBalanceChangeForContactWithinAGivenPeriod() {
+    $contactID = 1;
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+1 days'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => 1,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+3 days'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+5 days'),
+      'to_date' => CRM_Utils_Date::processDate('+6 days'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => 3,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    $startDate = new DateTime('+3 days');
+    $endDate = new DateTime('+6 days');
+
+    //only the last two TOILs fall within the given start and end date period
+    $totalBalanceChange = LeaveBalanceChange::getTotalTOILBalanceChangeForContact($contactID, $startDate, $endDate);
+    $this->assertEquals(5, $totalBalanceChange);
+  }
+
+  public function testGetTotalTOILBalanceChangeForContactWithinAGivenPeriodAndWithSpecificStatuses() {
+    $contactID = 1;
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Approved'],
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => 1,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Admin Approved'],
+      'from_date' => CRM_Utils_Date::processDate('+3 days'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'from_date' => CRM_Utils_Date::processDate('+5 days'),
+      'to_date' => CRM_Utils_Date::processDate('+6 days'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => 3,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    $startDate = new DateTime('+1 day');
+    $endDate = new DateTime('+6 days');
+
+    //only the first two TOILs have  Approved and Admin Approved status
+    $totalBalanceChange = LeaveBalanceChange::getTotalTOILBalanceChangeForContact(
+      $contactID,
+      $startDate,
+      $endDate,
+      [$leaveRequestStatuses['Admin Approved'], $leaveRequestStatuses['Approved']]
+    );
+    $this->assertEquals(3, $totalBalanceChange);
   }
 }
 
