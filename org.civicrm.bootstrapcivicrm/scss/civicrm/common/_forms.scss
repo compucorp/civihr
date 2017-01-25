@@ -372,8 +372,8 @@ $control-height: 30px;
         padding: 15px 20px;
         text-align: initial;
         &:after {
-          top: 21px !important;
-          left: 24px !important;
+          top: 6px !important;
+          left: 4px !important;
         }
       }
 
@@ -468,10 +468,11 @@ $control-height: 30px;
     border-radius: 0;
     box-shadow: none;
 
+    &,
     .cke_top,
     .cke_bottom {
       background: $gray-lighter;
-      border-color: $gray-dark;
+      border-color: $crm-darker-grayblue;
     }
 
     .cke_toolgroup {
@@ -617,12 +618,15 @@ $control-height: 30px;
 }
 
 .addon.fa-calendar {
-  border: 1px solid $gray-dark;
-  border-left: 0;
+  border: 1px solid $crm-darker-grayblue;
+  background-color: $gray-lighter;
   padding: 8px 10px 7px;
   vertical-align: bottom;
   color: $brand-primary;
   cursor: pointer;
+  margin-left: -2px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
 }
 
 input.dateplugin,
