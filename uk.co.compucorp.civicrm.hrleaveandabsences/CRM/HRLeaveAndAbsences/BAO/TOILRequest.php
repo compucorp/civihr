@@ -32,9 +32,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     //set from_date_type and to_date_type to be full day by default
     $dateTypeOptions = array_flip(LeaveRequest::buildOptions('from_date_type'));
     $params['from_date_type'] = $dateTypeOptions['All Day'];
-    if(!empty($params['to_date'])){
-      $params['to_date_type'] = $dateTypeOptions['All Day'];
-    }
+    $params['to_date_type'] = $dateTypeOptions['All Day'];
 
     if ($hook == 'edit') {
       $instance->id = $params['id'];
@@ -43,13 +41,13 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
       if ($instance->leave_request_id) {
         $instance->copyValues($params);
         $params['id'] = $instance->leave_request_id;
-        $leaveRequest = LeaveRequest::create($params, $validate);
+        $leaveRequest = LeaveRequest::create($params, false);
         $instance->save();
       }
     }
 
     if ($hook == 'create') {
-      $leaveRequest = LeaveRequest::create($params, $validate);
+      $leaveRequest = LeaveRequest::create($params, false);
       $instance->copyValues($params);
       $instance->leave_request_id = $leaveRequest->id;
       $instance->save();
@@ -76,6 +74,9 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     self::validateAbsenceTypeAllowsAccrual($params);
     self::validateValidTOILAmountNotGreaterThanMaximum($params);
     self::validateValidTOILPastDaysRequest($params);
+
+    //run LeaveRequest Validation after all validations on TOIL Request
+    LeaveRequest::validateParams($params);
   }
 
   /**

@@ -193,8 +193,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
    */
   public function testValidateTOILRequestWithPastDatesAndAbsenceTypeDoesNotAllow() {
     AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2016-01-31'),
-      'end_date'   => CRM_Utils_Date::processDate('+100 days'),
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date'   => CRM_Utils_Date::processDate('+10 days'),
     ]);
 
     $absenceType = AbsenceTypeFabricator::fabricate([
@@ -209,8 +209,32 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => '2016-11-14',
-      'to_date' => '2016-11-18',
+      'from_date' => CRM_Utils_Date::processDate('-4 days'),
+      'to_date' => CRM_Utils_Date::processDate('-2 days'),
+      'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
+      'duration' => 120
+    ]);
+  }
+
+  /**
+   * @expectedException \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Leave Requests should have a start date
+   */
+  public function testValidateParamsCallsLeaveRequestValidateParams() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date'   => CRM_Utils_Date::processDate('+20 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Title 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 4,
+    ]);
+
+    TOILRequest::validateParams([
+      'type_id' => $absenceType->id,
+      'status_id' => 1,
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
     ]);
