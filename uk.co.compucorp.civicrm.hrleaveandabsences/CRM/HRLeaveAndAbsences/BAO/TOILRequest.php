@@ -73,6 +73,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
   public static function validateParams($params) {
     self::validateMandatoryFields($params);
     self::validateTOILAmountIsValid($params);
+    self::validateAbsenceTypeAllowsAccrual($params);
     self::validateValidTOILAmountNotGreaterThanMaximum($params);
     self::validateValidTOILPastDaysRequest($params);
   }
@@ -123,8 +124,8 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
-   * Validate that the TOIL amount is not greater than the maximum defined(if any) for
-   * the Absence Type
+   * Validate that the TOIL amount to be accrued plus total approved accrued TOIL for the period
+   * is not greater than the maximum defined(if any) for the Absence Type
    *
    * @param array $params
    *   The params array received by the create method
@@ -132,11 +133,35 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
    */
   private static function validateValidTOILAmountNotGreaterThanMaximum($params) {
+    if(empty($params['contact_id']) || empty($params['type_id'])){
+      return;
+    }
+
     $absenceType = AbsenceType::findById($params['type_id']);
     $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual != 0;
-    if ($params['toil_to_accrue'] > $absenceType->max_leave_accrual && !$unlimitedAccrual) {
+
+    $currentPeriod = AbsencePeriod::getCurrentPeriod();
+    $startDate = new DateTime($currentPeriod->start_date);
+    $endDate = new DateTime($currentPeriod->end_date);
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $leaveRequestStatusFilter = [
+      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['Admin Approved']
+    ];
+
+    $totalApprovedTOIL = LeaveBalanceChange::getTotalTOILBalanceChangeForContact(
+      $params['contact_id'],
+      $startDate,
+      $endDate,
+      $leaveRequestStatusFilter
+    );
+    $totalProjectedToilForPeriod = $totalApprovedTOIL + $params['toil_to_accrue'];
+
+    if ($totalProjectedToilForPeriod > $absenceType->max_leave_accrual && !$unlimitedAccrual) {
       throw new InvalidTOILRequestException(
-        'The TOIL amount requested for is greater than the maximum for this Absence Type',
+        'The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type',
         'toil_request_toil_amount_more_than_maximum_for_absence_type',
         'toil_to_accrue'
       );
@@ -153,14 +178,13 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
    */
   private static function validateValidTOILPastDaysRequest($params) {
+    if(empty($params['type_id']) || empty($params['from_date']) || empty($params['to_date'])){
+      return;
+    }
+
     $absenceType = AbsenceType::findById($params['type_id']);
     $fromDate = new DateTime($params['from_date']);
-    if (!empty($params['to_date'])) {
-      $toDate = new DateTime($params['to_date']);
-    }
-    else{
-      $toDate = clone $fromDate;
-    }
+    $toDate = new DateTime($params['to_date']);
     $todayDate = new DateTime('today');
     $leaveDatesHasPastDates = $fromDate < $todayDate || $toDate < $todayDate;
 
@@ -173,6 +197,30 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     }
   }
 
+  /**
+   * Validate that the user cannot request TOIL if the allow_accruals_request flag on
+   * the absence type is false
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException
+   */
+  private static function validateAbsenceTypeAllowsAccrual($params) {
+    if(empty($params['type_id'])){
+      return;
+    }
+
+    $absenceType = AbsenceType::findById($params['type_id']);
+
+    if (!$absenceType->allow_accruals_request) {
+      throw new InvalidTOILRequestException(
+        "This absence Type does not allow TOIL accrual",
+        'toil_request_toil_accrual_not_allowed_for_absence_type',
+        'type_id'
+      );
+    }
+  }
   /**
    * Saves Balance Change for the TOIL Request
    *
