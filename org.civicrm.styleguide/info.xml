@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <extension key="org.civicrm.styleguide" type="module">
   <file>styleguide</file>
-  <name>Bootstrap theme style guide</name>
-  <description>Style Guide for themes based on Bootstrap</description>
+  <name>CiviCRM Style Guide</name>
+  <description>Demonstrate common HTMTL/CSS styling conventions used within CiviCRM.</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Alessandro Verdura</author>
@@ -16,6 +16,6 @@
   </compatibility>
   <comments></comments>
   <civix>
-    <namespace>CRM/Styleguide</namespace>
+    <namespace>CRM/StyleGuide</namespace>
   </civix>
 </extension>

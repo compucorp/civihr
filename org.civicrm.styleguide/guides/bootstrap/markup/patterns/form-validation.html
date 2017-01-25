@@ -1,0 +1,45 @@
+<h2>Required field</h2>
+
+<form class="form-horizontal">
+  <div class="form-group">
+    <label for="text-field-regular" class="col-sm-3 control-label required">With label</label>
+    <div class="col-sm-5">
+      <input type="text" required class="form-control" id="text-field-regular" placeholder="Required field">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="text-field-regular" class="col-sm-3 control-label" style="opacity: 0.5;">Without label</label>
+    <div class="col-sm-5">
+      <div class="required required-input">
+        <input type="text" required class="form-control required" id="text-field-regular" placeholder="Required field">
+      </div>
+    </div>
+  </div>
+</form>
+
+<h2>Errors</h2>
+<form class="form-horizontal">
+  <div class="form-group has-error">
+    <label for="text-field-regular" class="col-sm-3 control-label required">With label</label>
+    <div class="col-sm-5">
+      <input type="text" required class="form-control" id="text-field-regular" placeholder="Required field">
+    </div>
+  </div>
+  <div class="form-group has-error">
+    <label for="text-field-regular" class="col-sm-3 control-label" style="opacity: 0.5;">Without label</label>
+    <div class="col-sm-5">
+      <div class="required required-input">
+        <input type="text" required class="form-control required" id="text-field-regular" placeholder="Required field">
+      </div>
+    </div>
+  </div>
+  <div class="form-group has-error">
+    <label for="text-field-regular" class="col-sm-3 control-label">Label</label>
+    <div class="col-sm-5">
+      <input type="text" class="form-control" id="text-field-regular" placeholder="Field with custom validation">
+      <div class="form-error-message">
+        <span class="label label-danger">A custom error message</span>
+      </div>
+    </div>
+  </div>
+</form>
