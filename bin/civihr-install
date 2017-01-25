@@ -3,73 +3,73 @@
 # Setups CiviHR site using Drupal CMS and CiviCRM.
 
 ##########################################################
-## Global variables
+# Global variables
 
-## The location of the Project tree
+# The location of the Project tree
 PRJDIR=
 
-## Location to store temp files, defaults (PRJDIR/tmp)
+# Location to store temp files, defaults (PRJDIR/tmp)
 TMPDIR=
 
-## Location that  points to sites that we build.
+# Location that  points to sites that we build.
 BLDDIR=
 
-## Codename for the build instance.
+# Codename for the build instance.
 SITE_NAME=
 
-## Identifies site pointing ot default state.
-## (default: default)
+# Identifies site pointing ot default state.
+# (default: default)
 SITE_ID=default
 
-## Unique token for this site.
-## (default: random)
+# Unique token for this site.
+# (default: random)
 SITE_TOKEN=
 
-## Root directory where the site's code will be installed
-## (default: BLDDIR/SITE_NAME)
+# Root directory where the site's code will be installed
+# (default: BLDDIR/SITE_NAME)
 WEB_ROOT=
 
-## Root directory where we store cached copies of git repositories
-## (default: TMPDIR/git-cache)
+# Root directory where we store cached copies of git repositories
+# (default: TMPDIR/git-cache)
 CACHE_DIR=
 
-## Time to wait before allowing updates to git/svn caches (seconds)
+# Time to wait before allowing updates to git/svn caches (seconds)
 CACHE_TTL=60
 
-## When updating a cache record, first attempt to lock it. Wait up to X seconds to acquire lock.
+# When updating a cache record, first attempt to lock it. Wait up to X seconds to acquire lock.
 CACHE_LOCK_WAIT=120
 
-## When checking out or updating git/svn, wait up to X seconds for process to complete
+# When checking out or updating git/svn, wait up to X seconds for process to complete
 SCM_TIMEOUT=3600
 
-## Whether the site has been previously installed
+# Whether the site has been previously installed
 IS_INSTALLED=
 
-## Default user accounts
+# Default user accounts
 ADMIN_EMAIL="admin@example.com"
 ADMIN_PASS=
 ADMIN_USER="admin"
 
-## Printable name of the site (default: $SITE_NAME)
+# Printable name of the site (default: $SITE_NAME)
 CMS_TITLE=
 
-## The Drupal version
+# The Drupal version
 CMS_VERSION=
 
-## The CiviCRM API (default: randomly generated)
+# The CiviCRM API (default: randomly generated)
 CIVI_SITE_KEY=
 
-## The CiviCRM branch/version
+# The CiviCRM branch/version
 CIVI_VERSION=4.7.9
 
-## Public URL of the site
+# Public URL of the site
 CMS_URL=
 
-## Path to the base of the CMS
-## (default: WEB_ROOT)
+# Path to the base of the CMS
+# (default: WEB_ROOT)
 CMS_ROOT=
 
-## DB credentials for CMS
+# DB credentials for CMS
 CMS_DB_DSN=
 CMS_DB_HOST=127.0.0.1
 CMS_DB_NAME=
@@ -77,10 +77,10 @@ CMS_DB_PASS=
 CMS_DB_PORT=3306
 CMS_DB_USER=
 
-## Path to the civicrm-core tree
+# Path to the civicrm-core tree
 CIVI_CORE=
 
-## DB credentials for Civi
+# DB credentials for Civi
 CIVI_DB_DSN=
 CIVI_DB_HOST=127.0.0.1
 CIVI_DB_NAME=
@@ -88,29 +88,35 @@ CIVI_DB_PASS=
 CIVI_DB_PORT=3306
 CIVI_DB_USER=
 
-## Path to the civicrm.settings.php
+# Path to the civicrm.settings.php
 CIVI_SETTINGS=
 
-## Path to the civicrm files directory
+# Path to the civicrm files directory
 CIVI_FILES=
 
-## Path to the civicrm templates_c cache directory
+# Path to the civicrm templates_c cache directory
 CIVI_TEMPLATEC=
 
-## Name of the CiviCRM UF (Drupal)
+# Name of the CiviCRM UF (Drupal)
 CIVI_UF=
 
-## The name of the organization (for inclusion in footers, etc)
+# The name of the organization (for inclusion in footers, etc)
 CIVI_DOMAIN_NAME=
 
-## The default from email address
+# The default from email address
 CIVI_DOMAIN_EMAIL=
 
-## Path to the web-managed extension folder (optional)
+# Path to the web-managed extension folder (optional)
 CIVI_EXT_DIR=
 
-## URL of the web-managed extension folder (required if CIVI_EXT_DIR is set)
+# URL of the web-managed extension folder (required if CIVI_EXT_DIR is set)
 CIVI_EXT_URL=
+
+# Defines -p option for mysql.
+PASS_PARAM=
+
+# Defines username and password string for MySQL DSN.
+USER_PASS=
 
 ##########################################################
 # Displays usage message
@@ -136,6 +142,7 @@ Required parameters:
 
 Optional parameters:
   --dbpass [mysql-password]     Password for mysql
+  --force-drop                  Drop existing databases for --crmdb and --cmsdb options.
 EOT
   exit 99
 }
@@ -287,14 +294,16 @@ function _database_install_cms() {
   echo "[[Setting up MySQL for CMS]]"
   civihr_assert_vars _database_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
   # Create database.
-  mysql -u$DB_USER -p$DB_PASS -e "create database $CMSdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
+
+  mysql -u$DB_USER $PASS_PARAM -e "create database $CMSdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
   # Assign values to global variables.
   [ -z "$CMS_DB_USER" ]           && CMS_DB_USER="$DB_USER"
   [ -z "$CMS_DB_PASS" ]           && CMS_DB_PASS="$DB_PASS"
   [ -z "$CMS_DB_NAME" ]           && CMS_DB_NAME="$CMSdbName"
 
   CMS_DB_HOSTPORT=$(civihr_build_host_port "$CMS_DB_HOST" "$CMS_DB_PORT")
-  [ -z "$CMS_DB_DSN" ]           && CMS_DB_DSN="mysql://${DB_USER}:${DB_PASS}@${CMS_DB_HOSTPORT}/${CMSdbName}?new_link=true"
+
+  [ -z "$CMS_DB_DSN" ]           && CMS_DB_DSN="mysql://${USER_PASS}@${CMS_DB_HOSTPORT}/${CMSdbName}?new_link=true"
 }
 
 ##########################################################
@@ -310,14 +319,15 @@ function _database_install_civi() {
   echo "[[Setting up MySQL for CiviCRM]]"
   civihr_assert_vars _database_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
   # Create database.
-  mysql -u$DB_USER -p$DB_PASS -e "create database $CIVIdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
+
+  mysql -u$DB_USER $PASS_PARAM -e "create database $CIVIdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
   # Assign values to global variables.
   [ -z "$CIVI_DB_USER" ]           && CIVI_DB_USER="$DB_USER"
   [ -z "$CIVI_DB_PASS" ]           && CIVI_DB_PASS="$DB_PASS"
   [ -z "$CIVI_DB_NAME" ]           && CIVI_DB_NAME="$CIVIdbName"
 
   CIVI_DB_HOSTPORT=$(civihr_build_host_port "$CIVI_DB_HOST" "$CIVI_DB_PORT")
-  [ -z "$CIVI_DB_DSN" ]           && CIVI_DB_DSN="mysql://${DB_USER}:${DB_PASS}@${CIVI_DB_HOSTPORT}/${CIVIdbName}?new_link=true"
+  [ -z "$CIVI_DB_DSN" ]           && CIVI_DB_DSN="mysql://${USER_PASS}@${CIVI_DB_HOSTPORT}/${CIVIdbName}?new_link=true"
 }
 
 ##########################################################
@@ -345,12 +355,14 @@ function civicrm_install() {
 
   pushd "$CIVI_CORE" >> /dev/null
     if [ -e "sql/civicrm.mysql" -a -e "sql/civicrm_generated.mysql" ]; then
-      cat sql/civicrm.mysql sql/civicrm_generated.mysql | mysql -u"$CIVI_DB_USER" -p"$CIVI_DB_PASS" "$CIVI_DB_NAME"
+      cat sql/civicrm.mysql sql/civicrm_generated.mysql | mysql -u$CIVI_DB_USER $PASS_PARAM $CIVI_DB_NAME
+      
     else
       echo "Failed to locate civi SQL files"
     fi
   popd >> /dev/null
-  eval mysql -u"$CIVI_DB_USER" -p"$CIVI_DB_PASS" "$CIVI_DB_NAME" <<EOSQL
+
+  eval mysql -u$CIVI_DB_USER $PASS_PARAM $CIVI_DB_NAME <<EOSQL
     UPDATE civicrm_domain SET name = '$CIVI_DOMAIN_NAME';
     SELECT @option_group_id := id
       FROM civicrm_option_group n
@@ -371,8 +383,8 @@ EOSQL
 ##########################################################
 function civicrm_make_settings_php() {
   civihr_assert_vars civicrm_make_settings_php CIVI_SETTINGS CIVI_CORE CIVI_UF CIVI_TEMPLATEC CMS_URL CIVI_SITE_KEY
-  civihr_assert_vars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_PASS CMS_DB_USER
-  civihr_assert_vars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_NAME CIVI_DB_PASS CIVI_DB_USER
+  civihr_assert_vars civicrm_make_settings_php CMS_DB_HOST CMS_DB_NAME CMS_DB_USER
+  civihr_assert_vars civicrm_make_settings_php CIVI_DB_HOST CIVI_DB_NAME CIVI_DB_USER
 
   local tpl
 
@@ -423,7 +435,7 @@ EOF
 #   None
 ##########################################################
 function civicrm_make_setup_conf() {
-  civihr_assert_vars civicrm_make_setup_conf PRJDIR CMS_ROOT CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER CIVI_DB_PASS
+  civihr_assert_vars civicrm_make_setup_conf PRJDIR CMS_ROOT CIVI_CORE CIVI_UF CIVI_DB_NAME CIVI_DB_USER
 
   cat > "$CIVI_CORE/bin/setup.conf" << EOF
     PRJDIR="$PRJDIR"
@@ -463,7 +475,7 @@ function drupal_install() {
 ##########################################################
 function drupal7_install() {
 
-  civihr_assert_vars drupal7_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER CMS_DB_PASS CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
+  civihr_assert_vars drupal7_install CMS_ROOT SITE_ID CMS_TITLE CMS_DB_USER  CMS_DB_HOST CMS_DB_NAME ADMIN_USER ADMIN_PASS CMS_URL
   DRUPAL_SITE_DIR="$SITE_ID"
 
   CMS_DB_HOSTPORT=$(civihr_build_host_port "$CMS_DB_HOST" "$CMS_DB_PORT")
@@ -472,7 +484,7 @@ function drupal7_install() {
     [ -f "sites/$DRUPAL_SITE_DIR/settings.php" ] && rm -f "sites/$DRUPAL_SITE_DIR/settings.php"
 
     drush site-install -y "$@" \
-      --db-url="mysql://${CMS_DB_USER}:${CMS_DB_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
+      --db-url="mysql://${USER_PASS}@${CMS_DB_HOSTPORT}/${CMS_DB_NAME}" \
       --account-name="$ADMIN_USER" \
       --account-pass="$ADMIN_PASS" \
       --account-mail="$ADMIN_EMAIL" \
@@ -481,6 +493,7 @@ function drupal7_install() {
     chmod u+w "sites/$DRUPAL_SITE_DIR"
     chmod u+w "sites/$DRUPAL_SITE_DIR/settings.php"
     chmod u-w "sites/$DRUPAL_SITE_DIR/settings.php"
+
 
     ## Setup extra directories
     civihr_mkdir "sites/${DRUPAL_SITE_DIR}/files"
@@ -592,6 +605,7 @@ function civihr_parse_options() {
   while [ -n "$1" ] ; do
     OPTION="$1"
     shift
+
     case "$OPTION" in
       -h|--help|-?)
         civihr_app_usage
@@ -604,10 +618,13 @@ function civihr_parse_options() {
         ;;
 
       --dbpass)
-        echo -n "Enter Password for Mysql:"
-        read -s DB_PASS 
-        echo 
+        if [ -z "$1" ]; then
+          echo -n "Enter Password for Mysql:"
+          read -s DB_PASS 
+          echo     
+        fi
         DB_PASS="$1"
+        [ -n "$DB_PASS" ] && PASS_PARAM="-p$DB_PASS" 
         shift
         ;;
 
@@ -633,6 +650,12 @@ function civihr_parse_options() {
         shift
         ;;
 
+      --force-drop)
+        mysql -u$DB_USER $PASS_PARAM -e "drop database $CMSdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
+        mysql -u$DB_USER $PASS_PARAM -e "drop database $CIVIdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
+        shift
+        ;;
+
       *)
          if [ "${OPTION::1}" == "-" ]; then
            echo "[[Unrecognized option: $OPTION]]"
@@ -647,6 +670,9 @@ function civihr_parse_options() {
 [ -z "$DB_USER" ] || [ -z "$CMSdbName" ] || [ -z "$CIVIdbName" ] || [ -z "$CMS_URL" ] && echo "[[Please provide missing options/agruments.]]" && civihr_app_usage && exit 99
 
 # Assigning values.
+[ -z "$USER_PASS" ]          && USER_PASS="$DB_USER"
+[ -n "$DB_PASS" ]            && USER_PASS="$DB_USER:$DB_PASS"
+
 [ -z "$SITE_NAME" ]          && civihr_app_usage && exit 99
 [ -z "$WEB_ROOT" ]           && WEB_ROOT="$BLDDIR/$SITE_NAME"
 [ -z "$CMS_ROOT" ]           && CMS_ROOT="$WEB_ROOT"
@@ -809,11 +835,11 @@ function civihr_install_site(){
   ## Creating databases for Drupal and CIVICRM.
   database_install
 
-  ## Grant access for the Drupal database user to access the Civi Database too.
-eval mysql -u"$CIVI_DB_USER" -p"$CIVI_DB_PASS" <<EOSQL
-    GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'%';
-EOSQL
-  
+#   ## Grant access for the Drupal database user to access the Civi Database too.
+# eval mysql -u"$CIVI_DB_USER" $PASS_PARAM <<EOSQL
+#     GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'%';
+# EOSQL
+
   ## Setup Drupal (config files, database tables)
   drupal_install
 
@@ -826,6 +852,7 @@ EOSQL
   CIVI_FILES="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/files/civicrm"
   CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
   CIVI_UF="Drupal"
+
 
   ## civicrm-core v4.7+ sets default ext dir; for older versions, we'll set our own.
   if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
