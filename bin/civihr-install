@@ -708,8 +708,9 @@ export PATH="$PATH:$BINDIR"
 civihr_parse_options "$@"
 
 # Checking for Drush dependencies if not present downloading into temp.
-command -v drush >/dev/null 2>&1 || ( echo "[[Downloading dependencies.........]]" && curl -Lo "$TMPDIR/drush" "https://github.com/drush-ops/drush/releases/download/8.1.8/drush.phar" && chmod +x "$TMPDIR/drush" && export PATH="$TMPDIR:$PATH" )
-
+command -v drush >/dev/null 2>&1 || ( echo "[[Downloading dependencies.........]]" && curl -Lo "$TMPDIR/drush" "https://github.com/drush-ops/drush/releases/download/8.1.8/drush.phar" && chmod +x "$TMPDIR/drush" )
+# Adding Drush to environment path.
+[[ -f "$TMPDIR/drush" ]] && export PATH="$TMPDIR:$PATH"
 ##########################################################
 # Downloads Drupal,CiviCRM and CiviHR from remote drush.make file.
 # Arguments:
