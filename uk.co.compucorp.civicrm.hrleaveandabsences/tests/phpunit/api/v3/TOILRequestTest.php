@@ -153,7 +153,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
 
     $result = civicrm_api3('TOILRequest', 'isvalid', [
-      'contact_id' => 1,
+      'contact_id' => $contactID,
       'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
       'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
       'type_id' => $absenceType->id,
@@ -282,6 +282,62 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'count' => 1,
       'values' => [
         'toil_to_accrue' => ['toil_request_toil_to_accrue_is_empty']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testTOILRequestIsValidShouldReturnErrorWhenAbsenceTypeDoesNotAllowAccrual() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => false,
+    ]);
+
+    $result = civicrm_api3('TOILRequest', 'isValid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => '2016-11-14',
+      'to_date' => '2016-11-18',
+      'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
+      'duration' => 120
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'type_id' => ['toil_request_toil_accrual_not_allowed_for_absence_type']
+      ]
+    ];
+
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testTOILRequestIsValidReturnsLeaveRequestTypeErrorWhenLeaveRequestValidationFails() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date'   => CRM_Utils_Date::processDate('+20 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 4,
+    ]);
+
+    $result = civicrm_api3('TOILRequest', 'isvalid', [
+      'type_id' => $absenceType->id,
+      'status_id' => 1,
+      'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
+      'duration' => 120
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'from_date' => ['leave_request_empty_from_date']
       ]
     ];
     $this->assertEquals($expectedResult, $result);

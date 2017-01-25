@@ -143,7 +143,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
 
     //Approved TOIL for period is 3
     TOILRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $absenceType->id,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Approved'],
       'from_date' => CRM_Utils_Date::processDate('-5 days'),
@@ -193,7 +193,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequestTest extends BaseHeadlessTest {
    */
   public function testValidateTOILRequestWithPastDatesAndAbsenceTypeDoesNotAllow() {
     AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
       'end_date'   => CRM_Utils_Date::processDate('+10 days'),
     ]);
 

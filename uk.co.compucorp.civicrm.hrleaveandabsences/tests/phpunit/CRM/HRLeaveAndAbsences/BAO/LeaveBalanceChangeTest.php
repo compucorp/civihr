@@ -1787,8 +1787,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testGetTotalTOILBalanceChangeForContactWithinAGivenPeriod() {
     $contactID = 1;
+    $absenceTypeID = 1;
     TOILRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('+1 days'),
@@ -1801,7 +1802,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ]);
 
     TOILRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('+3 days'),
@@ -1814,7 +1815,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ]);
 
     TOILRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('+5 days'),
@@ -1830,16 +1831,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $endDate = new DateTime('+6 days');
 
     //only the last two TOILs fall within the given start and end date period
-    $totalBalanceChange = LeaveBalanceChange::getTotalTOILBalanceChangeForContact($contactID, $startDate, $endDate);
+    $totalBalanceChange = LeaveBalanceChange::getTotalTOILBalanceChangeForContact($contactID, $absenceTypeID, $startDate, $endDate);
     $this->assertEquals(5, $totalBalanceChange);
   }
 
-  public function testGetTotalTOILBalanceChangeForContactWithinAGivenPeriodAndWithSpecificStatuses() {
+  public function testGetTotalTOILBalanceChangeForContactWithinAGivenPeriodAndWithSpecificStatusesAndAbsenceType() {
     $contactID = 1;
+    $absenceTypeID = 1;
+    $absenceTypeID2 = 2;
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
     TOILRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Approved'],
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -1852,7 +1855,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ]);
 
     TOILRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Admin Approved'],
       'from_date' => CRM_Utils_Date::processDate('+3 days'),
@@ -1865,7 +1868,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ]);
 
     TOILRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $absenceTypeID2,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Admin Approved'],
+      'from_date' => CRM_Utils_Date::processDate('+3 days'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'to_date_type' => 1,
+      'from_date_type' => 1,
+      'toil_to_accrue' => 2,
+      'duration' => 120,
+      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    TOILRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Waiting Approval'],
       'from_date' => CRM_Utils_Date::processDate('+5 days'),
@@ -1880,9 +1896,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $startDate = new DateTime('+1 day');
     $endDate = new DateTime('+6 days');
 
-    //only the first two TOILs have  Approved and Admin Approved status
+    //only the first two TOILs have  Approved and Admin Approved status and also have type_id = 1
     $totalBalanceChange = LeaveBalanceChange::getTotalTOILBalanceChangeForContact(
       $contactID,
+      $absenceTypeID,
       $startDate,
       $endDate,
       [$leaveRequestStatuses['Admin Approved'], $leaveRequestStatuses['Approved']]
