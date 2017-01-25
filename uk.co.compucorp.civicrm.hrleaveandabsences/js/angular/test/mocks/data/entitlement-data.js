@@ -106,7 +106,7 @@ define([
             "values": [{
               "id": id,
               "remainder": {
-                "current": _.random(-10, 10),
+                "current": _.random(0, 10),
                 "future": _.random(-10, 10)
               }
             }]
