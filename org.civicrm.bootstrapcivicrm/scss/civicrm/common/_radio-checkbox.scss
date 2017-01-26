@@ -62,12 +62,16 @@
       box-shadow: inset 0 0 3px 0 rgba(0, 0, 0, 0.2);
       border: solid 1px $crm-darker-grayblue;
     }
+    &:checked + label[for] {
+      position: relative;
+    }
     &:checked + label[for]::after {
       @include fa-icon($font-size: 15px, $content: '\f00c', $color: $gray-darker);
       display: inline-block;
       position: absolute;
       left: 5px;
       top: 4px;
+      margin-top: -6px;
     }
   }
 }
