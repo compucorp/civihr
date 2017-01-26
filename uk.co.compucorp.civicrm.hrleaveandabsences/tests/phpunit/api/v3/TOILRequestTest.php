@@ -8,6 +8,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 
 /**
  * Class api_v3_TOILRequestTest
@@ -39,15 +40,21 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'toil_to_accrue' => ['toil_request_toil_amount_is_invalid']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testTOILRequestIsValidShouldReturnErrorWhenToilAmountIsGreaterThanMaximumAllowed() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date'   => CRM_Utils_Date::processDate('+20 days'),
+    ]);
+
     $absenceType = AbsenceTypeFabricator::fabricate([
       'title' => 'Title 1',
       'allow_accruals_request' => true,
@@ -59,23 +66,29 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => '2016-11-14',
-      'to_date' => '2016-11-18',
+      'from_date' => CRM_Utils_Date::processDate('today'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
     ]);
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'toil_to_accrue' => ['toil_request_toil_amount_more_than_maximum_for_absence_type']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testTOILRequestIsValidShouldReturnErrorWhenTOILRequestIsMadeWithPastDatesAndAbsenceTypeDoesNotAllowPastDates() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date'   => CRM_Utils_Date::processDate('+20 days'),
+    ]);
+
     $absenceType = AbsenceTypeFabricator::fabricate([
       'title' => 'Title 1',
       'allow_accruals_request' => true,
@@ -88,26 +101,39 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => '2016-11-14',
-      'to_date' => '2016-11-18',
+      'from_date' => CRM_Utils_Date::processDate('-1 day'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 120
     ]);
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'from_date' => ['toil_request_toil_cannot_be_requested_for_past_days']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testTOILRequestIsValidShouldNotReturnErrorWhenValidationsPass() {
 
     $fromDate = new DateTime();
     $toDate = new DateTime('+3 days');
+    $contactID = 1;
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date'   => CRM_Utils_Date::processDate('+20 days'),
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $fromDate->format('Y-m-d')]
+    );
 
     $absenceType = AbsenceTypeFabricator::fabricate([
       'title' => 'Title 1',
@@ -116,9 +142,21 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'is_active' => 1,
     ]);
 
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactID,
+      'period_id' => $period->id,
+      'type_id' => $absenceType->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 20);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
+
     $result = civicrm_api3('TOILRequest', 'isvalid', [
+      'contact_id' => $contactID,
+      'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
       'type_id' => $absenceType->id,
-      'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate->format('YmdHis'),
@@ -128,10 +166,12 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 0,
       'values' => []
     ];
-    $this->assertArraySubset($expectedResult, $result);
+
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testToilRequestGetShouldReturnAssociatedLeaveRequestData() {
@@ -206,70 +246,107 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result['values']);
   }
 
-  public function testTOILRequestIsValidShouldReturnErrorWhenDurationIsEmptyOrNotPresent() {
+  public function testTOILRequestIsValidShouldReturnErrorWhenDurationIsEmpty() {
     $result = civicrm_api3('TOILRequest', 'isValid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => '2016-11-14',
       'toil_to_accrue' => 200,
-      'duration' => null
     ]);
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'duration' => ['toil_request_duration_is_empty']
       ]
     ];
 
-    $this->assertArraySubset($expectedResult, $result);
-
-    $result = civicrm_api3('TOILRequest', 'isValid', [
-      'type_id' => 1,
-      'contact_id' => 1,
-      'status_id' => 1,
-      'from_date' => '2016-11-14',
-      'toil_to_accrue' => 200,
-    ]);
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
   }
 
-  public function testTOILRequestIsValidShouldReturnErrorWhenToilToAccrueIsEmptyOrNotPresent() {
+  public function testTOILRequestIsValidShouldReturnErrorWhenToilToAccrueIsEmpty() {
     $result = civicrm_api3('TOILRequest', 'isValid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => '2016-11-14',
-      'toil_to_accrue' => '',
       'duration' => 10,
     ]);
 
     $expectedResult = [
       'is_error' => 0,
+      'version' => 3,
       'count' => 1,
       'values' => [
         'toil_to_accrue' => ['toil_request_toil_to_accrue_is_empty']
       ]
     ];
-    $this->assertArraySubset($expectedResult, $result);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testTOILRequestIsValidShouldReturnErrorWhenAbsenceTypeDoesNotAllowAccrual() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => false,
+    ]);
 
     $result = civicrm_api3('TOILRequest', 'isValid', [
-      'type_id' => 1,
+      'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => '2016-11-14',
-      'duration' => 10
+      'to_date' => '2016-11-18',
+      'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
+      'duration' => 120
     ]);
-    $this->assertArraySubset($expectedResult, $result);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'type_id' => ['toil_request_toil_accrual_not_allowed_for_absence_type']
+      ]
+    ];
+
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testTOILRequestIsValidReturnsLeaveRequestTypeErrorWhenLeaveRequestValidationFails() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date'   => CRM_Utils_Date::processDate('+20 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 4,
+    ]);
+
+    $result = civicrm_api3('TOILRequest', 'isvalid', [
+      'type_id' => $absenceType->id,
+      'status_id' => 1,
+      'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
+      'duration' => 120
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'from_date' => ['leave_request_empty_from_date']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
   }
 
   public function testCreateResponseAlsoIncludeTheLeaveRequestFields() {
     $contact = ContactFabricator::fabricate();
 
     $startDate = new DateTime('next monday');
-    $endDate = new DateTime('+10 days');
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $contact['id']],
@@ -277,8 +354,8 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     );
 
     $period = AbsencePeriodFabricator::fabricate([
-      'start_date' => $startDate->format('YmdHis'),
-      'end_date' => $endDate->format('YmdHis')
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+20 days')
     ]);
 
     $type = AbsenceTypeFabricator::fabricate([

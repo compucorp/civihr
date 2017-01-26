@@ -163,11 +163,16 @@ function civicrm_api3_t_o_i_l_request_isvalid($params) {
   try {
     CRM_HRLeaveAndAbsences_BAO_TOILRequest::validateParams($params);
   }
-  catch (CRM_HRLeaveAndAbsences_Exception_InvalidTOILRequestException $e) {
+  catch (CRM_HRLeaveAndAbsences_Exception_EntityValidationException $e) {
     $result[$e->getField()] = [$e->getExceptionCode()];
   }
 
-  return civicrm_api3_create_success($result);
+  $results =  civicrm_api3_create_success($result);
+  if (isset($results['id'])) {
+    unset($results['id']);
+  }
+
+  return $results;
 }
 
 /**

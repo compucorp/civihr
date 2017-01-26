@@ -816,4 +816,52 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     return $balanceChangesToExpire;
   }
+
+  /**
+   * This method calculates the sum of the TOIL(with the given status) balance changes for a given contact
+   * over a given period of time.
+   *
+   * @param int $contactID
+   * @param int $absenceTypeID
+   * @param DateTime $startDate
+   *   TOILs linked to LeaveRequests with from_date >= this date will be included
+   * @param DateTime $endDate
+   *   TOILs linked to LeaveRequests with with to_date <= this date will be included
+   * @param array $toilStatus
+   *   The statuses of the TOIL request to be included in the calculation/summation
+   *   - An array of values from Leave Request Status option list
+   *
+   * @return float
+   */
+  public static function getTotalTOILBalanceChangeForContact($contactID, $absenceTypeID, DateTime $startDate, DateTime $endDate, $toilStatus = []) {
+    $leaveBalanceChangeTable = self::getTableName();
+    $toilRequestTable = TOILRequest::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+
+    $query = "SELECT SUM(bc.amount) balance
+              FROM {$leaveBalanceChangeTable} bc
+              INNER JOIN {$toilRequestTable} tr ON bc.source_id = tr.id AND bc.source_type = %1
+              INNER JOIN {$leaveRequestTable} lr ON tr.leave_request_id = lr.id
+              WHERE lr.contact_id = %2
+              AND lr.from_date >= %3 AND lr.to_date <= %4
+              AND lr.type_id = %5";
+
+    if (is_array($toilStatus) && !empty($toilStatus)) {
+      array_walk($toilStatus, 'intval');
+      $query .=' AND (lr.status_id IN('. implode(', ', $toilStatus) .'))';
+    }
+
+    $params = [
+      1 => [self::SOURCE_TOIL_REQUEST, 'String'],
+      2 => [$contactID, 'Integer'],
+      3 => [$startDate->format('Y-m-d'), 'String'],
+      4 => [$endDate->format('Y-m-d'), 'String'],
+      5 => [$absenceTypeID, 'Integer']
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+    $result->fetch();
+
+    return (float)$result->balance;
+  }
 }
