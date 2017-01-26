@@ -124,19 +124,18 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
    * @access public
    */
   function import($onDuplicate, &$values) {
-    $entityNames = array(
-        'details',
-        'hour',
-        'health',
-        'leave',
-        'pay',
-        'pension',
-        'role',
-    );
+    $entityNames = [
+      'details',
+      'hour',
+      'health',
+      'leave',
+      'pay',
+      'pension',
+      'role',
+    ];
 
     // first make sure this is a valid line
     $response = $this->summary($values);
-
     if ($response != CRM_Import_Parser::VALID) {
       return $response;
     }
@@ -154,7 +153,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       if ($this->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS)  {
         $localJobContractId = $params['HRJobContractRevision-jobcontract_id'];
       }
-      else  {
+      else {
         $contactId = $params['HRJobContract-contact_id'];
         $localJobContractId = $this->createJobContract($importedJobContractId, $contactId, $entityNames);
       }
@@ -805,14 +804,23 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       && isset($params['HRJobHour-hours_type'])
       && $params['HRJobHour-hours_type'] != ''
     )  {
-      $hourLocation = civicrm_api3('HRHoursLocation', 'getsingle', array(
+      $hourLocation = civicrm_api3('HRHoursLocation', 'getsingle', [
         'sequential' => 1,
         'id' => $params['HRJobHour-location_standard_hours']
-      ));
+      ]);
+      $hourType = civicrm_api3('OptionValue', 'getsingle', [
+        'sequential' => 1,
+        'option_group_id' => "hrjc_hours_type",
+        'value' => $params['HRJobHour-hours_type'],
+      ]);
       if (!empty($hourLocation))  {
         $this->_params['HRJobHour-hours_unit'] = $hourLocation['periodicity'];
+
         // calculate FTE Numerator/Denominator Equivalence
-        if (isset($params['HRJobHour-hours_amount']) && $params['HRJobHour-hours_amount'] != '')  {
+        if (isset($params['HRJobHour-hours_amount']) 
+          && $params['HRJobHour-hours_amount'] != '' 
+          && $hourType['name'] != 'Casual'
+        ) {
           $inputHourAmount = round(floatval($params['HRJobHour-hours_amount']), 2);
           $actualHourAmount = round(floatval($hourLocation['standard_hours']), 2);
           $fteNoRound = $inputHourAmount/$actualHourAmount;
@@ -821,6 +829,11 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
           $this->_params['HRJobHour-fte_num'] = $num;
           $this->_params['HRJobHour-fte_denom'] = $denom;
           $this->_params['HRJobHour-hours_fte'] = $fte;
+        } 
+        else {
+          $this->_params['HRJobHour-fte_num'] = 0;
+          $this->_params['HRJobHour-fte_denom'] = 0;
+          $this->_params['HRJobHour-hours_fte'] = 0;
         }
       }
     }

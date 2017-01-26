@@ -2,6 +2,7 @@
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 
 /**
  * Class CRM_Hrjobcontract_Import_Parser_ApiTest
@@ -11,33 +12,41 @@ use Civi\Test\TransactionalInterface;
 class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implements HeadlessInterface, TransactionalInterface {
 
   public $_contractTypeID;
+  private $_defaultImportData = [];
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
-      ->installMe(__DIR__)
+      ->install('uk.co.compucorp.civicrm.hrcore')
       ->install('org.civicrm.hrabsence')
+      ->installMe(__DIR__)
       ->apply();
   }
 
-  function setUp()
-  {
-    $upgrader = CRM_Hrjobcontract_Upgrader::instance();
-    $upgrader->install();
-
-    $upgrader = CRM_HRAbsence_Upgrader::instance();
-    $upgrader->install();
-
+  function setUp() {
     $session = CRM_Core_Session::singleton();
     $session->set('dateTypes', 1);
 
     $this->_contractTypeID = $this->creatTestContractType();
-  }
 
+    $this->_defaultImportData = [
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobDetails-location' => 'headquarters',
+      'HRJobDetails-period_end_date' => '2016-01-20',
+      'HRJobDetails-end_reason' => 'Planned',
+      'HRJobDetails-notice_amount_employee' => '3',
+      'HRJobDetails-notice_unit_employee' => 'Week',
+      'HRJobDetails-notice_amount' => '4',
+      'HRJobDetails-notice_unit' => 'day',
+      'HRJobDetails-funding_notes' => 'sample',
+    ];
+  }
 
   function tearDown() {
 
   }
-
 
   function testMandatoryFieldsImportWithContactID() {
     $contact2Params = array(
@@ -185,6 +194,53 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
 
     $expected = array('hours_unit'=>'Week', 'fte_num'=> 319, 'fte_denom'=>450, 'hours_fte'=>0.71);
     $this->validateHourAutoFields($contactID, $expected);
+  }
+
+  /**
+   * This test verifies FTE for Contracts imported with hours type = "Casual" or
+   * with empty hours amount, should be 0/0 FTE.
+   */
+  public function testFTECalculationOnCasualTypeAndEmptyAmount() {
+    // Casual Contract Type
+    $contact1 = ContactFabricator::fabricate();
+    $casualContract = $this->buildContractInfo([
+      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobContract-contact_id' => $contact1['id'],
+      'HRJobHour-hours_type' => 'Casual',
+      'HRJobHour-hours_amount' => '16'
+    ]);
+    $importCasualResponse = $this->runImport($casualContract);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importCasualResponse);
+
+    // Empty Hours Amount Contract
+    $contact2 = ContactFabricator::fabricate();
+    $emptyHoursContract = $this->buildContractInfo([
+      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobContract-contact_id' => $contact2['id'],
+      'HRJobHour-hours_type' => 'part time',
+      'HRJobHour-hours_amount' => ''
+    ]);
+    $importEmptyContractResponse = $this->runImport($emptyHoursContract);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importEmptyContractResponse);
+
+    // Assert FTE's
+    $expected = ['fte_num' => 0, 'fte_denom' => 0, 'hours_fte' => 0];
+    $this->validateHourAutoFields($contact1['id'], $expected);
+    $this->validateHourAutoFields($contact2['id'], $expected);
+  }
+
+  /**
+   * Merges parmeter array given with default import data for contracts. Given
+   * parameters override values of default import data array.
+   * 
+   * @param array $params
+   *   Parameters to be set to array
+   * 
+   * @return array
+   *   Result of merging given array with default import data array
+   */
+  private function buildContractInfo($params) {
+    return array_merge($this->_defaultImportData, $params);
   }
 
   function testPayImport() {

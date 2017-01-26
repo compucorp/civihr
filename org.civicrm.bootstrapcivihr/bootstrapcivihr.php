@@ -1,7 +1,5 @@
 <?php
-
 require_once 'bootstrapcivihr.civix.php';
-
 /**
  * Implements hook_civicrm_config().
  *
@@ -10,7 +8,6 @@ require_once 'bootstrapcivihr.civix.php';
 function bootstrapcivihr_civicrm_config(&$config) {
   _bootstrapcivihr_civix_civicrm_config($config);
 }
-
 /**
  * Implements hook_civicrm_xmlMenu().
  *
@@ -21,7 +18,6 @@ function bootstrapcivihr_civicrm_config(&$config) {
 function bootstrapcivihr_civicrm_xmlMenu(&$files) {
   _bootstrapcivihr_civix_civicrm_xmlMenu($files);
 }
-
 /**
  * Implements hook_civicrm_install().
  *
@@ -30,7 +26,6 @@ function bootstrapcivihr_civicrm_xmlMenu(&$files) {
 function bootstrapcivihr_civicrm_install() {
   _bootstrapcivihr_civix_civicrm_install();
 }
-
 /**
  * Implements hook_civicrm_uninstall().
  *
@@ -39,7 +34,6 @@ function bootstrapcivihr_civicrm_install() {
 function bootstrapcivihr_civicrm_uninstall() {
   _bootstrapcivihr_civix_civicrm_uninstall();
 }
-
 /**
  * Implements hook_civicrm_enable().
  *
@@ -48,7 +42,6 @@ function bootstrapcivihr_civicrm_uninstall() {
 function bootstrapcivihr_civicrm_enable() {
   _bootstrapcivihr_civix_civicrm_enable();
 }
-
 /**
  * Implements hook_civicrm_disable().
  *
@@ -57,7 +50,6 @@ function bootstrapcivihr_civicrm_enable() {
 function bootstrapcivihr_civicrm_disable() {
   _bootstrapcivihr_civix_civicrm_disable();
 }
-
 /**
  * Implements hook_civicrm_upgrade().
  *
@@ -73,7 +65,6 @@ function bootstrapcivihr_civicrm_disable() {
 function bootstrapcivihr_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
   return _bootstrapcivihr_civix_civicrm_upgrade($op, $queue);
 }
-
 /**
  * Implements hook_civicrm_managed().
  *
@@ -85,7 +76,6 @@ function bootstrapcivihr_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function bootstrapcivihr_civicrm_managed(&$entities) {
   _bootstrapcivihr_civix_civicrm_managed($entities);
 }
-
 /**
  * Implements hook_civicrm_caseTypes().
  *
@@ -98,7 +88,6 @@ function bootstrapcivihr_civicrm_managed(&$entities) {
 function bootstrapcivihr_civicrm_caseTypes(&$caseTypes) {
   _bootstrapcivihr_civix_civicrm_caseTypes($caseTypes);
 }
-
 /**
  * Implements hook_civicrm_angularModules().
  *
@@ -112,7 +101,6 @@ function bootstrapcivihr_civicrm_caseTypes(&$caseTypes) {
 function bootstrapcivihr_civicrm_angularModules(&$angularModules) {
 _bootstrapcivihr_civix_civicrm_angularModules($angularModules);
 }
-
 /**
  * Implements hook_civicrm_alterSettingsFolders().
  *
@@ -121,12 +109,11 @@ _bootstrapcivihr_civix_civicrm_angularModules($angularModules);
 function bootstrapcivihr_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _bootstrapcivihr_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
-
 /**
  * Implementation of hook_civicrm_pageRun
  */
 function bootstrapcivihr_civicrm_pageRun($page) {
   if (!(isset($_GET['snippet']) && $_GET['snippet'] == 'json')) {
-    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivihr', 'css/bootstrap-civihr-style.css');
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivihr', 'css/civihr.css');
   }
 }

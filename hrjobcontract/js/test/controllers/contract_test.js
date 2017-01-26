@@ -64,6 +64,19 @@ define([
               expect($scope.$parent.contract.is_current).toBe("1");
             });
           });
+
+          describe("When end date is empty", function () {
+            beforeEach(function () {
+              var date = ''; //  end date empty
+              createModalSpy(date);
+              $scope.modalContract("edit");
+              $rootScope.$digest();
+            });
+
+            it("Marks the contract as current", function () {
+              expect($scope.$parent.contract.is_current).toBe("1");
+            });
+          });
         });
 
         function makeController() {

@@ -8,10 +8,10 @@ define([
   'use strict';
 
   controllers.controller('HRJobRolesController', [
-    '$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q',
+    '$scope', '$log', '$routeParams', '$route', '$uibModal', '$rootElement', '$timeout', '$filter', '$q','settings',
     'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
     'DOMEventTrigger',
-    function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters, DOMEventTrigger) {
+    function ($scope, $log, $routeParams, $route, $modal, $rootElement, $timeout, $filter, $q, settings, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters, DOMEventTrigger) {
       $log.debug('Controller: HRJobRolesController');
 
       $scope.format = HR_settings.DATE_FORMAT;
@@ -22,6 +22,7 @@ define([
 
       $scope.present_job_roles = [];
       $scope.past_job_roles = [];
+      $scope.job_roles_loaded = false;
 
       $scope.dpOpen = function ($event) {
         $event.preventDefault();
@@ -492,12 +493,33 @@ define([
       $scope.removeRole = function (jobRole) {
         $log.debug('Remove Role');
 
-        // Delete job role
-        deleteJobRole(jobRole.id).then(function () {
-          updateHeaderInfo(jobRole);
-
-          return getJobRolesList($scope.$parent.contactId);
+        var modalInstance = $modal.open({
+          appendTo: $rootElement.find('div').eq(0),
+          template: '',
+          templateUrl: settings.pathApp+'views/modalDialog.html?v='+(new Date()).getTime(),
+          size: 'sm',
+          controller: 'ModalDialogCtrl',
+          resolve: {
+            content: function(){
+              return {
+                copyCancel: 'No',
+                title: 'Alert',
+                msg: 'Are you sure you want to Delete Job Role?'
+              };
+            }
+          }
         });
+
+        // Delete job role
+        modalInstance.result.then(function (confirm) {
+          if (confirm) {
+            deleteJobRole(jobRole.id).then(function () {
+              updateHeaderInfo(jobRole);
+
+              return getJobRolesList($scope.$parent.contactId);
+            });
+          }
+        })
       };
 
       /**
@@ -911,6 +933,7 @@ define([
 
           job_roles.present_job_roles = [];
           job_roles.past_job_roles = [];
+          $scope.job_roles_loaded = true;
 
           data.values.forEach(function (object_data) {
             var todaysDate = moment().startOf('day');
