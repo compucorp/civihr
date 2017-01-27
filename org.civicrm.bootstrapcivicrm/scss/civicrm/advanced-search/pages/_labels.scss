@@ -103,6 +103,11 @@ input[type='checkbox'] + label {
     margin-right: 15px;
     display: flex;
     align-items: center;
+
+    &:after {
+      top: 6px !important;
+      left: 4px !important;
+    }
   }
 
   label:first-of-type {
