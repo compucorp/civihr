@@ -1,0 +1,13 @@
+.CRM_Contact_Form_Task_AddToTag {
+
+  h3 {
+    padding-top: 20px;
+    padding-left: 25px;
+  }
+
+  table {
+    &.form-layout-compressed {
+      margin: 25px;
+    }
+  }
+}
