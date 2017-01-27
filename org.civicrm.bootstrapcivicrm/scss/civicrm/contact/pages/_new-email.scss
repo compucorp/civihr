@@ -55,6 +55,19 @@
   }
 }
 
+.page-civicrm-contact-search-advanced {
+  .CRM_Contact_Form_Task_Email {
+    .crm-contactEmail-form-block-recipient {
+      td {
+        &:first-child {
+          &:after {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
 
 .CRM_Contact_Form_Task_Email {
   .crm-contactEmail-form-block {
@@ -99,8 +112,10 @@
       }
     }
 
-    .crm-form-select {
-      padding-right: 30px !important;
+    .crm-contactEmail-form-block-template {
+      .crm-form-select {
+        padding-right: 30px !important;
+      }
     }
   }
 }
