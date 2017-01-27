@@ -68,6 +68,15 @@
             font-weight: 600;
             color: $gray-darker;
           }
+
+          &:first-child {
+            &:after {
+              content: "*";
+              font-weight: bold;
+              margin: 0 5px;
+              color: $brand-danger;
+            }
+          }
         }
 
         .select2-container {
@@ -81,6 +90,17 @@
         margin-bottom: 20px;
         margin-right: 0;
       }
+    }
+
+    #s2id_fromEmailAddress,
+    #s2id_to {
+      &:after {
+        display: none;
+      }
+    }
+
+    .crm-form-select {
+      padding-right: 30px !important;
     }
   }
 }
