@@ -21,8 +21,8 @@
                 <a class="btn btn-collapse" ng-click="collapseRow(job_roles_data.id)">
                     <i ng-class="{
                         'fa': true,
-                        'fa-chevron-down': collapsedRows[job_roles_data.id] == false,
-                        'fa-chevron-right': collapsedRows[job_roles_data.id] || !collapsedRows[job_roles_data.id]
+                        'fa-chevron-down': !collapsedRows[job_roles_data.id],
+                        'fa-chevron-right': collapsedRows[job_roles_data.id]
                     }"></i>
                     Details
                 </a>

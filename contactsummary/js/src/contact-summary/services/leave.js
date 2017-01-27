@@ -157,10 +157,6 @@ define([
           return Api.get('HRAbsenceEntitlement', data);
         })
         .then(function(response) {
-          if (response.values.length === 0) {
-            return {};
-          }
-
           entitlements = response.values;
 
           deferred.resolve(entitlements);
