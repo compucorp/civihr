@@ -265,7 +265,7 @@ function hrleaveandabsences_civicrm_permission(&$permissions) {
 function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $actionEntities = [
     'get' => ['absence_type', 'absence_period', 'option_group', 'option_value',
-              'leave_period_entitlement', 'public_holiday'],
+              'leave_period_entitlement', 'public_holiday', 'leave_request'],
     'getbalancechangebyabsencetype' => ['leave_request'],
     'calculatebalancechange' => ['leave_request'],
     'create' => ['leave_request'],

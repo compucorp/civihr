@@ -13,6 +13,12 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+
+  public function setUp() {
+    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+  }
 
   /**
    * @expectedException CiviCRM_API3_Exception
@@ -364,5 +370,108 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
     ];
 
     $this->assertEquals($expected, $result);
+  }
+
+  public function testGetReturnsOnlyDataLinkedToLoggedInUserWhenUserIsNotALeaveApproverOrAdmin() {
+    $contactID1 = 1;
+    $contactID2 = 2;
+
+    $this->registerCurrentLoggedInContactInSession($contactID1);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactID1,
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactID2,
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'get', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(1, $result['count']);
+    $this->assertEquals($contactID1, $result['values'][0]['contact_id']);
+  }
+
+  public function testGetReturnsOnlyDataLinkedToContactsThatLoggedInUserManagesWhenLoggedInUserIsALeaveApprover() {
+    $manager = ContactFabricator::fabricate();
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
+
+    $this->setContactAsLeaveApproverOf($manager, $contact2);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact1['id'],
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact2['id'],
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'get', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(1, $result['count']);
+    $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
+  }
+
+  public function testGetReturnsAllDataWhenLoggedInUserHasViewAllContactsPermission() {
+    $adminID = 1;
+    $contactID1 = 2;
+    $contactID2 = 3;
+
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API', 'view all contacts'];
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactID1,
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactID2,
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'get', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contactID1, $result['values'][0]['contact_id']);
+    $this->assertEquals($contactID2, $result['values'][1]['contact_id']);
+  }
+
+  public function testGetReturnsAllDataWhenLoggedInUserHasEditAllContactsPermission() {
+    $adminID = 1;
+    $contactID1 = 2;
+    $contactID2 = 3;
+
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API', 'edit all contacts'];
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactID1,
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactID2,
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'get', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contactID1, $result['values'][0]['contact_id']);
+    $this->assertEquals($contactID2, $result['values'][1]['contact_id']);
   }
 }
