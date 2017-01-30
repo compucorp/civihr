@@ -30,6 +30,7 @@ class api_v3_ApiPermissionTest extends BaseHeadlessTest {
 
   public function apiPermissionsDataProvider() {
     return [
+      ['LeaveRequest', 'get'],
       ['LeaveRequest', 'isvalid'],
       ['LeaveRequest', 'getfull'],
       ['LeaveRequest', 'ismanagedby'],
