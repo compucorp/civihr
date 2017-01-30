@@ -9,6 +9,7 @@ use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException as InvalidLeaveRequestException;
+use CRM_HRLeaveAndAbsences_API_Query_ACLQueryHelper as ACLQueryHelper;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
@@ -752,5 +753,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       ];
     }
     return $leaveRequestDayTypeOptionsGroup;
+  }
+
+  /**
+   *{@inheritdoc}
+   */
+  public function addSelectWhereClause() {
+    if (CRM_Core_Permission::check([['view all contacts', 'edit all contacts']])) {
+      return;
+    }
+
+    $query = ACLQueryHelper::limitContactsByTakingUserRelationShipsIntoAccount();
+    $clauses['contact_id'] = $query;
+
+    CRM_Utils_Hook::selectWhereClause($this, $clauses);
+    return $clauses;
   }
 }
