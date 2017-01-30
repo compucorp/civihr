@@ -1,27 +1,25 @@
 define([
-    'common/angular',
-    'common/angularMocks',
-    'job-roles/filters/option-group-filter',
-    'job-roles/filters/filters',
+  'common/angular',
+  'common/angularMocks',
+  'job-roles/filters/option-group-filter',
 ], function(angular, moment) {
   'use strict';
 
-  describe('Using getActiveGroup filter', function() {
-    var $filter, locations, getActiveGroup;
+  describe('getActiveValues', function () {
+    var $filter, locations, getActiveValues;
 
     beforeEach(module('hrjobroles.filters'));
-    beforeEach(inject(['$filter', function(_$filter_) {
-        $filter = _$filter_;
-        getActiveGroup = $filter('getActiveGroup');
-      }
-    ]));
+    beforeEach(inject(['$filter', function (_$filter_) {
+      $filter = _$filter_;
+      getActiveValues = $filter('getActiveValues');
+    }]));
 
-    it('should define getActiveGroup filter ', function() {
-      expect($filter('getActiveGroup')).toBeDefined();
+    it('is defined', function () {
+      expect($filter('getActiveValues')).toBeDefined();
     });
 
-    describe('When filtering locations, departments, region and lavels ', function() {
-      beforeEach(function() {
+    describe('when filtering locations, departments, region and lavels ', function () {
+      beforeEach(function () {
         locations = {
           "Headquarters": {
             "id": "Headquarters",
@@ -41,18 +39,18 @@ define([
         }
       });
 
-      it('should have 2 locations after filtration ', function() {
-        expect(getActiveGroup(locations, '1').length).toBe(2);
+      it('returns 2 values', function () {
+        expect(getActiveValues(locations).length).toBe(2);
       });
 
-      it('should have all data with is_active set to 1 ', function() {
-        expect(getActiveGroup(locations, '1')[0].is_active).toBe('1');
-        expect(getActiveGroup(locations, '1')[1].is_active).toBe('1');
+      it('returns all active values having is_active set to 1', function () {
+        expect(getActiveValues(locations)[0].is_active).toBe('1');
+        expect(getActiveValues(locations)[1].is_active).toBe('1');
       });
 
-      it('should have filtered correc locations ', function() {
-        expect(getActiveGroup(locations, '1')[0].title).toBe('Headquarters');
-        expect(getActiveGroup(locations, '1')[1].title).toBe('Home or Home-Office');
+      it('returns correct location values', function () {
+        expect(getActiveValues(locations)[0].title).toBe('Headquarters');
+        expect(getActiveValues(locations)[1].title).toBe('Home or Home-Office');
       });
     });
   });

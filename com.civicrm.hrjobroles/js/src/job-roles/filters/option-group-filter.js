@@ -1,18 +1,21 @@
 define([
+  'common/lodash',
   'job-roles/filters/filters'
-], function(filters) {
+], function(_,filters) {
   'use strict';
 
-  filters.filter('getActiveGroup', ['$log', function($log) {
-    $log.debug('Filter: getActiveGroup');
+  filters.filter('getActiveValues', ['$log', function($log) {
+    $log.debug('Filter: getActiveValues');
 
-    return function(groupData, param) {
+    return function(groupData) {
       var filteredGroupData = [];
-      angular.forEach(groupData, function(group, key) {
-        if (group.is_active === param) {
+
+      _.each(groupData, function (group) {
+        if (group.is_active === '1') {
           filteredGroupData.push(group);
         }
       });
+
       return filteredGroupData;
     }
   }]);

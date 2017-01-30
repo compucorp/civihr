@@ -87,25 +87,25 @@
                                             <div class="form-group">
                                                 <label for="newLocation" class="col-xs-4 control-label">Location:</label>
                                                 <div class="col-xs-6 control-label">
-                                                    <select ng-options="k as v.title for (k, v) in jobroles.LocationsData | getActiveGroup:'1'" ng-model="edit_data['new_role_id']['location']" class="form-control"></select>
+                                                    <select ng-options="k as v.title for (k, v) in jobroles.LocationsData | getActiveValues" ng-model="edit_data['new_role_id']['location']" class="form-control"></select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="newRegion" class="col-xs-4 control-label">Region:</label>
                                                 <div class="col-xs-6 control-label">
-                                                    <select ng-options="k as v.title for (k, v) in jobroles.RegionsData | getActiveGroup:'1'" ng-model="edit_data['new_role_id']['region']" class="form-control"></select>
+                                                    <select ng-options="k as v.title for (k, v) in jobroles.RegionsData | getActiveValues" ng-model="edit_data['new_role_id']['region']" class="form-control"></select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="newDepartment" class="col-xs-4 control-label">Department:</label>
                                                 <div class="col-xs-6 control-label">
-                                                    <select ng-options="k as v.title for (k, v) in jobroles.DepartmentsData | getActiveGroup:'1'" ng-model="edit_data['new_role_id']['department']" class="form-control"></select>
+                                                    <select ng-options="k as v.title for (k, v) in jobroles.DepartmentsData | getActiveValues" ng-model="edit_data['new_role_id']['department']" class="form-control"></select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="newLevel" class="col-xs-4 control-label">Level:</label>
                                                 <div class="col-xs-6 control-label">
-                                                    <select ng-options="k as v.title for (k, v) in jobroles.LevelsData | getActiveGroup:'1'" ng-model="edit_data['new_role_id']['level']" class="form-control"></select>
+                                                    <select ng-options="k as v.title for (k, v) in jobroles.LevelsData | getActiveValues" ng-model="edit_data['new_role_id']['level']" class="form-control"></select>
                                                 </div>
                                             </div>
 
