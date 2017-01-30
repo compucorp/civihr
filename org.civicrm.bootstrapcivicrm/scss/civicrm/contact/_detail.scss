@@ -404,3 +404,64 @@ input[type="text"] {
     }
   }
 }
+
+#Contribution {
+  #s2id_currency {
+    &:after {
+      display: none;
+    }
+  }
+
+  #total_amount {
+    margin-top: 8px !important;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  .crm-button_qf_Contribution_upload {
+    margin-left: 0;
+  }
+
+  .font-size12pt.label {
+    padding-left: 23px;
+  }
+
+  #softCredit {
+    > .crm-accordion-body {
+      &,
+      tr,
+      td {
+        padding-left: 0;
+      }
+
+      .crm-contribution-form-block-soft_credit_to:not(.hiddenElement) {
+        display: flex !important;
+        flex-direction: column;
+
+        td {
+          flex: 1 auto;
+        }
+      }
+
+      label {
+        width: 150px;
+        display: inline-block;
+      }
+
+      .crm-hover-button:not(#addMoreSoftCredit) {
+        margin-top: -3px !important;
+      }
+
+      .crm-form-text,
+      .select2-container {
+        margin: 0 0 10px 0 !important;
+      }
+    }
+  }
+}
+
+.ui-dialog-buttonpane {
+  display: none;
+}
