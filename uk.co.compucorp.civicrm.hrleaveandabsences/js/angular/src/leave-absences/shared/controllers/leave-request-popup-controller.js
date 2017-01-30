@@ -135,9 +135,8 @@ define([
 
         return checkAndSetAbsencePeriod(date)
           .then(function () {
-            return oldPeriodId == vm.period.id;
-          })
-          .then(function (isInCurrentPeriod) {
+            var isInCurrentPeriod = oldPeriodId == vm.period.id;
+
             if (!isInCurrentPeriod) {
               //partial reset is required when user has selected a to date and
               //then changes absence period from from date
@@ -154,14 +153,12 @@ define([
           })
           .then(function () {
             setMinMax();
-          })
-          .then(function () {
+
             return filterLeaveRequestDayTypes(date, dayType);
           })
           .then(function () {
             vm.loading[dayType + 'DayTypes'] = false;
-          })
-          .then(function () {
+
             return vm.updateBalance();
           })
           .catch(function (error) {
@@ -277,11 +274,8 @@ define([
           })
           .then(function () {
             initAbsencePeriod();
-          })
-          .then(function () {
             setMinMax();
-          })
-          .then(function () {
+
             return $q.all([loadAbsenceTypes(), loadCalendar()]);
           })
           .then(function () {
@@ -892,7 +886,18 @@ define([
        * Sets the min and max for to date from absence period
        */
       function setMinMax() {
-        vm.uiOptions.date.to.options.minDate = convertDateFormatFromServer(vm.period.start_date);
+        if (vm.uiOptions.fromDate) {
+          vm.uiOptions.date.to.options.minDate = vm.uiOptions.fromDate;
+
+          //also re-set to date if from date is changing and less than to date
+          if (vm.uiOptions.toDate && moment(vm.uiOptions.toDate).isBefore(vm.uiOptions.fromDate)) {
+            vm.uiOptions.toDate = vm.uiOptions.fromDate;
+          }
+        }
+        else {
+          vm.uiOptions.date.to.options.minDate = convertDateFormatFromServer(vm.period.start_date);
+        }
+
         vm.uiOptions.date.to.options.maxDate = convertDateFormatFromServer(vm.period.end_date);
       }
 

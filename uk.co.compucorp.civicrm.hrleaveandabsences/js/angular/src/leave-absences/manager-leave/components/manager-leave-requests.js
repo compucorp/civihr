@@ -21,7 +21,7 @@ define([
     $log.debug('Component: manager-leave-requests');
 
     var vm = Object.create(this);
-    var useCache = true;
+    var leaveRequestAPICache = true;
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -220,7 +220,7 @@ define([
       });
 
       $rootScope.$on('LeaveRequest::updatedByManager', function () {
-        useCache = false;
+        leaveRequestAPICache = false;
         vm.refresh();
       });
     })();
@@ -316,10 +316,10 @@ define([
             return: ['status_id']
           } : {};
 
-      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, returnFields, useCache)
+      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, returnFields, leaveRequestAPICache)
         .then(function (leaveRequests) {
           vm.leaveRequests[type] = leaveRequests;
-          useCache = true;
+          leaveRequestAPICache = true;
         });
     }
 

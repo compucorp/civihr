@@ -169,9 +169,8 @@
           var fromDate;
 
           beforeEach(function () {
-            setDates2016(true);
+            setTestDates(date2016);
             fromDate = moment($ctrl.uiOptions.fromDate).format(serverDateFormat);
-            $scope.$digest();
           });
 
           it('has balance change defined', function () {
@@ -194,9 +193,8 @@
           var toDate;
 
           beforeEach(function () {
-            setDates2016(true, true);
+            setTestDates(date2016, date2016);
             toDate = moment($ctrl.uiOptions.toDate).format(serverDateFormat);
-            $scope.$digest();
           });
 
           it('will set to date', function () {
@@ -210,8 +208,7 @@
 
         describe('from and to dates are selected', function () {
           beforeEach(function () {
-            setDates2016(true, true);
-            $scope.$digest();
+            setTestDates(date2016, date2016);
           });
 
           it('will show balance change', function () {
@@ -276,8 +273,7 @@
 
           describe('after from date is selected', function () {
             beforeEach(function () {
-              setDates2016(true);
-              $scope.$digest();
+              setTestDates(date2016);
             });
 
             it('should set from and to dates', function () {
@@ -295,8 +291,7 @@
       describe('calendar', function () {
         describe('when from date is selected', function () {
           beforeEach(function () {
-            setDates2016(true);
-            $scope.$digest();
+            setTestDates(date2016);
           });
 
           it('will set from date', function () {
@@ -306,8 +301,7 @@
 
         describe('when to date is selected', function () {
           beforeEach(function () {
-            setDates2016(true, true);
-            $scope.$digest();
+            setTestDates(date2016, date2016);
           });
 
           it('will set to date', function () {
@@ -322,8 +316,7 @@
 
           beforeEach(function () {
             expectedDayType = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
-            setDates2016(false, true);
-            $scope.$digest();
+            setTestDates(null, date2016);
           });
 
           it('will select to date type', function () {
@@ -334,8 +327,7 @@
         describe('when from and to are selected', function () {
           beforeEach(function () {
             spyOn($ctrl, 'calculateBalanceChange').and.callThrough();
-            setDates2016(true, true);
-            $scope.$digest();
+            setTestDates(date2016, date2016);
           });
 
           it('will calculate balance change', function () {
@@ -367,7 +359,7 @@
             beforeEach(function () {
               $ctrl.uiOptions.multipleDays = true;
               //select all_day to get multiple day mock data
-              setDates2016(true, true);
+              setTestDates(date2016, date2016);
               $ctrl.leaveRequest.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
               $ctrl.calculateBalanceChange();
               $scope.$digest();
@@ -385,8 +377,7 @@
 
         describe('when balance change is expanded during pagination', function () {
           beforeEach(function () {
-            setDates2016(true, true);
-            $scope.$digest();
+            setTestDates(date2016, date2016);
           });
 
           it('will select default page', function () {
@@ -436,7 +427,9 @@
         describe('when submit with valid fields', function () {
           beforeEach(function () {
             spyOn($rootScope, '$emit');
-            setDates2016(true, true);
+            setTestDates(date2016, date2016);
+            //entitlements are randomly generated so resetting them to positive here
+            $ctrl.balance.closing = 1;
             $ctrl.submit();
             $scope.$digest();
           });
@@ -467,8 +460,7 @@
           describe('when balance change is negative', function () {
             beforeEach(function () {
               $ctrl.selectedAbsenceType = $ctrl.absenceTypes[1];
-              setDates2016(true, true);
-              $scope.$digest();
+              setTestDates(date2016, date2016);
               //entitlements are randomly generated so resetting them to negative here
               $ctrl.balance.closing = -1;
               $ctrl.submit();
@@ -588,9 +580,7 @@
 
           describe('after from date is selected', function () {
             beforeEach(function () {
-              $ctrl.uiOptions.fromDate = new Date(date2017);
-              $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
-              $scope.$digest();
+              setTestDates(date2017);
             });
 
             it('should enable to date and to type', function () {
@@ -615,9 +605,7 @@
               beforeEach(function () {
                 $ctrl.uiOptions.toDate = null;
                 oldPeriodId = $ctrl.period.id;
-                $ctrl.uiOptions.fromDate = new Date(date2016);
-                $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
-                $scope.$digest();
+                setTestDates(date2016);
               });
 
               it('should change absence period', function () {
@@ -644,9 +632,7 @@
 
             describe('from unavailable absence period', function () {
               beforeEach(function () {
-                $ctrl.uiOptions.fromDate = new Date(date2013);
-                $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
-                $scope.$digest();
+                setTestDates(date2013);
               });
 
               it('should show error', function () {
@@ -656,8 +642,7 @@
 
             describe('and to date is selected', function () {
               beforeEach(function () {
-                setDates2016(true, true);
-                $scope.$digest();
+                setTestDates(date2016, date2016);
               });
 
               it('should select date from selected absence period', function () {
@@ -670,6 +655,55 @@
 
               it('should show balance', function () {
                 expect($ctrl.uiOptions.showBalance).toBeTruthy();
+              });
+            });
+
+            describe('from date is changed after to date', function () {
+              var from, to;
+
+              beforeEach(function () {
+                setTestDates(date2016);
+              });
+
+              it('should set min date to from date', function () {
+                expect($ctrl.uiOptions.date.to.options.minDate).toEqual(new Date(date2016));
+              });
+
+              describe('and from date is less than to date', function () {
+                beforeEach(function () {
+                  from = '9/12/2016', to = '10/12/2016';
+
+                  $ctrl.uiOptions.toDate = new Date(to);
+                  $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
+                  $scope.$digest();
+
+                  $ctrl.uiOptions.fromDate = new Date(from);
+                  $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
+                  $scope.$digest();
+
+                });
+
+                it('should not reset to date to equal from date', function () {
+                  expect($ctrl.leaveRequest.to_date).not.toEqual($ctrl.leaveRequest.from_date);
+                });
+              });
+
+              describe('and from date is greater than to date', function () {
+                beforeEach(function () {
+                  from = '11/12/2016', to = '10/12/2016';
+
+                  $ctrl.uiOptions.toDate = new Date(to);
+                  $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
+                  $scope.$digest();
+
+                  $ctrl.uiOptions.fromDate = new Date(from);
+                  $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
+                  $scope.$digest();
+                });
+
+                it('should change to date to equal to date', function () {
+                  expect($ctrl.leaveRequest.to_date).toEqual($ctrl.leaveRequest.from_date);
+                });
               });
             });
           });
@@ -694,19 +728,19 @@
       }
 
       /**
-       * sets all dates to 2016 only
-       * @param {Boolean} from set if from date is to be set
-       * @param {Boolean} to set if from date is to be set
+       * sets from and/or to dates
+       * @param {String} from date set if passed
+       * @param {String} to date set if passed
        */
-      function setDates2016(from, to) {
+      function setTestDates(from, to) {
         if (from) {
-          $ctrl.uiOptions.fromDate = new Date(date2016);
+          $ctrl.uiOptions.fromDate = new Date(from);
           $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
           $scope.$digest();
         }
 
         if (to) {
-          $ctrl.uiOptions.toDate = new Date(date2016);
+          $ctrl.uiOptions.toDate = new Date(to);
           $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
           $scope.$digest();
         }
