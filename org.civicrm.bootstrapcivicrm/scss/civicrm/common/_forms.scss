@@ -439,7 +439,7 @@ $control-height: 30px;
     td > input.crm-form-text {
       @extend %responsive;
       box-sizing: border-box;
-      height: $control-height;
+      min-height: $control-height;
       display: inline-block;
     }
 
