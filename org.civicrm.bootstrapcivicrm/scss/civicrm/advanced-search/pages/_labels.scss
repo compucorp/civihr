@@ -196,16 +196,6 @@ input[type='checkbox'] + label {
       }
     }
   }
-
-  .select2-container {
-    width: 230px !important;
-  }
-
-  @media (max-width: $screen-sm-min) {
-    .select2-container {
-      width: 100% !important;
-    }
-  }
 }
 
 #{$display-settings-for-results} {
@@ -432,6 +422,16 @@ input[type='checkbox'] + label {
 }
 
 .crm-accordion-body {
+  .select2-container {
+      width: 230px !important;
+  }
+  
+  @media (max-width: $screen-sm-min) {
+    .select2-container {
+      width: 100% !important;
+    }
+  }
+
   @media (max-width: $screen-sm-min) {
     tr {
       display: flex;
