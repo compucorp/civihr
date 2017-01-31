@@ -790,7 +790,7 @@ define([
                       if (option_group_id === data.values[i]['option_group_id']) {
                         // Build the department list
                         DepartmentList[data.values[i]['value']] = {
-                          id: data.values[i]['value'],
+                          id: data.values[i]['id'],
                           title: data.values[i]['label'],
                           is_active: data.values[i]['is_active']
                         };
@@ -802,7 +802,7 @@ define([
                       if (option_group_id === data.values[i]['option_group_id']) {
                         // Build the region list
                         RegionList[data.values[i]['value']] = {
-                          id: data.values[i]['value'],
+                          id: data.values[i]['id'],
                           title: data.values[i]['label'],
                           is_active: data.values[i]['is_active']
                         };
@@ -814,7 +814,7 @@ define([
                       if (option_group_id === data.values[i]['option_group_id']) {
                         // Build the contact list
                         LocationList[data.values[i]['value']] = {
-                          id: data.values[i]['value'],
+                          id: data.values[i]['id'],
                           title: data.values[i]['label'],
                           is_active: data.values[i]['is_active']
                         };
@@ -826,7 +826,7 @@ define([
                       if (option_group_id === data.values[i]['option_group_id']) {
                         // Build the contact list
                         LevelList[data.values[i]['value']] = {
-                          id: data.values[i]['value'],
+                          id: data.values[i]['id'],
                           title: data.values[i]['label'],
                           is_active: data.values[i]['is_active']
                         };
@@ -838,7 +838,7 @@ define([
                       if (option_group_id === data.values[i]['option_group_id']) {
                         // Build the contact list
                         CostCentreList.push({
-                          id: data.values[i]['value'],
+                          id: data.values[i]['id'],
                           title: data.values[i]['label'],
                           weight: data.values[i]['weight'],
                           is_active: data.values[i]['is_active']

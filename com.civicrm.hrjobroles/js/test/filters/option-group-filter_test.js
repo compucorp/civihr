@@ -1,7 +1,7 @@
 define([
   'common/angular',
   'common/angularMocks',
-  'job-roles/filters/option-group-filter',
+  'job-roles/filters/option-values-filter',
 ], function(angular, moment) {
   'use strict';
 
@@ -22,17 +22,17 @@ define([
       beforeEach(function () {
         locations = {
           "Headquarters": {
-            "id": "Headquarters",
+            "id": "35",
             "title": "Headquarters",
             "is_active": "1"
           },
           "Home": {
-            "id": "Home",
+            "id": "36",
             "title": "Home or Home-Office",
             "is_active": "1"
           },
           "Other": {
-            "id": "Home",
+            "id": "37",
             "title": "Home or Home-Office",
             "is_active": "0"
           }
@@ -40,17 +40,17 @@ define([
       });
 
       it('returns 2 values', function () {
-        expect(getActiveValues(locations).length).toBe(2);
+        expect(Object.keys(getActiveValues(locations)).length).toBe(2);
       });
 
       it('returns all active values having is_active set to 1', function () {
-        expect(getActiveValues(locations)[0].is_active).toBe('1');
-        expect(getActiveValues(locations)[1].is_active).toBe('1');
+        expect(getActiveValues(locations)['Headquarters'].is_active).toBe('1');
+        expect(getActiveValues(locations)['Home'].is_active).toBe('1');
       });
 
       it('returns correct location values', function () {
-        expect(getActiveValues(locations)[0].title).toBe('Headquarters');
-        expect(getActiveValues(locations)[1].title).toBe('Home or Home-Office');
+        expect(getActiveValues(locations)['Headquarters'].title).toBe('Headquarters');
+        expect(getActiveValues(locations)['Home'].title).toBe('Home or Home-Office');
       });
     });
   });

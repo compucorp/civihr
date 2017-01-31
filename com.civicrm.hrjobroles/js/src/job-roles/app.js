@@ -10,7 +10,7 @@ define([
     'job-roles/controllers/controllers',
     'job-roles/directives/directives',
     'job-roles/filters/filters',
-    'job-roles/filters/option-group-filter',
+    'job-roles/filters/option-values-filter',
     'job-roles/services/services',
     'job-roles/controllers/hr-job-roles-controller',
     'job-roles/controllers/modal-dialog',
