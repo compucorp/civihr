@@ -214,103 +214,13 @@ define([
         if (typeof $scope.edit_data[role_id] === "undefined") {
           $scope.edit_data[role_id] = {};
         }
-        // If we have funders or cost centers, we have a special way to init our data
+
         if (form_id === 'funders') {
-
-          // Init empty array for funder default values
-          $scope.edit_data[role_id]['funders'] = [];
-
-          // Split data from the stored funder contact IDs
-          var funder_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data['funder'].split("|"));
-
-          // Split the funder types
-          var funder_types = data['funder_val_type'].split("|");
-
-          // Split the percent value for the funder
-          var percent_funders = data['percent_pay_funder'].split("|");
-
-          // Split the amount value for the funder
-          var amount_funders = data['amount_pay_funder'].split("|");
-
-          // Loop data and crete the required array of values
-          for (var i = 0; i < funder_contact_ids.length; i++) {
-            if (funder_contact_ids[i] != "") {
-              // Set default funder rows funder rows
-              $scope.edit_data[role_id]['funders'].push({
-                id: $scope.edit_data[role_id]['funders'].length + 1,
-                funder_id: {
-                  id: funder_contact_ids[i],
-                  sort_name: vm.contactListObject[funder_contact_ids[i]]['sort_name']
-                },
-                type: funder_types[i],
-                percentage: percent_funders[i],
-                amount: amount_funders[i]
-              });
-            }
-          }
-        }
-        // If we have funders or cost centers, we have a special way to init our data
-        else if (form_id === 'cost_centers') {
-          // Init empty array for funder default values
-          $scope.edit_data[role_id]['cost_centers'] = [];
-
-          // Split data from the stored funder contact IDs
-          var cost_center_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data['cost_center'].split("|"));
-
-          // Split the cost_centers types
-          var cost_center_types = data['cost_center_val_type'].split("|");
-
-          // Split the percent value for the cost_center
-          var percent_cost_centers = data['percent_pay_cost_center'].split("|");
-
-          // Split the amount value for the cost_center
-          var amount_cost_centers = data['amount_pay_cost_center'].split("|");
-
-          // Loop data and crete the required array of values
-          for (var i = 0; i < cost_center_contact_ids.length; i++) {
-
-            if (cost_center_contact_ids[i] != "") {
-
-              // Set default funder rows funder rows
-              $scope.edit_data[role_id]['cost_centers'].push({
-                id: $scope.edit_data[role_id]['cost_centers'].length + 1,
-                cost_centre_id: cost_center_contact_ids[i],
-                type: cost_center_types[i],
-                percentage: percent_cost_centers[i],
-                amount: amount_cost_centers[i]
-              });
-
-            }
-
-          }
-
+          initFundersData($scope.edit_data[role_id], data);
+        } else if (form_id === 'cost_centers') {
+          initCostCentersData($scope.edit_data[role_id], data);
         } else {
-
-          var bothJustSet = (typeof $scope.edit_data[role_id].start_date === 'undefined'
-          || typeof $scope.edit_data[role_id].job_contract_id === 'undefined');
-
-          // Default data init
-          $scope.edit_data[role_id][form_id] = data;
-
-          if (!!$scope.edit_data[role_id].start_date) {
-            var date = moment($scope.edit_data[role_id].start_date);
-            /* If dates are not set, we programatically set them here. */
-            var invalidDate = (isNaN(date) && typeof $scope.edit_data[role_id].start_date != 'undefined');
-
-            var presentJobContract = !(typeof $scope.edit_data[role_id].job_contract_id === 'undefined');
-
-            if (invalidDate && presentJobContract && bothJustSet) {
-              $scope.onContractEdited(null, role_id).then(function () {
-                $scope.$apply();
-                return $scope.updateRole(role_id);
-              });
-            } else {
-              formatRoleDates($scope.edit_data[role_id], {
-                start: $scope.edit_data[role_id].start_date,
-                end: $scope.edit_data[role_id].end_date
-              });
-            }
-          }
+          initMiscData($scope.edit_data[role_id], form_id, data);
         }
 
         if (form_id === 'end_date' && !$scope.edit_data[role_id].end_date) {
@@ -996,6 +906,98 @@ define([
           function (errorMessage) {
             $scope.error = errorMessage;
           });
+      }
+
+      /**
+       * Initializes the cost centers data in the given job role
+       *
+       * @param  {Object} jobRole
+       * @param  {Object} data
+       */
+      function initCostCentersData(jobRole, data) {
+        jobRole.cost_centers = [];
+
+        var cost_center_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data.cost_center.split('|'));
+        var cost_center_types = data.cost_center_val_type.split('|');
+        var percent_cost_centers = data.percent_pay_cost_center.split('|');
+        var amount_cost_centers = data.amount_pay_cost_center.split('|');
+
+        for (var i = 0; i < cost_center_contact_ids.length; i++) {
+          if (cost_center_contact_ids[i] !== '') {
+            jobRole.cost_centers.push({
+              id: jobRole.cost_centers.length + 1,
+              amount: amount_cost_centers[i],
+              cost_centre_id: cost_center_contact_ids[i],
+              percentage: percent_cost_centers[i],
+              type: cost_center_types[i]
+            });
+          }
+        }
+      }
+
+      /**
+       * Initializes the funders data in the given job role
+       *
+       * @param  {Object} jobRole
+       * @param  {Object} data
+       */
+      function initFundersData(jobRole, data) {
+        jobRole.funders = [];
+
+        var funder_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data.funder.split('|'));
+        var funder_types = data.funder_val_type.split('|');
+        var percent_funders = data.percent_pay_funder.split('|');
+        var amount_funders = data.amount_pay_funder.split('|');
+
+        for (var i = 0; i < funder_contact_ids.length; i++) {
+          if (funder_contact_ids[i] !== '') {
+            jobRole.funders.push({
+              id: jobRole.funders.length + 1,
+              amount: amount_funders[i],
+              percentage: percent_funders[i],
+              type: funder_types[i],
+              funder_id: {
+                id: funder_contact_ids[i],
+                sort_name: vm.contactListObject[funder_contact_ids[i]].sort_name
+              }
+            });
+          }
+        }
+      }
+
+      /**
+       * Initializes miscellaneous data in the given job role
+       *
+       * @param  {Object} jobRole
+       * @param  {string} key
+       * @param  {Object} data
+       */
+      function initMiscData(jobRole, key, data) {
+        var bothJustSet = (typeof jobRole.start_date === 'undefined'
+        || typeof jobRole.job_contract_id === 'undefined');
+
+        // Default data init
+        jobRole[key] = data;
+
+        if (!!jobRole.start_date) {
+          // If dates are not set, we programatically set them here
+          var date = moment(jobRole.start_date);
+          var invalidDate = (isNaN(date) && typeof jobRole.start_date !== 'undefined');
+
+          var presentJobContract = !(typeof jobRole.job_contract_id === 'undefined');
+
+          if (invalidDate && presentJobContract && bothJustSet) {
+            $scope.onContractEdited(null, role_id).then(function () {
+              $scope.$apply();
+              return $scope.updateRole(role_id);
+            });
+          } else {
+            formatRoleDates(jobRole, {
+              start: jobRole.start_date,
+              end: jobRole.end_date
+            });
+          }
+        }
       }
 
       /**
