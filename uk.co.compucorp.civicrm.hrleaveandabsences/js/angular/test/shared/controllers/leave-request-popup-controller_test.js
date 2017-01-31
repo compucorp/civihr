@@ -415,7 +415,7 @@
             $scope.$digest();
           });
 
-          it('should fail', function () {
+          it('should fail with error', function () {
             expect($ctrl.error).toEqual(jasmine.any(Object));
           });
 
@@ -468,7 +468,7 @@
             });
 
             describe('and absence type does not allow overuse', function () {
-              it('will not save', function () {
+              it('will not save and set error', function () {
                 expect($ctrl.error).toBeDefined();
               });
             });
@@ -481,7 +481,7 @@
                 $scope.$digest();
               });
 
-              it('will save', function () {
+              it('will save without errors', function () {
                 expect($ctrl.error).toBeNull();
               });
             });
@@ -587,7 +587,7 @@
               expect($ctrl.leaveRequest.from_date).toBeTruthy();
             });
 
-            it('should check if date is in any absence period', function () {
+            it('should check if date is in any absence period without errors', function () {
               expect($ctrl.error).toBeNull();
             });
 
@@ -645,7 +645,7 @@
                 setTestDates(date2016, date2016);
               });
 
-              it('should select date from selected absence period', function () {
+              it('should select date from selected absence period without errors', function () {
                 expect($ctrl.error).toBeNull();
               });
 
@@ -673,14 +673,8 @@
                 beforeEach(function () {
                   from = '9/12/2016', to = '10/12/2016';
 
-                  $ctrl.uiOptions.toDate = new Date(to);
-                  $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
-                  $scope.$digest();
-
-                  $ctrl.uiOptions.fromDate = new Date(from);
-                  $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
-                  $scope.$digest();
-
+                  setTestDates(null, to);
+                  setTestDates(from);
                 });
 
                 it('should not reset to date to equal from date', function () {
@@ -692,13 +686,8 @@
                 beforeEach(function () {
                   from = '11/12/2016', to = '10/12/2016';
 
-                  $ctrl.uiOptions.toDate = new Date(to);
-                  $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
-                  $scope.$digest();
-
-                  $ctrl.uiOptions.fromDate = new Date(from);
-                  $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
-                  $scope.$digest();
+                  setTestDates(null, to);
+                  setTestDates(from);
                 });
 
                 it('should change to date to equal to date', function () {
