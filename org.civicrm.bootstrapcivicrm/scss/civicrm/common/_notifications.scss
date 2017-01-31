@@ -59,3 +59,14 @@
     padding: 15px;
   }
 }
+
+#crm-main-content-wrapper {
+  form {
+    .messages {
+      &.crm-error {
+        position: absolute;
+        visibility: hidden;
+      }
+    }
+  }
+}
