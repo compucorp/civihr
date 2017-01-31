@@ -25,10 +25,12 @@ define([
     ) {
       $log.debug('LeaveRequestPopupCtrl');
 
-      var selectedAbsenceType = {},
+      var absenceTypesAndIds,
+        selectedAbsenceType = {},
         serverDateFormat = 'YYYY-MM-DD',
         vm = {};
 
+      vm.absencePeriods = [];
       vm.absenceTypes = [];
       vm.calendar = {};
       vm.contact = {};
@@ -72,13 +74,25 @@ define([
       vm.uiOptions = {
         isChangeExpanded: false,
         multipleDays: true,
-        showDatePickerFrom: false,
-        showDatePickerTo: false,
         userDateFormat: HR_settings.DATE_FORMAT,
         showBalance: false,
-        datePickerOptions: {
-          startingDay: 1,
-          showWeeks: false
+        date: {
+          from: {
+            show: false,
+            options: {
+              startingDay: 1,
+              showWeeks: false
+            }
+          },
+          to: {
+            show: false,
+            options: {
+              minDate: null,
+              maxDate: null,
+              startingDay: 1,
+              showWeeks: false
+            }
+          }
         }
       };
 
@@ -89,7 +103,7 @@ define([
       vm.changeInNoOfDays = function () {
         reset();
         //reinitialize opening balance
-        vm.balance.opening = selectedAbsenceType.remainder;
+        initAbsenceType();
       };
 
       /**
@@ -102,12 +116,7 @@ define([
         // get the `balance` of the newly selected absence type
         vm.balance.opening = selectedAbsenceType.remainder;
 
-        if (canCalculateChange()) {
-          vm.loading.calculateBalanceChange = true;
-          vm.calculateBalanceChange().then(function () {
-            vm.loading.calculateBalanceChange = false;
-          });
-        }
+        vm.calculateBalanceChange();
       };
 
       /**
@@ -117,46 +126,60 @@ define([
        *
        * @param {Date} date - the selected date
        * @param {String} dayType - set to from if from date is selected else to
+       * @return {Promise}
        */
       vm.onDateChange = function (date, dayType) {
+        var oldPeriodId = vm.period.id;
         dayType = dayType || 'from';
-
-        if (vm.uiOptions.multipleDays) {
-          vm.uiOptions.showBalance = !!vm.uiOptions.toDate && !!vm.uiOptions.fromDate;
-        } else {
-          vm.uiOptions.showBalance = !!vm.uiOptions.fromDate;
-        }
-
         vm.loading[dayType + 'DayTypes'] = true;
-        filterLeaveRequestDayTypes(date, dayType)
+
+        return checkAndSetAbsencePeriod(date)
+          .then(function () {
+            var isInCurrentPeriod = oldPeriodId == vm.period.id;
+
+            if (!isInCurrentPeriod) {
+              //partial reset is required when user has selected a to date and
+              //then changes absence period from from date
+              //no reset required for single days and to date changes
+              if (vm.uiOptions.multipleDays && dayType === 'from') {
+                vm.uiOptions.showBalance = false;
+                vm.uiOptions.toDate = null;
+                vm.leaveRequest.to_date = null;
+                vm.leaveRequest.to_date_type = null;
+              }
+
+              return $q.all([setAbsenceTypesFromEntitlements(), loadCalendar()]);
+            }
+          })
+          .then(function () {
+            setMinMax();
+
+            return filterLeaveRequestDayTypes(date, dayType);
+          })
           .then(function () {
             vm.loading[dayType + 'DayTypes'] = false;
-            vm.leaveRequest[dayType + '_date'] = convertDateFormatToServer(vm.uiOptions[dayType + 'Date']);
 
-            if (!vm.uiOptions.multipleDays) {
-              vm.uiOptions.toDate = vm.uiOptions.fromDate;
-              vm.leaveRequest.to_date = vm.leaveRequest.from_date;
-              vm.leaveRequest.to_date_type = vm.leaveRequest.from_date_type;
-            }
-
-            vm.loading.calculateBalanceChange = true;
-            if (canCalculateChange()) {
-              vm.calculateBalanceChange().then(function () {
-                vm.loading.calculateBalanceChange = false;
-              });
-            }
+            return vm.updateBalance();
+          })
+          .catch(function (error) {
+            vm.error = error;
           });
       };
 
       /**
-       * Calculate change in balance, it updates local balance variables
+       * Calculate change in balance, it updates local balance variables.
        *
-       * @return {Promise}
+       * @return {Promise} empty promise if all required params are not set otherwise promise from server
        */
       vm.calculateBalanceChange = function () {
         setDateAndTypes();
 
+        if (!canCalculateChange()) {
+          return $q.resolve({});
+        }
+
         vm.error = null;
+        vm.loading.calculateBalanceChange = true;
         return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange())
           .then(function (balanceChange) {
             if (balanceChange) {
@@ -165,6 +188,7 @@ define([
               vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
               rePaginate();
             }
+            vm.loading.calculateBalanceChange = false;
           })
           .catch(handleError);
       };
@@ -246,12 +270,12 @@ define([
             return $q.all[initUserRole(), initOpenMode()];
           })
           .then(function () {
-            return AbsencePeriod.current();
-          })
-          .then(function (absencePeriodInstance) {
-            vm.period = absencePeriodInstance;
+            return loadAbsencePeriods();
           })
           .then(function () {
+            initAbsencePeriod();
+            setMinMax();
+
             return $q.all([loadAbsenceTypes(), loadCalendar()]);
           })
           .then(function () {
@@ -263,7 +287,7 @@ define([
             initContact();
             initDates();
           })
-          .then(function () {
+          .finally(function () {
             vm.loading.absenceTypes = false;
           });
       })();
@@ -282,7 +306,8 @@ define([
        * @return {Promise} of array with day types
        */
       function filterLeaveRequestDayTypes(date, dayType) {
-        var deferred = $q.defer(), inCalendarList, listToReturn;
+        var deferred = $q.defer(),
+          inCalendarList, listToReturn;
 
         if (!date) {
           deferred.reject([]);
@@ -367,13 +392,22 @@ define([
           //init to get methods like roleOf again on leaverequest instance as cloning removes them
           vm.leaveRequest = LeaveRequestInstance.init(cloneAttributes);
         } else {
-          // Create an empty leave request
           vm.leaveRequest = LeaveRequestInstance.init({
             contact_id: directiveOptions.contactId //resolved from directive
           });
         }
 
         return $q.resolve(vm.leaveRequest);
+      }
+
+      /**
+       * Loads all absence periods
+       */
+      function loadAbsencePeriods() {
+        return AbsencePeriod.all()
+          .then(function (periods) {
+            vm.absencePeriods = periods;
+          });
       }
 
       /**
@@ -385,32 +419,37 @@ define([
       function loadAbsenceTypes() {
         // Fetch all the absence types, except for the sickness ones
         return AbsenceType.all({
-            is_sickness: false
+            is_sick: false
           })
           .then(function (absenceTypes) {
             var absenceTypesIds = absenceTypes.map(function (absenceType) {
               return absenceType.id;
             });
 
-            return {
+            absenceTypesAndIds = {
               types: absenceTypes,
               ids: absenceTypesIds
             };
+
+            return absenceTypesAndIds;
           })
-          .then(loadAbsenceTypesFromEntitlements);
+          .then(setAbsenceTypesFromEntitlements);
       }
 
       /**
-       * Loads entitlements and sets the absences type available for the user
+       * Sets entitlements and sets the absences type available for the user.
+       * It depends on absenceTypesAndIds to be set to list of absence types and ids
        *
        * @param {Object} that contains all absencetypes and their ids
        * @return {Promise}
        */
-      function loadAbsenceTypesFromEntitlements(absenceTypesAndIds) {
+      function setAbsenceTypesFromEntitlements() {
         return Entitlement.all({
-          contact_id: vm.leaveRequest.contact_id,
-          period_id: vm.period.id,
-          type_id: { IN: absenceTypesAndIds.ids }
+            contact_id: vm.leaveRequest.contact_id,
+            period_id: vm.period.id,
+            type_id: {
+              IN: absenceTypesAndIds.ids
+            }
           }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
             // create a list of absence types with a `balance` property
@@ -563,12 +602,20 @@ define([
        * Sets dates and types for vm.leaveRequest from UI
        */
       function setDateAndTypes() {
-        if (!vm.uiOptions.multipleDays) {
-          vm.leaveRequest.to_date_type = vm.leaveRequest.from_date_type;
-        }
+        vm.leaveRequest.from_date = vm.uiOptions.fromDate ? convertDateFormatToServer(vm.uiOptions.fromDate) : null;
+        vm.leaveRequest.to_date = vm.uiOptions.toDate ? convertDateFormatToServer(vm.uiOptions.toDate) : null;
 
-        vm.leaveRequest.from_date = convertDateFormatToServer(vm.uiOptions.fromDate);
-        vm.leaveRequest.to_date = convertDateFormatToServer(vm.uiOptions.toDate);
+        if (vm.uiOptions.multipleDays) {
+          vm.uiOptions.showBalance = !!vm.leaveRequest.to_date && !!vm.leaveRequest.from_date;
+        } else {
+          if (vm.uiOptions.fromDate) {
+            vm.uiOptions.toDate = vm.uiOptions.fromDate;
+            vm.leaveRequest.to_date = vm.leaveRequest.from_date;
+            vm.leaveRequest.to_date_type = vm.leaveRequest.from_date_type;
+          }
+
+          vm.uiOptions.showBalance = !!vm.leaveRequest.from_date;
+        }
       }
 
       /**
@@ -641,6 +688,36 @@ define([
       }
 
       /**
+       * Inits absence period for the current date
+       */
+      function initAbsencePeriod() {
+        vm.period = _.find(vm.absencePeriods, function (period) {
+          return period.current;
+        });
+      }
+
+      /**
+       * Finds if date is in any absence period and sets absence period for the given date
+       *
+       * @param {Date/String} date
+       * @return {Promise} with true value if period found else rejected false
+       */
+      function checkAndSetAbsencePeriod(date) {
+        var formattedDate = moment(date).format(vm.uiOptions.userDateFormat.toUpperCase());
+
+        vm.period = _.find(vm.absencePeriods, function (period) {
+          return period.isInPeriod(formattedDate);
+        });
+
+        if (!vm.period) {
+          //inform user if absence period is not found
+          return $q.reject('Please change date as it is not in any absence period');
+        }
+
+        return $q.resolve(true);
+      }
+
+      /**
        * Initialize absence types
        */
       function initAbsenceType() {
@@ -661,11 +738,17 @@ define([
        */
       function initDates() {
         if (canEdit()) {
-          vm.uiOptions.fromDate = convertDateFormatFromServer(vm.leaveRequest.from_date);
-          vm.uiOptions.toDate = convertDateFormatFromServer(vm.leaveRequest.to_date);
+          var attributes = _.cloneDeep(vm.leaveRequest.attributes());
 
-          vm.onDateChange(vm.uiOptions.fromDate, 'from');
-          vm.onDateChange(vm.uiOptions.toDate, 'to');
+          vm.uiOptions.fromDate = convertDateFormatFromServer(vm.leaveRequest.from_date);
+          vm.onDateChange(vm.uiOptions.fromDate, 'from')
+            .then(function () {
+              //to_date and type has been reset in above call so reinitialize from clone
+              vm.leaveRequest.to_date = attributes.to_date;
+              vm.leaveRequest.to_date_type = attributes.to_date_type;
+              vm.uiOptions.toDate = convertDateFormatFromServer(vm.leaveRequest.to_date);
+              vm.onDateChange(vm.uiOptions.toDate, 'to');
+            });
         }
       }
 
@@ -695,16 +778,17 @@ define([
             .then(function (contact) {
               vm.contact = contact;
             });
-        } else {
-          return $q.resolve({});
         }
+
+        return $q.resolve({});
       }
 
       /**
        * Sets leave requestion statuses
        */
       function setStatuses() {
-        var allowedStatuses = ['approved', 'more_information_requested', 'cancelled'], key, status;
+        var allowedStatuses = ['approved', 'more_information_requested', 'cancelled'],
+          key, status;
 
         if (vm.role === 'manager') {
           //remove current status of leaverequest
@@ -772,6 +856,12 @@ define([
         else {
           vm.error = errors;
         }
+
+        //reset loading Checks
+        vm.loading.calculateBalanceChange = false;
+        vm.loading.absenceTypes = false;
+        vm.loading.fromDayTypes = false;
+        vm.loading.toDayTypes = false;
       }
 
       /**
@@ -780,7 +870,7 @@ define([
        * @return {Boolean}
        */
       function canEdit() {
-        return vm.mode === 'edit' || vm.mode === 'view';
+        return vm.mode === 'edit';
       }
 
       /**
@@ -790,6 +880,25 @@ define([
         return _.find(vm.absenceTypes, function (absenceType) {
           return absenceType.id == vm.leaveRequest.type_id;
         });
+      }
+
+      /**
+       * Sets the min and max for to date from absence period
+       */
+      function setMinMax() {
+        if (vm.uiOptions.fromDate) {
+          vm.uiOptions.date.to.options.minDate = vm.uiOptions.fromDate;
+
+          //also re-set to date if from date is changing and less than to date
+          if (vm.uiOptions.toDate && moment(vm.uiOptions.toDate).isBefore(vm.uiOptions.fromDate)) {
+            vm.uiOptions.toDate = vm.uiOptions.fromDate;
+          }
+        }
+        else {
+          vm.uiOptions.date.to.options.minDate = convertDateFormatFromServer(vm.period.start_date);
+        }
+
+        vm.uiOptions.date.to.options.maxDate = convertDateFormatFromServer(vm.period.end_date);
       }
 
       return vm;
