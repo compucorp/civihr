@@ -370,10 +370,6 @@ $control-height: 30px;
       label {
         padding: 15px 20px;
         text-align: initial;
-        &:after {
-          top: 23px !important;
-          left: 21px !important;
-        }
       }
 
       label ~ input ~ label ~ input {
@@ -443,7 +439,7 @@ $control-height: 30px;
     td > input.crm-form-text {
       @extend %responsive;
       box-sizing: border-box;
-      height: $control-height;
+      min-height: $control-height;
       display: inline-block;
     }
 
