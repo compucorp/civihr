@@ -24,10 +24,10 @@
             Regions:
           </label>
           <div class="col-xs-12 col-sm-8">
-            <ui-select multiple ng-required="true" theme="civihr-ui-select" ng-model="modalCtrl.selectedData.regions">
-              <ui-select-match placeholder="- select -">{{$item.name}}</ui-select-match>
+            <ui-select multiple on-select="modalCtrl.selection($item, $model)" ng-required="true" theme="civihr-ui-select" ng-model="modalCtrl.selectedData.regions">
+              <ui-select-match placeholder="- select -">{{$item.label}}</ui-select-match>
               <ui-select-choices repeat="region.id as region in modalCtrl.availableData.regions | filter: $select.search">
-                <div ng-bind-html="region.name | highlight: $select.search"></div>
+                <div ng-bind-html="region.label | highlight: $select.search"></div>
               </ui-select-choices>
             </ui-select>
           </div>
@@ -37,10 +37,10 @@
             Locations:
           </label>
           <div class="col-xs-12 col-sm-8">
-            <ui-select multiple ng-required="true" theme="civihr-ui-select" ng-model="modalCtrl.selectedData.locations">
-              <ui-select-match placeholder="- select -">{{$item.name}}</ui-select-match>
+            <ui-select multiple on-select="modalCtrl.selection($item, $model)" ng-required="true" theme="civihr-ui-select" ng-model="modalCtrl.selectedData.locations">
+              <ui-select-match placeholder="- select -">{{$item.label}}</ui-select-match>
               <ui-select-choices repeat="location.id as location in modalCtrl.availableData.locations | filter: $select.search">
-                <div ng-bind-html="location.name | highlight: $select.search"></div>
+                <div ng-bind-html="location.label | highlight: $select.search"></div>
               </ui-select-choices>
             </ui-select>
           </div>
@@ -51,7 +51,5 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary-outline text-uppercase" data-dismiss="modal" ng-click="modalCtrl.cancel()">cancel</button>
-  <button type="button" class="btn btn-primary text-uppercase" ng-click="modalCtrl.submit()" ng-show="modalCtrl.dataLoaded">
-    save
-  </button>
+  <input type="button" value="save" class="btn btn-primary text-uppercase" ng-disabled="modalCtrl.submitting" ng-click="modalCtrl.submit()" ng-show="modalCtrl.dataLoaded" />
 </div>
