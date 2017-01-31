@@ -405,7 +405,24 @@ input[type="text"] {
   }
 }
 
+.action-link {
+  min-height: 45px;
+  height: auto;
+}
+
+.form-layout-compressed {
+  th {
+    text-align: left;
+  }
+}
+
 #Contribution {
+  .crm-form-block > .form-layout-compressed {
+    td:first-child {
+      padding-left: 23px;
+    }
+  }
+
   #s2id_currency {
     &:after {
       display: none;
@@ -422,6 +439,15 @@ input[type="text"] {
 
   .crm-button_qf_Contribution_upload {
     margin-left: 0;
+  }
+
+  .crm-button_qf_Contribution_cancel {
+    overflow: visible;
+  }
+
+  #_qf_Contribution_cancel {
+    position: relative;
+    top: 1px;
   }
 
   .font-size12pt.label {
@@ -446,18 +472,49 @@ input[type="text"] {
       }
 
       label {
-        width: 150px;
+        width: 205px;
         display: inline-block;
+        padding-left: 10px;
       }
+    }
+  }
 
-      .crm-hover-button:not(#addMoreSoftCredit) {
-        margin-top: -3px !important;
+  #customData {
+    .label {
+      label {
+        line-height: normal;
       }
+    }
+  }
 
-      .crm-form-text,
-      .select2-container {
-        margin: 0 0 10px 0 !important;
+  input[type=radio] + label[for] {
+    line-height: normal;
+
+    &:after {
+      top: 7px;
+    }
+  }
+
+  .Premium {
+    td {
+      display: table-cell;
+
+      &:first-child {
+        width: 173px;
       }
+    }
+  }
+
+  .crm-contribution-form-table-credit_to_pcp {
+    tr {
+      &,
+      td.label {
+        padding-left: 0;
+      }
+    }
+
+    td.label {
+      width: 185px;
     }
   }
 }
