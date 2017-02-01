@@ -404,3 +404,121 @@ input[type="text"] {
     }
   }
 }
+
+.action-link {
+  min-height: 45px;
+  height: auto;
+}
+
+.form-layout-compressed {
+  th {
+    text-align: left;
+  }
+}
+
+#Contribution {
+  .crm-form-block > .form-layout-compressed {
+    td:first-child {
+      padding-left: 23px;
+    }
+  }
+
+  #s2id_currency {
+    &:after {
+      display: none;
+    }
+  }
+
+  #total_amount {
+    margin-top: 8px !important;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  .crm-button_qf_Contribution_upload {
+    margin-left: 0;
+  }
+
+  .crm-button_qf_Contribution_cancel {
+    overflow: visible;
+  }
+
+  #_qf_Contribution_cancel {
+    position: relative;
+    top: 1px;
+  }
+
+  .font-size12pt.label {
+    padding-left: 23px;
+  }
+
+  #softCredit {
+    > .crm-accordion-body {
+      &,
+      tr,
+      td {
+        padding-left: 0;
+      }
+
+      .crm-contribution-form-block-soft_credit_to:not(.hiddenElement) {
+        display: flex !important;
+        flex-direction: column;
+
+        td {
+          flex: 1 auto;
+        }
+      }
+
+      label {
+        width: 205px;
+        display: inline-block;
+        padding-left: 10px;
+      }
+    }
+  }
+
+  #customData {
+    .label {
+      label {
+        line-height: normal;
+      }
+    }
+  }
+
+  input[type=radio] + label[for] {
+    line-height: normal;
+
+    &:after {
+      top: 7px;
+    }
+  }
+
+  .Premium {
+    td {
+      display: table-cell;
+
+      &:first-child {
+        width: 173px;
+      }
+    }
+  }
+
+  .crm-contribution-form-table-credit_to_pcp {
+    tr {
+      &,
+      td.label {
+        padding-left: 0;
+      }
+    }
+
+    td.label {
+      width: 185px;
+    }
+  }
+}
+
+.ui-dialog-buttonpane {
+  display: none;
+}
