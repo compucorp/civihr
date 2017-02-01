@@ -80,6 +80,10 @@
             padding-left: 20px;
           }
         }
+
+        &:last-child {
+          border-top: 1px solid $crm-dark-grayblue;
+        }
       }
     }
 
