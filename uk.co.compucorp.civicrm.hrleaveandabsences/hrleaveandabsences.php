@@ -62,32 +62,38 @@ function _hrleaveandabsences_create_administer_menu() {
  * @param $leaveAndAbsencesAdminNavigation
  */
 function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminNavigation) {
-  $leaveAndAbsencesAdministerMenuTree = array(
-      array(
-          'label'      => ts('Leave/Absence Types'),
-          'name'       => 'leave_and_absence_types',
-          'url'        => 'civicrm/admin/leaveandabsences/types?action=browse&reset=1',
-          'permission' => 'administer leave and absences',
-      ),
-      array(
-          'label'      => ts('Leave/Absence Periods'),
-          'name'       => 'leave_and_absence_periods',
-          'url'        => 'civicrm/admin/leaveandabsences/periods?action=browse&reset=1',
-          'permission' => 'administer leave and absences',
-      ),
-      array(
-          'label'      => ts('Public Holidays'),
-          'name'       => 'leave_and_absence_public_holidays',
-          'url'        => 'civicrm/admin/leaveandabsences/public_holidays?action=browse&reset=1',
-          'permission' => 'administer leave and absences',
-      ),
-      array(
-          'label'      => ts('Manage Work Patterns'),
-          'name'       => 'leave_and_absence_manage_work_patterns',
-          'url'        => 'civicrm/admin/leaveandabsences/work_patterns?action=browse&reset=1',
-          'permission' => 'administer leave and absences',
-      )
-  );
+  $leaveAndAbsencesAdministerMenuTree = [
+    [
+      'label' => ts('Leave/Absence Types'),
+      'name' => 'leave_and_absence_types',
+      'url' => 'civicrm/admin/leaveandabsences/types?action=browse&reset=1',
+      'permission' => 'administer leave and absences',
+    ],
+    [
+      'label' => ts('Leave/Absence Periods'),
+      'name' => 'leave_and_absence_periods',
+      'url' => 'civicrm/admin/leaveandabsences/periods?action=browse&reset=1',
+      'permission' => 'administer leave and absences',
+    ],
+    [
+      'label' => ts('Public Holidays'),
+      'name' => 'leave_and_absence_public_holidays',
+      'url' => 'civicrm/admin/leaveandabsences/public_holidays?action=browse&reset=1',
+      'permission' => 'administer leave and absences',
+    ],
+    [
+      'label' => ts('Manage Work Patterns'),
+      'name' => 'leave_and_absence_manage_work_patterns',
+      'url' => 'civicrm/admin/leaveandabsences/work_patterns?action=browse&reset=1',
+      'permission' => 'administer leave and absences',
+    ],
+    [
+      'label' => ts('General Settings'),
+      'name' => 'leave_and_absence_general_settings',
+      'url' => 'civicrm/admin/leaveandabsences/general_settings',
+      'permission' => 'administer leave and absences',
+    ]
+  ];
 
   foreach ($leaveAndAbsencesAdministerMenuTree as $i => $item) {
     $item['weight']    = $i;
