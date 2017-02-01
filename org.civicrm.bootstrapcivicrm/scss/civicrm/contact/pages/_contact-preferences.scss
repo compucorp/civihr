@@ -29,7 +29,8 @@
       }
 
       .listing-box {
-        height: 216px;
+        max-height: 216px;
+        height: auto;
 
         > div {
           background-color: #ffffff;
