@@ -16,7 +16,7 @@ define([
 
       var vm = this;
       var formatDate = $filter('formatDate');
-      var fundersContacts;
+      var fundersContacts = {};
       var roles_type = ['funders', 'cost_centers'];
 
       $scope.loading = true;
@@ -403,7 +403,10 @@ define([
             delete newRole.newEndDate;
           }
 
-          // Create the new job role
+          if (newRole.funders.length) {
+            updateFundersContactsList(newRole.funders);
+          }
+
           createJobRole(newRole).then(function () {
             updateHeaderInfo(newRole);
 
@@ -506,7 +509,10 @@ define([
           delete updatedRole.end_date;
         }
 
-        // Update the job role
+        if (updatedRole.funders.length) {
+          updateFundersContactsList(updatedRole.funders);
+        }
+
         updateJobRole(role_id, updatedRole).then(function () {
           updateHeaderInfo(updatedRole);
 
@@ -1080,6 +1086,23 @@ define([
           .catch(function (errorMessage) {
             $scope.error = errorMessage;
           });
+      }
+
+      /**
+       * Updates the internal list of funders contacts with the funders list
+       * of the given job role. If the job role has any funder which is not
+       * already stored in the list, the funder gets added
+       *
+       * @param  {Array} jobRoleFunders
+       */
+      function updateFundersContactsList(jobRoleFunders) {
+        jobRoleFunders.forEach(function (funder) {
+          var funderData = funder.funder_id;
+
+          if (!_.contains(Object.keys(fundersContacts), funderData.id)) {
+            fundersContacts[funderData.id] = funderData;
+          }
+        });
       }
 
       /**
