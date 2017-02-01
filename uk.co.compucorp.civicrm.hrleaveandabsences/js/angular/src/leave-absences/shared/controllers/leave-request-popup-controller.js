@@ -26,6 +26,7 @@ define([
       $log.debug('LeaveRequestPopupCtrl');
 
       var absenceTypesAndIds,
+        initialLeaveRequest = {}, //used to compare the change in leaverequest in edit mode
         selectedAbsenceType = {},
         serverDateFormat = 'YYYY-MM-DD',
         vm = {};
@@ -201,6 +202,11 @@ define([
       vm.canSubmit = function () {
         var canSubmit = canCalculateChange();
 
+        //check if user has changed any attribute
+        if (vm.mode == 'edit') {
+          canSubmit = canSubmit &&  !_.isEqual(initialLeaveRequest, vm.leaveRequest.attributes());
+        }
+
         //check if manager has changed status
         if (vm.role === 'manager' && vm.leaveRequestStatuses) {
           //waiting_approval will not be available in vm.leaveRequestStatuses if manager has changed selection
@@ -285,7 +291,14 @@ define([
             initAbsenceType();
             initStatus();
             initContact();
-            initDates();
+
+            //the promise will set the day types so that initial value is set properly
+            return initDates();
+          })
+          .then( function () {
+            if(vm.mode == 'edit') {
+              initialLeaveRequest = _.cloneDeep(vm.leaveRequest.attributes());
+            }
           })
           .finally(function () {
             vm.loading.absenceTypes = false;
@@ -735,21 +748,35 @@ define([
 
       /**
        * Initialize from and to dates, day types and contact
+       *
+       * @return {Promise}
        */
       function initDates() {
+        var deferred = $q.defer();
+
         if (canEdit()) {
           var attributes = _.cloneDeep(vm.leaveRequest.attributes());
 
           vm.uiOptions.fromDate = convertDateFormatFromServer(vm.leaveRequest.from_date);
+
           vm.onDateChange(vm.uiOptions.fromDate, 'from')
             .then(function () {
               //to_date and type has been reset in above call so reinitialize from clone
               vm.leaveRequest.to_date = attributes.to_date;
               vm.leaveRequest.to_date_type = attributes.to_date_type;
               vm.uiOptions.toDate = convertDateFormatFromServer(vm.leaveRequest.to_date);
-              vm.onDateChange(vm.uiOptions.toDate, 'to');
+              vm.onDateChange(vm.uiOptions.toDate, 'to')
+                .then( function () {
+                  //reolve only after both from and to day types are also set
+                  deferred.resolve({});
+                });
             });
         }
+        else {
+          deferred.resolve({});
+        }
+
+        return deferred.promise;
       }
 
       /**
@@ -829,7 +856,13 @@ define([
       function updateRequest() {
         vm.leaveRequest.update()
           .then(function () {
-            postSubmit('LeaveRequest::updatedByManager');
+            if (vm.role == 'manager') {
+              postSubmit('LeaveRequest::updatedByManager');
+            }
+            else if (vm.role == 'owner') {
+              postSubmit('LeaveRequest::edit');
+            }
+
           })
           .catch(handleError);
       }

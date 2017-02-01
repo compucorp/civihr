@@ -21,6 +21,7 @@ define([
     $log.debug('Component: my-leave-report');
 
     var vm = Object.create(this);
+
     var actionMatrix = {
       'waiting_approval'          : ['edit'   , 'cancel'],
       'more_information_requested': ['respond', 'cancel'],
@@ -153,6 +154,10 @@ define([
       });
 
       $rootScope.$on('LeaveRequest::new', function () {
+        vm.refresh();
+      });
+
+      $rootScope.$on('LeaveRequest::edit', function () {
         vm.refresh();
       });
     })();
