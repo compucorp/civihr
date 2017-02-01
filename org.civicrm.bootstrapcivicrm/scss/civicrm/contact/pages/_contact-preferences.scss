@@ -27,6 +27,14 @@
           top: 17px;
         }
       }
+
+      .listing-box {
+        height: 216px;
+
+        > div {
+          background-color: #ffffff;
+        }
+      }
     }
   }
 }
