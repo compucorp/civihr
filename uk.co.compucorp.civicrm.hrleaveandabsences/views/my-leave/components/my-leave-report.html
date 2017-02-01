@@ -381,7 +381,7 @@
                               <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                 <li ng-repeat="action in report.actionsFor(request)">
                                   <a ng-if="action == 'cancel'" href ng-click="report.action(request, action)">{{action}}</a>
-                                  <a ng-if="action != 'cancel'" href leave-request-popup leave-request='request' contact-id="report.contactId">{{action}}</a>
+                                  <a ng-if="action != 'cancel'" href leave-request-popup leave-request="request" contact-id="report.contactId">{{action}}</a>
                                 </li>
                               </ul>
                             </div>

@@ -26,7 +26,7 @@ define([
       $log.debug('LeaveRequestPopupCtrl');
 
       var absenceTypesAndIds,
-        initialLeaveRequest = {}, //used to compare the change in leaverequest in edit mode
+        initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
         selectedAbsenceType = {},
         serverDateFormat = 'YYYY-MM-DD',
         vm = {};
@@ -129,7 +129,7 @@ define([
        * @param {String} dayType - set to from if from date is selected else to
        * @return {Promise}
        */
-      vm.onDateChange = function (date, dayType) {
+      vm.updateAbsencePeriodDatesTypes = function (date, dayType) {
         var oldPeriodId = vm.period.id;
         dayType = dayType || 'from';
         vm.loading[dayType + 'DayTypes'] = true;
@@ -176,7 +176,7 @@ define([
         setDateAndTypes();
 
         if (!canCalculateChange()) {
-          return $q.resolve({});
+          return $q.resolve();
         }
 
         vm.error = null;
@@ -203,8 +203,8 @@ define([
         var canSubmit = canCalculateChange();
 
         //check if user has changed any attribute
-        if (vm.mode == 'edit') {
-          canSubmit = canSubmit &&  !_.isEqual(initialLeaveRequest, vm.leaveRequest.attributes());
+        if (vm.mode === 'edit') {
+          canSubmit = canSubmit &&  !_.isEqual(initialLeaveRequestAttributes, vm.leaveRequest.attributes());
         }
 
         //check if manager has changed status
@@ -288,16 +288,16 @@ define([
             return $q.all([loadDayTypes(), loadStatuses()]);
           })
           .then(function () {
+            //the promise will set the day types so that initial value is set properly
+            return initDates();
+          })
+          .then(function () {
             initAbsenceType();
             initStatus();
             initContact();
 
-            //the promise will set the day types so that initial value is set properly
-            return initDates();
-          })
-          .then( function () {
-            if(vm.mode == 'edit') {
-              initialLeaveRequest = _.cloneDeep(vm.leaveRequest.attributes());
+            if(vm.mode === 'edit') {
+              initialLeaveRequestAttributes = vm.leaveRequest.attributes();
             }
           })
           .finally(function () {
@@ -747,7 +747,7 @@ define([
       }
 
       /**
-       * Initialize from and to dates, day types and contact
+       * Initialize from and to dates and day types
        *
        * @return {Promise}
        */
@@ -755,25 +755,25 @@ define([
         var deferred = $q.defer();
 
         if (canEdit()) {
-          var attributes = _.cloneDeep(vm.leaveRequest.attributes());
+          var attributes = vm.leaveRequest.attributes();
 
           vm.uiOptions.fromDate = convertDateFormatFromServer(vm.leaveRequest.from_date);
 
-          vm.onDateChange(vm.uiOptions.fromDate, 'from')
+          vm.updateAbsencePeriodDatesTypes(vm.uiOptions.fromDate, 'from')
             .then(function () {
               //to_date and type has been reset in above call so reinitialize from clone
               vm.leaveRequest.to_date = attributes.to_date;
               vm.leaveRequest.to_date_type = attributes.to_date_type;
               vm.uiOptions.toDate = convertDateFormatFromServer(vm.leaveRequest.to_date);
-              vm.onDateChange(vm.uiOptions.toDate, 'to')
-                .then( function () {
+              vm.updateAbsencePeriodDatesTypes(vm.uiOptions.toDate, 'to')
+                .then(function () {
                   //reolve only after both from and to day types are also set
-                  deferred.resolve({});
+                  deferred.resolve();
                 });
             });
         }
         else {
-          deferred.resolve({});
+          deferred.resolve();
         }
 
         return deferred.promise;
@@ -807,7 +807,7 @@ define([
             });
         }
 
-        return $q.resolve({});
+        return $q.resolve();
       }
 
       /**
@@ -856,13 +856,12 @@ define([
       function updateRequest() {
         vm.leaveRequest.update()
           .then(function () {
-            if (vm.role == 'manager') {
+            if (vm.role === 'manager') {
               postSubmit('LeaveRequest::updatedByManager');
             }
-            else if (vm.role == 'owner') {
+            else if (vm.role === 'owner') {
               postSubmit('LeaveRequest::edit');
             }
-
           })
           .catch(handleError);
       }

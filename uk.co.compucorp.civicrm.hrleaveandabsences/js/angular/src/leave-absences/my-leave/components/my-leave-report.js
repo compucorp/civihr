@@ -153,13 +153,7 @@ define([
         vm.loading.content = false;
       });
 
-      $rootScope.$on('LeaveRequest::new', function () {
-        vm.refresh();
-      });
-
-      $rootScope.$on('LeaveRequest::edit', function () {
-        vm.refresh();
-      });
+      registerEvents();
     })();
 
     /**
@@ -485,6 +479,20 @@ define([
       return _.find(vm.leaveRequestStatuses, function (status) {
         return status.name === statusName;
       })['value'];
+    }
+
+    /**
+    * Register events which will be called by other modules
+    *
+    */
+    function registerEvents() {
+      $rootScope.$on('LeaveRequest::new', function () {
+        vm.refresh();
+      });
+
+      $rootScope.$on('LeaveRequest::edit', function () {
+        vm.refresh();
+      });
     }
 
     return vm;
