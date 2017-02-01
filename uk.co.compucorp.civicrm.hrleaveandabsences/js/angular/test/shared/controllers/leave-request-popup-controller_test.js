@@ -503,10 +503,10 @@
         });
 
         describe('on initialization', function () {
-          var waiting_approval;
+          var waitingApprovalStatus;
 
           beforeEach(function () {
-            waiting_approval = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
+            waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
           });
 
           it('should set the manager role', function () {
@@ -516,7 +516,7 @@
           it('should set all leaverequest values', function () {
             expect($ctrl.leaveRequest.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
             expect($ctrl.leaveRequest.type_id).toEqual(jasmine.any(String));
-            expect($ctrl.leaveRequest.status_id).toEqual(waiting_approval.value);
+            expect($ctrl.leaveRequest.status_id).toEqual(waitingApprovalStatus.value);
             expect($ctrl.leaveRequest.from_date).toEqual(jasmine.any(String));
             expect($ctrl.leaveRequest.from_date_type).toEqual(jasmine.any(String));
             expect($ctrl.leaveRequest.to_date).toEqual(jasmine.any(String));
@@ -699,6 +699,92 @@
         });
       });
 
+      describe('when user edits leave request', function () {
+        beforeEach(function () {
+          var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+          var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+          leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+          var directiveOptions = {
+            contactId: leaveRequest.contact_id, //owner's contact id
+            leaveRequest: leaveRequest
+          };
+
+          initTestController(directiveOptions);
+        });
+
+        describe('on initialization', function () {
+          var waitingApprovalStatus;
+
+          beforeEach(function () {
+            waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
+          });
+
+          it('should set role to owner', function () {
+            expect($ctrl.role).toEqual('owner');
+          });
+
+          it('should set all leaverequest values', function () {
+            expect($ctrl.leaveRequest.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
+            expect($ctrl.leaveRequest.type_id).toEqual('1');
+            expect($ctrl.leaveRequest.status_id).toEqual(waitingApprovalStatus.value);
+            expect($ctrl.leaveRequest.from_date).toEqual('2016-11-23');
+            expect($ctrl.leaveRequest.from_date_type).toEqual('all_day');
+            expect($ctrl.leaveRequest.to_date).toEqual('2016-11-28');
+            expect($ctrl.leaveRequest.to_date_type).toEqual('all_day');
+          });
+
+          it('does not allow user to submit', function () {
+            expect($ctrl.canSubmit()).toBeFalsy();
+          });
+
+          it('should show balance', function () {
+            expect($ctrl.uiOptions.showBalance).toBeTruthy();
+          });
+
+          it('should load day types', function () {
+            expect($ctrl.leaveRequestFromDayTypes).toBeDefined();
+            expect($ctrl.leaveRequestToDayTypes).toBeDefined();
+          });
+        });
+
+        describe('and submits', function () {
+          beforeEach(function () {
+            spyOn($rootScope, '$emit');
+            spyOn($ctrl.leaveRequest, 'update').and.callThrough();
+            //change date to enable submit button
+            setTestDates(date2016);
+
+            //entitlements are randomly generated so resetting them to positive here
+            if ($ctrl.balance.closing < 0) {
+              $ctrl.balance.closing = 5;
+            }
+
+            $ctrl.submit();
+            $scope.$apply();
+          });
+
+          it('will allow user to submit', function () {
+            expect($ctrl.canSubmit()).toBeTruthy();
+          });
+
+          it('should call appropriate API endpoint', function () {
+            expect($ctrl.leaveRequest.update).toHaveBeenCalled();
+          });
+
+          it('should send edit event', function () {
+            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::edit', $ctrl.leaveRequest);
+          });
+
+          it('should have no error', function () {
+            expect($ctrl.error).toBeNull();
+          });
+
+          it('should close model popup', function () {
+            expect(modalInstanceSpy.close).toHaveBeenCalled();
+          });
+        });
+      });
+
       /**
        * Initialize the controller
        *
@@ -724,13 +810,13 @@
       function setTestDates(from, to) {
         if (from) {
           $ctrl.uiOptions.fromDate = new Date(from);
-          $ctrl.onDateChange($ctrl.uiOptions.fromDate, 'from');
+          $ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from');
           $scope.$digest();
         }
 
         if (to) {
           $ctrl.uiOptions.toDate = new Date(to);
-          $ctrl.onDateChange($ctrl.uiOptions.toDate, 'to');
+          $ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to');
           $scope.$digest();
         }
       }
