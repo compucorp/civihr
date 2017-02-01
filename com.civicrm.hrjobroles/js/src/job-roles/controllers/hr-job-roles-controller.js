@@ -16,14 +16,15 @@ define([
 
       var vm = this;
       var formatDate = $filter('formatDate');
+      var fundersContacts;
       var roles_type = ['funders', 'cost_centers'];
 
+      $scope.loading = true;
       $scope.format = HR_settings.DATE_FORMAT;
       $scope.past_job_roles = [];
       $scope.present_job_roles = [];
       $scope.collapsedRows = []; // Tracks collapsed / expanded rows
       $scope.contactList = []; // Contact List IDs array to use for the select lists
-      $scope.contactListObject = {}; // Contact List object stores more details about the contact
       $scope.contractsData = []; // Store the contractsData
       $scope.edit_data = {}; // Tracks edit data changes on the forms
       $scope.view_tab = []; // Tracks clicked tabs per each row
@@ -209,7 +210,6 @@ define([
        * @param  {*} data
        */
       $scope.initData = function (role_id, form_id, data) {
-
         // Check if we have the array already
         if (typeof $scope.edit_data[role_id] === "undefined") {
           $scope.edit_data[role_id] = {};
@@ -560,11 +560,7 @@ define([
        */
       vm.getContactList = function(sortName) {
         var successCallback = function (data) {
-
-          var contact,
-            contactList = [],
-            contactListObject = {},
-            i = 0;
+          var contactList = [], i = 0;
 
           if (data.is_error === 1) {
             vm.message_type = 'alert-danger';
@@ -573,18 +569,14 @@ define([
           else {
             // Pass the contact list to the scope
             for (; i < data.count; i++) {
-              // Build the contact list
-              contact = {
+              contactList.push({
                 id: data.values[i]['id'],
                 sort_name: data.values[i]['sort_name']
-              };
-              contactList.push(contact);
-              contactListObject[data.values[i]['id']] = contact;
+              });
             }
-            // Store the ContactList as Array as typeahead needs array what we can reuse later
+
+            // Store the ContactList as Array as typeahead needs array that we can reuse later
             vm.contactList = contactList;
-            // Store the object too, so we can point to right values by Contact ID
-            vm.contactListObject = contactListObject;
           }
 
           // Hide the message after some seconds
@@ -596,7 +588,7 @@ define([
           $scope.error = errorMessage;
         };
 
-        HRJobRolesService.getContactList(sortName).then(successCallback,errorCallback);
+        return HRJobRolesService.getContactList(sortName).then(successCallback, errorCallback);
       };
 
 
@@ -604,10 +596,14 @@ define([
       (function init() {
         $scope.today();
 
-        getOptionValues();
-        getJobRolesList($scope.$parent.contactId);
-
-        vm.getContactList();
+        $q.all([
+          getOptionValues(),
+          getJobRolesList($scope.$parent.contactId),
+          vm.getContactList()
+        ])
+        .then(function () {
+          $scope.loading = false;
+        });
       })();
 
 
@@ -719,6 +715,22 @@ define([
       }
 
       /**
+       * Extracts, from each job role past and preset, the contact id of every funder
+       *
+       * @return {Array} a list of ids
+       */
+      function extractFundersContactIds() {
+        return _(vm.present_job_roles.concat(vm.past_job_roles))
+          .map(function (jobRole) {
+            return jobRole.funder;
+          })
+          .thru(function (funderIds) {
+            return funderIds.join('').split('|');
+          })
+          .compact().uniq().value();
+      }
+
+      /**
        * Get a contract with the given contractId
        *
        * @param {int} contractId
@@ -763,6 +775,23 @@ define([
       }
 
       /**
+       * Fetches from the API the contact data of all the funders of each job role
+       *
+       * @return {Promise}
+       *   resolves to an object, with the key as the contact id,
+       *   and the value as the contact data
+       */
+      function getFundersContacts() {
+        return HRJobRolesService.getContactList(null, extractFundersContactIds()).then(function (data) {
+          return _(data.values).map(function (contact) {
+            return contact;
+          })
+          .indexBy('contact_id')
+          .value();
+        });
+      }
+
+      /**
        * Get job roles based on the passed Contact ID (refresh part of the page)
        *
        * @param {int} contactId
@@ -776,8 +805,8 @@ define([
           contractsPromise = $q.when(vm.job_contract_ids);
         }
 
-        contractsPromise.then(function (contractIds) {
-          !!contractIds.length && jobRolesFromContracts(contractIds);
+        return contractsPromise.then(function (contractIds) {
+          return !!contractIds.length && jobRolesFromContracts(contractIds);
         });
       }
 
@@ -788,7 +817,7 @@ define([
         // Set the option groups for which we want to get the values
         var option_groups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
 
-        HRJobRolesService.getOptionValues(option_groups).then(function (data) {
+        return HRJobRolesService.getOptionValues(option_groups).then(function (data) {
 
             if (data.is_error === 1) {
               vm.message_type = 'alert-danger';
@@ -958,7 +987,7 @@ define([
               type: funder_types[i],
               funder_id: {
                 id: funder_contact_ids[i],
-                sort_name: vm.contactListObject[funder_contact_ids[i]].sort_name
+                sort_name: fundersContacts[funder_contact_ids[i]].sort_name
               }
             });
           }
@@ -1017,34 +1046,40 @@ define([
        * @return {Promise}
        */
       function jobRolesFromContracts(contractIds) {
-        return HRJobRolesService.getAllJobRoles(contractIds).then(function (data) {
+        return HRJobRolesService.getAllJobRoles(contractIds)
+          .then(function (data) {
+            vm.present_job_roles = [];
+            vm.past_job_roles = [];
+            vm.status = 'Data load OK';
 
-          vm.present_job_roles = [];
-          vm.past_job_roles = [];
-
-          data.values.forEach(function (object_data) {
-            var todaysDate = moment().startOf('day');
-            var endDate = null;
-
-            if(!isDateEmpty(object_data.end_date)) {
-              endDate = moment(object_data.end_date).startOf('day');
+            if (data.is_error === 1) {
+              vm.error = 'Data load failure';
             }
 
-            if (!endDate || endDate.isSameOrAfter(todaysDate)) {
-              vm.present_job_roles.push(object_data);
-            } else {
-              vm.past_job_roles.push(object_data);
-            }
+            data.values.forEach(function (object_data) {
+              var todaysDate = moment().startOf('day');
+              var endDate = null;
+
+              if(!isDateEmpty(object_data.end_date)) {
+                endDate = moment(object_data.end_date).startOf('day');
+              }
+
+              if (!endDate || endDate.isSameOrAfter(todaysDate)) {
+                vm.present_job_roles.push(object_data);
+              } else {
+                vm.past_job_roles.push(object_data);
+              }
+            });
+          })
+          .then(function () {
+            return getFundersContacts();
+          })
+          .then(function (contacts) {
+            fundersContacts = contacts;
+          })
+          .catch(function (errorMessage) {
+            $scope.error = errorMessage;
           });
-
-          if (data.is_error === 1) {
-            vm.error = 'Data load failure';
-          }
-
-          vm.status = 'Data load OK';
-        }, function (errorMessage) {
-          $scope.error = errorMessage;
-        });
       }
 
       /**

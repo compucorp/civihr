@@ -2,7 +2,7 @@ define([
     'common/angular',
     'common/lodash',
     'common/moment',
-    'mocks/job-roles',
+    'mocks/data/job-roles',
     'common/angularMocks',
     'job-roles/app'
 ], function (angular, _, moment, Mock) {
@@ -366,7 +366,7 @@ define([
 
                   it('should remove the funders entries which are without funder_id', function() {
                     scope.onAfterSave(3, 'funders');
-                    expect(scope.edit_data[3]['funders'].length).toBe(2);
+                    expect(scope.edit_data[3]['funders'].length).toBe(3);
                   });
 
                   it('should remove the cost_centers entries which are without cost_centre_id', function() {
@@ -386,7 +386,7 @@ define([
                     });
 
                     it('should remove the funders entries which are without funder_id', function() {
-                      expect(scope.edit_data[3]['funders'].length).toBe(2);
+                      expect(scope.edit_data[3]['funders'].length).toBe(3);
                     });
                   });
 
@@ -407,7 +407,7 @@ define([
 
                     it('should remove the funders and cost_centers entries which are without id', function() {
                       expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
-                      expect(scope.edit_data[3]['funders'].length).toBe(2);
+                      expect(scope.edit_data[3]['funders'].length).toBe(3);
                     });
                   });
                 });
@@ -422,24 +422,29 @@ define([
         // Tests that needs to have control over the state prior
         // to the controller initialization
         describe('Initial state dependent tests', function () {
+            var getContractsSpy, getAllJobRolesSpy, contracts, jobRoles;
+
+            beforeEach(function () {
+              contracts = _.toArray(angular.copy(Mock.contracts_data));
+              jobRoles = _.toArray(angular.copy(Mock.roles_data));
+            });
+
+            beforeEach(function () {
+              spyOn(HRJobRolesService, 'getContracts').and.callFake(function () {
+                return fakeContractResponse(contracts);
+              });
+              spyOn(HRJobRolesService, 'getAllJobRoles').and.callFake(function () {
+                return fakeJobRolesResponse(jobRoles);
+              });
+            });
+
             describe('Fetching Job Roles from contract', function () {
-                var getContractsSpy, getAllJobRolesSpy;
-
-                beforeEach(function () {
-                    getContractsSpy = spyOn(HRJobRolesService, 'getContracts');
-                    getAllJobRolesSpy = spyOn(HRJobRolesService, 'getAllJobRoles');
-                });
-
                 describe('when the user does not have a contract', function () {
                     beforeEach(function () {
-                        getContractsSpy.and.callFake(function () {
-                            return fakeContractResponse([]);
-                        });
+                      contracts = [];
 
-                        getAllJobRolesSpy.and.callThrough();
-
-                        initController();
-                        $rootScope.$digest();
+                      initController();
+                      $rootScope.$digest();
                     });
 
                     it('does not try to fetch any job role', function () {
@@ -448,22 +453,9 @@ define([
                 });
 
                 describe('when the user does have a contract', function () {
-                    var contracts, jobRoles;
-
                     beforeEach(function () {
-                        contracts = _.toArray(angular.copy(Mock.contracts_data));
-                        jobRoles = _.toArray(angular.copy(Mock.roles_data));
-
-                        getContractsSpy.and.callFake(function () {
-                            return fakeContractResponse(contracts);
-                        });
-
-                        getAllJobRolesSpy.and.callFake(function () {
-                          return fakeJobRolesResponse(jobRoles);
-                        });
-
-                        initController();
-                        $rootScope.$digest();
+                      initController();
+                      $rootScope.$digest();
                     });
 
                     it('fetches the job roles', function () {
@@ -477,6 +469,42 @@ define([
                       expect(ctrl.past_job_roles.length).toBe(2);
                     });
                 });
+            });
+
+            describe('funders data', function () {
+              var funderContactIds;
+
+              beforeEach(function () {
+                jobRoles = _.toArray(angular.copy(Mock.roles_data_from_api));
+
+                spyOn(HRJobRolesService, 'getContactList').and.callThrough();
+                initController();
+                $rootScope.$digest();
+
+                funderContactIds = extractFundersContactIds();
+              });
+
+              it('fetches the contact for each job role funder', function () {
+                expect(HRJobRolesService.getContactList).toHaveBeenCalledWith(null, funderContactIds);
+              });
+
+              /**
+               * Method that mimics how the controller extracts the ids
+               *
+               * @return {[type]} [description]
+               */
+              function extractFundersContactIds() {
+                return _(ctrl.present_job_roles.concat(ctrl.past_job_roles))
+                  .map(function (jobRole) {
+                    return jobRole.funder;
+                  })
+                  .thru(function (funderIds) {
+                    return funderIds.join('').split('|');
+                  })
+                  .compact()
+                  .uniq()
+                  .value();
+              }
             });
 
             /**
