@@ -1,6 +1,6 @@
 define([
   'common/angular',
-  'mocks/job-roles',
+  'mocks/data/job-roles',
   'common/angularMocks',
   'job-roles/app'
 ], function (angular, Mock) {

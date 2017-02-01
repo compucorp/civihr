@@ -71,12 +71,33 @@ define(function () {
                 "cost_centers": []
             },
             "1": {
-                "title": "Test",
-                "job_contract_id": "1",
-                "start_date": "2005-05-05 00:00:00",
-                "end_date": "2006-05-05 00:00:00",
-                "funders": [],
-                "cost_centers": []
+              "title": "Test",
+              "job_contract_id": "1",
+              "start_date": "2005-05-05 00:00:00",
+              "end_date": "2006-05-05 00:00:00",
+              "funders": [
+                {
+                  id: 2,
+                  amount: "0",
+                  percentage: "1",
+                  type: "1",
+                  funder_id: {
+                    id: "1",
+                    sort_name: "Default Organization"
+                  }
+                },
+                {
+                  id: 4,
+                  amount: "1",
+                  percentage: "20",
+                  type: "0",
+                  funder_id: {
+                    id: "3",
+                    sort_name: "Bar Baz"
+                  }
+                }
+              ],
+              "cost_centers": []
             },
             "2": {
                 "title": "Contract Dates",
@@ -93,45 +114,41 @@ define(function () {
               "end_date": null,
               "funders": [
                 {
-                  $$hashKey: "object:565",
+                  id: 1,
                   amount: "0",
-                  funder_id: "",
-                  id: 2,
                   percentage: "2",
-                  type: "1"
+                  type: "1",
+                  funder_id: ""
                 },
                 {
-                  $$hashKey: "object:565",
+                  id: 2,
                   amount: "0",
-                  funder_id: {
-                    id:"1",
-                    sort_name:"Default Organization"
-                  },
-                  id: 1,
                   percentage: "1",
-                  type: "1"
+                  type: "1",
+                  funder_id: {
+                    id: "1",
+                    sort_name: "Default Organization"
+                  }
                 },
                 {
-                  $$hashKey: "object:565",
+                  id: 3,
                   amount: "0",
+                  percentage: "10",
+                  type: "1",
                   funder_id: {
-                    id:"1",
-                    sort_name:"Default Organization"
-                  },
-                  id: 1,
-                  percentage: "0",
-                  type: "1"
+                    id: "2",
+                    sort_name: "Foo Bar"
+                  }
                 },
                 {
-                  $$hashKey: "object:565",
+                  id: 4,
                   amount: "1",
+                  percentage: "20",
+                  type: "0",
                   funder_id: {
-                    id:"1",
-                    sort_name:"Default Organization"
-                  },
-                  id: 1,
-                  percentage: "0",
-                  type: "0"
+                    id: "3",
+                    sort_name: "Bar Baz"
+                  }
                 }
               ],
               "cost_centers": [
