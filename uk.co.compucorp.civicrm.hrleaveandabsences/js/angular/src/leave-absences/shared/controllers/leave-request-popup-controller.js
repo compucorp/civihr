@@ -288,7 +288,6 @@ define([
             return $q.all([loadDayTypes(), loadStatuses()]);
           })
           .then(function () {
-            //the promise will set the day types so that initial value is set properly
             return initDates();
           })
           .then(function () {
@@ -296,7 +295,7 @@ define([
             initStatus();
             initContact();
 
-            if(vm.mode === 'edit') {
+            if (vm.mode === 'edit') {
               initialLeaveRequestAttributes = vm.leaveRequest.attributes();
             }
           })
@@ -366,7 +365,7 @@ define([
           vm.mode = 'edit';
           //todo in future
           //if owner and status is approved then view only mode
-          // if(vm.role === 'owner' && vm.leaveRequest.status_id == valueOfRequestStatus('approved')){
+          // if (vm.role === 'owner' && vm.leaveRequest.status_id == valueOfRequestStatus('approved')){
           //   vm.mode = 'view';
           // }
         } else {
@@ -747,7 +746,8 @@ define([
       }
 
       /**
-       * Initialize from and to dates and day types
+       * Initialize from and to dates and day types.
+       * It will also set the day types.
        *
        * @return {Promise}
        */
@@ -767,7 +767,7 @@ define([
               vm.uiOptions.toDate = convertDateFormatFromServer(vm.leaveRequest.to_date);
               vm.updateAbsencePeriodDatesTypes(vm.uiOptions.toDate, 'to')
                 .then(function () {
-                  //reolve only after both from and to day types are also set
+                  //resolve only after both from and to day types are also set
                   deferred.resolve();
                 });
             });
