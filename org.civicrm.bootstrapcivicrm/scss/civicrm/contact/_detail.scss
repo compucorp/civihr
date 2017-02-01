@@ -59,8 +59,33 @@
     padding: 0 !important;
   }
 
-  .crm-expand-row {
-    line-height: 16px;
+  // Contributions tab
+  .CRM_Contribute_Form_Search {
+    padding-right: 10px;
+
+    .form-layout-compressed {
+      background-color: $gray-lighter;
+      box-shadow: $box-shadow;
+
+      tr {
+        height: 50px;
+        line-height: 50px;
+
+        th {
+          color: $gray-darker;
+          text-transform: capitalize;
+          border: none !important;
+
+          &:first-child {
+            padding-left: 20px;
+          }
+        }
+      }
+    }
+
+    .crm-expand-row {
+      line-height: 16px;
+    }
   }
 }
 
