@@ -9604,6 +9604,9 @@ fieldset[disabled]
 #hrjobroles .hrjobroles-switch[disabled] + .radio-label {
   cursor: not-allowed;
 }
+#hrjobroles .spinner-height {
+  height: 80px;
+}
 #hrjobroles .add-new-row {
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.176);
 }
