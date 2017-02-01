@@ -36,4 +36,10 @@
     <title>Calculation details</title>
     <access_arguments>administer leave and absences</access_arguments>
   </item>
+  <item>
+    <path>civicrm/admin/leaveandabsences/general_settings</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Form_GeneralSettings</page_callback>
+    <title>General Settings</title>
+    <access_arguments>administer leave and absences</access_arguments>
+  </item>
 </menu>
