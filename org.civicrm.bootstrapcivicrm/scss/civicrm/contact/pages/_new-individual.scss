@@ -104,47 +104,60 @@
       #s2id_preferred_mail_format {
         float: left;
       }
+
+      #s2id_contact_sub_type {
+        .select2-search-field {
+          width: 20%;
+        }
+      }
+
+      #s2id_group {
+        max-width: 230px;
+      }
     }
   }
   .contact_information-section {
     width: 100% !important;
     tr {
-      &:nth-child(1) {
+      &:first-child {
         td {
-          &:nth-child(2),
-          &:nth-child(3) {
-            position: relative;
-            top: 35px;
+          &:first-child {
 
-            .helpicon {
-              position: relative;
-              z-index: 2;
-              left: 40px;
-            }
-          }
-
-          &:nth-child(2) {
-            .helpicon {
-              left: 60px;
-            }
           }
         }
       }
+    }
 
-      &:nth-child(2) {
+    tr {
+      td {
+        &:nth-child(2),
+        &:nth-child(3),
+        &:nth-child(4) {
+          position: relative;
+          z-index: 1;
+          text-align: left;
+        }
+
+        &:nth-child(1) {
+          width: 435px;
+        }
+      }
+
+      &[id^="Email_Block_"] {
         td {
-          &:nth-child(2),
-          &:nth-child(3) {
-            position: relative;
-            z-index: 1;
-          }
-
           &:nth-child(2) {
-            right: 60px;
+            right: 10px;
+            width: 200px;
           }
 
           &:nth-child(3) {
-            right: 30px;
+            left: 7px;
+            width: 200px;
+          }
+
+          &:nth-child(4) {
+            left: 7px;
+            width: 200px;
           }
         }
       }
@@ -188,6 +201,10 @@
   #tagtree {
     li {
       padding: 10px 0;
+
+      span {
+        background: none;
+      }
 
       input[type=checkbox] {
 
@@ -235,5 +252,11 @@
         display: none !important;
       }
     }
+  }
+
+  .collapsible-title {
+    padding: 15px 20px;
+    border-bottom: 0;
+    font-size: 1.1em;
   }
 }
