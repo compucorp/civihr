@@ -2356,6 +2356,105 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
   }
 
+  public function testGetAndGetFullReturnsOnlyDataLinkedToContactsThatLoggedInUserManagesWhenLoggedInUserIsALeaveApproverWithOneOfTheAvailableRelationships() {
+    $this->setLeaveApproverRelationshipTypes([
+      'approves leaves for',
+      'manages things for',
+    ]);
+
+    $manager1 = ContactFabricator::fabricate();
+    $manager2 = ContactFabricator::fabricate();
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+    $contact3 = ContactFabricator::fabricate();
+
+    $this->setContactAsLeaveApproverOf($manager1, $contact2, null, null, true, 'manages things for');
+    $this->setContactAsLeaveApproverOf($manager2, $contact1, null, null, true, 'approves leaves for');
+    $this->setContactAsLeaveApproverOf($manager2, $contact3, null, null, true, 'manages leaves for');
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact2['id'] ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact1['id'] ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact3['id'] ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    $leaveRequestContact1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact1['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => 1
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact2['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => 1
+    ], true);
+
+    $leaveRequestContact3 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact3['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => 1
+    ], true);
+
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
+
+    // Manager1 only manages contact2 (though the 'manages things for' relationship),
+    // so only contact2 leave requests will be returned
+    $this->registerCurrentLoggedInContactInSession($manager1['id']);
+    $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(1, $result['count']);
+    $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
+
+    $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(1, $result['count']);
+    $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
+
+    // Manager2 manages contact1 (through the 'approves leaves for' relationship),
+    // and contact3 (through the 'manage things for' relationship), so leave
+    // requests from both should be returned
+    $this->registerCurrentLoggedInContactInSession($manager2['id']);
+    $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contact1['id'], $result['values'][$leaveRequestContact1->id]['contact_id']);
+    $this->assertEquals($contact3['id'], $result['values'][$leaveRequestContact3->id]['contact_id']);
+
+    $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contact1['id'], $result['values'][$leaveRequestContact1->id]['contact_id']);
+    $this->assertEquals($contact3['id'], $result['values'][$leaveRequestContact3->id]['contact_id']);
+    $this->assertEquals($contact3['id'], $result['values'][$leaveRequestContact3->id]['contact_id']);
+  }
+
   public function testGetAndGetFullReturnsAllDataWhenLoggedInUserHasViewAllContactsPermission() {
     $adminID = 1;
     $contact1 = ContactFabricator::fabricate();
