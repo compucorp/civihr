@@ -607,9 +607,7 @@
           });
 
           it('shows the "edit" and "cancel" actions', function () {
-            expect(actionMatrix.length).toBe(2);
-            expect(actionMatrix).toContain('edit');
-            expect(actionMatrix).toContain('cancel');
+            expect(actionMatrix).toEqual(['edit', 'cancel']);
           });
         });
 
@@ -619,9 +617,7 @@
           });
 
           it('shows the "respond" and "cancel" actions', function () {
-            expect(actionMatrix.length).toBe(2);
-            expect(actionMatrix).toContain('respond');
-            expect(actionMatrix).toContain('cancel');
+            expect(actionMatrix).toEqual(['respond', 'cancel']);
           });
         });
 
@@ -630,9 +626,8 @@
             actionMatrix = getActionMatrixForStatus('approved');
           });
 
-          it('shows the "cancel" action', function () {
-            expect(actionMatrix.length).toBe(2);
-            expect(actionMatrix).toContain('cancel');
+          it('shows the "cancel" and the "view" action', function () {
+            expect(actionMatrix).toEqual(['view', 'cancel']);
           });
         });
 
@@ -642,8 +637,7 @@
           });
 
           it('shows the "view" action', function () {
-            expect(actionMatrix.length).toBe(1);
-            expect(actionMatrix).toContain('view');
+            expect(actionMatrix).toEqual(['view']);
           });
         });
 
@@ -653,8 +647,7 @@
           });
 
           it('shows the "view" action', function () {
-            expect(actionMatrix.length).toBe(1);
-            expect(actionMatrix).toContain('view');
+            expect(actionMatrix).toEqual(['view']);
           });
         });
 
