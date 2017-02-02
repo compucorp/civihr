@@ -27,6 +27,8 @@ define([
 
       var absenceTypesAndIds,
         initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
+        mode = '', //can be edit, create, view
+        role = '', //could be manager, owner or admin
         selectedAbsenceType = {},
         serverDateFormat = 'YYYY-MM-DD',
         vm = {};
@@ -37,9 +39,7 @@ define([
       vm.contact = {};
       vm.error = null;
       vm.leaveRequestDayTypes = [];
-      vm.mode = ''; //can be edit, create, view
       vm.period = {};
-      vm.role = ''; //could be manager, owner or admin
       vm.statusLabel = '';
       vm.balance = {
         closing: 0,
@@ -175,21 +175,21 @@ define([
       /**
        * Checks if popup is opened in given mode
        *
-       * @param {String} mode to open leave request like edit or view or create
+       * @param {String} modeParam to open leave request like edit or view or create
        * @return {Boolean}
        */
-      vm.isMode = function (mode) {
-        return vm.mode === mode;
+      vm.isMode = function (modeParam) {
+        return mode === modeParam;
       };
 
       /**
        * Checks if popup is opened in given role
        *
-       * @param {String} role like manager, owner
+       * @param {String} roleParam like manager, owner
        * @return {Boolean}
        */
-      vm.isRole = function (role) {
-        return vm.role === role;
+      vm.isRole = function (roleParam) {
+        return role === roleParam;
       };
 
       /**
@@ -562,20 +562,20 @@ define([
        */
       function initOpenMode() {
         if (vm.leaveRequest.id) {
-          vm.mode = 'edit';
+          mode = 'edit';
 
           //approved, admin_approved, rejected, cancelled
           var viewModes = [vm.leaveRequestStatuses['1'].value, vm.leaveRequestStatuses['2'].value,
             vm.leaveRequestStatuses['5'].value, vm.leaveRequestStatuses['6'].value];
 
           if (vm.isRole('owner') && viewModes.indexOf(vm.leaveRequest.status_id) > -1){
-            vm.mode = 'view';
+            mode = 'view';
           }
         } else {
-          vm.mode = 'create';
+          mode = 'create';
         }
 
-        return $q.resolve(vm.mode);
+        return $q.resolve(mode);
       }
 
       /**
@@ -590,8 +590,8 @@ define([
           return setManagerRole(directiveOptions.contactId);
         }
         //owner is editing or viewing popup, no api call - direct set
-        vm.role = 'owner';
-        return $q.resolve(vm.role);
+        role = 'owner';
+        return $q.resolve(role);
       }
 
       /**
@@ -715,7 +715,7 @@ define([
         return Calendar.get(vm.leaveRequest.contact_id, vm.period.id)
           .then(function (usersCalendar) {
             vm.calendar = usersCalendar;
-          })
+          });
       }
 
       /**
@@ -885,9 +885,9 @@ define([
         return vm.leaveRequest.roleOf({
             id: managerContactId
           })
-          .then(function (role) {
-            if (role === 'manager') {
-              vm.role = 'manager';
+          .then(function (roleParam) {
+            if (roleParam === 'manager') {
+              role = 'manager';
             }
           });
       }

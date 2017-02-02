@@ -184,7 +184,7 @@
             expect($ctrl.leaveRequest.from_date).toEqual(fromDate);
           });
 
-          it('will select first day type', function () {
+          it('selects first day type', function () {
             expect($ctrl.leaveRequest.from_date_type).toEqual('all_day');
           });
         });
@@ -197,11 +197,11 @@
             toDate = moment($ctrl.uiOptions.toDate).format(serverDateFormat);
           });
 
-          it('will set to date', function () {
+          it('sets to date', function () {
             expect($ctrl.leaveRequest.to_date).toEqual(toDate);
           });
 
-          it('will select first day type', function () {
+          it('select first day type', function () {
             expect($ctrl.leaveRequest.to_date_type).toEqual('all_day');
           });
         });
@@ -211,7 +211,7 @@
             setTestDates(date2016, date2016);
           });
 
-          it('will show balance change', function () {
+          it('does show balance change', function () {
             expect($ctrl.uiOptions.showBalance).toBeTruthy();
           });
         });
@@ -257,12 +257,12 @@
             $scope.$digest();
           });
 
-          it('will hide to date and type', function () {
+          it('hides to date and type', function () {
             expect($ctrl.uiOptions.toDate).toBeNull();
             expect($ctrl.uiOptions.selectedToType).not.toBeDefined();
           });
 
-          it('will reset balance and types', function () {
+          it('resets balance and types', function () {
             expect($ctrl.balance.closing).toEqual(0);
             expect($ctrl.balance.change.amount).toEqual(0);
           });
@@ -294,7 +294,7 @@
             setTestDates(date2016);
           });
 
-          it('will set from date', function () {
+          it('sets from date', function () {
             expect(moment($ctrl.leaveRequest.from_date, serverDateFormat, true).isValid()).toBe(true);
           });
         });
@@ -304,7 +304,7 @@
             setTestDates(date2016, date2016);
           });
 
-          it('will set to date', function () {
+          it('sets to date', function () {
             expect(moment($ctrl.leaveRequest.to_date, serverDateFormat, true).isValid()).toBe(true);
           });
         });
@@ -319,7 +319,7 @@
             setTestDates(null, date2016);
           });
 
-          it('will select to date type', function () {
+          it('selects to date type', function () {
             expect($ctrl.leaveRequest.to_date_type).toEqual(expectedDayType);
           });
         });
@@ -330,7 +330,7 @@
             setTestDates(date2016, date2016);
           });
 
-          it('will calculate balance change', function () {
+          it('calculates balance change', function () {
             expect($ctrl.calculateBalanceChange).toHaveBeenCalled();
           });
         });
@@ -346,11 +346,11 @@
               $scope.$digest();
             });
 
-            it('will update balance', function () {
+            it('updates balance', function () {
               expect($ctrl.balance.change.amount).toEqual(jasmine.any(Number));
             });
 
-            it('will update closing balance', function () {
+            it('updates closing balance', function () {
               expect($ctrl.balance.closing).toEqual(jasmine.any(Number));
             });
           });
@@ -365,11 +365,11 @@
               $scope.$digest();
             });
 
-            it('will update change amount', function () {
+            it('updates change amount', function () {
               expect($ctrl.balance.change.amount).toEqual(-2);
             });
 
-            it('will update closing balance', function () {
+            it('updates closing balance', function () {
               expect($ctrl.balance.closing).toEqual(jasmine.any(Number));
             });
           });
@@ -380,11 +380,11 @@
             setTestDates(date2016, date2016);
           });
 
-          it('will select default page', function () {
+          it('selects default page', function () {
             expect($ctrl.pagination.currentPage).toEqual(1);
           });
 
-          it('will set totalItems', function () {
+          it('sets totalItems', function () {
             expect($ctrl.pagination.totalItems).toBeGreaterThan(0);
           });
 
@@ -419,7 +419,7 @@
             expect($ctrl.error).toEqual(jasmine.any(Object));
           });
 
-          it('will not allow user to submit', function () {
+          it('does not allow user to submit', function () {
             expect($ctrl.canSubmit()).toBeFalsy();
           });
         });
@@ -449,11 +449,11 @@
             expect($ctrl.leaveRequest.id).toBeDefined();
           });
 
-          it('will allow user to submit', function () {
+          it('allows user to submit', function () {
             expect($ctrl.canSubmit()).toBeTruthy();
           });
 
-          it('will send event', function () {
+          it('sends event', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.leaveRequest);
           });
 
@@ -468,7 +468,7 @@
             });
 
             describe('and absence type does not allow overuse', function () {
-              it('will not save and set error', function () {
+              it('does not save and sets error', function () {
                 expect($ctrl.error).toBeDefined();
               });
             });
@@ -481,7 +481,7 @@
                 $scope.$digest();
               });
 
-              it('will save without errors', function () {
+              it('saves without errors', function () {
                 expect($ctrl.error).toBeNull();
               });
             });
@@ -510,7 +510,7 @@
           });
 
           it('sets the manager role', function () {
-            expect($ctrl.role).toEqual('manager');
+            expect($ctrl.isRole('manager')).toBeTruthy();
           });
 
           it('sets all leaverequest values', function () {
@@ -527,7 +527,7 @@
             expect($ctrl.contact.display_name).toEqual(jasmine.any(String));
           });
 
-          it('will not allow user to submit', function () {
+          it('does not allow user to submit', function () {
             expect($ctrl.canSubmit()).toBeFalsy();
           });
 
@@ -556,7 +556,7 @@
             $scope.$apply();
           });
 
-          it('will allow user to submit', function () {
+          it('allows user to submit', function () {
             expect($ctrl.canSubmit()).toBeTruthy();
           });
 
@@ -564,7 +564,7 @@
             expect($ctrl.leaveRequest.update).toHaveBeenCalled();
           });
 
-          it('will send update event', function () {
+          it('sends update event', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', $ctrl.leaveRequest);
           });
         });
@@ -720,7 +720,11 @@
           });
 
           it('sets role to owner', function () {
-            expect($ctrl.role).toEqual('owner');
+            expect($ctrl.isRole('owner')).toBeTruthy();
+          });
+
+          it('sets mode to edit', function() {
+            expect($ctrl.isMode('edit')).toBeTruthy();
           });
 
           it('sets all leaverequest values', function () {
@@ -763,7 +767,7 @@
             $scope.$apply();
           });
 
-          it('will allow user to submit', function () {
+          it('allows user to submit', function () {
             expect($ctrl.canSubmit()).toBeTruthy();
           });
 
@@ -799,7 +803,7 @@
         });
 
         it('sets mode to view', function() {
-          expect($ctrl.mode).toEqual('view');
+          expect($ctrl.isMode('view')).toBeTruthy();
         });
 
         describe('on submit', function() {
