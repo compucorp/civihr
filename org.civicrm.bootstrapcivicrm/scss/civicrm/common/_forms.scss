@@ -336,6 +336,7 @@ $control-height: 30px;
       .select2-search-choice-close {
         right: 35px;
         background: none;
+        background-image: none !important;
 
         &::before {
           @include fa-icon(13px, '\f057', $brand-primary);

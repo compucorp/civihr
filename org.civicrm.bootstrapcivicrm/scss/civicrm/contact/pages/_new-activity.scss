@@ -96,4 +96,10 @@
       }
     }
   }
+
+  .required {
+    &:after {
+      display: none;
+    }
+  }
 }
