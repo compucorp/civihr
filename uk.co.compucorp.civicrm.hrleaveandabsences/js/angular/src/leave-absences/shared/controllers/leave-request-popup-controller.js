@@ -222,6 +222,10 @@ define([
        * Also, checks if its an update request from manager and accordingly updates leave request
        */
       vm.submit = function () {
+        if (vm.mode === 'view') {
+          return;
+        }
+
         // current absence type (vm.leaveRequest.type_id) doesn't allow that
         if (vm.balance.closing < 0 && selectedAbsenceType.allow_overuse == '0') {
           // show an error
@@ -263,6 +267,15 @@ define([
        */
       vm.closeAlert = function () {
         vm.error = null;
+      };
+
+      /**
+       * Checks if popup is opened in view mode
+       *
+       * @return {Boolean}
+       */
+      vm.isView = function () {
+        return vm.mode === 'view';
       };
 
       /**
@@ -363,11 +376,11 @@ define([
       function initOpenMode() {
         if (vm.leaveRequest.id) {
           vm.mode = 'edit';
-          //todo in future
-          //if owner and status is approved then view only mode
-          // if (vm.role === 'owner' && vm.leaveRequest.status_id == valueOfRequestStatus('approved')){
-          //   vm.mode = 'view';
-          // }
+
+          var viewModes = ['1', '2', '5', '6'];//approved, admin_approved, rejected, cancelled
+          if (vm.role === 'owner' && viewModes.indexOf(vm.leaveRequest.status_id) > -1){
+            vm.mode = 'view';
+          }
         } else {
           vm.mode = 'create';
         }
@@ -789,7 +802,7 @@ define([
           if (vm.role === 'manager') {
             setStatuses();
           }
-        } else {
+        } else if (vm.mode === 'create') {
           vm.leaveRequest.status_id = valueOfRequestStatus('waiting_approval');
         }
       }
@@ -902,7 +915,7 @@ define([
        * @return {Boolean}
        */
       function canEdit() {
-        return vm.mode === 'edit';
+        return vm.mode === 'edit' || vm.isView();
       }
 
       /**

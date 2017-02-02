@@ -14,7 +14,7 @@
     <div class="row">
       <div class="col-xs-12">
         <div class="chr_custom-select chr_custom-select--full">
-          <select name="absenceTypeSelect" ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes" ng-model="$ctrl.leaveRequest.type_id" ng-change="$ctrl.updateBalance()"></select>
+          <select ng-disabled="$ctrl.isView()" name="absenceTypeSelect" ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes" ng-model="$ctrl.leaveRequest.type_id" ng-change="$ctrl.updateBalance()"></select>
         </div>
       </div>
     </div>
@@ -28,8 +28,8 @@
                   <label class="col-xs-4 control-label">No. of Days</label>
                   <div class="col-xs-8">
                     <div class="btn-group btn-group-justified">
-                      <label class="btn active" ng-model="$ctrl.uiOptions.multipleDays" uib-btn-radio="true" ng-change="$ctrl.changeInNoOfDays()">Multiple Days</label>
-                      <label class="btn" ng-model="$ctrl.uiOptions.multipleDays" uib-btn-radio="false" ng-change="$ctrl.changeInNoOfDays()">Single Day</label>
+                      <label ng-disabled="$ctrl.isView()" class="btn active" ng-model="$ctrl.uiOptions.multipleDays" uib-btn-radio="true" ng-change="$ctrl.changeInNoOfDays()">Multiple Days</label>
+                      <label ng-disabled="$ctrl.isView()" class="btn" ng-model="$ctrl.uiOptions.multipleDays" uib-btn-radio="false" ng-change="$ctrl.changeInNoOfDays()">Single Day</label>
                     </div>
                   </div>
                 </div>
@@ -50,9 +50,10 @@
                         datepicker-options="$ctrl.uiOptions.date.from.options"
                         ng-model="$ctrl.uiOptions.fromDate"
                         is-open="$ctrl.uiOptions.date.from.show"
+                        ng-disabled="$ctrl.isView()"
                         ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from')"/>
                       <span class="input-group-btn">
-                        <button type="button" class="btn btn-default fa fa-calendar" ng-click="$ctrl.uiOptions.date.from.show = true"></button>
+                        <button ng-disabled="$ctrl.isView()" type="button" class="btn btn-default fa fa-calendar" ng-click="$ctrl.uiOptions.date.from.show = true"></button>
                       </span>
                     </div>
                   </div>
@@ -61,11 +62,11 @@
                       <div class="chr_custom-select chr_custom-select--full">
                         <select
                           name="fromDayTypeSelect"
-                          ng-disabled="$ctrl.leaveRequestFromDayTypes.length === 1"
+                          ng-disabled="$ctrl.isView() || $ctrl.leaveRequestFromDayTypes.length === 1"
                           ng-options="dayType.name as dayType.label for dayType in $ctrl.leaveRequestFromDayTypes"
                           ng-model="$ctrl.leaveRequest.from_date_type"
                           ng-change="$ctrl.calculateBalanceChange()">
-                          <option value="">Select</option>
+                          <option ng-disabled="$ctrl.isView()" value="">Select</option>
                           dayType{{dayType}}
                         </select>
                       </crm-loading>
@@ -90,9 +91,10 @@
                         ng-model="$ctrl.uiOptions.toDate"
                         is-open="$ctrl.uiOptions.date.to.show"
                         ng-readonly="!$ctrl.leaveRequest.from_date"
+                        ng-disabled="$ctrl.isView()"
                         ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to')"/>
                       <span class="input-group-btn">
-                        <button type="button" class="btn btn-default fa fa-calendar"
+                        <button type="button" class="btn btn-default fa fa-calendar" ng-disabled="$ctrl.isView()"
                           ng-click="$ctrl.uiOptions.date.to.show = $ctrl.leaveRequest.from_date ? true : false">
                         </button>
                       </span>
@@ -103,9 +105,10 @@
                       <div class="chr_custom-select chr_custom-select--full">
                         <select
                           name="toDayTypeSelect"
-                          ng-disabled="$ctrl.leaveRequestToDayTypes.length === 1 || !$ctrl.leaveRequest.from_date"
+                          ng-disabled="$ctrl.isView() || $ctrl.leaveRequestToDayTypes.length === 1 || !$ctrl.leaveRequest.from_date"
                           ng-options="dayType.name as dayType.label for dayType in $ctrl.leaveRequestToDayTypes"
                           ng-model="$ctrl.leaveRequest.to_date_type"
+                          ng-disabled="$ctrl.isView()"
                           ng-change="$ctrl.calculateBalanceChange()">
                           <option value="">Select</option>
                         </select>
@@ -205,6 +208,6 @@
     <button type="button" class="btn btn-primary pull-left" ng-click="$ctrl.cancel()">
       Back
     </button>
-    <button type="submit" class="btn btn-primary" ng-disabled="!$ctrl.canSubmit()" ng-click="$ctrl.submit()">Save</button>
+    <button type="submit" class="btn btn-primary" ng-disabled="!$ctrl.canSubmit() || $ctrl.isView()" ng-click="$ctrl.submit()">Save</button>
   </div>
 </crm-loading>

@@ -631,7 +631,7 @@
           });
 
           it('shows the "cancel" action', function () {
-            expect(actionMatrix.length).toBe(1);
+            expect(actionMatrix.length).toBe(2);
             expect(actionMatrix).toContain('cancel');
           });
         });
@@ -641,8 +641,8 @@
             actionMatrix = getActionMatrixForStatus('cancelled');
           });
 
-          it('shows no actions', function () {
-            expect(actionMatrix.length).toBe(0);
+          it('shows the "view" action', function () {
+            expect(actionMatrix.length).toBe(1);
           });
         });
 
@@ -651,8 +651,8 @@
             actionMatrix = getActionMatrixForStatus('rejected');
           });
 
-          it('shows no actions', function () {
-            expect(actionMatrix.length).toBe(0);
+          it('shows the "view" action', function () {
+            expect(actionMatrix.length).toBe(1);
           });
         });
 

@@ -785,6 +785,36 @@
         });
       });
 
+      describe('user opens in view mode', function() {
+        beforeEach(function() {
+          var approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+          var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', approvalStatus));
+          leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+          var directiveOptions = {
+            contactId: leaveRequest.contact_id, //owner's contact id
+            leaveRequest: leaveRequest
+          };
+
+          initTestController(directiveOptions);
+        });
+
+        it('should set mode to view', function() {
+          expect($ctrl.mode).toEqual('view');
+        });
+
+        describe('on submit', function() {
+          beforeEach(function() {
+            spyOn($ctrl.leaveRequest, 'update').and.callThrough();
+            $ctrl.submit();
+            $scope.$apply()
+          });
+
+          it('should not call appropriate API endpoint', function () {
+            expect($ctrl.leaveRequest.update).not.toHaveBeenCalled();
+          });
+        });
+      });
+
       /**
        * Initialize the controller
        *
