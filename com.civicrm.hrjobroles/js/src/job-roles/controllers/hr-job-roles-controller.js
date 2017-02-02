@@ -19,8 +19,8 @@ define([
       var fundersContacts = {};
       var roles_type = ['funders', 'cost_centers'];
 
-      $scope.loading = true;
       $scope.format = HR_settings.DATE_FORMAT;
+      $scope.loading = true;
       $scope.past_job_roles = [];
       $scope.present_job_roles = [];
       $scope.collapsedRows = []; // Tracks collapsed / expanded rows
@@ -43,10 +43,13 @@ define([
       $scope.rowTypes[0] = { id: 0, name: 'Fixed' };
       $scope.rowTypes[1] = { id: 1, name: '%' };
 
-
-      // Add additional rows (funder or cost centres)
+      /**
+       * Add additional rows (funder or cost centres)
+       *
+       * @param {int} role_id
+       * @param {string} row_type
+       */
       $scope.addAdditionalRow = function (role_id, row_type) {
-
         // Check if we have the array already
         if (typeof $scope.edit_data[role_id] === "undefined") {
           $scope.edit_data[role_id] = {};
@@ -67,7 +70,6 @@ define([
             percentage: "0",
             amount: "0"
           });
-
         } else {
 
           // As default add funder rows
@@ -460,12 +462,12 @@ define([
         var selected = '';
 
         if (typeof object.type !== "undefined") {
-
           // Get the human readable Type Value
           selected = $scope.rowTypes[object.type];
 
           return selected.name;
         }
+
         return 'Not set';
       };
 
@@ -571,7 +573,7 @@ define([
 
       /**
        *
-       * @param title
+       * @param {string} title
        * @returns {string|undefined}
        */
       $scope.validateTitle = function (title) {
@@ -585,15 +587,14 @@ define([
        *
        * @param  {string} sortName
        */
-      vm.getContactList = function(sortName) {
+      vm.getContactList = function (sortName) {
         var successCallback = function (data) {
           var contactList = [], i = 0;
 
           if (data.is_error === 1) {
             vm.message_type = 'alert-danger';
             vm.message = 'Cannot get contact list!';
-          }
-          else {
+          } else {
             // Pass the contact list to the scope
             for (; i < data.count; i++) {
               contactList.push({
@@ -611,6 +612,7 @@ define([
             vm.message = null;
           }, 3000);
         };
+
         var errorCallback = function (errorMessage) {
           $scope.error = errorMessage;
         };
@@ -743,6 +745,9 @@ define([
 
       /**
        * Extracts, from each job role past and preset, the contact id of every funder
+       *
+       * It combines present and past job roles, make a list of the funder ids string,
+       * splits it by the "|" separator, and return only the non-null and unique values
        *
        * @return {Array} a list of ids
        */
@@ -973,10 +978,10 @@ define([
       function initCostCentersData(jobRole, data) {
         jobRole.cost_centers = [];
 
-        var cost_center_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data.cost_center.split('|'));
-        var cost_center_types = data.cost_center_val_type.split('|');
-        var percent_cost_centers = data.percent_pay_cost_center.split('|');
-        var amount_cost_centers = data.amount_pay_cost_center.split('|');
+        var cost_center_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data.cost_center.split('|')),
+            cost_center_types = data.cost_center_val_type.split('|'),
+            percent_cost_centers = data.percent_pay_cost_center.split('|'),
+            amount_cost_centers = data.amount_pay_cost_center.split('|');
 
         for (var i = 0; i < cost_center_contact_ids.length; i++) {
           if (cost_center_contact_ids[i] !== '') {
@@ -1000,10 +1005,10 @@ define([
       function initFundersData(jobRole, data) {
         jobRole.funders = [];
 
-        var funder_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data.funder.split('|'));
-        var funder_types = data.funder_val_type.split('|');
-        var percent_funders = data.percent_pay_funder.split('|');
-        var amount_funders = data.amount_pay_funder.split('|');
+        var funder_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data.funder.split('|')),
+            funder_types = data.funder_val_type.split('|'),
+            percent_funders = data.percent_pay_funder.split('|'),
+            amount_funders = data.amount_pay_funder.split('|');
 
         for (var i = 0; i < funder_contact_ids.length; i++) {
           if (funder_contact_ids[i] !== '') {

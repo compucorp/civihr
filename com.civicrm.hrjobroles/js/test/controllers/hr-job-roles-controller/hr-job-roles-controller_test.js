@@ -491,7 +491,7 @@ define([
               /**
                * Method that mimics how the controller extracts the ids
                *
-               * @return {[type]} [description]
+               * @return {Array}
                */
               function extractFundersContactIds() {
                 return _(ctrl.present_job_roles.concat(ctrl.past_job_roles))
