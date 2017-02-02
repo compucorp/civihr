@@ -426,7 +426,7 @@ define([
             delete newRole.newEndDate;
           }
 
-          if (newRole.funders.length) {
+          if (newRole.funders && newRole.funders.length) {
             updateFundersContactsList(newRole.funders);
           }
 
@@ -532,7 +532,7 @@ define([
           delete updatedRole.end_date;
         }
 
-        if (updatedRole.funders.length) {
+        if (updatedRole.funders && updatedRole.funders.length) {
           updateFundersContactsList(updatedRole.funders);
         }
 
