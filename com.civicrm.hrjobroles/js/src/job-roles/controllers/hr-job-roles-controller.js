@@ -854,8 +854,7 @@ define([
             if (data.is_error === 1) {
               vm.message_type = 'alert-danger';
               vm.message = 'Cannot get option values!';
-            }
-            else {
+            } else {
 
               // Pass the department option group list to the scope
               var DepartmentList = {};
@@ -1161,8 +1160,7 @@ define([
           if (data.is_error === 1) {
             vm.message_type = 'alert-danger';
             vm.message = 'Role update failed!';
-          }
-          else {
+          } else {
             vm.message_type = 'alert-success';
             vm.message = 'Role updated successfully!';
           }
