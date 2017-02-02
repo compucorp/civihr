@@ -81,12 +81,18 @@
       }
     }
   }
+
+  .crm-i {
+    position: relative;
+    top: -2px;
+  }
 }
 
 .crm-summary-display_name {
   font-size: 24px !important;
   font-weight: 600;
   padding-top: 12px;
+  padding-left: 10px !important;
 
   .crm-summary-link {
     display: none;
