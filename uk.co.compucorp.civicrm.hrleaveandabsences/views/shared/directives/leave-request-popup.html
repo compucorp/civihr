@@ -6,7 +6,9 @@
   <h4 class="modal-title">Leave Request</h4>
 </div>
 <crm-loading show="!$ctrl.loading.absenceTypes">
-  <div ng-show="$ctrl.role === 'manager'" class="row chr_leave-request-modal__user-info">
+  <div
+    ng-show="$ctrl.isRole('manager')"
+    class="row chr_leave-request-modal__user-info">
     <span class="col-xs-6">{{$ctrl.contact.display_name}}</span>
     <span class="col-xs-6">{{$ctrl.statusLabel}}</span>
   </div>
@@ -14,7 +16,12 @@
     <div class="row">
       <div class="col-xs-12">
         <div class="chr_custom-select chr_custom-select--full">
-          <select name="absenceTypeSelect" ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes" ng-model="$ctrl.leaveRequest.type_id" ng-change="$ctrl.updateBalance()"></select>
+          <select
+            ng-disabled="$ctrl.isMode('view')"
+            name="absenceTypeSelect"
+            ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes"
+            ng-model="$ctrl.leaveRequest.type_id"
+            ng-change="$ctrl.updateBalance()"></select>
         </div>
       </div>
     </div>
@@ -28,8 +35,18 @@
                   <label class="col-xs-4 control-label">No. of Days</label>
                   <div class="col-xs-8">
                     <div class="btn-group btn-group-justified">
-                      <label class="btn active" ng-model="$ctrl.uiOptions.multipleDays" uib-btn-radio="true" ng-change="$ctrl.changeInNoOfDays()">Multiple Days</label>
-                      <label class="btn" ng-model="$ctrl.uiOptions.multipleDays" uib-btn-radio="false" ng-change="$ctrl.changeInNoOfDays()">Single Day</label>
+                      <label
+                        ng-disabled="$ctrl.isMode('view')"
+                        class="btn active"
+                        ng-model="$ctrl.uiOptions.multipleDays"
+                        uib-btn-radio="true"
+                        ng-change="$ctrl.changeInNoOfDays()">Multiple Days</label>
+                      <label
+                        ng-disabled="$ctrl.isMode('view')"
+                        class="btn"
+                        ng-model="$ctrl.uiOptions.multipleDays"
+                        uib-btn-radio="false"
+                        ng-change="$ctrl.changeInNoOfDays()">Single Day</label>
                     </div>
                   </div>
                 </div>
@@ -50,22 +67,29 @@
                         datepicker-options="$ctrl.uiOptions.date.from.options"
                         ng-model="$ctrl.uiOptions.fromDate"
                         is-open="$ctrl.uiOptions.date.from.show"
+                        ng-disabled="$ctrl.isMode('view')"
                         ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from')"/>
                       <span class="input-group-btn">
-                        <button type="button" class="btn btn-default fa fa-calendar" ng-click="$ctrl.uiOptions.date.from.show = true"></button>
+                        <button
+                          ng-disabled="$ctrl.isMode('view')"
+                          type="button"
+                          class="btn btn-default fa fa-calendar"
+                          ng-click="$ctrl.uiOptions.date.from.show = true"></button>
                       </span>
                     </div>
                   </div>
                   <div class="col-xs-4">
-                    <crm-loading show="!$ctrl.loading.fromDayTypes" class="chr_leave-request-modal__small_spinner">
+                    <crm-loading
+                      show="!$ctrl.loading.fromDayTypes"
+                      class="chr_leave-request-modal__small_spinner">
                       <div class="chr_custom-select chr_custom-select--full">
                         <select
                           name="fromDayTypeSelect"
-                          ng-disabled="$ctrl.leaveRequestFromDayTypes.length === 1"
+                          ng-disabled="$ctrl.isMode('view') || $ctrl.leaveRequestFromDayTypes.length === 1"
                           ng-options="dayType.name as dayType.label for dayType in $ctrl.leaveRequestFromDayTypes"
                           ng-model="$ctrl.leaveRequest.from_date_type"
                           ng-change="$ctrl.calculateBalanceChange()">
-                          <option value="">Select</option>
+                          <option ng-disabled="$ctrl.isMode('view')" value="">Select</option>
                           dayType{{dayType}}
                         </select>
                       </crm-loading>
@@ -80,7 +104,7 @@
                   <label class="col-xs-4 control-label">To Date<i class="fa fa-asterisk"></i>
                   </label>
                   <div class="col-xs-4">
-                    <div class="input-group" >
+                    <div class="input-group">
                       <input
                         type="text"
                         class="form-control"
@@ -89,23 +113,28 @@
                         show-button-bar="false"
                         ng-model="$ctrl.uiOptions.toDate"
                         is-open="$ctrl.uiOptions.date.to.show"
-                        ng-readonly="!$ctrl.leaveRequest.from_date"
+                        ng-disabled="$ctrl.isMode('view') || !$ctrl.leaveRequest.from_date"
                         ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to')"/>
                       <span class="input-group-btn">
-                        <button type="button" class="btn btn-default fa fa-calendar"
-                          ng-click="$ctrl.uiOptions.date.to.show = $ctrl.leaveRequest.from_date ? true : false">
-                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-default fa fa-calendar"
+                          ng-disabled="$ctrl.isMode('view') || !$ctrl.leaveRequest.from_date"
+                          ng-click="$ctrl.uiOptions.date.to.show = $ctrl.leaveRequest.from_date ? true : false"></button>
                       </span>
                     </div>
                   </div>
                   <div class="col-xs-4">
-                    <crm-loading show="!$ctrl.loading.toDayTypes" class="chr_leave-request-modal__small_spinner">
+                    <crm-loading
+                      show="!$ctrl.loading.toDayTypes"
+                      class="chr_leave-request-modal__small_spinner">
                       <div class="chr_custom-select chr_custom-select--full">
                         <select
                           name="toDayTypeSelect"
-                          ng-disabled="$ctrl.leaveRequestToDayTypes.length === 1 || !$ctrl.leaveRequest.from_date"
+                          ng-disabled="$ctrl.isMode('view') || $ctrl.leaveRequestToDayTypes.length === 1 || !$ctrl.leaveRequest.from_date"
                           ng-options="dayType.name as dayType.label for dayType in $ctrl.leaveRequestToDayTypes"
                           ng-model="$ctrl.leaveRequest.to_date_type"
+                          ng-disabled="$ctrl.isMode('view')"
                           ng-change="$ctrl.calculateBalanceChange()">
                           <option value="">Select</option>
                         </select>
@@ -122,14 +151,21 @@
                   <div class="col-xs-4">Opening Balance</div>
                   <div class="col-xs-8">{{$ctrl.balance.opening}}</div>
                 </div>
-                <div class="row chr_leave-request-modal__form-group text-primary pointer" ng-click="$ctrl.uiOptions.isChangeExpanded = !$ctrl.uiOptions.isChangeExpanded">
+                <div
+                  class="row chr_leave-request-modal__form-group text-primary pointer"
+                  ng-click="$ctrl.uiOptions.isChangeExpanded = !$ctrl.uiOptions.isChangeExpanded">
                   <div class="col-xs-4">
-                    <i class="fa chr_leave-request-modal__chevron" aria-hidden="true" ng-class="{ 'fa-chevron-right': !$ctrl.uiOptions.isChangeExpanded, ' fa-chevron-down': $ctrl.uiOptions.isChangeExpanded }"></i>
+                    <i
+                      class="fa chr_leave-request-modal__chevron"
+                      aria-hidden="true"
+                      ng-class="{ 'fa-chevron-right': !$ctrl.uiOptions.isChangeExpanded, ' fa-chevron-down': $ctrl.uiOptions.isChangeExpanded }"></i>
                     Change
                   </div>
                   <div class="col-xs-8">{{$ctrl.balance.change.amount}}</div>
                 </div>
-                <table class="table chr_leave-request-modal__table" ng-show="$ctrl.uiOptions.isChangeExpanded">
+                <table
+                  class="table chr_leave-request-modal__table"
+                  ng-show="$ctrl.uiOptions.isChangeExpanded">
                   <thead>
                     <tr>
                       <th>Date</th>
@@ -159,7 +195,9 @@
                     </tr>
                   </tfoot>
                 </table>
-                <div class="row chr_leave-request-modal__form-group" ng-class="{'text-danger': $ctrl.balance.closing < 0}">
+                <div
+                  class="row chr_leave-request-modal__form-group"
+                  ng-class="{'text-danger': $ctrl.balance.closing < 0}">
                   <div class="col-xs-4">Closing Balance</div>
                   <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
                 </div>
@@ -171,14 +209,19 @@
         </uib-tabset>
       </div>
     </div>
-    <div ng-show="$ctrl.role === 'manager'" class="row chr_leave-request-modal__response">
+    <div
+      ng-show="$ctrl.isRole('manager')"
+      class="row chr_leave-request-modal__response">
       <div class="col-xs-12 form-horizontal">
         <div class="form-group">
           <label class="col-xs-4 control-label">Set status to:<i class="fa fa-asterisk"></i>
           </label>
           <div class="col-xs-8">
             <div class="chr_custom-select chr_custom-select--full">
-              <select name="statusSelect" ng-options="status.value as status.label for status in $ctrl.leaveRequestStatuses" ng-model="$ctrl.leaveRequest.status_id">
+              <select
+                name="statusSelect"
+                ng-options="status.value as status.label for status in $ctrl.leaveRequestStatuses"
+                ng-model="$ctrl.leaveRequest.status_id">
                 <option value="">- select -</option>
               </select>
             </div>
@@ -188,7 +231,12 @@
       <div ng-show="$ctrl.leaveRequest.selectedResponse == 3">
         <div class="col-xs-12">Please add a comment:</div>
         <div class="col-xs-12">
-          <div class="chr_wysiwyg" text-angular prevent-animations ta-toolbar="[['bold','italics','underline']]" ng-model="myleave.leaveRequest.responseComment"></div>
+          <div
+            class="chr_wysiwyg"
+            text-angular
+            prevent-animations
+            ta-toolbar="[['bold','italics','underline']]"
+            ng-model="myleave.leaveRequest.responseComment"></div>
           <div class="chr_wysiwyg__action">
             <hr/>
             <button class="btn btn-link">
@@ -200,11 +248,23 @@
       </div>
     </div>
   </div>
-  <div ng-if="$ctrl.error" uib-alert class="danger" close="$ctrl.closeAlert()" dismiss-on-timeout="5000">{{$ctrl.error}}</div>
+  <div
+    ng-if="$ctrl.error"
+    uib-alert
+    class="danger"
+    close="$ctrl.closeAlert()"
+    dismiss-on-timeout="5000">{{$ctrl.error}}</div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-primary pull-left" ng-click="$ctrl.cancel()">
+    <button
+      type="button"
+      class="btn btn-primary pull-left"
+      ng-click="$ctrl.cancel()">
       Back
     </button>
-    <button type="submit" class="btn btn-primary" ng-disabled="!$ctrl.canSubmit()" ng-click="$ctrl.submit()">Save</button>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      ng-disabled="!$ctrl.canSubmit()"
+      ng-click="$ctrl.submit()">Save</button>
   </div>
 </crm-loading>

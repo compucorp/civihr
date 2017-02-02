@@ -25,9 +25,9 @@ define([
     var actionMatrix = {
       'waiting_approval'          : ['edit'   , 'cancel'],
       'more_information_requested': ['respond', 'cancel'],
-      'approved'                  : ['cancel'           ],
-      'cancelled'                 : [                   ],
-      'rejected'                  : [                   ]
+      'approved'                  : ['view'   , 'cancel'],
+      'cancelled'                 : ['view'             ],
+      'rejected'                  : ['view'             ]
     };
 
     vm.absencePeriods = [];
@@ -468,7 +468,7 @@ define([
           return Array.prototype.concat.apply([], breakdownList);
         });
     }
-    
+
     /**
     * Register events which will be called by other modules
     */
