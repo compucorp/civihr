@@ -643,6 +643,7 @@
 
           it('shows the "view" action', function () {
             expect(actionMatrix.length).toBe(1);
+            expect(actionMatrix).toContain('view');
           });
         });
 
@@ -653,6 +654,7 @@
 
           it('shows the "view" action', function () {
             expect(actionMatrix.length).toBe(1);
+            expect(actionMatrix).toContain('view');
           });
         });
 
