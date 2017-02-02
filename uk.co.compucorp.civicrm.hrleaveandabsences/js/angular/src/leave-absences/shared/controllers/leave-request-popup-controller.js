@@ -48,6 +48,7 @@ define([
           breakdown: []
         }
       };
+      vm.sickness = false;
       vm.loading = {
         absenceTypes: true,
         calculateBalanceChange: false,
@@ -282,6 +283,7 @@ define([
             return $q.all([loadDayTypes(), loadStatuses()]);
           })
           .then(function () {
+            initReason();
             initAbsenceType();
             initStatus();
             initContact();
@@ -750,6 +752,13 @@ define([
               vm.onDateChange(vm.uiOptions.toDate, 'to');
             });
         }
+      }
+
+      /**
+       * Initialize record sickness fields
+       */
+      function initReason() {
+        vm.sickness = directiveOptions.sickness;
       }
 
       /**
