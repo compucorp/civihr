@@ -21,12 +21,13 @@ define([
     $log.debug('Component: my-leave-report');
 
     var vm = Object.create(this);
+
     var actionMatrix = {
       'waiting_approval'          : ['edit'   , 'cancel'],
       'more_information_requested': ['respond', 'cancel'],
-      'approved'                  : ['cancel'           ],
-      'cancelled'                 : [                   ],
-      'rejected'                  : [                   ]
+      'approved'                  : ['view'   , 'cancel'],
+      'cancelled'                 : ['view'             ],
+      'rejected'                  : ['view'             ]
     };
 
     vm.absencePeriods = [];
@@ -152,9 +153,7 @@ define([
         vm.loading.content = false;
       });
 
-      $rootScope.$on('LeaveRequest::new', function () {
-        vm.refresh();
-      });
+      registerEvents();
     })();
 
     /**
@@ -468,6 +467,19 @@ define([
         .then(function (breakdownList) {
           return Array.prototype.concat.apply([], breakdownList);
         });
+    }
+
+    /**
+    * Register events which will be called by other modules
+    */
+    function registerEvents() {
+      $rootScope.$on('LeaveRequest::new', function () {
+        vm.refresh();
+      });
+
+      $rootScope.$on('LeaveRequest::edit', function () {
+        vm.refresh();
+      });
     }
 
     /**
