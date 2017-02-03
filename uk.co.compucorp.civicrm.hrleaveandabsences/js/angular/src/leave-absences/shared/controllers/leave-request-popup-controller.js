@@ -49,6 +49,7 @@ define([
           breakdown: []
         }
       };
+      vm.sickness = false;
       vm.loading = {
         absenceTypes: true,
         calculateBalanceChange: false,
@@ -318,6 +319,7 @@ define([
             return initDates();
           })
           .then(function () {
+            initReason();
             initAbsenceType();
             initStatus();
             initContact();
@@ -890,6 +892,109 @@ define([
               role = 'manager';
             }
           });
+      }
+
+      /**
+       * Inits absence period for the current date
+       */
+      function initAbsencePeriod() {
+        vm.period = _.find(vm.absencePeriods, function (period) {
+          return period.current;
+        });
+      }
+
+      /**
+       * Finds if date is in any absence period and sets absence period for the given date
+       *
+       * @param {Date/String} date
+       * @return {Promise} with true value if period found else rejected false
+       */
+      function checkAndSetAbsencePeriod(date) {
+        var formattedDate = moment(date).format(vm.uiOptions.userDateFormat.toUpperCase());
+
+        vm.period = _.find(vm.absencePeriods, function (period) {
+          return period.isInPeriod(formattedDate);
+        });
+
+        if (!vm.period) {
+          //inform user if absence period is not found
+          return $q.reject('Please change date as it is not in any absence period');
+        }
+
+        return $q.resolve(true);
+      }
+
+      /**
+       * Initialize absence types
+       */
+      function initAbsenceType() {
+        if (canEdit()) {
+          selectedAbsenceType = getSelectedAbsenceType();
+        } else {
+          // Assign the first absence type to the leave request
+          selectedAbsenceType = vm.absenceTypes[0];
+          vm.leaveRequest.type_id = selectedAbsenceType.id;
+        }
+
+        // Init the `balance` object based on the first absence type
+        vm.balance.opening = selectedAbsenceType.remainder;
+      }
+
+      /**
+       * Initialize from and to dates, day types and contact
+       */
+      function initDates() {
+        if (canEdit()) {
+          var attributes = _.cloneDeep(vm.leaveRequest.attributes());
+
+          vm.uiOptions.fromDate = convertDateFormatFromServer(vm.leaveRequest.from_date);
+          vm.onDateChange(vm.uiOptions.fromDate, 'from')
+            .then(function () {
+              //to_date and type has been reset in above call so reinitialize from clone
+              vm.leaveRequest.to_date = attributes.to_date;
+              vm.leaveRequest.to_date_type = attributes.to_date_type;
+              vm.uiOptions.toDate = convertDateFormatFromServer(vm.leaveRequest.to_date);
+              vm.onDateChange(vm.uiOptions.toDate, 'to');
+            });
+        }
+      }
+
+      /**
+       * Initialize record sickness fields
+       */
+      function initReason() {
+        vm.sickness = directiveOptions.sickness;
+      }
+
+      /**
+       * Initialize status
+       */
+      function initStatus() {
+        if (canEdit()) {
+          //set it before vm.leaveRequestStatuses gets filtered
+          vm.statusLabel = vm.leaveRequestStatuses[vm.leaveRequest.status_id].label;
+          if (vm.role === 'manager') {
+            setStatuses();
+          }
+        } else {
+          vm.leaveRequest.status_id = valueOfRequestStatus('waiting_approval');
+        }
+      }
+
+      /**
+       * Initialize contact
+       *
+       * {Promise}
+       */
+      function initContact() {
+        if (vm.role === 'manager') {
+          return Contact.find(vm.leaveRequest.contact_id)
+            .then(function (contact) {
+              vm.contact = contact;
+            });
+        }
+
+        return $q.resolve({});
       }
 
       /**
