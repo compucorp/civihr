@@ -79,9 +79,7 @@ define([
         var params = {
           contact_id: contactId,
           period_id: periodId,
-          statuses: statuses ? {
-            'IN': statuses
-          } : null,
+          statuses: statuses ? { 'IN': statuses } : null,
           public_holiday: isPublicHoliday || false
         };
 
