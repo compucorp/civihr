@@ -77,7 +77,6 @@
       .crm-contactEmail-form-block-recipient {
         td {
           &.label {
-            padding: 30px;
             font-weight: 600;
             color: $gray-darker;
           }
@@ -94,6 +93,12 @@
 
         .select2-container {
           width: 100% !important;
+        }
+      }
+
+      td {
+        &.label {
+          padding-left: 30px !important;
         }
       }
     }
