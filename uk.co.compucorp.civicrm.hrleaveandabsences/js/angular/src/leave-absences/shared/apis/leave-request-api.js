@@ -31,11 +31,8 @@ define([
       if (leaveRequestType === 'sick') {
         entityName = 'SicknessRequest';
       }
-      else if (leaveRequestType === 'leave') {
-        entityName = 'LeaveRequest';
-      }
 
-      return entityName
+      return entityName;
     }
 
     return api.extend({
@@ -82,7 +79,9 @@ define([
         var params = {
           contact_id: contactId,
           period_id: periodId,
-          statuses: statuses ? { 'IN': statuses } : null,
+          statuses: statuses ? {
+            'IN': statuses
+          } : null,
           public_holiday: isPublicHoliday || false
         };
 
@@ -107,7 +106,8 @@ define([
        */
       update: function (params, leaveRequestType) {
         $log.debug('LeaveRequestAPI.update', params);
-        var deferred = $q.defer(), entityName = getEntityName(leaveRequestType);
+        var deferred = $q.defer(),
+          entityName = getEntityName(leaveRequestType);
 
         if (!params.id) {
           deferred.reject('id is mandatory field');
@@ -171,7 +171,8 @@ define([
        */
       create: function (params, leaveRequestType) {
         $log.debug('LeaveRequestAPI.create', params);
-        var deferred = $q.defer(), entityName = getEntityName(leaveRequestType);
+        var deferred = $q.defer(),
+          entityName = getEntityName(leaveRequestType);
 
         if (params) {
           if (params.to_date && !params.to_date_type) {
@@ -206,7 +207,8 @@ define([
        */
       isValid: function (params, leaveRequestType) {
         $log.debug('LeaveRequestAPI.isValid', params);
-        var deferred = $q.defer(), entityName = getEntityName(leaveRequestType);
+        var deferred = $q.defer(),
+          entityName = getEntityName(leaveRequestType);
 
         this.sendPOST(entityName, 'isValid', params)
           .then(function (data) {

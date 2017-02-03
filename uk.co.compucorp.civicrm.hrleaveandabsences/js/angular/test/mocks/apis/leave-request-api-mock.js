@@ -16,7 +16,7 @@ define([
           return $q(function (resolve, reject) {
             var list = mockData.all().values;
 
-            if(leaveRequestType && leaveRequestType === 'sick'){
+            if (leaveRequestType && leaveRequestType === 'sick') {
               list = sicknessMockData.all().values;
             }
 
@@ -54,10 +54,9 @@ define([
             }
 
 
-            if(leaveRequestType && leaveRequestType === 'sick'){
+            if (leaveRequestType && leaveRequestType === 'sick') {
               resolve(sicknessMockData.all().values[0]);
-            }
-            else {
+            } else {
               resolve(mockData.all().values[0]);
             }
           });
@@ -66,10 +65,9 @@ define([
           return $q(function (resolve, reject) {
             var newAttributes;
 
-            if(leaveRequestType && leaveRequestType === 'sick'){
+            if (leaveRequestType && leaveRequestType === 'sick') {
               newAttributes = _.assign(Object.create(null), sicknessMockData.all().values[0], params);
-            }
-            else {
+            } else {
               newAttributes = _.assign(Object.create(null), mockData.all().values[0], params);
             }
 
