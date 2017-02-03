@@ -55,13 +55,8 @@
       margin-bottom: 0 !important;
     }
 
-    [for="activity_date_time_time"] {
-      position: relative;
-      top: -4px;
-    }
-
     #activity_date_time_time {
-      margin-top: -12px !important;
+      margin-top: 0 !important;
     }
 
     .addon.fa-calendar {
@@ -76,6 +71,74 @@
 }
 
 .CRM_Activity_Form_Activity {
+  .crm-activity-form-block-status_id,
+  .crm-activity-form-block-priority_id {
+    .crm-hover-button {
+      .crm-i {
+        margin-bottom: -15px;
+      }
+    }
+  }
+
+  .crm-core-form-recurringentity-block-absolute_date {
+    position: relative;
+
+    td {
+      &.label {
+        position: absolute;
+        left: 290px;
+        top: 5px;
+      }
+    }
+  }
+
+  .crm-activity-form-block-assignee_contact_id {
+    .description {
+      display: block;
+      margin-top: 5px;
+    }
+  }
+
+  .crm-activity-form-block-duration {
+    .description {
+      text-transform: capitalize;
+      padding: 5px;
+      position: relative;
+      top: 5px;
+    }
+  }
+
+  .crm-activity-form-block-attachment {
+    td {
+      &.label {
+        padding-bottom: 5px !important;
+        padding-left: 0 !important;
+      }
+
+      .description {
+        margin: 5px;
+      }
+    }
+  }
+
+  #recurring-entity-block,
+  #follow-up {
+    td {
+      &.label {
+        padding-bottom: 5px !important;
+        padding-left: 0 !important;
+      }
+    }
+  }
+
+  .crm-activity-form-block-details {
+    td {
+      &.label {
+        padding-bottom: 10px;
+      }
+    }
+  }
+
   .crm-form-block {
     padding: 15px;
   }
