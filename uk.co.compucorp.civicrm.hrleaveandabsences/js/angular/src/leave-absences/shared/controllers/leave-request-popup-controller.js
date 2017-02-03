@@ -41,7 +41,6 @@ define([
       vm.leaveRequestDayTypes = [];
       vm.period = {};
       vm.statusLabel = '';
-      vm.sickness = false;
       vm.sickness = directiveOptions.sickness;
       vm.balance = {
         closing: 0,
@@ -707,10 +706,6 @@ define([
 
         return $q.resolve();
       }
-
-      /**
-       * Initialize record sickness fields
-       */
 
       /**
        * Initializes user's calendar (work patterns)
