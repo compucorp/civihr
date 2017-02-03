@@ -73,12 +73,6 @@
       }
     }
 
-    #addMoreAddress1 {
-      height: auto;
-      zoom: 1;
-      overflow: auto;
-    }
-
     .crm-button_qf_Contact_refresh_dedupe {
       border: 0;
     }
@@ -174,6 +168,12 @@
   #commPrefs {
     table {
       tr {
+        &:nth-child(1) {
+          td {
+            padding-bottom: 10px;
+          }
+        }
+
         &:nth-child(3) {
           td:nth-child(4) {
             position: relative;
@@ -267,6 +267,50 @@
 
       .form-checkbox {
         display: none !important;
+      }
+    }
+  }
+
+  #addressBlock {
+    #addMoreAddress1 {
+      height: auto;
+      zoom: 1;
+      overflow: auto;
+    }
+
+    #Address-Primary-html {
+      padding-bottom: 10px;
+
+      .select2-container {
+        min-width: 90px;
+        margin-right: 10px;
+      }
+    }
+
+    label[for*="[use_shared_address]"] {
+      margin-bottom: 10px;
+    }
+
+    table[id^="address_table_"] {
+      tr {
+        &:nth-child(5) {
+          .crm-address-element {
+            td {
+              width: 33.3%;
+            }
+          }
+        }
+      }
+    }
+
+    .crm-add-address-wrapper {
+      .button {
+        margin: 5px !important;
+
+        i {
+          margin-top: -3px;
+          margin-right: 3px;
+        }
       }
     }
   }
