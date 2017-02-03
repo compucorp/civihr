@@ -17,6 +17,27 @@ define([
       return dataFromServer && !!dataFromServer.is_error;
     }
 
+    /**
+     * Checks given leave type and returns appropriate entity name
+     *
+     * @param {String} leaveRequestType whether its leave, sick or toil
+     * @return {String}
+     */
+    function getEntityName(leaveRequestType) {
+      var entityName = 'LeaveRequest';
+
+      leaveRequestType = !!leaveRequestType ? leaveRequestType : 'leave';
+
+      if (leaveRequestType === 'sick') {
+        entityName = 'SicknessRequest';
+      }
+      else if (leaveRequestType === 'leave') {
+        entityName = 'LeaveRequest';
+      }
+
+      return entityName
+    }
+
     return api.extend({
 
       /**
@@ -28,12 +49,15 @@ define([
        *   `page` for the current page, `size` for number of items per page
        * @param {string} sort - The field and direction to order by
        * @param  {Object} params
+       * @param  {Boolean} cache
+       * @param {String} leaveRequestType whether its leave, sick or toil
        * @return {Promise} Resolved with {Object} All leave requests
        */
-      all: function (filters, pagination, sort, params, cache) {
+      all: function (filters, pagination, sort, params, cache, leaveRequestType) {
         $log.debug('LeaveRequestAPI.all');
+        var entityName = getEntityName(leaveRequestType);
 
-        return this.getAll('LeaveRequest', filters, pagination, sort, params, 'getFull', cache);
+        return this.getAll(entityName, filters, pagination, sort, params, 'getFull', cache);
       },
 
       /**
@@ -78,17 +102,18 @@ define([
        * This method is used to update a leave request
        *
        * @param {object} params - Updated values of leave request
+       * @param {String} leaveRequestType whether its leave, sick or toil
        * @return {Promise} Resolved with {Object} Updated Leave request
        */
-      update: function (params) {
+      update: function (params, leaveRequestType) {
         $log.debug('LeaveRequestAPI.update', params);
-        var deferred = $q.defer();
+        var deferred = $q.defer(), entityName = getEntityName(leaveRequestType);
 
         if (!params.id) {
           deferred.reject('id is mandatory field');
         }
 
-        this.sendPOST('LeaveRequest', 'create', params)
+        this.sendPOST(entityName, 'create', params)
           .then(function (data) {
             if (checkError(data)) {
               deferred.reject(data.error_message);
@@ -139,12 +164,14 @@ define([
        * and optional values for to_date and to_date_type.
        * If to_date is given then to_date_type is also mandotory.
        *
+       * @param {String} leaveRequestType whether its leave, sick or toil
+       *
        * @return {Promise} containing the leave request object additionally with id key set
        * else rejects the promise with error data
        */
-      create: function (params) {
+      create: function (params, leaveRequestType) {
         $log.debug('LeaveRequestAPI.create', params);
-        var deferred = $q.defer();
+        var deferred = $q.defer(), entityName = getEntityName(leaveRequestType);
 
         if (params) {
           if (params.to_date && !params.to_date_type) {
@@ -154,7 +181,7 @@ define([
           }
         }
 
-        this.sendPOST('LeaveRequest', 'create', params)
+        this.sendPOST(entityName, 'create', params)
           .then(function (data) {
             if (checkError(data)) {
               deferred.reject(data.error_message);
@@ -173,13 +200,15 @@ define([
        * @param {Object} params matched the API end point params with
        * values like contact_id, status_id, from_date, from_date_type etc.,
        *
+       * @param {String} leaveRequestType whether its leave, sick or toil
+       *
        * @return {Promise} returns an array of errors for invalid data else empty array
        */
-      isValid: function (params) {
+      isValid: function (params, leaveRequestType) {
         $log.debug('LeaveRequestAPI.isValid', params);
-        var deferred = $q.defer();
+        var deferred = $q.defer(), entityName = getEntityName(leaveRequestType);
 
-        this.sendPOST('LeaveRequest', 'isValid', params)
+        this.sendPOST(entityName, 'isValid', params)
           .then(function (data) {
             if (data.count > 0) {
               deferred.reject(data.values);

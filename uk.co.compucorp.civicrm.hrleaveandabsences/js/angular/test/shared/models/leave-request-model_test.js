@@ -1,8 +1,7 @@
 define([
-  'mocks/data/leave-request-data',
   'leave-absences/shared/models/leave-request-model',
   'mocks/apis/leave-request-api-mock',
-], function (mockData) {
+], function () {
   'use strict';
 
   describe('LeaveRequest', function () {
@@ -38,6 +37,28 @@ define([
 
       beforeEach(function () {
         leaveRequestPromise = LeaveRequest.all();
+      });
+
+      it('calls equivalent API method', function () {
+        leaveRequestPromise.then(function () {
+          expect(LeaveRequestAPI.all).toHaveBeenCalled();
+        });
+      });
+
+      it('returns model instances', function () {
+        leaveRequestPromise.then(function (response) {
+          expect(response.list.every(function (modelInstance) {
+            return ('cancel' in modelInstance) && ('update' in modelInstance);
+          })).toBe(true);
+        });
+      });
+    });
+
+    describe('all() with sickness request', function () {
+      var leaveRequestPromise;
+
+      beforeEach(function () {
+        leaveRequestPromise = LeaveRequest.all({}, 'sick');
       });
 
       it('calls equivalent API method', function () {
