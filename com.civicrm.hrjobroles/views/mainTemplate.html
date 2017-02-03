@@ -1,25 +1,17 @@
 <div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">{{jobroles.message}}</div>
 
-<div class="crm-container" ng-if="loading">
-  <div class="blockUI blockOverlay spinner-height"></div>
+<h3 ng-show="loading || jobroles.present_job_roles.length" class="header-bar header-bar-primary">Current Roles and Projects:</h3>
+<div id="bootstrap-theme">
+  <crm-loading ng-show="loading"></crm-loading>
 </div>
-
-<div class="" ng-if="!loading">
-  <h3 ng-show="jobroles.present_job_roles.length > 0"
-    class="header-bar header-bar-primary">Current Roles and Projects:</h3>
+<div class="" ng-show="!loading">
   <ul class="{{prefix}}list-role">
-    <li class="{{prefix}}list-role-item"
-      ng-repeat="job_roles_data in jobroles.present_job_roles"
-      ng-include
-      src="job_role_panel_url">
+    <li class="{{prefix}}list-role-item" ng-repeat="job_roles_data in jobroles.present_job_roles" ng-include src="job_role_panel_url">
     </li>
   </ul>
   <h3 ng-show="jobroles.past_job_roles.length > 0" class="header-bar header-bar-danger">Past Roles and Projects:</h3>
   <ul class="{{prefix}}list-role">
-    <li class="{{prefix}}list-role-item"
-      ng-repeat="job_roles_data in jobroles.past_job_roles"
-      ng-include
-      src="job_role_panel_url">
+    <li class="{{prefix}}list-role-item" ng-repeat="job_roles_data in jobroles.past_job_roles" ng-include src="job_role_panel_url">
     </li>
   </ul>
 </div>
