@@ -41,6 +41,7 @@ define([
       vm.leaveRequestDayTypes = [];
       vm.period = {};
       vm.statusLabel = '';
+      vm.sickness = false;
       vm.balance = {
         closing: 0,
         opening: 0,
@@ -318,6 +319,7 @@ define([
             return initDates();
           })
           .then(function () {
+            initReason();
             initAbsenceType();
             initStatus();
             initContact();
@@ -704,6 +706,13 @@ define([
         }
 
         return $q.resolve();
+      }
+
+      /**
+       * Initialize record sickness fields
+       */
+      function initReason() {
+        vm.sickness = directiveOptions.sickness;
       }
 
       /**
