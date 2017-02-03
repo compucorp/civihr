@@ -21,6 +21,23 @@ define([
       };
     },
     /**
+     * Creates a Sickness LeaveRequest with random values
+     *
+     * @return {object} containing valid leaverequest data
+     **/
+    createRandomSicknessRequest: function () {
+      return {
+        'type_id': absenceTypeData.getRandomAbsenceType('id'),
+        'contact_id': '202',
+        'status_id': optionGroupMock.randomValue('hrleaveandabsences_leave_request_status', 'value'),
+        'from_date': '2016-02-01',
+        'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
+        'to_date': '2016-02-03',
+        'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
+        "reason": optionGroupMock.randomValue('hrleaveandabsences_sickness_reason', 'name'),
+      };
+    },
+    /**
      * Find if HTTP POST is for entity LeaveRequest and action create/update
      *
      * @param {object} data - contains the data sent along with http request

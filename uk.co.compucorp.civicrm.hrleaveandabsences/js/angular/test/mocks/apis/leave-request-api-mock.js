@@ -2,8 +2,9 @@
 define([
   'mocks/module',
   'mocks/data/leave-request-data',
+  'mocks/data/sickness-leave-request-data',
   'common/angularMocks',
-], function (mocks, mockData) {
+], function (mocks, mockData, sicknessMockData) {
   'use strict';
 
   mocks.factory('LeaveRequestAPIMock', [
@@ -11,9 +12,13 @@ define([
     function ($q) {
 
       return {
-        all: function (filters, pagination, sort, params) {
+        all: function (filters, pagination, sort, params, cache, leaveRequestType) {
           return $q(function (resolve, reject) {
             var list = mockData.all().values;
+
+            if (leaveRequestType && leaveRequestType === 'sick') {
+              list = sicknessMockData.all().values;
+            }
 
             resolve({
               list: list,
@@ -42,25 +47,37 @@ define([
             resolve(mockData.calculateBalanceChange().values);
           });
         },
-        create: function (params) {
+        create: function (params, leaveRequestType) {
           return $q(function (resolve, reject) {
             if (!params.contact_id || !params.from_date) {
               reject('contact_id, from_date and from_date_type in params are mandatory');
             }
 
-            resolve(mockData.all().values[0]);
+
+            if (leaveRequestType && leaveRequestType === 'sick') {
+              resolve(sicknessMockData.all().values[0]);
+            } else {
+              resolve(mockData.all().values[0]);
+            }
           });
         },
-        update: function (params) {
+        update: function (params, leaveRequestType) {
           return $q(function (resolve, reject) {
-            var newAttributes = _.assign(Object.create(null), mockData.all().values[0], params);
+            var newAttributes;
+
+            if (leaveRequestType && leaveRequestType === 'sick') {
+              newAttributes = _.assign(Object.create(null), sicknessMockData.all().values[0], params);
+            } else {
+              newAttributes = _.assign(Object.create(null), mockData.all().values[0], params);
+            }
+
             if (!params.id) {
               reject('id is mandatory field');
             }
             resolve(newAttributes);
           });
         },
-        isValid: function (params) {
+        isValid: function (params, leaveRequestType) {
           return $q(function (resolve, reject) {
             if (!params.contact_id || !params.from_date) {
               reject(mockData.getNotIsValid().values);

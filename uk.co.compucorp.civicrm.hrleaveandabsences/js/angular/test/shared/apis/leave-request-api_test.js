@@ -1,11 +1,12 @@
 define([
   'mocks/data/leave-request-data',
+  'mocks/data/sickness-leave-request-data',
   'common/moment',
   'mocks/helpers/helper',
   'mocks/data/absence-type-data',
   'mocks/data/option-group-mock-data',
   'leave-absences/shared/apis/leave-request-api',
-], function (mockData, moment, helper, absenceTypeData, optionGroupMock) {
+], function (mockData, sicknessMockData, moment, helper, absenceTypeData, optionGroupMock) {
   'use strict';
 
   describe('LeaveRequestAPI', function () {
@@ -24,6 +25,10 @@ define([
       //Intercept backend calls for LeaveRequest.all
       $httpBackend.whenGET(/action\=getFull&entity\=LeaveRequest/)
         .respond(mockData.all());
+
+      //Intercept backend calls for SicknessRequest.all
+      $httpBackend.whenGET(/action\=getFull&entity\=SicknessRequest/)
+        .respond(sicknessMockData.all());
 
       //Intercept backend calls for LeaveRequest.balanceChangeByAbsenceType
       $httpBackend.whenGET(/action\=getbalancechangebyabsencetype&entity\=LeaveRequest/)
@@ -44,6 +49,12 @@ define([
           }
           else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
             return [200, mockData.isManagedBy()];
+          }
+          else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'create')) {
+            return [201, sicknessMockData.all()];
+          }
+          else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'isValid')) {
+            return [200, mockData.getisValid()];
           }
         });
     }));
@@ -68,6 +79,23 @@ define([
         promise.then(function (response) {
           expect(response.list).toEqual(mockData.all().values);
         });
+      });
+    });
+
+    describe('all() sickness request', function() {
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'getAll').and.callThrough();
+        promise = LeaveRequestAPI.all(null, null, null, {}, false, 'sick');
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls the getAll() method', function () {
+        expect(LeaveRequestAPI.getAll).toHaveBeenCalled();
+        expect(LeaveRequestAPI.getAll.calls.mostRecent().args[0]).toBe('SicknessRequest');
+        expect(LeaveRequestAPI.getAll.calls.mostRecent().args[5]).toBe('getFull');
       });
     });
 
@@ -310,12 +338,36 @@ define([
       });
     });
 
+    describe('create() for sickness request', function() {
+      beforeEach(function () {
+        requestData = helper.createRandomSicknessRequest();
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+        promise = LeaveRequestAPI.create(requestData, 'sick');
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('call endpoint', function () {
+        promise.then(function (result) {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
+            jasmine.any(String), jasmine.any(Object));
+        });
+      });
+
+      it('sets leave request', function () {
+        promise.then(function (result) {
+          expect(result.leave_request_id).toEqual(jasmine.any(String));
+        });
+      });
+    });
+
     describe('isValid()', function () {
-
       describe('when called with valid data', function () {
-
         beforeEach(function () {
-          requestData = helper.createRandomLeaveRequest();
+          requestData = helper.createRandomSicknessRequest();
           spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
           promise = LeaveRequestAPI.isValid(requestData);
         });
@@ -340,9 +392,58 @@ define([
       });
 
       describe('when called with invalid data', function () {
-
         beforeEach(function () {
-          requestData = helper.createRandomLeaveRequest();
+          requestData = helper.createRandomSicknessRequest();
+          spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
+            return $q(function (resolve, reject) {
+              reject(mockData.getNotIsValid());
+            });
+          });
+          promise = LeaveRequestAPI.isValid(requestData);
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        it('returns validation errors', function () {
+          promise.catch(function (result) {
+            expect(result.count).toEqual(1);
+          });
+        });
+      });
+    });
+
+    describe('isValid() for sickness request', function () {
+      describe('when called with valid data', function () {
+        beforeEach(function () {
+          requestData = helper.createRandomSicknessRequest();
+          spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+          promise = LeaveRequestAPI.isValid(requestData, 'sick');
+        });
+
+        afterEach(function () {
+          $httpBackend.flush();
+        });
+
+        it('calls endpoint', function () {
+          promise.then(function (result) {
+            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
+            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
+              jasmine.any(String), jasmine.any(Object));
+          });
+        });
+
+        it('returns no errors', function () {
+          promise.then(function (result) {
+            expect(result).toEqual([]);
+          });
+        });
+      });
+
+      describe('when called with invalid data', function () {
+        beforeEach(function () {
+          requestData = helper.createRandomSicknessRequest();
           spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
             return $q(function (resolve, reject) {
               reject(mockData.getNotIsValid());
@@ -395,12 +496,63 @@ define([
       });
 
       describe('when does not contain id set', function () {
-
         beforeEach(function () {
           errorMessage = 'id is mandatory field';
           //remove id
           delete updatedRequestData.id;
           promise = LeaveRequestAPI.update(updatedRequestData);
+        });
+
+        afterEach(function () {
+          //resolves to local promise hence no need to flush http call
+          $rootScope.$apply();
+        });
+
+        it('returns error', function () {
+          promise.catch(function (result) {
+            expect(result).toBe(errorMessage);
+          });
+        });
+      });
+    });
+
+    describe('update() for sickness request', function () {
+      var updatedRequestData = {};
+
+      beforeEach(function () {
+        var changedStatusId = {
+          status_id: mockData.all().values[5].status_id
+        };
+        requestData = mockData.all().values[0];
+        _.assign(updatedRequestData, requestData, changedStatusId);
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+        promise = LeaveRequestAPI.update(updatedRequestData, 'sick');
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls endpoint', function () {
+        promise.then(function (result) {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
+            jasmine.any(String), jasmine.any(Object));
+        });
+      });
+
+      it('returns updated leave request', function () {
+        promise.then(function (result) {
+          expect(result.id).toBeDefined();
+        });
+      });
+
+      describe('when does not contain id set', function () {
+        beforeEach(function () {
+          errorMessage = 'id is mandatory field';
+          //remove id
+          delete updatedRequestData.id;
+          promise = LeaveRequestAPI.update(updatedRequestData, 'sick');
         });
 
         afterEach(function () {
