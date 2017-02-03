@@ -40,4 +40,20 @@ trait CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait {
 
     return $result['values'][0];
   }
+
+  public function createLeaveLeaveManagerServiceMock($isAdmin = false, $isManager = false) {
+    $leaveManagerService = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Service_LeaveManager::class)
+                                ->setMethods(['currentUserIsAdmin', 'currentUserIsLeaveManagerOf'])
+                                ->getMock();
+
+    $leaveManagerService->expects($this->any())
+                        ->method('currentUserIsAdmin')
+                        ->will($this->returnValue($isAdmin));
+
+    $leaveManagerService->expects($this->any())
+                        ->method('currentUserIsLeaveManagerOf')
+                        ->will($this->returnValue($isManager));
+
+    return $leaveManagerService;
+  }
 }
