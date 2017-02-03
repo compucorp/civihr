@@ -41,6 +41,7 @@ define([
       vm.leaveRequestDayTypes = [];
       vm.period = {};
       vm.statusLabel = '';
+      vm.sickness = directiveOptions.sickness;
       vm.balance = {
         closing: 0,
         opening: 0,
