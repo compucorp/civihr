@@ -42,6 +42,7 @@ define([
       vm.period = {};
       vm.statusLabel = '';
       vm.sickness = false;
+      vm.sickness = directiveOptions.sickness;
       vm.balance = {
         closing: 0,
         opening: 0,
@@ -319,7 +320,6 @@ define([
             return initDates();
           })
           .then(function () {
-            initReason();
             initAbsenceType();
             initStatus();
             initContact();
@@ -711,9 +711,6 @@ define([
       /**
        * Initialize record sickness fields
        */
-      function initReason() {
-        vm.sickness = directiveOptions.sickness;
-      }
 
       /**
        * Initializes user's calendar (work patterns)
