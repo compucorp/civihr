@@ -173,12 +173,22 @@
 
   #commPrefs {
     table {
-      td {
-        max-width: 270px;
+      tr {
+        &:nth-child(3) {
+          td:nth-child(4) {
+            position: relative;
+            top: 35px;
+            right: 35px;
+          }
+        }
 
-        select {
-          max-width: 100%;
-          padding-right: 30px !important;
+        td {
+          max-width: 270px;
+
+          select {
+            max-width: 200px;
+            padding-right: 30px !important;
+          }
         }
       }
     }
