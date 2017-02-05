@@ -47,12 +47,7 @@ define([
 
           return publicHolidayAPI.all(params)
             .then(function (publicHolidays) {
-
-              if (!!publicHolidays.length) {
-                return true;
-              }
-
-              return false;
+              return !!publicHolidays.length;
             });
         }
       });

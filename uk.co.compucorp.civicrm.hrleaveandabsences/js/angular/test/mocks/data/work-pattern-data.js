@@ -14,7 +14,7 @@ define(function () {
           }
         },
         {
-          'date': '2016-01-02',
+          'date': '2016-02-02',
           'type': {
             'value': 1,
             'name': 'non_working_day',
@@ -22,7 +22,7 @@ define(function () {
           }
         },
         {
-          'date': '2016-01-03',
+          'date': '2016-03-03',
           'type': {
             'value': 3,
             'name': 'weekend',

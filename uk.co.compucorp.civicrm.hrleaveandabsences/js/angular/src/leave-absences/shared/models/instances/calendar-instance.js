@@ -1,8 +1,8 @@
 define([
-  'common/moment',
+  'common/lodash',
   'leave-absences/shared/modules/models-instances',
   'common/models/instances/instance',
-], function (moment, instances) {
+], function (_, instances) {
   'use strict';
 
   instances.factory('CalendarInstance', [
@@ -12,16 +12,14 @@ define([
       /**
        * This method checks whether a date matches the send type.
        *
-       * @param {string} date
+       * @param {Object} date
        * @param {string} Type of day
        *
        * @return {Boolean}
        * @throws error if date is not found in calendarData
        */
       function checkDate(date, dayType) {
-        var searchedDate = this.days.find(function (data) {
-          return moment(data.date).isSame(date);
-        });
+        var searchedDate = this.days[date.getTime()];
 
         if (!searchedDate) {
           throw new Error('Date not found');
@@ -31,6 +29,29 @@ define([
       }
 
       return ModelInstance.extend({
+
+        /**
+         * Creates a new instance, optionally with its data normalized.
+         * Also, it will allow children to add/remove/update current attributes of
+         * the instance using transformAttributes method
+         *
+         * @param {object} data - The instance data
+         * @return {object}
+         */
+        init: function (data) {
+          var iterator,
+            length = data.length,
+            datesObj = {};
+
+          // convert array to an object with the timestamp being the key
+          for (iterator = 0; iterator < length; iterator++) {
+            datesObj[new Date(data[iterator].date).getTime()] = data[iterator];
+          }
+
+          return _.assign(Object.create(this), {
+            days: datesObj
+          });
+        },
 
         /**
          * Returns the default custom data (as in, not given by the API)
@@ -51,8 +72,6 @@ define([
          * @return {Boolean}
          */
         isWorkingDay: function (date) {
-          $log.debug('CalendarInstance.isWorkingDay', date);
-
           return checkDate.call(this, date, 'working_day');
         },
 
@@ -63,8 +82,6 @@ define([
          * @return {Boolean}
          */
         isNonWorkingDay: function (date) {
-          $log.debug('CalendarInstance.isNonWorkingDay', date);
-
           return checkDate.call(this, date, 'non_working_day');
         },
 
@@ -75,8 +92,6 @@ define([
          * @return {Boolean}
          */
         isWeekend: function (date) {
-          $log.debug('CalendarInstance.isWeekend', date);
-
           return checkDate.call(this, date, 'weekend');
         }
       });
