@@ -79,12 +79,6 @@
         it('calendar have loaded', function () {
           expect(Object.keys(controller.calendar.days).length).not.toBe(0);
         });
-
-        it('leave requests status have loaded', function () {
-          var expectedResult = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status');
-
-          expect(controller.leaveRequestStatuses).toEqual(expectedResult);
-        });
       });
 
       describe('isPublicHoliday', function () {
@@ -216,7 +210,7 @@
           });
         });
 
-        describe('', function () {
+        describe('refresh', function () {
           var dateObj,
             workPattern,
             leaveRequest;
@@ -229,7 +223,7 @@
 
           describe('when leave request is not approved', function () {
             beforeEach(function () {
-              var status = _.find(controller.leaveRequestStatuses, function (status) {
+              var status = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), function (status) {
                 return status.name === 'waiting_approval';
               });
               leaveRequest.status_id = status.value;

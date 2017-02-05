@@ -23,7 +23,8 @@ define([
     var vm = Object.create(this),
       dayTypes = [],
       leaveRequests = [],
-      publicHolidays = [];
+      publicHolidays = [],
+      leaveRequestStatuses = [];
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -31,6 +32,7 @@ define([
     vm.loading = false;
     vm.months = ['January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'];
+    //Select current month as default
     vm.selectedMonths = [vm.months[new Date().getMonth()]];
     vm.selectedPeriod = null;
 
@@ -147,14 +149,13 @@ define([
      * @return {object}
      */
     function getStyles(leaveRequest) {
-      var status = _.find(vm.leaveRequestStatuses, function (status) {
-        return status.value == leaveRequest.status_id;
-      });
+      var status = leaveRequestStatuses[leaveRequest.status_id],
+        absenceType;
 
       if (status.name === 'waiting_approval'
         || status.name === 'approved'
         || status.name === 'admin_approved') {
-        var absenceType = _.find(vm.absenceTypes, function (absenceType) {
+        absenceType = _.find(vm.absenceTypes, function (absenceType) {
           return absenceType.id == leaveRequest.type_id;
         });
 
@@ -194,11 +195,9 @@ define([
      * @return {boolean}
      */
     function isPendingApproval(leaveRequest) {
-      var status = _.find(vm.leaveRequestStatuses, function (status) {
-        return status.value == leaveRequest.status_id;
-      });
+      var status = leaveRequestStatuses[leaveRequest.status_id];
 
-      return status.name === "waiting_approval";
+      return status.name === 'waiting_approval';
     }
 
     /**
@@ -252,6 +251,7 @@ define([
             length = dayTypesData.length,
             typesObj = {};
 
+          // convert to an object with name as key
           for (iterator = 0; iterator < length; iterator++) {
             typesObj[dayTypesData[iterator].name] = dayTypesData[iterator];
           }
@@ -291,6 +291,7 @@ define([
             length = publicHolidaysData.length,
             datesObj = {};
 
+          // convert to an object with time stamp as key
           for (iterator = 0; iterator < length; iterator++) {
             datesObj[new Date(publicHolidaysData[iterator].date).getTime()] = publicHolidaysData[iterator];
           }
@@ -307,7 +308,16 @@ define([
     function loadStatuses() {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
-          vm.leaveRequestStatuses = statuses;
+          var iterator,
+            length = statuses.length,
+            statusesObj = {};
+
+          // convert to an object with value as key
+          for (iterator = 0; iterator < length; iterator++) {
+            statusesObj[statuses[iterator].value] = statuses[iterator];
+          }
+
+          leaveRequestStatuses = statusesObj;
         });
     }
 
@@ -339,8 +349,8 @@ define([
         if (leaveRequest) {
           dateObj.UI.styles = getStyles(leaveRequest);
           dateObj.UI.isRequested = isPendingApproval(leaveRequest);
-          dateObj.UI.isAM = isDayType("half_day_am", leaveRequest, dateObj.date);
-          dateObj.UI.isPM = isDayType("half_day_pm", leaveRequest, dateObj.date);
+          dateObj.UI.isAM = isDayType('half_day_am', leaveRequest, dateObj.date);
+          dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
         }
       }
 
