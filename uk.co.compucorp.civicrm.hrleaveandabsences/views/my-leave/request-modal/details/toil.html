@@ -1,0 +1,51 @@
+<div class="col-xs-12 form-horizontal" ng-show="!$ctrl.uiOptions.multipleDays">
+  <div class="form-group">
+    <label class="col-xs-4 control-label">Date Worked</label>
+    <div class="col-xs-4">
+      <div class="input-group">
+        <input type="text" class="form-control" is-open="$ctrl.uiOptions.date.to.dateWorked"/>
+        <span class="input-group-btn">
+          <button type="button" class="btn btn-default fa fa-calendar"</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-xs-12 form-horizontal">
+  <div class="form-group">
+    <label class="col-xs-4 control-label">Duration</label>
+    <div class="col-xs-4">
+      <div class="input-group">
+        <input placeholder="Hours" type="text" class="form-control"/>
+        <span class="input-group-btn">
+          <button type="button" class="btn btn-default fa fa-calendar"</button>
+        </span>
+      </div>
+    </div>
+    <div class="col-xs-4">
+      <div class="input-group">
+        <input placeholder="Mins" type="text" class="form-control"/>
+        <span class="input-group-btn">
+          <button type="button" class="btn btn-default fa fa-calendar"</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-xs-12 form-horizontal">
+<hr>
+  <div class="form-group">
+    <div class="col-xs-12 control-label"><p>TOIL to be Accuired:</p></div>
+    <div class="col-xs-12">
+      <div class="chr_custom-select chr_custom-select--full">
+        <select name="reason">
+          <option value="- select -">- select -</option>
+        </select>
+      </div>
+      <hr>
+    </div>
+    <div class="col-xs-12">
+      <div class="expire-date">Expiry Date: <span>$variable</span></div>
+    </div>
+  </div>
+</div>

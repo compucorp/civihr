@@ -42,6 +42,7 @@ define([
       vm.period = {};
       vm.statusLabel = '';
       vm.sickness = directiveOptions.sickness;
+      vm.overtime = directiveOptions.overtime;
       vm.balance = {
         closing: 0,
         opening: 0,
