@@ -13,11 +13,11 @@ define([
     }],
     controllerAs: 'ctrl',
     controller: ['$log', '$q', 'OptionGroup', 'AbsencePeriod', 'AbsenceType',
-      'Calendar', 'PublicHoliday', 'LeaveRequest', controller]
+      'Calendar', 'LeaveRequest', 'PublicHoliday', controller]
   });
 
 
-  function controller($log, $q, OptionGroup, AbsencePeriod, AbsenceType, Calendar, PublicHoliday, LeaveRequest) {
+  function controller($log, $q, OptionGroup, AbsencePeriod, AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
     $log.debug('Component: my-leave-calendar');
 
     var vm = Object.create(this),
@@ -63,7 +63,8 @@ define([
      * @return {string}
      */
     vm.getDayName = function (date) {
-      return new Date(date).toString().substr(0,3);
+      var day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      return day[new Date(date).getDay()];
     };
 
     /**
@@ -74,16 +75,16 @@ define([
      */
     vm.getMonthData = function (month) {
       if (vm.calendar.days) {
-        var iterator,
+        var index,
           dates = Object.keys(vm.calendar.days),
           date,
           length = dates.length,
           datesForTheMonth = [];
 
-        for (iterator = 0; iterator < length; iterator++) {
-          date = new Date(parseInt(dates[iterator]));
+        for (index = 0; index < length; index++) {
+          date = new Date(parseInt(dates[index]));
           if (date.getMonth() === month) {
-            datesForTheMonth.push(vm.calendar.days[dates[iterator]]);
+            datesForTheMonth.push(vm.calendar.days[dates[index]]);
           }
         }
 
@@ -96,7 +97,7 @@ define([
      */
     vm.refresh = function () {
       vm.loading = true;
-      loadLeaveRequest()
+      loadLeaveRequestandCalendar()
         .then(function () {
           vm.loading = false;
         });
@@ -112,7 +113,7 @@ define([
         loadDayTypes()
       ]).then(function () {
           vm.legendCollapsed = false;
-          return loadLeaveRequest();
+          return loadLeaveRequestandCalendar();
         })
         .then(function () {
           vm.loading = false;
@@ -126,17 +127,17 @@ define([
      * @return {object}
      */
     function getLeaveRequest(date) {
-      var iterator,
+      var index,
         length = leaveRequests.length,
         dates;
 
-      for (iterator = 0; iterator < length; iterator++) {
-        dates = _.find(leaveRequests[iterator].dates, function (leaveRequestDate) {
+      for (index = 0; index < length; index++) {
+        dates = _.find(leaveRequests[index].dates, function (leaveRequestDate) {
           return moment(leaveRequestDate.date).isSame(date);
         });
 
         if (dates) {
-          return leaveRequests[iterator];
+          return leaveRequests[index];
         }
       }
     }
@@ -247,24 +248,16 @@ define([
     function loadDayTypes() {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
         .then(function (dayTypesData) {
-          var iterator,
-            length = dayTypesData.length,
-            typesObj = {};
-
-          // convert to an object with name as key
-          for (iterator = 0; iterator < length; iterator++) {
-            typesObj[dayTypesData[iterator].name] = dayTypesData[iterator];
-          }
-          dayTypes = typesObj;
+          dayTypes = _.indexBy(dayTypesData, 'name');
         });
     }
 
     /**
-     * Loads all the leave requests
+     * Loads all the leave requests and calls calendar load function
      *
      * @return {Promise}
      */
-    function loadLeaveRequest() {
+    function loadLeaveRequestandCalendar() {
       return LeaveRequest.all({
         contact_id: vm.contactId,
         from_date: {
@@ -287,13 +280,13 @@ define([
     function loadPublicHolidays() {
       return PublicHoliday.all()
         .then(function (publicHolidaysData) {
-          var iterator,
+          var index,
             length = publicHolidaysData.length,
             datesObj = {};
 
           // convert to an object with time stamp as key
-          for (iterator = 0; iterator < length; iterator++) {
-            datesObj[new Date(publicHolidaysData[iterator].date).getTime()] = publicHolidaysData[iterator];
+          for (index = 0; index < length; index++) {
+            datesObj[new Date(publicHolidaysData[index].date).getTime()] = publicHolidaysData[index];
           }
 
           publicHolidays = datesObj;
@@ -308,16 +301,7 @@ define([
     function loadStatuses() {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
-          var iterator,
-            length = statuses.length,
-            statusesObj = {};
-
-          // convert to an object with value as key
-          for (iterator = 0; iterator < length; iterator++) {
-            statusesObj[statuses[iterator].value] = statuses[iterator];
-          }
-
-          leaveRequestStatuses = statusesObj;
+          leaveRequestStatuses = _.indexBy(statuses, 'value');
         });
     }
 
@@ -329,14 +313,14 @@ define([
      * @return {object}
      */
     function setCalendarProps(calendar) {
-      var iterator,
+      var index,
         dates = Object.keys(calendar.days),
         length = dates.length,
         dateObj,
         leaveRequest;
 
-      for (iterator = 0; iterator < length; iterator++) {
-        dateObj = calendar.days[dates[iterator]];
+      for (index = 0; index < length; index++) {
+        dateObj = calendar.days[dates[index]];
         leaveRequest = getLeaveRequest(dateObj.date);
 
         dateObj.UI = {
