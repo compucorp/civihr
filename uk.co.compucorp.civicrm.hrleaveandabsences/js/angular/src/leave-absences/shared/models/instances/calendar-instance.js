@@ -19,7 +19,7 @@ define([
        * @throws error if date is not found in calendarData
        */
       function checkDate(date, dayType) {
-        var searchedDate = this.days[date.getTime()];
+        var searchedDate = this.days[new Date(date).getTime()];
 
         if (!searchedDate) {
           throw new Error('Date not found');
