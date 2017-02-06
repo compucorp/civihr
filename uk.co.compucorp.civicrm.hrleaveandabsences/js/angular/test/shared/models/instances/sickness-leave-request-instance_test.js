@@ -1,11 +1,9 @@
 define([
-  'mocks/data/leave-request-data',
-  'mocks/data/sickness-leave-request-data',
   'mocks/helpers/helper',
   'mocks/apis/leave-request-api-mock',
   'mocks/apis/option-group-api-mock',
   'leave-absences/shared/models/instances/sickness-leave-request-instance',
-], function (mockData, sicknessMockData, helper) {
+], function (helper) {
   'use strict';
 
   describe('SicknessRequestInstance', function () {
