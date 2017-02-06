@@ -8,6 +8,9 @@ use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeServi
 use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
+use CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix as LeaveRequestStatusMatrixService;
+use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest
@@ -17,24 +20,46 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
 class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
+
+  /**
+   * @var \CRM_HRLeaveAndAbsences_Service_LeaveRequest
+   */
+  private $leaveRequestService;
+
+  private $leaveContact;
+
+  public function setUp() {
+    $leaveBalanceChangeService = new LeaveBalanceChangeService();
+    $leaveManagerService = new LeaveManagerService();
+    $leaveRequestStatusMatrixService = new LeaveRequestStatusMatrixService($leaveManagerService);
+    $leaveRequestRightsService = new LeaveRequestRightsService($leaveManagerService);
+
+    $this->leaveRequestService = new LeaveRequestService(
+      $leaveBalanceChangeService,
+      $leaveManagerService,
+      $leaveRequestStatusMatrixService,
+      $leaveRequestRightsService
+    );
+
+    $this->leaveContact = 1;
+    $this->registerCurrentLoggedInContactInSession($this->leaveContact);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
+  }
 
   public function testCreateAlsoCreateTheLeaveRequestBalanceChanges() {
-    $contact = ContactFabricator::fabricate();
-
     HRJobContractFabricator::fabricate(
-      ['contact_id' => $contact['id']],
+      ['contact_id' => $this->leaveContact],
       ['period_start_date' => '2016-01-01']
     );
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
 
-    $leaveRequestService = new LeaveRequestService(new LeaveBalanceChangeService());
-
     // a 7 days leave request, from monday to sunday
-    $leaveRequest = $leaveRequestService->create([
+    $leaveRequest = $this->leaveRequestService->create([
       'type_id' => 1,
-      'contact_id' => $contact['id'],
-      'status_id' => 1,
+      'contact_id' => $this->leaveContact,
+      'status_id' => 3,
       'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
@@ -53,29 +78,25 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testCreateDoesNotDuplicateLeaveBalanceChangesOnUpdate() {
-    $contact = ContactFabricator::fabricate();
-
     HRJobContractFabricator::fabricate(
-      ['contact_id' => $contact['id']],
+      ['contact_id' => $this->leaveContact],
       ['period_start_date' => '2016-01-01']
     );
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
 
-    $leaveRequestService = new LeaveRequestService(new LeaveBalanceChangeService());
-
     // a 7 days leave request, from friday to thursday
     $params = [
       'type_id' => 1,
-      'contact_id' => $contact['id'],
-      'status_id' => 1,
+      'contact_id' => $this->leaveContact,
+      'status_id' => 3,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
     ];
 
-    $leaveRequest = $leaveRequestService->create($params, false);
+    $leaveRequest = $this->leaveRequestService->create($params, false);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // Since the 40 hours work pattern was used, and it this is a week long
@@ -90,7 +111,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     // Increase the Leave Request period by 4 days (2 weekend + 2 working days)
     $params['id'] = $leaveRequest->id;
     $params['to_date'] = CRM_Utils_Date::processDate('2016-01-11');
-    $leaveRequestService->create($params, false);
+    $this->leaveRequestService->create($params, false);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // 5 from before + 2 (from the 2 new working days)
@@ -119,8 +140,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(7, $balanceChanges);
     $this->assertCount(7, $dates);
 
-    $leaveRequestService = new LeaveRequestService(new LeaveBalanceChangeService());
-    $leaveRequestService->delete($leaveRequest->id);
+    $this->leaveRequestService->delete($leaveRequest->id);
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
     $dates          = $leaveRequest->getDates();
