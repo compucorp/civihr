@@ -1921,6 +1921,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetShouldOnlyReturnTheLeaveRequestsOfStaffMembersManagedByTheContactOnTheManagedByParam() {
+    $this->setLeaveApproverRelationshipTypes([
+      'has Leaves Approved By',
+      'has Leaves Managed By',
+    ]);
+
     $manager1 = ContactFabricator::fabricate();
     $manager2 = ContactFabricator::fabricate();
 
@@ -1953,9 +1958,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     // Set Leave Approvers for staffMembers 1, 2 and 3. Staff Member 4 won't have
     // a Leave Approver
-    $this->setContactAsLeaveApproverOf($manager1, $staffMember1);
-    $this->setContactAsLeaveApproverOf($manager2, $staffMember2);
-    $this->setContactAsLeaveApproverOf($manager2, $staffMember3);
+    $this->setContactAsLeaveApproverOf($manager1, $staffMember1, null, null, true, 'has Leaves Approved By');
+    $this->setContactAsLeaveApproverOf($manager2, $staffMember2, null, null, true, 'has Leaves Approved By');
+    $this->setContactAsLeaveApproverOf($manager2, $staffMember3, null, null, true, 'has Leaves Managed By');
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],

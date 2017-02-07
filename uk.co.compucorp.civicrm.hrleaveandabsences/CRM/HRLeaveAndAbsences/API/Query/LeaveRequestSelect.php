@@ -92,9 +92,10 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     if(!empty($this->params['managed_by'])) {
       $managerID = (int)$this->params['managed_by'];
       $today =  '"' . date('Y-m-d') . '"';
+      $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipTypes();
 
       $conditions[] = 'rt.is_active = 1';
-      $conditions[] = 'rt.name_a_b = "has Leave Approved by"';
+      $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
       $conditions[] = 'r.is_active = 1';
       $conditions[] = "r.contact_id_b = {$managerID}";
       $conditions[] = "(r.start_date IS NULL OR r.start_date <= {$today})";
@@ -299,5 +300,15 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     }
 
     return $toilLeaveRequestIDs;
+  }
+
+  /**
+   * Returns a list of relationship types stored on the
+   * 'relationship_types_allowed_to_approve_leave' setting
+   *
+   * @return array
+   */
+  private function getLeaveApproverRelationshipTypes() {
+    return Civi::service('hrleaveandabsences.settings_manager')->get('relationship_types_allowed_to_approve_leave');
   }
 }
