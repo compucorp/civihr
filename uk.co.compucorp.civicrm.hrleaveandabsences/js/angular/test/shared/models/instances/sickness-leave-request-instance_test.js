@@ -7,7 +7,7 @@ define([
   'use strict';
 
   describe('SicknessRequestInstance', function () {
-    var expectedError, instance, LeaveRequestAPI, $provide, promise, requestData, $rootScope;
+    var $rootScope, $provide, expectedError, instance, LeaveRequestAPI, promise, requestData, toAPIReturnValue;
 
     beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -24,10 +24,14 @@ define([
         instance = _SicknessRequestInstance_.init({}, false);
         $rootScope = _$rootScope_;
         LeaveRequestAPI = _LeaveRequestAPI_;
+        toAPIReturnValue = {
+            key: jasmine.any(String)
+          };
 
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
         spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
+        spyOn(instance, 'toAPI').and.returnValue(toAPIReturnValue);
       }
     ]));
 
@@ -51,18 +55,23 @@ define([
 
       it('calls equivalent API method', function () {
         promise.then(function () {
-          expect(LeaveRequestAPI.create).toHaveBeenCalledWith(jasmine.any(Object), 'sick');
+          expect(LeaveRequestAPI.create).toHaveBeenCalledWith(toAPIReturnValue, 'sick');
+        });
+      });
+
+      it('calls toAPI method', function () {
+        promise.then(function () {
+          expect(instance.toAPI).toHaveBeenCalled();
         });
       });
 
       describe('id field', function() {
-        it('is not appended to instance before API returns data', function() {
+        it('is not appended to instance after API returns data', function() {
           expect(instance.id).not.toBeDefined();
         });
 
-        it('is appended to instance before API returns data', function() {
+        it('is appended to instance after API returns data', function() {
           promise.then(function () {
-            expect(instance.id).toBeDefined();
             expect(instance.id).toEqual(jasmine.any(String));
           });
         });
@@ -84,18 +93,19 @@ define([
 
       it('calls equivalent API method', function () {
         promise.then(function () {
-          expect(LeaveRequestAPI.isValid).toHaveBeenCalledWith(jasmine.any(Object), 'sick');
+          expect(LeaveRequestAPI.isValid).toHaveBeenCalledWith(toAPIReturnValue, 'sick');
+        });
+      });
+
+      it('calls toAPI method', function () {
+        promise.then(function () {
+          expect(instance.toAPI).toHaveBeenCalled();
         });
       });
     });
 
     describe('update()', function () {
-      var toAPIReturnValue = {
-          key: jasmine.any(String)
-        };
-
       beforeEach(function () {
-        spyOn(instance, 'toAPI').and.returnValue(toAPIReturnValue);
         promise = instance.update();
       });
 
@@ -113,7 +123,7 @@ define([
         promise.then(function () {
           expect(instance.toAPI).toHaveBeenCalled();
         });
-      })
+      });
     });
   });
 });
