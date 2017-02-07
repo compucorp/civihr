@@ -58,18 +58,14 @@ define([
      */
     vm.getMonthData = function (month) {
       if (vm.calendar.days) {
-        var i,
-          date,
-          dates = Object.keys(vm.calendar.days),
-          length = dates.length,
+        var dates = Object.keys(vm.calendar.days),
           datesForTheMonth = [];
 
-        for (i = 0; i < length; i++) {
-          date = moment(parseInt(dates[i]));
-          if (date.month() === month) {
-            datesForTheMonth.push(vm.calendar.days[dates[i]]);
+        dates.forEach(function (date) {
+          if (moment(parseInt(date)).month() === month) {
+            datesForTheMonth.push(vm.calendar.days[date]);
           }
-        }
+        });
 
         return datesForTheMonth;
       }
@@ -143,19 +139,11 @@ define([
      * @return {object}
      */
     function getLeaveRequestByDate(date) {
-      var i,
-        dates,
-        length = leaveRequests.length;
-
-      for (i = 0; i < length; i++) {
-        dates = _.find(leaveRequests[i].dates, function (leaveRequestDate) {
+      return _.find(leaveRequests, function(leaveRequest){
+        return !!_.find(leaveRequest.dates, function (leaveRequestDate) {
           return moment(leaveRequestDate.date).isSame(date);
         });
-
-        if (dates) {
-          return leaveRequests[i];
-        }
-      }
+      });
     }
 
     /**
@@ -252,7 +240,9 @@ define([
     function loadCalendar() {
       return Calendar.get(vm.contactId, vm.selectedPeriod.id)
         .then(function (calendar) {
+          console.time('a');
           vm.calendar = setCalendarProps(calendar);
+          console.timeEnd('a')
         });
     }
 
@@ -297,14 +287,12 @@ define([
     function loadPublicHolidays() {
       return PublicHoliday.all()
         .then(function (publicHolidaysData) {
-          var i,
-            length = publicHolidaysData.length,
-            datesObj = {};
+          var datesObj = {};
 
           // convert to an object with time stamp as key
-          for (i = 0; i < length; i++) {
-            datesObj[getDateObjectWithFormat(publicHolidaysData[i].date).valueOf()] = publicHolidaysData[i];
-          }
+          publicHolidaysData.forEach(function (publicHoliday) {
+            datesObj[getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
+          });
 
           publicHolidays = datesObj;
         });
@@ -330,14 +318,12 @@ define([
      * @return {object}
      */
     function setCalendarProps(calendar) {
-      var i,
-        dates = Object.keys(calendar.days),
-        length = dates.length,
-        dateObj,
-        leaveRequest;
+      var dateObj,
+        leaveRequest,
+        dates = Object.keys(calendar.days);
 
-      for (i = 0; i < length; i++) {
-        dateObj = calendar.days[dates[i]];
+      dates.forEach(function (date) {
+        dateObj = calendar.days[date];
         leaveRequest = getLeaveRequestByDate(dateObj.date);
 
         dateObj.UI = {
@@ -353,7 +339,7 @@ define([
           dateObj.UI.isAM = isDayType('half_day_am', leaveRequest, dateObj.date);
           dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
         }
-      }
+      });
 
       return calendar;
     }

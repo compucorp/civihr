@@ -52,14 +52,12 @@ define([
          * @return {object}
          */
         init: function (data) {
-          var iterator,
-            length = data.length,
-            datesObj = {};
+          var datesObj = {};
 
           // convert array to an object with the timestamp being the key
-          for (iterator = 0; iterator < length; iterator++) {
-            datesObj[getDateObjectWithFormat(data[iterator].date).valueOf()] = data[iterator];
-          }
+          data.forEach(function (calendar) {
+            datesObj[getDateObjectWithFormat(calendar.date).valueOf()] = calendar;
+          });
 
           return _.assign(Object.create(this), {
             days: datesObj
