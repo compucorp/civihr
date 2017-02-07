@@ -17,7 +17,21 @@ define([
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-02-03',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
-        'balance_change': -3
+        'balance_change': -3,
+        "dates": [
+          {
+            "id": "20",
+            "date": "2016-02-01"
+          },
+          {
+            "id": "21",
+            "date": "2016-02-02"
+          },
+          {
+            "id": "22",
+            "date": "2016-02-03"
+          }
+        ]
       }, {
         'id': '18',
         'type_id': absenceTypeData.all().values[0]['id'],
@@ -27,7 +41,45 @@ define([
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-08-25',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
-        'balance_change': -1.5
+        'balance_change': -1.5,
+        "dates": [
+          {
+            "id": "23",
+            "date": "2016-08-17"
+          },
+          {
+            "id": "24",
+            "date": "2016-08-18"
+          },
+          {
+            "id": "25",
+            "date": "2016-08-19"
+          },
+          {
+            "id": "26",
+            "date": "2016-08-20"
+          },
+          {
+            "id": "27",
+            "date": "2016-08-21"
+          },
+          {
+            "id": "28",
+            "date": "2016-08-22"
+          },
+          {
+            "id": "29",
+            "date": "2016-08-23"
+          },
+          {
+            "id": "30",
+            "date": "2016-08-24"
+          },
+          {
+            "id": "31",
+            "date": "2016-08-25"
+          }
+        ]
       }, {
         'id': '19',
         'type_id': absenceTypeData.all().values[0]['id'],
@@ -37,7 +89,21 @@ define([
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-02-01',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
-        'balance_change': -1
+        'balance_change': -1,
+        "dates": [
+          {
+            "id": "17",
+            "date": "2016-01-30"
+          },
+          {
+            "id": "18",
+            "date": "2016-01-31"
+          },
+          {
+            "id": "19",
+            "date": "2016-02-01"
+          }
+        ]
       }, {
         'id': '20',
         'type_id': absenceTypeData.all().values[0]['id'],
@@ -47,7 +113,33 @@ define([
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-11-28',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
-        'balance_change': -5
+        'balance_change': -5,
+        "dates": [
+          {
+            "id": "32",
+            "date": "2016-11-23"
+          },
+          {
+            "id": "33",
+            "date": "2016-11-24"
+          },
+          {
+            "id": "34",
+            "date": "2016-11-25"
+          },
+          {
+            "id": "35",
+            "date": "2016-11-26"
+          },
+          {
+            "id": "36",
+            "date": "2016-11-27"
+          },
+          {
+            "id": "37",
+            "date": "2016-11-28"
+          }
+        ]
       }, {
         'id': '21',
         'type_id': absenceTypeData.all().values[2]['id'],
@@ -57,7 +149,53 @@ define([
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-06-13',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
-        'balance_change': -10
+        'balance_change': -10,
+        "dates": [
+          {
+            "id": "38",
+            "date": "2016-06-03"
+          },
+          {
+            "id": "39",
+            "date": "2016-06-04"
+          },
+          {
+            "id": "40",
+            "date": "2016-06-05"
+          },
+          {
+            "id": "41",
+            "date": "2016-06-06"
+          },
+          {
+            "id": "42",
+            "date": "2016-06-07"
+          },
+          {
+            "id": "43",
+            "date": "2016-06-08"
+          },
+          {
+            "id": "44",
+            "date": "2016-06-09"
+          },
+          {
+            "id": "45",
+            "date": "2016-06-10"
+          },
+          {
+            "id": "46",
+            "date": "2016-06-11"
+          },
+          {
+            "id": "47",
+            "date": "2016-06-12"
+          },
+          {
+            "id": "48",
+            "date": "2016-06-13"
+          }
+        ]
       }, {
         'id': '22',
         'type_id': absenceTypeData.all().values[1]['id'],
@@ -67,7 +205,13 @@ define([
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-01-01',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
-        'balance_change': -1
+        'balance_change': -1,
+        "dates": [
+          {
+            "id": "49",
+            "date": "2016-06-01"
+          }
+        ]
       }]
     },
     singleDataSuccess: {
@@ -82,7 +226,21 @@ define([
         'from_date': '2016-02-01',
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-02-03',
-        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1')
+        'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
+        "dates": [
+          {
+            "id": "20",
+            "date": "2016-02-01"
+          },
+          {
+            "id": "21",
+            "date": "2016-02-02"
+          },
+          {
+            "id": "22",
+            "date": "2016-02-03"
+          }
+        ]
       }]
     },
     singleDataError: {

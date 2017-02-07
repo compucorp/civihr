@@ -513,11 +513,11 @@ define([
         var listToReturn = [];
 
         try {
-          if (vm.calendar.isNonWorkingDay(date)) {
+          if (vm.calendar.isNonWorkingDay(moment(date))) {
             listToReturn = listOfDayTypes.filter(function (day) {
               return day.name === 'non_working_day';
             });
-          } else if (vm.calendar.isWeekend(date)) {
+          } else if (vm.calendar.isWeekend(moment(date))) {
             listToReturn = listOfDayTypes.filter(function (day) {
               return day.name === 'weekend';
             });

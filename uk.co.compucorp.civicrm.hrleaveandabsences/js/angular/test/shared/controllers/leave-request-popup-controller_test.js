@@ -36,12 +36,12 @@
         }));
 
       beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_,
-        _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPI_,
+        _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
         _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
         $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
         $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
         $provide.value('EntitlementAPI', _EntitlementAPIMock_);
-        $provide.value('WorkPatternAPI', _WorkPatternAPI_);
+        $provide.value('WorkPatternAPI', _WorkPatternAPIMock_);
         $provide.value('HR_settings', _HR_settingsMock_);
         $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
         $provide.value('api.optionGroup', _OptionGroupAPIMock_);
