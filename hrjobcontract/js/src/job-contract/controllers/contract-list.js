@@ -198,6 +198,7 @@ define([
                         ContractService.updateHeaderInfo();
                         removeContractById($scope.contractCurrent, contractId) || removeContractById($scope.contractPast, contractId);
 
+                        pubSub.publish('contract:deleted',settings.contactId);
                         pubSub.publish('contract-refresh');
                       }
                     });
