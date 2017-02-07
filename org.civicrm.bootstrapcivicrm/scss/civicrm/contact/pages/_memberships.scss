@@ -40,9 +40,53 @@
             background: $crm-white;
             color: $gray-dark;
             border: none;
-            padding: 10px;
+            padding: 10px 30px;
           }
         }
+      }
+    }
+  }
+}
+
+.CRM_Member_Form_Membership {
+  .crm-membership-form-block {
+    table {
+      &.form-layout-compressed {
+        tr {
+          &:nth-child(1) {
+            border-bottom: 0;
+
+            td {
+              border-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+
+    .label {
+      padding: 10px 30px;
+      min-width: 210px;
+    }
+
+    .auto-renew-text {
+      padding: 10px 30px;
+      display: block;
+    }
+
+    .crm-membership-form-block-record_contribution {
+      & > td {
+        padding: 0;
+
+        legend {
+          padding: 10px 30px;
+        }
+      }
+    }
+
+    #record-different-contact {
+      .label {
+        padding-left: 0;
       }
     }
   }
