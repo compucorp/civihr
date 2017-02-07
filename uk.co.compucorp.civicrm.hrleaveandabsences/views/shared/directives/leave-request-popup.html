@@ -33,7 +33,10 @@
       <div class="col-xs-12">
         <uib-tabset class="chr_leave-request-modal__tab">
           <uib-tab heading="Details">
-            <ng-include src="'/sites/all/modules/civicrm/tools/extensions/civihr/uk.co.compucorp.civicrm.hrleaveandabsences/views/my-leave/request-modal/details/leave.html'"></ng-include>
+            <ng-include src="'/sites/all/modules/civicrm/tools/extensions/civihr/uk.co.compucorp.civicrm.hrleaveandabsences/views/shared/request-modal/details/leave.html'"></ng-include>
+            <div class="row" ng-show="$ctrl.overtime">
+              <ng-include src="'/sites/all/modules/civicrm/tools/extensions/civihr/uk.co.compucorp.civicrm.hrleaveandabsences/views/shared/request-modal/details/toil.html'"></ng-include>
+            </div>
             <crm-loading show="!$ctrl.loading.calculateBalanceChange">
               <div ng-show="$ctrl.uiOptions.showBalance">
                 <hr/>
@@ -93,11 +96,14 @@
                 </div>
               </div>
             </crm-loading>
-            <div class="row" ng-show="$ctrl.sickness">
-              <ng-include src="'/sites/all/modules/civicrm/tools/extensions/civihr/uk.co.compucorp.civicrm.hrleaveandabsences/views/my-leave/request-modal/details/sickness.html'"></ng-include>
-            </div>
             <div class="row" ng-show="$ctrl.overtime">
-              <ng-include src="'/sites/all/modules/civicrm/tools/extensions/civihr/uk.co.compucorp.civicrm.hrleaveandabsences/views/my-leave/request-modal/details/toil.html'"></ng-include>
+              <div class="col-xs-12 form-horizontal">
+                <hr>
+                <div class="expire-date">Expiry Date: <span>{{$ctrl.uiOptions.expiredDate}}</div>
+              </div>
+            </div>
+            <div class="row" ng-show="$ctrl.sickness">
+              <ng-include src="'/sites/all/modules/civicrm/tools/extensions/civihr/uk.co.compucorp.civicrm.hrleaveandabsences/views/shared/request-modal/details/sickness.html'"></ng-include>
             </div>
           </uib-tab>
           <uib-tab heading="Comments"></uib-tab>

@@ -77,6 +77,12 @@ define([
       vm.uiOptions = {
         isChangeExpanded: false,
         multipleDays: true,
+        workedDate: null,
+        expiredDate: 0,
+        duration: {
+          hour: 0,
+          min: 0
+        },
         userDateFormat: HR_settings.DATE_FORMAT,
         showBalance: false,
         date: {
@@ -95,7 +101,16 @@ define([
               startingDay: 1,
               showWeeks: false
             }
-          }
+          },
+          dateWorked: {
+            show: false,
+            options: {
+              minDate: null,
+              maxDate: null,
+              startingDay: 1,
+              showWeeks: false
+            }
+          },
         }
       };
 
@@ -806,7 +821,9 @@ define([
        */
       function reset() {
         vm.uiOptions.fromDate = vm.uiOptions.toDate = null;
+        vm.uiOptions.workedDate = null;
         vm.uiOptions.showBalance = false;
+        vm.uiOptions.duration = false;
 
         vm.leaveRequest.from_date_type = vm.leaveRequest.to_date_type = null;
         vm.leaveRequest.from_date = vm.leaveRequest.to_date = null;
