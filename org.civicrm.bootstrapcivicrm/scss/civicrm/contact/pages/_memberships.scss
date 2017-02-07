@@ -1,0 +1,49 @@
+.page-civicrm-contact {
+  #memberships {
+    box-shadow: $box-shadow;
+
+    h3 {
+      padding: 20px 10px;
+      background: $crm-background;
+      color: $gray-darker;
+      font-size: $font-size-h3;
+      font-family: $font-family-base;
+      border-bottom: 1px solid $crm-dark-grayblue;
+    }
+
+    table {
+      background: transparent;
+      border: none;
+      font-family: $font-family-base;
+
+      thead {
+        th {
+          border-bottom: none;
+          background: $crm-background;
+          color: $gray-darker;
+          vertical-align: middle;
+          border: none;
+          padding: 10px;
+
+          div {
+            padding: 0;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          background: $crm-white;
+          border-bottom: 1px solid $crm-background;
+
+          td {
+            background: $crm-white;
+            color: $gray-dark;
+            border: none;
+            padding: 10px;
+          }
+        }
+      }
+    }
+  }
+}
