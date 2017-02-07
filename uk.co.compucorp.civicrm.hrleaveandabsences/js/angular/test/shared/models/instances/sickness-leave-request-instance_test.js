@@ -7,7 +7,7 @@ define([
   'use strict';
 
   describe('SicknessRequestInstance', function () {
-    var expectedError, instance, LeaveRequestAPI, $provide, promise, $q, requestData, $rootScope;
+    var expectedError, instance, LeaveRequestAPI, $provide, promise, requestData, $rootScope;
 
     beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -19,12 +19,11 @@ define([
     }));
 
     beforeEach(inject([
-      'SicknessRequestInstance', '$rootScope', 'LeaveRequestAPI', '$q',
-      function (_SicknessRequestInstance_, _$rootScope_, _LeaveRequestAPI_, _$q_) {
+       '$rootScope', 'LeaveRequestAPI', 'SicknessRequestInstance',
+      function (_$rootScope_, _LeaveRequestAPI_, _SicknessRequestInstance_) {
         instance = _SicknessRequestInstance_.init({}, false);
         $rootScope = _$rootScope_;
         LeaveRequestAPI = _LeaveRequestAPI_;
-        $q = _$q_;
 
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
@@ -52,33 +51,19 @@ define([
 
       it('calls equivalent API method', function () {
         promise.then(function () {
-          expect(LeaveRequestAPI.create).toHaveBeenCalled();
+          expect(LeaveRequestAPI.create).toHaveBeenCalledWith(jasmine.any(Object), 'sick');
         });
       });
 
-      it('id is appended to instance', function () {
-        expect(instance.id).not.toBeDefined();
-        promise.then(function () {
-          expect(instance.id).toBeDefined();
-          expect(instance.id).toEqual(jasmine.any(String));
-        });
-      });
-
-      describe('when one mandatory field is missing', function () {
-        beforeEach(function () {
-          expectedError = 'contact_id, from_date and from_date_type in params are mandatory';
-          delete instance.contact_id;
-          promise = instance.create();
+      describe('id field', function() {
+        it('is not appended to instance before API returns data', function() {
+          expect(instance.id).not.toBeDefined();
         });
 
-        afterEach(function () {
-          //to excute the promise force an digest
-          $rootScope.$apply();
-        });
-
-        it('fails to create instance', function () {
-          promise.catch(function (error) {
-            expect(error).toBe(expectedError);
+        it('is appended to instance before API returns data', function() {
+          promise.then(function () {
+            expect(instance.id).toBeDefined();
+            expect(instance.id).toEqual(jasmine.any(String));
           });
         });
       });
@@ -99,32 +84,7 @@ define([
 
       it('calls equivalent API method', function () {
         promise.then(function () {
-          expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
-        });
-      });
-
-      describe('when leave request is valid', function () {
-        it('returns no error', function () {
-          promise.then(function (result) {
-            expect(result).toEqual([]);
-          });
-        });
-
-        describe('when valid data not present', function () {
-          beforeEach(function () {
-            delete instance.contact_id;
-            promise = instance.isValid();
-          });
-
-          afterEach(function () {
-            $rootScope.$apply();
-          });
-
-          it('returns array of errors', function () {
-            promise.catch(function (result) {
-              expect(Object.keys(result).length).toBeGreaterThan(0);
-            });
-          });
+          expect(LeaveRequestAPI.isValid).toHaveBeenCalledWith(jasmine.any(Object), 'sick');
         });
       });
     });
@@ -135,11 +95,7 @@ define([
         };
 
       beforeEach(function () {
-        var defer = $q.defer();
-        LeaveRequestAPI.update.and.returnValue(defer.promise);
-        defer.resolve(jasmine.any(Object));
         spyOn(instance, 'toAPI').and.returnValue(toAPIReturnValue);
-
         promise = instance.update();
       });
 
