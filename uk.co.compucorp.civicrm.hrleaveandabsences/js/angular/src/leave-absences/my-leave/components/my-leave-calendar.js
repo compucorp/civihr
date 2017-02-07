@@ -11,7 +11,7 @@ define([
     templateUrl: ['settings', function (settings) {
       return settings.pathTpl + 'components/my-leave-calendar.html';
     }],
-    controllerAs: 'ctrl',
+    controllerAs: 'calendar',
     controller: ['$log', '$q', 'OptionGroup', 'AbsencePeriod', 'AbsenceType',
       'Calendar', 'LeaveRequest', 'PublicHoliday', controller]
   });
@@ -24,17 +24,56 @@ define([
       dayTypes = [],
       leaveRequests = [],
       publicHolidays = [],
-      leaveRequestStatuses = [];
+      leaveRequestStatuses = [],
+      serverDateFormat = 'YYYY-MM-DD';
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
     vm.calendar = {};
-    vm.loading = false;
+    vm.loading = {
+      calendar: false,
+      page: false
+    };
     vm.months = ['January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'];
-    //Select current month as default
-    vm.selectedMonths = [vm.months[new Date().getMonth()]];
+    vm.selectedMonths = [];
     vm.selectedPeriod = null;
+
+    /**
+     * Returns day name of the sent date(Monday, Tuesday etc.)
+     *
+     * @param  {string} date
+     * @return {string}
+     */
+    vm.getDayName = function (date) {
+      var day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      return day[getDateObjectWithFormat(date).day()];
+    };
+
+    /**
+     * Returns the calendar information for a specific month
+     *
+     * @param  {int} month
+     * @return {array}
+     */
+    vm.getMonthData = function (month) {
+      if (vm.calendar.days) {
+        var i,
+          date,
+          dates = Object.keys(vm.calendar.days),
+          length = dates.length,
+          datesForTheMonth = [];
+
+        for (i = 0; i < length; i++) {
+          date = moment(parseInt(dates[i]));
+          if (date.month() === month) {
+            datesForTheMonth.push(vm.calendar.days[dates[i]]);
+          }
+        }
+
+        return datesForTheMonth;
+      }
+    };
 
     /**
      * Decides whether sent date is a public holiday
@@ -43,7 +82,7 @@ define([
      * @return {boolean}
      */
     vm.isPublicHoliday = function (date) {
-      return !!publicHolidays[new Date(date).getTime()];
+      return !!publicHolidays[getDateObjectWithFormat(date).valueOf()];
     };
 
     /**
@@ -57,68 +96,45 @@ define([
     };
 
     /**
-     * Returns day name of the sent date(Monday, Tuesday etc.)
-     *
-     * @param  {string} date
-     * @return {string}
-     */
-    vm.getDayName = function (date) {
-      var day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      return day[new Date(date).getDay()];
-    };
-
-    /**
-     * Returns the calendar information for a specific month
-     *
-     * @param  {int} month
-     * @return {array}
-     */
-    vm.getMonthData = function (month) {
-      if (vm.calendar.days) {
-        var index,
-          dates = Object.keys(vm.calendar.days),
-          date,
-          length = dates.length,
-          datesForTheMonth = [];
-
-        for (index = 0; index < length; index++) {
-          date = new Date(parseInt(dates[index]));
-          if (date.getMonth() === month) {
-            datesForTheMonth.push(vm.calendar.days[dates[index]]);
-          }
-        }
-
-        return datesForTheMonth;
-      }
-    };
-
-    /**
      * Refresh all leave request and calendar data
      */
     vm.refresh = function () {
-      vm.loading = true;
-      loadLeaveRequestandCalendar()
+      vm.loading.calendar = true;
+      loadLeaveRequestAndCalendar()
         .then(function () {
-          vm.loading = false;
+          vm.loading.calendar = false;
         });
     };
 
     (function init() {
-      vm.loading = true;
+      vm.loading.page = true;
+      //Select current month as default
+      vm.selectedMonths = [vm.months[moment().month()]];
       $q.all([
         loadAbsencePeriods(),
         loadAbsenceTypes(),
         loadPublicHolidays(),
         loadStatuses(),
         loadDayTypes()
-      ]).then(function () {
-          vm.legendCollapsed = false;
-          return loadLeaveRequestandCalendar();
-        })
-        .then(function () {
-          vm.loading = false;
-        });
+      ])
+      .then(function () {
+        vm.legendCollapsed = false;
+        return loadLeaveRequestAndCalendar();
+      })
+      .then(function () {
+        vm.loading.page = false;
+      });
     })();
+
+    /**
+     * Converts given date to moment object with server format
+     *
+     * @param {Date/String} date from server
+     * @return {Date} Moment date
+     */
+    function getDateObjectWithFormat(date) {
+      return moment(date, serverDateFormat).clone();
+    }
 
     /**
      * Returns the leave request which is in range of the sent date
@@ -126,18 +142,18 @@ define([
      * @param  {string} date
      * @return {object}
      */
-    function getLeaveRequest(date) {
-      var index,
-        length = leaveRequests.length,
-        dates;
+    function getLeaveRequestByDate(date) {
+      var i,
+        dates,
+        length = leaveRequests.length;
 
-      for (index = 0; index < length; index++) {
-        dates = _.find(leaveRequests[index].dates, function (leaveRequestDate) {
+      for (i = 0; i < length; i++) {
+        dates = _.find(leaveRequests[i].dates, function (leaveRequestDate) {
           return moment(leaveRequestDate.date).isSame(date);
         });
 
         if (dates) {
-          return leaveRequests[index];
+          return leaveRequests[i];
         }
       }
     }
@@ -150,8 +166,8 @@ define([
      * @return {object}
      */
     function getStyles(leaveRequest) {
-      var status = leaveRequestStatuses[leaveRequest.status_id],
-        absenceType;
+      var absenceType,
+        status = leaveRequestStatuses[leaveRequest.status_id];
 
       if (status.name === 'waiting_approval'
         || status.name === 'approved'
@@ -257,7 +273,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadLeaveRequestandCalendar() {
+    function loadLeaveRequestAndCalendar() {
       return LeaveRequest.all({
         contact_id: vm.contactId,
         from_date: {
@@ -266,10 +282,11 @@ define([
         to_date: {
           to: vm.selectedPeriod.end_date
         }
-      }).then(function (leaveRequestsData) {
-          leaveRequests = leaveRequestsData.list;
-          return loadCalendar();
-        });
+      })
+      .then(function (leaveRequestsData) {
+        leaveRequests = leaveRequestsData.list;
+        return loadCalendar();
+      });
     }
 
     /**
@@ -280,13 +297,13 @@ define([
     function loadPublicHolidays() {
       return PublicHoliday.all()
         .then(function (publicHolidaysData) {
-          var index,
+          var i,
             length = publicHolidaysData.length,
             datesObj = {};
 
           // convert to an object with time stamp as key
-          for (index = 0; index < length; index++) {
-            datesObj[new Date(publicHolidaysData[index].date).getTime()] = publicHolidaysData[index];
+          for (i = 0; i < length; i++) {
+            datesObj[getDateObjectWithFormat(publicHolidaysData[i].date).valueOf()] = publicHolidaysData[i];
           }
 
           publicHolidays = datesObj;
@@ -313,19 +330,19 @@ define([
      * @return {object}
      */
     function setCalendarProps(calendar) {
-      var index,
+      var i,
         dates = Object.keys(calendar.days),
         length = dates.length,
         dateObj,
         leaveRequest;
 
-      for (index = 0; index < length; index++) {
-        dateObj = calendar.days[dates[index]];
-        leaveRequest = getLeaveRequest(dateObj.date);
+      for (i = 0; i < length; i++) {
+        dateObj = calendar.days[dates[i]];
+        leaveRequest = getLeaveRequestByDate(dateObj.date);
 
         dateObj.UI = {
-          isWeekend: calendar.isWeekend(new Date(dateObj.date)),
-          isNonWorkingDay: calendar.isNonWorkingDay(new Date(dateObj.date)),
+          isWeekend: calendar.isWeekend(getDateObjectWithFormat(dateObj.date)),
+          isNonWorkingDay: calendar.isNonWorkingDay(getDateObjectWithFormat(dateObj.date)),
           isPublicHoliday: vm.isPublicHoliday(dateObj.date)
         };
 

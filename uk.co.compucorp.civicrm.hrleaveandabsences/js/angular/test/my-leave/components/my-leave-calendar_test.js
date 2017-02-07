@@ -1,6 +1,7 @@
 (function (CRM) {
   define([
     'common/angular',
+    'common/moment',
     'common/lodash',
     'mocks/data/option-group-mock-data',
     'mocks/data/public-holiday-data',
@@ -14,12 +15,13 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/my-leave/app'
-  ], function (angular, _, optionGroupMock, publicHolidayData, workPatternData, leaveRequestData) {
+  ], function (angular, moment, _, optionGroupMock, publicHolidayData, workPatternData, leaveRequestData) {
     'use strict';
 
     describe('myLeaveCalendar', function () {
       var $compile, $log, $q, $rootScope, component, controller,
         $provide, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
+      var serverDateFormat = 'YYYY-MM-DD';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -65,7 +67,7 @@
 
       describe('on init', function () {
         it('loader is hidden', function () {
-          expect(controller.loading).toBe(false);
+          expect(controller.loading.page).toBe(false);
         });
 
         it('absence periods have loaded', function () {
@@ -145,15 +147,15 @@
 
         it('returns the date which are from the month of january', function () {
           _.each(returnValue, function (dateObject) {
-            expect(new Date(dateObject.date).getMonth()).toBe(januaryMonth);
+            expect(moment(dateObject.date).month()).toBe(januaryMonth);
           });
         });
       });
 
       describe('refresh', function () {
-        it('loading is true initially', function () {
+        it('page loading is true initially', function () {
           controller.refresh();
-          expect(controller.loading).toBe(true);
+          expect(controller.loading.calendar).toBe(true);
         });
 
         describe('after data load is complete', function () {
@@ -162,8 +164,8 @@
             $rootScope.$digest();
           });
 
-          it('loading is false', function () {
-            expect(controller.loading).toBe(false);
+          it('page loading is false', function () {
+            expect(controller.loading.calendar).toBe(false);
           });
         });
 
@@ -173,7 +175,7 @@
           beforeEach(function () {
             controller.refresh();
             $rootScope.$digest();
-            dateObj = controller.calendar.days[new Date(getDate('weekend').date).getTime()];
+            dateObj = controller.calendar.days[getDateObjectWithFormat(getDate('weekend').date).valueOf()];
           });
 
           it('is set', function () {
@@ -187,7 +189,7 @@
           beforeEach(function () {
             controller.refresh();
             $rootScope.$digest();
-            dateObj = controller.calendar.days[new Date(getDate('non_working_day').date).getTime()];
+            dateObj = controller.calendar.days[getDateObjectWithFormat(getDate('non_working_day').date).valueOf()];
           });
 
           it('is set', function () {
@@ -228,7 +230,7 @@
               });
               leaveRequest.status_id = status.value;
               commonSetup();
-              dateObj = controller.calendar.days[new Date(leaveRequest.from_date).getTime()];
+              dateObj = controller.calendar.days[getDateObjectWithFormat(leaveRequest.from_date).valueOf()];
             });
 
             it('isRequested flag is true', function () {
@@ -303,6 +305,10 @@
         $scope.$digest();
 
         controller = component.controller('myLeaveCalendar');
+      }
+
+      function getDateObjectWithFormat(date) {
+        return moment(date, serverDateFormat).clone();
       }
 
       function getDate(dayType) {

@@ -1,47 +1,52 @@
 <section>
-  <crm-loading show="!ctrl.loading">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-sm-5">
-            <ui-select multiple
-                       limit="4"
-                       ng-model="ctrl.selectedMonths">
-              <ui-select-match placeholder="Select Months">
-                <span ng-bind="$item"></span>
-              </ui-select-match>
-              <ui-select-choices repeat="month in (ctrl.months | filter: $select.search)">
-                <span ng-bind="month"></span>
-              </ui-select-choices>
-            </ui-select>
-          </div>
-          <div class="col-sm-offset-4 col-sm-3">
-            <div class="chr_custom-select chr_custom-select--full">
-              <select
-                ng-options="period as ctrl.labelPeriod(period) for period in ctrl.absencePeriods track by period.id"
-                ng-model="ctrl.selectedPeriod"
-                ng-change="ctrl.refresh()">
-              </select>
+  <crm-loading show="!calendar.loading.page">
+    <crm-loading show="!calendar.loading.calendar">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-sm-5">
+              <ui-select multiple
+                         limit="4"
+                         ng-model="calendar.selectedMonths">
+                <ui-select-match placeholder="Select Months">
+                  <span ng-bind="$item"></span>
+                </ui-select-match>
+                <ui-select-choices repeat="month in (calendar.months | filter: $select.search)">
+                  <span ng-bind="month"></span>
+                </ui-select-choices>
+              </ui-select>
+            </div>
+            <div class="col-sm-offset-4 col-sm-3">
+              <div class="chr_custom-select chr_custom-select--full">
+                <select
+                  ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
+                  ng-model="calendar.selectedPeriod"
+                  ng-change="calendar.refresh()">
+                </select>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <section class="panel panel-default" ng-repeat="month in (ctrl.selectedMonths.length > 0 ? ctrl.selectedMonths : ctrl.months)">
-      <header class="panel-heading">
-        <h2 class="panel-title">{{month}}</h2>
-      </header>
-      <div class="table-responsive">
-        <table class="table table-bordered chr_leave-calendar">
-          <thead>
+      <section class="panel panel-default"
+               ng-repeat="month in (calendar.selectedMonths.length > 0 ? calendar.selectedMonths : calendar.months)">
+        <header class="panel-heading">
+          <h2 class="panel-title">{{month}}</h2>
+        </header>
+        <div class="table-responsive">
+          <table class="table table-bordered chr_leave-calendar">
+            <thead>
             <tr class="chr_leave-calendar__days">
-              <th ng-repeat="day in ctrl.getMonthData(ctrl.months.indexOf(month))">{{ctrl.getDayName(day.date)}} <div>{{$index + 1}}</div></th>
+              <th ng-repeat="day in calendar.getMonthData(calendar.months.indexOf(month))">
+                {{calendar.getDayName(day.date)}}
+                <div>{{$index + 1}}</div>
+              </th>
             </tr>
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             <tr class="chr_leave-calendar__items">
-              <td ng-repeat="day in ctrl.getMonthData(ctrl.months.indexOf(month))">
+              <td ng-repeat="day in calendar.getMonthData(calendar.months.indexOf(month))">
                 <div class="chr_leave-calendar__item"
                      ng-style="day.UI.styles"
                      ng-class="{
@@ -55,11 +60,11 @@
                 </div>
               </td>
             </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </crm-loading>
     <section class="panel panel-default" ng-class="{ 'is-collapsed': calendar.legendCollapsed }">
       <header class="panel-heading panel-heading-plain">
         <h2 class="panel-title" role="button" ng-click="calendar.legendCollapsed = !calendar.legendCollapsed">
@@ -73,7 +78,7 @@
       <div class="panel-collapse" uib-collapse="calendar.legendCollapsed">
         <div class="panel-body chr_leave-calendar__legend" ng-show="!calendar.legendCollapsed">
 
-          <div class="row" ng-repeat-start="absenceType in ctrl.absenceTypes">
+          <div class="row" ng-repeat-start="absenceType in calendar.absenceTypes">
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item"
@@ -84,12 +89,14 @@
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item"
-                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>AM</span></div>
+                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>AM</span>
+                </div>
                 <span class="chr_leave-calendar__legend__label">{{absenceType.title}} AM Only</span>
               </div>
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item"
-                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>PM</span></div>
+                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>PM</span>
+                </div>
                 <span class="chr_leave-calendar__legend__label">{{absenceType.title}} PM Only</span>
               </div>
             </div>
@@ -103,12 +110,14 @@
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
-                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>AM</span></div>
+                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>AM</span>
+                </div>
                 <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}} AM</span>
               </div>
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
-                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>PM</span></div>
+                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>PM</span>
+                </div>
                 <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}} PM</span>
               </div>
             </div>
@@ -146,7 +155,9 @@
             </div>
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
-                <div class="chr_leave-calendar__item chr_leave-calendar__item--type--late chr_leave-calendar__item--alt"><span>L</span></div>
+                <div
+                  class="chr_leave-calendar__item chr_leave-calendar__item--type--late chr_leave-calendar__item--alt">
+                  <span>L</span></div>
                 <span class="chr_leave-calendar__legend__label">Late</span>
               </div>
             </div>

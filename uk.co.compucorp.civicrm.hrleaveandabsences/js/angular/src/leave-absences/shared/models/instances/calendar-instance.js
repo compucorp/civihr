@@ -1,13 +1,16 @@
 define([
   'common/lodash',
+  'common/moment',
   'leave-absences/shared/modules/models-instances',
   'common/models/instances/instance',
-], function (_, instances) {
+], function (_, moment, instances) {
   'use strict';
 
   instances.factory('CalendarInstance', [
     '$log', 'ModelInstance',
     function ($log, ModelInstance) {
+
+      var serverDateFormat = 'YYYY-MM-DD';
 
       /**
        * This method checks whether a date matches the send type.
@@ -19,13 +22,23 @@ define([
        * @throws error if date is not found in calendarData
        */
       function checkDate(date, dayType) {
-        var searchedDate = this.days[new Date(date).getTime()];
+        var searchedDate = this.days[getDateObjectWithFormat(date).valueOf()];
 
         if (!searchedDate) {
           throw new Error('Date not found');
         }
 
         return searchedDate.type.name === dayType;
+      }
+
+      /**
+       * Converts given date to moment object with server format
+       *
+       * @param {Date/String} date from server
+       * @return {Date} Moment date
+       */
+      function getDateObjectWithFormat(date) {
+        return moment(date, serverDateFormat).clone();
       }
 
       return ModelInstance.extend({
@@ -45,7 +58,7 @@ define([
 
           // convert array to an object with the timestamp being the key
           for (iterator = 0; iterator < length; iterator++) {
-            datesObj[new Date(data[iterator].date).getTime()] = data[iterator];
+            datesObj[getDateObjectWithFormat(data[iterator].date).valueOf()] = data[iterator];
           }
 
           return _.assign(Object.create(this), {

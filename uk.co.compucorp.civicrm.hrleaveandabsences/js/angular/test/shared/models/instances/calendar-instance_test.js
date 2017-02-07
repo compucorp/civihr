@@ -1,7 +1,8 @@
 define([
+  'common/moment',
   'mocks/data/work-pattern-data',
   'leave-absences/shared/models/instances/calendar-instance',
-], function (mockData) {
+], function (moment, mockData) {
   'use strict';
 
   describe('CalendarInstance', function () {
@@ -22,7 +23,7 @@ define([
       beforeEach(function () {
         //check with first key of the object
         key = Object.keys(CalendarInstance.days)[0];
-        date = new Date(CalendarInstance.days[key].date).getTime().toString();
+        date = moment(CalendarInstance.days[key].date).valueOf().toString();
       });
 
       it('dates arrays has been converted to an object with proper timestamp values', function () {
@@ -36,12 +37,12 @@ define([
       describe('isWorkingDay()', function () {
 
         it('return true if it is a working day', function () {
-          dateToSearch = new Date(getDate("working_day").date);
+          dateToSearch = moment(getDate("working_day").date);
           expect(CalendarInstance.isWorkingDay(dateToSearch)).toBe(true);
         });
 
         it('return false if it is a not working day', function () {
-          dateToSearch = new Date(getDate("non_working_day").date);
+          dateToSearch = moment(getDate("non_working_day").date);
           expect(CalendarInstance.isWorkingDay(dateToSearch)).toBe(false);
         });
 
@@ -51,12 +52,12 @@ define([
       describe('isNonWorkingDay()', function () {
 
         it('return true if it is a non working day', function () {
-          dateToSearch = new Date(getDate("non_working_day").date);
+          dateToSearch = moment(getDate("non_working_day").date);
           expect(CalendarInstance.isNonWorkingDay(dateToSearch)).toBe(true);
         });
 
         it('return false if it is a not non working day', function () {
-          dateToSearch = new Date(getDate("working_day").date);
+          dateToSearch = moment(getDate("working_day").date);
           expect(CalendarInstance.isNonWorkingDay(dateToSearch)).toBe(false);
         });
 
@@ -66,12 +67,12 @@ define([
       describe('isWeekend()', function () {
 
         it('return true if it is a weekend', function () {
-          dateToSearch = new Date(getDate("weekend").date);
+          dateToSearch = moment((getDate("weekend").date));
           expect(CalendarInstance.isWeekend(dateToSearch)).toBe(true);
         });
 
         it('return false if it is a not weekend', function () {
-          dateToSearch = new Date(getDate("working_day").date);
+          dateToSearch = moment(getDate("working_day").date);
           expect(CalendarInstance.isWeekend(dateToSearch)).toBe(false);
         });
 
@@ -79,7 +80,7 @@ define([
       });
 
       function testOutofRangeDate() {
-        dateToSearch = new Date('2017-12-12');
+        dateToSearch = moment(('2017-12-12'));
         var workingDayFn = function () {
           CalendarInstance.isWorkingDay(dateToSearch)
         };
