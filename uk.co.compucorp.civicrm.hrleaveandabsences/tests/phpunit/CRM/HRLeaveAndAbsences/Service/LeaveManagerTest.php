@@ -91,6 +91,30 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
     $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
   }
 
+  public function testIsContactManagedByWhenCurrentUserHasMoreThanOneRelationshipWithTheEmployee() {
+    $this->setLeaveApproverRelationshipTypes([
+      'approves leaves for',
+      'manages leaves for'
+    ]);
+
+    $manager = ContactFabricator::fabricate();
+    $staffMember = ContactFabricator::fabricate();
+
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+
+    $this->setContactAsLeaveApproverOf($manager, $staffMember, null, null, false, 'approves leaves for');
+
+    // the relationship is of one of the "Leave Approver" types, but it's not active,
+    // so this should return false
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+
+    $this->setContactAsLeaveApproverOf($manager, $staffMember, null, null, true, 'manages leaves for');
+
+    // this relationship uses another one of the "Leave Approver" types and it's active,
+    // so this should return true
+    $this->assertTrue($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+  }
+
   public function testCurrentUserIsLeaveManagerOf() {
     $staffMember = ContactFabricator::fabricate();
 
