@@ -98,7 +98,16 @@ function civicrm_api3_sickness_request_create($params) {
   _civicrm_api3_format_params_for_create($params, null);
 
   $leaveBalanceChangeService = new CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange();
-  $leaveRequestService = new CRM_HRLeaveAndAbsences_Service_LeaveRequest($leaveBalanceChangeService);
+  $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
+  $leaveRequestStatusMatrixService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix($leaveManagerService);
+  $leaveRequestRightsService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestRights($leaveManagerService);
+
+  $leaveRequestService = new CRM_HRLeaveAndAbsences_Service_LeaveRequest(
+    $leaveBalanceChangeService,
+    $leaveManagerService,
+    $leaveRequestStatusMatrixService,
+    $leaveRequestRightsService
+  );
   $service = new CRM_HRLeaveAndAbsences_Service_SicknessRequest($leaveBalanceChangeService, $leaveRequestService);
 
   $sicknessRequest = $service->create($params);
@@ -124,7 +133,16 @@ function civicrm_api3_sickness_request_delete($params) {
   _civicrm_api3_check_edit_permissions($bao, ['id' => $params['id']]);
 
   $leaveBalanceChangeService = new CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange();
-  $leaveRequestService = new CRM_HRLeaveAndAbsences_Service_LeaveRequest($leaveBalanceChangeService);
+  $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
+  $leaveRequestStatusMatrixService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix($leaveManagerService);
+  $leaveRequestRightsService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestRights($leaveManagerService);
+
+  $leaveRequestService = new CRM_HRLeaveAndAbsences_Service_LeaveRequest(
+    $leaveBalanceChangeService,
+    $leaveManagerService,
+    $leaveRequestStatusMatrixService,
+    $leaveRequestRightsService
+  );
   $service = new CRM_HRLeaveAndAbsences_Service_SicknessRequest($leaveBalanceChangeService, $leaveRequestService);
   $service->delete($params['id']);
 
