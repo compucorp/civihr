@@ -20,12 +20,12 @@ define([
   function controller($log, $q, OptionGroup, AbsencePeriod, AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
     $log.debug('Component: my-leave-calendar');
 
-    var vm = Object.create(this),
-      dayTypes = [],
+    var dayTypes = [],
       leaveRequests = [],
       publicHolidays = [],
       leaveRequestStatuses = [],
-      serverDateFormat = 'YYYY-MM-DD';
+      serverDateFormat = 'YYYY-MM-DD',
+      vm = Object.create(this);
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -58,8 +58,8 @@ define([
      */
     vm.getMonthData = function (month) {
       if (vm.calendar.days) {
-        var dates = Object.keys(vm.calendar.days),
-          datesForTheMonth = [];
+        var datesForTheMonth = [],
+          dates = Object.keys(vm.calendar.days);
 
         dates.forEach(function (date) {
           if (moment(parseInt(date)).month() === month) {
@@ -240,9 +240,7 @@ define([
     function loadCalendar() {
       return Calendar.get(vm.contactId, vm.selectedPeriod.id)
         .then(function (calendar) {
-          console.time('a');
           vm.calendar = setCalendarProps(calendar);
-          console.timeEnd('a')
         });
     }
 
