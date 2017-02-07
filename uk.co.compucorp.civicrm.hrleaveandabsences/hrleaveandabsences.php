@@ -515,3 +515,21 @@ function _hrleaveandabsences_civicrm_post_absencetype($op, $objectId, &$objectRe
     } catch (Exception $e) {}
   }
 }
+
+/**
+ * Uses the hook_civicrm_container hook in order to insert L&A services in the
+ * global Civi container.
+ *
+ * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+ */
+function hrleaveandabsences_civicrm_container(\Symfony\Component\DependencyInjection\ContainerBuilder $container) {
+  $settingsManagerDefinition = new Symfony\Component\DependencyInjection\Definition(
+    CRM_HRLeaveAndAbsences_Service_SettingsManager::class
+  );
+  $settingsManagerDefinition->setFactoryClass(CRM_HRLeaveAndAbsences_Factory_SettingsManager::class);
+  $settingsManagerDefinition->setFactoryMethod('create');
+  // If we running unit tests, this will make the factory return an InMemorySettingsManager
+  $settingsManagerDefinition->setArguments([CIVICRM_UF == 'UnitTests']);
+
+  $container->setDefinition('hrleaveandabsences.settings_manager', $settingsManagerDefinition);
+}

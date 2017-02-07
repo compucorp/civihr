@@ -25,30 +25,41 @@ class CRM_HRLeaveAndAbsences_API_Query_ACLQueryHelper {
     $loggedInUserID = (int) CRM_Core_Session::getLoggedInContactID();
     $today = date('Y-m-d');
 
+    $conditions = [];
+    $conditions[] = "(c.id = {$loggedInUserID})";
+
+    $leaveApproverRelationships = self::getLeaveApproverRelationships();
+    if(!empty($leaveApproverRelationships)) {
+      $conditions[] = "(
+        r.is_active = 1 AND
+        rt.is_active = 1 AND
+        rt.id IN(" . implode(',', $leaveApproverRelationships) . ") AND
+        r.contact_id_b = {$loggedInUserID} AND 
+        (r.start_date IS NULL OR r.start_date <= '$today') AND
+        (r.end_date IS NULL OR r.end_date >= '$today')
+      )";
+    }
+
+    $conditions = implode(' OR ', $conditions);
+
     $query = "IN (
       SELECT c.id
       FROM {$contactsTable} c
       LEFT JOIN {$relationshipTable} r ON c.id = r.contact_id_a
       LEFT JOIN {$relationshipTypeTable} rt ON rt.id = r.relationship_type_id
-      WHERE (
-          (
-            r.is_active = 1
-            AND rt.is_active = 1
-            AND rt.name_a_b = 'has Leave Approved By'
-            AND r.contact_id_b = {$loggedInUserID}
-            AND (
-              r.start_date IS NULL
-              OR r.start_date <= '$today'
-              )
-            AND (
-              r.end_date IS NULL
-              OR r.end_date >= '$today'
-              )
-            )
-          OR (c.id = {$loggedInUserID})
-          )
-      )";
+      WHERE $conditions
+    )";
 
     return $query;
+  }
+
+  /**
+   * Returns a list of relationship types stored on the
+   * 'relationship_types_allowed_to_approve_leave' setting
+   *
+   * @return array
+   */
+  private static function getLeaveApproverRelationships() {
+    return Civi::service('hrleaveandabsences.settings_manager')->get('relationship_types_allowed_to_approve_leave');
   }
 }
