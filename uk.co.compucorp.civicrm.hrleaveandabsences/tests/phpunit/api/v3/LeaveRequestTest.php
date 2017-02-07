@@ -1920,7 +1920,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->fail("Expected to not find the LeaveRequest with {$leaveRequest->id}, but it was found");
   }
 
-  public function testGetShouldOnlyReturnTheLeaveRequestsOfStaffMembersManagedByTheContactOnTheManagedByParam() {
+  public function testGetAndGetFullShouldOnlyReturnTheLeaveRequestsOfStaffMembersManagedByTheContactOnTheManagedByParam() {
     $this->setLeaveApproverRelationshipTypes([
       'has Leaves Approved By',
       'has Leaves Managed By',
@@ -2007,36 +2007,34 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => 1
     ], true);
 
-    $result = civicrm_api3('LeaveRequest', 'get');
-
-    // Without managed_by, all leave requests should be returned
-    $this->assertEquals(5, $result['count']);
-    $this->assertNotEmpty($result['values'][$leaveRequest1->id]);
-    $this->assertNotEmpty($result['values'][$leaveRequest2->id]);
-    $this->assertNotEmpty($result['values'][$leaveRequest3->id]);
-    $this->assertNotEmpty($result['values'][$leaveRequest4->id]);
-    $this->assertNotEmpty($result['values'][$leaveRequest5->id]);
-
     // On the Leave Requests of contacts managed by manager 1 (staff member 1) will
     // be returned
     $result = civicrm_api3('LeaveRequest', 'get', ['managed_by' => $manager1['id']]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['managed_by' => $manager1['id']]);
 
     // Without managed_by, all leave requests should be returned
     $this->assertEquals(2, $result['count']);
     $this->assertNotEmpty($result['values'][$leaveRequest1->id]);
     $this->assertNotEmpty($result['values'][$leaveRequest2->id]);
+    $this->assertEquals(2, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest1->id]);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest2->id]);
 
     // On the Leave Requests of contacts managed by manager 2 (staff members 2 and 3) will
     // be returned
     $result = civicrm_api3('LeaveRequest', 'get', ['managed_by' => $manager2['id']]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['managed_by' => $manager2['id']]);
 
     // Without managed_by, all leave requests should be returned
     $this->assertEquals(2, $result['count']);
     $this->assertNotEmpty($result['values'][$leaveRequest3->id]);
     $this->assertNotEmpty($result['values'][$leaveRequest4->id]);
+    $this->assertEquals(2, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest3->id]);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest4->id]);
   }
 
-  public function testGetShouldOnlyReturnTheLeaveRequestsOfStaffMembersManagedByManagersWithAnActiveLeaveApproverRelationship() {
+  public function testGetAndGetFullShouldOnlyReturnTheLeaveRequestsOfStaffMembersManagedByManagersWithAnActiveLeaveApproverRelationship() {
     $manager = ContactFabricator::fabricate();
     $staffMember = ContactFabricator::fabricate();
 
@@ -2061,19 +2059,24 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get');
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull');
 
     // Without managed_by, all leave requests should be returned
     $this->assertEquals(1, $result['count']);
     $this->assertNotEmpty($result['values'][$leaveRequest->id]);
+    $this->assertEquals(1, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest->id]);
 
     $result = civicrm_api3('LeaveRequest', 'get', ['managed_by' => $manager['id']]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['managed_by' => $manager['id']]);
 
     // Even though the relationship was active during the Leave Request date,
     // it's not active today, so nothing will be returned
     $this->assertEquals(0, $result['count']);
+    $this->assertEquals(0, $resultGetFull['count']);
   }
 
-  public function testGetShouldOnlyReturnTheLeaveRequestsOfStaffMembersManagedByManagersWithAnEnabledLeaveApproverRelationship() {
+  public function testGetAndGetFullShouldOnlyReturnTheLeaveRequestsOfStaffMembersManagedByManagersWithAnEnabledLeaveApproverRelationship() {
     $manager = ContactFabricator::fabricate();
     $staffMember = ContactFabricator::fabricate();
 
@@ -2101,14 +2104,19 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get');
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull');
 
     // Without managed_by, all leave requests should be returned
     $this->assertEquals(1, $result['count']);
     $this->assertNotEmpty($result['values'][$leaveRequest->id]);
+    $this->assertEquals(1, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest->id]);
 
     $result = civicrm_api3('LeaveRequest', 'get', ['managed_by' => $manager['id']]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['managed_by' => $manager['id']]);
 
     $this->assertEquals(0, $result['count']);
+    $this->assertEquals(0, $resultGetFull['count']);
   }
 
   /**
