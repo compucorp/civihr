@@ -428,7 +428,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     return new LeaveRequestService(
       $this->leaveBalanceChangeService,
-      $leaveManagerService,
       $leaveRequestStatusMatrixService,
       $leaveRequestRightsService
     );

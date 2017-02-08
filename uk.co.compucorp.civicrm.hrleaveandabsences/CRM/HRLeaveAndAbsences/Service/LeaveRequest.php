@@ -5,7 +5,6 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
-use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix as LeaveRequestStatusMatrixService;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
@@ -14,11 +13,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @var \LeaveBalanceChangeService
    */
   private $leaveBalanceChangeService;
-
-  /**
-   * @var \CRM_HRLeaveAndAbsences_Service_LeaveManager
-   */
-  private $leaveManagerService;
 
   /**
    * @var \CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix
@@ -40,19 +34,15 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * CRM_HRLeaveAndAbsences_Service_LeaveRequest constructor.
    *
    * @param \CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange $leaveBalanceChangeService
-   * @param \CRM_HRLeaveAndAbsences_Service_LeaveManager $leaveManagerService
    * @param \CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix $leaveRequestStatusMatrixService
    * @param \CRM_HRLeaveAndAbsences_Service_LeaveRequestRights $leaveRequestRightsService
    */
   public function __construct(
     LeaveBalanceChangeService $leaveBalanceChangeService,
-    LeaveManagerService $leaveManagerService,
     LeaveRequestStatusMatrixService $leaveRequestStatusMatrixService,
     LeaveRequestRightsService $leaveRequestRightsService
-
   ) {
     $this->leaveBalanceChangeService = $leaveBalanceChangeService;
-    $this->leaveManagerService = $leaveManagerService;
     $this->leaveRequestStatusMatrixService = $leaveRequestStatusMatrixService;
     $this->leaveRequestRightsService = $leaveRequestRightsService;
   }
@@ -86,7 +76,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   }
 
   /**
-   * Performs some checks before a leave request can be updated
+   * Performs some checks/validations required
    *
    * @param array $params
    *
