@@ -37,6 +37,9 @@ function hrleaveandabsences_civicrm_install() {
   _hrleaveandabsences_civix_civicrm_install();
 }
 
+/**
+ * Creates the "Leave and Absences" menu item under Civi's "Administer" menu
+ */
 function _hrleaveandabsences_create_administer_menu() {
   $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
   $maxWeightOfAdminMenuItems = _hrleaveandabsences_get_max_child_weight_for_menu($administerMenuId);
@@ -124,15 +127,18 @@ function _hrleaveandabsences_get_max_child_weight_for_menu($menu_id) {
   return 0;
 }
 
+/**
+ * Creates the extension's menu item on the main navigation
+ */
 function _hrleavesandabsences_create_main_menu() {
-  $reportWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'job_contracts', 'weight', 'name');
+  $vacanciesWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'weight', 'name');
 
   $params = array(
       'label'      => ts('Leave and Absences'),
       'name'       => 'leave_and_absences',
       'url'        => 'civicrm/leaveandabsences/dashboard',
       'operator'   => null,
-      'weight'     => $reportWeight + 1,
+      'weight'     => $vacanciesWeight + 1,
       'is_active'  => 1,
       'permission' => 'access leave and absences'
   );
