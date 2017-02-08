@@ -7,3 +7,6 @@ See also:
  * Develop (install, test, etc): [doc/DEVELOP.md](doc/DEVELOP.md)
  * Wiki: http://wiki.civicrm.org/confluence/display/HR/CiviHR
  * Issues: http://issues.civicrm.org/jira/secure/Dashboard.jspa?selectPageId=11213
+ 
+ We are using browserstack to do cross browser testing:
+ ![Browserstack_logo](https://www.browserstack.com/images/layout/browserstack-logo-600x315.png =35x)
