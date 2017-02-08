@@ -72,7 +72,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
     $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
   }
 
-  public function testIsContactManagedByWhenTheCurrentRelationshipIsNotActive() {
+  public function testIsContactManagedByWhenRelationshipIsNotActive() {
     $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
 
     $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, null, null, false);
@@ -80,7 +80,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
     $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
   }
 
-  public function testIsContactManagedByWhenCurrentUserHasMoreThanOneRelationshipWithTheEmployee() {
+  public function testIsContactManagedByWhenThereAreMultipleLeaveApproverRelationshipsAndOnlyOneIsActive() {
     $this->setLeaveApproverRelationshipTypes([
       'approves leaves for',
       'manages leaves for'
@@ -98,6 +98,20 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
 
     // this relationship uses another one of the "Leave Approver" types and it's active,
     // so this should return true
+    $this->assertTrue($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
+  }
+
+  public function testIsContactManagedByWhenThereAreMultipleActiveLeaveApproverRelationships() {
+    $this->setLeaveApproverRelationshipTypes([
+      'approves leaves for',
+      'manages leaves for'
+    ]);
+
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
+
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, null, null, true, 'approves leaves for');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, null, null, true, 'manages leaves for');
+
     $this->assertTrue($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
   }
 
