@@ -1,8 +1,8 @@
 define([
-  'mocks/data/work-pattern-data',
   'common/moment',
+  'mocks/data/work-pattern-data',
   'leave-absences/shared/models/instances/calendar-instance',
-], function (mockData, moment) {
+], function (moment, mockData) {
   'use strict';
 
   describe('CalendarInstance', function () {
@@ -13,29 +13,26 @@ define([
     beforeEach(inject([
       'CalendarInstance',
       function (_CalendarInstance_) {
-        CalendarInstance = _CalendarInstance_.init({
-          days: mockData.daysData().values
-        }, true);
+        CalendarInstance = _CalendarInstance_.init(mockData.daysData().values);
       }]
     ));
 
+    describe('init()', function () {
+      var key, date;
+
+      beforeEach(function () {
+        //check with first key of the object
+        key = Object.keys(CalendarInstance.days)[0];
+        date = moment(CalendarInstance.days[key].date).valueOf().toString();
+      });
+
+      it('dates arrays has been converted to an object with proper timestamp values', function () {
+        expect(key).toBe(date);
+      })
+    });
+
     describe('test date functions', function () {
       var dateToSearch;
-
-      function testOutofRangeDate() {
-        dateToSearch = moment('2017-12-12');
-        var workingDayFn = function () {
-          CalendarInstance.isWorkingDay(dateToSearch)
-        };
-
-        expect(workingDayFn).toThrow(new Error('Date not found'));
-      }
-
-      function getDate(dayType) {
-        return mockData.daysData().values.find(function (data) {
-          return data.type.name === dayType;
-        })
-      }
 
       describe('isWorkingDay()', function () {
 
@@ -70,7 +67,7 @@ define([
       describe('isWeekend()', function () {
 
         it('return true if it is a weekend', function () {
-          dateToSearch = moment(getDate("weekend").date);
+          dateToSearch = moment((getDate("weekend").date));
           expect(CalendarInstance.isWeekend(dateToSearch)).toBe(true);
         });
 
@@ -81,6 +78,21 @@ define([
 
         it('throws error if date is not found', testOutofRangeDate);
       });
+
+      function testOutofRangeDate() {
+        dateToSearch = moment(('2017-12-12'));
+        var workingDayFn = function () {
+          CalendarInstance.isWorkingDay(dateToSearch)
+        };
+
+        expect(workingDayFn).toThrow(new Error('Date not found'));
+      }
+
+      function getDate(dayType) {
+        return mockData.daysData().values.find(function (data) {
+          return data.type.name === dayType;
+        });
+      }
     })
   });
 });

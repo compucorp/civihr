@@ -4,9 +4,26 @@ use CRM_HRCore_Test_Fabricator_Relationship as RelationshipFabricator;
 
 trait CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait {
 
-  public function setContactAsLeaveApproverOf($leaveApprover, $contact, $startDate = null, $endDate = null, $isActive = true) {
-    $relationshipType = $this->getLeaveApproverRelationshipType();
+  public function setLeaveApproverRelationshipTypes($relationshipTypes) {
+    $relationshipTypesIDs = [];
+    foreach($relationshipTypes as $relationshipType) {
+      $relationshipType = $this->getRelationshipType($relationshipType);
+      $relationshipTypesIDs[] = $relationshipType['id'];
+    }
 
+    Civi::service('hrleaveandabsences.settings_manager')->set(
+      'relationship_types_allowed_to_approve_leave',
+      $relationshipTypesIDs
+    );
+  }
+
+  public function setContactAsLeaveApproverOf($leaveApprover, $contact, $startDate = null, $endDate = null, $isActive = true, $relationshipType = null) {
+    if(!$relationshipType) {
+      $relationshipType = 'has Leave Approved By';
+    }
+
+    $relationshipType = $this->getRelationshipType($relationshipType);
+  
     RelationshipFabricator::fabricate([
       'contact_id_a' => $contact['id'],
       'contact_id_b' => $leaveApprover['id'],
@@ -17,28 +34,47 @@ trait CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait {
     ]);
   }
 
-  private function getLeaveApproverRelationshipType() {
+  private function getRelationshipType($typeName) {
     $result = civicrm_api3('RelationshipType', 'get', [
-      'name_a_b' => 'has Leave Approved by',
+      'name_a_b' => $typeName,
     ]);
 
     if(empty($result['values'])) {
-      return $this->createLeaveApproverRelationshipType();
+      return $this->createRelationshipType($typeName);
     }
 
     return array_shift($result['values']);
   }
 
-  private function createLeaveApproverRelationshipType() {
+  private function createRelationshipType($typeName) {
     $result = civicrm_api3('RelationshipType', 'create', array(
       'sequential'     => 1,
-      'name_a_b'       => 'has Leave Approved by',
-      'name_b_a'       => 'is Leave Approver of',
+      'name_a_b'       => $typeName,
+      'name_b_a'       => $typeName,
       'contact_type_a' => 'individual',
       'contact_type_b' => 'individual',
     ));
 
-    return $result['values'][0];
+    $relationshipType = $result['values'][0];
+
+    $this->addRelationShipTypeAsLeaveApproverType($relationshipType['id']);
+
+    return $relationshipType;
+  }
+
+  private function addRelationShipTypeAsLeaveApproverType($relationshipTypeID) {
+    $currentSettings = Civi::service('hrleaveandabsences.settings_manager')->get(
+      'relationship_types_allowed_to_approve_leave'
+    );
+
+    if(!$currentSettings) {
+      $currentSettings = [];
+    }
+
+    Civi::service('hrleaveandabsences.settings_manager')->set(
+      'relationship_types_allowed_to_approve_leave',
+      array_merge($currentSettings, [$relationshipTypeID])
+    );
   }
 
   public function createLeaveLeaveManagerServiceMock($isAdmin = false, $isManager = false) {

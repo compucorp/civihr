@@ -423,6 +423,59 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
     $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
   }
 
+  public function testGetReturnsOnlyDataLinkedToContactsThatLoggedInUserManagesWhenLoggedInIsALeaveApproverWithOneOfTheAvailableRelationships() {
+    $this->setLeaveApproverRelationshipTypes([
+      'approves leaves for',
+      'manages things for',
+    ]);
+
+    $manager1 = ContactFabricator::fabricate();
+    $manager2 = ContactFabricator::fabricate();
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+    $contact3 = ContactFabricator::fabricate();
+
+    $this->setContactAsLeaveApproverOf($manager1, $contact2, null, null, true, 'manage things for');
+    $this->setContactAsLeaveApproverOf($manager2, $contact1, null, null, true, 'approves leaves for');
+    $this->setContactAsLeaveApproverOf($manager2, $contact3, null, null, true, 'manage things for');
+
+    $entitlementContact1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact1['id'],
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact2['id'],
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    $entitlementContact3 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact3['id'],
+      'type_id' => 1,
+      'period_id' => 1
+    ]);
+
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
+
+    // Manager1 only manages contact2 (though the 'manages things for' relationship),
+    // so only contact2 leave requests will be returned
+    $this->registerCurrentLoggedInContactInSession($manager1['id']);
+    $result = civicrm_api3('LeavePeriodEntitlement', 'get', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(1, $result['count']);
+    $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
+
+    // Manager2 manages contact1 (through the 'approves leaves for' relationship),
+    // and contact3 (through the 'manage things for' relationship), so the
+    // entitlement for both will be returned
+    $this->registerCurrentLoggedInContactInSession($manager2['id']);
+    $result = civicrm_api3('LeavePeriodEntitlement', 'get', ['check_permissions' => true]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contact1['id'], $result['values'][$entitlementContact1->id]['contact_id']);
+    $this->assertEquals($contact3['id'], $result['values'][$entitlementContact3->id]['contact_id']);
+  }
+
   public function testGetReturnsAllDataWhenLoggedInUserHasViewAllContactsPermission() {
     $adminID = 1;
     $contactID1 = 2;

@@ -28,9 +28,7 @@ define([
 
           return workPatternAPI.getCalendar(contactId, periodId, params)
             .then(function (data) {
-              return instance.init({
-                days: data.values
-              }, true);
+              return instance.init(data.values);
             });
         }
       });

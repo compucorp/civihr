@@ -107,7 +107,8 @@ function _civicrm_api3_leave_request_get_spec(&$spec) {
  * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_request_get($params) {
-  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params);
+  $settingsManager = Civi::service('hrleaveandabsences.settings_manager');
+  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params, $settingsManager);
   return civicrm_api3_create_success($query->run(), $params, '', 'get');
 }
 
@@ -149,7 +150,8 @@ function _civicrm_api3_leave_request_getfull_spec(&$spec) {
  * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_request_getfull($params) {
-  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params);
+  $settingsManager = Civi::service('hrleaveandabsences.settings_manager');
+  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params, $settingsManager);
   $query->setReturnFullDetails(true);
 
   return civicrm_api3_create_success($query->run(), $params, '', 'getfull');

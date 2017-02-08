@@ -5,7 +5,7 @@ define([
 ], function (mocks, mockData) {
   'use strict';
 
-  mocks.factory('WorkPatternAPI', ['$q', function ($q) {
+  mocks.factory('WorkPatternAPIMock', ['$q', function ($q) {
     return {
       getCalendar: function (params) {
         return $q(function (resolve, reject) {
