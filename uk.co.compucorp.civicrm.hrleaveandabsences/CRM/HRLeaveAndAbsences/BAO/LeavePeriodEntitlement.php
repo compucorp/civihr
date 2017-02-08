@@ -6,7 +6,6 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeavePeriodEntitlementException as InvalidPeriodEntitlementException;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
-use CRM_HRLeaveAndAbsences_API_Query_ACLQueryHelper as ACLQueryHelper;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement
