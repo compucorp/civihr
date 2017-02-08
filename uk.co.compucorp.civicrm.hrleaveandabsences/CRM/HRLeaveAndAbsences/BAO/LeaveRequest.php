@@ -13,6 +13,8 @@ use CRM_HRLeaveAndAbsences_API_Query_ACLQueryHelper as ACLQueryHelper;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
+  use CRM_HRLeaveAndAbsences_ACL_LeaveApproverTrait;
+
   /**
    * Create a new LeaveRequest based on array-data
    *
@@ -763,8 +765,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
 
-    $query = ACLQueryHelper::limitContactsByTakingUserRelationShipsIntoAccount();
-    $clauses['contact_id'] = $query;
+    $clauses['contact_id'] = $this->getLeaveApproverACLClauses();
 
     CRM_Utils_Hook::selectWhereClause($this, $clauses);
     return $clauses;
