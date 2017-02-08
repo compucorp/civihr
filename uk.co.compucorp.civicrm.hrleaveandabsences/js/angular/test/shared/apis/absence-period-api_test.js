@@ -2,25 +2,28 @@ define([
   'mocks/data/absence-period-data',
   'common/moment',
   'leave-absences/shared/apis/absence-period-api',
+  'leave-absences/shared/modules/shared-settings',
 ], function (mockData, moment) {
   'use strict'
 
   describe("AbsencePeriodAPI", function () {
-    var AbsencePeriodAPI, $httpBackend;
+    var AbsencePeriodAPI, $httpBackend, sharedSettings;
 
-    beforeEach(module('leave-absences.apis'));
+    beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
 
-    beforeEach(inject(function (_AbsencePeriodAPI_, _$httpBackend_) {
+    beforeEach(inject(['AbsencePeriodAPI', '$httpBackend', 'shared-settings',
+      function (_AbsencePeriodAPI_, _$httpBackend_, _sharedSettings_) {
       AbsencePeriodAPI = _AbsencePeriodAPI_;
       $httpBackend = _$httpBackend_;
-    }));
+      sharedSettings = _sharedSettings_;
+    }]));
 
     it("has expected interface", function () {
       expect(Object.keys(AbsencePeriodAPI)).toContain("all");
     });
 
     describe("all()", function () {
-      var absenceTypePromise, totalAbsencePeriods, dateFormat = 'YYYY-MM-DD';
+      var absenceTypePromise, totalAbsencePeriods;
 
       beforeEach(function () {
         $httpBackend.whenGET(/action=get&entity=AbsencePeriod/)
@@ -61,8 +64,8 @@ define([
 
           expect(firstAbsencePeriod.id).toEqual(jasmine.any(String));
           expect(firstAbsencePeriod.title).toEqual(jasmine.any(String));
-          expect(moment(firstAbsencePeriod.start_date, dateFormat, true).isValid()).toBe(true);
-          expect(moment(firstAbsencePeriod.end_date, dateFormat, true).isValid()).toBe(true);
+          expect(moment(firstAbsencePeriod.start_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
+          expect(moment(firstAbsencePeriod.end_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
           expect(firstAbsencePeriod.weight).toEqual(jasmine.any(String));
         });
       });

@@ -1,7 +1,8 @@
 define([
+  'common/moment',
   'leave-absences/shared/models/absence-type-model',
   'mocks/apis/absence-type-api-mock',
-], function () {
+], function (moment) {
   'use strict'
 
   describe('AbsenceType', function () {
@@ -21,10 +22,11 @@ define([
       $rootScope = _$rootScope_;
 
       spyOn(AbsenceTypeAPI, 'all').and.callThrough();
+      spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
     }));
 
     it('has expected interface', function () {
-      expect(Object.keys(AbsenceType)).toEqual(['all']);
+      expect(Object.keys(AbsenceType)).toEqual(['all', 'calculateToilExpiryDate']);
     });
 
     describe('all()', function () {
@@ -50,6 +52,30 @@ define([
           expect(response.every(function (modelInstance) {
             return 'init' in modelInstance;
           })).toBe(true);
+        });
+      });
+    });
+
+    describe('calculateToilExpiryDate()', function () {
+      var absenceTypePromise,
+        absenceTypeID = 2,
+        date = moment(),
+        params = {
+          key: 'value'
+        };
+
+      beforeEach(function () {
+        absenceTypePromise = AbsenceType.calculateToilExpiryDate(absenceTypeID, date, params);
+      });
+
+      afterEach(function () {
+        //to excute the promise force an digest
+        $rootScope.$apply();
+      });
+
+      it('calls equivalent API method', function () {
+        absenceTypePromise.then(function () {
+          expect(AbsenceTypeAPI.calculateToilExpiryDate).toHaveBeenCalledWith(absenceTypeID, date, params);
         });
       });
     });

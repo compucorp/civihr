@@ -9,8 +9,8 @@ define([
   'use strict';
 
   models.factory('PublicHoliday', [
-    '$log', 'Model', 'PublicHolidayAPI', 'PublicHolidayInstance', 'HR_settings',
-    function ($log, Model, publicHolidayAPI, instance, HR_settings) {
+    '$log', 'Model', 'PublicHolidayAPI', 'PublicHolidayInstance', 'shared-settings',
+    function ($log, Model, publicHolidayAPI, instance, sharedSettings) {
       $log.debug('PublicHoliday');
 
       return Model.extend({
@@ -40,7 +40,7 @@ define([
         isPublicHoliday: function (whichDate) {
           $log.debug('PublicHoliday.isPublicHoliday', whichDate);
 
-          var checkDate = moment(whichDate).format('YYYY-MM-DD');
+          var checkDate = moment(whichDate).format(sharedSettings.serverDateFormat);
           var params = {
             'date': checkDate
           };

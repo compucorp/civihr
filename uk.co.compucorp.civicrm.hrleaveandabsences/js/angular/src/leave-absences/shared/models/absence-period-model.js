@@ -1,6 +1,7 @@
 define([
   'leave-absences/shared/modules/models',
   'common/moment',
+  'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/models/instances/absence-period-instance',
   'leave-absences/shared/apis/absence-period-api',
   'common/models/model',
@@ -9,8 +10,8 @@ define([
   'use strict';
 
   models.factory('AbsencePeriod', [
-    '$log', 'Model', 'AbsencePeriodAPI', 'AbsencePeriodInstance', 'HR_settings',
-    function ($log, Model, absencePeriodAPI, instance, HR_settings) {
+    '$log', 'Model', 'AbsencePeriodAPI', 'AbsencePeriodInstance', 'shared-settings',
+    function ($log, Model, absencePeriodAPI, instance, sharedSettings) {
       $log.debug('AbsencePeriod');
 
       return Model.extend({
@@ -36,7 +37,7 @@ define([
          * @return {Object} Absence period instance or null if not found
          */
         current: function () {
-          var today = moment().format('YYYY-MM-DD');
+          var today = moment().format(sharedSettings.serverDateFormat);
 
           var params = {
             "start_date": {

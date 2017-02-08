@@ -77,7 +77,13 @@ define([
       "allow_carry_forward": "0"
     }]
   };
-  
+
+  var calculateToilExpiryDate = {
+    values: {
+      "expiry_date": "2016-07-08"
+    }
+  };
+
   return {
     all: function () {
       return all_data;
@@ -96,5 +102,8 @@ define([
     getAllAbsenceTypesIds: function () {
       return this.getAllAbsenceTypesByKey('id');
     },
+    calculateToilExpiryDate: function () {
+      return calculateToilExpiryDate;
+    }
   }
 });

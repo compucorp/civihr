@@ -7,10 +7,8 @@ define([
   'use strict';
 
   instances.factory('CalendarInstance', [
-    '$log', 'ModelInstance',
-    function ($log, ModelInstance) {
-
-      var serverDateFormat = 'YYYY-MM-DD';
+    '$log', 'ModelInstance', 'shared-settings',
+    function ($log, ModelInstance, sharedSettings) {
 
       /**
        * This method checks whether a date matches the send type.
@@ -38,7 +36,7 @@ define([
        * @return {Date} Moment date
        */
       function getDateObjectWithFormat(date) {
-        return moment(date, serverDateFormat).clone();
+        return moment(date, sharedSettings.serverDateFormat).clone();
       }
 
       return ModelInstance.extend({

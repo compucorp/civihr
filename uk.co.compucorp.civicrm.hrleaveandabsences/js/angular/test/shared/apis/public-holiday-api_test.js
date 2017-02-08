@@ -2,25 +2,28 @@ define([
   'mocks/data/public-holiday-data',
   'common/moment',
   'leave-absences/shared/apis/public-holiday-api',
+  'leave-absences/shared/modules/shared-settings',
 ], function (mockData, moment) {
   'use strict'
 
   describe("PublicHolidayAPI", function () {
-    var PublicHolidayAPI, $httpBackend;
+    var PublicHolidayAPI, $httpBackend, sharedSettings;
 
-    beforeEach(module('leave-absences.apis'));
+    beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
 
-    beforeEach(inject(function (_PublicHolidayAPI_, _$httpBackend_) {
+    beforeEach(inject(['PublicHolidayAPI', '$httpBackend', 'shared-settings',
+      function (_PublicHolidayAPI_, _$httpBackend_, _sharedSettings_) {
       PublicHolidayAPI = _PublicHolidayAPI_;
       $httpBackend = _$httpBackend_;
-    }));
+      sharedSettings = _sharedSettings_;
+    }]));
 
     it("has expected interface", function () {
       expect(Object.keys(PublicHolidayAPI)).toContain("all");
     });
 
     describe("all()", function () {
-      var promise, totalPublicHolidays, dateFormat = 'YYYY-MM-DD';
+      var promise, totalPublicHolidays;
 
       beforeEach(function () {
         $httpBackend.whenGET(/action=get&entity=PublicHoliday/)
@@ -60,7 +63,7 @@ define([
 
           expect(firstPublicHoliday.id).toEqual(jasmine.any(String));
           expect(firstPublicHoliday.title).toEqual(jasmine.any(String));
-          expect(moment(firstPublicHoliday.date, dateFormat, true).isValid()).toBe(true);
+          expect(moment(firstPublicHoliday.date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
           expect(firstPublicHoliday.is_active).toEqual(jasmine.any(String));
         });
       });

@@ -6,12 +6,12 @@ define([
 ], function (mocks, mockData, moment) {
   'use strict';
 
-  mocks.factory('AbsencePeriodAPIMock', ['$q', function ($q) {
+  mocks.factory('AbsencePeriodAPIMock', ['$q', 'shared-settings', function ($q, sharedSettings) {
     return {
       all: function (params) {
         return $q(function (resolve, reject) {
           if (params && 'start_date' in params) {
-            var dateFormat = 'YYYY-MM-DD';
+            var dateFormat = sharedSettings.serverDateFormat;
             //find if dates are in range else return null
             var checkDate = moment(params.start_date['<='], dateFormat);
 

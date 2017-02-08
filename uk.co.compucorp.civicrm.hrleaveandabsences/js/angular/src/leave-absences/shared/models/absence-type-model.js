@@ -26,6 +26,18 @@ define([
                 return instance.init(absenceType, true);
               });
             });
+        },
+
+        /**
+         * Calls the calculateToilExpiryDate() method of the AbsenceType API
+         *
+         * @param  {string} absenceTypeID
+         * @param  {Object} date
+         * @param  {Object} params
+         * @return {Promise}
+         */
+        calculateToilExpiryDate: function (absenceTypeID, date, params) {
+          return absenceTypeAPI.calculateToilExpiryDate(absenceTypeID, date, params);
         }
       });
     }

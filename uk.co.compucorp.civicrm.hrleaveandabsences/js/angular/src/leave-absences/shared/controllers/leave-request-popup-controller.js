@@ -18,10 +18,10 @@ define([
   components.controller('LeaveRequestPopupCtrl', [
     '$log', '$q', '$rootScope', '$uibModalInstance', 'Contact', 'AbsencePeriod', 'AbsenceType',
     'api.optionGroup', 'directiveOptions', 'Calendar', 'Entitlement', 'HR_settings',
-    'LeaveRequest', 'LeaveRequestInstance', 'PublicHoliday',
+    'LeaveRequest', 'LeaveRequestInstance', 'PublicHoliday', 'shared-settings',
     function ($log, $q, $rootScope, $modalInstance, Contact, AbsencePeriod, AbsenceType,
       OptionGroup, directiveOptions, Calendar, Entitlement, HR_settings,
-      LeaveRequest, LeaveRequestInstance, PublicHoliday
+      LeaveRequest, LeaveRequestInstance, PublicHoliday, sharedSettings
     ) {
       $log.debug('LeaveRequestPopupCtrl');
 
@@ -30,7 +30,6 @@ define([
         mode = '', //can be edit, create, view
         role = '', //could be manager, owner or admin
         selectedAbsenceType = {},
-        serverDateFormat = 'YYYY-MM-DD',
         vm = {};
 
       vm.absencePeriods = [];
@@ -426,7 +425,7 @@ define([
        * @return {Date} converted to server format
        */
       function convertDateFormatToServer(date) {
-        return moment(date).format(serverDateFormat);
+        return moment(date).format(sharedSettings.serverDateFormat);
       }
 
       /**
@@ -436,7 +435,7 @@ define([
        * @return {Date} Javascript date
        */
       function convertDateFormatFromServer(date) {
-        return moment(date, serverDateFormat).clone().toDate();
+        return moment(date, sharedSettings.serverDateFormat).clone().toDate();
       }
 
       /**
