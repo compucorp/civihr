@@ -8,6 +8,8 @@
  */
 class CRM_HRLeaveAndAbsences_Service_LeaveManager {
 
+  use CRM_HRLeaveAndAbsences_Service_SettingsManagerTrait;
+
   /**
    * Checks contact given by $contactID is managed by the contact given by
    * $managerID.
@@ -29,12 +31,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManager {
     $relationshipTable = CRM_Contact_BAO_Relationship::getTableName();
     $relationshipTypeTable = CRM_Contact_BAO_RelationshipType::getTableName();
 
+    $leaveApproveRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
+
     $query = "SELECT r.id 
                 FROM {$relationshipTable} r
                 INNER JOIN {$relationshipTypeTable} rt ON rt.id = r.relationship_type_id
               WHERE r.is_active = 1 AND 
                     rt.is_active = 1 AND 
-                    rt.name_a_b = 'has Leave Approved By' AND
+                    rt.id IN(" . implode(',', $leaveApproveRelationshipTypes) . ") AND
                     r.contact_id_a = %1 AND
                     r.contact_id_b = %2 AND
                     (r.start_date IS NULL OR r.start_date <= %3) AND 
