@@ -8,7 +8,6 @@ See also:
  * Wiki: http://wiki.civicrm.org/confluence/display/HR/CiviHR
  * Issues: http://issues.civicrm.org/jira/secure/Dashboard.jspa?selectPageId=11213
  
- We are using browserstack to do cross browser testing:
- ![Browserstack_logo](https://www.browserstack.com/images/layout/browserstack-logo-600x315.png?raw=true =35x35)
- 
- [![Browserstack_logo](https://www.browserstack.com/images/layout/browserstack-logo-600x315.png?raw=true =35x35)](https://www.browserstack.com/)
+ [![Browserstack_logo](https://www.browserstack.com/images/layout/browserstack-logo-600x315.png?raw=true =35x35)]()
+
+<a href="https://www.browserstack.com/"><img src="https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" align="left" height="48" ></a>
