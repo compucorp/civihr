@@ -1,6 +1,5 @@
 <?php
 
-
 trait CRM_HRLeaveAndAbsences_LeaveRequestStatusMatrixHelpersTrait {
 
   public function createLeaveRequestStatusMatrixServiceMock($canTransitionTo = false) {

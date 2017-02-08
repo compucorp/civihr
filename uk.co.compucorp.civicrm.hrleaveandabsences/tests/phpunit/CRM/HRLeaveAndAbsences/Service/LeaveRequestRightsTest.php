@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest
@@ -144,27 +145,29 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     );
   }
 
-  public function testCanChangeDatesForReturnsFalseWhenCurrentUserNotLeaveContactIrrespectiveOfStatusPassed() {
+  /**
+   * @dataProvider leaveRequestStatusesDataProvider
+   */
+  public function testCanChangeDatesForReturnsFalseWhenCurrentUserNotLeaveContactIrrespectiveOfStatusPassed($status) {
     $contactID = 2;
-
     $this->assertFalse(
       $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser()->canChangeDatesFor(
         $contactID,
-        $this->leaveRequestStatuses['Cancelled']['id']
+        $status
       )
     );
 
     $this->assertFalse(
       $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeDatesFor(
         $contactID,
-        $this->leaveRequestStatuses['Rejected']['id']
+        $status
       )
     );
 
     $this->assertFalse(
       $this->getLeaveRightsService()->canChangeDatesFor(
         $contactID,
-        $this->leaveRequestStatuses['Approved']['id']
+        $status
       )
     );
   }
@@ -205,27 +208,30 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     );
   }
 
-  public function testCanChangeAbsenceTypeForReturnsFalseWhenCurrentUserNotLeaveContactIrrespectiveOfStatusPassed() {
+  /**
+   * @dataProvider leaveRequestStatusesDataProvider
+   */
+  public function testCanChangeAbsenceTypeForReturnsFalseWhenCurrentUserNotLeaveContactIrrespectiveOfStatusPassed($status) {
     $contactID = 2;
 
     $this->assertFalse(
       $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser()->canChangeAbsenceTypeFor(
         $contactID,
-        $this->leaveRequestStatuses['More Information Requested']['id']
+        $status
       )
     );
 
     $this->assertFalse(
       $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeAbsenceTypeFor(
         $contactID,
-        $this->leaveRequestStatuses['Waiting Approval']['id']
+        $status
       )
     );
 
     $this->assertFalse(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $contactID,
-        $this->leaveRequestStatuses['Cancelled']['id']
+        $status
       )
     );
   }
@@ -241,5 +247,18 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
 
   private function getLeaveRequestRightsForLeaveManagerAsCurrentUser() {
     return $this->getLeaveRightsService(false, true);
+  }
+
+  public function leaveRequestStatusesDataProvider() {
+    $leaveRequestStatuses =  $this->leaveRequestStatuses;
+
+    return [
+      [$leaveRequestStatuses['More Information Requested']['id']],
+      [$leaveRequestStatuses['Waiting Approval']['id']],
+      [$leaveRequestStatuses['Cancelled']['id']],
+      [$leaveRequestStatuses['Rejected']['id']],
+      [$leaveRequestStatuses['Admin Approved']['id']],
+      [$leaveRequestStatuses['Approved']['id']],
+    ];
   }
 }
