@@ -10,3 +10,5 @@ See also:
  
  We are using browserstack to do cross browser testing:
  ![Browserstack_logo](https://www.browserstack.com/images/layout/browserstack-logo-600x315.png?raw=true =35x35)
+ 
+ [![Browserstack_logo][https://www.browserstack.com/images/layout/browserstack-logo-600x315.png?raw=true =35x35]]https://www.browserstack.com/
