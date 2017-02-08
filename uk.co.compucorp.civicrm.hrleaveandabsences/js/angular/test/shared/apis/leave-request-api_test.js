@@ -6,19 +6,22 @@ define([
   'mocks/data/absence-type-data',
   'mocks/data/option-group-mock-data',
   'leave-absences/shared/apis/leave-request-api',
+  'leave-absences/shared/modules/shared-settings',
 ], function (mockData, sicknessMockData, moment, helper, absenceTypeData, optionGroupMock) {
   'use strict';
 
   describe('LeaveRequestAPI', function () {
-    var LeaveRequestAPI, $httpBackend, $rootScope, $q, $log, dateFormat = 'YYYY-MM-DD',
+    var LeaveRequestAPI, $httpBackend, $rootScope, $q, $log, sharedSettings,
       promise, requestData, errorMessage;
 
-    beforeEach(module('leave-absences.apis'));
+    beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
 
-    beforeEach(inject(function (_LeaveRequestAPI_, _$httpBackend_, _$rootScope_, _$q_, _$log_) {
+    beforeEach(inject(['LeaveRequestAPI', '$httpBackend', '$rootScope', '$q', '$log', 'shared-settings',
+      function (_LeaveRequestAPI_, _$httpBackend_, _$rootScope_, _$q_, _$log_, _sharedSettings_) {
       LeaveRequestAPI = _LeaveRequestAPI_;
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
+      sharedSettings = _sharedSettings_;
       $q = _$q_;
       $log = _$log_;
 
@@ -57,7 +60,7 @@ define([
             return [200, mockData.getisValid()];
           }
         });
-    }));
+    }]));
 
     describe('all()', function () {
       beforeEach(function () {
@@ -225,7 +228,7 @@ define([
           expect(result.amount).toEqual(jasmine.any(Number));
           expect(result.breakdown).toEqual(jasmine.any(Object));
           expect(breakdown.amount).toEqual(jasmine.any(Number));
-          expect(moment(breakdown.date, dateFormat, true).isValid()).toBe(true);
+          expect(moment(breakdown.date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
           expect(breakdown.type).toEqual(jasmine.any(Object));
           expect(breakdownType.id).toEqual(jasmine.any(Number));
           expect(breakdownType.value).toEqual(jasmine.any(Number));
@@ -280,7 +283,7 @@ define([
           expect(result.contact_id).toBeDefined();
           expect(result.status_id).toBeDefined();
           expect(result.from_date).toBeDefined();
-          expect(moment(result.from_date, dateFormat, true).isValid()).toBe(true);
+          expect(moment(result.from_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
           expect(result.from_date_type).toBeDefined();
         });
       });
@@ -292,7 +295,7 @@ define([
           expect(absenceTypeData.getAllAbsenceTypesIds()).toContain(result.type_id);
           expect(result.contact_id).toEqual(jasmine.any(String));
           expect(optionGroupMock.getAllRequestStatusesValues()).toContain(result.status_id);
-          expect(moment(result.from_date, dateFormat, true).isValid()).toBe(true);
+          expect(moment(result.from_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
           expect(optionGroupMock.getAllRequestDayValues()).toContain(result.from_date_type);
         });
       });

@@ -21,6 +21,7 @@ define([
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/public-holiday-model',
+  'leave-absences/shared/modules/shared-settings',
 ], function (angular) {
   angular.module('my-leave', [
     'ngResource',
@@ -36,6 +37,7 @@ define([
     'my-leave.components',
     'leave-absences.directives',
     'leave-absences.models',
+    'leave-absences.settings'
   ])
   .run(['$log', function ($log) {
     $log.debug('app.run');

@@ -12,19 +12,18 @@ define([
       return settings.pathTpl + 'components/my-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$log', '$q', 'OptionGroup', 'AbsencePeriod', 'AbsenceType',
+    controller: ['$log', '$q', 'shared-settings', 'OptionGroup', 'AbsencePeriod', 'AbsenceType',
       'Calendar', 'LeaveRequest', 'PublicHoliday', controller]
   });
 
 
-  function controller($log, $q, OptionGroup, AbsencePeriod, AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
+  function controller($log, $q, sharedSettings, OptionGroup, AbsencePeriod, AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
     $log.debug('Component: my-leave-calendar');
 
     var dayTypes = [],
       leaveRequests = [],
       publicHolidays = [],
       leaveRequestStatuses = [],
-      serverDateFormat = 'YYYY-MM-DD',
       vm = Object.create(this);
 
     vm.absencePeriods = [];
@@ -129,7 +128,7 @@ define([
      * @return {Date} Moment date
      */
     function getDateObjectWithFormat(date) {
-      return moment(date, serverDateFormat).clone();
+      return moment(date, sharedSettings.serverDateFormat).clone();
     }
 
     /**

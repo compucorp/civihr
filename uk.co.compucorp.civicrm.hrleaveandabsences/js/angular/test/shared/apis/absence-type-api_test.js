@@ -1,8 +1,10 @@
 define([
+  'common/lodash',
+  'common/moment',
   'mocks/data/absence-type-data',
   'leave-absences/shared/apis/absence-type-api',
   ],
-  function (mockData) {
+  function (_, moment, mockData) {
     'use strict'
 
     describe("AbsenceTypeAPI", function () {
@@ -62,6 +64,41 @@ define([
             expect(firstAbsenceType.allow_accruals_request).toBeDefined();
             expect(firstAbsenceType.allow_accrue_in_the_past).toBeDefined();
             expect(firstAbsenceType.allow_carry_forward).toBeDefined();
+          });
+        });
+      });
+
+      describe('calculateToilExpiryDate()', function() {
+        var absenceTypePromise,
+          absenceTypeID = 2,
+          date = moment(),
+          params = {
+            key: 'value'
+          };
+
+        beforeEach(function () {
+          spyOn(AbsenceTypeAPI, 'sendPOST').and.callThrough();
+          $httpBackend.whenPOST()
+            .respond(mockData.calculateToilExpiryDate());
+
+          absenceTypePromise = AbsenceTypeAPI.calculateToilExpiryDate(absenceTypeID, date, params);
+        });
+
+        afterEach(function () {
+          //enforce flush to make calls to httpBackend
+          $httpBackend.flush();
+        });
+
+        it("API is called with absence type ID, date and parameters", function () {
+          expect(AbsenceTypeAPI.sendPOST).toHaveBeenCalledWith('AbsenceType', 'calculateToilExpiryDate', _.assign(params, {
+            absence_type_id: absenceTypeID,
+            date: date
+          }))
+        });
+
+        it("returns expiry_date", function () {
+          absenceTypePromise.then(function (result) {
+            expect(result).toEqual(mockData.calculateToilExpiryDate().values.expiry_date);
           });
         });
       });

@@ -4,7 +4,8 @@
   ], function (angular) {
     return angular.module('leave-absences.settings', []).constant('shared-settings', {
       debug: CRM.debug,
-      pathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/'
+      pathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/',
+      serverDateFormat: 'YYYY-MM-DD'
     });
   });
 })(CRM);
