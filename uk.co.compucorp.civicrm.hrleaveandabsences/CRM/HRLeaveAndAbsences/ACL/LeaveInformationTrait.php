@@ -1,21 +1,28 @@
 <?php
 
-trait CRM_HRLeaveAndAbsences_ACL_LeaveApproverTrait {
+trait CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait {
 
   use CRM_HRLeaveAndAbsences_Service_SettingsManagerTrait;
 
   /**
-   * This method returns a query string that limits contacts records that are
-   * available to a logged in user by taking into account user relationships.
-   * It checks whether the logged in user is a leave approver to some contacts
-   * or not. If yes the logged in user has access to contact records for the
-   * contacts/users he manages. If not the logged is limited to his/her own
-   * records only.
+   * For any leave information (Entitlement, Leave Requests etc) the access
+   * rules are:
+   *   - Staff members can only see their own information
+   *   - Managers can see their own information + the information from their
+   *     managees
+   *
+   * This method creates ACL clauses that can be added to queries in order to
+   * filter results to follow these rules.
+   *
+   * The manager > managee relationship is determined by checking if there's an
+   * active relationship between the two contacts and that the type of this
+   * relationship is one of those configured as a "Leave Approver Relationship
+   * Type" on the extension's General Settings.
    *
    * @return string
    *   Query String
    */
-  public function getLeaveApproverACLClauses() {
+  public function getLeaveInformationACLClauses() {
     $contactsTable = CRM_Contact_BAO_Contact::getTableName();
     $relationshipTable = CRM_Contact_BAO_Relationship::getTableName();
     $relationshipTypeTable = CRM_Contact_BAO_RelationshipType::getTableName();

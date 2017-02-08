@@ -12,7 +12,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
  */
 class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement {
 
-  use CRM_HRLeaveAndAbsences_ACL_LeaveApproverTrait;
+  use CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait;
 
   /**
    * Create a new LeavePeriodEntitlement based on array-data
@@ -783,7 +783,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       return;
     }
 
-    $clauses['contact_id'] = $this->getLeaveApproverACLClauses();
+    $clauses['contact_id'] = $this->getLeaveInformationACLClauses();
 
     CRM_Utils_Hook::selectWhereClause($this, $clauses);
     return $clauses;

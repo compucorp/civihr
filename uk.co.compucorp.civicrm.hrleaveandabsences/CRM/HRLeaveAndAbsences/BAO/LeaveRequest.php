@@ -12,7 +12,7 @@ use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException as InvalidLeav
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
-  use CRM_HRLeaveAndAbsences_ACL_LeaveApproverTrait;
+  use CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait;
 
   /**
    * Create a new LeaveRequest based on array-data
@@ -764,7 +764,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
 
-    $clauses['contact_id'] = $this->getLeaveApproverACLClauses();
+    $clauses['contact_id'] = $this->getLeaveInformationACLClauses();
 
     CRM_Utils_Hook::selectWhereClause($this, $clauses);
     return $clauses;
