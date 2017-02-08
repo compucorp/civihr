@@ -12,16 +12,17 @@ define([
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/shared/models/public-holiday-model',
   'leave-absences/shared/models/instances/leave-request-instance',
+  'leave-absences/shared/models/instances/sickness-leave-request-instance',
 ], function (components, _, moment) {
   'use strict';
 
   components.controller('LeaveRequestPopupCtrl', [
     '$log', '$q', '$rootScope', '$uibModalInstance', 'Contact', 'AbsencePeriod', 'AbsenceType',
     'api.optionGroup', 'directiveOptions', 'Calendar', 'Entitlement', 'HR_settings',
-    'LeaveRequest', 'LeaveRequestInstance', 'PublicHoliday', 'shared-settings',
+    'LeaveRequest', 'LeaveRequestInstance', 'PublicHoliday', 'SicknessRequestInstance', 'shared-settings',
     function ($log, $q, $rootScope, $modalInstance, Contact, AbsencePeriod, AbsenceType,
       OptionGroup, directiveOptions, Calendar, Entitlement, HR_settings,
-      LeaveRequest, LeaveRequestInstance, PublicHoliday, sharedSettings
+      LeaveRequest, LeaveRequestInstance, PublicHoliday, SicknessRequestInstance, sharedSettings
     ) {
       $log.debug('LeaveRequestPopupCtrl');
 
@@ -30,6 +31,7 @@ define([
         mode = '', //can be edit, create, view
         role = '', //could be manager, owner or admin
         selectedAbsenceType = {},
+        leaveType = directiveOptions.leaveType ? directiveOptions.leaveType : 'leave',
         vm = {};
 
       vm.absencePeriods = [];
@@ -40,8 +42,6 @@ define([
       vm.leaveRequestDayTypes = [];
       vm.period = {};
       vm.statusLabel = '';
-      vm.sickness = directiveOptions.sickness;
-      vm.toil = directiveOptions.toil;
       vm.balance = {
         closing: 0,
         opening: 0,
@@ -183,7 +183,33 @@ define([
           canSubmit = canSubmit && !!vm.leaveRequestStatuses[vm.leaveRequest.status_id];
         }
 
+        if(vm.isleaveType('sick')) {
+          canSubmit = canSubmit && !!vm.leaveRequest.reason;
+        }
+
         return canSubmit && !vm.isMode('view');
+      };
+
+      /**
+       * Checks if given value is set for leave request list of document value ie., field required_documents
+       *
+       * @param {String} value
+       * @return {Boolean}
+       */
+      vm.isDocumentInRequest = function (value) {
+        return !!_.find(vm.leaveRequestDocuments, function (document) {
+          return document.value == value;
+        });
+      };
+
+      /**
+       * Checks if popup is opened in given leave type like `leave` or `sick`
+       *
+       * @param {String} leaveTypeParam to check the leave type of current request
+       * @return {Boolean}
+       */
+      vm.isleaveType = function (leaveTypeParam) {
+        return leaveType === leaveTypeParam;
       };
 
       /**
@@ -241,6 +267,19 @@ define([
         } else {
           createRequest();
         }
+      };
+
+      /**
+       * Checks if given value is added for leave request list of document value ie., field required_documents
+       *  otherwise add it to list of required documents
+       *
+       * @param {String} value
+       */
+      vm.updateRequiredDocuments = function (value) {
+        vm.leaveRequest.required_documents = vm.leaveRequest.required_documents ? vm.leaveRequest.required_documents : [];
+        var index = vm.leaveRequest.required_documents.indexOf(value);
+
+        index === -1 ? vm.leaveRequest.required_documents.push(value) : vm.leaveRequest.required_documents.splice(index, 1);
       };
 
       /**
@@ -329,7 +368,7 @@ define([
             return loadDayTypes();
           })
           .then(function () {
-            return initDates();
+            return $q.all([initDates(), loadDocuments(), loadReasons()]);
           })
           .then(function () {
             initAbsenceType();
@@ -614,17 +653,18 @@ define([
        * @return {Promise}
        */
       function initLeaveRequest() {
+        var attributes, request;
+
         //if set indicates that leaverequest is either being managed or edited
         if (directiveOptions.leaveRequest) {
           //get a clone so that it is not the same reference as passed from callee
-          var cloneAttributes = _.cloneDeep(directiveOptions.leaveRequest.attributes());
+          attributes = _.cloneDeep(directiveOptions.leaveRequest.attributes());
 
           //init to get methods like roleOf again on leaverequest instance as cloning removes them
-          vm.leaveRequest = LeaveRequestInstance.init(cloneAttributes);
+          vm.leaveRequest = vm.isleaveType('sick') ? SicknessRequestInstance.init(attributes):LeaveRequestInstance.init(attributes);
         } else {
-          vm.leaveRequest = LeaveRequestInstance.init({
-            contact_id: directiveOptions.contactId //resolved from directive
-          });
+          request = { contact_id: directiveOptions.contactId };
+          vm.leaveRequest = vm.isleaveType('sick') ? SicknessRequestInstance.init(request) : LeaveRequestInstance.init(request);
         }
 
         return $q.resolve(vm.leaveRequest);
@@ -749,10 +789,10 @@ define([
        * @return {Promise}
        */
       function loadAbsenceTypes() {
+        var param = vm.isleaveType('sick') ? { is_sick: true } : {is_sick: false};
+
         // Fetch all the absence types, except for the sickness ones
-        return AbsenceType.all({
-            is_sick: false
-          })
+        return AbsenceType.all(param)
           .then(function (absenceTypes) {
             var absenceTypesIds = absenceTypes.map(function (absenceType) {
               return absenceType.id;
@@ -777,6 +817,30 @@ define([
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
           .then(function (dayTypes) {
             vm.leaveRequestDayTypes = dayTypes;
+          });
+      }
+
+      /**
+       * Initializes leave request documents types required for submission
+       *
+       * @return {Promise}
+       */
+      function loadDocuments() {
+        return OptionGroup.valuesOf('hrleaveandabsences_leave_request_required_document')
+          .then(function (documents) {
+            vm.leaveRequestDocuments = documents;
+          });
+      }
+
+      /**
+       * Initializes leave request reasons and indexes them by name like accident etc.,
+       *
+       * @return {Promise}
+       */
+      function loadReasons() {
+        return OptionGroup.valuesOf('hrleaveandabsences_sickness_reason')
+          .then(function (reasons) {
+            vm.leaveRequestReasons = _.indexBy(reasons, 'name');
           });
       }
 
@@ -832,6 +896,10 @@ define([
             breakdown: []
           }
         };
+
+        if (vm.isleaveType('sick')) {
+          vm.leaveRequest.reason = null;
+        }
       }
 
       /**

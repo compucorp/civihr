@@ -48,20 +48,15 @@ define([
 
           if (helper.isEntityActionInPost(data, 'LeaveRequest', 'create')) {
             return [201, mockData.all()];
-          }
-          else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'calculatebalancechange')) {
+          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'calculatebalancechange')) {
             return [200, mockData.calculateBalanceChange()];
-          }
-          else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isValid')) {
+          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isValid')) {
             return [200, mockData.getisValid()];
-          }
-          else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
+          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
             return [200, mockData.isManagedBy()];
-          }
-          else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'create')) {
+          } else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'create')) {
             return [201, sicknessMockData.all()];
-          }
-          else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'isValid')) {
+          } else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'isValid')) {
             return [200, mockData.getisValid()];
           }
           else if (helper.isEntityActionInPost(data, 'TOILRequest', 'create')) {
@@ -95,7 +90,7 @@ define([
       });
     });
 
-    describe('all() sickness request', function() {
+    describe('all() sickness request', function () {
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'getAll').and.callThrough();
         promise = LeaveRequestAPI.all(null, null, null, {}, false, 'sick');
@@ -183,7 +178,9 @@ define([
           LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String), jasmine.any(Array), jasmine.any(Boolean));
 
           expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
-            statuses: { "IN": jasmine.any(Array) },
+            statuses: {
+              "IN": jasmine.any(Array)
+            },
           }), false);
         });
       });
@@ -194,6 +191,33 @@ define([
         });
 
         $httpBackend.flush();
+      });
+    });
+
+    describe('balanceChangeByAbsenceType() with error from server', function () {
+      var error;
+
+      beforeEach(function () {
+        error = mockData.singleDataError();
+
+        spyOn(LeaveRequestAPI, 'sendGET').and.callFake(function () {
+          return $q(function (resolve, reject) {
+            resolve(error);
+          });
+        });
+
+        requestData = helper.createRandomLeaveRequest();
+        promise = LeaveRequestAPI.balanceChangeByAbsenceType(requestData);
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      it('returns error message', function () {
+        promise.catch(function (result) {
+          expect(result).toEqual(error.error_message);
+        });
       });
     });
 
@@ -281,6 +305,33 @@ define([
       });
     });
 
+    describe('calculateBalanceChange() with error from server', function () {
+      var error;
+
+      beforeEach(function () {
+        error = mockData.singleDataError();
+
+        spyOn(LeaveRequestAPI, 'sendGET').and.callFake(function () {
+          return $q(function (resolve, reject) {
+            resolve(error);
+          });
+        });
+
+        requestData = helper.createRandomLeaveRequest();
+        promise = LeaveRequestAPI.calculateBalanceChange(requestData);
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      it('returns error message', function () {
+        promise.catch(function (result) {
+          expect(result).toEqual(error.error_message);
+        });
+      });
+    });
+
     describe('create()', function () {
 
       beforeEach(function () {
@@ -364,7 +415,34 @@ define([
       });
     });
 
-    describe('create() for sickness request', function() {
+    describe('create() with error from server', function () {
+      var error;
+
+      beforeEach(function () {
+        error = mockData.singleDataError();
+
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
+          return $q(function (resolve, reject) {
+            resolve(error);
+          });
+        });
+
+        requestData = helper.createRandomLeaveRequest();
+        promise = LeaveRequestAPI.create(requestData);
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      it('returns error message', function () {
+        promise.catch(function (result) {
+          expect(result).toEqual(error.error_message);
+        });
+      });
+    });
+
+    describe('create() for sickness request', function () {
       beforeEach(function () {
         requestData = helper.createRandomSicknessRequest();
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
@@ -456,6 +534,33 @@ define([
           promise.catch(function (result) {
             expect(result.count).toEqual(1);
           });
+        });
+      });
+    });
+
+    describe('isValid() with error from server', function () {
+      var error;
+
+      beforeEach(function () {
+        error = mockData.singleDataError();
+
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
+          return $q(function (resolve, reject) {
+            resolve(error);
+          });
+        });
+
+        requestData = helper.createRandomLeaveRequest();
+        promise = LeaveRequestAPI.isValid(requestData);
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      it('returns error message', function () {
+        promise.catch(function (result) {
+          expect(result).toEqual(error.error_message);
         });
       });
     });
@@ -598,6 +703,33 @@ define([
           promise.catch(function (result) {
             expect(result).toBe(errorMessage);
           });
+        });
+      });
+    });
+
+    describe('update() with error from server', function () {
+      var error;
+
+      beforeEach(function () {
+        error = mockData.singleDataError();
+
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
+          return $q(function (resolve, reject) {
+            resolve(error);
+          });
+        });
+
+        requestData = mockData.all().values[0];
+        promise = LeaveRequestAPI.update(requestData);
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      it('returns error message', function () {
+        promise.catch(function (result) {
+          expect(result).toEqual(error.error_message);
         });
       });
     });

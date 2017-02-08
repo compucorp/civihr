@@ -5,28 +5,22 @@
       <label class="col-xs-4 control-label">Reason<i class="fa fa-asterisk"></i></label>
       <div class="col-xs-8">
         <div class="chr_custom-select chr_custom-select--full">
-          <select name="reason">
-            <option value="- select -">- select -</option>
+          <select
+            name="reason"
+            ng-options="reason.name as reason.label for reason in $ctrl.leaveRequestReasons"
+            ng-model="$ctrl.leaveRequest.reason">
+            <option value="">- select -</option>
           </select>
         </div>
       </div>
     </div>
     <div class="form-group">
       <div class="col-xs-12">
-        <div class="checkbox">
-          <label>
-            <input required type="checkbox" value="certification">Self certification form required
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <input required type="checkbox" value="interview">Back to work interview required
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <input required type="checkbox" value="work">Return to work required
-          </label>
+        <div ng-repeat="document in $ctrl.leaveRequestDocuments">
+          <input ng-disabled="$ctrl.isRole('owner')" required type="checkbox" value="document.value"
+            ng-click="$ctrl.updateRequiredDocuments(document.value)"
+            ng-selected="$ctrl.isDocumentInRequest(document.value)">
+          <span>{{document.label}}</span>
         </div>
       </div>
     </div>

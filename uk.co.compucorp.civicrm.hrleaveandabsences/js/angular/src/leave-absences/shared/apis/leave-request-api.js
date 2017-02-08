@@ -87,8 +87,9 @@ define([
             if (checkError(data)) {
               deferred.reject(data.error_message);
             }
-
-            deferred.resolve(data.values);
+            else {
+              deferred.resolve(data.values);
+            }
           });
 
         return deferred.promise;
@@ -115,9 +116,10 @@ define([
             if (checkError(data)) {
               deferred.reject(data.error_message);
             }
-
-            //returns array of single object hence getting first object
-            deferred.resolve(data.values[0]);
+            else {
+              //returns array of single object hence getting first object
+              deferred.resolve(data.values[0]);
+            }
           });
 
         return deferred.promise;
@@ -146,8 +148,9 @@ define([
             if (checkError(data)) {
               deferred.reject(data.error_message);
             }
-
-            deferred.resolve(data.values);
+            else {
+              deferred.resolve(data.values);
+            }
           });
 
         return deferred.promise;
@@ -184,8 +187,10 @@ define([
             if (checkError(data)) {
               deferred.reject(data.error_message);
             }
-            //returns array of single object hence getting first object
-            deferred.resolve(data.values[0]);
+            else {
+              //returns array of single object hence getting first object
+              deferred.resolve(data.values[0]);
+            }
           });
 
         return deferred.promise;
@@ -212,8 +217,9 @@ define([
             if (data.count > 0) {
               deferred.reject(data.values);
             }
-
-            deferred.resolve(data.values);
+            else {
+              deferred.resolve(data.values);
+            }
           });
 
         return deferred.promise;
