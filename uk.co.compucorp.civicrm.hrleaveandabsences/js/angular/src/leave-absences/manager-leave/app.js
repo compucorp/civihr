@@ -28,8 +28,10 @@ define([
     'leave-absences.directives',
     'leave-absences.models',
   ])
-  .run(['$log', function ($log) {
+  .run(['$log', '$rootScope', 'settings', function ($log, $rootScope, settings) {
     $log.debug('app.run');
+
+    $rootScope.pathTpl = settings.pathTpl;
   }]);
 
   return angular;
