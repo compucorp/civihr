@@ -4,6 +4,7 @@ define([
   'common/modules/services',
   'leave-absences/shared/modules/apis',
   'leave-absences/shared/modules/models-instances',
+  'leave-absences/shared/modules/shared-settings',
 ], function (angular) {
   'use strict';
 
@@ -11,6 +12,7 @@ define([
     'common.models',
     'common.services',
     'leave-absences.apis',
-    'leave-absences.models.instances'
+    'leave-absences.models.instances',
+    'leave-absences.settings'
   ]);
 });

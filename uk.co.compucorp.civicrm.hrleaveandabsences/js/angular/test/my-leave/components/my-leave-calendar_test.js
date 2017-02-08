@@ -19,9 +19,8 @@
     'use strict';
 
     describe('myLeaveCalendar', function () {
-      var $compile, $log, $q, $rootScope, component, controller,
+      var $compile, $log, $q, $rootScope, component, controller, sharedSettings,
         $provide, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
-      var serverDateFormat = 'YYYY-MM-DD';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -36,8 +35,10 @@
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
 
-      beforeEach(inject(function (_$compile_, _$log_, _$q_, _$rootScope_, _OptionGroup_, _OptionGroupAPIMock_,
-                                  _Calendar_, _CalendarInstance_, _LeaveRequest_) {
+      beforeEach(inject(['$compile', '$log', '$q', '$rootScope', 'OptionGroup', 'OptionGroupAPIMock',
+        'Calendar', 'CalendarInstance', 'LeaveRequest', 'shared-settings',
+        function (_$compile_, _$log_, _$q_, _$rootScope_, _OptionGroup_, _OptionGroupAPIMock_,
+                  _Calendar_, _CalendarInstance_, _LeaveRequest_, _sharedSettings_) {
         $compile = _$compile_;
         $log = _$log_;
         $q = _$q_;
@@ -47,6 +48,7 @@
         CalendarInstance = _CalendarInstance_;
         OptionGroup = _OptionGroup_;
         OptionGroupAPIMock = _OptionGroupAPIMock_;
+        sharedSettings = _sharedSettings_;
 
         spyOn($log, 'debug');
 
@@ -55,7 +57,7 @@
         });
 
         compileComponent();
-      }));
+      }]));
 
       it('is initialized', function () {
         expect($log.debug).toHaveBeenCalled();
@@ -308,7 +310,7 @@
       }
 
       function getDateObjectWithFormat(date) {
-        return moment(date, serverDateFormat).clone();
+        return moment(date, sharedSettings.serverDateFormat).clone();
       }
 
       function getDate(dayType) {

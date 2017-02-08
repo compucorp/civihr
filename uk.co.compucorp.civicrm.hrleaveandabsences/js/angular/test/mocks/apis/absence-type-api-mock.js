@@ -11,6 +11,11 @@ define([
         return $q(function (resolve, reject) {
           resolve(mockData.all().values);
         });
+      },
+      calculateToilExpiryDate: function (params) {
+        return $q(function (resolve, reject) {
+          resolve(mockData.calculateToilExpiryDate().values);
+        });
       }
     }
   }]);

@@ -17,20 +17,20 @@
     'mocks/apis/public-holiday-api-mock',
     'common/mocks/services/api/contact-mock',
     'leave-absences/shared/controllers/leave-request-popup-controller',
+    'leave-absences/shared/modules/shared-settings',
   ], function (_, moment, angular, optionGroupMock, mockData) {
     'use strict';
 
     describe('LeaveRequestPopupCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
-        $provide, DateFormat, LeaveRequestInstance, Contact, ContactAPIMock,
+        $provide, sharedSettings, LeaveRequestInstance, Contact, ContactAPIMock,
         EntitlementAPI, LeaveRequestAPI, WorkPatternAPI,
-        serverDateFormat = 'YYYY-MM-DD',
         date2016 = '01/12/2016',
         date2017 = '02/02/2017',
         date2013 = '02/02/2013';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
-        'leave-absences.mocks', 'common.mocks',
+        'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
         function (_$provide_) {
           $provide = _$provide_;
         }));
@@ -48,8 +48,9 @@
         $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
       }));
 
-      beforeEach(inject(['api.contact.mock', function (_ContactAPIMock_) {
+      beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
         $provide.value('api.contact', _ContactAPIMock_);
+        sharedSettings = _sharedSettings_;
       }]));
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_,
@@ -170,7 +171,7 @@
 
           beforeEach(function () {
             setTestDates(date2016);
-            fromDate = moment($ctrl.uiOptions.fromDate).format(serverDateFormat);
+            fromDate = moment($ctrl.uiOptions.fromDate).format(sharedSettings.serverDateFormat);
           });
 
           it('has balance change defined', function () {
@@ -194,7 +195,7 @@
 
           beforeEach(function () {
             setTestDates(date2016, date2016);
-            toDate = moment($ctrl.uiOptions.toDate).format(serverDateFormat);
+            toDate = moment($ctrl.uiOptions.toDate).format(sharedSettings.serverDateFormat);
           });
 
           it('sets to date', function () {
@@ -295,7 +296,7 @@
           });
 
           it('sets from date', function () {
-            expect(moment($ctrl.leaveRequest.from_date, serverDateFormat, true).isValid()).toBe(true);
+            expect(moment($ctrl.leaveRequest.from_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
           });
         });
 
@@ -305,7 +306,7 @@
           });
 
           it('sets to date', function () {
-            expect(moment($ctrl.leaveRequest.to_date, serverDateFormat, true).isValid()).toBe(true);
+            expect(moment($ctrl.leaveRequest.to_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
           });
         });
       });
