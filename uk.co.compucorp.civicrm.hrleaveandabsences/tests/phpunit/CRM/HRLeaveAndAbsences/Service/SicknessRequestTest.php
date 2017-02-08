@@ -12,6 +12,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_SicknessRequest as SicknessRequestFabricator;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix as LeaveRequestStatusMatrixService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
+use CRM_HRLeaveAndAbsences_Factory_LeaveRequestService as LeaveRequestServiceFactory;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest
@@ -173,14 +174,7 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
   }
 
   private function getLeaveRequestService($isAdmin = false, $isManager = false) {
-    $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
-    $leaveRequestStatusMatrixService = new LeaveRequestStatusMatrixService($leaveManagerService);
-    $leaveRequestRightsService = new LeaveRequestRightsService($leaveManagerService);
 
-    return new LeaveRequestService(
-      $this->leaveBalanceChangeService,
-      $leaveRequestStatusMatrixService,
-      $leaveRequestRightsService
-    );
+    return LeaveRequestServiceFactory::create();
   }
 }

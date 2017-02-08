@@ -166,17 +166,16 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testCreateThrowsAnExceptionWhenTransitionStatusIsNotValidWhenUpdatingLeaveRequestStatus() {
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($this->getDefaultParams());
+    $params = $this->getDefaultParams();
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
 
     $this->setExpectedException(
       'RuntimeException', "You can't change the Leave Request status from ".
       $this->getDefaultParams()['status_id']. " to {$this->leaveRequestStatuses['Waiting Approval']['id']}"
     );
 
-    $params = $this->getDefaultParams([
-      'id' => $leaveRequest->id,
-      'status_id' => $this->leaveRequestStatuses['Waiting Approval']['id']
-    ]);
+    $params['id'] = $leaveRequest->id;
+    $params['status_id'] = $this->leaveRequestStatuses['Waiting Approval']['id'];
 
     $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($params, false);
   }
@@ -188,10 +187,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     //The leave contact tries to change the status to 'Waiting Approval'
     //Even though it was a valid status transition but the leave contact does not have the permission
-    $params = $this->getDefaultParams([
-      'id' => $leaveRequest->id,
-      'status_id' => $this->leaveRequestStatuses['Waiting Approval']['id']
-    ]);
+    $params['id'] = $leaveRequest->id;
+    $params['status_id'] = $this->leaveRequestStatuses['Waiting Approval']['id'];
 
     $this->setExpectedException(
       'RuntimeException', "You don't have enough permission to change the status to {$this->leaveRequestStatuses['Waiting Approval']['id']}"
@@ -208,11 +205,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->getDefaultParams(['contact_id' => $contactID]);
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
 
-    $params = $this->getDefaultParams([
-      'from_date' => CRM_Utils_Date::processDate('2016-01-10'),
-      'to_date' => CRM_Utils_Date::processDate('2016-01-15'),
-      'id' => $leaveRequest->id
-    ]);
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-10');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-15');
+    $params['id'] = $leaveRequest->id;
 
     $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
   }
@@ -226,11 +221,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->getDefaultParams(['contact_id' => $contactID]);
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
 
-    $params = $this->getDefaultParams([
-      'from_date' => CRM_Utils_Date::processDate('2016-01-10'),
-      'to_date' => CRM_Utils_Date::processDate('2016-01-15'),
-      'id' => $leaveRequest->id
-    ]);
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-10');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-15');
+    $params['id'] = $leaveRequest->id;
 
     $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
   }
@@ -244,10 +237,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->getDefaultParams(['contact_id' => $contactID]);
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
 
-    $params = $this->getDefaultParams([
-      'type_id' => 2,
-      'id' => $leaveRequest->id
-    ]);
+    $params['id'] = $leaveRequest->id;
+    $params['type_id'] = 2;
 
     $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
   }
@@ -261,10 +252,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->getDefaultParams(['contact_id' => $contactID]);
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
 
-    $params = $this->getDefaultParams([
-      'type_id' => 2,
-      'id' => $leaveRequest->id
-    ]);
+    $params['id'] = $leaveRequest->id;
+    $params['type_id'] = 2;
+
     $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
   }
 
