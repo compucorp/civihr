@@ -23,7 +23,7 @@ trait CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait {
     }
 
     $relationshipType = $this->getRelationshipType($relationshipType);
-  
+
     RelationshipFabricator::fabricate([
       'contact_id_a' => $contact['id'],
       'contact_id_b' => $leaveApprover['id'],
@@ -77,7 +77,7 @@ trait CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait {
     );
   }
 
-  public function createLeaveLeaveManagerServiceMock($isAdmin = false, $isManager = false) {
+  public function createLeaveManagerServiceMock($isAdmin = false, $isManager = false) {
     $leaveManagerService = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Service_LeaveManager::class)
                                 ->setMethods(['currentUserIsAdmin', 'currentUserIsLeaveManagerOf'])
                                 ->getMock();

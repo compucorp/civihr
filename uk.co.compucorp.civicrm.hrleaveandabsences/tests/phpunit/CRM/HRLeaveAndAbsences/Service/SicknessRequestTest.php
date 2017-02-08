@@ -27,7 +27,6 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
 
   public function setUp() {
     $this->leaveBalanceChangeService = new LeaveBalanceChangeService();
-    $this->leaveBalanceChangeService = new LeaveBalanceChangeService();
   }
 
   public function testCreateAlsoCreateTheLeaveRequestBalanceChanges() {
@@ -174,7 +173,7 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
   }
 
   private function getLeaveRequestService($isAdmin = false, $isManager = false) {
-    $leaveManagerService = $this->createLeaveLeaveManagerServiceMock($isAdmin, $isManager);
+    $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
     $leaveRequestStatusMatrixService = new LeaveRequestStatusMatrixService($leaveManagerService);
     $leaveRequestRightsService = new LeaveRequestRightsService($leaveManagerService);
 

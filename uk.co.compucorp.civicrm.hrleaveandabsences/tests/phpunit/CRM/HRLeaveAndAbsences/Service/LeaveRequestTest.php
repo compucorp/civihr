@@ -7,7 +7,6 @@ use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeServi
 use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
-use CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix as LeaveRequestStatusMatrixService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
 
 /**
@@ -20,6 +19,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveRequestStatusMatrixHelpersTrait;
 
 
   private $leaveBalanceChangeService;
@@ -170,7 +170,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
    */
   public function testCreateThrowsAnExceptionWhenTransitionStatusIsNotValidForNewLeaveRequest() {
     //A leave contact trying to set a new leave request to approved status
-    $this->getleaveRequestService()->create([
+    $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create([
       'type_id' => 1,
       'contact_id' => $this->leaveContact,
       'status_id' => $this->leaveRequestStatuses['Approved']['id'],
@@ -181,44 +181,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ], false);
   }
 
-  /**
-   * @expectedException RuntimeException
-   * @expectedExceptionMessage You can't create a Leave Request with this status
-   */
-  public function testCreateThrowsAnExceptionForAdminWhenTransitionStatusIsNotValidForNewLeaveRequest() {
-    //An admin trying to set a new leave request to rejected status
-    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create([
-      'type_id' => 1,
-      'contact_id' => 5,
-      'status_id' => $this->leaveRequestStatuses['Rejected']['id'],
-      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
-      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-      'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
-      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-    ], false);
-  }
-
-  /**
-   * @expectedException RuntimeException
-   * @expectedExceptionMessage You can't create a Leave Request with this status
-   */
-  public function testCreateThrowsAnExceptionForLeaveApproverWhenTransitionStatusIsNotValidForNewLeaveRequest() {
-    //A leave manager trying to set a new leave request to cancelled status
-    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create([
-      'type_id' => 1,
-      'contact_id' => 5,
-      'status_id' => $this->leaveRequestStatuses['Cancelled']['id'],
-      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
-      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-      'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
-      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-    ], false);
-  }
-
-  public function testCreateThrowsAnExceptionForLeaveApproverWhenTransitionStatusIsNotValidWhenUpdatingLeaveRequestStatus() {
-    $contactID = 5;
+  public function testCreateThrowsAnExceptionWhenTransitionStatusIsNotValidWhenUpdatingLeaveRequestStatus() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'contact_id' => $contactID,
+      'contact_id' => $this->leaveContact,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
@@ -233,40 +198,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       $this->leaveRequestStatuses['More Information Requested']['id']. " to {$this->leaveRequestStatuses['Waiting Approval']['id']}"
     );
 
-    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create([
+    $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create([
       'id' => $leaveRequest->id,
       'type_id' => 1,
-      'contact_id' => 5,
-      'status_id' => $this->leaveRequestStatuses['Waiting Approval']['id'],
-      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
-      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-      'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
-      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-    ], false);
-  }
-
-  public function testCreateThrowsAnExceptionForAdminWhenTransitionStatusIsNotValidWhenUpdatingLeaveRequestStatus() {
-    $contactID = 5;
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'contact_id' => $contactID,
-      'type_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
-      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-      'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
-      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-      'status_id' => $this->leaveRequestStatuses['Approved']['id'],
-      'sequential' => 1,
-    ]);
-
-    $this->setExpectedException(
-      'RuntimeException', "You can't change the Leave Request status from ".
-      $this->leaveRequestStatuses['Approved']['id']. " to {$this->leaveRequestStatuses['Waiting Approval']['id']}"
-    );
-
-    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create([
-      'id' => $leaveRequest->id,
-      'type_id' => 1,
-      'contact_id' => 5,
+      'contact_id' => $this->le,
       'status_id' => $this->leaveRequestStatuses['Waiting Approval']['id'],
       'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
@@ -421,9 +356,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ], false);
   }
 
-  private function getLeaveRequestService($isAdmin = false, $isManager = false) {
-    $leaveManagerService = $this->createLeaveLeaveManagerServiceMock($isAdmin, $isManager);
-    $leaveRequestStatusMatrixService = new LeaveRequestStatusMatrixService($leaveManagerService);
+  private function getLeaveRequestService($isAdmin = false, $isManager = false, $allowStatusTransition = true) {
+    $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
+    $leaveRequestStatusMatrixService = $this->createLeaveRequestStatusMatrixServiceMock($allowStatusTransition);
     $leaveRequestRightsService = new LeaveRequestRightsService($leaveManagerService);
 
     return new LeaveRequestService(
@@ -431,6 +366,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       $leaveRequestStatusMatrixService,
       $leaveRequestRightsService
     );
+  }
+
+  private function getLeaveRequestServiceWhenStatusTransitionIsNotAllowed() {
+    return $this->getLeaveRequestService(false, false, false);
   }
 
   private function getLeaveRequestServiceWhenCurrentUserIsAdmin() {

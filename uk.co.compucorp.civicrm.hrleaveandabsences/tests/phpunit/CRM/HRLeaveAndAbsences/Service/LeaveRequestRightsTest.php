@@ -150,14 +150,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertFalse(
       $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser()->canChangeDatesFor(
         $contactID,
-        $this->leaveRequestStatuses['More Information Requested']['id']
+        $this->leaveRequestStatuses['Cancelled']['id']
       )
     );
 
     $this->assertFalse(
       $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeDatesFor(
         $contactID,
-        $this->leaveRequestStatuses['Admin Approved']['id']
+        $this->leaveRequestStatuses['Rejected']['id']
       )
     );
 
@@ -218,20 +218,20 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertFalse(
       $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeAbsenceTypeFor(
         $contactID,
-        $this->leaveRequestStatuses['Admin Approved']['id']
+        $this->leaveRequestStatuses['Waiting Approval']['id']
       )
     );
 
     $this->assertFalse(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $contactID,
-        $this->leaveRequestStatuses['Approved']['id']
+        $this->leaveRequestStatuses['Cancelled']['id']
       )
     );
   }
 
   private function getLeaveRightsService($isAdmin = false, $isManager = false) {
-    $leaveManagerService = $this->createLeaveLeaveManagerServiceMock($isAdmin, $isManager);
+    $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
     return new LeaveRequestRightsService($leaveManagerService);
   }
 
