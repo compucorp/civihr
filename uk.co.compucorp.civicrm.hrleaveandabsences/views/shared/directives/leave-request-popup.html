@@ -99,7 +99,7 @@
             <div class="row" ng-show="$ctrl.overtime">
               <div class="col-xs-12 form-horizontal">
                 <hr>
-                <div class="expire-date">Expiry Date: <span>{{$ctrl.uiOptions.expiredDate}}</div>
+                <div class="expire-date">Expiry Date: <span>{{$ctrl.currentDate()}}</div>
               </div>
             </div>
             <div class="row" src="{{pathTpl + 'directives/sickness.html'}}" ng-show="$ctrl.sickness">

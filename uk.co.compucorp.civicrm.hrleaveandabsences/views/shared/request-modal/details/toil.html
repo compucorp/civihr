@@ -26,7 +26,7 @@
     <label class="col-xs-4 control-label">Duration</label>
     <div class="col-xs-4">
       <div class="chr_custom-select chr_custom-select--full">
-        <select name="reason" ng-model="$ctrl.uiOptions.duration.hour">
+        <select name="reason">
           <option value="0">Hours</option>
           <option value="1">1h</option>
           <option value="2">2h</option>
@@ -45,7 +45,7 @@
     </div>
     <div class="col-xs-4">
       <div class="chr_custom-select chr_custom-select--full">
-        <select name="reason" ng-model="$ctrl.uiOptions.duration.min">
+        <select name="reason">
           <option value="0">Mins</option>
           <option value="5">5m</option>
           <option value="10">10m</option>
@@ -70,7 +70,13 @@
     <div class="col-xs-12">
       <div class="chr_custom-select chr_custom-select--full">
         <select name="reason">
-          <option value="- select -">- select -</option>
+          <option value="1">1 Day</option>
+          <option value="2">2 Day</option>
+          <option value="3">3 Day</option>
+          <option value="4">4 Day</option>
+          <option value="5">5 Day</option>
+          <option value="6">6 Day</option>
+          <option value="7">7 Day</option>
         </select>
       </div>
     </div>

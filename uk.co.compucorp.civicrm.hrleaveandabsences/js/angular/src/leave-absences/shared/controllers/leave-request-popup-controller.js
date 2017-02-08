@@ -78,11 +78,6 @@ define([
         isChangeExpanded: false,
         multipleDays: true,
         workedDate: null,
-        expiredDate: 0,
-        duration: {
-          hour: 0,
-          min: 0
-        },
         userDateFormat: HR_settings.DATE_FORMAT,
         showBalance: false,
         date: {
@@ -112,6 +107,24 @@ define([
             }
           },
         }
+      };
+
+      /**
+       * Get current date
+       */
+      vm.currentDate = function () {
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        if(dd<10) {
+          dd='0'+dd
+        }
+        if(mm<10) {
+          mm='0'+mm
+        }
+        today = mm+'/'+dd+'/'+yyyy;
+        return today;
       };
 
       /**
@@ -823,7 +836,6 @@ define([
         vm.uiOptions.fromDate = vm.uiOptions.toDate = null;
         vm.uiOptions.workedDate = null;
         vm.uiOptions.showBalance = false;
-        vm.uiOptions.duration = false;
 
         vm.leaveRequest.from_date_type = vm.leaveRequest.to_date_type = null;
         vm.leaveRequest.from_date = vm.leaveRequest.to_date = null;
