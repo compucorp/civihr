@@ -8,14 +8,16 @@ define([
     'use strict'
 
     describe("AbsenceTypeAPI", function () {
-      var AbsenceTypeAPI, $httpBackend;
+      var AbsenceTypeAPI, $httpBackend, sharedSettings;
 
-      beforeEach(module('leave-absences.apis'));
+      beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
 
-      beforeEach(inject(function (_AbsenceTypeAPI_, _$httpBackend_) {
+      beforeEach(inject(['shared-settings', 'AbsenceTypeAPI', '$httpBackend',
+        function (_sharedSettings_, _AbsenceTypeAPI_, _$httpBackend_) {
         AbsenceTypeAPI = _AbsenceTypeAPI_;
         $httpBackend = _$httpBackend_;
-      }));
+        sharedSettings = _sharedSettings_;
+      }]));
 
       it("has expected interface", function () {
         expect(Object.keys(AbsenceTypeAPI)).toContain("all");
@@ -92,7 +94,7 @@ define([
         it("API is called with absence type ID, date and parameters", function () {
           expect(AbsenceTypeAPI.sendPOST).toHaveBeenCalledWith('AbsenceType', 'calculateToilExpiryDate', _.assign(params, {
             absence_type_id: absenceTypeID,
-            date: date
+            date: moment(date).format(sharedSettings.serverDateFormat)
           }))
         });
 

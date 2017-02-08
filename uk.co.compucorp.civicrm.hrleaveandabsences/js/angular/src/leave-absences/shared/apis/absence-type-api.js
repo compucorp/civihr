@@ -1,11 +1,12 @@
 define([
   'common/lodash',
+  'common/moment',
   'leave-absences/shared/modules/apis',
   'common/services/api'
-], function (_, apis) {
+], function (_, moment, apis) {
   'use strict';
 
-  apis.factory('AbsenceTypeAPI', ['$log', 'api', function ($log, api) {
+  apis.factory('AbsenceTypeAPI', ['$log', 'api', 'shared-settings', function ($log, api, sharedSettings) {
     $log.debug('AbsenceTypeAPI');
 
     return api.extend({
@@ -17,7 +18,7 @@ define([
        * @return {Promise}
        */
       all: function (params) {
-        $log.debug('AbsenceTypeAPI');
+        $log.debug('AbsenceTypeAPI.all');
 
         return this.sendGET('AbsenceType', 'get', params)
           .then(function (data) {
@@ -34,12 +35,11 @@ define([
        * @return {Promise}
        */
       calculateToilExpiryDate: function (absenceTypeID, date, params) {
-        $log.debug('calculateToilExpiryDate');
+        $log.debug('AbsenceTypeAPI.calculateToilExpiryDate');
 
-        params = params ? params : {};
-        params = _.assign(params, {
+        params = _.assign({}, params, {
           absence_type_id: absenceTypeID,
-          date: date
+          date: moment(date).format(sharedSettings.serverDateFormat)
         });
 
         return this.sendPOST('AbsenceType', 'calculateToilExpiryDate', params)
