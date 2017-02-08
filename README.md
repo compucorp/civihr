@@ -8,6 +8,6 @@ See also:
  * Wiki: http://wiki.civicrm.org/confluence/display/HR/CiviHR
  * Issues: http://issues.civicrm.org/jira/secure/Dashboard.jspa?selectPageId=11213
  
- [![Browserstack_logo](https://www.browserstack.com/images/layout/browserstack-logo-600x315.png?raw=true =35x35)]()
+We are using browserstack for testing:
 
-<a href="https://www.browserstack.com/"><img src="https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" align="left" height="48" ></a>
+<a href="https://www.browserstack.com/"><img src="https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" align="left" height="100" ></a>
