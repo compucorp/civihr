@@ -9,14 +9,18 @@ use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
 
   private $leaveManagerService;
-
-  private $loggedInContact;
+  private $manager;
+  private $staffMember;
 
   public function setUp() {
-    $this->loggedInContact = ContactFabricator::fabricate();
-    $this->registerCurrentLoggedInContactInSession();
+    $this->manager = ContactFabricator::fabricate();
+    $this->staffMember = ContactFabricator::fabricate();
+
+    $this->registerCurrentLoggedInContactInSession($this->manager['id']);
+
     $this->leaveManagerService = new LeaveManagerService();
   }
 
@@ -25,70 +29,55 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
   }
 
   public function testIsContactManagedBy() {
-    $manager = ContactFabricator::fabricate();
-    $staffMember = ContactFabricator::fabricate();
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
 
-    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember);
 
-    $this->setContactAsLeaveApproverOf($manager, $staffMember);
-
-    $this->assertTrue($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertTrue($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
   }
 
   public function testIsContactManagedByWhenTheRelationshipHasSpecificStartDate() {
-    $manager = ContactFabricator::fabricate();
-    $staffMember = ContactFabricator::fabricate();
-
-    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
 
     $today = new DateTime('today');
-    $this->setContactAsLeaveApproverOf($manager, $staffMember, $today->format('Y-m-d'));
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, $today->format('Y-m-d'));
 
-    $this->assertTrue($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertTrue($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
   }
 
   public function testIsContactManagedByWhenTheRelationshipHasSpecificDates() {
-    $manager = ContactFabricator::fabricate();
-    $staffMember = ContactFabricator::fabricate();
-
-    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
 
     $today = new DateTime('today');
     $tomorrow = new DateTime('tomorrow');
-    $this->setContactAsLeaveApproverOf($manager, $staffMember, $today->format('Y-m-d'), $tomorrow->format('Y-m-d'));
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, $today->format('Y-m-d'), $tomorrow->format('Y-m-d'));
 
-    $this->assertTrue($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertTrue($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
   }
 
   public function testIsContactManagedByWhenTheresNoActiveRelationshipForTheCurrentDate() {
-    $manager = ContactFabricator::fabricate();
-    $staffMember = ContactFabricator::fabricate();
-
-    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
 
     // Set a relationship in the past
     $startDate = new DateTime('-10 days');
     $endDate = new DateTime('-1 day');
-    $this->setContactAsLeaveApproverOf($manager, $staffMember, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
 
-    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
 
     // Set a relationship in the future
     $startDate = new DateTime('+1 day');
-    $this->setContactAsLeaveApproverOf($manager, $staffMember, $startDate->format('Y-m-d'));
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, $startDate->format('Y-m-d'));
 
-    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
   }
 
   public function testIsContactManagedByWhenTheCurrentRelationshipIsNotActive() {
-    $manager = ContactFabricator::fabricate();
-    $staffMember = ContactFabricator::fabricate();
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
 
-    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, null, null, false);
 
-    $this->setContactAsLeaveApproverOf($manager, $staffMember, null, null, false);
-
-    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
   }
 
   public function testIsContactManagedByWhenCurrentUserHasMoreThanOneRelationshipWithTheEmployee() {
@@ -97,61 +86,52 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
       'manages leaves for'
     ]);
 
-    $manager = ContactFabricator::fabricate();
-    $staffMember = ContactFabricator::fabricate();
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
 
-    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
-
-    $this->setContactAsLeaveApproverOf($manager, $staffMember, null, null, false, 'approves leaves for');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, null, null, false, 'approves leaves for');
 
     // the relationship is of one of the "Leave Approver" types, but it's not active,
     // so this should return false
-    $this->assertFalse($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertFalse($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
 
-    $this->setContactAsLeaveApproverOf($manager, $staffMember, null, null, true, 'manages leaves for');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, null, null, true, 'manages leaves for');
 
     // this relationship uses another one of the "Leave Approver" types and it's active,
     // so this should return true
-    $this->assertTrue($this->leaveManagerService->isContactManagedBy($staffMember['id'], $manager['id']));
+    $this->assertTrue($this->leaveManagerService->isContactManagedBy($this->staffMember['id'], $this->manager['id']));
   }
 
   public function testCurrentUserIsLeaveManagerOf() {
-    $staffMember = ContactFabricator::fabricate();
+    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($this->staffMember['id']));
 
-    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($staffMember['id']));
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember);
 
-    $this->setContactAsLeaveApproverOf($this->loggedInContact, $staffMember);
-
-    $this->assertTrue($this->leaveManagerService->currentUserIsLeaveManagerOf($staffMember['id']));
+    $this->assertTrue($this->leaveManagerService->currentUserIsLeaveManagerOf($this->staffMember['id']));
   }
 
   public function testCurrentUserIsLeaveManagerOfWhenTheresNoActiveRelationshipForTheCurrentDate() {
-    $staffMember = ContactFabricator::fabricate();
-
-    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($staffMember['id']));
+    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($this->staffMember['id']));
 
     // Set a relationship in the past
     $startDate = new DateTime('-10 days');
     $endDate = new DateTime('-1 day');
-    $this->setContactAsLeaveApproverOf($this->loggedInContact, $staffMember, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, $startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
 
-    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($staffMember['id']));
+    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($this->staffMember['id']));
 
     // Set a relationship in the future
     $startDate = new DateTime('+1 day');
-    $this->setContactAsLeaveApproverOf($this->loggedInContact, $staffMember, $startDate->format('Y-m-d'));
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, $startDate->format('Y-m-d'));
 
-    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($staffMember['id']));
+    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($this->staffMember['id']));
   }
 
   public function testCurrentUserIsLeaveManagerOfWhenTheCurrentRelationshipIsNotActive() {
-    $staffMember = ContactFabricator::fabricate();
-
-    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($staffMember['id']));
+    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($this->staffMember['id']));
     
-    $this->setContactAsLeaveApproverOf($this->loggedInContact, $staffMember, null, null, false);
+    $this->setContactAsLeaveApproverOf($this->manager, $this->staffMember, null, null, false);
 
-    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($staffMember['id']));
+    $this->assertFalse($this->leaveManagerService->currentUserIsLeaveManagerOf($this->staffMember['id']));
   }
 
   public function testCurrentUserIsAdmin() {
@@ -164,15 +144,5 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
     CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
 
     $this->assertTrue($this->leaveManagerService->currentUserIsAdmin());
-  }
-
-  private function registerCurrentLoggedInContactInSession() {
-    $session = CRM_Core_Session::singleton();
-    $session->set('userID', $this->loggedInContact['id']);
-  }
-
-  private function unregisterCurrentLoggedInContactFromSession() {
-    $session = CRM_Core_Session::singleton();
-    $session->set('userID', null);
   }
 }

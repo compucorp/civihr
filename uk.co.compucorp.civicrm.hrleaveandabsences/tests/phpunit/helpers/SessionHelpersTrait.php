@@ -6,4 +6,9 @@ trait CRM_HRLeaveAndAbsences_SessionHelpersTrait {
     $session = CRM_Core_Session::singleton();
     $session->set('userID', $contactID);
   }
+
+  private function unregisterCurrentLoggedInContactFromSession() {
+    $session = CRM_Core_Session::singleton();
+    $session->set('userID', null);
+  }
 }
