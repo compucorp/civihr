@@ -33,7 +33,6 @@ function hrleaveandabsences_civicrm_xmlMenu(&$files) {
 function hrleaveandabsences_civicrm_install() {
   _hrleavesandabsences_create_main_menu();
   _hrleaveandabsences_create_administer_menu();
-  _hrleaveandabsences_add_scheduled_jobs();
 
   _hrleaveandabsences_civix_civicrm_install();
 }
@@ -158,59 +157,6 @@ function _hrleaveandabsences_add_navigation_menu($params)
   $navigationMenu->save();
 
   return $navigationMenu;
-}
-
-/**
- * Adds the scheduled jobs for this extension
- */
-function _hrleaveandabsences_add_scheduled_jobs() {
-  _hrleaveandabsences_add_create_expiry_records_scheduled_job();
-  _hrleaveandabsences_add_process_public_holiday_leave_requests_updates_scheduled_job();
-}
-
-/**
- * Adds the "Create expiration records for expired LeaveBalanceChange records" scheduled job.
- */
-function _hrleaveandabsences_add_create_expiry_records_scheduled_job() {
-  $dao             = new CRM_Core_DAO_Job();
-  $dao->api_entity = 'LeaveBalanceChange';
-  $dao->api_action = 'create_expiry_records';
-  $dao->find(TRUE);
-  if (!$dao->id) {
-    $dao                = new CRM_Core_DAO_Job();
-    $dao->api_entity    = 'LeaveBalanceChange';
-    $dao->api_action    = 'create_expiry_records';
-    $dao->domain_id     = CRM_Core_Config::domainID();
-    $dao->run_frequency = 'Daily';
-    $dao->parameters    = NULL;
-    $dao->name          = 'Create expiry records for expired LeaveBalanceChanges';
-    $dao->description   = 'Checks the number of days taken as leave during the LeaveBalanceChange period and add a negative balance change to expire the number of days not used';
-    $dao->is_active     = 1;
-    $dao->save();
-  }
-}
-
-/**
- * Adds the "Process Public Holiday Leave Requests Update" scheduled job.
- */
-function _hrleaveandabsences_add_process_public_holiday_leave_requests_updates_scheduled_job() {
-  $dao             = new CRM_Core_DAO_Job();
-  $dao->api_entity = 'PublicHoliday';
-  $dao->api_action = 'process_public_holiday_leave_request_updates_queue';
-  $dao->find(TRUE);
-
-  if (!$dao->id) {
-    $dao                = new CRM_Core_DAO_Job();
-    $dao->api_entity    = 'PublicHoliday';
-    $dao->api_action    = 'process_public_holiday_leave_request_updates_queue';
-    $dao->domain_id     = CRM_Core_Config::domainID();
-    $dao->run_frequency = 'Always';
-    $dao->parameters    = NULL;
-    $dao->name          = 'Process Public Holiday Leave Requests Updates';
-    $dao->description   = 'Process all the tasks on the "Public Holiday Leave Requests Update" queue';
-    $dao->is_active     = 1;
-    $dao->save();
-  }
 }
 
 /**
