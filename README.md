@@ -9,4 +9,4 @@ See also:
  * Issues: http://issues.civicrm.org/jira/secure/Dashboard.jspa?selectPageId=11213
  
  We are using browserstack to do cross browser testing:
- ![Browserstack_logo](https://www.browserstack.com/images/layout/browserstack-logo-600x315.png?raw=true=35x)
+ ![Browserstack_logo](https://www.browserstack.com/images/layout/browserstack-logo-600x315.png?raw=true =35x35)
