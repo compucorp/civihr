@@ -34,9 +34,7 @@
         <uib-tabset class="chr_leave-request-modal__tab">
           <uib-tab heading="Details">
             <ng-include src="pathTpl + 'request-modal/details/leave.html'"></ng-include>
-            <div class="row" ng-show="$ctrl.overtime">
-              <ng-include src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
-            </div>
+            <ng-include ng-show="$ctrl.overtime" src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
             <crm-loading show="!$ctrl.loading.calculateBalanceChange">
               <div ng-show="$ctrl.uiOptions.showBalance">
                 <hr/>
@@ -89,7 +87,7 @@
                   </tfoot>
                 </table>
                 <div
-                  class="row chr_leave-request-modal__form-group"
+                  class="row"
                   ng-class="{'text-danger': $ctrl.balance.closing < 0}">
                   <div class="col-xs-4">Closing Balance</div>
                   <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
@@ -102,9 +100,7 @@
                 <div class="expire-date">Expiry Date: <span>{{$ctrl.currentDate()}}</div>
               </div>
             </div>
-            <div class="row" src="{{pathTpl + 'directives/sickness.html'}}" ng-show="$ctrl.sickness">
-              <ng-include src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
-            </div>
+            <ng-include ng-show="$ctrl.sickness" src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
           </uib-tab>
           <uib-tab heading="Comments"></uib-tab>
           <uib-tab heading="Files"></uib-tab>

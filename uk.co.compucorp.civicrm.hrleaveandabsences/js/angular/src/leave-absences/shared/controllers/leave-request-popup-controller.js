@@ -97,6 +97,7 @@ define([
               showWeeks: false
             }
           },
+          // temporary, for PCHR-1384
           dateWorked: {
             show: false,
             options: {
@@ -112,6 +113,7 @@ define([
       /**
        * Get current date
        */
+      // temporary, for PCHR-1384
       vm.currentDate = function () {
         var today = new Date();
         var dd = today.getDate();
