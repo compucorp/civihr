@@ -1021,6 +1021,49 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     return true;
   }
 
+  /**
+   * Creates Option Group and Option Values for Health an Life Insurance Plan 
+   * Types.
+   * 
+   * @return boolean TRUE
+   */
+  public function upgrade_1025() {
+    $this->installInsurancePlanTypes();
+    return TRUE;
+  }
+
+  /**
+   * Creates Option Group for Insurance Plan Types.
+   */
+  public function installInsurancePlanTypes() {
+    try {
+      civicrm_api3('OptionGroup', 'create', [
+        'sequential' => 1,
+        'name' => 'hrjc_insurance_plantype',
+        'title' => 'Insurance Plan Type',
+        'is_active' => 1
+      ]);
+
+      $planTypes = [
+        'Family',
+        'Individual'
+      ];
+
+      foreach ($planTypes as $type) {
+        civicrm_api3('OptionValue', 'create', [
+          'sequential' => 1,
+          'option_group_id' => 'hrjc_insurance_plantype',
+          'label' => $type,
+          'value' => $type,
+          'name' => $type
+        ]);
+      }
+    } catch(Exception $e) {
+      // OptionGroup already exists
+      // Skip this
+    }
+  }
+  
   function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
     $array = array();

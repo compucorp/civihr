@@ -42,14 +42,20 @@ class CRM_Hrjobcontract_SelectValues {
    * @static
    */
   static function &planType() {
-    static $planType = NULL;
-    if (!$planType) {
-      $planType = array(
-        'Family' => ts('Family'),
-        'Individual' => ts('Individual'),
-      );
+    static $types = NULL;
+
+    if (!$types) {
+      $result = civicrm_api3('OptionValue', 'get', [
+        'sequential' => 1,
+        'option_group_id' => "hrjc_insurance_plantype",
+      ]);
+
+      foreach ($result['values'] as $planType) {
+        $types[$planType['value']] = ts($planType['label']);
+      }
     }
-    return $planType;
+
+    return $types;
   }
 
   /** different types of life insurance plan
