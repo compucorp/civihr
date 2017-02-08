@@ -10,7 +10,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
-use CRM_HRLeaveAndAbsences_Service_SettingsManager as SettingsManager;
+
 /**
  * This class is basically a wrapper around Civi\API\SelectQuery.
  *
@@ -20,6 +20,8 @@ use CRM_HRLeaveAndAbsences_Service_SettingsManager as SettingsManager;
  * Public Holiday Leave Requests.
  */
 class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
+
+  use CRM_HRLeaveAndAbsences_Service_SettingsManagerTrait;
 
   /**
    * @var array
@@ -40,15 +42,8 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    */
   private $returnFullDetails = false;
 
-  /**
-   * @var CRM_HRLeaveAndAbsences_Service_SettingsManager
-   *   The SettingsManager instance passed to the constructor
-   */
-  private $settingsManager;
-
-  public function __construct($params, SettingsManager $settingsManager) {
+  public function __construct($params) {
     $this->params = $params;
-    $this->settingsManager = $settingsManager;
     $this->buildCustomQuery();
   }
 
@@ -99,7 +94,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     if(!empty($this->params['managed_by'])) {
       $managerID = (int)$this->params['managed_by'];
       $today =  '"' . date('Y-m-d') . '"';
-      $leaveApproverRelationshipTypes = $this->settingsManager->get('relationship_types_allowed_to_approve_leave');
+      $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
 
       $conditions[] = 'rt.is_active = 1';
       $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
