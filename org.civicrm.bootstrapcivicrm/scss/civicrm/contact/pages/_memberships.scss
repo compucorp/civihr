@@ -89,5 +89,19 @@
         padding-left: 0;
       }
     }
+
+    #recordContribution {
+      tr {
+        td {
+          &:nth-child(2) {
+            padding-left: 0;
+          }
+
+          &.label {
+            padding-right: 20px; 
+          }
+        }
+      }
+    }
   }
 }
