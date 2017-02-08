@@ -740,7 +740,7 @@ define([
             setStatuses();
           }
         } else if (vm.isMode('create')) {
-          vm.leaveRequest.status_id = vm.leaveRequestStatuses['3'].name;
+          vm.leaveRequest.status_id = vm.leaveRequestStatuses['3'].value;
         }
       }
 
@@ -955,7 +955,7 @@ define([
         var keyForDayTypeCollection = 'leaveRequest' + _.startCase(dayType) + 'DayTypes';
 
         vm[keyForDayTypeCollection] = listOfDayTypes;
-        vm.leaveRequest[dayType + '_date_type'] = vm[keyForDayTypeCollection][0].name;
+        vm.leaveRequest[dayType + '_date_type'] = vm[keyForDayTypeCollection][0].value;
       }
 
       /**

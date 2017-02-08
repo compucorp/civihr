@@ -202,7 +202,7 @@
           });
 
           it('selects first day type', function () {
-            expect($ctrl.leaveRequest.from_date_type).toEqual('all_day');
+            expect($ctrl.leaveRequest.from_date_type).toEqual('1');
           });
         });
 
@@ -219,7 +219,7 @@
           });
 
           it('select first day type', function () {
-            expect($ctrl.leaveRequest.to_date_type).toEqual('all_day');
+            expect($ctrl.leaveRequest.to_date_type).toEqual('1');
           });
         });
 
@@ -332,7 +332,7 @@
           var expectedDayType;
 
           beforeEach(function () {
-            expectedDayType = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
+            expectedDayType = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1');
             setTestDates(null, date2016);
           });
 
@@ -749,9 +749,9 @@
             expect($ctrl.leaveRequest.type_id).toEqual('1');
             expect($ctrl.leaveRequest.status_id).toEqual(waitingApprovalStatus.value);
             expect($ctrl.leaveRequest.from_date).toEqual('2016-11-23');
-            expect($ctrl.leaveRequest.from_date_type).toEqual('all_day');
+            expect($ctrl.leaveRequest.from_date_type).toEqual('1');
             expect($ctrl.leaveRequest.to_date).toEqual('2016-11-28');
-            expect($ctrl.leaveRequest.to_date_type).toEqual('all_day');
+            expect($ctrl.leaveRequest.to_date_type).toEqual('1');
           });
 
           it('does not allow user to submit', function () {
