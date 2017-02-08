@@ -14,6 +14,7 @@ require_once 'helpers/WorkPatternHelpersTrait.php';
 require_once 'helpers/TOILRequestHelpersTrait.php';
 require_once 'helpers/LeaveManagerHelpersTrait.php';
 require_once 'helpers/SessionHelpersTrait.php';
+require_once 'helpers/LeaveRequestStatusMatrixHelpersTrait.php';
 
 /**
  * Call the "cv" command.

@@ -1849,6 +1849,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testCreateAlsoCreatesTheBalanceChangesForTheLeaveRequest() {
+    $contactID = 1;
+    $this->registerCurrentLoggedInContactInSession($contactID);
     $startDate = new DateTime();
     $endDate = new DateTime('+5 days');
 
@@ -1858,7 +1860,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => 1],
+      ['contact_id' => $contactID],
       ['period_start_date' => $startDate->format('Y-m-d')]
     );
 
