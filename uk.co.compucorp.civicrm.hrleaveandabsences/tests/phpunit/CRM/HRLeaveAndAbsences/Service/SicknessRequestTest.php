@@ -6,13 +6,9 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_SicknessRequest as SicknessRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
-use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
-use CRM_HRLeaveAndAbsences_Service_SicknessRequest as SicknessRequestService;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_SicknessRequest as SicknessRequestFabricator;
-use CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix as LeaveRequestStatusMatrixService;
-use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
-use CRM_HRLeaveAndAbsences_Factory_LeaveRequestService as LeaveRequestServiceFactory;
+use CRM_HRLeaveAndAbsences_Factory_SicknessRequestService as SicknessRequestServiceFactory;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest
@@ -23,36 +19,36 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
 
   private $leaveBalanceChangeService;
 
+  private $leaveContact;
+
   public function setUp() {
     $this->leaveBalanceChangeService = new LeaveBalanceChangeService();
+    $this->leaveContact = 1;
+    $this->registerCurrentLoggedInContactInSession($this->leaveContact);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
   }
 
   public function testCreateAlsoCreateTheLeaveRequestBalanceChanges() {
-    $contact = ContactFabricator::fabricate();
-
     HRJobContractFabricator::fabricate(
-      ['contact_id' => $contact['id']],
+      ['contact_id' => $this->leaveContact],
       ['period_start_date' => '2016-01-01']
     );
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
 
-    $balanceChangeService = new LeaveBalanceChangeService();
-    $service = new SicknessRequestService(
-      $balanceChangeService,
-      $this->getLeaveRequestService()
-    );
+    $service = $this->getSicknessRequestService();
 
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason', 'validate'));
 
     // a 9 days request, from thursday to friday next week
     $sicknessRequest = $service->create([
       'type_id' => 1,
-      'contact_id' => $contact['id'],
-      'status_id' => 1,
+      'contact_id' => $this->leaveContact,
+      'status_id' => 3,
       'from_date' => CRM_Utils_Date::processDate('2016-02-11'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-02-19'),
@@ -74,27 +70,21 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
   }
 
   public function testCreateDoesNotDuplicateLeaveBalanceChangesOnUpdate() {
-    $contact = ContactFabricator::fabricate();
-
     HRJobContractFabricator::fabricate(
-      ['contact_id' => $contact['id']],
+      ['contact_id' => $this->leaveContact],
       ['period_start_date' => '2016-01-01']
     );
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
 
-    $balanceChangeService = new LeaveBalanceChangeService();
-    $service = new SicknessRequestService(
-      $balanceChangeService,
-      $this->getLeaveRequestService()
-    );
+    $service = $this->getSicknessRequestService();
 
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason', 'validate'));
 
     $params = [
       'type_id' => 1,
-      'contact_id' => $contact['id'],
-      'status_id' => 1,
+      'contact_id' => $this->leaveContact,
+      'status_id' => 3,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
@@ -152,11 +142,7 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
     $this->assertCount(7, $balanceChanges);
     $this->assertCount(7, $dates);
 
-    $balanceChangeService = new LeaveBalanceChangeService();
-    $service = new SicknessRequestService(
-      $balanceChangeService,
-      $this->getLeaveRequestService()
-    );
+    $service = $this->getSicknessRequestService();
     $service->delete($sicknessRequest->id);
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
@@ -173,8 +159,7 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
     $this->fail("Expected to not find the LeaveRequest with {$leaveRequest->id}, but it was found");
   }
 
-  private function getLeaveRequestService($isAdmin = false, $isManager = false) {
-
-    return LeaveRequestServiceFactory::create();
+  private function getSicknessRequestService() {
+    return SicknessRequestServiceFactory::create();
   }
 }

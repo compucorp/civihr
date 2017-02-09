@@ -97,10 +97,7 @@ function civicrm_api3_sickness_request_create($params) {
   _civicrm_api3_check_edit_permissions($bao, $params);
   _civicrm_api3_format_params_for_create($params, null);
 
-  $leaveBalanceChangeService = new CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange();
-  $leaveRequestService = CRM_HRLeaveAndAbsences_Factory_LeaveRequestService::create();
-  $service = new CRM_HRLeaveAndAbsences_Service_SicknessRequest($leaveBalanceChangeService, $leaveRequestService);
-
+  $service = CRM_HRLeaveAndAbsences_Factory_SicknessRequestService::create();
   $sicknessRequest = $service->create($params);
   $values = [];
   _civicrm_api3_object_to_array($sicknessRequest, $values[$sicknessRequest->id]);
@@ -123,9 +120,7 @@ function civicrm_api3_sickness_request_delete($params) {
   civicrm_api3_verify_mandatory($params, NULL, ['id']);
   _civicrm_api3_check_edit_permissions($bao, ['id' => $params['id']]);
 
-  $leaveBalanceChangeService = new CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange();
-  $leaveRequestService = CRM_HRLeaveAndAbsences_Factory_LeaveRequestService::create();
-  $service = new CRM_HRLeaveAndAbsences_Service_SicknessRequest($leaveBalanceChangeService, $leaveRequestService);
+  $service = CRM_HRLeaveAndAbsences_Factory_SicknessRequestService::create();
   $service->delete($params['id']);
 
   return civicrm_api3_create_success(true);

@@ -22,6 +22,9 @@ class SicknessRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_SicknessRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
+
+  private $leaveContact;
 
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
@@ -29,6 +32,10 @@ class SicknessRequestTest extends BaseHeadlessTest {
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
     $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
     $this->sicknessRequestReasons = $this->getSicknessRequestReasons();
+
+    $this->leaveContact = 1;
+    $this->registerCurrentLoggedInContactInSession($this->leaveContact);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
   }
 
   public function testSicknessRequestIsValidReturnsErrorWhenReasonIsEmpty() {
@@ -238,8 +245,6 @@ class SicknessRequestTest extends BaseHeadlessTest {
   }
 
   public function testCreateAlsoCreatesTheBalanceChangesForTheSicknessRequests() {
-    $contact = ContactFabricator::fabricate();
-
     $startDate = new DateTime();
     $endDate = new DateTime('+5 days');
 
@@ -249,7 +254,7 @@ class SicknessRequestTest extends BaseHeadlessTest {
     ]);
 
     HRJobContractFabricator::fabricate(
-      ['contact_id' => $contact['id']],
+      ['contact_id' => $this->leaveContact],
       ['period_start_date' => $startDate->format('Y-m-d')]
     );
 
@@ -258,7 +263,7 @@ class SicknessRequestTest extends BaseHeadlessTest {
     ]);
 
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
-      'contact_id' => $contact['id'],
+      'contact_id' => $this->leaveContact,
       'period_id' => $period->id,
       'type_id' => $absenceType->id
     ]);
@@ -270,13 +275,13 @@ class SicknessRequestTest extends BaseHeadlessTest {
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason'));
 
     $result = civicrm_api3('SicknessRequest', 'create', [
-      'contact_id' => $contact['id'],
+      'contact_id' => $this->leaveContact,
       'type_id' => $absenceType->id,
       'from_date' => $startDate->format('Y-m-d'),
       'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
       'to_date' => $endDate->format('Y-m-d'),
       'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
-      'status_id' => 1,
+      'status_id' => 3,
       'reason' => $sicknessReasons['Accident'],
       'sequential' => 1,
     ]);
@@ -325,13 +330,11 @@ class SicknessRequestTest extends BaseHeadlessTest {
   }
 
   public function testCreateResponseAlsoIncludeTheLeaveRequestFields() {
-    $contact = ContactFabricator::fabricate();
-
     $startDate = new DateTime('next monday');
     $endDate = new DateTime('+10 days');
 
     HRJobContractFabricator::fabricate(
-      ['contact_id' => $contact['id']],
+      ['contact_id' => $this->leaveContact],
       ['period_start_date' => $startDate->format('Y-m-d')]
     );
 
@@ -345,7 +348,7 @@ class SicknessRequestTest extends BaseHeadlessTest {
     ]);
 
     $leavePeriodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
-      'contact_id' => $contact['id'],
+      'contact_id' => $this->leaveContact,
       'period_id' => $period->id,
       'type_id' => $type->id,
     ]);
@@ -353,9 +356,9 @@ class SicknessRequestTest extends BaseHeadlessTest {
     $this->createLeaveBalanceChange($leavePeriodEntitlement->id, 10);
 
     $result = civicrm_api3('SicknessRequest', 'create', [
-      'contact_id' => $contact['id'],
+      'contact_id' => $this->leaveContact,
       'type_id' => $type->id,
-      'status_id' => $this->leaveRequestStatuses['Approved']['value'],
+      'status_id' => $this->leaveRequestStatuses['Waiting Approval']['value'],
       'from_date' => $startDate->format('Y-m-d'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => $startDate->format('Y-m-d'),
@@ -365,9 +368,9 @@ class SicknessRequestTest extends BaseHeadlessTest {
     ]);
 
     $expectedValues = [
-      'contact_id' => $contact['id'],
+      'contact_id' => $this->leaveContact,
       'type_id' => $type->id,
-      'status_id' => $this->leaveRequestStatuses['Approved']['value'],
+      'status_id' => $this->leaveRequestStatuses['Waiting Approval']['value'],
       'from_date' => $startDate->format('Y-m-d'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => $startDate->format('Y-m-d'),
