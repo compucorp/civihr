@@ -354,7 +354,7 @@ function _hrleaveandabsences_create_administer_menu() {
   $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
   $maxWeightOfAdminMenuItems = _hrleaveandabsences_get_max_child_weight_for_menu($administerMenuId);
 
-  $params = array(
+  $params = [
     'label'      => ts('Leave and Absences'),
     'name'       => 'leave_and_absences',
     'url'        => null,
@@ -363,7 +363,7 @@ function _hrleaveandabsences_create_administer_menu() {
     'parent_id'  => $administerMenuId,
     'weight'     => $maxWeightOfAdminMenuItems + 1,
     'permission' => 'administer leave and absences'
-  );
+  ];
 
   $leaveAndAbsencesAdminNavigation = _hrleaveandabsences_add_navigation_menu($params);
 
@@ -425,9 +425,9 @@ function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminN
  */
 function _hrleaveandabsences_get_max_child_weight_for_menu($menu_id) {
   $query = "SELECT MAX(weight) AS max FROM civicrm_navigation WHERE parent_id = %1";
-  $params = array(
-    1 => array($menu_id, 'Integer')
-  );
+  $params = [
+    1 => [$menu_id, 'Integer']
+  ];
   $dao = CRM_Core_DAO::executeQuery($query, $params);
   $dao->fetch();
   if($dao->max) {
@@ -443,7 +443,7 @@ function _hrleaveandabsences_get_max_child_weight_for_menu($menu_id) {
 function _hrleavesandabsences_create_main_menu() {
   $vacanciesWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'weight', 'name');
 
-  $params = array(
+  $params = [
     'label'      => ts('Leave and Absences'),
     'name'       => 'leave_and_absences',
     'url'        => 'civicrm/leaveandabsences/dashboard',
@@ -451,7 +451,7 @@ function _hrleavesandabsences_create_main_menu() {
     'weight'     => $vacanciesWeight + 1,
     'is_active'  => 1,
     'permission' => 'access leave and absences'
-  );
+  ];
 
   _hrleaveandabsences_add_navigation_menu($params);
 }
