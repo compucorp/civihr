@@ -543,7 +543,11 @@ $control-height: 30px;
     }
 
     .select2-results {
-      margin-right: 0;
+      margin: 4px;
+      padding: 5px;
+      background: $select2-inner-background;
+      border: 1px solid $crm-darker-grayblue;
+      color: $gray-darker;
 
       .select2-result-label {
         padding: 5px 10px;
@@ -552,6 +556,18 @@ $control-height: 30px;
 
       .select2-highlighted {
         background: $gray-lighter;
+      }
+
+      .select2-no-results {
+        padding: 0;
+        margin: 0;
+        background: none;
+      }
+
+      select {
+        height: 30px;
+        background: $crm-white;
+        border: 1px solid $crm-darker-grayblue;
       }
     }
   }
