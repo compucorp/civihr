@@ -50,6 +50,7 @@ function hrleaveandabsences_civicrm_xmlMenu(&$files) {
 function hrleaveandabsences_civicrm_install() {
   _hrleavesandabsences_create_main_menu();
   _hrleaveandabsences_create_administer_menu();
+  _hrleaveandabsences_create_has_leave_approved_by_relationship_type();
 
   _hrleaveandabsences_civix_civicrm_install();
 }
@@ -61,6 +62,8 @@ function hrleaveandabsences_civicrm_install() {
  */
 function hrleaveandabsences_civicrm_uninstall() {
   _hrleaveandabsences_delete_extension_menus();
+  _hrleaveandabsences_delete_has_leave_approved_by_relationship_type();
+
   _hrleaveandabsences_civix_civicrm_uninstall();
 }
 
@@ -71,6 +74,8 @@ function hrleaveandabsences_civicrm_uninstall() {
  */
 function hrleaveandabsences_civicrm_enable() {
   _hrleaveandabsences_update_extension_is_active_flag(true);
+  _hrleaveandabsences_update_has_leave_approved_by_relationship_type_is_active_flag(true);
+
   _hrleaveandabsences_civix_civicrm_enable();
 }
 
@@ -81,6 +86,8 @@ function hrleaveandabsences_civicrm_enable() {
  */
 function hrleaveandabsences_civicrm_disable() {
   _hrleaveandabsences_update_extension_is_active_flag(false);
+  _hrleaveandabsences_update_has_leave_approved_by_relationship_type_is_active_flag(false);
+
   _hrleaveandabsences_civix_civicrm_disable();
 }
 
@@ -518,4 +525,73 @@ function _hrleaveandabsences_civicrm_post_absencetype($op, $objectId, &$objectRe
       $absenceTypeService->postUpdateActions($objectRef);
     } catch (Exception $e) {}
   }
+}
+
+/**
+ * Creates the "Has Leave Approved By" relationship type, if it doesn't exist
+ * yet.
+ */
+function _hrleaveandabsences_create_has_leave_approved_by_relationship_type() {
+  $relationshipType = _hrleaveandabsences_get_has_leave_approved_by_relationship_type();
+
+  if(NULL === $relationshipType) {
+    civicrm_api3('RelationshipType', 'create', [
+      'sequential'     => 1,
+      'description'    => 'Has Leave Approved By',
+      'name_a_b'       => 'has Leave Approved by',
+      'name_b_a'       => 'is Leave Approver of',
+      'contact_type_a' => 'Individual',
+      'contact_type_b' => 'Individual',
+    ]);
+  }
+}
+
+/**
+ * Deletes the "Has Leave Approved By" relationship type, if it exists
+ */
+function _hrleaveandabsences_delete_has_leave_approved_by_relationship_type() {
+  $relationshipType = _hrleaveandabsences_get_has_leave_approved_by_relationship_type();
+
+  if (NULL !== $relationshipType) {
+    civicrm_api3('RelationshipType', 'delete', [
+      'sequential' => 1,
+      'id' => $relationshipType['id']
+    ]);
+  }
+}
+
+/**
+ * Enable or disable the "Has Leave Approved By" relationship type, according to
+ * the value of the $active param.
+ *
+ * @param bool $active
+ */
+function _hrleaveandabsences_update_has_leave_approved_by_relationship_type_is_active_flag($active = true) {
+  $relationshipType = _hrleaveandabsences_get_has_leave_approved_by_relationship_type();
+
+  if ($relationshipType) {
+    civicrm_api3('RelationshipType', 'create', [
+      'id' => $relationshipType['id'],
+      'is_active' => $active
+    ]);
+  }
+}
+
+/**
+ * Returns the data for the "Has Leave Approved" relationship type. If it doesn't
+ * exist, returns null.
+ *
+ * @return mixed|null
+ */
+function _hrleaveandabsences_get_has_leave_approved_by_relationship_type() {
+  $result = civicrm_api3('RelationshipType', 'get', [
+    'sequential' => 1,
+    'name_a_b' => 'has Leave Approved by',
+  ]);
+
+  if (!empty($result['values'])) {
+    return $result['values'][0];
+  }
+
+  return NULL;
 }
