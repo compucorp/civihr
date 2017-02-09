@@ -41,7 +41,7 @@ define([
       vm.period = {};
       vm.statusLabel = '';
       vm.sickness = directiveOptions.sickness;
-      vm.overtime = directiveOptions.overtime;
+      vm.toil = directiveOptions.toil;
       vm.balance = {
         closing: 0,
         opening: 0,
@@ -108,25 +108,8 @@ define([
           },
         }
       };
-
-      /**
-       * Get current date
-       */
       // temporary, for PCHR-1384
-      vm.currentDate = function () {
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
-        var yyyy = today.getFullYear();
-        if(dd<10) {
-          dd='0'+dd
-        }
-        if(mm<10) {
-          mm='0'+mm
-        }
-        today = mm+'/'+dd+'/'+yyyy;
-        return today;
-      };
+      vm.currentDate = '09/02/2017';
 
       /**
        * Change handler for change request type like multiple or single. It will
