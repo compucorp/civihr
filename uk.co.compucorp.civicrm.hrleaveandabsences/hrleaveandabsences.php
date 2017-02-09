@@ -333,6 +333,16 @@ function hrleaveandabsences_civicrm_container(\Symfony\Component\DependencyInjec
   $container->setDefinition('hrleaveandabsences.settings_manager', $settingsManagerDefinition);
 }
 
+/**
+ * Implementation of the hook_civicrm_postInstall.
+ *
+ * Basically, it finishes the extension installation by setting things that are
+ * not available during the installation phase.
+ */
+function hrleaveandabsences_civicrm_postInstall() {
+  _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_type();
+}
+
 //----------------------------------------------------------------------------//
 //                               Helper Functions                             //
 //----------------------------------------------------------------------------//
@@ -528,8 +538,7 @@ function _hrleaveandabsences_civicrm_post_absencetype($op, $objectId, &$objectRe
 }
 
 /**
- * Creates the "Has Leave Approved By" relationship type, if it doesn't exist
- * yet.
+ * Creates the "Has Leave Approved By" relationship type, if it doesn't exist yet.
  */
 function _hrleaveandabsences_create_has_leave_approved_by_relationship_type() {
   $relationshipType = _hrleaveandabsences_get_has_leave_approved_by_relationship_type();
@@ -555,7 +564,7 @@ function _hrleaveandabsences_delete_has_leave_approved_by_relationship_type() {
   if (NULL !== $relationshipType) {
     civicrm_api3('RelationshipType', 'delete', [
       'sequential' => 1,
-      'id' => $relationshipType['id']
+      'id' => $relationshipType['id'],
     ]);
   }
 }
@@ -572,13 +581,19 @@ function _hrleaveandabsences_update_has_leave_approved_by_relationship_type_is_a
   if ($relationshipType) {
     civicrm_api3('RelationshipType', 'create', [
       'id' => $relationshipType['id'],
-      'is_active' => $active
+      'is_active' => $active,
+      // we need to pass both name_a_b and name_b_a
+      // to avoid some notices thrown by the poor code in
+      // the civicrm Relationship Type API, which tries to
+      // access them without checking first if they exist
+      'name_a_b' => $relationshipType['name_a_b'],
+      'name_b_a' => $relationshipType['name_b_a']
     ]);
   }
 }
 
 /**
- * Returns the data for the "Has Leave Approved" relationship type. If it doesn't
+ * Returns the data for the "Has Leave Approved By" relationship type. If it doesn't
  * exist, returns null.
  *
  * @return mixed|null
@@ -594,4 +609,20 @@ function _hrleaveandabsences_get_has_leave_approved_by_relationship_type() {
   }
 
   return NULL;
+}
+
+/**
+ * Sets the "Has Leave Approved By" relationship type as the default Leave Approver
+ * relationship type one on the General Settings.
+ */
+function _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_type() {
+  $settingsManager  = CRM_HRLeaveAndAbsences_Factory_SettingsManager::create();
+  $relationshipType = _hrleaveandabsences_get_has_leave_approved_by_relationship_type();
+
+  if ($relationshipType) {
+    $settingsManager->set(
+      'relationship_types_allowed_to_approve_leave',
+      [$relationshipType['id']]
+    );
+  }
 }

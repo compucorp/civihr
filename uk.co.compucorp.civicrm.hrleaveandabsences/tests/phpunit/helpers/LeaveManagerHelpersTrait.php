@@ -19,7 +19,7 @@ trait CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait {
 
   public function setContactAsLeaveApproverOf($leaveApprover, $contact, $startDate = null, $endDate = null, $isActive = true, $relationshipType = null) {
     if(!$relationshipType) {
-      $relationshipType = 'has Leave Approved By';
+      $relationshipType = 'leave approver is';
     }
 
     $relationshipType = $this->getRelationshipType($relationshipType);
