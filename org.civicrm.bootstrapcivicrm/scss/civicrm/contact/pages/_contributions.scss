@@ -1,0 +1,169 @@
+.CRM_Contribute_Form_Search {
+  table {
+    background: transparent;
+    border: none;
+    font-family: $font-family-base;
+
+    thead {
+      th {
+        border-bottom: none;
+        background: $crm-background !important;
+        color: $gray-darker !important;
+        vertical-align: middle;
+        border: none;
+        padding: 10px;
+        line-height: 1.1em;
+
+        div {
+          padding: 0;
+        }
+      }
+    }
+
+
+    tbody {
+      tr {
+        background: $crm-white;
+        border-bottom: 1px solid $crm-background;
+
+        td {
+          background: $crm-white;
+          color: $gray-dark;
+          border: none;
+          padding: 10px 30px;
+          line-height: 1.1em;
+        }
+
+        th {
+          border-bottom: none;
+          background: $crm-background !important;
+          color: $gray-darker !important;
+          vertical-align: middle;
+          border: none;
+          padding: 10px;
+          line-height: 1.1em;
+
+          div {
+            padding: 0;
+          }
+        }
+      }
+    }
+  }
+
+  p {
+    margin: 0;
+
+    &.description {
+      padding: 20px 5px !important;
+      display: block;
+    }
+  }
+}
+
+
+.CRM_Contribute_Form_Contribution {
+  td {
+    border-bottom: 0 !important;
+
+    &.label {
+      line-height: 1.5em;
+    }
+  }
+
+  .crm-contribution-form-block-soft_credit_to,
+  .crm-contribution-pcp-block {
+    border-bottom: 0 !important;
+  }
+
+  .crm-link-credit-card-mode {
+    a {
+      padding: 20px 30px;
+    }
+  }
+
+  #recurringPaymentBlock {
+    .description {
+      display: block;
+      line-height: 1.5em;
+    }
+  }
+
+  legend {
+    padding: 10px 30px;
+  }
+
+  textarea {
+    vertical-align: middle;
+    padding: 0px 5px;
+  }
+
+  .select2-container {
+    max-width: 230px;
+  }
+
+  #from_email_address {
+    padding-right: 30px !important;
+  }
+
+  div {
+    &.description {
+      display: block;
+      line-height: 1.5em;
+      padding-bottom: 10px;
+    }
+  }
+
+  .credit_card_info-section,
+  .billing_name_address-section {
+    .label {
+      label {
+        display: inline-block;
+        width: 105px;
+        text-align: left;
+      }
+    }
+
+    .billing_middle_name-section {
+      label {
+        width: 120px;
+      }
+    }
+
+    .cvv2-section {
+      input,
+      .cvv2-icon {
+        float: left;
+      }
+    }
+  }
+
+  #id-additionalDetail {
+    input {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  .crm-inline-error {
+    padding: 5px;
+    position: relative;
+    border-radius: 4px;
+    background: $brand-danger;
+    color: $crm-white;
+    display: block;
+    margin-top: 2px;
+    max-width: 220px;
+    padding: 0 5px;
+  }
+
+  label {
+    &.crm-error {
+      background: $brand-danger;
+      color: $crm-white;
+      border-radius: 4px;
+      -moz-border-radius: 4px;
+      -webkit-border-radius: 4px;
+      padding: 0 5px;
+    }
+  }
+}
