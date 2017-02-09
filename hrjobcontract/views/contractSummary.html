@@ -85,7 +85,7 @@
                     <div class="col-sm-6">
                         <p class="form-control-static">
                                     <span ng-if="health.plan_type || health.provider" class="subfield">
-                                        <span ng-if="health.plan_type">{{health.plan_type}} </span>
+                                        <span ng-if="health.plan_type">{{health.healthplan_type_label}} </span>
                                         <span ng-if="health.provider">(with <span hrjc-contact="health.provider" hrjc-contact-link="true"></span>)</span>
                                     </span>
                             <span ng-if="health.description" class="subfield"><strong>Description:</strong> {{health.description}}</span>
@@ -103,7 +103,7 @@
                     <div class="col-sm-6">
                         <p class="form-control-static">
                                     <span ng-if="health.plan_type_life_insurance || health.provider_life_insurance" class="subfield">
-                                        <span ng-if="health.plan_type_life_insurance">{{health.plan_type_life_insurance}} </span>
+                                        <span ng-if="health.plan_type_life_insurance">{{health.lifeplan_type_label}} </span>
                                         <span ng-if="health.provider_life_insurance">(with <span hrjc-contact="health.provider_life_insurance" hrjc-contact-link="true"></span>)</span>
                                     </span>
                             <span ng-if="health.plan_type_life_insurance" class="subfield">{{health.plan_type_life_insurance}}</span>

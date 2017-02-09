@@ -542,6 +542,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1016();
     $this->upgrade_1017();
     $this->upgrade_1020();
+    $this->upgrade_1025();
   }
 
   function upgrade_1001() {
@@ -1028,17 +1029,16 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * @return boolean TRUE
    */
   public function upgrade_1025() {
-    $this->installInsurancePlanTypes();
+    $this->createInsurancePlanTypes();
     return TRUE;
   }
 
   /**
    * Creates Option Group for Insurance Plan Types.
    */
-  public function installInsurancePlanTypes() {
+  public function createInsurancePlanTypes() {
     try {
       civicrm_api3('OptionGroup', 'create', [
-        'sequential' => 1,
         'name' => 'hrjc_insurance_plantype',
         'title' => 'Insurance Plan Type',
         'is_active' => 1
@@ -1051,7 +1051,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
       foreach ($planTypes as $type) {
         civicrm_api3('OptionValue', 'create', [
-          'sequential' => 1,
           'option_group_id' => 'hrjc_insurance_plantype',
           'label' => $type,
           'value' => $type,

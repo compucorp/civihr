@@ -37,39 +37,46 @@
  */
 class CRM_Hrjobcontract_SelectValues {
 
-  /**CRM/HRJob/SelectValues.php
-   * different types of plan
-   * @static
+  /**
+   * Array of insurance plan types.
+   * @var array 
    */
-  static function &planType() {
-    static $types = NULL;
+  private static $_insurancePlanTypes = NULL;
+  
+  /**
+   * Obtains the different types of insurance plans configured in option values.
+   * 
+   * @return array
+   *   Array of insurance plan types found, of the form [type.value => type.label]
+   */
+  static function planType() {
 
-    if (!$types) {
+    if (!self::$_insurancePlanTypes) {
       $result = civicrm_api3('OptionValue', 'get', [
         'sequential' => 1,
         'option_group_id' => "hrjc_insurance_plantype",
+        'options' => ['limit' => 0]
       ]);
 
-      foreach ($result['values'] as $planType) {
-        $types[$planType['value']] = ts($planType['label']);
+      if (!empty($result['values'])) {
+        foreach ($result['values'] as $planType) {
+          self::$_insurancePlanTypes[$planType['value']] = ts($planType['label']);
+        }
       }
     }
 
-    return $types;
+    return self::$_insurancePlanTypes;
   }
 
-  /** different types of life insurance plan
-   * @static
+  /**
+   * Obtains the different types of life insurance plans configured in option 
+   * values.
+   * 
+   * @return array
+   *   Array of insurance plan types found, of the form [type.value => type.label]
    */
-  static function &planTypeLifeInsurance() {
-    static $planTypeLifeInsurance = NULL;
-    if (!$planTypeLifeInsurance) {
-      $planTypeLifeInsurance = array(
-        'Family' => ts('Family'),
-        'Individual' => ts('Individual'),
-      );
-    }
-    return $planTypeLifeInsurance;
+  static function planTypeLifeInsurance() {
+    return self::planType();
   }
 
   /** different types of units of pay
