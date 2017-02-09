@@ -250,7 +250,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
   }
 
   public function leaveRequestStatusesDataProvider() {
-    $leaveRequestStatuses =  $this->leaveRequestStatuses;
+    $leaveRequestStatuses =  $this->getLeaveRequestStatuses();
 
     return [
       [$leaveRequestStatuses['More Information Requested']['id']],
