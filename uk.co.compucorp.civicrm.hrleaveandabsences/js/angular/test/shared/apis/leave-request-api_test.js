@@ -1,13 +1,14 @@
 define([
   'mocks/data/leave-request-data',
   'mocks/data/sickness-leave-request-data',
+  'mocks/data/toil-leave-request-data',
   'common/moment',
   'mocks/helpers/helper',
   'mocks/data/absence-type-data',
   'mocks/data/option-group-mock-data',
   'leave-absences/shared/apis/leave-request-api',
   'leave-absences/shared/modules/shared-settings',
-], function (mockData, sicknessMockData, moment, helper, absenceTypeData, optionGroupMock) {
+], function (mockData, sicknessMockData, toilMockData, moment, helper, absenceTypeData, optionGroupMock) {
   'use strict';
 
   describe('LeaveRequestAPI', function () {
@@ -33,6 +34,10 @@ define([
       $httpBackend.whenGET(/action\=getFull&entity\=SicknessRequest/)
         .respond(sicknessMockData.all());
 
+      //Intercept backend calls for TOILRequest.all
+      $httpBackend.whenGET(/action\=getFull&entity\=TOILRequest/)
+        .respond(toilMockData.all());
+
       //Intercept backend calls for LeaveRequest.balanceChangeByAbsenceType
       $httpBackend.whenGET(/action\=getbalancechangebyabsencetype&entity\=LeaveRequest/)
         .respond(mockData.balanceChangeByAbsenceType());
@@ -57,6 +62,12 @@ define([
             return [201, sicknessMockData.all()];
           }
           else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'isValid')) {
+            return [200, mockData.getisValid()];
+          }
+          else if (helper.isEntityActionInPost(data, 'TOILRequest', 'create')) {
+            return [201, toilMockData.all()];
+          }
+          else if (helper.isEntityActionInPost(data, 'TOILRequest', 'isValid')) {
             return [200, mockData.getisValid()];
           }
         });
@@ -98,6 +109,23 @@ define([
       it('calls the getAll() method', function () {
         expect(LeaveRequestAPI.getAll).toHaveBeenCalled();
         expect(LeaveRequestAPI.getAll.calls.mostRecent().args[0]).toBe('SicknessRequest');
+        expect(LeaveRequestAPI.getAll.calls.mostRecent().args[5]).toBe('getFull');
+      });
+    });
+
+    describe('all() toil request', function() {
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'getAll').and.callThrough();
+        promise = LeaveRequestAPI.all(null, null, null, {}, false, 'toil');
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls the getAll() method', function () {
+        expect(LeaveRequestAPI.getAll).toHaveBeenCalled();
+        expect(LeaveRequestAPI.getAll.calls.mostRecent().args[0]).toBe('TOILRequest');
         expect(LeaveRequestAPI.getAll.calls.mostRecent().args[5]).toBe('getFull');
       });
     });
@@ -269,10 +297,8 @@ define([
       });
 
       it('call endpoint', function () {
-        promise.then(function (result) {
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
-            jasmine.any(String), jasmine.any(Object));
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest', 'create', requestData);
         });
       });
 
@@ -353,10 +379,34 @@ define([
       });
 
       it('call endpoint', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith( 'SicknessRequest',
+            'create', requestData);
+        });
+      });
+
+      it('sets leave request', function () {
         promise.then(function (result) {
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
-            jasmine.any(String), jasmine.any(Object));
+          expect(result.leave_request_id).toEqual(jasmine.any(String));
+        });
+      });
+    });
+
+    describe('create() for toil request', function() {
+      beforeEach(function () {
+        requestData = helper.createRandomSicknessRequest();
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+        promise = LeaveRequestAPI.create(requestData, 'toil');
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('call endpoint', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith( 'TOILRequest',
+            'create', requestData);
         });
       });
 
@@ -380,10 +430,8 @@ define([
         });
 
         it('calls endpoint', function () {
-          promise.then(function (result) {
-            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
-            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
-              jasmine.any(String), jasmine.any(Object));
+          promise.then(function () {
+            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest', 'isValid', requestData);
           });
         });
 
@@ -430,10 +478,56 @@ define([
         });
 
         it('calls endpoint', function () {
+          promise.then(function () {
+            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('SicknessRequest', 'isValid', requestData);
+          });
+        });
+
+        it('returns no errors', function () {
           promise.then(function (result) {
-            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
-            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
-              jasmine.any(String), jasmine.any(Object));
+            expect(result).toEqual([]);
+          });
+        });
+      });
+
+      describe('when called with invalid data', function () {
+        beforeEach(function () {
+          requestData = helper.createRandomSicknessRequest();
+          spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
+            return $q(function (resolve, reject) {
+              reject(mockData.getNotIsValid());
+            });
+          });
+          promise = LeaveRequestAPI.isValid(requestData);
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        it('returns validation errors', function () {
+          promise.catch(function (result) {
+            expect(result.count).toEqual(1);
+          });
+        });
+      });
+    });
+
+    describe('isValid() for toil request', function () {
+      describe('when called with valid data', function () {
+        beforeEach(function () {
+          requestData = helper.createRandomSicknessRequest();
+          spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+          promise = LeaveRequestAPI.isValid(requestData, 'toil');
+        });
+
+        afterEach(function () {
+          $httpBackend.flush();
+        });
+
+        it('calls endpoint', function () {
+          promise.then(function () {
+            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('TOILRequest', 'isValid', requestData);
           });
         });
 
@@ -475,7 +569,7 @@ define([
           status_id: mockData.all().values[5].status_id
         };
         requestData = mockData.all().values[0];
-        _.assign(updatedRequestData, requestData, changedStatusId);
+        requestData = _.assign(updatedRequestData, requestData, changedStatusId);
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
         promise = LeaveRequestAPI.update(updatedRequestData);
       });
@@ -485,10 +579,8 @@ define([
       });
 
       it('calls endpoint', function () {
-        promise.then(function (result) {
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
-            jasmine.any(String), jasmine.any(Object));
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest', 'create', requestData);
         });
       });
 
@@ -527,7 +619,7 @@ define([
           status_id: mockData.all().values[5].status_id
         };
         requestData = mockData.all().values[0];
-        _.assign(updatedRequestData, requestData, changedStatusId);
+        requestData = _.assign(updatedRequestData, requestData, changedStatusId);
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
         promise = LeaveRequestAPI.update(updatedRequestData, 'sick');
       });
@@ -537,10 +629,58 @@ define([
       });
 
       it('calls endpoint', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('SicknessRequest', 'create', requestData);
+        });
+      });
+
+      it('returns updated leave request', function () {
         promise.then(function (result) {
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
-            jasmine.any(String), jasmine.any(Object));
+          expect(result.id).toBeDefined();
+        });
+      });
+
+      describe('when does not contain id set', function () {
+        beforeEach(function () {
+          errorMessage = 'id is mandatory field';
+          //remove id
+          delete updatedRequestData.id;
+          promise = LeaveRequestAPI.update(updatedRequestData, 'sick');
+        });
+
+        afterEach(function () {
+          //resolves to local promise hence no need to flush http call
+          $rootScope.$apply();
+        });
+
+        it('returns error', function () {
+          promise.catch(function (result) {
+            expect(result).toBe(errorMessage);
+          });
+        });
+      });
+    });
+
+    describe('update() for toil request', function () {
+      var updatedRequestData = {};
+
+      beforeEach(function () {
+        var changedStatusId = {
+          status_id: mockData.all().values[5].status_id
+        };
+        requestData = mockData.all().values[0];
+        requestData = _.assign(updatedRequestData, requestData, changedStatusId);
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+        promise = LeaveRequestAPI.update(updatedRequestData, 'toil');
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls endpoint', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('TOILRequest', 'create', requestData);
         });
       });
 
