@@ -12,7 +12,8 @@ define([
         scope: {
           contactId: '<',
           leaveRequest: '<',
-          sickness: '<'
+          sickness: '<',
+          toil: '<'
         },
         restrict: 'EA',
         link: function (scope, element) {
@@ -28,7 +29,8 @@ define([
                   return {
                     contactId: scope.contactId,
                     leaveRequest: scope.leaveRequest,
-                    sickness: scope.sickness
+                    sickness: scope.sickness,
+                    toil: scope.toil
                   };
                 },
                 //to set HR_settings DateFormat

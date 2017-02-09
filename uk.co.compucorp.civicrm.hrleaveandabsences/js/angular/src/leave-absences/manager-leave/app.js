@@ -28,8 +28,10 @@ define([
     'leave-absences.directives',
     'leave-absences.models',
   ])
-  .run(['$log', function ($log) {
+  .run(['$log', '$rootScope', 'shared-settings', function ($log, $rootScope, sharedSettings) {
     $log.debug('app.run');
+
+    $rootScope.pathTpl = sharedSettings.pathTpl;
   }]);
 
   return angular;

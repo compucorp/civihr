@@ -3,7 +3,11 @@
     <span aria-hidden="true">&times;</span>
     <span class="sr-only">Close</span>
   </button>
-  <h4 class="modal-title">Leave Request</h4>
+  <h4 class="modal-title">
+    <span ng-show="!$ctrl.sickness && !$ctrl.toil">Leave Request</span>
+    <span ng-show="$ctrl.sickness">Sick Absence</span>
+    <span ng-show="$ctrl.toil">Accure TOIL for additional work</span>
+  </h4>
 </div>
 <crm-loading show="!$ctrl.loading.absenceTypes">
   <div
@@ -29,121 +33,8 @@
       <div class="col-xs-12">
         <uib-tabset class="chr_leave-request-modal__tab">
           <uib-tab heading="Details">
-            <div class="row">
-              <div class="col-xs-12 form-horizontal">
-                <div class="form-group">
-                  <label class="col-xs-4 control-label">No. of Days</label>
-                  <div class="col-xs-8">
-                    <div class="btn-group btn-group-justified">
-                      <label
-                        ng-disabled="$ctrl.isMode('view')"
-                        class="btn active"
-                        ng-model="$ctrl.uiOptions.multipleDays"
-                        uib-btn-radio="true"
-                        ng-change="$ctrl.changeInNoOfDays()">Multiple Days</label>
-                      <label
-                        ng-disabled="$ctrl.isMode('view')"
-                        class="btn"
-                        ng-model="$ctrl.uiOptions.multipleDays"
-                        uib-btn-radio="false"
-                        ng-change="$ctrl.changeInNoOfDays()">Single Day</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xs-12 form-horizontal">
-                <div class="form-group">
-                  <label class="col-xs-4 control-label">From Date<i class="fa fa-asterisk"></i>
-                  </label>
-                  <div class="col-xs-4">
-                    <div class="input-group">
-                      <input
-                        type="text"
-                        class="form-control"
-                        uib-datepicker-popup
-                        show-button-bar="false"
-                        datepicker-options="$ctrl.uiOptions.date.from.options"
-                        ng-model="$ctrl.uiOptions.fromDate"
-                        is-open="$ctrl.uiOptions.date.from.show"
-                        ng-disabled="$ctrl.isMode('view')"
-                        ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from')"/>
-                      <span class="input-group-btn">
-                        <button
-                          ng-disabled="$ctrl.isMode('view')"
-                          type="button"
-                          class="btn btn-default fa fa-calendar"
-                          ng-click="$ctrl.uiOptions.date.from.show = true"></button>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="col-xs-4">
-                    <crm-loading
-                      show="!$ctrl.loading.fromDayTypes"
-                      class="chr_leave-request-modal__small_spinner">
-                      <div class="chr_custom-select chr_custom-select--full">
-                        <select
-                          name="fromDayTypeSelect"
-                          ng-disabled="$ctrl.isMode('view') || $ctrl.leaveRequestFromDayTypes.length === 1"
-                          ng-options="dayType.name as dayType.label for dayType in $ctrl.leaveRequestFromDayTypes"
-                          ng-model="$ctrl.leaveRequest.from_date_type"
-                          ng-change="$ctrl.calculateBalanceChange()">
-                          <option ng-disabled="$ctrl.isMode('view')" value="">Select</option>
-                          dayType{{dayType}}
-                        </select>
-                      </crm-loading>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row" ng-show="$ctrl.uiOptions.multipleDays">
-              <div class="col-xs-12 form-horizontal">
-                <div class="form-group">
-                  <label class="col-xs-4 control-label">To Date<i class="fa fa-asterisk"></i>
-                  </label>
-                  <div class="col-xs-4">
-                    <div class="input-group">
-                      <input
-                        type="text"
-                        class="form-control"
-                        uib-datepicker-popup
-                        datepicker-options="$ctrl.uiOptions.date.to.options"
-                        show-button-bar="false"
-                        ng-model="$ctrl.uiOptions.toDate"
-                        is-open="$ctrl.uiOptions.date.to.show"
-                        ng-disabled="$ctrl.isMode('view') || !$ctrl.leaveRequest.from_date"
-                        ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to')"/>
-                      <span class="input-group-btn">
-                        <button
-                          type="button"
-                          class="btn btn-default fa fa-calendar"
-                          ng-disabled="$ctrl.isMode('view') || !$ctrl.leaveRequest.from_date"
-                          ng-click="$ctrl.uiOptions.date.to.show = $ctrl.leaveRequest.from_date ? true : false"></button>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="col-xs-4">
-                    <crm-loading
-                      show="!$ctrl.loading.toDayTypes"
-                      class="chr_leave-request-modal__small_spinner">
-                      <div class="chr_custom-select chr_custom-select--full">
-                        <select
-                          name="toDayTypeSelect"
-                          ng-disabled="$ctrl.isMode('view') || $ctrl.leaveRequestToDayTypes.length === 1 || !$ctrl.leaveRequest.from_date"
-                          ng-options="dayType.name as dayType.label for dayType in $ctrl.leaveRequestToDayTypes"
-                          ng-model="$ctrl.leaveRequest.to_date_type"
-                          ng-disabled="$ctrl.isMode('view')"
-                          ng-change="$ctrl.calculateBalanceChange()">
-                          <option value="">Select</option>
-                        </select>
-                      </div>
-                    </crm-loading>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ng-include src="pathTpl + 'request-modal/details/leave.html'"></ng-include>
+            <ng-include ng-show="$ctrl.toil" src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
             <crm-loading show="!$ctrl.loading.calculateBalanceChange">
               <div ng-show="$ctrl.uiOptions.showBalance">
                 <hr/>
@@ -196,44 +87,20 @@
                   </tfoot>
                 </table>
                 <div
-                  class="row chr_leave-request-modal__form-group"
+                  class="row"
                   ng-class="{'text-danger': $ctrl.balance.closing < 0}">
                   <div class="col-xs-4">Closing Balance</div>
                   <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
                 </div>
               </div>
             </crm-loading>
-            <div class="row" ng-show="$ctrl.sickness">
+            <div class="row" ng-show="$ctrl.toil">
               <div class="col-xs-12 form-horizontal">
-              <hr>
-                <div class="form-group">
-                  <label class="col-xs-4 control-label">Reason<i class="fa fa-asterisk"></i></label>
-                  <div class="col-xs-8">
-                    <div class="chr_custom-select chr_custom-select--full">
-                      <select name="reason">
-                        <option value="- select -">- select -</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="col-xs-12">
-                    <div>
-                      <input required type="checkbox" value="certification">
-                      <span>Self certification form required</span>
-                    </div>
-                    <div>
-                      <input required type="checkbox" value="interview">
-                      <span>Back to work interview required</span>
-                    </div>
-                    <div>
-                      <input required type="checkbox" value="work">
-                      <span>Return to work required</span>
-                    </div>
-                  </div>
-                </div>
+                <hr>
+                <div class="expire-date">Expiry Date: <span>{{$ctrl.currentDate}}</div>
               </div>
             </div>
+            <ng-include ng-show="$ctrl.sickness" src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
           </uib-tab>
           <uib-tab heading="Comments"></uib-tab>
           <uib-tab heading="Files"></uib-tab>
