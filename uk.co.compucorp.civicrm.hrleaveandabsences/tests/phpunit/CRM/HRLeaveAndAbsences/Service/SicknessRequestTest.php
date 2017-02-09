@@ -1,6 +1,5 @@
 <?php
 
-use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
@@ -8,7 +7,9 @@ use CRM_HRLeaveAndAbsences_BAO_SicknessRequest as SicknessRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_SicknessRequest as SicknessRequestFabricator;
-use CRM_HRLeaveAndAbsences_Factory_SicknessRequestService as SicknessRequestServiceFactory;
+use CRM_HRLeaveAndAbsences_Service_SicknessRequest as SicknessRequestService;
+use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
+use CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix as LeaveRequestStatusMatrixService;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest
@@ -25,7 +26,12 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
 
   private $leaveContact;
 
+  private $sicknessReasons;
+
   public function setUp() {
+    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+
+    $this->sicknessReasons = array_flip(SicknessRequest::buildOptions('reason', 'validate'));
     $this->leaveBalanceChangeService = new LeaveBalanceChangeService();
     $this->leaveContact = 1;
     $this->registerCurrentLoggedInContactInSession($this->leaveContact);
@@ -42,8 +48,6 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
 
     $service = $this->getSicknessRequestService();
 
-    $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason', 'validate'));
-
     // a 9 days request, from thursday to friday next week
     $sicknessRequest = $service->create([
       'type_id' => 1,
@@ -53,7 +57,7 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-02-19'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-      'reason' => $sicknessReasons['accident']
+      'reason' => $this->sicknessReasons['accident']
     ], false);
 
     $leaveRequest = LeaveRequest::findById($sicknessRequest->leave_request_id);
@@ -79,8 +83,6 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
 
     $service = $this->getSicknessRequestService();
 
-    $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason', 'validate'));
-
     $params = [
       'type_id' => 1,
       'contact_id' => $this->leaveContact,
@@ -89,7 +91,7 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
-      'reason' => $sicknessReasons['accident']
+      'reason' => $this->sicknessReasons['accident']
     ];
 
     // a 7 days leave request, from friday to thursday
@@ -159,7 +161,80 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequestTest extends BaseHeadlessTes
     $this->fail("Expected to not find the LeaveRequest with {$leaveRequest->id}, but it was found");
   }
 
-  private function getSicknessRequestService() {
-    return SicknessRequestServiceFactory::create();
+  public function testCreateDoesNotThrowAnExceptionWhenLeaveManagerUpdatesDatesForSicknessRequest() {
+    $contactID = 5;
+    $params = $this->getDefaultParams(['contact_id' => $contactID]);
+    $sicknessRequest = SicknessRequestFabricator::fabricateWithoutValidation($params);
+
+    $service = $this->getSicknessRequestServiceWhenCurrentUserIsLeaveManager();
+    $params['id'] = $sicknessRequest->id;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-10');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-15');
+    $sicknessRequest  = $service->create($params, false);
+    $this->assertInstanceOf(CRM_HRLeaveAndAbsences_BAO_SicknessRequest::class, $sicknessRequest);
+  }
+
+  public function testCreateDoesNotThrowAnExceptionWhenAdminUpdatesDatesForSicknessRequest() {
+    $contactID = 5;
+    $params = $this->getDefaultParams(['contact_id' => $contactID]);
+    $sicknessRequest = SicknessRequestFabricator::fabricateWithoutValidation($params);
+
+    $service = $this->getSicknessRequestServiceWhenCurrentUserIsAdmin();
+    $params['id'] = $sicknessRequest->id;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-10');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-15');
+    $sicknessRequest  = $service->create($params, false);
+    $this->assertInstanceOf(CRM_HRLeaveAndAbsences_BAO_SicknessRequest::class, $sicknessRequest);
+  }
+
+  /**
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage You are not allowed to change the type of a request
+   */
+  public function testCreateThrowsAnExceptionWhenLeaveApproverUpdatesAbsenceTypeForSicknessRequest() {
+    $contactID = 5;
+    $params = $this->getDefaultParams(['contact_id' => $contactID]);
+    $sicknessRequest = SicknessRequestFabricator::fabricateWithoutValidation($params);
+
+    $service = $this->getSicknessRequestServiceWhenCurrentUserIsLeaveManager();
+    $params['id'] = $sicknessRequest->id;
+    $params['type_id'] = 2;
+    $sicknessRequest  = $service->create($params, false);
+    $this->assertInstanceOf(CRM_HRLeaveAndAbsences_BAO_SicknessRequest::class, $sicknessRequest);
+  }
+
+  private function getSicknessRequestService($isAdmin = false, $isManager = false) {
+    $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
+    $leaveRequestStatusMatrixService = new LeaveRequestStatusMatrixService($leaveManagerService);
+    $leaveRequestRightsService = new LeaveRequestRightsService($leaveManagerService);
+
+    return new SicknessRequestService(
+      $this->leaveBalanceChangeService,
+      $leaveRequestStatusMatrixService,
+      $leaveRequestRightsService
+    );
+  }
+
+  private function getSicknessRequestServiceWhenCurrentUserIsAdmin() {
+    return $this->getSicknessRequestService(true, false);
+  }
+
+  private function getSicknessRequestServiceWhenCurrentUserIsLeaveManager() {
+    return $this->getSicknessRequestService(false, true);
+  }
+
+  private function getDefaultParams($params = []) {
+    $defaultParams = [
+      'type_id' => 1,
+      'contact_id' => $this->leaveContact,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-11'),
+      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2016-01-09'),
+      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'reason' => $this->sicknessReasons['accident']
+    ];
+
+    return array_merge($defaultParams, $params);
   }
 }
