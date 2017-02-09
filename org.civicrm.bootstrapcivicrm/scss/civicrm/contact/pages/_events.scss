@@ -121,7 +121,7 @@
         }
 
         .crm-event-eventfees-form-block-line_items {
-          td {
+          & > td {
             &:nth-child(2) {
               padding-left: 0;
               width: 100%;
@@ -133,6 +133,10 @@
           }
         }
       }
+    }
+
+    table {
+      box-shadow: none;
     }
 
     .label {
@@ -225,28 +229,4 @@
     }
   }
 
-  .crm-inline-error {
-    padding: 5px;
-    position: relative;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    background: $brand-danger;
-    color: $crm-white;
-    display: block;
-    margin-top: 2px;
-    max-width: 220px;
-    padding: 0 5px;
-  }
-
-  label {
-    &.crm-error {
-      background: $brand-danger;
-      color: $crm-white;
-      border-radius: 4px;
-      -moz-border-radius: 4px;
-      -webkit-border-radius: 4px;
-      padding: 0 5px;
-    }
-  }
 }
