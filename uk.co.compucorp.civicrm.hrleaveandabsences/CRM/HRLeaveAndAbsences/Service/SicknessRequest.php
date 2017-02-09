@@ -2,44 +2,47 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_SicknessRequest as SicknessRequest;
-use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
 
-class CRM_HRLeaveAndAbsences_Service_SicknessRequest {
+class CRM_HRLeaveAndAbsences_Service_SicknessRequest extends CRM_HRLeaveAndAbsences_Service_LeaveRequest {
 
   /**
-   * @var \LeaveBalanceChangeService
+   * {@inheritDoc}
    */
-  private $leaveBalanceChangeService;
-
-  /**
-   * @var \LeaveRequestService
-   */
-  private $leaveRequestService;
-
-  public function __construct(
-    LeaveBalanceChangeService $leaveBalanceChangeService,
-    LeaveRequestService $leaveRequestService
-  ) {
-    $this->leaveBalanceChangeService = $leaveBalanceChangeService;
-    $this->leaveRequestService = $leaveRequestService;
+  protected function canChangeDatesFor($params) {
+    return true;
   }
 
   /**
-   * Wraps the SicknessRequest BAO create method in order to perform some more
-   * actions before/after calling it.
+   * This method creates/updates the SicknessRequest along with the
+   * associated LeaveRequest and it's LeaveBalanceChanges
    *
    * @param array $params
-   * @param bool $validate
    *
-   * @return \CRM_HRLeaveAndAbsences_BAO_SicknessRequest
+   * @return \CRM_HRLeaveAndAbsences_BAO_SicknessRequest|NULL
    */
-  public function create($params, $validate = true) {
-    $sicknessRequest = SicknessRequest::create($params, $validate);
+  protected function createLeaveRequestWithBalanceChange($params) {
+    $sicknessRequest = SicknessRequest::create($params, false);
     $leaveRequest = LeaveRequest::findById($sicknessRequest->leave_request_id);
     $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
 
     return $sicknessRequest;
+  }
+
+  /**
+   * Returns the LeaveRequest object associated with the SicknessRequest
+   * in its current state (i.e before it gets updated)
+   *
+   * @param int $sicknessRequestID
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
+   */
+  protected function getOldLeaveRequest($sicknessRequestID) {
+    $sicknessRequest = SicknessRequest::findById($sicknessRequestID);
+    if (!$this->oldLeaveRequest) {
+      $this->oldLeaveRequest = LeaveRequest::findById($sicknessRequest->leave_request_id);
+    }
+    return $this->oldLeaveRequest;
   }
 
   /**
@@ -51,16 +54,7 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequest {
    */
   public function delete($sicknessRequestID) {
     $sicknessRequest = SicknessRequest::findById($sicknessRequestID);
-    try {
-      $transaction = new CRM_Core_Transaction();
-
-      $this->leaveRequestService->delete($sicknessRequest->leave_request_id);
-      $sicknessRequest->delete();
-
-      $transaction->commit();
-    } catch(Exception $e) {
-      $transaction->rollback();
-    }
+    parent::delete($sicknessRequest->leave_request_id);
+    $sicknessRequest->delete();
   }
-
 }
