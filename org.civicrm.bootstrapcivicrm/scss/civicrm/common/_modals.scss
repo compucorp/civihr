@@ -6,6 +6,8 @@
   background: $gray-lighter;
   max-height: 90%;
   overflow-y: auto;
+  padding: 0;
+  box-shadow: none;
 
   .help {
     border-radius: 2px;
@@ -27,10 +29,9 @@
 
   .ui-dialog-titlebar {
     @extend .modal-header, %open-sans-font-family;
-    padding: 20px;
+    padding: 15px 20px;
     background: none !important;
     border: none !important;
-    border-bottom: 1px solid $crm-background !important;
     color: $gray-darker !important;
 
     .ui-dialog-title {
@@ -69,7 +70,7 @@
     padding: 20px;
     margin-top: 0;
     height: auto !important;
-    background: $gray-lighter;
+    background: $crm-white;
 
     a.button:not(.hr-job-info-close) {
       @extend .btn-primary;
@@ -77,6 +78,10 @@
 
     h3 {
       display: none;
+    }
+
+    .crm-block {
+      box-shadow: none;
     }
   }
 
