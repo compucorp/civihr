@@ -4,7 +4,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_SicknessRequest as SicknessRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
 
-class CRM_HRLeaveAndAbsences_Service_SicknessRequest extends CRM_HRLeaveAndAbsences_Service_LeaveRequest {
+class CRM_HRLeaveAndAbsences_Service_SicknessRequest extends LeaveRequestService {
 
   /**
    * {@inheritDoc}
@@ -21,7 +21,7 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequest extends CRM_HRLeaveAndAbsen
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_SicknessRequest|NULL
    */
-  protected function createLeaveRequestWithBalanceChange($params) {
+  protected function createRequestWithBalanceChanges($params) {
     $sicknessRequest = SicknessRequest::create($params, false);
     $leaveRequest = LeaveRequest::findById($sicknessRequest->leave_request_id);
     $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
@@ -56,5 +56,12 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequest extends CRM_HRLeaveAndAbsen
     $sicknessRequest = SicknessRequest::findById($sicknessRequestID);
     parent::delete($sicknessRequest->leave_request_id);
     $sicknessRequest->delete();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  protected function runValidation($params) {
+    SicknessRequest::validateParams($params);
   }
 }

@@ -57,7 +57,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    */
   public function create($params, $validate = true) {
     if ($validate) {
-      LeaveRequest::validateParams($params);
+      $this->runValidation($params);
     }
 
     if(!$this->canCreateAndUpdateLeaveRequestFor($params['contact_id'])) {
@@ -72,7 +72,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       throw new RuntimeException("You can't create a Leave Request with this status");
     }
 
-    return $this->createLeaveRequestWithBalanceChange($params);
+    return $this->createRequestWithBalanceChanges($params);
   }
 
   /**
@@ -108,7 +108,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       );
     }
 
-    return $this->createLeaveRequestWithBalanceChange($params);
+    return $this->createRequestWithBalanceChanges($params);
   }
 
   /**
@@ -288,10 +288,19 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    */
-  protected function createLeaveRequestWithBalanceChange($params) {
+  protected function createRequestWithBalanceChanges($params) {
     $leaveRequest = LeaveRequest::create($params, false);
     $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
 
     return $leaveRequest;
+  }
+
+  /**
+   * Run necessary BAO validations
+   *
+   * @param array $params
+   */
+  protected function runValidation($params) {
+    LeaveRequest::validateParams($params);
   }
 }
