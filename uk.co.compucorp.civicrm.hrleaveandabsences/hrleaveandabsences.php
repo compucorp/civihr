@@ -1,9 +1,26 @@
 <?php
 
+//----------------------------------------------------------------------------//
+//                             File Organization                              //
+//                                                                            //
+// To keep this file organized, it is split into 2 sections: CiviCRM Hooks    //
+// and Helper Functions. The former has all the civicrm hooks implementations //
+// used by this extension, whereas the latter, has all the helper functions   //
+// used by those hooks.                                                       //
+//                                                                            //
+// If you're adding new things here, please keep this organization in mind.   //
+//                                                                            //
+//----------------------------------------------------------------------------//
+
 use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestService as PublicHolidayLeaveRequestServiceFactory;
 use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
 
 require_once 'hrleaveandabsences.civix.php';
+
+
+//----------------------------------------------------------------------------//
+//                           CiviCRM Hooks                                    //
+//----------------------------------------------------------------------------//
 
 /**
  * Implements hook_civicrm_config().
@@ -33,184 +50,9 @@ function hrleaveandabsences_civicrm_xmlMenu(&$files) {
 function hrleaveandabsences_civicrm_install() {
   _hrleavesandabsences_create_main_menu();
   _hrleaveandabsences_create_administer_menu();
-  _hrleaveandabsences_add_scheduled_jobs();
+  _hrleaveandabsences_create_has_leave_approved_by_relationship_type();
 
   _hrleaveandabsences_civix_civicrm_install();
-}
-
-function _hrleaveandabsences_create_administer_menu() {
-  $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
-  $maxWeightOfAdminMenuItems = _hrleaveandabsences_get_max_child_weight_for_menu($administerMenuId);
-
-  $params = array(
-      'label'      => ts('Leave and Absences'),
-      'name'       => 'leave_and_absences',
-      'url'        => null,
-      'operator'   => null,
-      'is_active'  => 1,
-      'parent_id'  => $administerMenuId,
-      'weight'     => $maxWeightOfAdminMenuItems + 1,
-      'permission' => 'administer leave and absences'
-  );
-
-  $leaveAndAbsencesAdminNavigation = _hrleaveandabsences_add_navigation_menu($params);
-
-  _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminNavigation);
-}
-
-/**
- * @param $leaveAndAbsencesAdminNavigation
- */
-function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminNavigation) {
-  $leaveAndAbsencesAdministerMenuTree = [
-    [
-      'label' => ts('Leave/Absence Types'),
-      'name' => 'leave_and_absence_types',
-      'url' => 'civicrm/admin/leaveandabsences/types?action=browse&reset=1',
-      'permission' => 'administer leave and absences',
-    ],
-    [
-      'label' => ts('Leave/Absence Periods'),
-      'name' => 'leave_and_absence_periods',
-      'url' => 'civicrm/admin/leaveandabsences/periods?action=browse&reset=1',
-      'permission' => 'administer leave and absences',
-    ],
-    [
-      'label' => ts('Public Holidays'),
-      'name' => 'leave_and_absence_public_holidays',
-      'url' => 'civicrm/admin/leaveandabsences/public_holidays?action=browse&reset=1',
-      'permission' => 'administer leave and absences',
-    ],
-    [
-      'label' => ts('Manage Work Patterns'),
-      'name' => 'leave_and_absence_manage_work_patterns',
-      'url' => 'civicrm/admin/leaveandabsences/work_patterns?action=browse&reset=1',
-      'permission' => 'administer leave and absences',
-    ],
-    [
-      'label' => ts('General Settings'),
-      'name' => 'leave_and_absence_general_settings',
-      'url' => 'civicrm/admin/leaveandabsences/general_settings',
-      'permission' => 'administer leave and absences',
-    ]
-  ];
-
-  foreach ($leaveAndAbsencesAdministerMenuTree as $i => $item) {
-    $item['weight']    = $i;
-    $item['parent_id'] = $leaveAndAbsencesAdminNavigation->id;
-    $item['is_active'] = 1;
-    CRM_Core_BAO_Navigation::add($item);
-  }
-}
-
-/**
- * Returns the maximum weight for a child item of the given parent menu.
- * If theres no child for this menu, 0 is returned
- *
- * @param $menu_id
- *
- * @return int
- */
-function _hrleaveandabsences_get_max_child_weight_for_menu($menu_id) {
-  $query = "SELECT MAX(weight) AS max FROM civicrm_navigation WHERE parent_id = %1";
-  $params = array(
-      1 => array($menu_id, 'Integer')
-  );
-  $dao = CRM_Core_DAO::executeQuery($query, $params);
-  $dao->fetch();
-  if($dao->max) {
-    return $dao->max;
-  }
-
-  return 0;
-}
-
-function _hrleavesandabsences_create_main_menu() {
-  $reportWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'job_contracts', 'weight', 'name');
-
-  $params = array(
-      'label'      => ts('Leave and Absences'),
-      'name'       => 'leave_and_absences',
-      'url'        => 'civicrm/leaveandabsences/dashboard',
-      'operator'   => null,
-      'weight'     => $reportWeight + 1,
-      'is_active'  => 1,
-      'permission' => 'access leave and absences'
-  );
-
-  _hrleaveandabsences_add_navigation_menu($params);
-}
-
-/**
- * Creates a new navigation menu with the given parameters
- *
- * @param array $params
- *
- * @return array
- */
-function _hrleaveandabsences_add_navigation_menu($params)
-{
-  $navigationMenu = new CRM_Core_DAO_Navigation();
-  if(!isset($params['domain_id'])) {
-    $params['domain_id'] = CRM_Core_Config::domainID();
-  }
-  $navigationMenu->copyValues($params);
-  $navigationMenu->save();
-
-  return $navigationMenu;
-}
-
-/**
- * Adds the scheduled jobs for this extension
- */
-function _hrleaveandabsences_add_scheduled_jobs() {
-  _hrleaveandabsences_add_create_expiry_records_scheduled_job();
-  _hrleaveandabsences_add_process_public_holiday_leave_requests_updates_scheduled_job();
-}
-
-/**
- * Adds the "Create expiration records for expired LeaveBalanceChange records" scheduled job.
- */
-function _hrleaveandabsences_add_create_expiry_records_scheduled_job() {
-  $dao             = new CRM_Core_DAO_Job();
-  $dao->api_entity = 'LeaveBalanceChange';
-  $dao->api_action = 'create_expiry_records';
-  $dao->find(TRUE);
-  if (!$dao->id) {
-    $dao                = new CRM_Core_DAO_Job();
-    $dao->api_entity    = 'LeaveBalanceChange';
-    $dao->api_action    = 'create_expiry_records';
-    $dao->domain_id     = CRM_Core_Config::domainID();
-    $dao->run_frequency = 'Daily';
-    $dao->parameters    = NULL;
-    $dao->name          = 'Create expiry records for expired LeaveBalanceChanges';
-    $dao->description   = 'Checks the number of days taken as leave during the LeaveBalanceChange period and add a negative balance change to expire the number of days not used';
-    $dao->is_active     = 1;
-    $dao->save();
-  }
-}
-
-/**
- * Adds the "Process Public Holiday Leave Requests Update" scheduled job.
- */
-function _hrleaveandabsences_add_process_public_holiday_leave_requests_updates_scheduled_job() {
-  $dao             = new CRM_Core_DAO_Job();
-  $dao->api_entity = 'PublicHoliday';
-  $dao->api_action = 'process_public_holiday_leave_request_updates_queue';
-  $dao->find(TRUE);
-
-  if (!$dao->id) {
-    $dao                = new CRM_Core_DAO_Job();
-    $dao->api_entity    = 'PublicHoliday';
-    $dao->api_action    = 'process_public_holiday_leave_request_updates_queue';
-    $dao->domain_id     = CRM_Core_Config::domainID();
-    $dao->run_frequency = 'Always';
-    $dao->parameters    = NULL;
-    $dao->name          = 'Process Public Holiday Leave Requests Updates';
-    $dao->description   = 'Process all the tasks on the "Public Holiday Leave Requests Update" queue';
-    $dao->is_active     = 1;
-    $dao->save();
-  }
 }
 
 /**
@@ -219,9 +61,8 @@ function _hrleaveandabsences_add_process_public_holiday_leave_requests_updates_s
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function hrleaveandabsences_civicrm_uninstall() {
-  $query = "DELETE FROM civicrm_navigation WHERE name LIKE 'leave_and_absence%'";
-  CRM_Core_DAO::executeQuery($query);
-  CRM_Core_BAO_Navigation::resetNavigation();
+  _hrleaveandabsences_delete_extension_menus();
+  _hrleaveandabsences_delete_has_leave_approved_by_relationship_type();
 
   _hrleaveandabsences_civix_civicrm_uninstall();
 }
@@ -232,9 +73,8 @@ function hrleaveandabsences_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function hrleaveandabsences_civicrm_enable() {
-  $query = "UPDATE civicrm_navigation SET is_active = 1 WHERE name LIKE 'leave_and_absence%'";
-  CRM_Core_DAO::executeQuery($query);
-  CRM_Core_BAO_Navigation::resetNavigation();
+  _hrleaveandabsences_update_extension_is_active_flag(true);
+  _hrleaveandabsences_update_has_leave_approved_by_relationship_type_is_active_flag(true);
 
   _hrleaveandabsences_civix_civicrm_enable();
 }
@@ -245,9 +85,8 @@ function hrleaveandabsences_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function hrleaveandabsences_civicrm_disable() {
-  $query = "UPDATE civicrm_navigation SET is_active = 0 WHERE name LIKE 'leave_and_absence%'";
-  CRM_Core_DAO::executeQuery($query);
-  CRM_Core_BAO_Navigation::resetNavigation();
+  _hrleaveandabsences_update_extension_is_active_flag(false);
+  _hrleaveandabsences_update_has_leave_approved_by_relationship_type_is_active_flag(false);
 
   _hrleaveandabsences_civix_civicrm_disable();
 }
@@ -477,6 +316,188 @@ function hrleaveandabsences_civicrm_post($op, $objectName, $objectId, &$objectRe
 }
 
 /**
+ * Uses the hook_civicrm_container hook in order to insert L&A services in the
+ * global Civi container.
+ *
+ * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+ */
+function hrleaveandabsences_civicrm_container(\Symfony\Component\DependencyInjection\ContainerBuilder $container) {
+  $settingsManagerDefinition = new Symfony\Component\DependencyInjection\Definition(
+    CRM_HRLeaveAndAbsences_Service_SettingsManager::class
+  );
+  $settingsManagerDefinition->setFactoryClass(CRM_HRLeaveAndAbsences_Factory_SettingsManager::class);
+  $settingsManagerDefinition->setFactoryMethod('create');
+  // If we running unit tests, this will make the factory return an InMemorySettingsManager
+  $settingsManagerDefinition->setArguments([CIVICRM_UF == 'UnitTests']);
+
+  $container->setDefinition('hrleaveandabsences.settings_manager', $settingsManagerDefinition);
+}
+
+/**
+ * Implementation of the hook_civicrm_postInstall.
+ *
+ * Basically, it finishes the extension installation by setting things that are
+ * not available during the installation phase.
+ */
+function hrleaveandabsences_civicrm_postInstall() {
+  _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_type();
+}
+
+//----------------------------------------------------------------------------//
+//                               Helper Functions                             //
+//----------------------------------------------------------------------------//
+
+/**
+ * Creates the "Leave and Absences" menu item under Civi's "Administer" menu
+ */
+function _hrleaveandabsences_create_administer_menu() {
+  $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
+  $maxWeightOfAdminMenuItems = _hrleaveandabsences_get_max_child_weight_for_menu($administerMenuId);
+
+  $params = [
+    'label'      => ts('Leave and Absences'),
+    'name'       => 'leave_and_absences',
+    'url'        => null,
+    'operator'   => null,
+    'is_active'  => 1,
+    'parent_id'  => $administerMenuId,
+    'weight'     => $maxWeightOfAdminMenuItems + 1,
+    'permission' => 'administer leave and absences'
+  ];
+
+  $leaveAndAbsencesAdminNavigation = _hrleaveandabsences_add_navigation_menu($params);
+
+  _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminNavigation);
+}
+
+/**
+ * @param $leaveAndAbsencesAdminNavigation
+ */
+function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminNavigation) {
+  $leaveAndAbsencesAdministerMenuTree = [
+    [
+      'label' => ts('Leave/Absence Types'),
+      'name' => 'leave_and_absence_types',
+      'url' => 'civicrm/admin/leaveandabsences/types?action=browse&reset=1',
+      'permission' => 'administer leave and absences',
+    ],
+    [
+      'label' => ts('Leave/Absence Periods'),
+      'name' => 'leave_and_absence_periods',
+      'url' => 'civicrm/admin/leaveandabsences/periods?action=browse&reset=1',
+      'permission' => 'administer leave and absences',
+    ],
+    [
+      'label' => ts('Public Holidays'),
+      'name' => 'leave_and_absence_public_holidays',
+      'url' => 'civicrm/admin/leaveandabsences/public_holidays?action=browse&reset=1',
+      'permission' => 'administer leave and absences',
+    ],
+    [
+      'label' => ts('Manage Work Patterns'),
+      'name' => 'leave_and_absence_manage_work_patterns',
+      'url' => 'civicrm/admin/leaveandabsences/work_patterns?action=browse&reset=1',
+      'permission' => 'administer leave and absences',
+    ],
+    [
+      'label' => ts('General Settings'),
+      'name' => 'leave_and_absence_general_settings',
+      'url' => 'civicrm/admin/leaveandabsences/general_settings',
+      'permission' => 'administer leave and absences',
+    ]
+  ];
+
+  foreach ($leaveAndAbsencesAdministerMenuTree as $i => $item) {
+    $item['weight']    = $i;
+    $item['parent_id'] = $leaveAndAbsencesAdminNavigation->id;
+    $item['is_active'] = 1;
+    CRM_Core_BAO_Navigation::add($item);
+  }
+}
+
+/**
+ * Returns the maximum weight for a child item of the given parent menu.
+ * If theres no child for this menu, 0 is returned
+ *
+ * @param $menu_id
+ *
+ * @return int
+ */
+function _hrleaveandabsences_get_max_child_weight_for_menu($menu_id) {
+  $query = "SELECT MAX(weight) AS max FROM civicrm_navigation WHERE parent_id = %1";
+  $params = [
+    1 => [$menu_id, 'Integer']
+  ];
+  $dao = CRM_Core_DAO::executeQuery($query, $params);
+  $dao->fetch();
+  if($dao->max) {
+    return $dao->max;
+  }
+
+  return 0;
+}
+
+/**
+ * Creates the extension's menu item on the main navigation
+ */
+function _hrleavesandabsences_create_main_menu() {
+  $vacanciesWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'weight', 'name');
+
+  $params = [
+    'label'      => ts('Leave and Absences'),
+    'name'       => 'leave_and_absences',
+    'url'        => 'civicrm/leaveandabsences/dashboard',
+    'operator'   => null,
+    'weight'     => $vacanciesWeight + 1,
+    'is_active'  => 1,
+    'permission' => 'access leave and absences'
+  ];
+
+  _hrleaveandabsences_add_navigation_menu($params);
+}
+
+/**
+ * Creates a new navigation menu with the given parameters
+ *
+ * @param array $params
+ *
+ * @return array
+ */
+function _hrleaveandabsences_add_navigation_menu($params) {
+  $navigationMenu = new CRM_Core_DAO_Navigation();
+  if(!isset($params['domain_id'])) {
+    $params['domain_id'] = CRM_Core_Config::domainID();
+  }
+  $navigationMenu->copyValues($params);
+  $navigationMenu->save();
+
+  return $navigationMenu;
+}
+
+/**
+ * Deletes from the database all the menus created by this extension
+ */
+function _hrleaveandabsences_delete_extension_menus() {
+  $query = "DELETE FROM civicrm_navigation WHERE name LIKE 'leave_and_absence%'";
+  CRM_Core_DAO::executeQuery($query);
+  CRM_Core_BAO_Navigation::resetNavigation();
+}
+
+/**
+ * Updates the is_active flag for this extension menus, according to the given
+ * param.
+ *
+ * @param bool $active
+ */
+function _hrleaveandabsences_update_extension_is_active_flag($active = true) {
+  $value = $active ? '1' : '0';
+
+  $query = "UPDATE civicrm_navigation SET is_active = {$value} WHERE name LIKE 'leave_and_absence%'";
+  CRM_Core_DAO::executeQuery($query);
+  CRM_Core_BAO_Navigation::resetNavigation();
+}
+
+/**
  * Function which will be called when hook_civicrm_post is executed for the
  * HRJobDetails entity
  *
@@ -517,19 +538,91 @@ function _hrleaveandabsences_civicrm_post_absencetype($op, $objectId, &$objectRe
 }
 
 /**
- * Uses the hook_civicrm_container hook in order to insert L&A services in the
- * global Civi container.
- *
- * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+ * Creates the "Has Leave Approved By" relationship type, if it doesn't exist yet.
  */
-function hrleaveandabsences_civicrm_container(\Symfony\Component\DependencyInjection\ContainerBuilder $container) {
-  $settingsManagerDefinition = new Symfony\Component\DependencyInjection\Definition(
-    CRM_HRLeaveAndAbsences_Service_SettingsManager::class
-  );
-  $settingsManagerDefinition->setFactoryClass(CRM_HRLeaveAndAbsences_Factory_SettingsManager::class);
-  $settingsManagerDefinition->setFactoryMethod('create');
-  // If we running unit tests, this will make the factory return an InMemorySettingsManager
-  $settingsManagerDefinition->setArguments([CIVICRM_UF == 'UnitTests']);
+function _hrleaveandabsences_create_has_leave_approved_by_relationship_type() {
+  $relationshipType = _hrleaveandabsences_get_has_leave_approved_by_relationship_type();
 
-  $container->setDefinition('hrleaveandabsences.settings_manager', $settingsManagerDefinition);
+  if(NULL === $relationshipType) {
+    civicrm_api3('RelationshipType', 'create', [
+      'sequential'     => 1,
+      'description'    => 'Has Leave Approved By',
+      'name_a_b'       => 'has Leave Approved by',
+      'name_b_a'       => 'is Leave Approver of',
+      'contact_type_a' => 'Individual',
+      'contact_type_b' => 'Individual',
+    ]);
+  }
+}
+
+/**
+ * Deletes the "Has Leave Approved By" relationship type, if it exists
+ */
+function _hrleaveandabsences_delete_has_leave_approved_by_relationship_type() {
+  $relationshipType = _hrleaveandabsences_get_has_leave_approved_by_relationship_type();
+
+  if (NULL !== $relationshipType) {
+    civicrm_api3('RelationshipType', 'delete', [
+      'sequential' => 1,
+      'id' => $relationshipType['id'],
+    ]);
+  }
+}
+
+/**
+ * Enable or disable the "Has Leave Approved By" relationship type, according to
+ * the value of the $active param.
+ *
+ * @param bool $active
+ */
+function _hrleaveandabsences_update_has_leave_approved_by_relationship_type_is_active_flag($active = true) {
+  $relationshipType = _hrleaveandabsences_get_has_leave_approved_by_relationship_type();
+
+  if ($relationshipType) {
+    civicrm_api3('RelationshipType', 'create', [
+      'id' => $relationshipType['id'],
+      'is_active' => $active,
+      // we need to pass both name_a_b and name_b_a
+      // to avoid some notices thrown by the poor code in
+      // the civicrm Relationship Type API, which tries to
+      // access them without checking first if they exist
+      'name_a_b' => $relationshipType['name_a_b'],
+      'name_b_a' => $relationshipType['name_b_a']
+    ]);
+  }
+}
+
+/**
+ * Returns the data for the "Has Leave Approved By" relationship type. If it doesn't
+ * exist, returns null.
+ *
+ * @return mixed|null
+ */
+function _hrleaveandabsences_get_has_leave_approved_by_relationship_type() {
+  $result = civicrm_api3('RelationshipType', 'get', [
+    'sequential' => 1,
+    'name_a_b' => 'has Leave Approved by',
+  ]);
+
+  if (!empty($result['values'])) {
+    return $result['values'][0];
+  }
+
+  return NULL;
+}
+
+/**
+ * Sets the "Has Leave Approved By" relationship type as the default Leave Approver
+ * relationship type one on the General Settings.
+ */
+function _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_type() {
+  $settingsManager  = CRM_HRLeaveAndAbsences_Factory_SettingsManager::create();
+  $relationshipType = _hrleaveandabsences_get_has_leave_approved_by_relationship_type();
+
+  if ($relationshipType) {
+    $settingsManager->set(
+      'relationship_types_allowed_to_approve_leave',
+      [$relationshipType['id']]
+    );
+  }
 }
