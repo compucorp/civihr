@@ -104,7 +104,7 @@
           });
 
           it('has leave type set to leave', function () {
-            expect($ctrl.isleaveType('leave')).toBeTruthy();
+            expect($ctrl.isLeaveType('leave')).toBeTruthy();
           });
 
           it('has absence period is set', function () {
@@ -847,7 +847,7 @@
         });
 
         it('has leave type set to sick', function () {
-          expect($ctrl.isleaveType('sick')).toBeTruthy();
+          expect($ctrl.isLeaveType('sick')).toBeTruthy();
         });
 
         it('calls init on sickness instance', function() {
@@ -855,11 +855,11 @@
         });
 
         it('loads reasons option types', function() {
-          expect(Object.keys($ctrl.leaveRequestReasons).length).toBeGreaterThan(0);
+          expect(Object.keys($ctrl.sicknessReasons).length).toBeGreaterThan(0);
         });
 
         it('loads documents option types', function() {
-          expect($ctrl.leaveRequestDocuments.length).toBeGreaterThan(0);
+          expect($ctrl.sicknessDocumentTypes.length).toBeGreaterThan(0);
         });
 
         it('gets absence types with true sick param', function() {

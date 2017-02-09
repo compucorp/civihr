@@ -26,46 +26,7 @@ define([
       $q = _$q_;
       $log = _$log_;
 
-      //Intercept backend calls for LeaveRequest.all
-      $httpBackend.whenGET(/action\=getFull&entity\=LeaveRequest/)
-        .respond(mockData.all());
-
-      //Intercept backend calls for SicknessRequest.all
-      $httpBackend.whenGET(/action\=getFull&entity\=SicknessRequest/)
-        .respond(sicknessMockData.all());
-
-      //Intercept backend calls for TOILRequest.all
-      $httpBackend.whenGET(/action\=getFull&entity\=TOILRequest/)
-        .respond(toilMockData.all());
-
-      //Intercept backend calls for LeaveRequest.balanceChangeByAbsenceType
-      $httpBackend.whenGET(/action\=getbalancechangebyabsencetype&entity\=LeaveRequest/)
-        .respond(mockData.balanceChangeByAbsenceType());
-
-      //Intercept backend calls for LeaveRequest.create in POST
-      $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)
-        .respond(function (method, url, data, headers, params) {
-
-          if (helper.isEntityActionInPost(data, 'LeaveRequest', 'create')) {
-            return [201, mockData.all()];
-          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'calculatebalancechange')) {
-            return [200, mockData.calculateBalanceChange()];
-          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isValid')) {
-            return [200, mockData.getisValid()];
-          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
-            return [200, mockData.isManagedBy()];
-          } else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'create')) {
-            return [201, sicknessMockData.all()];
-          } else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'isValid')) {
-            return [200, mockData.getisValid()];
-          }
-          else if (helper.isEntityActionInPost(data, 'TOILRequest', 'create')) {
-            return [201, toilMockData.all()];
-          }
-          else if (helper.isEntityActionInPost(data, 'TOILRequest', 'isValid')) {
-            return [200, mockData.getisValid()];
-          }
-        });
+      interceptHTTP();
     }]));
 
     describe('all()', function () {
@@ -178,9 +139,7 @@ define([
           LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String), jasmine.any(Array), jasmine.any(Boolean));
 
           expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
-            statuses: {
-              "IN": jasmine.any(Array)
-            },
+            statuses: { "IN": jasmine.any(Array) },
           }), false);
         });
       });
@@ -192,6 +151,8 @@ define([
 
         $httpBackend.flush();
       });
+
+
     });
 
     describe('balanceChangeByAbsenceType() with error from server', function () {
@@ -201,9 +162,7 @@ define([
         error = mockData.singleDataError();
 
         spyOn(LeaveRequestAPI, 'sendGET').and.callFake(function () {
-          return $q(function (resolve, reject) {
-            resolve(error);
-          });
+          return $q.resolve(error);
         });
 
         requestData = helper.createRandomLeaveRequest();
@@ -312,9 +271,7 @@ define([
         error = mockData.singleDataError();
 
         spyOn(LeaveRequestAPI, 'sendGET').and.callFake(function () {
-          return $q(function (resolve, reject) {
-            resolve(error);
-          });
+          return $q.resolve(error);
         });
 
         requestData = helper.createRandomLeaveRequest();
@@ -422,9 +379,7 @@ define([
         error = mockData.singleDataError();
 
         spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-          return $q(function (resolve, reject) {
-            resolve(error);
-          });
+          return $q.resolve(error);
         });
 
         requestData = helper.createRandomLeaveRequest();
@@ -545,9 +500,7 @@ define([
         error = mockData.singleDataError();
 
         spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-          return $q(function (resolve, reject) {
-            resolve(error);
-          });
+          return $q.resolve(error);
         });
 
         requestData = helper.createRandomLeaveRequest();
@@ -596,7 +549,7 @@ define([
           spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
             return $q.reject(mockData.getNotIsValid());
           });
-          promise = LeaveRequestAPI.isValid(requestData);
+          promise = LeaveRequestAPI.isValid(requestData, 'sick');
         });
 
         afterEach(function () {
@@ -642,7 +595,7 @@ define([
           spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
             return $q.reject(mockData.getNotIsValid());
           });
-          promise = LeaveRequestAPI.isValid(requestData);
+          promise = LeaveRequestAPI.isValid(requestData, 'toil');
         });
 
         afterEach(function () {
@@ -714,9 +667,7 @@ define([
         error = mockData.singleDataError();
 
         spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-          return $q(function (resolve, reject) {
-            resolve(error);
-          });
+          return $q.resolve(error);
         });
 
         requestData = mockData.all().values[0];
@@ -864,5 +815,51 @@ define([
         });
       })
     });
+
+    /**
+     * Intercept HTTP calls to be handled by httpBackend
+     **/
+    function interceptHTTP() {
+      //Intercept backend calls for LeaveRequest.all
+      $httpBackend.whenGET(/action\=getFull&entity\=LeaveRequest/)
+        .respond(mockData.all());
+
+      //Intercept backend calls for SicknessRequest.all
+      $httpBackend.whenGET(/action\=getFull&entity\=SicknessRequest/)
+        .respond(sicknessMockData.all());
+
+      //Intercept backend calls for TOILRequest.all
+      $httpBackend.whenGET(/action\=getFull&entity\=TOILRequest/)
+        .respond(toilMockData.all());
+
+      //Intercept backend calls for LeaveRequest.balanceChangeByAbsenceType
+      $httpBackend.whenGET(/action\=getbalancechangebyabsencetype&entity\=LeaveRequest/)
+        .respond(mockData.balanceChangeByAbsenceType());
+
+      //Intercept backend calls for LeaveRequest.create in POST
+      $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)
+        .respond(function (method, url, data, headers, params) {
+
+          if (helper.isEntityActionInPost(data, 'LeaveRequest', 'create')) {
+            return [201, mockData.all()];
+          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'calculatebalancechange')) {
+            return [200, mockData.calculateBalanceChange()];
+          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isValid')) {
+            return [200, mockData.getisValid()];
+          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
+            return [200, mockData.isManagedBy()];
+          } else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'create')) {
+            return [201, sicknessMockData.all()];
+          } else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'isValid')) {
+            return [200, mockData.getisValid()];
+          }
+          else if (helper.isEntityActionInPost(data, 'TOILRequest', 'create')) {
+            return [201, toilMockData.all()];
+          }
+          else if (helper.isEntityActionInPost(data, 'TOILRequest', 'isValid')) {
+            return [200, mockData.getisValid()];
+          }
+        });
+    }
   });
 });
