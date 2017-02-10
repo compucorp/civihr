@@ -9,6 +9,8 @@ define([
     function ($q, $modalInstance, Region, Location, Right) {
       var vm = this;
 
+      vm.submitting = false;
+
       vm.availableData = {
         regions: [],
         locations: []
@@ -39,12 +41,16 @@ define([
        * Saves data and closes the modal
        */
       vm.submit = function () {
+        vm.submitting = true;
         $q.all([persistValues('regions'), persistValues('locations')])
           .then(function () {
             $modalInstance.dismiss('cancel');
           })
           .catch(function (err) {
             vm.errorMsg = 'Error while saving data';
+          })
+          .finally(function () {
+            vm.submitting = true;
           });
       };
 

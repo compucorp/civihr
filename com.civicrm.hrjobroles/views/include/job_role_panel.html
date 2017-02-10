@@ -287,14 +287,26 @@
                                             </thead>
                                             <tbody>
                                             <tr ng-repeat="(key, funder) in edit_data[job_roles_data.id]['funders']">
-                                                <td>
-                                                    <!-- editable funder (text with validation) -->
-                                                                        <span editable-text="funder.funder_id"
-                                                                              e-uib-typeahead="contact as contact.sort_name for contact in jobroles.contactList | filter:$viewValue | limitTo:10"
-                                                                              e-form="tableform" e-name="funder"
-                                                                              onbeforesave="checkName($data, user.id)">
-                                                                            {{funder.funder_id.sort_name || 'empty'}}
-                                                                        </span>
+                                                <td id="bootstrap-theme">
+                                                  <!--show ui-select for funder in edit mode-->
+                                                  <span ng-show="tableform.$visible">
+                                                    <ui-select class="funder-select"
+                                                        theme="civihr-ui-select"
+                                                        ng-model="funder.funder_id">
+                                                    <ui-select-match allow-clear class="ui-select-match">
+                                                      {{$select.selected.sort_name}}
+                                                    </ui-select-match>
+                                                    <ui-select-choices
+                                                      class="ui-select-choices"
+                                                      repeat="contact in jobroles.contactList | filter: $select.search"
+                                                      refresh="jobroles.getContactList($select.search)"
+                                                      refresh-delay="500">
+                                                      <div ng-bind-html="contact.sort_name | highlight: $select.search"></div>
+                                                    </ui-select-choices>
+                                                  </ui-select>
+                                                  </span>
+                                                  <!--show funder in non-edit mode-->
+                                                  <span ng-show="!tableform.$visible">{{funder.funder_id.sort_name}}</span>
                                                 </td>
                                                 <td>
                                                     <!-- editable funder type (will restrict the fields to amount or percentage -->

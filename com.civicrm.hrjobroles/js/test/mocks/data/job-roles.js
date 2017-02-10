@@ -71,12 +71,33 @@ define(function () {
                 "cost_centers": []
             },
             "1": {
-                "title": "Test",
-                "job_contract_id": "1",
-                "start_date": "2005-05-05 00:00:00",
-                "end_date": "2006-05-05 00:00:00",
-                "funders": [],
-                "cost_centers": []
+              "title": "Test",
+              "job_contract_id": "1",
+              "start_date": "2005-05-05 00:00:00",
+              "end_date": "2006-05-05 00:00:00",
+              "funders": [
+                {
+                  id: 2,
+                  amount: "0",
+                  percentage: "1",
+                  type: "1",
+                  funder_id: {
+                    id: "1",
+                    sort_name: "Default Organization"
+                  }
+                },
+                {
+                  id: 4,
+                  amount: "1",
+                  percentage: "20",
+                  type: "0",
+                  funder_id: {
+                    id: "3",
+                    sort_name: "Bar Baz"
+                  }
+                }
+              ],
+              "cost_centers": []
             },
             "2": {
                 "title": "Contract Dates",
@@ -93,45 +114,41 @@ define(function () {
               "end_date": null,
               "funders": [
                 {
-                  $$hashKey: "object:565",
+                  id: 1,
                   amount: "0",
-                  funder_id: "",
-                  id: 2,
                   percentage: "2",
-                  type: "1"
+                  type: "1",
+                  funder_id: ""
                 },
                 {
-                  $$hashKey: "object:565",
+                  id: 2,
                   amount: "0",
-                  funder_id: {
-                    id:"1",
-                    sort_name:"Default Organization"
-                  },
-                  id: 1,
                   percentage: "1",
-                  type: "1"
+                  type: "1",
+                  funder_id: {
+                    id: "1",
+                    sort_name: "Default Organization"
+                  }
                 },
                 {
-                  $$hashKey: "object:565",
+                  id: 3,
                   amount: "0",
+                  percentage: "10",
+                  type: "1",
                   funder_id: {
-                    id:"1",
-                    sort_name:"Default Organization"
-                  },
-                  id: 1,
-                  percentage: "0",
-                  type: "1"
+                    id: "2",
+                    sort_name: "Foo Bar"
+                  }
                 },
                 {
-                  $$hashKey: "object:565",
+                  id: 4,
                   amount: "1",
+                  percentage: "20",
+                  type: "0",
                   funder_id: {
-                    id:"1",
-                    sort_name:"Default Organization"
-                  },
-                  id: 1,
-                  percentage: "0",
-                  type: "0"
+                    id: "3",
+                    sort_name: "Bar Baz"
+                  }
                 }
               ],
               "cost_centers": [
@@ -169,6 +186,64 @@ define(function () {
                 }
               ]
             }
+        },
+        roles_data_from_api: {
+          "0": {
+            "amount_pay_cost_center": "|",
+            "amount_pay_funder": "|",
+            "cost_center": "|",
+            "cost_center_val_type": "|",
+            "end_date": null,
+            "funder": "|",
+            "funder_val_type": "|",
+            "job_contract_id": "1",
+            "percent_pay_cost_center": "|",
+            "percent_pay_funder": "|",
+            "start_date": "2015-12-30 00:00:00",
+            "title": "Test",
+          },
+          "1": {
+            "amount_pay_cost_center": "|",
+            "amount_pay_funder": "|0|1|",
+            "cost_center": "|",
+            "cost_center_val_type": "|",
+            "end_date": "2006-05-05 00:00:00",
+            "funder": "|1|3|",
+            "funder_val_type": "|1|0|",
+            "job_contract_id": "1",
+            "percent_pay_cost_center": "|",
+            "percent_pay_funder": "|1|0|",
+            "start_date": "2005-05-05 00:00:00",
+            "title": "Test",
+          },
+          "2": {
+            "amount_pay_cost_center": "|",
+            "amount_pay_funder": "|",
+            "cost_center": "|",
+            "cost_center_val_type": "|",
+            "end_date": "2016-01-31",
+            "funder": "|",
+            "funder_val_type": "|",
+            "job_contract_id": "3",
+            "percent_pay_cost_center": "|",
+            "percent_pay_funder": "|",
+            "start_date": "2016-01-01",
+            "title": "Contract Dates",
+          },
+          "3": {
+            "amount_pay_cost_center": "|0|0|2|2|",
+            "amount_pay_funder": "|0|0|0|1|",
+            "cost_center": "|879|890|888|123|",
+            "cost_center_val_type": "|1|1|0|0|",
+            "end_date": null,
+            "funder": "||1|2|3|",
+            "funder_val_type": "|1|1|1|0",
+            "job_contract_id": "1",
+            "percent_pay_cost_center": "|1|1|0|0",
+            "percent_pay_funder": "|0|0|0|20",
+            "start_date": "2015-12-30 00:00:00",
+            "title": "Test filter",
+          }
         }
     };
 });

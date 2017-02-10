@@ -305,29 +305,21 @@ define([
 
             },
 
-            getContactList: function (sortName) {
+            getContactList: function (sortName, idsList) {
+              var deferred = $q.defer();
 
-                var deferred = $q.defer();
+              CRM.api3('Contact', 'get', {
+                "sequential": 1,
+                "return": "id, sort_name",
+                "id": _.isArray(idsList) ? { 'IN': idsList } : null,
+                "sort_name": sortName || null
+              }).done(function (result) {
+                deferred.resolve(result);
+              }).error(function (result) {
+                deferred.reject("An error occured while fetching items");
+              });
 
-                CRM.api3('Contact', 'get', {
-                    "sequential": 1,
-                    "return": "id, sort_name",
-                    "sort_name": sortName || null
-                }).done(function (result) {
-
-                    // Passing data to deferred's resolve function on successful completion
-                    deferred.resolve(result);
-
-                }).error(function (result) {
-
-                    // Sending a friendly error message in case of failure
-                    deferred.reject("An error occured while fetching items");
-
-                });
-
-                // Returning the promise object
-                return deferred.promise;
-
+              return deferred.promise;
             },
 
             /**
