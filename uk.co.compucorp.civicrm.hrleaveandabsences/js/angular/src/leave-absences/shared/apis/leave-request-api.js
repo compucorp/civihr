@@ -24,15 +24,14 @@ define([
      * @return {String}
      */
     function getEntityName(leaveRequestType) {
-      var entityName = 'LeaveRequest';
-
+      var entityMap = {
+        leave: 'LeaveRequest',
+        sick: 'SicknessRequest',
+        toil: 'TOILRequest'
+      };
       leaveRequestType = !!leaveRequestType ? leaveRequestType : 'leave';
 
-      if (leaveRequestType === 'sick') {
-        entityName = 'SicknessRequest';
-      }
-
-      return entityName;
+      return entityMap[leaveRequestType];
     }
 
     return api.extend({

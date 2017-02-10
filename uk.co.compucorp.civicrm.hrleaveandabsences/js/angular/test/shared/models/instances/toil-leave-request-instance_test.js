@@ -1,12 +1,12 @@
 define([
   'mocks/apis/leave-request-api-mock',
   'mocks/apis/option-group-api-mock',
-  'leave-absences/shared/models/instances/sickness-leave-request-instance',
-], function () {
+  'leave-absences/shared/models/instances/toil-leave-request-instance',
+], function (helper) {
   'use strict';
 
-  describe('SicknessRequestInstance', function () {
-    var $rootScope, $provide, SicknessRequestInstance, instance, LeaveRequestAPI, promise;
+  describe('TOILRequestInstance', function () {
+    var $rootScope, $provide, TOILRequestInstance, instance, LeaveRequestAPI, promise;
 
     beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -18,22 +18,36 @@ define([
     }));
 
     beforeEach(inject([
-       '$rootScope', 'LeaveRequestAPI', 'SicknessRequestInstance',
-      function (_$rootScope_, _LeaveRequestAPI_, _SicknessRequestInstance_) {
-        SicknessRequestInstance = _SicknessRequestInstance_;
+      '$rootScope', 'LeaveRequestAPI', 'TOILRequestInstance',
+      function (_$rootScope_, _LeaveRequestAPI_, _TOILRequestInstance_) {
+        TOILRequestInstance = _TOILRequestInstance_;
         $rootScope = _$rootScope_;
         LeaveRequestAPI = _LeaveRequestAPI_;
 
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
         spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
-        spyOn(SicknessRequestInstance, 'toAPI').and.callThrough();
+        spyOn(TOILRequestInstance, 'toAPI').and.callThrough();
       }
     ]));
 
+    describe('init', function () {
+      beforeEach(function () {
+        instance = TOILRequestInstance.init({}, false);
+      });
+
+      it('instance is defined', function () {
+        expect(instance).toBeDefined();
+      });
+
+      it('default toil Duration value is set', function () {
+        expect(instance.toilDuration).toBe(0);
+      })
+    });
+
     describe('create()', function () {
       beforeEach(function () {
-        instance = SicknessRequestInstance.init({}, false);
+        instance = TOILRequestInstance.init({}, false);
         promise = instance.create();
       });
 
@@ -43,7 +57,7 @@ define([
       });
 
       it('calls equivalent API method', function () {
-        expect(LeaveRequestAPI.create).toHaveBeenCalledWith(jasmine.any(Object), 'sick');
+        expect(LeaveRequestAPI.create).toHaveBeenCalledWith(jasmine.any(Object), 'toil');
       });
 
       it('calls toAPI method', function () {
@@ -65,7 +79,7 @@ define([
 
     describe('isValid()', function () {
       beforeEach(function () {
-        instance = SicknessRequestInstance.init({}, false);
+        instance = TOILRequestInstance.init({}, false);
         promise = instance.isValid();
       });
 
@@ -74,7 +88,7 @@ define([
       });
 
       it('calls equivalent API method', function () {
-        expect(LeaveRequestAPI.isValid).toHaveBeenCalledWith(jasmine.any(Object), 'sick');
+        expect(LeaveRequestAPI.isValid).toHaveBeenCalledWith(jasmine.any(Object), 'toil');
       });
 
       it('calls toAPI method', function () {
@@ -84,7 +98,7 @@ define([
 
     describe('update()', function () {
       beforeEach(function () {
-        instance = SicknessRequestInstance.init({}, false);
+        instance = TOILRequestInstance.init({}, false);
         promise = instance.update();
       });
 
@@ -93,7 +107,7 @@ define([
       });
 
       it('calls update api method with the return value of toAPI method', function () {
-        expect(LeaveRequestAPI.update).toHaveBeenCalledWith(jasmine.any(Object), 'sick');
+        expect(LeaveRequestAPI.update).toHaveBeenCalledWith(jasmine.any(Object), 'toil');
       });
 
       it('calls toAPI method', function () {
