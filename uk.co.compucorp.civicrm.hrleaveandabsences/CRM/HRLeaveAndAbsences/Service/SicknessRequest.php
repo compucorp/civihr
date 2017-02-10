@@ -62,6 +62,10 @@ class CRM_HRLeaveAndAbsences_Service_SicknessRequest extends LeaveRequestService
    * {@inheritDoc}
    */
   protected function runValidation($params) {
+    if (isset($params['id'])) {
+      $params['leave_request_id'] = $this->getOldLeaveRequest($params['id'])->id;
+    }
+
     SicknessRequest::validateParams($params);
   }
 }

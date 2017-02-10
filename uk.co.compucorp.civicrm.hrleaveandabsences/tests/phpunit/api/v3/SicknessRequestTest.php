@@ -329,7 +329,7 @@ class SicknessRequestTest extends BaseHeadlessTest {
     $this->fail("Expected to not find the LeaveRequest with {$leaveRequest->id}, but it was found");
   }
 
-  public function testCreateResponseAlsoIncludeTheLeaveRequestFields() {
+  public function testCreateAndUpdateResponseIncludesSicknessRequestAndLeaveRequestRelatedFields() {
     $startDate = new DateTime('next monday');
     $endDate = new DateTime('+10 days');
 
@@ -355,7 +355,7 @@ class SicknessRequestTest extends BaseHeadlessTest {
 
     $this->createLeaveBalanceChange($leavePeriodEntitlement->id, 10);
 
-    $result = civicrm_api3('SicknessRequest', 'create', [
+    $params = [
       'contact_id' => $this->leaveContact,
       'type_id' => $type->id,
       'status_id' => $this->leaveRequestStatuses['Waiting Approval']['value'],
@@ -364,22 +364,27 @@ class SicknessRequestTest extends BaseHeadlessTest {
       'to_date' => $startDate->format('Y-m-d'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'reason' => $this->sicknessRequestReasons['Accident']['value'],
+      'required_documents' => $this->requiredDocumentOptions['Self certification form required']['value'],
       'sequential' => 1
-    ]);
-
-    $expectedValues = [
-      'contact_id' => $this->leaveContact,
-      'type_id' => $type->id,
-      'status_id' => $this->leaveRequestStatuses['Waiting Approval']['value'],
-      'from_date' => $startDate->format('Y-m-d'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $startDate->format('Y-m-d'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'reason' => $this->sicknessRequestReasons['Accident']['value'],
     ];
+    $result = civicrm_api3('SicknessRequest', 'create', $params);
 
-    $this->assertArraySubset($expectedValues, $result['values'][0]);
-    $this->assertNotEmpty($result['values'][0]['id']);
-    $this->assertNotEmpty($result['values'][0]['leave_request_id']);
+    $params['id'] = $result['values'][0]['id'];
+    $params['leave_request_id'] = $result['values'][0]['leave_request_id'];
+    unset($params['sequential']);
+    $expectedValues = $params;
+
+    $this->assertEquals($expectedValues, $result['values'][0]);
+
+    //update the sickness request and leave request
+    $params['required_documents'] = $this->requiredDocumentOptions['Back to work interview required']['value'];
+    $params['reason'] = $this->sicknessRequestReasons['Appointment']['value'];
+    $params['from_date_type'] = $this->leaveRequestDayTypes['1/2 PM']['value'];
+    $params['sequential'] = 1;
+
+    $result2 = civicrm_api3('SicknessRequest', 'create', $params);
+    unset($params['sequential']);
+    $expectedValues = $params;
+    $this->assertEquals($expectedValues, $result2['values'][0]);
   }
 }

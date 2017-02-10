@@ -20,9 +20,6 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
     $hook = empty($params['id']) ? 'create' : 'edit';
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
 
-    if ($validate) {
-      self::validateParams($params);
-    }
     $instance = new self();
 
     if ($hook == 'edit') {
@@ -30,11 +27,19 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
       $instance->find(true);
 
       if ($instance->leave_request_id) {
-        $instance->copyValues($params);
-        $params['id'] = $instance->leave_request_id;
-        LeaveRequest::create($params, false);
-        $instance->save();
+        $params['leave_request_id'] = $instance->leave_request_id;
       }
+    }
+
+    if ($validate) {
+      self::validateParams($params);
+    }
+
+    if ($hook == 'edit') {
+      $instance->copyValues($params);
+      $params['id'] = $instance->leave_request_id;
+      LeaveRequest::create($params, false);
+      $instance->save();
     }
 
     if ($hook == 'create') {
@@ -62,6 +67,9 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
     self::validateAbsenceTypeAllowsSicknessRequest($params);
 
     //run LeaveRequest Validation after all validations on Sickness Request
+    if (isset($params['leave_request_id'])) {
+      $params['id'] = $params['leave_request_id'];
+    }
     LeaveRequest::validateParams($params);
   }
 

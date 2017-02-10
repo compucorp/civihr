@@ -3,6 +3,9 @@
 use CRM_HRLeaveAndAbsences_BAO_SicknessRequest as SicknessRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest
@@ -13,6 +16,10 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_SicknessRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
+
+  private $leaveContact;
 
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
@@ -20,6 +27,11 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
     $this->requiredDocumentOptions = $this->getSicknessRequestRequiredDocumentsOptions();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
     $this->sicknessRequestReasons = $this->getSicknessRequestReasons();
+    $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
+
+    $this->leaveContact = 1;
+    $this->registerCurrentLoggedInContactInSession($this->leaveContact);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
   }
 
   public function testCreateSicknessRequest() {
@@ -206,5 +218,61 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'required_documents' => $requiredDocuments
     ]);
+  }
+
+  public function testCreateAndUpdateSicknessRequest() {
+    $startDate = new DateTime('next monday');
+    $endDate = new DateTime('+10 days');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => $startDate->format('Y-m-d')]
+    );
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $startDate->format('YmdHis'),
+      'end_date' => $endDate->format('YmdHis')
+    ]);
+
+    $type = AbsenceTypeFabricator::fabricate([
+      'is_sick' => true
+    ]);
+
+    $leavePeriodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $this->leaveContact,
+      'period_id' => $period->id,
+      'type_id' => $type->id,
+    ]);
+
+    $this->createLeaveBalanceChange($leavePeriodEntitlement->id, 10);
+
+    $params = [
+      'contact_id' => $this->leaveContact,
+      'type_id' => $type->id,
+      'status_id' => $this->leaveRequestStatuses['Waiting Approval']['value'],
+      'from_date' => $startDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $startDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'reason' => $this->sicknessRequestReasons['Accident']['value'],
+      'required_documents' => $this->requiredDocumentOptions['Self certification form required']['value'],
+    ];
+
+    $sicknessRequest = SicknessRequest::create($params);
+
+    $this->assertInstanceOf(SicknessRequest::class, $sicknessRequest);
+    $this->assertEquals($sicknessRequest->reason, $params ['reason']);
+    $this->assertEquals($sicknessRequest->required_documents, $params ['required_documents']);
+
+    //update the Sickness Request
+    $params['id'] = $sicknessRequest->id;
+    $params['required_documents'] = $this->requiredDocumentOptions['Back to work interview required']['value'];
+    $params['reason'] = $this->sicknessRequestReasons['Appointment']['value'];
+
+    $sicknessRequest2 = SicknessRequest::create($params);
+
+    $this->assertInstanceOf(SicknessRequest::class, $sicknessRequest2);
+    $this->assertEquals($sicknessRequest2->reason, $params ['reason']);
+    $this->assertEquals($sicknessRequest2->required_documents, $params ['required_documents']);
   }
 }
