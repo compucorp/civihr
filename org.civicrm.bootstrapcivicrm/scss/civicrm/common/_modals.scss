@@ -83,18 +83,45 @@
 
     .crm-block {
       box-shadow: none;
+      padding: 0;
     }
 
     .crm-submit-buttons {
-      &:last-child {
-        margin-left: -20px !important;
-        margin-right: -20px !important;
-        padding: 22px 40px !important;
-        background: $gray-lighter !important;
+      border: none;
+      margin-top: 0px !important;
+
+      .crm-button {
+        float: right !important;
+        margin-right: 0;
+        margin-left: 10px;
+
+        &.crm-button-type-cancel {
+          float: left !important;
+          margin-left: 0 !important;
+        }
 
         input {
           margin-top: 1px;
         }
+      }
+
+      &:not(:last-child) {
+        margin: 0 !important;
+      }
+
+      &:last-child {
+        margin-left: -20px !important;
+        margin-right: -20px !important;
+        padding: 22px 25px !important;
+        background: $gray-lighter !important;
+      }
+    }
+
+    table {
+      tr,
+      td,
+      th {
+        border-bottom: 0;
       }
     }
   }

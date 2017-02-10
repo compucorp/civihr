@@ -131,6 +131,12 @@
     }
   }
 
+  #s2id_exclude_date_list {
+    .fa-calendar {
+      display: none;
+    }
+  }
+
   .crm-activity-form-block-details {
     td {
       &.label {
