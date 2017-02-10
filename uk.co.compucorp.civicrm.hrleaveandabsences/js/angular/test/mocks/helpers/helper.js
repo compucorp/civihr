@@ -38,6 +38,23 @@ define([
       };
     },
     /**
+     * Creates a TOIL LeaveRequest with random values
+     *
+     * @return {object} containing valid leaverequest data
+     **/
+    createRandomTOILRequest: function () {
+      return {
+        'type_id': absenceTypeData.getRandomAbsenceType('id'),
+        'contact_id': '202',
+        'status_id': optionGroupMock.randomValue('hrleaveandabsences_leave_request_status', 'value'),
+        'from_date': '2016-02-01',
+        'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
+        'to_date': '2016-02-03',
+        'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
+        "duration": 180
+      };
+    },
+    /**
      * Find if HTTP POST is for entity LeaveRequest and action create/update
      *
      * @param {object} data - contains the data sent along with http request

@@ -84,7 +84,6 @@ define([
       });
 
       it('calls the getAll() method', function () {
-        expect(LeaveRequestAPI.getAll).toHaveBeenCalled();
         expect(LeaveRequestAPI.getAll.calls.mostRecent().args[0]).toBe('LeaveRequest');
         expect(LeaveRequestAPI.getAll.calls.mostRecent().args[5]).toBe('getFull');
       });
@@ -107,7 +106,6 @@ define([
       });
 
       it('calls the getAll() method', function () {
-        expect(LeaveRequestAPI.getAll).toHaveBeenCalled();
         expect(LeaveRequestAPI.getAll.calls.mostRecent().args[0]).toBe('SicknessRequest');
         expect(LeaveRequestAPI.getAll.calls.mostRecent().args[5]).toBe('getFull');
       });
@@ -124,7 +122,6 @@ define([
       });
 
       it('calls the getAll() method', function () {
-        expect(LeaveRequestAPI.getAll).toHaveBeenCalled();
         expect(LeaveRequestAPI.getAll.calls.mostRecent().args[0]).toBe('TOILRequest');
         expect(LeaveRequestAPI.getAll.calls.mostRecent().args[5]).toBe('getFull');
       });
@@ -296,7 +293,7 @@ define([
         $httpBackend.flush();
       });
 
-      it('call endpoint', function () {
+      it('calls endpoint', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest', 'create', requestData);
         });
@@ -378,7 +375,7 @@ define([
         $httpBackend.flush();
       });
 
-      it('call endpoint', function () {
+      it('calls endpoint', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith( 'SicknessRequest',
             'create', requestData);
@@ -394,7 +391,7 @@ define([
 
     describe('create() for toil request', function() {
       beforeEach(function () {
-        requestData = helper.createRandomSicknessRequest();
+        requestData = helper.createRandomTOILRequest();
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
         promise = LeaveRequestAPI.create(requestData, 'toil');
       });
@@ -403,7 +400,7 @@ define([
         $httpBackend.flush();
       });
 
-      it('call endpoint', function () {
+      it('calls endpoint', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith( 'TOILRequest',
             'create', requestData);
@@ -446,9 +443,7 @@ define([
         beforeEach(function () {
           requestData = helper.createRandomSicknessRequest();
           spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
-            return $q(function (resolve, reject) {
-              reject(mockData.getNotIsValid());
-            });
+            return $q.reject(mockData.getNotIsValid());
           });
           promise = LeaveRequestAPI.isValid(requestData);
         });
@@ -494,9 +489,7 @@ define([
         beforeEach(function () {
           requestData = helper.createRandomSicknessRequest();
           spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
-            return $q(function (resolve, reject) {
-              reject(mockData.getNotIsValid());
-            });
+            return $q.reject(mockData.getNotIsValid());
           });
           promise = LeaveRequestAPI.isValid(requestData);
         });
@@ -516,7 +509,7 @@ define([
     describe('isValid() for toil request', function () {
       describe('when called with valid data', function () {
         beforeEach(function () {
-          requestData = helper.createRandomSicknessRequest();
+          requestData = helper.createRandomTOILRequest();
           spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
           promise = LeaveRequestAPI.isValid(requestData, 'toil');
         });
@@ -540,11 +533,9 @@ define([
 
       describe('when called with invalid data', function () {
         beforeEach(function () {
-          requestData = helper.createRandomSicknessRequest();
+          requestData = helper.createRandomTOILRequest();
           spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
-            return $q(function (resolve, reject) {
-              reject(mockData.getNotIsValid());
-            });
+            return $q.reject(mockData.getNotIsValid());
           });
           promise = LeaveRequestAPI.isValid(requestData);
         });
@@ -590,7 +581,7 @@ define([
         });
       });
 
-      describe('when does not contain id set', function () {
+      describe('when id is not set', function () {
         beforeEach(function () {
           errorMessage = 'id is mandatory field';
           //remove id
@@ -640,7 +631,7 @@ define([
         });
       });
 
-      describe('when does not contain id set', function () {
+      describe('when id is not set', function () {
         beforeEach(function () {
           errorMessage = 'id is mandatory field';
           //remove id
@@ -690,7 +681,7 @@ define([
         });
       });
 
-      describe('when does not contain id set', function () {
+      describe('when id is not set', function () {
         beforeEach(function () {
           errorMessage = 'id is mandatory field';
           //remove id

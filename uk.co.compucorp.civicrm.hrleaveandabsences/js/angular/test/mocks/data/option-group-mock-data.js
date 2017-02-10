@@ -435,7 +435,8 @@ define([
       "is_reserved": "0",
       "is_active": "1"
     }],
-    hrleaveandabsences_sickness_reason: [{
+    hrleaveandabsences_sickness_reason: [
+      {
         "id": "1129",
         "option_group_id": "145",
         "label": "Accident",
@@ -568,7 +569,8 @@ define([
         "is_active": "1"
       }
     ],
-    hrleaveandabsences_leave_request_required_document: [{
+    hrleaveandabsences_leave_request_required_document: [
+      {
         "id": "1126",
         "option_group_id": "144",
         "label": "Self certification form required",
