@@ -276,7 +276,6 @@ define([
        * @param {String} value
        */
       vm.updateRequiredDocuments = function (value) {
-        vm.leaveRequest.required_documents = vm.leaveRequest.required_documents ? vm.leaveRequest.required_documents : [];
         var index = vm.leaveRequest.required_documents.indexOf(value);
 
         index === -1 ? vm.leaveRequest.required_documents.push(value) : vm.leaveRequest.required_documents.splice(index, 1);
