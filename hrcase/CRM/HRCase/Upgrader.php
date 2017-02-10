@@ -165,7 +165,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
       // chained API call to activate/disable the relationship type
       civicrm_api3('RelationshipType', 'get', [
         'name_b_a' => $relationshipType['name_b_a'],
-        'api.RelationshipType.create' => ['id' => 'value.id', 'is_active' => $setActive],
+        'api.RelationshipType.create' => ['id' => '$value.id', 'name_a_b' => '$value.name_a_b', 'name_b_a' => '$value.name_b_a', 'is_active' => $setActive],
       ]);
     }
   }
@@ -201,7 +201,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
       // chained API call to activate/disable the case type
       civicrm_api3('CaseType', 'get', [
         'name' => $caseType,
-        'api.CaseType.create' => ['id' => 'value.id', 'is_active' => $setActive],
+        'api.CaseType.create' => ['id' => '$value.id', 'is_active' => $setActive],
       ]);
     }
   }
