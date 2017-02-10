@@ -114,5 +114,41 @@ define([
         expect(instance.required_documents).toEqual('');
       });
     });
+
+    describe('with required documents', function() {
+      beforeEach(function() {
+        instance = instance.init({}, false);
+      });
+
+      describe('for new leave request instance', function() {
+        it('is initialized to empty string', function() {
+          expect(instance.required_documents).toEqual('');
+        });
+      });
+
+      describe('when added by user', function() {
+        beforeEach(function () {
+          instance.toggleDocument("1");
+          instance.toggleDocument("2");
+        });
+
+        it('leave request instance has required documents', function() {
+          expect(instance.required_documents).toEqual('1,2');
+        });
+      });
+
+      describe('when removed by user', function() {
+        beforeEach(function () {
+          //user added by selecting
+          instance.toggleDocument("1");
+          //user removed by unselecting
+          instance.toggleDocument("1");
+        });
+
+        it('leave request instance has no required documents', function() {
+          expect(instance.required_documents).toEqual('');
+        });
+      });
+    });
   });
 });

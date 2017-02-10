@@ -53,6 +53,20 @@ define([
          */
         update: function () {
           return LeaveRequestAPI.update(this.toAPI(), 'sick');
+        },
+
+        /**
+         * Checks if given value is added for leave request list of document value ie., field required_documents
+         *  otherwise add it to list of required documents (list is actually string of comma separated values for now)
+         *
+         * @param {String} value required document value like '1'
+         */
+        toggleDocument: function (value) {
+          var docsArray = this.required_documents.length > 0 ? this.required_documents.split(','): [];
+          var index = docsArray.indexOf(value);
+
+          index === -1 ? docsArray.push(value) : docsArray.splice(index, 1);
+          this.required_documents = docsArray.join(',');
         }
       });
     }

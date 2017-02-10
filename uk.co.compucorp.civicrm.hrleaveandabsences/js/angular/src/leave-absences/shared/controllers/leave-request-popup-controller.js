@@ -270,20 +270,6 @@ define([
       };
 
       /**
-       * Checks if given value is added for leave request list of document value ie., field required_documents
-       *  otherwise add it to list of required documents (list is actually string of comma separated values for now)
-       *
-       * @param {String} value
-       */
-      vm.updateRequiredDocuments = function (value) {
-        var docsArray = vm.leaveRequest.required_documents ? vm.leaveRequest.required_documents.split(','): [];
-        var index = docsArray.indexOf(value);
-
-        index === -1 ? docsArray.push(value) : docsArray.splice(index, 1);
-        vm.leaveRequest.required_documents = docsArray.join(',');
-      };
-
-      /**
        * This should be called whenever a date has been changed
        * First it syncs `from` and `to` date, if it's in 'single day' mode
        * Then, if all the dates are there, it gets the balance change
