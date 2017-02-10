@@ -113,12 +113,12 @@ function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$para
               'leave_period_entitlement', 'public_holiday', 'leave_request'],
     'getbalancechangebyabsencetype' => ['leave_request'],
     'calculatebalancechange' => ['leave_request'],
-    'create' => ['leave_request'],
-    'update' => ['leave_request'],
+    'create' => ['leave_request', 'sickness_request'],
+    'update' => ['leave_request', 'sickness_request'],
     'getcalendar' => ['work_pattern'],
     'ismanagedby' => ['leave_request'],
-    'isvalid' => ['leave_request'],
-    'getfull' => ['leave_request']
+    'isvalid' => ['leave_request', 'sickness_request'],
+    'getfull' => ['leave_request', 'sickness_request']
   ];
 
   foreach ($actionEntities as $action => $entities) {

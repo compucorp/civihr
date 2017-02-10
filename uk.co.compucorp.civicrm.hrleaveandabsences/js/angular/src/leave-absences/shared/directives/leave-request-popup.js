@@ -12,12 +12,10 @@ define([
         scope: {
           contactId: '<',
           leaveRequest: '<',
-          sickness: '<',
-          toil: '<'
+          leaveType: '@'
         },
         restrict: 'EA',
         link: function (scope, element) {
-
           element.on('click', function (event) {
             $modal.open({
               templateUrl: settings.pathTpl + 'directives/leave-request-popup.html',
@@ -29,8 +27,7 @@ define([
                   return {
                     contactId: scope.contactId,
                     leaveRequest: scope.leaveRequest,
-                    sickness: scope.sickness,
-                    toil: scope.toil
+                    leaveType: scope.leaveType
                   };
                 },
                 //to set HR_settings DateFormat

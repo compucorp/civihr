@@ -4,9 +4,9 @@
     <span class="sr-only">Close</span>
   </button>
   <h4 class="modal-title">
-    <span ng-show="!$ctrl.sickness && !$ctrl.toil">Leave Request</span>
-    <span ng-show="$ctrl.sickness">Sick Absence</span>
-    <span ng-show="$ctrl.toil">Accure TOIL for additional work</span>
+    <span ng-show="$ctrl.isLeaveType('leave')">Leave Request</span>
+    <span ng-show="$ctrl.isLeaveType('sick')">Sick Absence</span>
+    <span ng-show="$ctrl.isLeaveType('toil')">Accure TOIL for additional work</span>
   </h4>
 </div>
 <crm-loading show="!$ctrl.loading.absenceTypes">
@@ -34,7 +34,7 @@
         <uib-tabset class="chr_leave-request-modal__tab">
           <uib-tab heading="Details">
             <ng-include src="pathTpl + 'request-modal/details/leave.html'"></ng-include>
-            <ng-include ng-show="$ctrl.toil" src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
+            <ng-include ng-show="$ctrl.isLeaveType('toil')" src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
             <crm-loading show="!$ctrl.loading.calculateBalanceChange">
               <div ng-show="$ctrl.uiOptions.showBalance">
                 <hr/>
@@ -94,13 +94,13 @@
                 </div>
               </div>
             </crm-loading>
-            <div class="row" ng-show="$ctrl.toil">
+            <div class="row" ng-show="$ctrl.isLeaveType('toil')">
               <div class="col-xs-12 form-horizontal">
                 <hr>
                 <div class="expire-date">Expiry Date: <span>{{$ctrl.currentDate}}</div>
               </div>
             </div>
-            <ng-include ng-show="$ctrl.sickness" src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
+            <ng-include ng-show="$ctrl.isLeaveType('sick')" src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
           </uib-tab>
           <uib-tab heading="Comments"></uib-tab>
           <uib-tab heading="Files"></uib-tab>

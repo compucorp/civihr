@@ -5,6 +5,7 @@
     'common/angular',
     'mocks/data/option-group-mock-data',
     'mocks/data/leave-request-data',
+    'mocks/helpers/helper',
     'common/angularMocks',
     'leave-absences/shared/config',
     'common/mocks/services/hr-settings-mock',
@@ -18,13 +19,13 @@
     'common/mocks/services/api/contact-mock',
     'leave-absences/shared/controllers/leave-request-popup-controller',
     'leave-absences/shared/modules/shared-settings',
-  ], function (_, moment, angular, optionGroupMock, mockData) {
+  ], function (_, moment, angular, optionGroupMock, mockData, helper) {
     'use strict';
 
     describe('LeaveRequestPopupCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
-        $provide, sharedSettings, LeaveRequestInstance, Contact, ContactAPIMock,
-        EntitlementAPI, LeaveRequestAPI, WorkPatternAPI,
+        $provide, sharedSettings, AbsenceTypeAPI, LeaveRequestInstance, Contact, ContactAPIMock,
+        EntitlementAPI, LeaveRequestAPI, SicknessRequestInstance, WorkPatternAPI,
         date2016 = '01/12/2016',
         date2017 = '02/02/2017',
         date2013 = '02/02/2013';
@@ -54,8 +55,8 @@
       }]));
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_,
-        _LeaveRequestInstance_, _Contact_, _EntitlementAPI_, _LeaveRequestAPI_,
-        _WorkPatternAPI_) {
+        _AbsenceTypeAPI_, _Contact_, _EntitlementAPI_, _LeaveRequestInstance_,
+        _LeaveRequestAPI_, _SicknessRequestInstance_, _WorkPatternAPI_) {
 
         $log = _$log_;
         $rootScope = _$rootScope_;
@@ -65,15 +66,22 @@
         EntitlementAPI = _EntitlementAPI_;
         LeaveRequestAPI = _LeaveRequestAPI_;
         WorkPatternAPI = _WorkPatternAPI_;
+        AbsenceTypeAPI = _AbsenceTypeAPI_;
 
         LeaveRequestInstance = _LeaveRequestInstance_;
+        SicknessRequestInstance = _SicknessRequestInstance_;
+
         spyOn($log, 'debug');
         spyOn(Contact, 'all').and.callFake(function () {
           return $q.resolve(ContactAPIMock.mockedContacts());
         });
+
+        spyOn(AbsenceTypeAPI, 'all').and.callThrough();
         spyOn(EntitlementAPI, 'all').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
         spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
+        spyOn(SicknessRequestInstance, 'init').and.callThrough();
+
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
       }));
 
@@ -93,6 +101,10 @@
         describe('before date is selected', function () {
           beforeEach(function () {
             $scope.$digest();
+          });
+
+          it('has leave type set to leave', function () {
+            expect($ctrl.isLeaveType('leave')).toBeTruthy();
           });
 
           it('has absence period is set', function () {
@@ -144,6 +156,10 @@
             expect($ctrl.calendar.days).toBeDefined();
           });
 
+          it('gets absence types with false sick param', function() {
+            expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({ is_sick: false })
+          });
+
           describe('leave request instance', function () {
             it('has new instance created', function () {
               expect($ctrl.leaveRequest).toEqual(jasmine.any(Object));
@@ -186,7 +202,7 @@
           });
 
           it('selects first day type', function () {
-            expect($ctrl.leaveRequest.from_date_type).toEqual('all_day');
+            expect($ctrl.leaveRequest.from_date_type).toEqual('1');
           });
         });
 
@@ -203,7 +219,7 @@
           });
 
           it('select first day type', function () {
-            expect($ctrl.leaveRequest.to_date_type).toEqual('all_day');
+            expect($ctrl.leaveRequest.to_date_type).toEqual('1');
           });
         });
 
@@ -316,7 +332,7 @@
           var expectedDayType;
 
           beforeEach(function () {
-            expectedDayType = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
+            expectedDayType = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1');
             setTestDates(null, date2016);
           });
 
@@ -733,9 +749,9 @@
             expect($ctrl.leaveRequest.type_id).toEqual('1');
             expect($ctrl.leaveRequest.status_id).toEqual(waitingApprovalStatus.value);
             expect($ctrl.leaveRequest.from_date).toEqual('2016-11-23');
-            expect($ctrl.leaveRequest.from_date_type).toEqual('all_day');
+            expect($ctrl.leaveRequest.from_date_type).toEqual('1');
             expect($ctrl.leaveRequest.to_date).toEqual('2016-11-28');
-            expect($ctrl.leaveRequest.to_date_type).toEqual('all_day');
+            expect($ctrl.leaveRequest.to_date_type).toEqual('1');
           });
 
           it('does not allow user to submit', function () {
@@ -816,6 +832,95 @@
 
           it('does not update leave request', function () {
             expect($ctrl.leaveRequest.update).not.toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe('sick request', function() {
+        beforeEach(function() {
+          var directiveOptions = {
+            contactId: CRM.vars.leaveAndAbsences.contactId,
+            leaveType: 'sick'
+          };
+
+          initTestController(directiveOptions);
+        });
+
+        it('has leave type set to sick', function () {
+          expect($ctrl.isLeaveType('sick')).toBeTruthy();
+        });
+
+        it('calls init on sickness instance', function() {
+          expect(SicknessRequestInstance.init).toHaveBeenCalledWith({contact_id: CRM.vars.leaveAndAbsences.contactId});
+        });
+
+        it('loads reasons option types', function() {
+          expect(Object.keys($ctrl.sicknessReasons).length).toBeGreaterThan(0);
+        });
+
+        it('loads documents option types', function() {
+          expect($ctrl.sicknessDocumentTypes.length).toBeGreaterThan(0);
+        });
+
+        it('gets absence types with true sick param', function() {
+          expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({ is_sick: true })
+        });
+
+        it('cannot submit request', function() {
+          expect($ctrl.canSubmit()).toBe(false);
+        });
+
+        describe('with selected reason', function() {
+          beforeEach(function() {
+            var reason = optionGroupMock.specificObject('hrleaveandabsences_sickness_reason', 'name', 'appointment');
+
+            $ctrl.leaveRequest = helper.createRandomSicknessRequest();
+            $ctrl.leaveRequest.reason = reason.value;
+          });
+
+          it('cannot submit request', function() {
+            expect($ctrl.canSubmit()).toBe(true);
+          });
+
+          describe('when user changes number of days selected', function() {
+            beforeEach(function() {
+              $ctrl.changeInNoOfDays();
+            });
+
+            it('resets reason', function() {
+              expect($ctrl.leaveRequest.reason).toBeNull();
+            });
+          });
+        });
+
+        describe('with required documents', function() {
+          describe('for new leave request instance', function() {
+            it('is not defined', function() {
+              expect($ctrl.leaveRequest.required_documents).toEqual([]);
+            });
+          });
+
+          describe('added by user', function() {
+            beforeEach(function () {
+              $ctrl.updateRequiredDocuments("1");
+            });
+
+            it('leave request instance has required documents', function() {
+              expect($ctrl.leaveRequest.required_documents).toEqual(['1']);
+            });
+          });
+
+          describe('removed by user', function() {
+            beforeEach(function () {
+              //user added by selecting
+              $ctrl.updateRequiredDocuments("1");
+              //user removed by unselecting
+              $ctrl.updateRequiredDocuments("1");
+            });
+
+            it('leave request instance has no required documents', function() {
+              expect($ctrl.leaveRequest.required_documents).toEqual([]);
+            });
           });
         });
       });

@@ -22,12 +22,12 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-xs-12 form-horizontal" ng-hide="!$ctrl.uiOptions.multipleDays && $ctrl.toil">
+  <div class="col-xs-12 form-horizontal" ng-hide="!$ctrl.uiOptions.multipleDays && $ctrl.isLeaveType('toil')">
     <div class="form-group">
       <label class="col-xs-4 control-label">From Date<i class="fa fa-asterisk"></i>
       </label>
       <div class="col-xs-4">
-        <div ng-hide="$ctrl.toil" class="input-group">
+        <div ng-hide="$ctrl.isLeaveType('toil')" class="input-group">
           <input
             type="text"
             class="form-control"
@@ -46,7 +46,7 @@
               ng-click="$ctrl.uiOptions.date.from.show = true"></button>
           </span>
         </div>
-        <div ng-show="$ctrl.toil" class="input-group">
+        <div ng-show="$ctrl.isLeaveType('toil')" class="input-group">
           <input
             type="text"
             class="form-control"
@@ -63,7 +63,7 @@
           </span>
         </div>
       </div>
-      <div class="col-xs-4" ng-hide="$ctrl.toil">
+      <div class="col-xs-4" ng-hide="$ctrl.isLeaveType('toil')">
         <crm-loading
           show="!$ctrl.loading.fromDayTypes"
           class="chr_leave-request-modal__small_spinner">
@@ -71,7 +71,7 @@
             <select
               name="fromDayTypeSelect"
               ng-disabled="$ctrl.isMode('view') || $ctrl.leaveRequestFromDayTypes.length === 1"
-              ng-options="dayType.name as dayType.label for dayType in $ctrl.leaveRequestFromDayTypes"
+              ng-options="dayType.value as dayType.label for dayType in $ctrl.leaveRequestFromDayTypes"
               ng-model="$ctrl.leaveRequest.from_date_type"
               ng-change="$ctrl.calculateBalanceChange()">
               <option ng-disabled="$ctrl.isMode('view')" value="">Select</option>
@@ -89,7 +89,7 @@
       <label class="col-xs-4 control-label">To Date<i class="fa fa-asterisk"></i>
       </label>
       <div class="col-xs-4">
-        <div ng-hide="$ctrl.toil" class="input-group">
+        <div ng-hide="$ctrl.isLeaveType('toil')" class="input-group">
           <input
             type="text"
             class="form-control"
@@ -108,7 +108,7 @@
               ng-click="$ctrl.uiOptions.date.to.show = $ctrl.leaveRequest.from_date ? true : false"></button>
           </span>
         </div>
-        <div ng-show="$ctrl.toil" class="input-group">
+        <div ng-show="$ctrl.isLeaveType('toil')" class="input-group">
           <input
             type="text"
             class="form-control"
@@ -125,7 +125,7 @@
           </span>
         </div>
       </div>
-      <div class="col-xs-4" ng-hide="$ctrl.toil">
+      <div class="col-xs-4" ng-hide="$ctrl.isLeaveType('toil')">
         <crm-loading
           show="!$ctrl.loading.toDayTypes"
           class="chr_leave-request-modal__small_spinner">
@@ -133,7 +133,7 @@
             <select
               name="toDayTypeSelect"
               ng-disabled="$ctrl.isMode('view') || $ctrl.leaveRequestToDayTypes.length === 1 || !$ctrl.leaveRequest.from_date"
-              ng-options="dayType.name as dayType.label for dayType in $ctrl.leaveRequestToDayTypes"
+              ng-options="dayType.value as dayType.label for dayType in $ctrl.leaveRequestToDayTypes"
               ng-model="$ctrl.leaveRequest.to_date_type"
               ng-disabled="$ctrl.isMode('view')"
               ng-change="$ctrl.calculateBalanceChange()">

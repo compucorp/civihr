@@ -100,5 +100,19 @@ define([
         expect(instance.toAPI).toHaveBeenCalled();
       });
     });
+
+    describe('default attributes', function() {
+      beforeEach(function() {
+        instance = instance.init({}, false);
+      });
+
+      it('initializes reason', function() {
+        expect(instance.reason).toBeNull();
+      });
+
+      it('initializes required documents', function() {
+        expect(instance.required_documents).toEqual([]);
+      });
+    });
   });
 });
