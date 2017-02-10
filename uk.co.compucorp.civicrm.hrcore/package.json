@@ -1,0 +1,10 @@
+{
+  "name": "uk.co.compucorp.civicrm.hrcore",
+  "description": "Provides CiviHR generic functionality",
+  "scripts": {
+    "backstop": "backstop"
+  },
+  "devDependencies": {
+    "backstopjs": "^2.3.7"
+  }
+}

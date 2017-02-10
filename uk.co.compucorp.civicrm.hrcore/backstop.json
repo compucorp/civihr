@@ -1,0 +1,51 @@
+{
+  "id": "CiviHR main pages",
+  "viewports": [{
+    "name": "desktop",
+    "width": 1920,
+    "height": 900
+  }],
+  "scenarios": [
+    {
+      "label": "T&A - Tasks",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "delay": 1000,
+      "onBeforeScript": "login.js"
+    },
+    {
+      "label": "T&A - Documents",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "delay": 1000,
+      "onBeforeScript": "login.js"
+    },
+    {
+      "label": "T&A - Calendar",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/calendar",
+      "delay": 1000,
+      "onBeforeScript": "login.js"
+    },
+    {
+      "label": "Contact Summary - Main",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "delay": 1000,
+      "onBeforeScript": "login.js"
+    },
+    {
+      "label": "Contact Summary - Job Contract",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "delay": 1000,
+      "onBeforeScript": "login.js"
+    }
+  ],
+  "paths": {
+    "bitmaps_reference": "backstop_data/screenshots/main-pages/reference",
+    "bitmaps_test": "backstop_data/screenshots/main-pages/test",
+    "casper_scripts": "backstop_data/casper_scripts",
+    "html_report": "backstop_data/html_report",
+    "ci_report": "backstop_data/ci_report"
+  },
+  "casperFlags": [],
+  "engine": "phantomjs",
+  "report": ["CLI"],
+  "debug": false
+}
