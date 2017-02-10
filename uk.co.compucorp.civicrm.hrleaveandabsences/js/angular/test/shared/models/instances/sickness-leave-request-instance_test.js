@@ -115,37 +115,29 @@ define([
       });
     });
 
-    describe('with required documents', function() {
+    describe('toggleDocument()', function() {
       beforeEach(function() {
         instance = instance.init({}, false);
       });
 
-      describe('for new leave request instance', function() {
-        it('is initialized to empty string', function() {
-          expect(instance.required_documents).toEqual('');
-        });
-      });
-
-      describe('when added by user', function() {
+      describe('when toggled with unique string value', function() {
         beforeEach(function () {
           instance.toggleDocument("1");
           instance.toggleDocument("2");
         });
 
-        it('leave request instance has required documents', function() {
+        it('appends it to required documents', function() {
           expect(instance.required_documents).toEqual('1,2');
         });
       });
 
-      describe('when removed by user', function() {
+      describe('when toggles with same string value', function() {
         beforeEach(function () {
-          //user added by selecting
           instance.toggleDocument("1");
-          //user removed by unselecting
           instance.toggleDocument("1");
         });
 
-        it('leave request instance has no required documents', function() {
+        it('removes string value from required documents', function() {
           expect(instance.required_documents).toEqual('');
         });
       });
