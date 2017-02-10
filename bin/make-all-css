@@ -1,0 +1,36 @@
+#!/bin/bash
+
+## DESCRIPTION: Run "gulp sass" in every extension
+##
+## MIGRATION UTILITY: Delete this script after the bootstrap materials are migrated to their own repos.
+
+set -ex
+
+if [ ! -d uk.co.compucorp.civicrm.appraisals ]; then
+  echo "Please execute this from within the civihr folder." 1>&2
+  exit 1
+fi
+
+echo "[[ Pre-clean ]]"
+for f in org.civicrm.bootstrap/css/bootstrap.css org.civicrm.bootstrapcivicrm/css/bootstrap.css \
+         org.civicrm.bootstrapcivicrm/css/custom-civicrm.css org.civicrm.bootstrapcivihr/css/civihr.css \
+         contactsummary/css/contactsummary.css uk.co.compucorp.civicrm.appraisals/css/civiappraisals.css \
+         org.civicrm.styleguide/css/styleguide.css
+do
+  if [ -f "$f" ]; then rm -f "$f" ; fi
+done
+echo "[[ Pre-clean status ]]"
+git status
+
+
+echo "[[ Build ]]"
+
+for EXT in org.civicrm.bootstrap contactsummary contactaccessrights org.civicrm.bootstrapcivicrm org.civicrm.bootstrapcivihr uk.co.compucorp.civicrm.appraisals org.civicrm.styleguide ; do
+  pushd "$EXT"
+    [ ! -d node_modules ] && npm install
+    time gulp sass
+  popd
+done
+
+echo "[[ Final status ]]"
+git status

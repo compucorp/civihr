@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+
+// DESCRIPTION: Search and update SCSS files with cross-extension references.
+//
+// MIGRATION UTILITY: Delete this script after the bootstrap materials are migrated to their own repos.
+//
+// Search for:
+//    @import '../../org.civicrm.bootstrap/foo/*';
+// And replace with:
+//    @import 'SCSSROOT/org.civicrm.bootstrap/foo/ALL';
+
+$files = explode("\n", trim(`find -name \*.scss | grep -v /node_modules/`));
+foreach ($files as $file) {
+  if (!$file) continue;
+  $oldContent = file_get_contents($file);
+  $newContent = preg_replace(';(@import [\'"])(\.\./)+(org.civicrm.boot);', '$1SCSSROOT/$3', $oldContent);
+  $newContent = preg_replace(';(@import [\'"]SCSSROOT[^\'"]+)/\*;', '$1/ALL', $newContent);
+  if ($newContent  != $oldContent) {
+    echo "Patch $file\n";
+    file_put_contents($file, $newContent);
+  }
+}
