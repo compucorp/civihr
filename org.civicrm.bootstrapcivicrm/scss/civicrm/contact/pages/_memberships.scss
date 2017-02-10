@@ -53,12 +53,10 @@
     table {
       &.form-layout-compressed {
         tr {
-          &:nth-child(1) {
-            border-bottom: 0;
+          border-bottom: 0;
 
-            td {
-              border-bottom: 0;
-            }
+          td {
+            border-bottom: 0;
           }
         }
       }
@@ -66,12 +64,38 @@
 
     .label {
       padding: 10px 30px;
-      min-width: 210px;
+      min-width: 165px;
+      line-height: 1.5em;
     }
 
     .auto-renew-text {
       padding: 10px 30px;
       display: block;
+    }
+
+    span {
+      &.description {
+        display: block;
+        line-height: 1.5em;
+        margin-bottom: 5px;
+      }
+    }
+
+    textarea {
+      vertical-align: middle;
+      padding: 0 5px;
+    }
+
+    .crm-submit-buttons {
+      border: 0;
+      padding: 0 !important;
+    }
+
+    .crm-membership-form-block-membership_type_id {
+      select {
+        max-width: 230px;
+        padding-right: 30px !important;
+      }
     }
 
     .crm-membership-form-block-record_contribution {
@@ -80,6 +104,7 @@
 
         legend {
           padding: 10px 30px;
+          margin-bottom: 0;
         }
       }
     }
@@ -98,8 +123,16 @@
           }
 
           &.label {
-            padding-right: 20px; 
+            padding-right: 20px;
           }
+        }
+      }
+    }
+
+    #send-receipt {
+      td {
+        &.label {
+          min-width: 175px;
         }
       }
     }

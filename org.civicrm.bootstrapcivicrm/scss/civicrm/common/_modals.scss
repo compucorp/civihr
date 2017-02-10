@@ -67,8 +67,9 @@
 
   .ui-dialog-content {
     @extend .modal-body, %open-sans-font-family;
-    padding: 20px;
+    padding: 20px 20px 0 20px;
     margin-top: 0;
+    margin-bottom: 0;
     height: auto !important;
     background: $crm-white;
 
@@ -82,6 +83,19 @@
 
     .crm-block {
       box-shadow: none;
+    }
+
+    .crm-submit-buttons {
+      &:last-child {
+        margin-left: -20px !important;
+        margin-right: -20px !important;
+        padding: 22px 40px !important;
+        background: $gray-lighter !important;
+
+        input {
+          margin-top: 1px;
+        }
+      }
     }
   }
 
