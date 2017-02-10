@@ -533,20 +533,9 @@ define([
        * @return {Object} containing required keys for leave request
        */
       function getParamsForBalanceChange() {
-        var params = _.pick(vm.leaveRequest, ['contact_id', 'from_date',
+        return _.pick(vm.leaveRequest, ['contact_id', 'from_date',
           'from_date_type', 'to_date', 'to_date_type'
         ]);
-
-        //todo to remove in future when this call is consistent with leaverequest db fields name
-        return _.mapKeys(params, function (value, key) {
-          if (key == 'from_date_type') {
-            return 'from_type';
-          } else if (key == 'to_date_type') {
-            return 'to_type';
-          }
-
-          return key;
-        });
       }
 
       /**

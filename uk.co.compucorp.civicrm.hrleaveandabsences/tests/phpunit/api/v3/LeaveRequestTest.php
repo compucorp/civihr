@@ -1115,7 +1115,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, from_date, from_type
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, from_date, from_date_type
    */
   public function testCalculateBalanceChangeShouldNotAllowNullParams() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', []);
@@ -1128,9 +1128,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testCalculateBalanceChangeShouldNotAllowParamsWithoutContactID() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'from_date' => "2016-11-05",
-      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
+      'from_date_type' => $this->leaveRequestDayTypes['1/2 AM']['value'],
       'to_date' => "2016-11-10",
-      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
+      'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
     ]);
   }
 
@@ -1141,22 +1141,22 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromDate() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
-      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
+      'from_date_type' => $this->leaveRequestDayTypes['1/2 AM']['value'],
       'to_date' => "2016-11-10",
-      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
+      'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
     ]);
   }
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: from_type
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: from_date_type
    */
   public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromType() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
       'from_date' => "2016-11-05",
       'to_date' => "2016-11-10",
-      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
+      'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
     ]);
   }
 
@@ -1168,22 +1168,22 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
       'from_date' => "2016-19-05",
-      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
+      'from_date_type' => $this->leaveRequestDayTypes['1/2 AM']['value'],
       'to_date' => "2016-11-10",
-      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name']
+      'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value']
     ]);
   }
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage to_date and to_type must be included together
+   * @expectedExceptionMessage to_date and to_date_type must be included together
    */
   public function testCalculateBalanceChangeShouldNotAllowToTypeParameterWhenToDateIsNotPresent() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
       'from_date' => "2016-11-05",
-      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
-      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
+      'from_date_type' => $this->leaveRequestDayTypes['1/2 AM']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
     ]);
   }
 
@@ -1205,8 +1205,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = date('2016-11-13');
     $toDate = date('2016-11-15');
-    $fromType = $this->leaveRequestDayTypes['1/2 AM']['name'];
-    $toType = $this->leaveRequestDayTypes['1/2 AM']['name'];
+    $fromType = $this->leaveRequestDayTypes['1/2 AM']['value'];
+    $toType = $this->leaveRequestDayTypes['1/2 AM']['value'];
 
     $expectedResultsBreakdown = [
       'amount' => 0,
@@ -1253,9 +1253,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => $contract['contact_id'],
       'from_date' => $fromDate,
-      'from_type' => $fromType,
+      'from_date_type' => $fromType,
       'to_date' => $toDate,
-      'to_type' => $toType
+      'to_date_type' => $toType
     ]);
     $this->assertEquals($expectedResultsBreakdown, $result['values']);
   }
@@ -1478,8 +1478,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-11-14');
     $toDate = new DateTime('2016-11-17');
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
-    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
+    $toType = $this->leaveRequestDayTypes['All Day']['value'];
 
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => $absenceType->id,
@@ -1533,8 +1533,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //both days are on weekends
     $fromDate = new DateTime('2016-11-12');
     $toDate = new DateTime('2016-11-13');
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
-    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
+    $toType = $this->leaveRequestDayTypes['All Day']['value'];
 
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => $this->absenceType->id,
@@ -1566,8 +1566,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //the dates are outside of the absence period dates
     $fromDate = new DateTime('2015-11-12');
     $toDate = new DateTime('2015-11-13');
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
-    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
+    $toType = $this->leaveRequestDayTypes['All Day']['value'];
 
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => $this->absenceType->id,
@@ -1634,8 +1634,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //The from date and to date overlaps the two job contracts
     $fromDate = new DateTime('2016-06-25');
     $toDate = new DateTime('2016-07-13');
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
-    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
+    $toType = $this->leaveRequestDayTypes['All Day']['value'];
 
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => $periodEntitlement->type_id,
@@ -1878,9 +1878,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
       'from_date' => $startDate->format('Y-m-d'),
-      'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => $endDate->format('Y-m-d'),
-      'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'status_id' => 1,
       'sequential' => 1,
     ]);
@@ -1898,9 +1898,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => $startDate->format('Ymd'),
-      'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => $endDate->format('Ymd'),
-      'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'status_id' => 1,
       'sequential' => 1,
     ], true);

@@ -604,15 +604,21 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $interval   = new DateInterval('P1D');
     $datePeriod = new DatePeriod($fromDate, $interval, $toDate);
 
-    $isHalfDay = ['half_day_am', 'half_day_pm'];
-    $fromDateIsHalfDay = in_array($fromType, $isHalfDay);
-    $toDateIsHalfDay = in_array($toType, $isHalfDay);
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type'));
+
+    $halfDayTypesValues = [
+      $leaveRequestDayTypes['1/2 AM'],
+      $leaveRequestDayTypes['1/2 PM'],
+    ];
+    $fromDateIsHalfDay = in_array($fromType, $halfDayTypesValues);
+    $toDateIsHalfDay = in_array($toType, $halfDayTypesValues);
+
     $resultsBreakdown = [
       'amount' => 0,
       'breakdown' => []
     ];
+
     $leaveRequestDayTypeOptionsGroup = self::getLeaveRequestDayTypeOptionsGroup();
-    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type'));
 
     foreach ($datePeriod as $date) {
       //check if date is a public holiday
@@ -631,13 +637,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       //since its an half day, 0.5 will be deducted irrespective of the amount returned from the work pattern
       if($fromDateIsHalfDay && $date == $fromDate && $amount != 0) {
         $amount = -1 * 0.5;
-        $leaveRequestDayTypeName = $fromType;
+        $leaveRequestDayTypeName = $fromType == $leaveRequestDayTypes['1/2 AM'] ? 'half_day_am' : 'half_day_pm';
       }
 
       //since its an half day, 0.5 will be deducted irrespective of the amount returned from the work pattern
       if($toDateIsHalfDay && $date == $endDateUnmodified && $amount !=0) {
         $amount =  -1 * 0.5;
-        $leaveRequestDayTypeName = $toType;
+        $leaveRequestDayTypeName = $toType == $leaveRequestDayTypes['1/2 AM'] ? 'half_day_am' : 'half_day_pm';
       }
 
       $result = [
