@@ -31,7 +31,7 @@ define([
         mode = '', //can be edit, create, view
         role = '', //could be manager, owner or admin
         selectedAbsenceType = {},
-        leaveType = directiveOptions.leaveType ? directiveOptions.leaveType : 'leave',
+        leaveType = 'leave', //other values could be sick or toil
         vm = {};
 
       vm.absencePeriods = [];
@@ -350,18 +350,13 @@ define([
        */
       (function initController() {
         vm.loading.absenceTypes = true;
+        initLeaveType();
+        initLeaveRequest();
 
-        initLeaveRequest()
+        loadStatuses()
           .then(function () {
-            return loadStatuses();
-          })
-          .then(function () {
-            return $q.all[
-              initUserRole(),
-              initOpenMode()
-            ];
-          })
-          .then(function () {
+            initUserRole();
+            initOpenMode();
             return loadAbsencePeriods();
           })
           .then(function () {
@@ -596,6 +591,8 @@ define([
 
       /**
        * Gets currently selected absence type from leave request type_id
+       *
+       * @return {Object} absence type object
        */
       function getSelectedAbsenceType() {
         return _.find(vm.absenceTypes, function (absenceType) {
@@ -604,7 +601,7 @@ define([
       }
 
       /**
-       * Gets currently selected absence type from leave request type_id
+       * Gets status object for given status value
        *
        * @param value of the status
        * @return {Object} option group of type status
@@ -642,8 +639,6 @@ define([
 
       /**
        * Initialize open mode of the dialog
-       *
-       * @return {Promise}
        */
       function initOpenMode() {
         if (vm.leaveRequest.id) {
@@ -657,17 +652,14 @@ define([
           if (vm.isRole('owner') && viewModes.indexOf(vm.leaveRequest.status_id) > -1) {
             mode = 'view';
           }
+
         } else {
           mode = 'create';
         }
-
-        return $q.resolve(mode);
       }
 
       /**
        * Initialize user's role
-       *
-       * @return {Promise}
        */
       function initUserRole() {
         if (directiveOptions.leaveRequest &&
@@ -677,13 +669,10 @@ define([
         }
         //owner is editing or viewing popup, no api call - direct set
         role = 'owner';
-        return $q.resolve(role);
       }
 
       /**
        * Initialize leaverequest based on attributes that come from directive
-       *
-       * @return {Promise}
        */
       function initLeaveRequest() {
         var attributes;
@@ -701,12 +690,20 @@ define([
         //init to get methods like roleOf again on leaverequest instance as cloning removes them
         if (vm.isLeaveType('sick')) {
           vm.leaveRequest = SicknessRequestInstance.init(attributes);
-        }
-        else {
+        } else {
           vm.leaveRequest = LeaveRequestInstance.init(attributes);
         }
+      }
 
-        return $q.resolve(vm.leaveRequest);
+      /**
+       * Inits leave type
+       */
+      function initLeaveType() {
+        if (directiveOptions.leaveType && directiveOptions.leaveType !== 'holiday / vacation') {
+          leaveType = directiveOptions.leaveType;
+        } else {
+          leaveType = 'leave';
+        }
       }
 
       /**
@@ -827,8 +824,9 @@ define([
        * @return {Promise}
        */
       function loadAbsenceTypes() {
-        // Fetch all the absence types, except for the sickness ones
-        return AbsenceType.all({ is_sick: vm.isLeaveType('sick') })
+        return AbsenceType.all({
+            is_sick: vm.isLeaveType('sick')
+          })
           .then(function (absenceTypes) {
             var absenceTypesIds = absenceTypes.map(function (absenceType) {
               return absenceType.id;

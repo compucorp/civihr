@@ -894,23 +894,23 @@
         });
 
         describe('with required documents', function() {
-          describe('not added', function() {
+          describe('for new leave request instance', function() {
             it('is not defined', function() {
-              expect($ctrl.leaveRequest.required_documents).not.toBeDefined();
+              expect($ctrl.leaveRequest.required_documents).toEqual([]);
             });
           });
 
-          describe('added', function() {
+          describe('added by user', function() {
             beforeEach(function () {
               $ctrl.updateRequiredDocuments("1");
             });
 
-            it('has required documents', function() {
+            it('leave request instance has required documents', function() {
               expect($ctrl.leaveRequest.required_documents).toEqual(['1']);
             });
           });
 
-          describe('removed', function() {
+          describe('removed by user', function() {
             beforeEach(function () {
               //user added by selecting
               $ctrl.updateRequiredDocuments("1");
@@ -918,7 +918,7 @@
               $ctrl.updateRequiredDocuments("1");
             });
 
-            it('has no required documents', function() {
+            it('leave request instance has no required documents', function() {
               expect($ctrl.leaveRequest.required_documents).toEqual([]);
             });
           });

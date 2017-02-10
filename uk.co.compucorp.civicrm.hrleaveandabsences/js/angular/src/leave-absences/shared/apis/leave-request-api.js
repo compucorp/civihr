@@ -86,8 +86,7 @@ define([
           .then(function (data) {
             if (checkError(data)) {
               deferred.reject(data.error_message);
-            }
-            else {
+            } else {
               deferred.resolve(data.values);
             }
           });
@@ -115,8 +114,7 @@ define([
           .then(function (data) {
             if (checkError(data)) {
               deferred.reject(data.error_message);
-            }
-            else {
+            } else {
               //returns array of single object hence getting first object
               deferred.resolve(data.values[0]);
             }
@@ -147,8 +145,7 @@ define([
           .then(function (data) {
             if (checkError(data)) {
               deferred.reject(data.error_message);
-            }
-            else {
+            } else {
               deferred.resolve(data.values);
             }
           });
@@ -186,8 +183,7 @@ define([
           .then(function (data) {
             if (checkError(data)) {
               deferred.reject(data.error_message);
-            }
-            else {
+            } else {
               //returns array of single object hence getting first object
               deferred.resolve(data.values[0]);
             }
@@ -216,8 +212,7 @@ define([
           .then(function (data) {
             if (data.count > 0) {
               deferred.reject(data.values);
-            }
-            else {
+            } else {
               deferred.resolve(data.values);
             }
           });

@@ -11,6 +11,19 @@ define([
       return LeaveRequestInstance.extend({
 
         /**
+         * Returns the default custom data
+         * with its default values
+         *
+         * @return {object}
+         */
+        defaultCustomData: function () {
+          return {
+            reason: null,
+            required_documents: []
+          }
+        },
+
+        /**
          * Create a new sickness request
          *
          * @return {Promise} Resolved with {Object} Created Leave request with
