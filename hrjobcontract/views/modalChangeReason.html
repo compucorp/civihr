@@ -1,43 +1,34 @@
 <form novalidate class="form-horizontal {{prefix}}wizard" name="contractChangeReason" role="form" ng-submit="save()">
-    <div class="modal-header">
-        <button type="button" class="close" ng-click="cancel()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title">{{copy.title}}</h4>
-    </div>
-    <div class="modal-body">
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="form-group required" hrjc-validate>
-                    <label for="{{prefix}}change-reason" class="col-sm-4 control-label">Reason for change</label>
-                    <div class="col-sm-6">
-                        <select id="{{prefix}}change-reason" class="form-control" name="changeReason"
-                                ng-model="change_reason"
-                                ng-options="key as value for (key, value) in options.contract.change_reason"
-                                ng-disabled="isDisabled"
-                                required>
-                            <option value="">- select -</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group required" hrjc-validate hrjc-validate-warning="isPast">
-                    <label for="{{prefix}}date-effective" class="col-sm-4 control-label">Effective date</label>
-                    <div class="col-sm-6">
-                        <div class="input-group input-group-unstyled">
-                            <input type="text" class="form-control" id="{{prefix}}date-effective" name="dateEffective"
-                              uib-datepicker-popup
-                              is-open="dpDateEffectiveOpen"
-                              ng-model="effective_date"
-                              ng-click="dpOpen($event, 'dpDateEffectiveOpen')"
-                              required>
-                            <span class="input-group-addon fa fa-calendar"></span>
-                        </div>
-                        <span class="help-block" ng-show="isPast && contractChangeReason.dateEffective.$dirty">Note: The Effective Date that you have selected is in the past. Are you sure you wish to continue?</span>
-                    </div>
-                </div>
-            </div>
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <h4 class="modal-title">{{copy.title}}</h4>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="form-group required" hrjc-validate>
+          <label for="{{prefix}}change-reason" class="col-sm-4 control-label">Reason for change</label>
+          <div class="col-sm-6">
+            <select id="{{prefix}}change-reason" class="form-control" name="changeReason" ng-model="change_reason" ng-options="key as value for (key, value) in options.contract.change_reason" ng-disabled="isDisabled" required>
+              <option value="">- select -</option>
+            </select>
+          </div>
         </div>
+        <div class="form-group required" hrjc-validate hrjc-validate-warning="isPast">
+          <label for="{{prefix}}date-effective" class="col-sm-4 control-label">Effective date</label>
+          <div class="col-sm-6">
+            <div class="input-group input-group-unstyled">
+              <input type="text" class="form-control" id="{{prefix}}date-effective" name="dateEffective" uib-datepicker-popup is-open="dpDateEffectiveOpen" ng-model="effective_date" ng-click="dpOpen($event, 'dpDateEffectiveOpen')" required>
+              <span class="input-group-addon fa fa-calendar"></span>
+            </div>
+            <span class="help-block" ng-show="isPast && contractChangeReason.dateEffective.$dirty">Note: The Effective Date that you have selected is in the past. Are you sure you wish to continue?</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" ng-click="save()" ng-disabled="!contractChangeReason.$valid">Save and done</button>
-    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+    <button type="submit" class="btn btn-primary" ng-disabled="!contractChangeReason.$valid">Save and done</button>
+  </div>
 </form>
