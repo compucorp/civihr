@@ -1,11 +1,16 @@
 var gulp = require('gulp');
 var bulk = require('gulp-sass-bulk-import');
 var sass = require('gulp-sass');
+var civicrmScssRoot = require('civicrm-scssroot')();
 
 gulp.task('sass', function () {
+  civicrmScssRoot.updateSync();
   gulp.src('scss/*.scss')
     .pipe(bulk())
-    .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
+    .pipe(sass({
+      includePaths: civicrmScssRoot.getPath(),
+      outputStyle: 'compressed'
+    }).on('error', sass.logError))
     .pipe(gulp.dest('css/'));
 });
 

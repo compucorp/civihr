@@ -6,14 +6,17 @@ var postcssPrefix = require('postcss-prefix-selector');
 var postcssDiscardDuplicates = require('postcss-discard-duplicates');
 var stripCssComments = require('gulp-strip-css-comments');
 var transformSelectors = require("gulp-transform-selectors");
+var civicrmScssRoot = require('civicrm-scssroot')();
 
 var bootstrapNamespace = '#bootstrap-theme';
 
 gulp.task('sass', function () {
+  civicrmScssRoot.updateSync();
   gulp.src('scss/*.scss')
     .pipe(bulk())
     .pipe(sass({
       outputStyle: 'compressed',
+      includePaths: civicrmScssRoot.getPath(),
       precision: 10
     }).on('error', sass.logError))
     .pipe(stripCssComments({ preserve: false }))

@@ -8,11 +8,14 @@ var karma = require('karma');
 var exec = require('child_process').exec;
 var path = require('path');
 var fs = require('fs');
+var civicrmScssRoot = require('civicrm-scssroot')();
 
 gulp.task('sass', function () {
+  civicrmScssRoot.updateSync();
   gulp.src('scss/*.scss')
     .pipe(bulk())
     .pipe(sass({
+      includePaths: civicrmScssRoot.getPath(),
       outputStyle: 'compressed'
     }).on('error', sass.logError))
     .pipe(gulp.dest('css/'));

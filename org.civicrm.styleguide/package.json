@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "civicrm-cv": "civicrm/cv-nodejs",
+    "civicrm-scssroot": "git://github.com/totten/civicrm-scssroot.git#v0.1.1",
     "gulp": "^3.9.0",
     "gulp-sass": "^2.1.0",
     "gulp-sass-bulk-import": "^0.3.2",
