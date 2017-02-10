@@ -22,39 +22,38 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
   public static function create($params, $validate = true) {
     $entityName = 'TOILRequest';
     $hook = empty($params['id']) ? 'create' : 'edit';
-
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
-    if ($validate) {
-      self::validateParams($params);
-    }
 
     $instance = new self();
+    $toilRequestParams = self::parseTOILRequestParams($params);
+    $leaveRequestParams = self::parseLeaveRequestParams($params);
+
     //set from_date_type and to_date_type to be full day by default
     $dateTypeOptions = array_flip(LeaveRequest::buildOptions('from_date_type'));
-    $params['from_date_type'] = $dateTypeOptions['All Day'];
-    $params['to_date_type'] = $dateTypeOptions['All Day'];
+    $leaveRequestParams['from_date_type'] = $dateTypeOptions['All Day'];
+    $leaveRequestParams['to_date_type'] = $dateTypeOptions['All Day'];
 
     if ($hook == 'edit') {
-      $instance->id = $params['id'];
+      $instance->id = $toilRequestParams['id'];
       $instance->find(true);
-
       if ($instance->leave_request_id) {
-        $instance->copyValues($params);
-        $params['id'] = $instance->leave_request_id;
-        $leaveRequest = LeaveRequest::create($params, false);
-        $instance->save();
+        $toilRequestParams['leave_request_id'] = $instance->leave_request_id;
+        $leaveRequestParams['id'] = $instance->leave_request_id;
       }
     }
 
-    if ($hook == 'create') {
-      $leaveRequest = LeaveRequest::create($params, false);
-      $instance->copyValues($params);
-      $instance->leave_request_id = $leaveRequest->id;
-      $instance->save();
+    if ($validate) {
+      $params['leave_request_id'] = $instance->leave_request_id;
+      self::validateParams($params);
     }
 
+    $instance->copyValues($toilRequestParams);
+    $leaveRequestInstance = LeaveRequest::create($leaveRequestParams, false);
+    $instance->leave_request_id = $leaveRequestInstance->id;
+    $instance->save();
+
     $expiryDate = !empty($params['expiry_date']) ? new DateTime($params['expiry_date']) : null;
-    $instance->saveBalanceChange($leaveRequest, $params['toil_to_accrue'], $expiryDate);
+    $instance->saveBalanceChange($leaveRequestInstance, $params['toil_to_accrue'], $expiryDate);
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
@@ -76,6 +75,9 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     self::validateValidTOILPastDaysRequest($params);
 
     //run LeaveRequest Validation after all validations on TOIL Request
+    if (isset($params['leave_request_id'])) {
+      $params['id'] = $params['leave_request_id'];
+    }
     LeaveRequest::validateParams($params);
   }
 
@@ -340,5 +342,31 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     );
 
     return $totalApprovedTOIL;
+  }
+
+  /**
+   * Parses TOILRequest related parameters from the params array received
+   * by the create method.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @return array
+   */
+  private static function parseTOILRequestParams($params) {
+    return array_intersect_key($params, self::fields());
+  }
+
+  /**
+   * Parses LeaveRequest related parameters from the params array received
+   * by the create method.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @return array
+   */
+  private static function parseLeaveRequestParams($params) {
+    return array_intersect_key($params, LeaveRequest::fields());
   }
 }
