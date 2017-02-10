@@ -19,7 +19,7 @@ define([
         defaultCustomData: function () {
           return {
             reason: null,
-            required_documents: []
+            required_documents: ''
           }
         },
 

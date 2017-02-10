@@ -111,7 +111,7 @@ define([
       });
 
       it('initializes required documents', function() {
-        expect(instance.required_documents).toEqual([]);
+        expect(instance.required_documents).toEqual('');
       });
     });
   });
