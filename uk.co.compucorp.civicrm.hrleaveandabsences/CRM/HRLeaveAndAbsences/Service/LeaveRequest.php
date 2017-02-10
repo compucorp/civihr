@@ -299,6 +299,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * Run necessary BAO validations
    *
    * @param array $params
+   *
+   * @throws CRM_HRLeaveAndAbsences_Exception_EntityValidationException
    */
   protected function runValidation($params) {
     LeaveRequest::validateParams($params);
