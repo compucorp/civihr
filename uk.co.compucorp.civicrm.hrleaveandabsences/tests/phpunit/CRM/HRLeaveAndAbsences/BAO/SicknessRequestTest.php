@@ -13,6 +13,8 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_SicknessRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
@@ -20,6 +22,7 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
     $this->requiredDocumentOptions = $this->getSicknessRequestRequiredDocumentsOptions();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
     $this->sicknessRequestReasons = $this->getSicknessRequestReasons();
+    $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
   }
 
   public function testCreateSicknessRequest() {

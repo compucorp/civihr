@@ -20,30 +20,28 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
     $hook = empty($params['id']) ? 'create' : 'edit';
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
 
-    if ($validate) {
-      self::validateParams($params);
-    }
     $instance = new self();
+    $sicknessRequestParams = self::parseSicknessRequestParams($params);
+    $leaveRequestParams = self::parseLeaveRequestParams($params);
 
     if ($hook == 'edit') {
-      $instance->id = $params['id'];
+      $instance->id = $sicknessRequestParams['id'];
       $instance->find(true);
-
       if ($instance->leave_request_id) {
-        $instance->copyValues($params);
-        $params['id'] = $instance->leave_request_id;
-        LeaveRequest::create($params, false);
-        $instance->save();
+        $sicknessRequestParams['leave_request_id'] = $instance->leave_request_id;
+        $leaveRequestParams['id'] = $instance->leave_request_id;
       }
     }
-
-    if ($hook == 'create') {
-      $leaveRequest = LeaveRequest::create($params, false);
-      $instance->copyValues($params);
-      $instance->leave_request_id = $leaveRequest->id;
-      $instance->save();
+    if ($validate) {
+      $params['leave_request_id'] = $instance->leave_request_id;
+      self::validateParams($params);
     }
 
+    $instance->copyValues($sicknessRequestParams);
+    $leaveRequestInstance = LeaveRequest::create($leaveRequestParams, false);
+    $instance->leave_request_id = $leaveRequestInstance->id;
+
+    $instance->save();
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
@@ -62,6 +60,9 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
     self::validateAbsenceTypeAllowsSicknessRequest($params);
 
     //run LeaveRequest Validation after all validations on Sickness Request
+    if (isset($params['leave_request_id'])) {
+      $params['id'] = $params['leave_request_id'];
+    }
     LeaveRequest::validateParams($params);
   }
 
@@ -106,5 +107,31 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
         'type_id'
       );
     }
+  }
+
+  /**
+   * Parses SicknessRequest related parameters from the params array received
+   * by the create method.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @return array
+   */
+  private static function parseSicknessRequestParams($params) {
+    return array_intersect_key($params, self::fields());
+  }
+
+  /**
+   * Parses LeaveRequest related parameters from the params array received
+   * by the create method.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @return array
+   */
+  private static function parseLeaveRequestParams($params) {
+    return array_intersect_key($params, LeaveRequest::fields());
   }
 }

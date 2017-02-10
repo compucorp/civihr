@@ -12,7 +12,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   /**
    * @var \LeaveBalanceChangeService
    */
-  private $leaveBalanceChangeService;
+  protected $leaveBalanceChangeService;
 
   /**
    * @var \CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix
@@ -28,7 +28,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @var \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
    *   The leave request object before it gets updated.
    */
-  private $oldLeaveRequest;
+  protected $oldLeaveRequest;
 
   /**
    * CRM_HRLeaveAndAbsences_Service_LeaveRequest constructor.
@@ -57,7 +57,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    */
   public function create($params, $validate = true) {
     if ($validate) {
-      LeaveRequest::validateParams($params);
+      $this->runValidation($params);
     }
 
     if(!$this->canCreateAndUpdateLeaveRequestFor($params['contact_id'])) {
@@ -72,7 +72,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       throw new RuntimeException("You can't create a Leave Request with this status");
     }
 
-    return $this->createLeaveRequestWithBalanceChange($params);
+    return $this->createRequestWithBalanceChanges($params);
   }
 
   /**
@@ -108,7 +108,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       );
     }
 
-    return $this->createLeaveRequestWithBalanceChange($params);
+    return $this->createRequestWithBalanceChanges($params);
   }
 
   /**
@@ -164,7 +164,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    *
    * @return bool
    */
-  private function canChangeDatesFor($params) {
+  protected function canChangeDatesFor($params) {
     return $this->leaveRequestRightsService->canChangeDatesFor($params['contact_id'], $params['status_id']);
   }
 
@@ -274,7 +274,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
    */
-  private function getOldLeaveRequest($leaveRequestID) {
+  protected function getOldLeaveRequest($leaveRequestID) {
     if (!$this->oldLeaveRequest) {
       $this->oldLeaveRequest = LeaveRequest::findById($leaveRequestID);
     }
@@ -288,10 +288,21 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    */
-  private function createLeaveRequestWithBalanceChange($params) {
+  protected function createRequestWithBalanceChanges($params) {
     $leaveRequest = LeaveRequest::create($params, false);
     $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
 
     return $leaveRequest;
+  }
+
+  /**
+   * Run necessary BAO validations
+   *
+   * @param array $params
+   *
+   * @throws CRM_HRLeaveAndAbsences_Exception_EntityValidationException
+   */
+  protected function runValidation($params) {
+    LeaveRequest::validateParams($params);
   }
 }
