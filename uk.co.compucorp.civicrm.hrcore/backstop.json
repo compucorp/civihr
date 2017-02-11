@@ -7,34 +7,299 @@
   }],
   "scenarios": [
     {
-      "label": "T&A - Tasks",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
-      "delay": 1000,
-      "onBeforeScript": "login.js"
+      "label": "Contact Summary",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "delay": 2000,
+      "onBeforeScript": "login",
+      "onReadyScript": "close-any-modal"
     },
     {
-      "label": "T&A - Documents",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
-      "delay": 1000,
-      "onBeforeScript": "login.js"
+      "label": "Contact Summary / Actions",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/show-actions"
     },
     {
-      "label": "T&A - Calendar",
+      "label": "Contact Access Rights",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/show-manage-rights"
+    },
+    {
+      "label": "Job Contract",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/summary"
+    },
+    {
+      "label": "Job Contract / Full History",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/full-history"
+    },
+    {
+      "label": "Job Contract / Delete Dialog",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/delete-dialog"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / General",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-general"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Hours",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-hours"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Pay",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-pay"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Leave",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-leave"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Insurance",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-insurance"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Pension",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-pension"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Funding",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-funding"
+    },
+    {
+      "label": "Job Contract / Modal / Correct Error ",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/correct-error"
+    },
+    {
+      "label": "Job Contract / Modal / Change Terms ",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/change-terms"
+    },
+    {
+      "label": "Job Roles / Basic Details",
+      "delay": 5000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-roles/basic-details"
+    },
+    {
+      "label": "Job Roles / Funding",
+      "delay": 5000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-roles/funding"
+    },
+    {
+      "label": "Job Roles / Cost Centres",
+      "delay": 5000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-roles/cost-centres"
+    },
+    {
+      "label": "Job Roles / Delete Dialog",
+      "delay": 5000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-roles/delete-dialog"
+    },
+    {
+      "label": "Job Roles / Add New",
+      "delay": 5000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-roles/add-new"
+    },
+    {
+      "label": "Job Roles / Basic Details / Edit",
+      "delay": 5000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-roles/basic-details-edit"
+    },
+    {
+      "label": "Job Roles / Funding / Edit",
+      "delay": 5000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-roles/funding-edit"
+    },
+    {
+      "label": "Job Roles / Cost Centres / Edit",
+      "delay": 5000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-roles/cost-centres-edit"
+    },
+     {
+      "label": "Documents",
+      "delay": 2000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/documents/show"
+    },
+    {
+      "label": "Tasks",
+      "delay": 2000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/tasks/show"
+    },
+    {
+      "label": "T&A / Calendar",
       "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/calendar",
-      "delay": 1000,
-      "onBeforeScript": "login.js"
+      "delay": 2000,
+      "onReadyScript": "close-any-modal"
     },
     {
-      "label": "Contact Summary - Main",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "delay": 1000,
-      "onBeforeScript": "login.js"
+      "label": "T&A / Tasks",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "delay": 2000,
+      "onReadyScript": "close-any-modal"
     },
     {
-      "label": "Contact Summary - Job Contract",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "delay": 1000,
-      "onBeforeScript": "login.js"
+      "label": "T&A / Tasks / Advanced Filters",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/advanced-filters"
+    },
+    {
+      "label": "T&A / Tasks / Select Dates",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/select-dates"
+    },
+    {
+      "label": "T&A / Tasks / Assignment / Add",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/add"
+    },
+    {
+      "label": "T&A / Tasks / Assignment / Select Type",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/select-type"
+    },
+    {
+      "label": "T&A / Tasks / Assignment / Add Task",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/add-task"
+    },
+    {
+      "label": "T&A / Tasks / Assignment / Add Document",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/add-document"
+    },
+    {
+      "label": "T&A / Tasks / Assignment / Pick Date",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/pick-date"
+    },
+    {
+      "label": "T&A / Tasks / Task / In Place Edit / Due Date",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-date"
+    },
+    {
+      "label": "T&A / Tasks / Task / In Place Edit / Subject",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-subject"
+    },
+    {
+      "label": "T&A / Tasks / Task / In Place Edit / Target",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-target"
+    },
+    {
+      "label": "T&A / Tasks / Task / In Place Edit / Assigned To",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-assigned"
+    },
+    {
+      "label": "T&A / Tasks / Task / Add",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/add"
+    },
+    {
+      "label": "T&A / Tasks / Task / Pick Date",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/pick-date"
+    },
+    {
+      "label": "T&A / Tasks / Task / Select Assignee",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/select-assignee"
+    },
+    {
+      "label": "T&A / Tasks / Task / Select Type",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/select-type"
+    },
+    {
+      "label": "T&A / Tasks / Task / Show All Fields",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/show-all-fields"
+    },
+    {
+      "label": "T&A / Tasks / Task / Show More",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/show-more"
+    },
+    {
+      "label": "T&A / Tasks / Task / Actions",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/actions"
+    },
+    {
+      "label": "T&A / Tasks / Task / Open",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/open"
+    },
+    {
+      "label": "T&A / Documents",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "delay": 2000,
+      "onReadyScript": "close-any-modal"
+    },
+    {
+      "label": "T&A / Documents / Select Dates",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/select-dates"
+    },
+    {
+      "label": "T&A / Documents / Advanced Filters",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/advanced-filters"
+    },
+    {
+      "label": "T&A / Documents / Document / Add",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/add"
+    },
+    {
+      "label": "T&A / Documents / Document / Actions",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/actions"
+    },
+    {
+      "label": "T&A / Documents / Document / Open",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/open"
+    },
+    {
+      "label": "T&A / Documents / Document / Show All Fields",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/show-all-fields"
+    },
+    {
+      "label": "T&A / Documents / Document / Select Type",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/select-type"
+    },
+    {
+      "label": "T&A / Documents / Document / Select Assignee",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/select-assignee"
+    },
+    {
+      "label": "T&A / Documents / Document / Pick Due Date",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/pick-due-date"
     }
   ],
   "paths": {

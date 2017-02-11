@@ -5,6 +5,8 @@
     "backstop": "backstop"
   },
   "devDependencies": {
-    "backstopjs": "^2.3.7"
+    "backstopjs": "^2.3.7",
+    "es6-promise": "^4.0.5",
+    "lodash": "^4.17.4"
   }
 }
