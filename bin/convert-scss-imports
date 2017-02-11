@@ -13,9 +13,10 @@
 $files = explode("\n", trim(`find -name \*.scss | grep -v /node_modules/`));
 foreach ($files as $file) {
   if (!$file) continue;
-  $oldContent = file_get_contents($file);
-  $newContent = preg_replace(';(@import [\'"])(\.\./)+(org.civicrm.boot);', '$1SCSSROOT/$3', $oldContent);
+  $newContent = $oldContent = file_get_contents($file);
+  $newContent = preg_replace(';(@import [\'"])(\.\./)+(org.civicrm.boot);', '$1SCSSROOT/$3', $newContent);
   $newContent = preg_replace(';(@import [\'"]SCSSROOT[^\'"]+)/\*;', '$1/ALL', $newContent);
+  $newContent = preg_replace(';(@import [\'"]SCSSROOT)/org.civicrm.bootstrap/;', '$1/org.civicrm.bootstrapcivicrm/base/', $newContent);
   if ($newContent  != $oldContent) {
     echo "Patch $file\n";
     file_put_contents($file, $newContent);

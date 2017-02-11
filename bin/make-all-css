@@ -12,7 +12,7 @@ if [ ! -d uk.co.compucorp.civicrm.appraisals ]; then
 fi
 
 echo "[[ Pre-clean ]]"
-for f in org.civicrm.bootstrap/css/bootstrap.css org.civicrm.bootstrapcivicrm/css/bootstrap.css \
+for f in org.civicrm.bootstrapcivicrm/css/bootstrap.css \
          org.civicrm.bootstrapcivicrm/css/custom-civicrm.css org.civicrm.bootstrapcivihr/css/civihr.css \
          contactsummary/css/contactsummary.css uk.co.compucorp.civicrm.appraisals/css/civiappraisals.css \
          org.civicrm.styleguide/css/styleguide.css
@@ -25,7 +25,7 @@ git status
 
 echo "[[ Build ]]"
 
-for EXT in org.civicrm.bootstrap contactsummary contactaccessrights org.civicrm.bootstrapcivicrm org.civicrm.bootstrapcivihr uk.co.compucorp.civicrm.appraisals org.civicrm.styleguide ; do
+for EXT in contactsummary contactaccessrights org.civicrm.bootstrapcivicrm org.civicrm.bootstrapcivihr uk.co.compucorp.civicrm.appraisals org.civicrm.styleguide ; do
   pushd "$EXT"
     [ ! -d node_modules ] && npm install
     time gulp sass
