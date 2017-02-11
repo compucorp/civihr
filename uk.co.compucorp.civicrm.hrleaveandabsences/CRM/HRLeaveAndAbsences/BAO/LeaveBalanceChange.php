@@ -34,31 +34,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
-   * Creates LeaveBalanceChanges for each of the LeaveRequestDates of the given
-   * LeaveRequest.
-   *
-   * The amount for each balance change will be calculated accordingly to the
-   * WorkPattern(s) of the contact of the LeaveRequest.
-   *
-   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
-   */
-  public static function createForLeaveRequest(LeaveRequest $leaveRequest) {
-    $balanceChangeTypes = array_flip(self::buildOptions('type_id'));
-
-    foreach($leaveRequest->getDates() as $date) {
-      self::create([
-        'source_id'   => $date->id,
-        'source_type' => self::SOURCE_LEAVE_REQUEST_DAY,
-        'type_id'     => $balanceChangeTypes['Leave'],
-        'amount'      => self::calculateAmountForDate(
-          $leaveRequest,
-          new \DateTime($date->date)
-        )
-      ]);
-    }
-  }
-
-  /**
    * Returns the sum of all balance changes between the given LeavePeriodEntitlement
    * dates.
    *
