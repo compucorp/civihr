@@ -546,21 +546,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private function saveDates() {
     $this->deleteDates();
 
-    $startDate = new DateTime($this->from_date);
-
-    if (!$this->to_date) {
-      $endDate = new DateTime($this->from_date);
-    }
-    else {
-      $endDate = new DateTime($this->to_date);
-    }
-
-    // We need to add 1 day to the end date to include it
-    // when we loop through the DatePeriod
-    $endDate->modify('+1 day');
-
-    $interval   = new DateInterval('P1D');
-    $datePeriod = new DatePeriod($startDate, $interval, $endDate);
+    $datePeriod = new BasicDatePeriod($this->from_date, $this->to_date ?: $this->from_date);
 
     foreach ($datePeriod as $date) {
       LeaveRequestDate::create([
