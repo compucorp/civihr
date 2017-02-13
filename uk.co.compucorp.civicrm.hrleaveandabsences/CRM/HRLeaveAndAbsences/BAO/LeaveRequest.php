@@ -546,7 +546,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private function saveDates() {
     $this->deleteDates();
 
-    $datePeriod = new BasicDatePeriod($this->from_date, $this->to_date ?: $this->from_date);
+    $datePeriod = new BasicDatePeriod($this->from_date, $this->to_date);
 
     foreach ($datePeriod as $date) {
       LeaveRequestDate::create([
@@ -570,19 +570,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @param int $contactId
    * @param \DateTime $fromDate
    * @param string $fromDateType
-   * @param null|\DateTime $toDate
-   * @param null|string $toDateType
+   * @param \DateTime $toDate
+   * @param string $toDateType
    *
    * @return array
    *   An array of formatted results
    */
-  public static function calculateBalanceChange($contactId, DateTime $fromDate, $fromDateType, DateTime $toDate = null, $toDateType = null) {
+  public static function calculateBalanceChange($contactId, DateTime $fromDate, $fromDateType, DateTime $toDate, $toDateType) {
     $leaveRequest = new self();
     $leaveRequest->contact_id = $contactId;
 
-    if (!$toDate) {
-      $toDate = clone $fromDate;
-    }
     $datePeriod = new BasicDatePeriod($fromDate, $toDate);
 
     $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));

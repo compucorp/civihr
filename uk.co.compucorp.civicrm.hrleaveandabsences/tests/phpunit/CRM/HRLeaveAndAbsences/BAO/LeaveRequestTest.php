@@ -62,7 +62,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => 1,
       'to_date' => $date,
       'to_date_type' => 1,
-
     ]);
 
     $dates = $leaveRequest->getDates();

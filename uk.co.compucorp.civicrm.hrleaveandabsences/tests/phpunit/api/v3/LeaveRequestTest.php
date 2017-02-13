@@ -1127,9 +1127,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
    */
   public function testCalculateBalanceChangeShouldNotAllowParamsWithoutContactID() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-      'from_date' => "2016-11-05",
+      'from_date' => '2016-11-05',
       'from_date_type' => $this->leaveRequestDayTypes['1/2 AM']['value'],
-      'to_date' => "2016-11-10",
+      'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
     ]);
   }
@@ -1142,7 +1142,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
       'from_date_type' => $this->leaveRequestDayTypes['1/2 AM']['value'],
-      'to_date' => "2016-11-10",
+      'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
     ]);
   }
@@ -1154,9 +1154,35 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromType() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
-      'from_date' => "2016-11-05",
-      'to_date' => "2016-11-10",
+      'from_date' => '2016-11-05',
+      'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: to_date
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutToDate() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => '2016-11-05',
+      'from_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: to_date_type
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutToDateType() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => '2016-11-05',
+      'from_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
+      'to_date' => '2016-11-05',
     ]);
   }
 
@@ -1167,23 +1193,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testCalculateBalanceChangeShouldNotAllowInvalidDate() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
-      'from_date' => "2016-19-05",
+      'from_date' => '2016-19-05',
       'from_date_type' => $this->leaveRequestDayTypes['1/2 AM']['value'],
-      'to_date' => "2016-11-10",
+      'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value']
-    ]);
-  }
-
-  /**
-   * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage to_date and to_date_type must be included together
-   */
-  public function testCalculateBalanceChangeShouldNotAllowToTypeParameterWhenToDateIsNotPresent() {
-    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-      'contact_id' => 1,
-      'from_date' => "2016-11-05",
-      'from_date_type' => $this->leaveRequestDayTypes['1/2 AM']['value'],
-      'to_date_type' => $this->leaveRequestDayTypes['1/2 PM']['value'],
     ]);
   }
 

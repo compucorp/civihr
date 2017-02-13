@@ -40,7 +40,7 @@ class CRM_HRCore_Date_BasicDatePeriodTest extends \PHPUnit_Framework_TestCase im
     $this->assertEquals('2016-01-05', $dates[4]->format('Y-m-d'));
   }
 
-  public function testItDoesNotModifyTheEndDate() {
+  public function testItDoesNotModifyTheGivenEndDate() {
     $startDate = new DateTime('2016-10-10');
     $endDate = new DateTime('2016-10-11');
 
