@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+
 trait CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait {
 
   protected $toilAmounts = [];
@@ -21,5 +23,13 @@ trait CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait {
       $toilAmounts[$toilAmount['label']] = $option;
     }
     return $toilAmounts;
+  }
+
+  protected function getTOILBalanceChange($toilRequestID) {
+    $toilBalanceChange = new LeaveBalanceChange();
+    $toilBalanceChange->source_id = $toilRequestID;
+    $toilBalanceChange->source_type = LeaveBalanceChange::SOURCE_TOIL_REQUEST;
+    $toilBalanceChange->find(true);
+    return $toilBalanceChange;
   }
 }
