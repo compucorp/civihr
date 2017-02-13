@@ -1,8 +1,8 @@
 define([
-  'leave-absences/shared/modules/models-instances',
   'common/lodash',
+  'leave-absences/shared/modules/models-instances',
   'leave-absences/shared/models/instances/leave-request-instance',
-], function (modelInstances, _) {
+], function (_, modelInstances) {
   'use strict';
 
   modelInstances.factory('SicknessRequestInstance', [
@@ -63,7 +63,7 @@ define([
          * @param {String} documentValue required document value like '1'
          */
         toggleDocument: function (documentValue) {
-          var docsArray = this.required_documents ? this.required_documents.split(','): [];
+          var docsArray = this.required_documents ? this.required_documents.split(',') : [];
           var index = docsArray.indexOf(documentValue);
 
           _.contains(docsArray, documentValue) ? docsArray.splice(index, 1) : docsArray.push(documentValue);
