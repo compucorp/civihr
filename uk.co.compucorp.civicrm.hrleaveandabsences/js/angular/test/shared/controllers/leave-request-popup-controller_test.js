@@ -892,37 +892,6 @@
             });
           });
         });
-
-        describe('with required documents', function() {
-          describe('for new leave request instance', function() {
-            it('is not defined', function() {
-              expect($ctrl.leaveRequest.required_documents).toEqual([]);
-            });
-          });
-
-          describe('added by user', function() {
-            beforeEach(function () {
-              $ctrl.updateRequiredDocuments("1");
-            });
-
-            it('leave request instance has required documents', function() {
-              expect($ctrl.leaveRequest.required_documents).toEqual(['1']);
-            });
-          });
-
-          describe('removed by user', function() {
-            beforeEach(function () {
-              //user added by selecting
-              $ctrl.updateRequiredDocuments("1");
-              //user removed by unselecting
-              $ctrl.updateRequiredDocuments("1");
-            });
-
-            it('leave request instance has no required documents', function() {
-              expect($ctrl.leaveRequest.required_documents).toEqual([]);
-            });
-          });
-        });
       });
 
       /**

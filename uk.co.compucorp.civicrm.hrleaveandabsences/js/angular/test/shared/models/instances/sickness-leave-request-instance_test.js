@@ -111,7 +111,35 @@ define([
       });
 
       it('initializes required documents', function() {
-        expect(instance.required_documents).toEqual([]);
+        expect(instance.required_documents).toEqual('');
+      });
+    });
+
+    describe('toggleDocument()', function() {
+      beforeEach(function() {
+        instance = instance.init({}, false);
+      });
+
+      describe('when toggled with unique string value', function() {
+        beforeEach(function () {
+          instance.toggleDocument("1");
+          instance.toggleDocument("2");
+        });
+
+        it('appends it to required documents', function() {
+          expect(instance.required_documents).toEqual('1,2');
+        });
+      });
+
+      describe('when toggles with same string value', function() {
+        beforeEach(function () {
+          instance.toggleDocument("1");
+          instance.toggleDocument("1");
+        });
+
+        it('removes string value from required documents', function() {
+          expect(instance.required_documents).toEqual('');
+        });
       });
     });
   });
