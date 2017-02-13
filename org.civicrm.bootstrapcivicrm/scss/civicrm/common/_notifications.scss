@@ -45,6 +45,13 @@
       h1 {
         color: $gray;
       }
+
+      .notify-content {
+
+        ul {
+          margin: 0 15px;
+        }
+      }
     }
 
     &.ui-notify-message-style {
