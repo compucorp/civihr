@@ -52,8 +52,6 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     $instance->leave_request_id = $leaveRequestInstance->id;
     $instance->save();
 
-    $expiryDate = !empty($params['expiry_date']) ? new DateTime($params['expiry_date']) : null;
-    $instance->saveBalanceChange($leaveRequestInstance, $params['toil_to_accrue'], $expiryDate);
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
@@ -213,43 +211,6 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
         'type_id'
       );
     }
-  }
-  /**
-   * Saves Balance Change for the TOIL Request
-   *
-   * @param CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
-   *   The Leave Request created by this TOIL Request
-   * @param float $toilToAccrue
-   *   The amount of TOIL to be accrued.
-   * @param \DateTime $expiryDate
-   *   The date the LeaveBalanceChange will expire
-   */
-  private function saveBalanceChange(LeaveRequest $leaveRequest, $toilToAccrue, DateTime $expiryDate = null) {
-    $this->deleteBalanceChange();
-
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
-    if($expiryDate === null) {
-      $absenceType = AbsenceType::findById($leaveRequest->type_id);
-      $expiryDate =  $absenceType->calculateToilExpiryDate(new DateTime());
-    }
-
-    LeaveBalanceChange::create([
-      'type_id' => $balanceChangeTypes['Credit'],
-      'amount' => $toilToAccrue,
-      'expiry_date' => $expiryDate ? $expiryDate->format('Ymd') : null,
-      'source_id' => $this->id,
-      'source_type' => LeaveBalanceChange::SOURCE_TOIL_REQUEST
-    ]);
-  }
-
-  /**
-   * Delete Balance Change for this TOIL Request
-   */
-  private function deleteBalanceChange() {
-    $dao = new LeaveBalanceChange();
-    $dao->source_id = $this->id;
-    $dao->source_type = LeaveBalanceChange::SOURCE_TOIL_REQUEST;
-    $dao->delete();
   }
 
   /**

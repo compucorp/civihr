@@ -191,7 +191,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'is_active' => 1,
     ]);
 
-    $toilRequest1 = TOILRequest::create([
+    $toilRequest1 = TOILRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
@@ -201,9 +201,9 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'to_date_type' => $toType,
       'toil_to_accrue' => $this->toilAmounts['2 Days']['value'],
       'duration' => 60
-    ], false);
+    ], true);
 
-    $toilRequest2 = TOILRequest::create([
+    $toilRequest2 = TOILRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
@@ -213,7 +213,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'to_date_type' => $toType,
       'toil_to_accrue' => $this->toilAmounts['3 Days']['value'],
       'duration' => 120
-    ], false);
+    ], true);
 
     $expectedResult = [
       [
@@ -417,7 +417,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'duration' => 10,
       'expiry_date' => '20160110'
-    ]);
+    ], true);
 
     $toilRequestBalanceChange = $this->findToilRequestBalanceChange($toilRequest1->id);
     LeaveBalanceChangeFabricator::fabricate([
@@ -440,7 +440,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'to_date' => $nextMonday->format('Ymd'),
       'duration' => 10,
       'expiry_date' => $nextMonday->modify('+5 days')->format('Ymd')
-    ]);
+    ], true);
 
     $result = civicrm_api3('TOILRequest', 'get');
     $this->assertEquals(2, $result['count']);
@@ -465,7 +465,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'duration' => 10,
       'expiry_date' => CRM_Utils_Date::processDate('2016-01-10')
-    ]);
+    ], true);
 
     $toilRequestBalanceChange = $this->findToilRequestBalanceChange($toilRequest1->id);
     LeaveBalanceChangeFabricator::fabricate([
@@ -481,14 +481,14 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
 
     // This is not expired yet and it will not be included on
     // the response
-    $toilRequest2 = TOILRequestFabricator::fabricateWithoutValidation([
+    TOILRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $type->id,
       'from_date' => $nextMonday->format('Ymd'),
       'to_date' => $nextMonday->format('Ymd'),
       'duration' => 10,
       'expiry_date' => $nextMonday->modify('+5 days')->format('Ymd')
-    ]);
+    ], true);
 
     $result = civicrm_api3('TOILRequest', 'get', ['expired' => true]);
     $this->assertEquals(1, $result['count']);
@@ -512,7 +512,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'duration' => 10,
       'expiry_date' => '20160110'
-    ]);
+    ], true);
 
     $result = civicrm_api3('TOILRequest', 'get', ['expired' => true]);
     // The expiry date is in the past and the expired leave balance change was

@@ -2,29 +2,42 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 
 class CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest {
 
   private static $leaveRequestStatuses;
   private static $toilAmounts;
 
-  public static function fabricate($params) {
+  public static function fabricate($params, $withBalanceChanges = false) {
     $params = self::mergeDefaultParams($params);
+    $toilRequest =  TOILRequest::create($params);
 
-    return TOILRequest::create($params);
+    if($withBalanceChanges) {
+     self::createBalanceChange($toilRequest, $params);
+    }
+
+    return $toilRequest;
   }
 
   /**
    * Creates a new TOIL Request without running any validation
    *
    * @param array $params
+   * @param boolean $withBalanceChanges
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_TOILRequest
    */
-  public static function fabricateWithoutValidation($params = []) {
+  public static function fabricateWithoutValidation($params = [], $withBalanceChanges = false) {
     $params = self::mergeDefaultParams($params);
+    $toilRequest =  TOILRequest::create($params, false);
 
-    return TOILRequest::create($params, false);
+    if($withBalanceChanges) {
+      self::createBalanceChange($toilRequest, $params);
+    }
+
+    return $toilRequest;
+
   }
 
   private static function mergeDefaultParams($params) {
@@ -53,5 +66,13 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest {
     }
 
     return self::$toilAmounts[$reasonLabel];
+  }
+
+  private static function createBalanceChange(TOILRequest $toilRequest, $params) {
+    $expiryDate = null;
+    if(!empty($params['expiry_date'])) {
+      $expiryDate = new DateTime($params['expiry_date']);
+    }
+    LeaveBalanceChangeFabricator::fabricateForTOIL($toilRequest, $params['toil_to_accrue'], $expiryDate);
   }
 }
