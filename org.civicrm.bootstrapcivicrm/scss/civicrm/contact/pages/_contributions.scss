@@ -63,6 +63,33 @@
 
 
 .CRM_Contribute_Form_Contribution {
+  .crm-submit-buttons {
+    .crm-button_qf_Contribution_upload {
+      margin-left: 0 !important;
+    }
+  }
+
+  .crm-contribution-form-block > .form-layout-compressed {
+    td {
+      padding: 10px 20px !important;
+
+      .required {
+        &:after {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .crm-form-select {
+    margin-right: 0 !important;
+
+    + .helpicon {
+      position: relative;
+      left: -3px;
+    }
+  }
+
   td {
     border-bottom: 0 !important;
 
@@ -157,6 +184,8 @@
   }
 
   label {
+    font-family: $font-family-base;
+
     &.crm-error {
       background: $brand-danger;
       color: $crm-white;
@@ -165,5 +194,32 @@
       -webkit-border-radius: 4px;
       padding: 0 5px;
     }
+  }
+
+  #paymentDetails_Information {
+    .helpicon {
+      left: 0;
+    }
+  }
+
+  .crm-accordion-header {
+    font-size: 13px !important;
+    font-family: $font-family-base;
+
+    + .crm-accordion-body {
+      padding: 20px !important;
+
+      td.label {
+        padding-left: 0 !important;
+      }
+    }
+  }
+
+  label[for="thankyou_date"] {
+    top: 7px;
+  }
+
+  label[for="thankyou_date_time"] {
+    top: 5px;
   }
 }
