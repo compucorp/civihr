@@ -1,3 +1,85 @@
+.page-civicrm-tag {
+
+  #branding {
+
+    .page-title {
+      margin-bottom: 20px !important;
+    }
+  }
+
+  .help {
+    padding: 15px 5px;
+  }
+
+  .tabs-secondary {
+    float: left;
+  }
+
+  .crm-submit-buttons {
+    margin: 0;
+
+    .button {
+      background: $brand-primary !important;
+
+      &:hover {
+        opacity: .9;
+      }
+    }
+  }
+
+  .CRM_Tag_Form_Edit {
+
+    table {
+
+      &.form-layout-compressed {
+        margin: 0 25px;
+      }
+    }
+  }
+
+  #cat {
+    box-shadow: $box-shadow;
+    margin: 30px 0;
+
+    table {
+      background: transparent;
+      border: none;
+      font-family: $font-family-base;
+
+      thead {
+
+        th {
+          border-bottom: none;
+          background: $crm-background;
+          color: $gray-darker;
+          vertical-align: middle;
+          border: none;
+          padding: 10px 15px;
+
+          div {
+            padding: 0;
+          }
+        }
+      }
+
+      tbody {
+
+        tr {
+          background: $crm-white;
+          border-bottom: 1px solid $crm-background;
+
+          td {
+            background: $crm-white;
+            color: $gray-dark;
+            border: none;
+            padding: 10px 15px;
+          }
+        }
+      }
+    }
+  }
+}
+
 .CRM_Contact_Form_Task_AddToTag,
 .CRM_Contact_Form_Task_RemoveFromTag {
 
@@ -7,6 +89,7 @@
   }
 
   table {
+    
     &.form-layout-compressed {
       margin: 25px;
     }
