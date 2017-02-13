@@ -18,7 +18,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
  */
 class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadlessTest {
 
-  use CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
   private $leaveBalanceChangeService;
 
@@ -127,7 +127,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
 
     //delete balance change for toil
     $this->leaveBalanceChangeService->deleteForTOILRequest($toilRequest);
-    $this->assertNull($this->getTOILBalanceChange($toilRequest->id));
+    $this->assertNull($this->findToilRequestBalanceChange($toilRequest->id));
   }
 
   public function testCreateForTOILRequestWhenNoExpiryDateIsGivenAndAbsenceTypeSaysTOILNeverExpires() {
@@ -141,7 +141,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
 
     $this->leaveBalanceChangeService->createForTOILRequest($toilRequest, $params['type_id'], $params['toil_to_accrue']);
 
-    $toilBalanceChange = $this->getTOILBalanceChange($toilRequest->id);
+    $toilBalanceChange = $this->findToilRequestBalanceChange($toilRequest->id);
     $this->assertNull($toilBalanceChange->expiry_date);
   }
 
@@ -160,7 +160,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
 
     $expectedExpiryDate = new DateTime('+10 days');
 
-    $toilBalanceChange = $this->getTOILBalanceChange($toilRequest->id);
+    $toilBalanceChange = $this->findToilRequestBalanceChange($toilRequest->id);
 
     $this->assertEquals($toilBalanceChange->expiry_date, $expectedExpiryDate->format('Y-m-d'));
   }
@@ -179,7 +179,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
     $toilRequest = TOILRequestFabricator::fabricateWithoutValidation($params);
 
     $this->leaveBalanceChangeService->createForTOILRequest($toilRequest, $params['type_id'], $params['toil_to_accrue'], $expiryDate);
-    $toilBalanceChange = $this->getTOILBalanceChange($toilRequest->id);
+    $toilBalanceChange = $this->findToilRequestBalanceChange($toilRequest->id);
 
     // The settings on the AbsenceType says TOIL Requests should expire in 10 days,
     // but the expiry date passed to create was 100 days, so that should be the
