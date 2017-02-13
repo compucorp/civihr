@@ -1,13 +1,14 @@
 .page-civicrm-tag {
 
   #branding {
+
     .page-title {
       margin-bottom: 20px !important;
     }
   }
 
   .help {
-      padding: 15px 5px;
+    padding: 15px 5px;
   }
 
   .tabs-secondary {
@@ -27,7 +28,9 @@
   }
 
   .CRM_Tag_Form_Edit {
+
     table {
+
       &.form-layout-compressed {
         margin: 0 25px;
       }
@@ -44,6 +47,7 @@
       font-family: $font-family-base;
 
       thead {
+
         th {
           border-bottom: none;
           background: $crm-background;
@@ -59,6 +63,7 @@
       }
 
       tbody {
+
         tr {
           background: $crm-white;
           border-bottom: 1px solid $crm-background;
@@ -84,6 +89,7 @@
   }
 
   table {
+    
     &.form-layout-compressed {
       margin: 25px;
     }
