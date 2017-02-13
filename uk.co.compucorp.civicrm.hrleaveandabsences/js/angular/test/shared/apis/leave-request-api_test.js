@@ -706,11 +706,11 @@ define([
         .respond(mockData.all());
 
       //Intercept backend calls for SicknessRequest.all
-      $httpBackend.whenGET(/action\=getFull&entity\=SicknessRequest/)
+      $httpBackend.whenGET(/action\=get&entity\=SicknessRequest/)
         .respond(sicknessMockData.all());
 
       //Intercept backend calls for TOILRequest.all
-      $httpBackend.whenGET(/action\=getFull&entity\=TOILRequest/)
+      $httpBackend.whenGET(/action\=get&entity\=TOILRequest/)
         .respond(toilMockData.all());
 
       //Intercept backend calls for LeaveRequest.balanceChangeByAbsenceType

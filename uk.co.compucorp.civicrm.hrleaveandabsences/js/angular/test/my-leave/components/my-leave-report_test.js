@@ -561,8 +561,8 @@
                 }));
               });
 
-              it('groups and flattens all breakdown entries before caching them', function () {
-                expect(controller.sections.expired.data.length).toBe(expectedFormat.length);
+              it('groups and flattens all breakdown and expired TOIL entries before caching them', function () {
+                expect(controller.sections.expired.data.length).toBe(expectedFormat.length + leaveRequestMock.all().values.length);
               });
             });
           });
