@@ -1,5 +1,6 @@
 <?php
 
+use CRM_HRCore_Date_BasicDatePeriod as BasicDatePeriod;
 use CRM_HRLeaveAndAbsences_Validator_Date as DateValidator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
@@ -318,16 +319,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
         throw new UnexpectedValueException('You can only get the number of working days for an AbsencePeriod with a valid end date');
       }
 
-      $startDate = new DateTime($this->start_date);
-      $endDate = new DateTime($this->end_date);
-      $oneDayInterval = new DateInterval('P1D');
-
-      // DatePeriod doesn't include the end date,
-      // so we add one more day for it to be included
-      $endDate->add($oneDayInterval);
-
       $numberOfWorkingDays = 0;
-      $period = new DatePeriod($startDate, $oneDayInterval, $endDate);
+      $period = new BasicDatePeriod($this->start_date, $this->end_date);
       foreach($period as $date) {
         $dayOfTheWeek = $date->format('N');
         $dayIsWorkingDay = $dayOfTheWeek > 0 && $dayOfTheWeek < 6;

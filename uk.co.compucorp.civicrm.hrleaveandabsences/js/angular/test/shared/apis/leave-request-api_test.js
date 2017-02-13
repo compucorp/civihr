@@ -186,17 +186,6 @@ define([
       describe('without error from server', function () {
         beforeEach(function () {
           requestData = helper.createRandomLeaveRequest();
-          //todo --> will be removed once from_type will change to from_date_type
-          requestData = _.mapKeys(requestData, function (value, key) {
-            if (key === 'from_date_type') {
-              return 'from_type';
-            } else if (key === 'to_date_type') {
-              return 'to_type';
-            }
-
-            return key;
-          });
-
           spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
           promise = LeaveRequestAPI.calculateBalanceChange(requestData);
         });
@@ -248,7 +237,7 @@ define([
 
         describe('when mandatory field is missing', function () {
           beforeEach(function () {
-            errorMessage = 'contact_id, from_date and from_type in params are mandatory';
+            errorMessage = 'contact_id, from_date and from_date_type in params are mandatory';
             requestData = {};
             promise = LeaveRequestAPI.calculateBalanceChange(requestData);
           });

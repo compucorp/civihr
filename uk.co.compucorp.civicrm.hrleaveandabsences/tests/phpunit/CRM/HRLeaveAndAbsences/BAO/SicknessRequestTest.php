@@ -17,7 +17,7 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
   public function setUp() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
 
     $this->requiredDocumentOptions = $this->getSicknessRequestRequiredDocumentsOptions();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
@@ -27,10 +27,10 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
 
   public function testCreateSicknessRequest() {
     $contactID = 1;
-    $fromDate = new DateTime("2016-11-14");
-    $toDate = new DateTime("2016-11-17");
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
-    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromDate = new DateTime('2016-11-14');
+    $toDate = new DateTime('2016-11-17');
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
+    $toType = $this->leaveRequestDayTypes['All Day']['value'];
 
     //four working days which will create a balance change of 4
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason'));
@@ -63,12 +63,12 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
 
   public function testUpdateSicknessRequestDoesNotCreateDuplicates() {
     $contactID = 1;
-    $fromDate1 = new DateTime("2016-11-14");
-    $toDate1 = new DateTime("2016-11-17");
-    $fromDate2 = new DateTime("2016-11-16");
-    $toDate2 = new DateTime("2016-11-18");
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
-    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromDate1 = new DateTime('2016-11-14');
+    $toDate1 = new DateTime('2016-11-17');
+    $fromDate2 = new DateTime('2016-11-16');
+    $toDate2 = new DateTime('2016-11-18');
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
+    $toType = $this->leaveRequestDayTypes['All Day']['value'];
     $requiredDocuments1 = $this->requiredDocumentOptions['Self certification form required']['value']. ',' . $this->requiredDocumentOptions['Back to work interview required']['value'];
     $requiredDocuments2 = $this->requiredDocumentOptions['Self certification form required']['value'];
 
@@ -132,8 +132,8 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage Sickness Requests should have a reason
    */
   public function testValidateSicknessRequestWhenReasonIsEmpty() {
-    $fromDate = new DateTime("2016-11-14");
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromDate = new DateTime('2016-11-14');
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
     $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
 
     SicknessRequest::validateParams([
@@ -151,8 +151,8 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage Sickness Requests should have a reason
    */
   public function testValidateParamsIsCalledOnCreate() {
-    $fromDate = new DateTime("2016-11-14");
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromDate = new DateTime('2016-11-14');
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
     $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
 
     SicknessRequest::create([
@@ -170,8 +170,8 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage This absence does not allow sickness request
    */
   public function testValidateSicknessRequestWhenAbsenceTypeDoesNotAllowSicknessRequest() {
-    $fromDate = new DateTime("2016-11-14");
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromDate = new DateTime('2016-11-14');
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
     $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
 
     $absenceType = AbsenceTypeFabricator::fabricate([

@@ -1,5 +1,6 @@
 <?php
 
+use CRM_HRCore_Date_BasicDatePeriod as BasicDatePeriod;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_WorkPattern {
@@ -376,11 +377,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    *   ]
    */
   public function getCalendar(DateTime $effectiveDate, DateTime $startDate, DateTime $endDate) {
-    $datePeriod = new DatePeriod(
-      $startDate,
-      new DateInterval('P1D'),
-      $endDate->modify('+1 day')
-    );
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     $workDayTypeLabels = WorkDay::buildOptions('type');
     $workDayTypeNames = WorkDay::buildOptions('type', 'validate');

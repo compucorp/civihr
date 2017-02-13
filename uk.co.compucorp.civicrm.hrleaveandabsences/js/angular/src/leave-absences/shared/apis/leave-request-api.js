@@ -128,8 +128,8 @@ define([
        * API will create and return the detailed breakdown of it in days.
        *
        * @param {Object} params matched the API end point params like
-       * mandatory values for contact_id, from_date, from_type and optional values for
-       * to_date and to_type.
+       * mandatory values for contact_id, from_date, from_date_type and optional values for
+       * to_date and to_date_type.
        *
        * @return {Promise} containing the detailed breakdown of balance leaves
        */
@@ -137,8 +137,8 @@ define([
         $log.debug('LeaveRequestAPI.calculateBalanceChange', params);
         var deferred = $q.defer();
 
-        if (params && (!params.contact_id || !params.from_date || !params.from_type)) {
-          deferred.reject('contact_id, from_date and from_type in params are mandatory');
+        if (params && (!params.contact_id || !params.from_date || !params.from_date_type)) {
+          deferred.reject('contact_id, from_date and from_date_type in params are mandatory');
         }
 
         this.sendPOST('LeaveRequest', 'calculatebalancechange', params)

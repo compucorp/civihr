@@ -154,8 +154,8 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
 
     $result = civicrm_api3('TOILRequest', 'isvalid', [
       'contact_id' => $contactID,
-      'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
-      'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'type_id' => $absenceType->id,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
@@ -175,14 +175,14 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
   }
 
   public function testToilRequestGetShouldReturnAssociatedLeaveRequestData() {
-    $fromDate1 = new DateTime("2016-11-14");
-    $toDate1 = new DateTime("2016-11-17");
+    $fromDate1 = new DateTime('2016-11-14');
+    $toDate1 = new DateTime('2016-11-17');
 
-    $fromDate2 = new DateTime("2016-11-20");
-    $toDate2 = new DateTime("2016-11-30");
+    $fromDate2 = new DateTime('2016-11-20');
+    $toDate2 = new DateTime('2016-11-30');
 
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
-    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
+    $toType = $this->leaveRequestDayTypes['All Day']['value'];
 
     $absenceType = AbsenceTypeFabricator::fabricate([
       'title' => 'Title 1',

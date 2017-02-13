@@ -27,7 +27,7 @@ class SicknessRequestTest extends BaseHeadlessTest {
   private $leaveContact;
 
   public function setUp() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
     $this->requiredDocumentOptions = $this->getSicknessRequestRequiredDocumentsOptions();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
     $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
@@ -39,8 +39,8 @@ class SicknessRequestTest extends BaseHeadlessTest {
   }
 
   public function testSicknessRequestIsValidReturnsErrorWhenReasonIsEmpty() {
-    $fromDate = new DateTime("2016-11-14");
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromDate = new DateTime('2016-11-14');
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
     $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
 
     $result = civicrm_api3('SicknessRequest', 'isvalid', [
@@ -64,8 +64,8 @@ class SicknessRequestTest extends BaseHeadlessTest {
   }
 
   public function testSicknessRequestIsValidReturnsErrorWhenAbsenceTypeDoesNotAllowSicknessRequest() {
-    $fromDate = new DateTime("2016-11-14");
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromDate = new DateTime('2016-11-14');
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
     $requiredDocuments = $this->requiredDocumentOptions['Self certification form required']['value'];
 
     $absenceType = AbsenceTypeFabricator::fabricate([
@@ -157,9 +157,9 @@ class SicknessRequestTest extends BaseHeadlessTest {
       'contact_id' => $contact['id'],
       'type_id' => $absenceType->id,
       'from_date' => $startDate->format('Y-m-d'),
-      'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => $endDate->format('Y-m-d'),
-      'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'status_id' => 1,
       'reason' => $sicknessReasons['Accident'],
       'sequential' => 1,
@@ -176,14 +176,14 @@ class SicknessRequestTest extends BaseHeadlessTest {
   }
 
   public function testSicknessRequestGetShouldReturnAssociatedLeaveRequestData() {
-    $fromDate = new DateTime("2016-11-14");
-    $toDate = new DateTime("2016-11-17");
+    $fromDate = new DateTime('2016-11-14');
+    $toDate = new DateTime('2016-11-17');
 
-    $fromDate2 = new DateTime("2016-11-20");
-    $toDate2 = new DateTime("2016-11-30");
+    $fromDate2 = new DateTime('2016-11-20');
+    $toDate2 = new DateTime('2016-11-30');
 
-    $fromType = $this->leaveRequestDayTypes['All Day']['id'];
-    $toType = $this->leaveRequestDayTypes['All Day']['id'];
+    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
+    $toType = $this->leaveRequestDayTypes['All Day']['value'];
 
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason'));
 
@@ -278,9 +278,9 @@ class SicknessRequestTest extends BaseHeadlessTest {
       'contact_id' => $this->leaveContact,
       'type_id' => $absenceType->id,
       'from_date' => $startDate->format('Y-m-d'),
-      'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => $endDate->format('Y-m-d'),
-      'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'status_id' => 3,
       'reason' => $sicknessReasons['Accident'],
       'sequential' => 1,
@@ -303,9 +303,9 @@ class SicknessRequestTest extends BaseHeadlessTest {
       'contact_id' => $contact['id'],
       'type_id' => 1,
       'from_date' => $startDate->format('Ymd'),
-      'from_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => $endDate->format('Ymd'),
-      'to_date_type' => $fromType = $this->leaveRequestDayTypes['All Day']['id'],
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'status_id' => 1,
       'reason' => $sicknessReasons['Accident'],
       'sequential' => 1,
