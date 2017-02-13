@@ -20,12 +20,19 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
+
+  private $leaveContact;
 
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
 
     $this->toilAmounts = $this->toilAmountOptions();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
+
+    $this->leaveContact = 1;
+    $this->registerCurrentLoggedInContactInSession($this->leaveContact);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
   }
 
   public function testTOILRequestIsValidShouldReturnErrorWhenToilAmountIsNotValid() {
@@ -344,12 +351,10 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
   }
 
   public function testCreateResponseAlsoIncludeTheLeaveRequestFields() {
-    $contact = ContactFabricator::fabricate();
-
     $startDate = new DateTime('next monday');
 
     HRJobContractFabricator::fabricate(
-      ['contact_id' => $contact['id']],
+      ['contact_id' => $this->leaveContact],
       ['period_start_date' => $startDate->format('Y-m-d')]
     );
 
@@ -364,7 +369,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     ]);
 
     $leavePeriodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
-      'contact_id' => $contact['id'],
+      'contact_id' => $this->leaveContact,
       'period_id' => $period->id,
       'type_id' => $type->id,
     ]);
@@ -372,9 +377,9 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     $this->createLeaveBalanceChange($leavePeriodEntitlement->id, 10);
 
     $result = civicrm_api3('TOILRequest', 'create', [
-      'contact_id' => $contact['id'],
+      'contact_id' => $this->leaveContact,
       'type_id' => $type->id,
-      'status_id' => $this->getLeaveRequestStatuses()['Approved']['value'],
+      'status_id' => $this->getLeaveRequestStatuses()['Waiting Approval']['value'],
       'from_date' => $startDate->format('Y-m-d'),
       'to_date' => $startDate->format('Y-m-d'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
@@ -385,9 +390,9 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
     ]);
 
     $expectedValues = [
-      'contact_id' => $contact['id'],
+      'contact_id' => $this->leaveContact,
       'type_id' => $type->id,
-      'status_id' => $this->getLeaveRequestStatuses()['Approved']['value'],
+      'status_id' => $this->getLeaveRequestStatuses()['Waiting Approval']['value'],
       'from_date' => $startDate->format('Y-m-d'),
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => $startDate->format('Y-m-d'),

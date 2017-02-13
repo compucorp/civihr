@@ -97,7 +97,17 @@ function _civicrm_api3_t_o_i_l_request_create_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_t_o_i_l_request_create($params) {
-  $result = _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $bao = _civicrm_api3_get_BAO(__FUNCTION__);
+  _civicrm_api3_check_edit_permissions($bao, $params);
+  _civicrm_api3_format_params_for_create($params, null);
+
+  $service = CRM_HRLeaveAndAbsences_Factory_TOILRequestService::create();
+  $toilRequest = $service->create($params);
+  $values = [];
+  _civicrm_api3_object_to_array($toilRequest, $values[$toilRequest->id]);
+
+  $result = civicrm_api3_create_success($values, $params, null, 'create', $toilRequest);
+
   if ($result['count'] > 0) {
     array_walk($result['values'], '_civicrm_api3_t_o_i_l_request_merge_with_leave_request');
   }
@@ -113,7 +123,14 @@ function civicrm_api3_t_o_i_l_request_create($params) {
  * @throws API_Exception
  */
 function civicrm_api3_t_o_i_l_request_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $bao = _civicrm_api3_get_BAO(__FUNCTION__);
+  civicrm_api3_verify_mandatory($params, NULL, ['id']);
+  _civicrm_api3_check_edit_permissions($bao, ['id' => $params['id']]);
+
+  $service = CRM_HRLeaveAndAbsences_Factory_TOILRequestService::create();
+  $service->delete($params['id']);
+
+  return civicrm_api3_create_success(true);
 }
 
 function _civicrm_api3_t_o_i_l_request_get_spec(&$spec) {
