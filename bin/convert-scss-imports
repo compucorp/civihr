@@ -17,6 +17,7 @@ foreach ($files as $file) {
   $newContent = preg_replace(';(@import [\'"])(\.\./)+(org.civicrm.boot);', '$1SCSSROOT/$3', $newContent);
   $newContent = preg_replace(';(@import [\'"]SCSSROOT[^\'"]+)/\*;', '$1/ALL', $newContent);
   $newContent = preg_replace(';(@import [\'"]SCSSROOT)/org.civicrm.bootstrap/;', '$1/org.civicrm.bootstrapcivicrm/base/', $newContent);
+  $newContent = preg_replace(';(@import [\'"]SCSSROOT)/org.civicrm.bootstrapcivicrm/;', '$1/org.civicrm.shoreditch/', $newContent);
   if ($newContent  != $oldContent) {
     echo "Patch $file\n";
     file_put_contents($file, $newContent);

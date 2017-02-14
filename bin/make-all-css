@@ -12,21 +12,23 @@ if [ ! -d uk.co.compucorp.civicrm.appraisals ]; then
 fi
 
 echo "[[ Pre-clean ]]"
-for f in org.civicrm.bootstrapcivicrm/css/bootstrap.css \
-         org.civicrm.bootstrapcivicrm/css/custom-civicrm.css org.civicrm.bootstrapcivihr/css/civihr.css \
-         contactsummary/css/contactsummary.css uk.co.compucorp.civicrm.appraisals/css/civiappraisals.css \
-         org.civicrm.styleguide/css/styleguide.css
-do
+cv path \
+  -x org.civicrm.shoreditch/css/bootstrap.css \
+  -x org.civicrm.shoreditch/css/custom-civicrm.css \
+  -x org.civicrm.bootstrapcivihr/css/civihr.css \
+  -x contactsummary/css/contactsummary.css \
+  -x uk.co.compucorp.civicrm.appraisals/css/civiappraisals.css \
+  -x org.civicrm.styleguide/css/styleguide.css \
+| while read f ; do 
   if [ -f "$f" ]; then rm -f "$f" ; fi
 done
 echo "[[ Pre-clean status ]]"
 git status
 
-
 echo "[[ Build ]]"
 
-for EXT in contactsummary contactaccessrights org.civicrm.bootstrapcivicrm org.civicrm.bootstrapcivihr uk.co.compucorp.civicrm.appraisals org.civicrm.styleguide ; do
-  pushd "$EXT"
+for EXT in contactsummary contactaccessrights org.civicrm.shoreditch org.civicrm.bootstrapcivihr uk.co.compucorp.civicrm.appraisals org.civicrm.styleguide ; do
+  pushd `cv path -x $EXT`
     [ ! -d node_modules ] && npm install
     time gulp sass
   popd
