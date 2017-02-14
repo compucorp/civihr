@@ -379,6 +379,42 @@ define([
           }
         }]
       }
+    },
+    getComments: {
+      "is_error": 0,
+      "version": 3,
+      "count": 1,
+      "id": 3,
+      "values": [
+        {
+          "comment_id": "3",
+          "leave_request_id": "17",
+          "text": "test comment message",
+          "contact_id": "202",
+          "created_at": "2017-02-14 13:48:33"
+        }
+      ]
+    },
+    addComment: {
+      "is_error": 0,
+      "version": 3,
+      "count": 1,
+      "id": 4,
+      "values": [
+        {
+          "comment_id": "4",
+          "leave_request_id": "17",
+          "text": "111",
+          "contact_id": "202",
+          "created_at": "20170214200205"
+        }
+      ]
+    },
+    deleteComment: {
+      "is_error": 0,
+      "version": 3,
+      "count": 1,
+      "values": 1
     }
   };
 
@@ -417,6 +453,15 @@ define([
       return _.find(mockData.allData.values, function (leaveRequest) {
         return leaveRequest[key] == value;
       })
+    },
+    getComments: function () {
+      return mockData.getComments;
+    },
+    addComment: function () {
+      return mockData.addComment;
+    },
+    deleteComment: function () {
+      return mockData.deleteComment;
     }
   };
 });

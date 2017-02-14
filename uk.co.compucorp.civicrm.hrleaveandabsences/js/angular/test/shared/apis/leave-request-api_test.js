@@ -810,6 +810,103 @@ define([
       })
     });
 
+    describe('getComments()', function () {
+      var leaveRequestID = '101',
+        params = {
+          key: 'value'
+        };
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+        promise = LeaveRequestAPI.getComments(leaveRequestID, params);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls endpoint with leaveRequestID', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest',
+            'getcomment', jasmine.objectContaining(_.assign(params, {
+              leave_request_id: leaveRequestID
+            })));
+        });
+      });
+
+      it('returns data', function () {
+        promise.then(function (result) {
+          expect(result).toEqual(mockData.getComments().values);
+        });
+      })
+    });
+
+    describe('saveComment()', function () {
+      var leaveRequestID = '101',
+        commentText = 'test string',
+        contactID = '202',
+        params = {
+          key: 'value'
+        };
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+        promise = LeaveRequestAPI.saveComment(leaveRequestID, commentText, contactID, params);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls endpoint with leaveRequestID, text and contact_id', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
+            'addcomment', jasmine.objectContaining(_.assign(params, {
+              leave_request_id: leaveRequestID,
+              text: commentText,
+              contact_id: contactID
+            })));
+        });
+      });
+
+      it('returns data', function () {
+        promise.then(function (result) {
+          expect(result).toEqual(mockData.addComment().values);
+        });
+      })
+    });
+
+    describe('deleteComment()', function () {
+      var commentID = '101',
+        params = {
+          key: 'value'
+        };
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+        promise = LeaveRequestAPI.deleteComment(commentID, params);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls endpoint with comment_id', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
+            'deletecomment', jasmine.objectContaining(_.assign(params, {
+              comment_id: commentID
+            })));
+        });
+      });
+
+      it('returns data', function () {
+        promise.then(function (result) {
+          expect(result).toEqual(mockData.deleteComment().values);
+        });
+      })
+    });
+
     /**
      * Intercept HTTP calls to be handled by httpBackend
      **/
@@ -830,6 +927,10 @@ define([
       $httpBackend.whenGET(/action\=getbalancechangebyabsencetype&entity\=LeaveRequest/)
         .respond(mockData.balanceChangeByAbsenceType());
 
+      //Intercept backend calls for LeaveRequest.getComments
+      $httpBackend.whenGET(/action\=getcomment&entity\=LeaveRequest/)
+        .respond(mockData.getComments());
+
       //Intercept backend calls for LeaveRequest.create in POST
       $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)
         .respond(function (method, url, data, headers, params) {
@@ -842,6 +943,10 @@ define([
             return [200, mockData.getisValid()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
             return [200, mockData.isManagedBy()];
+          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'deletecomment')) {
+            return [200, mockData.deleteComment()];
+          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'addcomment')) {
+            return [200, mockData.addComment()];
           } else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'create')) {
             return [201, sicknessMockData.all()];
           } else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'isValid')) {
