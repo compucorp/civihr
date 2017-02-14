@@ -51,10 +51,56 @@
 }
 
 .CRM_Event_Form_Participant {
-  .crm-submit-buttons {
-    display: block !important;
-    height: 50px !important;
-    padding: 15px 30px !important;
+
+  input,
+  select,
+  textarea,
+  .select2-container {
+    &.crm-inline-error,
+    &.crm-error,
+    &.error {
+      background: none !important;
+      border: 1px solid $brand-danger;
+      min-height: 30px;
+
+      &.select2-container {
+        padding: 0;
+      }
+    }
+  }
+
+  label {
+    &.crm-inline-error,
+    &.crm-error {
+      background: $brand-danger !important;
+      color: $crm-white !important;
+      padding: 5px;
+      border-radius: 3px;
+
+      &.crm-inline-error {
+        margin: 0 4px;
+      }
+
+      span {
+        background: none;
+        color: $crm-white;
+      }
+    }
+  }
+
+  span {
+    &.crm-error {
+      background: $brand-danger !important;
+      color: $crm-white !important;
+      padding: 5px;
+      border-radius: 3px;
+      margin: 2px;
+
+      span {
+        background: none;
+        color: $crm-white;
+      }
+    }
   }
 
   textarea {
@@ -163,7 +209,17 @@
 
   #send_confirmation_receipt {
     legend {
+      margin: 15px 0;
+      float: left;
+      width: 100%;
       padding: 10px 30px;
+    }
+
+    #notice {
+
+      br {
+        display: none;
+      }
     }
   }
 
@@ -229,4 +285,123 @@
     }
   }
 
+  span {
+    &.description {
+      display: block;
+      line-height: 1.5em;
+      margin-bottom: 5px;
+    }
+  }
+
+  .cvv2-section {
+
+    input,
+    .cvv2-section,
+    .crm-error {
+      float: left;
+    }
+  }
+
+  table.selector {
+    background: transparent;
+    border: none;
+    font-family: $font-family-base;
+    margin: 10px 0;
+    box-shadow: none !important;
+
+    thead {
+
+      th {
+        border-bottom: none;
+        background: $crm-background !important;
+        color: $gray-darker !important;
+        vertical-align: middle;
+        border: none;
+        padding: 10px;
+        line-height: 1.1em;
+
+        div {
+          padding: 0;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        background: $crm-white;
+        border: 1px solid $crm-background !important;
+
+        td {
+          border: none;
+          background: $crm-white;
+          color: $gray-dark;
+          padding: 10px 30px;
+          line-height: 1.1em;
+        }
+      }
+    }
+  }
+}
+
+
+.CRM_Event_Form_ParticipantView {
+  .action-link {
+    display: none;
+  }
+  
+  table {
+    background: transparent;
+    border: none;
+    font-family: $font-family-base;
+    margin: 10px 0;
+    box-shadow: none !important;
+
+    thead {
+      th {
+        border-bottom: none;
+        background: $crm-background !important;
+        color: $gray-darker !important;
+        vertical-align: middle;
+        border: none;
+        padding: 10px;
+        line-height: 1.1em;
+
+        div {
+          padding: 0;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        background: $crm-white;
+        border: 1px solid $crm-background !important;
+
+
+        td {
+          border: none;
+
+          &.label {
+            border-bottom: none;
+            background: $crm-background !important;
+            color: $gray-darker !important;
+            vertical-align: middle;
+            padding: 10px;
+            line-height: 1.1em;
+
+            div {
+              padding: 0;
+            }
+          }
+
+          &:not(.label) {
+            background: $crm-white;
+            color: $gray-dark;
+            padding: 10px 30px;
+            line-height: 1.1em;
+          }
+        }
+      }
+    }
+  }
 }

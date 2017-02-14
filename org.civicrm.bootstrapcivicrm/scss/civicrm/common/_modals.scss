@@ -70,6 +70,7 @@
     padding: 20px 20px 0 20px;
     margin-top: 0;
     margin-bottom: 0;
+    padding-bottom: 20px;
     height: auto !important;
     background: $crm-white;
 
@@ -87,34 +88,7 @@
     }
 
     .crm-submit-buttons {
-      border: none;
-      margin-top: 0px !important;
-
-      .crm-button {
-        float: right !important;
-        margin-right: 0;
-        margin-left: 10px;
-
-        &.crm-button-type-cancel {
-          float: left !important;
-          margin-left: 0 !important;
-        }
-
-        input {
-          margin-top: 1px;
-        }
-      }
-
-      &:not(:last-child) {
-        margin: 0 !important;
-      }
-
-      &:last-child {
-        margin-left: -20px !important;
-        margin-right: -20px !important;
-        padding: 22px 25px !important;
-        background: $gray-lighter !important;
-      }
+      display: none;
     }
 
     table {
@@ -130,5 +104,29 @@
     @extend .modal-footer, %open-sans-font-family;
     background: #ffffff;
     border-top: 0;
+    margin-top: 0;
+    display: block;
+    background: $gray-lighter;
+
+    .ui-dialog-buttonset {
+      width: 100%;
+
+      button {
+        float: right;
+        margin-right: 0;
+        margin-left: 10px;
+        background: $brand-primary;
+
+        &[data-identifier*="cancel"] {
+          float: left;
+          margin-left: 0 !important;
+        }
+
+        &:hover {
+          color: $crm-white;
+          opacity: .8;
+        }
+      }
+    }
   }
 }
