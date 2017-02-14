@@ -85,9 +85,7 @@
 
     td {
       &.label {
-        position: absolute;
-        left: 290px;
-        top: 5px;
+        visibility: hidden;
       }
     }
   }
@@ -96,6 +94,13 @@
     .description {
       display: block;
       margin-top: 5px;
+      line-height: 1.5em;
+    }
+
+    td {
+      &:last-child {
+        padding: 0 4px !important;
+      }
     }
   }
 
@@ -118,6 +123,14 @@
       .description {
         margin: 5px;
       }
+    }
+  }
+
+  .crm-activity-form-block-attachment,
+  .crm-activity-form-block-recurring_activity,
+  .crm-activity-form-block-schedule_followup {
+    & > td {
+      padding: 0;
     }
   }
 
