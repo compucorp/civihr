@@ -93,7 +93,7 @@
     .selector {
       .sticky {
         tr:first-child {
-          border-bottom: 1px solid #d3dee2;
+          border-bottom: 1px solid $crm-dark-grayblue;
 
           th {
             padding-left: 30px;
@@ -119,7 +119,7 @@
       }
 
       th {
-        background-color: #f3f6f7 !important;
+        background-color: $gray-lighter !important;
       }
 
       .crm-child-row {
