@@ -355,6 +355,10 @@ $control-height: 30px;
       .select2-input {
         border: 0 !important;
       }
+
+      &.error {
+        background-image: none;
+      }
     }
 
     td td {
@@ -543,11 +547,13 @@ $control-height: 30px;
     }
 
     .select2-results {
-      margin: 4px;
-      padding: 5px;
-      background: $select2-inner-background;
-      border: 1px solid $crm-darker-grayblue;
+      margin-top: 4px;
       color: $gray-darker;
+
+      li {
+        padding: 5px;
+        background: $crm-white;
+      }
 
       .select2-result-label {
         padding: 5px 10px;
@@ -555,11 +561,18 @@ $control-height: 30px;
       }
 
       .select2-highlighted {
-        background: $gray-lighter;
+        background: $crm-background;
+        color: $gray-dark;
+
+        .crm-select2-row-description {
+          p {
+            color: $gray-dark;
+          }
+        }
       }
 
       .select2-no-results {
-        padding: 0;
+        padding: 4px;
         margin: 0;
         background: none;
       }

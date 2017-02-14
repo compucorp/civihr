@@ -144,26 +144,119 @@
     }
   }
 
-  .crm-inline-error {
-    padding: 5px;
-    position: relative;
-    border-radius: 4px;
-    background: $brand-danger;
-    color: $crm-white;
-    display: block;
-    margin-top: 2px;
-    max-width: 220px;
-    padding: 0 5px;
+  input,
+  select,
+  textarea,
+  .select2-container {
+    &.crm-inline-error,
+    &.crm-error,
+    &.error {
+      background: none !important;
+      border: 1px solid $brand-danger;
+
+      &.select2-container {
+        padding: 0;
+      }
+    }
   }
 
   label {
+    &.crm-inline-error,
     &.crm-error {
-      background: $brand-danger;
-      color: $crm-white;
-      border-radius: 4px;
-      -moz-border-radius: 4px;
-      -webkit-border-radius: 4px;
-      padding: 0 5px;
+      background: $brand-danger !important;
+      color: $crm-white !important;
+      padding: 5px;
+      border-radius: 3px;
+
+      &.crm-inline-error {
+        margin: 0 4px;
+      }
+
+      span {
+        background: none;
+        color: $crm-white;
+      }
+    }
+  }
+
+  span {
+    &.crm-error {
+      background: $brand-danger !important;
+      color: $crm-white !important;
+      padding: 5px;
+      border-radius: 3px;
+      margin: 2px;
+
+      span {
+        background: none;
+        color: $crm-white;
+      }
+    }
+  }
+}
+
+.CRM_Contribute_Form_ContributionView {
+  table {
+    background: transparent;
+    border: none;
+    font-family: $font-family-base;
+    margin: 10px 0;
+    box-shadow: none !important;
+
+    thead {
+      th {
+        border-bottom: none;
+        background: $crm-background !important;
+        color: $gray-darker !important;
+        vertical-align: middle;
+        border: none;
+        padding: 10px;
+        line-height: 1.1em;
+
+        div {
+          padding: 0;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        background: $crm-white;
+        border: 1px solid $crm-background !important;
+
+
+        td {
+          border: none;
+
+          &.label {
+            border-bottom: none;
+            background: $crm-background !important;
+            color: $gray-darker !important;
+            vertical-align: middle;
+            padding: 10px;
+            line-height: 1.1em;
+
+            div {
+              padding: 0;
+            }
+          }
+
+          &:not(.label) {
+            background: $crm-white;
+            color: $gray-dark;
+            padding: 10px 30px;
+            line-height: 1.1em;
+          }
+
+          &#Donor_Information__ {
+            padding: 0;
+
+            .crm-accordion-header {
+              background: $crm-background !important;
+            }
+          }
+        }
+      }
     }
   }
 }
