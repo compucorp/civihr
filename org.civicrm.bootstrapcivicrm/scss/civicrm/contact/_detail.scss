@@ -63,8 +63,11 @@
   .CRM_Contribute_Form_Search {
     padding-right: 10px;
 
+    .action-link {
+      line-height: normal;
+    }
+
     .form-layout-compressed {
-      background-color: $gray-lighter;
       box-shadow: $box-shadow;
 
       tr {
@@ -83,6 +86,62 @@
 
         &:last-child {
           border-top: 1px solid $crm-dark-grayblue;
+        }
+      }
+    }
+
+    .selector {
+      .sticky {
+        tr:first-child {
+          border-bottom: 1px solid #d3dee2;
+
+          th {
+            padding-left: 30px;
+          }
+        }
+      }
+
+      .crm-expand-row {
+        position: relative;
+        background: none;
+
+        &:after {
+          @include fa-icon(13px, '\f054');
+          position: absolute;
+          left: 0;
+        }
+
+        &.expanded {
+          &:after {
+            @include fa-icon(13px, '\f078');
+          }
+        }
+      }
+
+      th {
+        background-color: #f3f6f7 !important;
+      }
+
+      .crm-child-row {
+        &,
+        td {
+          padding: 0;
+        }
+
+        #info {
+          th {
+            text-transform: capitalize;
+          }
+
+          td,
+          th {
+            padding-left: 30px;
+          }
+
+          td {
+            padding-top: 10px;
+            padding-bottom: 10px;
+          }
         }
       }
     }
