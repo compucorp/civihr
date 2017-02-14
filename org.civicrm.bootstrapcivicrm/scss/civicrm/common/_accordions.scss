@@ -115,5 +115,13 @@
       font-size: 13px;
       opacity: 1;
     }
+
+    span,
+    div {
+      &.description {
+        display: block;
+        line-height: 1.5em;
+      }
+    }
   }
 }
