@@ -51,6 +51,7 @@
 }
 
 .CRM_Event_Form_Participant {
+
   input,
   select,
   textarea,
@@ -344,6 +345,10 @@
 
 
 .CRM_Event_Form_ParticipantView {
+  .action-link {
+    display: none;
+  }
+  
   table {
     background: transparent;
     border: none;

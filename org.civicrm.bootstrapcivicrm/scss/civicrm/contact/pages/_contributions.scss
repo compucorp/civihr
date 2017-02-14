@@ -228,6 +228,10 @@
 }
 
 .CRM_Contribute_Form_ContributionView {
+  .action-link {
+    display: none;
+  }
+
   table {
     background: transparent;
     border: none;
@@ -285,6 +289,20 @@
 
             .crm-accordion-header {
               background: $crm-background !important;
+            }
+
+            .crm-accordion-body {
+              padding: 0 !important;
+              tr {
+                border: none !important;
+
+                td {
+                  &.label {
+                    padding: 10px 30px !important;
+                    background: none !important;
+                  }
+                }
+              }
             }
           }
         }
