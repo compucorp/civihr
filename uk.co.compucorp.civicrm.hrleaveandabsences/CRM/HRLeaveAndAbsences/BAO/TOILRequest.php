@@ -29,9 +29,9 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     $leaveRequestParams = self::parseLeaveRequestParams($params);
 
     //set from_date_type and to_date_type to be full day by default
-    $dateTypeOptions = array_flip(LeaveRequest::buildOptions('from_date_type'));
-    $leaveRequestParams['from_date_type'] = $dateTypeOptions['All Day'];
-    $leaveRequestParams['to_date_type'] = $dateTypeOptions['All Day'];
+    $dateTypeOptions = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
+    $leaveRequestParams['from_date_type'] = $dateTypeOptions['all_day'];
+    $leaveRequestParams['to_date_type'] = $dateTypeOptions['all_day'];
 
     if ($hook == 'edit') {
       $instance->id = $toilRequestParams['id'];

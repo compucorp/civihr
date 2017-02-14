@@ -62,14 +62,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
   public function createForTOILRequest(TOILRequest $toilRequest, $absenceTypeID, $toilToAccrue, DateTime $expiryDate = null) {
     $this->deleteForTOILRequest($toilRequest);
 
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
     if($expiryDate === null) {
       $absenceType = AbsenceType::findById($absenceTypeID);
       $expiryDate =  $absenceType->calculateToilExpiryDate(new DateTime());
     }
 
     LeaveBalanceChange::create([
-      'type_id' => $balanceChangeTypes['Credit'],
+      'type_id' => $balanceChangeTypes['credit'],
       'amount' => $toilToAccrue,
       'expiry_date' => $expiryDate ? $expiryDate->format('Ymd') : null,
       'source_id' => $toilRequest->id,
