@@ -38,7 +38,7 @@
       @extend .modal-title, %open-sans-font-family;
       font-size: 18px;
       background: none;
-      padding-left: 20px;
+      padding-left: 10px;
       font-weight: 600;
     }
 
@@ -67,7 +67,7 @@
 
   .ui-dialog-content {
     @extend .modal-body, %open-sans-font-family;
-    padding: 20px 20px 0 20px;
+    padding: 0;
     margin-top: 0;
     margin-bottom: 0;
     padding-bottom: 20px;
