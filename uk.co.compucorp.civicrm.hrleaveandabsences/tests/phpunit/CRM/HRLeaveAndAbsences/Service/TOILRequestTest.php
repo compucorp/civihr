@@ -90,27 +90,6 @@ class CRM_HRLeaveAndAbsences_Service_TOILRequestTest extends BaseHeadlessTest {
     }
   }
 
-  /**
-   * @expectedException RuntimeException
-   * @expectedExceptionMessage You are not allowed to change the type of a request
-   */
-  public function testCreateThrowsAnExceptionWhenLeaveApproverUpdatesAbsenceTypeForTOILRequest() {
-    $contactID = 5;
-    $params = $this->getDefaultParams(['contact_id' => $contactID]);
-    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation($params, true);
-
-    $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'max_leave_accrual' => 10
-    ]);
-
-    $params['id'] = $toilRequest->id;
-    $params['type_id'] = $absenceType->id;
-
-    $toilRequestService = $this->getTOILRequestServiceWhenCurrentUserIsLeaveManager();
-    $toilRequestService->create($params, false);
-  }
-
   private function getTOILRequestService($isAdmin = false, $isManager = false) {
     $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
     $leaveRequestStatusMatrixService = new LeaveRequestStatusMatrixService($leaveManagerService);
@@ -121,10 +100,6 @@ class CRM_HRLeaveAndAbsences_Service_TOILRequestTest extends BaseHeadlessTest {
       $leaveRequestStatusMatrixService,
       $leaveRequestRightsService
     );
-  }
-
-  private function getTOILRequestServiceWhenCurrentUserIsLeaveManager() {
-    return $this->getTOILRequestService(false, true);
   }
 
   private function getDefaultParams($params = []) {
