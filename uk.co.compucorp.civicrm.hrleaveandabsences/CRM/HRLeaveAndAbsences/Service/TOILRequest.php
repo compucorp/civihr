@@ -54,19 +54,9 @@ class CRM_HRLeaveAndAbsences_Service_TOILRequest extends LeaveRequestService {
    */
   public function delete($toilRequestID) {
     $toilRequest = TOILRequest::findById($toilRequestID);
-    $leaveRequest = LeaveRequest::findById($toilRequest->leave_request_id);
-
-    $transaction = new CRM_Core_Transaction();
-    try {
-      $this->leaveBalanceChangeService->deleteForTOILRequest($toilRequest);
-      LeaveRequestDate::deleteDatesForLeaveRequest($toilRequest->leave_request_id);
-      $leaveRequest->delete();
-      $toilRequest->delete();
-
-      $transaction->commit();
-    } catch(Exception $e) {
-      $transaction->rollback();
-    }
+    parent::delete($toilRequest->leave_request_id);
+    $this->leaveBalanceChangeService->deleteForTOILRequest($toilRequest);
+    $toilRequest->delete();
   }
 
   /**
