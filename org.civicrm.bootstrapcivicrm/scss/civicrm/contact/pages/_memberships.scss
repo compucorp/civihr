@@ -136,5 +136,137 @@
         }
       }
     }
+
+    .crm-accordion-wrapper {
+      .crm-accordion-header {
+        background: $crm-background !important;
+      }
+
+      .crm-accordion-body {
+        padding: 15px 0 !important;
+      }
+    }
+  }
+
+  table {
+    &.selector {
+      box-shadow: none;
+
+      thead {
+        th {
+          border-bottom: none;
+          background: $crm-background !important;
+          color: $gray-darker !important;
+          vertical-align: middle;
+          border: none;
+          padding: 10px;
+          line-height: 1.1em;
+
+          div {
+            padding: 0;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          background: $crm-white;
+          border: 1px solid $crm-background !important;
+
+          td {
+            border: none;
+            background: $crm-white;
+            color: $gray-dark;
+            padding: 10px 30px;
+            line-height: 1.1em;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+.CRM_Member_Form_MembershipView {
+  .action-link {
+    display: none;
+  }
+
+  table {
+    background: transparent;
+    border: none;
+    font-family: $font-family-base;
+    margin: 10px 0;
+    box-shadow: none !important;
+
+    thead {
+      th {
+        border-bottom: none;
+        background: $crm-background !important;
+        color: $gray-darker !important;
+        vertical-align: middle;
+        border: none;
+        padding: 10px;
+        line-height: 1.1em;
+
+        div {
+          padding: 0;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        background: $crm-white;
+        border: 1px solid $crm-background !important;
+
+        td {
+          border: none;
+
+          &.label {
+            border-bottom: none;
+            background: $crm-background !important;
+            color: $gray-darker !important;
+            vertical-align: middle;
+            padding: 10px;
+            line-height: 1.1em;
+
+            div {
+              padding: 0;
+            }
+          }
+
+          &:not(.label) {
+            background: $crm-white;
+            color: $gray-dark;
+            padding: 10px 30px;
+            line-height: 1.1em;
+          }
+        }
+      }
+    }
+  }
+
+  .crm-accordion-wrapper {
+    padding: 0;
+
+    .crm-accordion-header {
+      background: $crm-background !important;
+    }
+
+    .crm-accordion-body {
+      padding: 15px 0 !important;
+      tr {
+
+        td {
+
+          &.label {
+            padding: 10px 30px !important;
+            background: none !important;
+          }
+        }
+      }
+    }
   }
 }
