@@ -30,7 +30,7 @@ class CRM_HRLeaveAndAbsences_Service_TOILRequestTest extends BaseHeadlessTest {
   private $leaveBalanceChangeService;
 
   public function setUp() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
 
     $this->absenceType = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => true,
@@ -121,10 +121,6 @@ class CRM_HRLeaveAndAbsences_Service_TOILRequestTest extends BaseHeadlessTest {
       $leaveRequestStatusMatrixService,
       $leaveRequestRightsService
     );
-  }
-
-  private function getTOILRequestServiceWhenCurrentUserIsAdmin() {
-    return $this->getTOILRequestService(true, false);
   }
 
   private function getTOILRequestServiceWhenCurrentUserIsLeaveManager() {

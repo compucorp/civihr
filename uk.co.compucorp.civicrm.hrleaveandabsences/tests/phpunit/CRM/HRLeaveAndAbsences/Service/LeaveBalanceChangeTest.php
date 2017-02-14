@@ -23,7 +23,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
   private $leaveBalanceChangeService;
 
   public function setUp() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
     $this->leaveBalanceChangeService = new LeaveBalanceChangeService();
   }
 

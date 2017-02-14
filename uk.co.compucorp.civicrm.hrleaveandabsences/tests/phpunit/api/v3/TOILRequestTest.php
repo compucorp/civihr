@@ -25,7 +25,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
   private $leaveContact;
 
   public function setUp() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
 
     $this->toilAmounts = $this->toilAmountOptions();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
