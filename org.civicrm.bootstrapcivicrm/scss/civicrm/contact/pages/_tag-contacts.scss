@@ -94,6 +94,16 @@
       margin: 25px;
     }
   }
+
+  .listing-box {
+    max-height: 216px;
+    height: auto;
+
+    > div {
+      padding: 15px;
+      background-color: $crm-white;
+    }
+  }
 }
 
 .CRM_Tag_Form_Tag {

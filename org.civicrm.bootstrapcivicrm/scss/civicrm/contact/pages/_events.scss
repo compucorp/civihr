@@ -60,6 +60,7 @@
     &.error {
       background: none !important;
       border: 1px solid $brand-danger;
+      min-height: 30px;
 
       &.select2-container {
         padding: 0;
@@ -308,7 +309,7 @@
     box-shadow: none !important;
 
     thead {
-      
+
       th {
         border-bottom: none;
         background: $crm-background !important;
