@@ -1,5 +1,0 @@
-
-// Converts pixs into ems
-@function em($pixels, $context: $crm-font-size-base-unitless) {
-  @return #{$pixels/$context}em;
-}
