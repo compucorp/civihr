@@ -304,9 +304,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validatePayAutoFields($contactID, $expected);
   }
 
-
-
-  function testInsuranceImport() {
+  public function testInsuranceImport() {
     $contact2Params = array(
       'first_name' => 'John_8',
       'last_name' => 'Snow_8',
@@ -336,6 +334,33 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateResult($contactID, 'HRJobHealth');
   }
 
+  public function testWrongInsurancePlanTypeImport() {
+    $contact2Params = array(
+      'first_name' => 'John_8',
+      'last_name' => 'Snow_8',
+      'email' => 'a8@b8.com',
+      'contact_type' => 'Individual',
+    );
+
+    $contactID = $this->createTestContact($contact2Params);
+    $params = array(
+      'HRJobContract-contact_id' => $contactID,
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobHealth-dependents' => 'HI Description',
+      'HRJobHealth-description' => 'HI dependents',
+      'HRJobHealth-plan_type' => 'Wrong Plan Type Label',
+      'HRJobHealth-dependents_life_insurance' => 'LI dependents',
+      'HRJobHealth-description_life_insurance' => 'LI description',
+      'HRJobHealth-plan_type_life_insurance' => $this->_insurancePlanTypes[1]['label'],
+    );
+
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
+  }
+  
   function testPensionImport() {
     $contact2Params = array(
       'first_name' => 'John_9',
