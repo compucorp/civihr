@@ -2,104 +2,104 @@
   "scenarios": [
     {
       "label": "T&A / Tasks",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "delay": 2000,
       "onBeforeScript": "login",
       "onReadyScript": "close-any-modal"
     },
     {
       "label": "T&A / Tasks / Advanced Filters",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/advanced-filters"
     },
     {
       "label": "T&A / Tasks / Select Dates",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/select-dates"
     },
     {
       "label": "T&A / Tasks / Assignment / Add",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/assignment/add"
     },
     {
       "label": "T&A / Tasks / Assignment / Select Type",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/assignment/select-type"
     },
     {
       "label": "T&A / Tasks / Assignment / Add Task",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/assignment/add-task"
     },
     {
       "label": "T&A / Tasks / Assignment / Add Document",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/assignment/add-document"
     },
     {
       "label": "T&A / Tasks / Assignment / Pick Date",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/assignment/pick-date"
     },
     {
       "label": "T&A / Tasks / Task / In Place Edit / Due Date",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/editable-date"
     },
     {
       "label": "T&A / Tasks / Task / In Place Edit / Subject",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/editable-subject"
     },
     {
       "label": "T&A / Tasks / Task / In Place Edit / Target",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/editable-target"
     },
     {
       "label": "T&A / Tasks / Task / In Place Edit / Assigned To",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/editable-assigned"
     },
     {
       "label": "T&A / Tasks / Task / Add",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/add"
     },
     {
       "label": "T&A / Tasks / Task / Pick Date",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/pick-date"
     },
     {
       "label": "T&A / Tasks / Task / Select Assignee",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/select-assignee"
     },
     {
       "label": "T&A / Tasks / Task / Select Type",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/select-type"
     },
     {
       "label": "T&A / Tasks / Task / Show All Fields",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/show-all-fields"
     },
     {
       "label": "T&A / Tasks / Task / Show More",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/show-more"
     },
     {
       "label": "T&A / Tasks / Task / Actions",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/actions"
     },
     {
       "label": "T&A / Tasks / Task / Open",
-      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
       "onReadyScript": "tasks/task/open"
     }
   ]

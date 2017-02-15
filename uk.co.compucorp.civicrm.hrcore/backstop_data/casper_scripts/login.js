@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function (casper) {
-  var config = require('../config/crm-config');
+  var config = require('../site-config');
   var loginFormSelector = 'form#user-login-form';
 
   casper

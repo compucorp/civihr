@@ -2,63 +2,63 @@
   "scenarios": [
     {
       "label": "Job Contract",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onBeforeScript": "login",
       "onReadyScript": "contact-summary/job-contract/summary"
     },
     {
       "label": "Job Contract / Full History",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/full-history"
     },
     {
       "label": "Job Contract / Delete Dialog",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/delete-dialog"
     },
     {
       "label": "Job Contract / Modal / Tab / General",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/tab-general"
     },
     {
       "label": "Job Contract / Modal / Tab / Hours",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/tab-hours"
     },
     {
       "label": "Job Contract / Modal / Tab / Pay",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/tab-pay"
     },
     {
       "label": "Job Contract / Modal / Tab / Leave",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/tab-leave"
     },
     {
       "label": "Job Contract / Modal / Tab / Insurance",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/tab-insurance"
     },
     {
       "label": "Job Contract / Modal / Tab / Pension",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/tab-pension"
     },
     {
       "label": "Job Contract / Modal / Tab / Funding",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/tab-funding"
     },
     {
       "label": "Job Contract / Modal / Correct Error ",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/correct-error"
     },
     {
       "label": "Job Contract / Modal / Change Terms ",
-      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-contract/change-terms"
     }
   ]
