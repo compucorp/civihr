@@ -1,0 +1,56 @@
+{
+  "scenarios": [
+    {
+      "label": "T&A / Documents",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "delay": 2000,
+      "onBeforeScript": "login",
+      "onReadyScript": "close-any-modal"
+    },
+    {
+      "label": "T&A / Documents / Select Dates",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/select-dates"
+    },
+    {
+      "label": "T&A / Documents / Advanced Filters",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/advanced-filters"
+    },
+    {
+      "label": "T&A / Documents / Document / Add",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/add"
+    },
+    {
+      "label": "T&A / Documents / Document / Actions",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/actions"
+    },
+    {
+      "label": "T&A / Documents / Document / Open",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/open"
+    },
+    {
+      "label": "T&A / Documents / Document / Show All Fields",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/show-all-fields"
+    },
+    {
+      "label": "T&A / Documents / Document / Select Type",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/select-type"
+    },
+    {
+      "label": "T&A / Documents / Document / Select Assignee",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/select-assignee"
+    },
+    {
+      "label": "T&A / Documents / Document / Pick Due Date",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/pick-due-date"
+    }
+  ]
+}

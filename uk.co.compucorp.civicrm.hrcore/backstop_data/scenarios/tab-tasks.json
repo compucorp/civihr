@@ -1,0 +1,11 @@
+{
+  "scenarios": [
+    {
+      "label": "Tasks",
+      "delay": 2000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onBeforeScript": "login",
+      "onReadyScript": "contact-summary/tasks/show"
+    }
+  ]
+}

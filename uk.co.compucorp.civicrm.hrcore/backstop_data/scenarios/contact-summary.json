@@ -1,0 +1,23 @@
+{
+  "scenarios": [
+    {
+      "label": "Contact Summary",
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "delay": 2000,
+      "onBeforeScript": "login",
+      "onReadyScript": "close-any-modal"
+    },
+    {
+      "label": "Contact Summary / Actions",
+      "delay": 2000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/show-actions"
+    },
+    {
+      "label": "Contact Access Rights",
+      "delay": 2000,
+      "url": "http://localhost:8123/index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/show-manage-rights"
+    }
+  ]
+}

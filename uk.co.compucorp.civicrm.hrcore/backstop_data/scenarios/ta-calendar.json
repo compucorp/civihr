@@ -1,0 +1,11 @@
+{
+  "scenarios": [
+    {
+      "label": "T&A / Calendar",
+      "url": "http://localhost:8123/civicrm/tasksassignments/dashboard#/calendar",
+      "delay": 2000,
+      "onBeforeScript": "login",
+      "onReadyScript": "close-any-modal"
+    }
+  ]
+}
