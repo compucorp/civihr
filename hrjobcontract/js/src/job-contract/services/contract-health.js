@@ -18,8 +18,7 @@ define([
         getOne: function(params) {
 
           if ((!params || typeof params !== 'object') ||
-            (!params.jobcontract_id && !params.jobcontract_revision_id) ||
-            (params.jobcontract_id && typeof + params.jobcontract_id !== 'number') ||
+            (!params.jobcontract_revision_id) ||
             (params.jobcontract_revision_id && typeof + params.jobcontract_revision_id !== 'number')) {
             return null;
           }
