@@ -35,6 +35,7 @@ define([
     'job-contract/filters/parse-int',
     'job-contract/services/services',
     'job-contract/services/contract',
+    'job-contract/services/contract-revision-list',
     'job-contract/vendor/job-summary',
 ], function (angular) {
     'use strict';
