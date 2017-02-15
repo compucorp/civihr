@@ -35,6 +35,14 @@
         margin: 0 25px;
       }
     }
+
+    div,
+    span {
+      &.description {
+        line-height: 1.5em;
+        display: block;
+      }
+    }
   }
 
   #cat {
@@ -78,6 +86,13 @@
       }
     }
   }
+  a {
+    &.button  {
+      i {
+        margin-right: 3px;
+      }
+    }
+  }
 }
 
 .CRM_Contact_Form_Task_AddToTag,
@@ -89,7 +104,7 @@
   }
 
   table {
-    
+
     &.form-layout-compressed {
       margin: 25px;
     }

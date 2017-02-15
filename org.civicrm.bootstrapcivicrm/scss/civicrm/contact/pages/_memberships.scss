@@ -3,12 +3,13 @@
     box-shadow: $box-shadow;
 
     h3 {
-      padding: 20px 10px;
-      background: $crm-background;
+      padding: 20px;
+      margin: 0;
+      background: $gray-lighter;
       color: $gray-darker;
-      font-size: $font-size-h3;
+      font-size: $font-size-h2;
       font-family: $font-family-base;
-      border-bottom: 1px solid $crm-dark-grayblue;
+      border-bottom: 1px solid $crm-background;
     }
 
     table {
@@ -17,16 +18,21 @@
       font-family: $font-family-base;
 
       thead {
-        th {
-          border-bottom: none;
-          background: $crm-background;
-          color: $gray-darker;
-          vertical-align: middle;
-          border: none;
-          padding: 10px;
 
-          div {
-            padding: 0;
+        tr{
+          border-bottom: 1px solid $crm-dark-grayblue;
+
+          th {
+            border-bottom: none;
+            background: $gray-lighter;
+            color: $gray-darker;
+            vertical-align: middle;
+            border: none;
+            padding: 10px 20px;
+
+            div {
+              padding: 0;
+            }
           }
         }
       }
@@ -40,10 +46,20 @@
             background: $crm-white;
             color: $gray-dark;
             border: none;
-            padding: 10px 30px;
+            padding: 10px 20px;
           }
         }
       }
+    }
+  }
+}
+
+.page-civicrm-contact-view {
+  .action-link {
+    margin-bottom: 30px;
+
+    br {
+      display: none;
     }
   }
 }
