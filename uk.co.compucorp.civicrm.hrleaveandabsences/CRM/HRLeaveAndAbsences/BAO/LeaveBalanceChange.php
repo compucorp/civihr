@@ -396,7 +396,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       $remainingAmount = $balanceChangeToExpire['amount'];
 
       foreach($datesOverlappingBalanceChangesToExpire as $i => $date) {
-        if($date['date'] >= $balanceChangeToExpire['start_date'] && $date['date'] <= $balanceChangeToExpire['expiry_date']) {
+        $isSameContact = $balanceChangeToExpire['contact_id'] == $date['contact_id'];
+        if($isSameContact && $date['date'] >= $balanceChangeToExpire['start_date'] && $date['date'] <= $balanceChangeToExpire['expiry_date']) {
           if($remainingAmount >= abs($date['amount'])) {
             // Date already deducted, so new we remove it from the
             // array so it won't be deducted again from another
@@ -671,7 +672,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *
    * @return array
    */
-  private static function getDatesOverlappingBalanceChangesToExpire($balanceChangesToExpire) {
+  private static function getDatesOverlappingBalanceChangesToExpire(&$balanceChangesToExpire) {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequestTable = LeaveRequest::getTableName();
@@ -679,12 +680,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $leaveBalanceChangeTable = self::getTableName();
 
     $dates = [];
-    foreach($balanceChangesToExpire as $balanceChangeToExpire) {
+    foreach($balanceChangesToExpire as &$balanceChangeToExpire) {
       $balanceChange = new self();
       $balanceChange->source_id = $balanceChangeToExpire['source_id'];
       $balanceChange->source_type = $balanceChangeToExpire['source_type'];
       $periodEntitlement = $balanceChange->getLeavePeriodEntitlement();
 
+      $balanceChangeToExpire['contact_id'] = $periodEntitlement->contact_id;
       $wherePeriodEntitlementDates = [];
       $periodStartAndEndDates = $periodEntitlement->getStartAndEndDates();
       foreach($periodStartAndEndDates as $dates) {
@@ -705,14 +707,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
             ON leave_request_date.leave_request_id = leave_request.id
         WHERE ({$wherePeriodEntitlementDates}) AND 
               (leave_request_date.date BETWEEN %2 AND %3) AND
-              (leave_request.status_id = %4)
+              (leave_request.status_id = %4) AND 
+              (leave_request.contact_id = %5)
       ";
 
       $params = [
         1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
         2 => [$balanceChangeToExpire['start_date']->format('Y-m-d'), 'String'],
         3 => [$balanceChangeToExpire['expiry_date']->format('Y-m-d'), 'String'],
-        4 => [$leaveRequestStatuses['approved'], 'String']
+        4 => [$leaveRequestStatuses['approved'], 'String'],
+        5 => [$periodEntitlement->contact_id, 'Integer']
       ];
 
       $result = CRM_Core_DAO::executeQuery($query, $params);
@@ -721,7 +725,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
         $dates[$result->id] = [
           'id' => $result->id,
           'date' => new DateTime($result->date),
-          'amount' => (float)$result->amount
+          'amount' => (float)$result->amount,
+          'contact_id' => $periodEntitlement->contact_id
         ];
       }
     }

@@ -1168,6 +1168,74 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(-3, $expiryRecord->amount);
   }
 
+  public function testCreateExpiryRecordsCalculatesTheExpiredAmountCorrectlyForMoreThanOneContact() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-30 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 1,
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 2,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 1,
+    ]);
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $balanceChange1 = $this->createBroughtForwardBalanceChange(
+      $periodEntitlement1->id,
+      5,
+      date('YmdHis', strtotime('-1 day'))
+    );
+
+    $balanceChange2 = $this->createBroughtForwardBalanceChange(
+      $periodEntitlement2->id,
+      5,
+      date('YmdHis', strtotime('-1 day'))
+    );
+
+    // This leave request has 7 days, but only two of them
+    // were taken before the brought forward expiry date
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement1->type_id,
+      $periodEntitlement1->contact_id,
+      $leaveRequestStatuses['Approved'],
+      CRM_Utils_Date::processDate('-2 days'),
+      CRM_Utils_Date::processDate('+5 days')
+    );
+
+    // This leave request has 7 days, but only four of them
+    // were taken before the brought forward expiry date
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement2->type_id,
+      $periodEntitlement2->contact_id,
+      $leaveRequestStatuses['Approved'],
+      CRM_Utils_Date::processDate('-4 days'),
+      CRM_Utils_Date::processDate('+3 days')
+    );
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
+    $this->assertEquals(2, $numberOfCreatedRecords);
+
+    $expiryRecord1 = $this->getExpiryRecordForBalanceChange($balanceChange1->id);
+    $this->assertNotNull($expiryRecord1);
+    // Since only two days were taken before the brought forward
+    // expiry date, the other 3 days will expire
+    $this->assertEquals(-3, $expiryRecord1->amount);
+
+    $expiryRecord2 = $this->getExpiryRecordForBalanceChange($balanceChange2->id);
+    $this->assertNotNull($expiryRecord2);
+    // Since only four days were taken before the brought forward
+    // expiry date, the remaining one expire
+    $this->assertEquals(-1, $expiryRecord2->amount);
+  }
+
   public function testGetLeavePeriodEntitlementCanReturnThePeriodEntitlementWhenTheSourceTypeIsEntitlement() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'contact_id' => 1,
