@@ -11,7 +11,6 @@
 
     a.newGroup.button {
       @extend %btn-civi-primary;
-      margin-bottom: 20px;
 
       .crm-i {
         position: relative;
@@ -22,7 +21,7 @@
 
   .crm-group-search-form-block {
     padding: 20px !important;
-    margin-bottom: 20px;
+    margin-bottom: 30px !important;
 
     h3 {
       @extend .collapsible-title;
@@ -30,6 +29,16 @@
 
     > table td {
       padding: 0;
+    }
+
+    table {
+      tr {
+        td:nth-child(5) {
+          label[for*="group_status"] {
+            margin-top: 7px;
+          }
+        }
+      }
     }
   }
 
@@ -205,5 +214,20 @@
   .ui-dialog {
     max-height: 90% !important;
     overflow-y: auto;
+  }
+
+  #group_type-block {
+
+    label {
+      margin-top: 7px;
+    }
+  }
+
+  #branding {
+    h1 {
+      &.page-title {
+        margin-bottom: 25px !important;
+      }
+    }
   }
 }
