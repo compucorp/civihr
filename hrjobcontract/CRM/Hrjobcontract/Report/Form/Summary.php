@@ -749,14 +749,6 @@ class CRM_Hrjobcontract_Report_Form_Summary extends CRM_Report_Form {
                   $select[] = "CONCAT({$this->_aliases['civicrm_contact']}_health2.sort_name, ' (InternalID: ', hrjobcontract_health_civireport.provider_life_insurance , ', Email: ', COALESCE({$this->_aliases['civicrm_email']}_health2.email, '-'), ', ExternalID: ', COALESCE({$this->_aliases['civicrm_contact']}_health2.external_identifier, '-'), ')') AS {$tableName}_{$fieldName}";
                 break;
 
-              case $tableName == 'civicrm_hrjobcontract_health' && $fieldName == 'health_plan_type':
-                  $select[] = "healthplan_type_ov.label as {$tableName}_{$fieldName}";
-                break;
-
-              case $tableName == 'civicrm_hrjobcontract_health' && $fieldName == 'health_plan_type_life_insurance':
-                  $select[] = "lifeplan_type_ov.label as {$tableName}_{$fieldName}";
-                break;
-
               default:
                 $alias = "{$tableName}_{$fieldName}";
                 $select[] = "{$field['dbAlias']} as {$alias}";
@@ -795,12 +787,6 @@ class CRM_Hrjobcontract_Report_Form_Summary extends CRM_Report_Form {
       LEFT JOIN civicrm_hrjobcontract_revision AS {$this->_aliases['civicrm_hrjobcontract_revision']} ON {$this->_aliases['civicrm_hrjobcontract_contract']}.id = {$this->_aliases['civicrm_hrjobcontract_revision']}.jobcontract_id
       LEFT JOIN civicrm_hrjobcontract_details AS {$this->_aliases['civicrm_hrjobcontract_details']} ON {$this->_aliases['civicrm_hrjobcontract_revision']}.details_revision_id = {$this->_aliases['civicrm_hrjobcontract_details']}.jobcontract_revision_id
       LEFT JOIN civicrm_hrjobcontract_health AS {$this->_aliases['civicrm_hrjobcontract_health']} ON {$this->_aliases['civicrm_hrjobcontract_revision']}.health_revision_id = {$this->_aliases['civicrm_hrjobcontract_health']}.jobcontract_revision_id
-
-      LEFT JOIN civicrm_option_group healthplan_og ON healthplan_og.name = 'hrjc_insurance_plantype'
-      LEFT JOIN civicrm_option_value healthplan_type_ov ON (healthplan_type_ov.option_group_id = healthplan_og.id AND healthplan_type_ov.value = {$this->_aliases['civicrm_hrjobcontract_health']}.plan_type)
-
-      LEFT JOIN civicrm_option_group lifeplan_og ON lifeplan_og.name = 'hrjc_insurance_plantype'
-      LEFT JOIN civicrm_option_value lifeplan_type_ov ON (lifeplan_type_ov.option_group_id = lifeplan_og.id AND lifeplan_type_ov.value = {$this->_aliases['civicrm_hrjobcontract_health']}.plan_type_life_insurance)
 
       LEFT JOIN civicrm_contact AS {$this->_aliases['civicrm_contact']}_health1 ON {$this->_aliases['civicrm_hrjobcontract_health']}.provider = {$this->_aliases['civicrm_contact']}_health1.id
       LEFT JOIN civicrm_contact AS {$this->_aliases['civicrm_contact']}_health2 ON {$this->_aliases['civicrm_hrjobcontract_health']}.provider_life_insurance = {$this->_aliases['civicrm_contact']}_health2.id
