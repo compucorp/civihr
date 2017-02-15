@@ -118,6 +118,9 @@ PASS_PARAM=
 # Defines username and password string for MySQL DSN.
 USER_PASS=
 
+# Defines flag to force drop databases.
+FORCE_DROP=
+
 ##########################################################
 # Displays usage message
 # Arguments:
@@ -251,11 +254,11 @@ function civihr_mkdir() {
 ##########################################################
 # Creates host and port to a single string.
 # Arguments:
-#   Folder Name.
+#   Host and Port.
 # Returns:
-#   Creates directory.
+#   Creates host and port of database string.
 # Usage:
-#   civihr_mkdir <directory-name>
+#   civihr_build_host_port <host> <port>
 ##########################################################
 function civihr_build_host_port() {
   local host=$1
@@ -293,8 +296,11 @@ function _database_install_cms() {
 
   echo "[[Setting up MySQL for CMS]]"
   civihr_assert_vars _database_install_cms CMS_ROOT SITE_NAME SITE_ID TMPDIR
+  # Force drop database.
+  if [ "$FORCE_DROP" ]; then
+      mysql -u$DB_USER $PASS_PARAM -e "drop database $CMSdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
+  fi
   # Create database.
-
   mysql -u$DB_USER $PASS_PARAM -e "create database $CMSdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
   # Assign values to global variables.
   [ -z "$CMS_DB_USER" ]           && CMS_DB_USER="$DB_USER"
@@ -318,8 +324,11 @@ function _database_install_civi() {
 
   echo "[[Setting up MySQL for CiviCRM]]"
   civihr_assert_vars _database_install_civi CMS_ROOT SITE_NAME SITE_ID TMPDIR
+  # Force drop database.
+  if [ "$FORCE_DROP" ]; then
+      mysql -u$DB_USER $PASS_PARAM -e "drop database $CIVIdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
+  fi
   # Create database.
-
   mysql -u$DB_USER $PASS_PARAM -e "create database $CIVIdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
   # Assign values to global variables.
   [ -z "$CIVI_DB_USER" ]           && CIVI_DB_USER="$DB_USER"
@@ -605,7 +614,6 @@ function civihr_parse_options() {
   while [ -n "$1" ] ; do
     OPTION="$1"
     shift
-
     case "$OPTION" in
       -h|--help|-?)
         civihr_app_usage
@@ -651,9 +659,7 @@ function civihr_parse_options() {
         ;;
 
       --force-drop)
-        mysql -u$DB_USER $PASS_PARAM -e "drop database $CMSdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
-        mysql -u$DB_USER $PASS_PARAM -e "drop database $CIVIdbName" || { echo "[[Please fix above MySQL error.]]"; exit 1;  }
-        shift
+        FORCE_DROP=1
         ;;
 
       *)
@@ -835,11 +841,6 @@ function civihr_install_site(){
 
   ## Creating databases for Drupal and CIVICRM.
   database_install
-
-#   ## Grant access for the Drupal database user to access the Civi Database too.
-# eval mysql -u"$CIVI_DB_USER" $PASS_PARAM <<EOSQL
-#     GRANT ALL PRIVILEGES ON $CIVI_DB_NAME.* TO $CMS_DB_USER@'%';
-# EOSQL
 
   ## Setup Drupal (config files, database tables)
   drupal_install
