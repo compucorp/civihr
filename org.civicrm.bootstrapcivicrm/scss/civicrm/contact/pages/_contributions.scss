@@ -4,6 +4,56 @@
   }
 }
 
+.page-civicrm-contribute-search {
+  #branding h1.page-title {
+    margin-bottom: 28px !important;
+  }
+
+  .CRM_Contribute_Form_Search {
+    .crm-accordion-body {
+      > .form-layout {
+        > tbody {
+          > tr {
+            &:nth-child(2) {
+              display: flex;
+
+              > td {
+                width: 30%;
+              }
+            }
+
+            &:nth-child(8) {
+              table {
+                tr td:first-child {
+                  vertical-align: middle;
+                }
+              }
+            }
+
+            &:nth-child(14) {
+              td {
+                padding: 0;
+
+                .crm-accordion-body {
+                  padding: 15px 30px !important;
+                }
+              }
+            }
+
+            td {
+              table {
+                td {
+                  padding: 0 !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 .CRM_Contribute_Form_Search {
   table {
     background: transparent;
