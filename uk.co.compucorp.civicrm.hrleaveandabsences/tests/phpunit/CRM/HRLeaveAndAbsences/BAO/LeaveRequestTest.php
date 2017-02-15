@@ -167,7 +167,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => CRM_Utils_Date::processDate('2016-11-03'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('2016-11-05'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
     $this->assertInstanceOf(LeaveRequest::class, $leaveRequest2);
   }
@@ -551,7 +552,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date_type' => 1
+      'from_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -567,7 +569,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -581,7 +584,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $this->absenceType->id,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1
+      'from_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -595,7 +599,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'contact_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1
+      'from_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -609,7 +614,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1
+      'from_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -627,6 +633,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -644,6 +651,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate->format('YmdHis'),
       'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -661,7 +669,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -683,7 +692,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -705,7 +715,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -741,7 +752,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -777,7 +789,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -1089,7 +1102,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -1129,7 +1143,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
     $this->assertEquals($leaveRequest->from_date, $fromDate->format('YmdHis'));
   }
@@ -1182,7 +1197,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
     $this->assertEquals($leaveRequest->from_date, $fromDate->format('YmdHis'));
   }
@@ -1236,7 +1252,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -1284,7 +1301,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
     $this->assertEquals($leaveRequest->from_date, $fromDate->format('YmdHis'));
   }
@@ -1332,7 +1350,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -1382,7 +1401,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $date,
       'from_date_type' => $fromType,
       'to_date' => $date,
-      'to_date_type' => $fromType
+      'to_date_type' => $fromType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -1409,7 +1429,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -1440,7 +1461,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
@@ -1502,7 +1524,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 }

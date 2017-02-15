@@ -48,6 +48,7 @@ class CRM_HRLeaveAndAbsences_BAO_TOILRequest extends CRM_HRLeaveAndAbsences_DAO_
     }
 
     $instance->copyValues($toilRequestParams);
+    $leaveRequestParams['request_type'] = LeaveRequest::REQUEST_TYPE_TOIL;
     $leaveRequestInstance = LeaveRequest::create($leaveRequestParams, false);
     $instance->leave_request_id = $leaveRequestInstance->id;
     $instance->save();

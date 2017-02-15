@@ -129,6 +129,42 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
    */
   public $to_date_type;
   /**
+   * One of the values of the Sickness Reason option group
+   *
+   * @var string
+   */
+  public $sickness_reason;
+  /**
+   * A list of values from the LeaveRequestRequiredDocument option group
+   *
+   * @var string
+   */
+  public $sickness_required_documents;
+  /**
+   * The duration of the overtime work in minutes
+   *
+   * @var int unsigned
+   */
+  public $toil_duration;
+  /**
+   * The amount of days accrued for this toil request
+   *
+   * @var int unsigned
+   */
+  public $toil_to_accrue;
+  /**
+   * The expiry date of this TOIL Request. When null, it means it never expires.
+   *
+   * @var date
+   */
+  public $toil_expiry_date;
+  /**
+   * The type of this request (leave, toil, sickness etc)
+   *
+   * @var string
+   */
+  public $request_type;
+  /**
    * class constructor
    *
    * @return civicrm_hrleaveandabsences_leave_request
@@ -228,6 +264,53 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
             'optionEditPath' => 'civicrm/admin/options/hrleaveandabsences_leave_request_day_type',
           )
         ) ,
+        'sickness_reason' => array(
+          'name' => 'sickness_reason',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Sickness Reason') ,
+          'description' => 'One of the values of the Sickness Reason option group',
+          'maxlength' => 512,
+          'size' => CRM_Utils_Type::HUGE,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrleaveandabsences_sickness_reason',
+            'optionEditPath' => 'civicrm/admin/options/hrleaveandabsences_sickness_reason',
+          )
+        ) ,
+        'sickness_required_documents' => array(
+          'name' => 'sickness_required_documents',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Sickness Required Documents') ,
+          'description' => 'A list of values from the LeaveRequestRequiredDocument option group',
+          'maxlength' => 10,
+          'size' => CRM_Utils_Type::TWELVE,
+        ) ,
+        'toil_duration' => array(
+          'name' => 'toil_duration',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Toil Duration') ,
+          'description' => 'The duration of the overtime work in minutes',
+        ) ,
+        'toil_to_accrue' => array(
+          'name' => 'toil_to_accrue',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Toil To Accrue') ,
+          'description' => 'The amount of days accrued for this toil request',
+        ) ,
+        'toil_expiry_date' => array(
+          'name' => 'toil_expiry_date',
+          'type' => CRM_Utils_Type::T_DATE,
+          'title' => ts('Toil Expiry Date') ,
+          'description' => 'The expiry date of this TOIL Request. When null, it means it never expires.',
+        ) ,
+        'request_type' => array(
+          'name' => 'request_type',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Request Type') ,
+          'description' => 'The type of this request (leave, toil, sickness etc)',
+          'required' => true,
+          'maxlength' => 10,
+          'size' => CRM_Utils_Type::TWELVE,
+        ) ,
       );
     }
     return self::$_fields;
@@ -250,6 +333,12 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
         'from_date_type' => 'from_date_type',
         'to_date' => 'to_date',
         'to_date_type' => 'to_date_type',
+        'sickness_reason' => 'sickness_reason',
+        'sickness_required_documents' => 'sickness_required_documents',
+        'toil_duration' => 'toil_duration',
+        'toil_to_accrue' => 'toil_to_accrue',
+        'toil_expiry_date' => 'toil_expiry_date',
+        'request_type' => 'request_type',
       );
     }
     return self::$_fieldKeys;

@@ -347,7 +347,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
           'to_date'        => CRM_Utils_Date::processDate($publicHoliday->date),
           'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
           'from_date_type' => $leaveRequestDateTypes['All Day'],
-          'to_date_type'   => $leaveRequestDateTypes['All Day']
+          'to_date_type'   => $leaveRequestDateTypes['All Day'],
+          'request_type'   => LeaveRequest::REQUEST_TYPE_LEAVE
         ]);
 
         $requestDate  = LeaveRequestDate::getDatesForLeaveRequest($leaveRequest->id)[0];

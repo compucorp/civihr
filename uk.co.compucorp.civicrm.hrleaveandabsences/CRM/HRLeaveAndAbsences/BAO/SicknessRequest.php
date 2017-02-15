@@ -38,6 +38,7 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
     }
 
     $instance->copyValues($sicknessRequestParams);
+    $leaveRequestParams['request_type'] = LeaveRequest::REQUEST_TYPE_SICKNESS;
     $leaveRequestInstance = LeaveRequest::create($leaveRequestParams, false);
     $instance->leave_request_id = $leaveRequestInstance->id;
 

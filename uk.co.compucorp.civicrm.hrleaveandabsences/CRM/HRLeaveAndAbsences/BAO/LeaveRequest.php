@@ -15,6 +15,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
   use CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait;
 
+  const REQUEST_TYPE_LEAVE = 'leave';
+  const REQUEST_TYPE_SICKNESS = 'sickness';
+  const REQUEST_TYPE_TOIL = 'toil';
+
   /**
    * Create a new LeaveRequest based on array-data
    *

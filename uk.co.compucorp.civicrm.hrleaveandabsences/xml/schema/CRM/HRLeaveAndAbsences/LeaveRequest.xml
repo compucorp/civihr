@@ -99,4 +99,53 @@
     </pseudoconstant>
   </field>
 
+  <field>
+    <name>sickness_reason</name>
+    <type>varchar</type>
+    <length>512</length>
+    <label>Sickness Reason</label>
+    <comment>One of the values of the Sickness Reason option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_sickness_reason</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>sickness_required_documents</name>
+    <type>varchar</type>
+    <length>10</length>
+    <comment>A list of values from the LeaveRequestRequiredDocument option group</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>toil_duration</name>
+    <type>int unsigned</type>
+    <comment>The duration of the overtime work in minutes</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>toil_to_accrue</name>
+    <type>int unsigned</type>
+    <comment>The amount of days accrued for this toil request</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>toil_expiry_date</name>
+    <type>date</type>
+    <comment>The expiry date of this TOIL Request. When null, it means it never expires.</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>request_type</name>
+    <type>varchar</type>
+    <length>10</length>
+    <required>true</required>
+    <comment>The type of this request (leave, toil, sickness etc)</comment>
+  </field>
+
 </table>

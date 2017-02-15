@@ -234,6 +234,12 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
         'to_date_type' => $toType,
         'leave_request_id' => $toilRequest1->leave_request_id,
         'duration' => 60,
+        'sickness_reason' => '',
+        'sickness_required_documents' => '',
+        'toil_duration' => '',
+        'toil_to_accrue' => '2',
+        'toil_expiry_date' => '',
+        'request_type' => 'toil'
       ],
       [
         'id' => $toilRequest2->id,
@@ -246,6 +252,12 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
         'to_date_type' => $toType,
         'leave_request_id' => $toilRequest2->leave_request_id,
         'duration' => 120,
+        'sickness_reason' => '',
+        'sickness_required_documents' => '',
+        'toil_duration' => '',
+        'toil_to_accrue' => '3',
+        'toil_expiry_date' => '',
+        'request_type' => 'toil'
       ]
     ];
 

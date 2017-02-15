@@ -223,7 +223,13 @@ class SicknessRequestTest extends BaseHeadlessTest {
         'to_date_type' => $toType,
         'leave_request_id' => $sicknessRequest1->leave_request_id,
         'reason' => $sicknessRequest1->reason,
-        'required_documents' => $sicknessRequest1->required_documents
+        'required_documents' => $sicknessRequest1->required_documents,
+        'sickness_reason' => '',
+        'sickness_required_documents' => '',
+        'toil_duration' => '',
+        'toil_to_accrue' => '',
+        'toil_expiry_date' => '',
+        'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS,
       ],
       [
         'id' => $sicknessRequest2->id,
@@ -236,7 +242,13 @@ class SicknessRequestTest extends BaseHeadlessTest {
         'to_date_type' => $toType,
         'leave_request_id' => $sicknessRequest2->leave_request_id,
         'reason' => $sicknessRequest2->reason,
-        'required_documents' => $sicknessRequest2->required_documents
+        'required_documents' => $sicknessRequest2->required_documents,
+        'sickness_reason' => '',
+        'sickness_required_documents' => '',
+        'toil_duration' => '',
+        'toil_to_accrue' => '',
+        'toil_expiry_date' => '',
+        'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS,
       ]
     ];
 
@@ -365,6 +377,12 @@ class SicknessRequestTest extends BaseHeadlessTest {
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'reason' => $this->sicknessRequestReasons['Accident']['value'],
       'required_documents' => $this->requiredDocumentOptions['Self certification form required']['value'],
+      'sickness_reason' => '',
+      'sickness_required_documents' => '',
+      'toil_duration' => '',
+      'toil_to_accrue' => '',
+      'toil_expiry_date' => '',
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS,
       'sequential' => 1
     ];
     $result = civicrm_api3('SicknessRequest', 'create', $params);

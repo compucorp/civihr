@@ -58,6 +58,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ], false);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
@@ -88,6 +89,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
 
     $leaveRequest = $this->getleaveRequestService()->create($params, false);
@@ -313,6 +315,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
     return array_merge($defaultParams, $params);
   }
