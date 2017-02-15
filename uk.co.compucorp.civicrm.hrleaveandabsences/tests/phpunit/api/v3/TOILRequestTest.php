@@ -236,7 +236,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
         'duration' => 60,
         'sickness_reason' => '',
         'sickness_required_documents' => '',
-        'toil_duration' => '',
+        'toil_duration' => '60',
         'toil_to_accrue' => '2',
         'toil_expiry_date' => '',
         'request_type' => 'toil'
@@ -254,7 +254,7 @@ class api_v3_TOILRequestTest extends BaseHeadlessTest {
         'duration' => 120,
         'sickness_reason' => '',
         'sickness_required_documents' => '',
-        'toil_duration' => '',
+        'toil_duration' => '120',
         'toil_to_accrue' => '3',
         'toil_expiry_date' => '',
         'request_type' => 'toil'

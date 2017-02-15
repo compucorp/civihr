@@ -1278,7 +1278,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date_type' => 1
+      'from_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1298,7 +1299,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1
+      'from_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1318,7 +1320,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'contact_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1
+      'from_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1338,7 +1341,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'contact_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1
+      'from_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1362,6 +1366,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1375,6 +1380,239 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
+  public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'request_type' => ['leave_request_empty_request_type']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsToilAndToilDurationIsEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'toil_duration' => ['leave_request_empty_toil_duration']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsToilAndToilToAccrueIsEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_duration' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'toil_to_accrue' => ['leave_request_empty_toil_to_accrue']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsNotToilAndToilDurationIsNotEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS,
+      'toil_duration' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'toil_duration' => ['leave_request_non_empty_toil_duration']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsNotToilAndToilToAccrueIsNotEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'toil_to_accrue' => 1
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'toil_to_accrue' => ['leave_request_non_empty_toil_to_accrue']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsNotToilAndToilExpiryDateIsNotEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'toil_expiry_date' => $toDate->format('Y-m-d')
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'toil_expiry_date' => ['leave_request_non_empty_toil_expiry_date']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsSicknessAndSicknessReasonIsEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS,
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'sickness_reason' => ['leave_request_empty_sickness_reason']
+      ]
+    ];
+
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsNotSicknessAndSicknessReasonIsNotEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'sickness_reason' => 1,
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'sickness_reason' => ['leave_request_non_empty_sickness_reason']
+      ]
+    ];
+
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsNotSicknessAndSicknessRequiredDocumentsIsNotEmpty() {
+    $toDate= new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'sickness_required_documents' => '1',
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'sickness_required_documents' => ['leave_request_non_empty_sickness_required_documents']
+      ]
+    ];
+
+    $this->assertEquals($expectedResult, $result);
+  }
+
   public function testLeaveRequestIsValidShouldReturnErrorWhenEndDateIsGreaterThanStartDate() {
     $fromDate = new DateTime('+4 days');
     $toDate = new DateTime();
@@ -1385,7 +1623,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1444,7 +1683,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1501,7 +1741,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1556,7 +1797,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1589,7 +1831,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1657,7 +1900,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1686,7 +1930,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1714,7 +1959,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1759,7 +2005,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1804,7 +2051,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [
@@ -1849,7 +2097,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
     $expectedResult = [

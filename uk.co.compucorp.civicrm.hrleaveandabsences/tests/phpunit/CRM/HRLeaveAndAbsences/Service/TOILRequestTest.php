@@ -112,6 +112,7 @@ class CRM_HRLeaveAndAbsences_Service_TOILRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'toil_to_accrue' => 2,
+      'toil_duration' => 60,
       'duration' => 60,
       'sequential' => 1
     ];

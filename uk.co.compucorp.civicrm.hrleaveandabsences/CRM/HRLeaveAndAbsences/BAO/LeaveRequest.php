@@ -66,6 +66,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    */
   public static function validateParams($params) {
     self::validateMandatory($params);
+    self::validateRequestType($params);
+    self::validateTOILFields($params);
+    self::validateSicknessFields($params);
     self::validateStartDateNotGreaterThanEndDate($params);
     self::validateAbsenceTypeIsActive($params);
     self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params);
@@ -141,6 +144,105 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         'leave_request_empty_to_date_type',
         'to_date_type'
       );
+    }
+
+    if (empty($params['request_type'])) {
+      throw new InvalidLeaveRequestException(
+        'The request_type should not be empty',
+        'leave_request_empty_request_type',
+        'request_type'
+      );
+    }
+  }
+
+  /**
+   * Validates the values of the request_type field
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateRequestType($params) {
+    $validRequestTypes = [
+      self::REQUEST_TYPE_LEAVE,
+      self::REQUEST_TYPE_SICKNESS,
+      self::REQUEST_TYPE_TOIL
+    ];
+
+    if(!in_array($params['request_type'], $validRequestTypes)) {
+      throw new InvalidLeaveRequestException(
+        'The request_type is invalid',
+        'leave_request_invalid_request_type',
+        'requet_type'
+      );
+    }
+  }
+
+  /**
+   * Validates the TOIL fields according to the value of request_type.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateTOILFields($params) {
+    $toilRequiredFields = [ 'toil_duration', 'toil_to_accrue' ];
+    $toilFields = array_merge($toilRequiredFields, [ 'toil_expiry_date' ]);
+
+    if(self::REQUEST_TYPE_TOIL == $params['request_type']) {
+      foreach($toilRequiredFields as $requiredField) {
+        if(empty($params[$requiredField])) {
+          throw new InvalidLeaveRequestException(
+            "The {$requiredField} can not be empty when request_type is toil",
+            "leave_request_empty_{$requiredField}",
+            $requiredField
+          );
+        }
+      }
+    } else {
+      foreach($toilFields as $field) {
+        if(!empty($params[$field])) {
+          throw new InvalidLeaveRequestException(
+            "The {$field} should be empty when request_type is not toil",
+            "leave_request_non_empty_{$field}",
+            $field
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Validates the Sickness fields according to the value of request_type.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateSicknessFields($params) {
+    $sicknessRequiredFields = [ 'sickness_reason' ];
+    $sicknessFields = array_merge($sicknessRequiredFields, ['sickness_required_documents']);
+
+    if(self::REQUEST_TYPE_SICKNESS == $params['request_type']) {
+      foreach($sicknessRequiredFields as $requiredField) {
+        if(empty($params[$requiredField])) {
+          throw new InvalidLeaveRequestException(
+            "The {$requiredField} can not be empty when request_type is sickness",
+            "leave_request_empty_{$requiredField}",
+            $requiredField
+          );
+        }
+      }
+    } else {
+      foreach($sicknessFields as $field) {
+        if(!empty($params[$field])) {
+          throw new InvalidLeaveRequestException(
+            "The {$field} should be empty when request_type is not sickness",
+            "leave_request_non_empty_{$field}",
+            $field
+          );
+        }
+      }
     }
   }
 

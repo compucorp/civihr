@@ -1408,6 +1408,211 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The request_type should not be empty
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsEmpty() {
+    $fromDate = new DateTime('2015-11-12');
+    $toDate = new DateTime('2015-11-13');
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value']
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The request_type is invalid
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsInvalid() {
+    $fromDate = new DateTime('2015-11-12');
+    $toDate = new DateTime('2015-11-13');
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'request_type' => 'çfdklajfewiojçdasojfdsa'. microtime()
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The toil_duration can not be empty when request_type is toil
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsToilAndToilDurationIsEmpty() {
+    $fromDate = new DateTime('2015-11-12');
+    $toDate = new DateTime('2015-11-13');
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The toil_to_accrue can not be empty when request_type is toil
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsToilAndToilToAccrueIsEmpty() {
+    $fromDate = new DateTime('2015-11-12');
+    $toDate = new DateTime('2015-11-13');
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_duration' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The toil_duration should be empty when request_type is not toil
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsNotToilAndToilDurationIsNotEmpty() {
+    $fromDate = new DateTime('2015-11-12');
+    $toDate = new DateTime('2015-11-13');
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_duration' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The toil_to_accrue should be empty when request_type is not toil
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsNotToilAndToilToAccrueIsNotEmpty() {
+    $fromDate = new DateTime('2015-11-12');
+    $toDate = new DateTime('2015-11-13');
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_to_accrue' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The toil_expiry_date should be empty when request_type is not toil
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsNotToilAndToilExpiryDateIsNotEmpty() {
+    $fromDate = new DateTime('2015-11-12');
+    $toDate = new DateTime('2015-11-13');
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_expiry_date' => $fromDate->format('Y-m-d'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The sickness_reason can not be empty when request_type is sickness
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsSicknessAndSicknessReasonIsEmpty() {
+    $fromDate = new DateTime('2015-11-12');
+    $toDate = new DateTime('2015-11-13');
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The sickness_reason should be empty when request_type is not sickness
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsNotSicknessAndSicknessReasonIsNotEmpty() {
+    $fromDate = new DateTime('2015-11-12');
+    $toDate = new DateTime('2015-11-13');
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'sickness_reason' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The sickness_required_documents should be empty when request_type is not sickness
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsNotSicknessAndSicknessRequiredDocumentIsNotEmpty() {
+    $fromDate = new DateTime('2015-11-12');
+    $toDate = new DateTime('2015-11-13');
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'sickness_required_documents' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage The Leave request dates are not contained within a valid absence period
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheDatesAreNotContainedInValidAbsencePeriod() {
