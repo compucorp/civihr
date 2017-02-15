@@ -76,7 +76,7 @@
 
   .crm-contribution-form-block > .form-layout-compressed {
     td {
-      padding: 10px 20px !important;
+      padding: 10px 30px !important;
 
       .required {
         &:after {
@@ -106,6 +106,13 @@
   .crm-contribution-form-block-soft_credit_to,
   .crm-contribution-pcp-block {
     border-bottom: 0 !important;
+  }
+
+  .crm-contribution-form-block-thankyou_date {
+    label {
+      position: relative;
+      top: 7px;
+    }
   }
 
   .crm-link-credit-card-mode {
