@@ -21,17 +21,17 @@ define([
       ContractPensionService, ContractFilesService, ContactService, $log) {
       $log.debug('Controller: ContractCtrl');
 
+      var vm = this;
       var contractId = $scope.contract.id,
         promiseFiles;
 
       $scope.contractLoaded = false;
+      $scope.revisionsShown = false;
       $scope.isCollapsed = true;
       $scope.files = {};
       $scope.revisionCurrent = {};
       $scope.revisionList = [];
       $scope.revisionDataList = [];
-
-      $scope.revisionsShown = false;
 
       angular.extend($scope, angular.copy($scope.model));
 
@@ -120,6 +120,58 @@ define([
         })
         .then(updateContractFiles);
 
+      /**
+       * Fetches the Revision Details for given revision
+       * @param  {object} revisionEntityIdObj
+       * @return {object}
+       */
+      vm.fetchRevisionDetails = function(revisionEntityIdObj) {
+        return $q.all([
+          ContractDetailsService.getOne({
+            jobcontract_revision_id: revisionEntityIdObj.details_revision_id
+          }),
+          ContractHourService.getOne({
+            jobcontract_revision_id: revisionEntityIdObj.hour_revision_id
+          }),
+          ContractHealthService.getOne({
+            jobcontract_revision_id: revisionEntityIdObj.health_revision_id
+          }),
+          ContractPayService.getOne({
+            jobcontract_revision_id: revisionEntityIdObj.pay_revision_id
+          }),
+          ContractPensionService.getOne({
+            jobcontract_revision_id: revisionEntityIdObj.pension_revision_id
+          }),
+          ContractLeaveService.getOne({
+            jobcontract_revision_id: revisionEntityIdObj.leave_revision_id
+          })
+        ])
+        .then(function(results) {
+          var revisionDetails = {
+            "details": results[0],
+            "hour": results[1],
+            "health": results[2],
+            "pay": results[3],
+            "pension": results[4],
+            "leave": results[5]
+          };
+          var entity = {
+            contract: $scope.contract
+          }
+          angular.extend(entity, angular.copy($scope.model));
+          angular.extend(entity.details, revisionDetails.details);
+          angular.extend(entity.hour, revisionDetails.hour);
+          angular.extend(entity.health, revisionDetails.health);
+          angular.extend(entity.pay, revisionDetails.pay);
+          angular.extend(entity.pension, revisionDetails.pension);
+          angular.forEach(entity.leave, function(leaveType, leaveTypeId) {
+            angular.extend(leaveType, revisionDetails.leave ? revisionDetails.leave[leaveTypeId] : '');
+          });
+
+          return entity;
+        });
+      }
+
       $scope.modalContract = function(action, revisionEntityIdObj) {
         $scope.$broadcast('hrjc-loader-show');
 
@@ -150,30 +202,7 @@ define([
                   };
                 }
 
-                return ContractService
-                  .fullDetails(revisionEntityIdObj.jobcontract_id)
-                  .then(function(results) {
-                    var entity = {
-                        contract: $scope.contract
-                      },
-                      contractRevisionIdObj = {
-                        id: null,
-                        jobcontract_id: contractId,
-                        jobcontract_revision_id: results.details.jobcontract_revision_id
-                      };
-
-                    angular.extend(entity, angular.copy($scope.model));
-                    angular.extend(entity.details, results.details);
-                    angular.extend(entity.hour, results.hour || contractRevisionIdObj);
-                    angular.extend(entity.pay, results.pay || contractRevisionIdObj);
-                    angular.forEach(entity.leave, function(leaveType, leaveTypeId) {
-                      angular.extend(leaveType, results.leave ? results.leave[leaveTypeId] || contractRevisionIdObj : contractRevisionIdObj);
-                    });
-                    angular.extend(entity.health, results.health || contractRevisionIdObj);
-                    angular.extend(entity.pension, results.pension || contractRevisionIdObj);
-
-                    return entity;
-                  });
+                return vm.fetchRevisionDetails(revisionEntityIdObj);
               },
               files: function() {
 

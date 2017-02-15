@@ -15,7 +15,7 @@ define([
       });
 
       return {
-        get: function(params) {
+        getOne: function(params) {
 
           if ((!params || typeof params !== 'object') ||
             (!params.jobcontract_revision_id) ||
