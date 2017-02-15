@@ -74,6 +74,16 @@
         height: 50px;
         line-height: 50px;
 
+        &:first-child {
+          height: 40px;
+          line-height: normal;
+
+          th {
+            padding-bottom: 0;
+            padding-top: 15px;
+          }
+        }
+
         th {
           color: $gray-darker;
           text-transform: capitalize;
