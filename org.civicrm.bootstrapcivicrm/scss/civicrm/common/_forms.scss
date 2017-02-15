@@ -277,6 +277,11 @@ $control-height: 30px;
         abbr {
           top: 0;
         }
+
+        .select2-chosen {
+          font-size: 13px;
+          font-weight: normal;
+        }
       }
 
       &.select2-container-active {
