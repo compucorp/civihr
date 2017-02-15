@@ -5,6 +5,10 @@
 }
 
 .page-civicrm-contribute-search {
+  #branding h1.page-title {
+    margin-bottom: 28px !important;
+  }
+
   .CRM_Contribute_Form_Search {
     .crm-accordion-body {
       > .form-layout {
