@@ -246,13 +246,13 @@ define([
       /**
        * Calls the getcomment backend API.
        *
-       * @param {String} leaveRequestID - Id of leave request
+       * @param {String} leaveRequestID - ID of leave request
        * @param {Object} params
        *
        * @return {Promise}
        */
       getComments: function (leaveRequestID, params) {
-        params = _.assign(params, {
+        params = _.assign({}, params, {
           leave_request_id: leaveRequestID
         });
 
@@ -273,7 +273,7 @@ define([
        * @return {Promise}
        */
       saveComment: function (leaveRequestID, commentText, contactID, params) {
-        params = _.assign(params, {
+        params = _.assign({}, params, {
           leave_request_id: leaveRequestID,
           text: commentText,
           contact_id: contactID
@@ -294,7 +294,7 @@ define([
        * @return {Promise}
        */
       deleteComment: function (commentID, params) {
-        params = _.assign(params, {
+        params = _.assign({}, params, {
           comment_id: commentID
         });
 
