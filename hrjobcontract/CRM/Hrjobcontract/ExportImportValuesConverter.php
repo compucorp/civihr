@@ -22,7 +22,6 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     protected $_payScaleOptions = array();
     protected $_pensionTypeOptions = array();
     protected $_pensionTypeOptionsFlipped = array();
-    protected $_insurancePlanType = [];
 
     private function __construct()
     {
@@ -139,13 +138,6 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
             $this->_pensionTypeOptions[$pensionType['value']] = $pensionType;
             $this->_pensionTypeOptionsFlipped[$pensionType['label']] = $pensionType['value'];
         }
-
-        // Insurance Plan Type Options:
-        $typeOptions = array();
-        CRM_Core_OptionGroup::getAssoc('hrjc_insurance_plantype', $typeOptions, true);
-        foreach ($typeOptions as $insuranceType) {
-            $this->_insurancePlanType[$insuranceType['value']] = $insuranceType;
-        }
     }
 
     public function export($entityName, $fieldName, $value)
@@ -184,14 +176,6 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     public function details_contract_type_import($value)
     {
         return $this->_contractTypeOptionsFlipped[$value];
-    }
-
-    public function health_plan_type_export($value) {
-      return isset($this->_insurancePlanType[$value]['label']) ? $this->_insurancePlanType[$value]['label'] : $value;
-    }
-
-    public function health_plan_type_life_insurance_export($value) {
-      return isset($this->_insurancePlanType[$value]['label']) ? $this->_insurancePlanType[$value]['label'] : $value;
     }
 
     public function details_location_export($value)
