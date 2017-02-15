@@ -96,7 +96,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
       'toil_to_accrue' => $toilToAccrue,
       'duration' => 200,
       'expiry_date' => $expiryDate
-    ]);
+    ], true);
 
     $toilBalanceChange = $this->findToilRequestBalanceChange($toilRequest->id);
     return LeaveBalanceChangeFabricator::fabricate([
