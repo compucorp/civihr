@@ -10,6 +10,84 @@
   }
 
   .CRM_Contribute_Form_Search {
+    .crm-search-tasks {
+      background-color: $crm-white;
+
+      td {
+        padding: 10px 20px;
+      }
+    }
+
+    .selector {
+      td {
+        padding: 10px 20px;
+
+        &:not(:first-child) {
+          word-break: break-word;
+          min-width: 80px;
+        }
+
+        &:nth-child(2) {
+          display: flex;
+          align-items: center;
+        }
+      }
+
+      .crm-expand-row {
+        position: relative;
+        background: none;
+
+        &:after {
+          @include fa-icon(13px, '\f054');
+          position: absolute;
+          left: 0;
+        }
+
+        &.expanded {
+          &:after {
+            @include fa-icon(13px, '\f078');
+          }
+        }
+      }
+
+      th {
+        background-color: $gray-lighter !important;
+      }
+
+      .crm-child-row {
+        &,
+        > td {
+          padding: 0;
+        }
+
+        #info {
+          th {
+            text-transform: capitalize;
+          }
+
+          td,
+          th {
+            padding-left: 20px;
+          }
+
+          td {
+            padding-top: 10px;
+            padding-bottom: 10px;
+          }
+        }
+      }
+
+      .sticky {
+        tr:first-child {
+          border-bottom: 1px solid $crm-dark-grayblue;
+        }
+
+        th:first-child {
+          text-align: center;
+        }
+      }
+    }
+
     .crm-accordion-body {
       > .form-layout {
         > tbody {

@@ -12,7 +12,10 @@
     background: $crm-accordion-header-color !important;
     color: $gray-darker;
     font-weight: normal !important;
-    font-size: 13px !important;
+
+    &:not(.crm-master-accordion-header) {
+      font-size: 13px !important;
+    }
 
     &::before {
       @include fa-icon(.8em);
