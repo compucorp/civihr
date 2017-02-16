@@ -82,12 +82,10 @@ define([
 
         if (isCurrentContract) {
           $scope.$parent.contract.is_current = '1';
-          $scope.$parent.contractCurrent = _.uniq($scope.$parent.contractCurrent);
           $scope.$parent.contractCurrent.push($scope.$parent.contract);
           $scope.$parent.contractPast.splice($scope.$parent.contractPast.indexOf($scope.$parent.contract), 1);
         } else {
           $scope.$parent.contract.is_current = '0';
-          $scope.$parent.contractPast = _.uniq($scope.$parent.contractPast);
           $scope.$parent.contractPast.push($scope.$parent.contract);
           $scope.$parent.contractCurrent.splice($scope.$parent.contractCurrent.indexOf($scope.$parent.contract), 1)
         }
@@ -133,7 +131,7 @@ define([
        * @param  {object} revision
        * @return {object}
        */
-      vm.fetchRevisionDetails = function(revison) {
+      vm.fetchRevisionDetails = function(revision) {
         return $q.all([
           ContractDetailsService.getOne({
             jobcontract_revision_id: revision.id

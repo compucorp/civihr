@@ -357,7 +357,6 @@ define([
                 }).then(function(results){
                     $scope.$broadcast('hrjc-loader-hide');
                     $modalInstance.close(results);
-
                     pubSub.publish('contract-refresh');
                 },function(reason){
                     $scope.$broadcast('hrjc-loader-hide');

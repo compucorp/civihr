@@ -35,8 +35,8 @@ define([
 
           // Fetching revision list form ContractRevisionList service
           ContractRevisionList.fetchRevisions(contractId).then(function(result){
-            Array.prototype.push.apply($scope.revisionList, result.revisionList);
-            Array.prototype.push.apply($scope.revisionDataList, result.revisionDataList);
+            $scope.revisionList = result.revisionList;
+            $scope.revisionDataList = result.revisionDataList;
             $scope.$broadcast('hrjc-loader-hide');
           });
         }
@@ -69,7 +69,7 @@ define([
 
       function urlCSVBuild() {
         var url = settings.pathReport + (settings.pathReport.indexOf('?') > -1 ? '&' : '?'),
-        fields = $scope.fields;
+          fields = $scope.fields;
 
         angular.forEach(fields, function(entityFields, entityName) {
           url += 'fields[' + entityName + '_revision_id]=1&';
@@ -79,31 +79,31 @@ define([
         });
 
         url += 'fields[sort_name]=1' +
-        '&fields[first_name]=1' +
-        '&fields[last_name]=1' +
-        '&fields[external_identifier]=1' +
-        '&fields[email]=1' +
-        '&fields[street_address]=1' +
-        '&fields[city]=1' +
-        '&fields[name]=1' +
-        '&fields[contract_contact_id]=1' +
-        '&fields[contract_contract_id]=1' +
-        '&fields[jobcontract_revision_id]=1' +
-        '&fields[change_reason]=1' +
-        '&fields[created_date]=1' +
-        '&fields[effective_date]=1' +
-        '&fields[modified_date]=1' +
-        '&order_bys[1][column]=id&order_bys[1][order]=ASC' +
-        '&order_bys[2][column]=civicrm_hrjobcontract_revision_revision_id&order_bys[2][order]=ASC' +
-        '&order_bys[3][column]=-&order_bys[3][order]=ASC' +
-        '&order_bys[4][column]=-&order_bys[4][order]=ASC' +
-        '&order_bys[5][column]=-&order_bys[5][order]=ASC' +
-        '&contract_id_op=eq&permission=access+CiviReport' +
-        '&row_count=' +
-        '&_qf_Summary_submit_csv=Preview+CSV' +
-        '&groups=' +
-        '&contract_id_value=' + contractId +
-        '&group_bys[civicrm_hrjobcontract_revision_revision_id]=1';
+          '&fields[first_name]=1' +
+          '&fields[last_name]=1' +
+          '&fields[external_identifier]=1' +
+          '&fields[email]=1' +
+          '&fields[street_address]=1' +
+          '&fields[city]=1' +
+          '&fields[name]=1' +
+          '&fields[contract_contact_id]=1' +
+          '&fields[contract_contract_id]=1' +
+          '&fields[jobcontract_revision_id]=1' +
+          '&fields[change_reason]=1' +
+          '&fields[created_date]=1' +
+          '&fields[effective_date]=1' +
+          '&fields[modified_date]=1' +
+          '&order_bys[1][column]=id&order_bys[1][order]=ASC' +
+          '&order_bys[2][column]=civicrm_hrjobcontract_revision_revision_id&order_bys[2][order]=ASC' +
+          '&order_bys[3][column]=-&order_bys[3][order]=ASC' +
+          '&order_bys[4][column]=-&order_bys[4][order]=ASC' +
+          '&order_bys[5][column]=-&order_bys[5][order]=ASC' +
+          '&contract_id_op=eq&permission=access+CiviReport' +
+          '&row_count=' +
+          '&_qf_Summary_submit_csv=Preview+CSV' +
+          '&groups=' +
+          '&contract_id_value=' + contractId +
+          '&group_bys[civicrm_hrjobcontract_revision_revision_id]=1';
 
         return url;
       };
