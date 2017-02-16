@@ -62,8 +62,8 @@ function set_default_localisation_settings() {
 function set_resource_urls() {
   # Set Custom CSS URL
   ## FIXME: cv url
-  drush cvapi Setting.create \
-  customCSSURL="[civicrm.root]/tools/extensions/civihr/org.civicrm.shoreditch/css/custom-civicrm.css"
+  cv api setting.create customCSSURL=$(cv url -x shoreditch/css/custom-civicrm.css --out=list)
+  # drush cvapi Setting.create customCSSURL="[civicrm.root]/tools/extensions/civihr/org.civicrm.shoreditch/css/custom-civicrm.css"
 }
 
 ##################################
