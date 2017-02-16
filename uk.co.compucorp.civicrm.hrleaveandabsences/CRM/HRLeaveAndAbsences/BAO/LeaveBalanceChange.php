@@ -844,4 +844,176 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     return (float)$result->balance;
   }
+
+  /**
+   * Recalculate the expired TOIL/Brought Forward LeaveBalanceChanges for a contact
+   * requesting LeaveRequest with past dates if the LeaveBalanceChanges
+   * expired after the from_date of the LeaveRequest
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return int
+   *   The number of records updated
+   */
+  public static function recalculateExpiredBalanceChangesForLeaveRequestPastDates(LeaveRequest $leaveRequest) {
+
+    $expiredBalanceChanges = self::getExpiredBalanceChangesForLeaveRequestPeriod($leaveRequest);
+
+    if(empty($expiredBalanceChanges)){
+      return 0;
+    }
+
+    $leaveRequestPastDates = self::getPastDatesWithBalanceChangesForLeaveRequest($leaveRequest);
+    $numberOfRecordsUpdated = 0;
+
+    foreach ($expiredBalanceChanges as $expiredBalanceChange) {
+      $remainingAmount = abs($expiredBalanceChange['amount']);
+
+      foreach ($leaveRequestPastDates as $i => $date) {
+
+        if($date['date'] >= $expiredBalanceChange['start_date'] && $date['date'] <= $expiredBalanceChange['expiry_date']) {
+          if($remainingAmount >= abs($date['amount'])) {
+            // Date already deducted, so new we remove it from the
+            // array so it won't be deducted again from another
+            // balance change
+            unset($leaveRequestPastDates[$i]);
+            $remainingAmount += $date['amount'];
+          }
+
+          if($remainingAmount === 0) {
+            break;
+          }
+        }
+      }
+
+      $balanceChange = self::findById($expiredBalanceChange['id']);
+      $balanceChange->amount = $remainingAmount * -1;
+      $balanceChange->save();
+
+      $numberOfRecordsUpdated++;
+    }
+
+    return $numberOfRecordsUpdated;
+  }
+
+  /**
+   * Get the expired TOIL/Brought Forward LeaveBalanceChanges linked to the LeaveRequest Contact
+   * whose expiry date was within the Absence Period linked to the given LeaveRequest
+   * and also the expiry date is greater than the LeaveRequest from_date.
+   *
+   * This is to ensure that only expired TOIL/Brought Forward LeaveBalanceChanges that are eligible for recalculation
+   * are fetched by the query. If the LeaveBalanceChange has expired before the LeaveRequest from_date,
+   * then there is no need to fetch it.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return array
+   */
+  private static function getExpiredBalanceChangesForLeaveRequestPeriod(LeaveRequest $leaveRequest) {
+    $balanceChangeTable = self::getTableName();
+    $toilRequestTable = TOILRequest::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+    $periodEntitlementTable = LeavePeriodEntitlement::getTableName();
+    $absencePeriodTable = AbsencePeriod::getTableName();
+
+    $absencePeriod = AbsencePeriod::getPeriodContainingDates(
+      new DateTime($leaveRequest->from_date),
+      new DateTime($leaveRequest->to_date)
+    );
+
+    $query = "
+      SELECT 
+        bc.*,
+        coalesce(absence_period.start_date, toil_leave_request.from_date) as start_date
+      FROM {$balanceChangeTable} bc
+      LEFT JOIN {$toilRequestTable} toil_request
+            ON bc.source_type = 'toil_request' AND bc.source_id = toil_request.id
+      LEFT JOIN {$leaveRequestTable} toil_leave_request
+            ON toil_request.leave_request_id = toil_leave_request.id
+      LEFT JOIN {$periodEntitlementTable} period_entitlement
+            ON bc.source_type = 'entitlement' AND bc.source_id = period_entitlement.id
+      LEFT JOIN {$absencePeriodTable} absence_period
+            ON period_entitlement.period_id = absence_period.id
+      WHERE bc.expiry_date IS NOT NULL AND
+            (bc.expiry_date BETWEEN %1 AND %2) AND
+            bc.expiry_date >= %3 AND  
+            bc.expired_balance_change_id IS NOT NULL AND
+            (toil_leave_request.contact_id = %4 OR period_entitlement.contact_id = %4)           
+      ORDER BY bc.expiry_date ASC, bc.id ASC";
+
+    $params = [
+      1 => [$absencePeriod->start_date, 'String'],
+      2 => [$absencePeriod->end_date, 'String'],
+      3 => [$leaveRequest->from_date, 'String'],
+      4 => [$leaveRequest->contact_id, 'Integer'],
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+
+    $expiredBalanceChanges = [];
+    while ($result->fetch()) {
+      $expiredBalanceChanges[] = [
+        'id' => $result->id,
+        'type_id' => $result->type_id,
+        'amount' => (float) $result->amount,
+        'start_date' => $result->start_date,
+        'expiry_date' => new DateTime($result->expiry_date),
+        'source_type' => $result->source_type,
+        'source_id' => $result->source_id
+      ];
+    }
+
+    return $expiredBalanceChanges;
+  }
+
+  /**
+   * Get approved Leave Request dates linked with LeaveBalanceChange for the past dates
+   * of the given LeaveRequest instance.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return array
+   */
+  private static function getPastDatesWithBalanceChangesForLeaveRequest(LeaveRequest $leaveRequest) {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $leaveRequestTable = LeaveRequest::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveBalanceChangeTable = self::getTableName();
+
+    $query = "
+        SELECT
+          leave_request_date.id,
+          leave_request_date.date,
+          balance_change.amount
+        FROM {$leaveRequestDateTable} leave_request_date 
+        INNER JOIN {$leaveBalanceChangeTable} balance_change 
+            ON balance_change.source_id = leave_request_date.id AND balance_change.source_type = %1
+        INNER JOIN {$leaveRequestTable} leave_request
+            ON leave_request_date.leave_request_id = leave_request.id
+        WHERE leave_request.id = %2 AND
+              (leave_request.status_id = %3) AND
+              (leave_request_date.date < %4)";
+
+    $today = date('Y-m-d');
+    $params = [
+      1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$leaveRequest->id, 'Integer'],
+      3 => [$leaveRequestStatuses['approved'], 'String'],
+      4 => [$today, 'String']
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+
+    $dates = [];
+    while($result->fetch()) {
+      $dates[$result->id] = [
+        'id' => $result->id,
+        'date' => new DateTime($result->date),
+        'amount' => (float)$result->amount,
+      ];
+    }
+
+    return $dates;
+  }
 }

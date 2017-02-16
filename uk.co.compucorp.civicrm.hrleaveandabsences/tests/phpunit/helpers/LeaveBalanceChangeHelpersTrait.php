@@ -76,7 +76,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     if(!$expiredByNoOfDays) {
       $expiredByNoOfDays = 2;
     }
-    LeaveBalanceChange::create([
+    return LeaveBalanceChange::create([
       'type_id' => $this->getBalanceChangeTypeValue('Brought Forward'),
       'source_id' => $entitlementID,
       'source_type' => 'entitlement',
@@ -128,6 +128,8 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
    *    The start date of the leave request
    * @param null|string $toDate
    *    The end date of the leave request. If null, it means it starts and ends at the same date
+   * 
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
    */
   public function createLeaveRequestBalanceChange($typeID, $contactID, $status, $fromDate, $toDate = null) {
     $fromDate = new DateTime($fromDate);
@@ -139,7 +141,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
       $toDate = new DateTime($toDate);
     }
 
-    LeaveRequestFabricator::fabricateWithoutValidation([
+    return LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $typeID,
       'contact_id' => $contactID,
       'status_id' => $status,
