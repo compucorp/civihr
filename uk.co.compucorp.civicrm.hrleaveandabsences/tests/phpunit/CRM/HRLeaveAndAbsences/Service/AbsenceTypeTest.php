@@ -36,7 +36,7 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
       'toil_to_accrue' => 2,
       'duration' => 120,
       'expiry_date' => CRM_Utils_Date::processDate('+100 days')
-    ]);
+    ], true);
 
     $toilRequest2 = TOILRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
@@ -46,7 +46,7 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
       'toil_to_accrue' => 2,
       'duration' => 120,
       'expiry_date' => CRM_Utils_Date::processDate('2016-12-10')
-    ]);
+    ], true);
 
     //assert the records exist first before updating absence type
     $balanceChanges = new LeaveBalanceChange();
