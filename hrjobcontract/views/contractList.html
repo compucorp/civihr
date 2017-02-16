@@ -1,11 +1,11 @@
 <h3 class="header-bar header-bar-primary" ng-show="contractCurrent.length">Current Contracts:</h3>
 <ul class="{{prefix}}list-contract">
-    <li class="{{prefix}}list-contract-item" hrjc-loader hrjc-loader-show="true" ng-class="{'ng-active': contractLoaded}" ng-repeat="contract in contractCurrent" ng-controller="ContractCtrl" ng-include src="'contract.html'"></li>
+    <li class="{{prefix}}list-contract-item" hrjc-loader hrjc-loader-show="true" ng-class="{'ng-active': contractLoaded}" ng-repeat="contract in contractCurrent track by contract.id" ng-controller="ContractCtrl" ng-include src="'contract.html'"></li>
 </ul>
 
 <h3 class="header-bar header-bar-danger-light" ng-show="contractPast.length">Past Contracts:</h3>
 <ul class="{{prefix}}list-contract">
-    <li class="{{prefix}}list-contract-item" hrjc-loader hrjc-loader-show="true" ng-class="{'ng-active': contractLoaded}" ng-repeat="contract in contractPast" ng-controller="ContractCtrl" ng-include src="'contract.html'"></li>
+    <li class="{{prefix}}list-contract-item" hrjc-loader hrjc-loader-show="true" ng-class="{'ng-active': contractLoaded}" ng-repeat="contract in contractPast track by contract.id" ng-controller="ContractCtrl" ng-include src="'contract.html'"></li>
 </ul>
 <p class="{{prefix}}btn-add-contract"  ng-class="{'ng-active': contractListLoaded}">
     <button class="btn btn-default btn-primary" ng-click="modalContract('new')">

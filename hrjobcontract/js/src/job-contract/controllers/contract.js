@@ -15,10 +15,10 @@ define([
 
   controllers.controller('ContractCtrl', ['$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', 'settings',
     'API', 'ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
-    'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'ContactService', '$log',
+    'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'ContactService', 'ContractRevisionList', '$log',
     function($scope, $route, $filter, $modal, $rootElement, $q, settings, API, ContractService, ContractDetailsService,
       ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
-      ContractPensionService, ContractFilesService, ContactService, $log) {
+      ContractPensionService, ContractFilesService, ContactService, ContractRevisionList, $log) {
       $log.debug('Controller: ContractCtrl');
 
       var vm = this;
@@ -82,10 +82,12 @@ define([
 
         if (isCurrentContract) {
           $scope.$parent.contract.is_current = '1';
+          $scope.$parent.contractCurrent = _.uniq($scope.$parent.contractCurrent);
           $scope.$parent.contractCurrent.push($scope.$parent.contract);
           $scope.$parent.contractPast.splice($scope.$parent.contractPast.indexOf($scope.$parent.contract), 1);
         } else {
           $scope.$parent.contract.is_current = '0';
+          $scope.$parent.contractPast = _.uniq($scope.$parent.contractPast);
           $scope.$parent.contractPast.push($scope.$parent.contract);
           $scope.$parent.contractCurrent.splice($scope.$parent.contractCurrent.indexOf($scope.$parent.contract), 1)
         }
@@ -116,7 +118,13 @@ define([
             $scope.isCollapsed = !+$scope.contract.is_primary;
           });
 
-          $scope.$broadcast('hrjc-loader-hide');
+          $scope.$broadcast('hrjc-loader-show');
+          // Fetching revision list form ContractRevisionList service
+          ContractRevisionList.fetchRevisions(contractId).then(function(result){
+            $scope.revisionList = result.revisionList;
+            $scope.revisionDataList = result.revisionDataList;
+            $scope.$broadcast('hrjc-loader-hide');
+          });
         })
         .then(updateContractFiles);
 

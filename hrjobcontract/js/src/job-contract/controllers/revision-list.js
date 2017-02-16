@@ -6,9 +6,9 @@ define([
   'use strict';
 
   controllers.controller('RevisionListCtrl', ['$scope', '$filter', '$q', '$uibModal', '$rootElement', 'settings', 'ContractService',
-    'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractFilesService', '$log', 'ContractRevisionService',
+    'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractFilesService', '$log', 'ContractRevisionService', 'ContractRevisionList',
     function($scope, $filter, $q, $modal, $rootElement, settings, ContractService,
-      ContractDetailsService, ContractHourService, ContractPayService, ContractFilesService, $log, ContractRevisionService) {
+      ContractDetailsService, ContractHourService, ContractPayService, ContractFilesService, $log, ContractRevisionService, ContractRevisionList) {
       $log.debug('Controller: RevisionListCtrl');
 
       var contractId = $scope.contract.id,
@@ -29,6 +29,86 @@ define([
         recordedBy: true
       };
 
+      function init(){
+        if(!$scope.revisionDataList){
+          $scope.$broadcast('hrjc-loader-show');
+
+          // Fetching revision list form ContractRevisionList service
+          ContractRevisionList.fetchRevisions(contractId).then(function(result){
+            Array.prototype.push.apply($scope.revisionList, result.revisionList);
+            Array.prototype.push.apply($scope.revisionDataList, result.revisionDataList);
+            $scope.$broadcast('hrjc-loader-hide');
+          });
+        }
+      }
+
+      function setCurrentRevision() {
+        var revisionCurrent, i = 0;
+
+        if ($scope.revisionList.length) {
+          var revisionList = $filter('orderBy')($scope.revisionList, ['effective_date', 'id']);
+
+          angular.forEach(revisionList, function(revision) {
+            if (new Date(revision.effective_date).setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0)) {
+              revisionCurrent = revision;
+            }
+          });
+
+          if (!revisionCurrent) {
+            do {
+              revisionCurrent = revisionList[i];
+              i++;
+            } while (revisionList[i] && revisionList[i - 1].effective_date == revisionList[i].effective_date);
+          }
+
+          angular.extend($scope.revisionCurrent, revisionCurrent);
+          return revisionCurrent.id;
+        }
+        return null;
+      }
+
+      function urlCSVBuild() {
+        var url = settings.pathReport + (settings.pathReport.indexOf('?') > -1 ? '&' : '?'),
+        fields = $scope.fields;
+
+        angular.forEach(fields, function(entityFields, entityName) {
+          url += 'fields[' + entityName + '_revision_id]=1&';
+          angular.forEach(entityFields, function(field) {
+            url += 'fields[' + entityName + '_' + field.name + ']=1&';
+          })
+        });
+
+        url += 'fields[sort_name]=1' +
+        '&fields[first_name]=1' +
+        '&fields[last_name]=1' +
+        '&fields[external_identifier]=1' +
+        '&fields[email]=1' +
+        '&fields[street_address]=1' +
+        '&fields[city]=1' +
+        '&fields[name]=1' +
+        '&fields[contract_contact_id]=1' +
+        '&fields[contract_contract_id]=1' +
+        '&fields[jobcontract_revision_id]=1' +
+        '&fields[change_reason]=1' +
+        '&fields[created_date]=1' +
+        '&fields[effective_date]=1' +
+        '&fields[modified_date]=1' +
+        '&order_bys[1][column]=id&order_bys[1][order]=ASC' +
+        '&order_bys[2][column]=civicrm_hrjobcontract_revision_revision_id&order_bys[2][order]=ASC' +
+        '&order_bys[3][column]=-&order_bys[3][order]=ASC' +
+        '&order_bys[4][column]=-&order_bys[4][order]=ASC' +
+        '&order_bys[5][column]=-&order_bys[5][order]=ASC' +
+        '&contract_id_op=eq&permission=access+CiviReport' +
+        '&row_count=' +
+        '&_qf_Summary_submit_csv=Preview+CSV' +
+        '&groups=' +
+        '&contract_id_value=' + contractId +
+        '&group_bys[civicrm_hrjobcontract_revision_revision_id]=1';
+
+        return url;
+      };
+
+      init();
 
       $scope.createPage = function() {
         var start = (($scope.currentPage - 1) * $scope.itemsPerPage),
@@ -56,158 +136,6 @@ define([
         revisionDataListLocal = $filter('orderBy')($scope.revisionDataList, $scope.sortCol, $scope.sortReverse);
       };
 
-      function setCurrentRevision() {
-        var revisionCurrent, i = 0;
-
-        if ($scope.revisionList.length) {
-          var revisionList = $filter('orderBy')($scope.revisionList, ['effective_date', 'id']);
-
-          angular.forEach(revisionList, function(revision) {
-            if (new Date(revision.effective_date).setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0)) {
-              revisionCurrent = revision;
-            }
-          });
-
-          if (!revisionCurrent) {
-            do {
-              revisionCurrent = revisionList[i];
-              i++;
-            } while (revisionList[i] && revisionList[i - 1].effective_date == revisionList[i].effective_date);
-          }
-
-          angular.extend($scope.revisionCurrent, revisionCurrent);
-          return revisionCurrent.id;
-        }
-        return null;
-      }
-
-      /**
-       * Takes in a bulk of data, the result of a joined api call, and
-       * returns an object containing such data divided in different properties
-       *
-       * @param  {Object} aggregated
-       * @return {Object}
-       */
-      function expandAggregatedRevisionDetails(aggregated) {
-        return {
-          details: {
-            position: aggregated['details_revision_id.position'],
-            location: aggregated['details_revision_id.location'],
-          },
-          hour: {
-            hours_type: aggregated['hour_revision_id.hours_type']
-          },
-          pay: {
-            pay_annualized_est: aggregated['pay_revision_id.pay_annualized_est'],
-            pay_currency: aggregated['pay_revision_id.pay_currency'],
-            pay_scale: aggregated['pay_revision_id.pay_scale']
-          }
-        };
-      }
-
-      /**
-       * Fetches the details of the given revision, like files, pay, etc
-       *
-       * The bulk of the data is fetched via a joined api call, whose aggregated
-       * result is then expanded before being returned
-       *
-       * @param  {Object} revision
-       * @return {Promise} resolves to an object containing the details
-       */
-      function fetchRevisionDetails(revision) {
-        revision.effective_date = revision.effective_date || '';
-
-        return $q.all({
-            files: $q.all({
-              details: ContractFilesService.get(revision.details_revision_id, 'civicrm_hrjobcontract_details')
-            }),
-            aggregated: ContractRevisionService.get({
-                action: 'getsingle',
-                json: {
-                  sequential: 1,
-                  id: revision.id,
-                  return: [
-                      'details_revision_id.position',
-                      'details_revision_id.location',
-                      'hour_revision_id.hours_type',
-                      'pay_revision_id.pay_scale',
-                      'pay_revision_id.pay_annualized_est',
-                      'pay_revision_id.pay_currency'
-                    ]
-                }
-              })
-              .$promise.then(function(aggregated) {
-                return aggregated;
-              })
-          })
-          .then(function(results) {
-            return _.assign({
-              revisionEntityIdObj: revision,
-              files: results.files
-            }, expandAggregatedRevisionDetails(results.aggregated));
-          });
-      }
-
-      function fetchRevisions(contractId) {
-        $scope.revisionList.length = 0;
-        $scope.revisionDataList.length = 0;
-
-        ContractService.getRevision(contractId)
-          .then(function(revisionList) {
-            revisionList = $filter('orderBy')(revisionList, ['-effective_date', '-id']);
-            Array.prototype.push.apply($scope.revisionList, revisionList);
-
-            return $q.all(revisionList.map(fetchRevisionDetails));
-          })
-          .then(function(results) {
-            Array.prototype.push.apply($scope.revisionDataList, results);
-
-            $scope.$broadcast('hrjc-loader-hide');
-          });
-      };
-
-      fetchRevisions(contractId);
-
-      function urlCSVBuild() {
-        var url = settings.pathReport + (settings.pathReport.indexOf('?') > -1 ? '&' : '?'),
-          fields = $scope.fields;
-
-        angular.forEach(fields, function(entityFields, entityName) {
-          url += 'fields[' + entityName + '_revision_id]=1&';
-          angular.forEach(entityFields, function(field) {
-            url += 'fields[' + entityName + '_' + field.name + ']=1&';
-          })
-        });
-
-        url += 'fields[sort_name]=1' +
-          '&fields[first_name]=1' +
-          '&fields[last_name]=1' +
-          '&fields[external_identifier]=1' +
-          '&fields[email]=1' +
-          '&fields[street_address]=1' +
-          '&fields[city]=1' +
-          '&fields[name]=1' +
-          '&fields[contract_contact_id]=1' +
-          '&fields[contract_contract_id]=1' +
-          '&fields[jobcontract_revision_id]=1' +
-          '&fields[change_reason]=1' +
-          '&fields[created_date]=1' +
-          '&fields[effective_date]=1' +
-          '&fields[modified_date]=1' +
-          '&order_bys[1][column]=id&order_bys[1][order]=ASC' +
-          '&order_bys[2][column]=civicrm_hrjobcontract_revision_revision_id&order_bys[2][order]=ASC' +
-          '&order_bys[3][column]=-&order_bys[3][order]=ASC' +
-          '&order_bys[4][column]=-&order_bys[4][order]=ASC' +
-          '&order_bys[5][column]=-&order_bys[5][order]=ASC' +
-          '&contract_id_op=eq&permission=access+CiviReport' +
-          '&row_count=' +
-          '&_qf_Summary_submit_csv=Preview+CSV' +
-          '&groups=' +
-          '&contract_id_value=' + contractId +
-          '&group_bys[civicrm_hrjobcontract_revision_revision_id]=1';
-
-        return url;
-      };
       $scope.urlCSV = urlCSVBuild();
 
       $scope.deleteRevision = function(revisionId, e) {
