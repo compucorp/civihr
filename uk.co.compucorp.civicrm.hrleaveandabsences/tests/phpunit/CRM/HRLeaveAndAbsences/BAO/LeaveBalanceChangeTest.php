@@ -1236,6 +1236,51 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(-1, $expiryRecord2->amount);
   }
 
+  public function testCreateExpiryRecordsWhenExpiredAmountAbsenceTypeIsDifferentFromTheAbsenceTypeOfTheLeaveRequestDates() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-30 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 1,
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 2,
+    ]);
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $balanceChange = $this->createBroughtForwardBalanceChange(
+      $periodEntitlement2->id,
+      5,
+      date('YmdHis', strtotime('-1 day'))
+    );
+
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement->type_id,
+      $periodEntitlement->contact_id,
+      $leaveRequestStatuses['Approved'],
+      CRM_Utils_Date::processDate('-2 days'),
+      CRM_Utils_Date::processDate('+5 days')
+    );
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
+    $this->assertEquals(1, $numberOfCreatedRecords);
+
+    $expiryRecord = $this->getExpiryRecordForBalanceChange($balanceChange->id);
+    $this->assertNotNull($expiryRecord);
+
+    // The absence type linked to the balance change that expired is different from
+    // the absence type on the leave request, therefore the amount remains intact
+    $this->assertEquals(-5, $expiryRecord->amount);
+  }
+
   public function testGetLeavePeriodEntitlementCanReturnThePeriodEntitlementWhenTheSourceTypeIsEntitlement() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'contact_id' => 1,
@@ -2009,7 +2054,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     );
 
     $numberOfUpdatedRecords = LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
-    $this->assertEquals(1, $numberOfUpdatedRecords);
+    $this->assertEquals(0, $numberOfUpdatedRecords);
 
     $expiryRecord1 = new LeaveBalanceChange();
     $expiryRecord1->id = $balanceChange1->id;
@@ -2057,6 +2102,53 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     //no recalculation is done because the leave request has no past days that falls on days
     // before the brought forward expired
+    $this->assertEquals(-5, $expiryRecord1->amount);
+  }
+
+  public function testRecalculateExpiredBalanceChangesWhenAbsenceTypeOfLeaveRequestIsDifferentFromThatOfExpiredBalanceChange() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+5 days')
+    ]);
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 1,
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 2,
+    ]);
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $balanceChange1 = $this->createExpiredBroughtForwardBalanceChange(
+      $periodEntitlement1->id,
+      5,
+      5,
+      2
+    );
+
+    $leaveRequest = $this->createLeaveRequestBalanceChange(
+      $periodEntitlement2->type_id,
+      $periodEntitlement2->contact_id,
+      $leaveRequestStatuses['Approved'],
+      CRM_Utils_Date::processDate('-2 days'),
+      CRM_Utils_Date::processDate('+1 day')
+    );
+
+    $numberOfUpdatedRecords = LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
+    $this->assertEquals(0, $numberOfUpdatedRecords);
+
+    $expiryRecord1 = new LeaveBalanceChange();
+    $expiryRecord1->id = $balanceChange1->id;
+    $expiryRecord1->find(true);
+
+    //no recalculation is done because the the absence type on the expired brought forward balance change is
+    //different from that on the leave request
     $this->assertEquals(-5, $expiryRecord1->amount);
   }
 }
