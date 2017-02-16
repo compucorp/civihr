@@ -235,6 +235,88 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   /**
+   * @dataProvider openLeaveRequestStatusesDataProvider
+   */
+  public function testCreateDoesNotThrowAnExceptionWhenLeaveManagerUpdatesDatesForAnOpenSicknessRequest($status) {
+    $params = $this->getDefaultParams([
+      'contact_id' => 5,
+      'status_id' => $status,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $toDate = new DateTime($params['to_date']);
+    $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
+    $params['id'] = $leaveRequest->id;
+
+    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
+  }
+
+  /**
+   * @dataProvider openLeaveRequestStatusesDataProvider
+   */
+  public function testCreateDoesNotThrowAnExceptionWhenAdminUpdatesDatesForAnOpenSicknessRequest($status) {
+    $params = $this->getDefaultParams([
+      'contact_id' => 5,
+      'status_id' => $status,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $toDate = new DateTime($params['to_date']);
+    $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
+    $params['id'] = $leaveRequest->id;
+
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+  }
+
+  /**
+   * @dataProvider closedLeaveRequestStatusesDataProvider
+   *
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage You are not allowed to change the request dates
+   */
+  public function testCreateThrowsAnExceptionWhenLeaveManagerUpdatesDatesForAClosedSicknessRequest($status) {
+    $params = $this->getDefaultParams([
+      'contact_id' => 5,
+      'status_id' => $status,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $toDate = new DateTime($params['to_date']);
+    $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
+    $params['id'] = $leaveRequest->id;
+
+    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
+  }
+
+  /**
+   * @dataProvider closedLeaveRequestStatusesDataProvider
+   *
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage You are not allowed to change the request dates
+   */
+  public function testCreateThrowsAnExceptionWhenAdminUpdatesDatesForAClosedSicknessRequest($status) {
+    $params = $this->getDefaultParams([
+      'contact_id' => 5,
+      'status_id' => $status,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $toDate = new DateTime($params['to_date']);
+    $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
+    $params['id'] = $leaveRequest->id;
+
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+  }
+
+  /**
    * @expectedException RuntimeException
    * @expectedExceptionMessage You are not allowed to change the type of a request
    */

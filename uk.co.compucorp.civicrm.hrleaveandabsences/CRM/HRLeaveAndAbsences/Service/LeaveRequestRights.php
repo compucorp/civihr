@@ -105,17 +105,26 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
   /**
    * Checks whether the current user can update the dates for the leave request or not.
    *
-   * @param $contactID
+   * @param int $contactID
    *   The contactID of the leave request
-   * @param $statusID
+   * @param int $statusID
    *   The statusID of the leave request
+   * @param string $requestType
+   *   The type of the leave request (toil, sickness, leave)
    *
    * @return bool
    */
-  public function canChangeDatesFor($contactID, $statusID) {
+  public function canChangeDatesFor($contactID, $statusID, $requestType) {
     $leaveRequestStatuses = self::getLeaveRequestStatuses();
-    return $this->currentUserIsLeaveContact($contactID) &&
-           in_array($statusID, [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['more_information_requested']]);
+    $currentUserCanChangeDates = $requestType === LeaveRequest::REQUEST_TYPE_SICKNESS ||
+                                 $this->currentUserIsLeaveContact($contactID);
+
+    $openStatuses = [
+      $leaveRequestStatuses['waiting_approval'],
+      $leaveRequestStatuses['more_information_requested']
+    ];
+
+    return $currentUserCanChangeDates && in_array($statusID, $openStatuses);
   }
 
   /**
