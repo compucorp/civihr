@@ -391,18 +391,29 @@
     margin: 10px 0;
     box-shadow: none !important;
 
-    thead {
-      th {
-        border-bottom: none;
-        background: $crm-background !important;
-        color: $gray-darker !important;
-        vertical-align: middle;
-        border: none;
-        padding: 10px;
-        line-height: 1.1em;
+    &.crm-info-panel {
+      width: 105%;
+      margin-top: -20px;
+      margin-left: -20px;
+      margin-right: -20px;
+    }
 
-        div {
-          padding: 0;
+    thead {
+      tr {
+        border: 1px solid $crm-background !important;
+
+        th {
+          border-bottom: none;
+          background: $gray-lighter !important;
+          color: $gray-darker !important;
+          vertical-align: middle;
+          border: none;
+          line-height: 1.1em;
+          height: 42px;
+
+          div {
+            padding: 0;
+          }
         }
       }
     }
@@ -410,19 +421,44 @@
     tbody {
       tr {
         background: $crm-white;
-        border: 1px solid $crm-background !important;
+        border: 1px solid $crm-background;
+        border-right: 0;
+        border-left: 0;
 
+        &.crm-child-row {
+          & > td {
+            padding: 0;
+
+            .crm-ajax-container {
+              table {
+                margin: 0;
+
+                tbody {
+                  border-top: 1px solid $crm-dark-grayblue !important
+                }
+
+                th {
+                  border-bottom: none;
+                  background: $gray-lighter !important;
+                  color: $gray-darker;
+                  vertical-align: middle;
+                  border: none;
+                }
+              }
+            }
+          }
+        }
 
         td {
           border: none;
+          padding: 20px;
+          line-height: 1.1em;
+          background: $crm-white !important;
 
           &.label {
             border-bottom: none;
-            background: $crm-background !important;
             color: $gray-darker !important;
             vertical-align: middle;
-            padding: 10px;
-            line-height: 1.1em;
 
             div {
               padding: 0;
@@ -430,33 +466,16 @@
           }
 
           &:not(.label) {
-            background: $crm-white;
             color: $gray-dark;
-            padding: 10px 30px;
-            line-height: 1.1em;
           }
+        }
 
-          &#Donor_Information__ {
-            padding: 0;
+        &:last-child {
+          border-bottom: 0;
+        }
 
-            .crm-accordion-header {
-              background: $crm-background !important;
-            }
-
-            .crm-accordion-body {
-              padding: 0 !important;
-              tr {
-                border: none !important;
-
-                td {
-                  &.label {
-                    padding: 10px 30px !important;
-                    background: none !important;
-                  }
-                }
-              }
-            }
-          }
+        &:first-child {
+          border-top: 0;
         }
       }
     }
@@ -465,6 +484,14 @@
   #paymentDetails_Information {
     .helpicon {
       left: 0;
+    }
+  }
+
+  #Donor_Information__ {
+    padding: 0;
+
+    .crm-accordion-body {
+      padding: 20px 40px !important;
     }
   }
 
