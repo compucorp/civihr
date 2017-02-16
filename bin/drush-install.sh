@@ -32,7 +32,7 @@ org.civicrm.hrim,\
 org.civicrm.hrrecruitment,\
 org.civicrm.reqangular,\
 org.civicrm.contactsummary,\
-org.civicrm.bootstrapcivicrm,\
+org.civicrm.shoreditch,\
 org.civicrm.bootstrapcivihr
 
 ##
@@ -61,8 +61,9 @@ function set_default_localisation_settings() {
 # Set Any needed Resource URLs
 function set_resource_urls() {
   # Set Custom CSS URL
-  drush cvapi Setting.create \
-  customCSSURL="[civicrm.root]/tools/extensions/civihr/org.civicrm.bootstrapcivicrm/css/custom-civicrm.css"
+  ## FIXME: cv url
+  cv api setting.create customCSSURL=$(cv url -x shoreditch/css/custom-civicrm.css --out=list)
+  # drush cvapi Setting.create customCSSURL="[civicrm.root]/tools/extensions/civihr/org.civicrm.shoreditch/css/custom-civicrm.css"
 }
 
 ##################################
