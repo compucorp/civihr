@@ -70,7 +70,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateTOILFields($params);
     self::validateSicknessFields($params);
     self::validateStartDateNotGreaterThanEndDate($params);
-    self::validateAbsenceTypeIsActive($params);
+    self::validateAbsenceTypeIsActiveAndValid($params);
     self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params);
     self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params);
     self::validateAbsencePeriod($params);
@@ -507,14 +507,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * This method validates that the absence type is active
+   * This method validates that the absence type is active and is valid for the
+   * type of request. That is, if this is a Sickness Request, then only absence
+   * types where is_sick is set can be used. If it's a TOIL Request, then only
+   * absence types where allow_accruals_request is set can be used.
    *
    * @param array $params
    *   The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateAbsenceTypeIsActive($params) {
+  private static function validateAbsenceTypeIsActiveAndValid($params) {
     $absenceType = AbsenceType::findById($params['type_id']);
 
     if (!$absenceType->is_active) {
@@ -523,6 +526,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         'leave_request_absence_type_not_active',
         'type_id'
       );
+    }
+
+    if($params['request_type'] === self::REQUEST_TYPE_SICKNESS && !$absenceType->is_sick) {
+      throw new InvalidLeaveRequestException(
+        'This absence type does not allow sickness requests',
+        'leave_request_invalid_sickness_absence_type',
+        'type_id'
+      );
+    }
+
+    if($params['request_type'] === self::REQUEST_TYPE_TOIL && !$absenceType->allow_accruals_request) {
+      throw new InvalidLeaveRequestException(
+        'This absence type does not allow TOIL requests',
+        'leave_request_invalid_toil_absence_type',
+        'type_id'
+      );
+
     }
   }
 
