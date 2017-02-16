@@ -390,6 +390,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $numberOfRecordsCreated = 0;
 
     $balanceChangesToExpire = self::getBalanceChangesToExpire();
+
+    if(empty($balanceChangesToExpire)) {
+      return $numberOfRecordsCreated;
+    }
+
     $datesOverlappingBalanceChangesToExpire = self::getDatesOverlappingBalanceChangesToExpire($balanceChangesToExpire);
 
     foreach($balanceChangesToExpire as $balanceChangeToExpire) {
@@ -766,11 +771,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       LEFT JOIN {$balanceChangeTable} expired_balance_change
              ON balance_to_expire.id = expired_balance_change.expired_balance_change_id
       LEFT JOIN {$toilRequestTable} toil_request
-            ON balance_to_expire.source_type = 'toil_request' AND balance_to_expire.source_id = toil_request.id
+            ON balance_to_expire.source_type = %1 AND balance_to_expire.source_id = toil_request.id
       LEFT JOIN {$leaveRequestTable} toil_leave_request
             ON toil_request.leave_request_id = toil_leave_request.id
       LEFT JOIN {$periodEntitlementTable} period_entitlement
-            ON balance_to_expire.source_type = 'entitlement' AND balance_to_expire.source_id = period_entitlement.id
+            ON balance_to_expire.source_type = %2 AND balance_to_expire.source_id = period_entitlement.id
       LEFT JOIN {$absencePeriodTable} absence_period
             ON period_entitlement.period_id = absence_period.id
       WHERE balance_to_expire.expiry_date IS NOT NULL AND
@@ -780,7 +785,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       ORDER BY balance_to_expire.expiry_date ASC, balance_to_expire.id ASC
     ";
 
-    $result = CRM_Core_DAO::executeQuery($query);
+    $params = [
+      1 => [self::SOURCE_TOIL_REQUEST, 'String'],
+      2 => [self::SOURCE_ENTITLEMENT, 'String'],
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params);
     $balanceChangesToExpire = [];
     while ($result->fetch()) {
       $balanceChangesToExpire[] = [
@@ -916,9 +926,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $periodEntitlementTable = LeavePeriodEntitlement::getTableName();
     $absencePeriodTable = AbsencePeriod::getTableName();
 
+    $leaveRequestFromDate = new DateTime($leaveRequest->from_date);
+    $leaveRequestToDate =  new DateTime($leaveRequest->to_date);
+
     $absencePeriod = AbsencePeriod::getPeriodContainingDates(
-      new DateTime($leaveRequest->from_date),
-      new DateTime($leaveRequest->to_date)
+      $leaveRequestFromDate,
+      $leaveRequestToDate
     );
 
     $query = "
@@ -927,25 +940,27 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
         coalesce(absence_period.start_date, toil_leave_request.from_date) as start_date
       FROM {$balanceChangeTable} bc
       LEFT JOIN {$toilRequestTable} toil_request
-            ON bc.source_type = 'toil_request' AND bc.source_id = toil_request.id
+            ON bc.source_type = %1 AND bc.source_id = toil_request.id
       LEFT JOIN {$leaveRequestTable} toil_leave_request
             ON toil_request.leave_request_id = toil_leave_request.id
       LEFT JOIN {$periodEntitlementTable} period_entitlement
-            ON bc.source_type = 'entitlement' AND bc.source_id = period_entitlement.id
+            ON bc.source_type = %2 AND bc.source_id = period_entitlement.id
       LEFT JOIN {$absencePeriodTable} absence_period
             ON period_entitlement.period_id = absence_period.id
       WHERE bc.expiry_date IS NOT NULL AND
-            (bc.expiry_date BETWEEN %1 AND %2) AND
-            bc.expiry_date >= %3 AND  
+            (bc.expiry_date BETWEEN %3 AND %4) AND
+            bc.expiry_date >= %5 AND  
             bc.expired_balance_change_id IS NOT NULL AND
-            (toil_leave_request.contact_id = %4 OR period_entitlement.contact_id = %4)           
+            (toil_leave_request.contact_id = %6 OR period_entitlement.contact_id = %6)           
       ORDER BY bc.expiry_date ASC, bc.id ASC";
 
     $params = [
-      1 => [$absencePeriod->start_date, 'String'],
-      2 => [$absencePeriod->end_date, 'String'],
-      3 => [$leaveRequest->from_date, 'String'],
-      4 => [$leaveRequest->contact_id, 'Integer'],
+      1 => [self::SOURCE_TOIL_REQUEST, 'String'],
+      2 => [self::SOURCE_ENTITLEMENT, 'String'],
+      3 => [$absencePeriod->start_date, 'String'],
+      4 => [$absencePeriod->end_date, 'String'],
+      5 => [$leaveRequestFromDate->format('Y-m-d'), 'String'],
+      6 => [$leaveRequest->contact_id, 'Integer'],
     ];
 
     $result = CRM_Core_DAO::executeQuery($query, $params);

@@ -1964,7 +1964,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       $periodEntitlement1->contact_id,
       $leaveRequestStatuses['Approved'],
       CRM_Utils_Date::processDate('-2 days'),
-      CRM_Utils_Date::processDate('+1 days')
+      CRM_Utils_Date::processDate('+1 day')
     );
 
     $numberOfUpdatedRecords = LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
@@ -2005,7 +2005,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       $periodEntitlement1->contact_id,
       $leaveRequestStatuses['Waiting Approval'],
       CRM_Utils_Date::processDate('-2 days'),
-      CRM_Utils_Date::processDate('+1 days')
+      CRM_Utils_Date::processDate('+1 day')
     );
 
     $numberOfUpdatedRecords = LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
@@ -2016,6 +2016,47 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $expiryRecord1->find(true);
 
     //no recalculation is done because the leave request is not yet approved
+    $this->assertEquals(-5, $expiryRecord1->amount);
+  }
+
+  public function testRecalculateExpiredBalanceChangesForLeaveRequestWithoutPastDates() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+5 days')
+    ]);
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 1,
+    ]);
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $balanceChange1 = $this->createExpiredBroughtForwardBalanceChange(
+      $periodEntitlement1->id,
+      5,
+      5,
+      2
+    );
+
+    $leaveRequest = $this->createLeaveRequestBalanceChange(
+      $periodEntitlement1->type_id,
+      $periodEntitlement1->contact_id,
+      $leaveRequestStatuses['Approved'],
+      CRM_Utils_Date::processDate('today'),
+      CRM_Utils_Date::processDate('+2 days')
+    );
+
+    $numberOfUpdatedRecords = LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
+    $this->assertEquals(0, $numberOfUpdatedRecords);
+
+    $expiryRecord1 = new LeaveBalanceChange();
+    $expiryRecord1->id = $balanceChange1->id;
+    $expiryRecord1->find(true);
+
+    //no recalculation is done because the leave request has no past days that falls on days
+    // before the brought forward expired
     $this->assertEquals(-5, $expiryRecord1->amount);
   }
 }
