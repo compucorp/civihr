@@ -143,8 +143,9 @@ function bootstrapcivicrm_civicrm_coreResourceList(&$items, $region) {
  * Implementation of hook_civicrm_buildForm
  */
 function bootstrapcivicrm_civicrm_buildForm($formName) {
+  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivicrm', 'js/enable-select2.js');
+
   if($formName == 'CRM_Contact_Form_Search_Advanced') {
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivicrm', 'js/enable-select2.js');
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivicrm', 'js/highlight-table-rows.js');
   }
 }
