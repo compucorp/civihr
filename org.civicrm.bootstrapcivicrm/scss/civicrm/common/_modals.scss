@@ -67,7 +67,7 @@
 
   .ui-dialog-content {
     @extend .modal-body, %open-sans-font-family;
-    padding: 0;
+    padding: 20px 20px 0 20px;
     margin-top: 0;
     margin-bottom: 0;
     padding-bottom: 20px;
@@ -97,6 +97,11 @@
       th {
         border-bottom: 0;
       }
+    }
+
+    .crm-accordion-wrapper  {
+      margin-left: -20px;
+      margin-right: -20px;
     }
   }
 
