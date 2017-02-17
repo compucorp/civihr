@@ -13,7 +13,7 @@ var Promise = require('es6-promise').Promise;
   var backstopDir = 'backstop_data/';
   var files = { config: 'site-config.json', tpl: 'backstop.tpl.json' };
   var configTpl = {
-    "url": "%{site-host}",
+    "url": "http://%{site-host}",
     "credentials": { "name": "%{user-name}", "pass": "%{user-password}" }
   };
 
@@ -103,6 +103,7 @@ var Promise = require('es6-promise').Promise;
   function tempFileContent() {
     var config = JSON.parse(fs.readFileSync(backstopDir + files.config));
     var content = JSON.parse(fs.readFileSync(backstopDir + files.tpl));
+
     content.scenarios = scenariosList().map(function (scenario) {
       scenario.url = config.url + '/' + scenario.url;
 
@@ -115,6 +116,8 @@ var Promise = require('es6-promise').Promise;
   /**
    * Concatenates all the scenarios, or returns only the scenario passed as
    * an argument to the gulp task
+   *
+   * The first scenario of the list gets the login script to run
    *
    * @return {Array}
    */
@@ -129,6 +132,11 @@ var Promise = require('es6-promise').Promise;
         return JSON.parse(fs.readFileSync(scenariosPath + scenarioFile)).scenarios;
       })
       .flatten()
+      .tap(function (scenarios) {
+        scenarios[0].onBeforeScript = "login";
+
+        return scenarios;
+      })
       .value();
   }
 })();

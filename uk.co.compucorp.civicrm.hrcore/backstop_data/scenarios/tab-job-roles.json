@@ -4,7 +4,6 @@
       "label": "Job Roles / Basic Details",
       "delay": 5000,
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onBeforeScript": "login",
       "onReadyScript": "contact-summary/job-roles/basic-details"
     },
     {

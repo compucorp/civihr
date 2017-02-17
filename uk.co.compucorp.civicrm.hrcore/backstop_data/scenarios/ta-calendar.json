@@ -4,7 +4,6 @@
       "label": "T&A / Calendar",
       "url": "civicrm/tasksassignments/dashboard#/calendar",
       "delay": 5000,
-      "onBeforeScript": "login",
       "onReadyScript": "close-any-modal"
     }
   ]
