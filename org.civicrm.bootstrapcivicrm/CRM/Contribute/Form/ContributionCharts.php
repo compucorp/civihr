@@ -198,6 +198,28 @@ class CRM_Contribute_Form_ContributionCharts extends CRM_Core_Form {
       }
       $values['size'] = array('xSize' => $xSize, 'ySize' => $ySize);
     }
+
+    // @custom Start custom code
+    $colors = array('#5A6779', '#E5807F', '#ECA67F', '#8EC68A', '#C096AA', '#9579A8', '#42B0CB');
+
+    $colorIndex = 0;
+    foreach ($chartData as $key => $value) {
+
+      $chartData[$key]['object']->bg_colour = '#FFFFFF';
+      $chartData[$key]['object']->y_axis->colour = '#edf2f3';
+      $chartData[$key]['object']->y_axis->{'grid-colour'} = '#FFFFFF';
+      $chartData[$key]['object']->x_axis->colour = '#edf2f3';
+      $chartData[$key]['object']->x_axis->{'grid-colour'} = '#edf2f3';
+
+      for ($i=0; $i < count($chartData[$key]['object']->elements); $i++) {
+        $chartData[$key]['object']->elements[$i]->colour = $colors[$colorIndex];
+        $chartData[$key]['object']->elements[$i]->type = 'bar';
+        $chartData[$key]['object']->elements[$i]->alpha = 1;
+        $colorIndex++;
+      }
+    }
+    // @custom End custom code
+
     // finally assign this chart data to template.
     $this->assign('hasYearlyChart', $yearlyChart);
     $this->assign('hasByMonthChart', $monthlyChart);
