@@ -113,7 +113,7 @@
   }
 }
 
-%expandable-table {
+@mixin mx-expandable-table {
   @extend %civihr-table;
   background: transparent;
   border: none;

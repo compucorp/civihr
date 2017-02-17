@@ -15,7 +15,7 @@
     }
 
     .selector {
-      @extend %expandable-table;
+      @include mx-expandable-table();
 
       tr {
         &:not(.crm-child-row) {
@@ -536,7 +536,7 @@
 
   .selector,
   .report {
-    @extend %expandable-table;
+    @include mx-expandable-table();
   }
 
   .report {
