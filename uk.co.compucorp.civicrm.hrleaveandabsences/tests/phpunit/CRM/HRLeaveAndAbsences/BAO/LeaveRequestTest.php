@@ -1782,4 +1782,58 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
   }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The TOIL to accrue amount is not valid
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilButToilToAccruedItNotAValidAmount() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
+    ]);
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_accruals_request' => true]);
+
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_duration' => 1000,
+      'toil_to_accrue' => 10,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage You cannot request TOIL for past days
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndDatesAreInThePastAndAbsenceTypeDoesNotAllow() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date'   => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => false
+    ]);
+
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('-2 days'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('-1 day'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_duration' => 1,
+      'toil_to_accrue' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+  }
 }

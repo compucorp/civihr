@@ -67,10 +67,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   public static function validateParams($params) {
     self::validateMandatory($params);
     self::validateRequestType($params);
-    self::validateTOILFields($params);
-    self::validateSicknessFields($params);
-    self::validateStartDateNotGreaterThanEndDate($params);
+    self::validateTOILMandatoryFields($params);
+    self::validateSicknessMandatoryFields($params);
     self::validateAbsenceTypeIsActiveAndValid($params);
+    self::validateTOILRequest($params);
+    self::validateStartDateNotGreaterThanEndDate($params);
     self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params);
     self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params);
     self::validateAbsencePeriod($params);
@@ -173,19 +174,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       throw new InvalidLeaveRequestException(
         'The request_type is invalid',
         'leave_request_invalid_request_type',
-        'requet_type'
+        'request_type'
       );
     }
   }
 
   /**
-   * Validates the TOIL fields according to the value of request_type.
+   * Validates the TOIL mandatory fields according to the value of request_type.
    *
    * @param array $params
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateTOILFields($params) {
+  private static function validateTOILMandatoryFields($params) {
     $toilRequiredFields = [ 'toil_duration', 'toil_to_accrue' ];
     $toilFields = array_merge($toilRequiredFields, [ 'toil_expiry_date' ]);
 
@@ -213,13 +214,74 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Validates the Sickness fields according to the value of request_type.
+   * Runs all the validations specific for TOIL Requests
    *
    * @param array $params
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateSicknessFields($params) {
+  private static function validateTOILRequest($params) {
+    if($params['request_type'] !== self::REQUEST_TYPE_TOIL) {
+      return;
+    }
+
+    self::validateTOILToAccrue($params);
+    self::validateTOILPastDays($params);
+  }
+
+  /**
+   * Validates if the value passed to the TOIL To Accrued field is one of the
+   * options available on the hrleaveandabsences_toil_amounts option group
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateTOILToAccrue($params) {
+    $toilAmountOptions = self::buildOptions('toil_to_accrue', 'validate');
+    if(!array_key_exists($params['toil_to_accrue'], $toilAmountOptions)) {
+      throw new InvalidLeaveRequestException(
+        'The TOIL to accrue amount is not valid',
+        'leave_request_toil_to_accrue_is_invalid',
+        'toil_to_accrue'
+      );
+    }
+  }
+
+  /**
+   * Validate that the user cannot request TOIL for past days
+   * if the absence type is not set up as such.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateTOILPastDays($params) {
+    $absenceType = AbsenceType::findById($params['type_id']);
+
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
+    $todayDate = new DateTime('today');
+    $leaveDatesHasPastDates = $fromDate < $todayDate || $toDate < $todayDate;
+
+    if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past) {
+      throw new InvalidLeaveRequestException(
+        'You cannot request TOIL for past days',
+        'leave_request_toil_cannot_be_requested_for_past_days',
+        'from_date'
+      );
+    }
+  }
+
+  /**
+   * Validates the Sickness mandatory fields according to the value of request_type.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateSicknessMandatoryFields($params) {
     $sicknessRequiredFields = [ 'sickness_reason' ];
     $sicknessFields = array_merge($sicknessRequiredFields, ['sickness_required_documents']);
 

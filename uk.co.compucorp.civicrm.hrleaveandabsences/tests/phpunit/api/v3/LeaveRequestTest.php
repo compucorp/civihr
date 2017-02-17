@@ -1617,7 +1617,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = new DateTime('+4 days');
     $toDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
@@ -2122,6 +2122,71 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'count' => 1,
       'values' => [
         'type_id' => ['leave_request_past_days_cannot_be_cancelled']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnAnErrorWhenTheToilToAccruedDoesNotHaveAValidValue() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
+    ]);
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_accruals_request' => true]);
+
+    $result = civicrm_api3('LeaveRequest', 'isValid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_duration' => 1000,
+      'toil_to_accrue' => 10,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'toil_to_accrue' => ['leave_request_toil_to_accrue_is_invalid']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnAnErrorWhenTheToilDatesAreInThePastAndTheAbsenceTypeDoesNotAllowIt() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
+    ]);
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => false
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'isValid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_duration' => 1,
+      'toil_to_accrue' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'from_date' => ['leave_request_toil_cannot_be_requested_for_past_days']
       ]
     ];
     $this->assertEquals($expectedResult, $result);
