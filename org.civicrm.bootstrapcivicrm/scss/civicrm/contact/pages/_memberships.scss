@@ -108,7 +108,8 @@
     width: 230px;
   }
 
-  select {
+  select,
+  #from_email_address {
     max-width: 230px;
     padding-right: 30px !important;
   }
