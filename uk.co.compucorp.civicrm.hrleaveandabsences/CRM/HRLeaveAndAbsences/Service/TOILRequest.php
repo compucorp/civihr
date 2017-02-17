@@ -8,28 +8,6 @@ use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
 class CRM_HRLeaveAndAbsences_Service_TOILRequest extends LeaveRequestService {
 
   /**
-   * This method creates/updates the TOILRequest along with the
-   * associated LeaveRequest and it's LeaveBalanceChanges
-   *
-   * @param array $params
-   *
-   * @return \CRM_HRLeaveAndAbsences_BAO_TOILRequest|NULL
-   */
-  protected function createRequestWithBalanceChanges($params) {
-    $toilRequest = TOILRequest::create($params, false);
-    $expiryDate = !empty($params['expiry_date']) ? new DateTime($params['expiry_date']) : null;
-
-    $this->leaveBalanceChangeService->createForTOILRequest(
-      $toilRequest,
-      $params['type_id'],
-      $params['toil_to_accrue'],
-      $expiryDate
-    );
-
-    return $toilRequest;
-  }
-
-  /**
    * Returns the LeaveRequest object associated with the TOILRequest
    * in its current state (i.e before it gets updated)
    *
@@ -55,7 +33,6 @@ class CRM_HRLeaveAndAbsences_Service_TOILRequest extends LeaveRequestService {
   public function delete($toilRequestID) {
     $toilRequest = TOILRequest::findById($toilRequestID);
     parent::delete($toilRequest->leave_request_id);
-    $this->leaveBalanceChangeService->deleteForTOILRequest($toilRequest);
     $toilRequest->delete();
   }
 

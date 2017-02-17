@@ -1,9 +1,11 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
+use Drupal\civihr_employee_portal\Blocks\Leave;
 
 trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
 
@@ -98,18 +100,19 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
   }
 
   public function createExpiredTOILRequestBalanceChange($typeID, $contactID, $status, $fromDate, $toDate, $toilToAccrue, $expiryDate, $expiredAmount) {
-    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $typeID,
       'contact_id' => $contactID,
       'status_id' => $status,
       'from_date' => $fromDate,
       'to_date' => $toDate,
       'toil_to_accrue' => $toilToAccrue,
-      'duration' => 200,
-      'expiry_date' => $expiryDate
+      'toil_duration' => 200,
+      'toil_expiry_date' => $expiryDate,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
-    $toilBalanceChange = $this->findToilRequestBalanceChange($toilRequest->id);
+    $toilBalanceChange = $this->findToilRequestMainBalanceChange($toilRequest->id);
     return LeaveBalanceChangeFabricator::fabricate([
       'source_id' => $toilBalanceChange->source_id,
       'source_type' => $toilBalanceChange->source_type,
@@ -168,21 +171,40 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
   }
 
   /**
-   * Finds a LeaveBalanceChange associated with the TOILRequest with the given ID
+   * Finds the main LeaveBalanceChange associated with the Leave Request of
+   * request_type TOIL. The main balance change is the one linked to the first
+   * dates of the LeaveRequest and where we store the accrued amount and the
+   * expiry date.
    *
    * @param int $toilRequestID
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange|null
    */
-  public function findToilRequestBalanceChange($toilRequestID) {
-    $balanceChange = new LeaveBalanceChange();
-    $balanceChange->source_id = $toilRequestID;
-    $balanceChange->source_type = LeaveBalanceChange::SOURCE_TOIL_REQUEST;
+  public function findToilRequestMainBalanceChange($toilRequestID) {
+    $balanceChangeTable = LeaveBalanceChange::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
 
-    if($balanceChange->find()) {
-      $balanceChange->fetch();
+    $query = "
+      SELECT balance_change.* 
+      FROM {$balanceChangeTable} balance_change
+      INNER JOIN {$leaveRequestDateTable} as leave_request_date 
+        ON leave_request_date.id = balance_change.source_id AND balance_change.source_type = %1
+      WHERE leave_request_date.leave_request_id = %2
+      ORDER BY leave_request_date.date ASC 
+      LIMIT 1
+    ";
 
-      return $balanceChange;
+    $params = [
+      1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$toilRequestID, 'Integer']
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params, true, LeaveBalanceChange::class);
+
+    if($result->N === 1) {
+      $result->fetch();
+
+      return $result;
     }
 
     return null;

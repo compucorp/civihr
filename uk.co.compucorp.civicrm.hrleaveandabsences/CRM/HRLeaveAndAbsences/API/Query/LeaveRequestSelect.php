@@ -191,22 +191,12 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    * @param array $results
    */
   private function addFullDetails(&$results) {
-    $toilLeaveRequestIDs = $this->getToilLeaveRequests($results);
-    $toilIDs = array_flip($toilLeaveRequestIDs);
-
     foreach($results as $i => $leaveRequest) {
       $leaveRequestBao = new LeaveRequest();
       $leaveRequestBao->copyValues($leaveRequest);
 
       if($this->shouldReturnBalanceChange()) {
-
-        if (in_array($leaveRequestBao->id, $toilLeaveRequestIDs)) {
-          $balanceChange = LeaveBalanceChange::getAmountForTOILRequest($toilIDs[$leaveRequestBao->id]);
-        }
-        else{
-          $balanceChange = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequestBao);
-        }
-
+        $balanceChange = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequestBao);
         $results[$i]['balance_change'] = $balanceChange;
       }
 

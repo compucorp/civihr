@@ -978,7 +978,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => $leaveRequestStatuses['Admin Approved']
     ], true);
 
-    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
@@ -987,8 +987,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => 1,
       'from_date_type' => 1,
       'toil_to_accrue' => 8,
-      'duration' => 300,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+      'toil_duration' => 300,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'getFull', [
@@ -996,7 +997,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
         'return' => ['id', 'balance_change', 'dates']]
     );
 
-    $toilLeaveRequestBao = LeaveRequest::findById($toilRequest->leave_request_id);
     $expectedValues = [
       [
         'id' => $leaveRequest1->id,
@@ -1009,9 +1009,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
         'dates' => $this->createLeaveRequestDatesArray($leaveRequest2)
       ],
       [
-        'id' => $toilRequest->leave_request_id,
+        'id' => $toilRequest->id,
         'balance_change' => 8,
-        'dates' => $this->createLeaveRequestDatesArray($toilLeaveRequestBao)
+        'dates' => $this->createLeaveRequestDatesArray($toilRequest)
       ]
     ];
 

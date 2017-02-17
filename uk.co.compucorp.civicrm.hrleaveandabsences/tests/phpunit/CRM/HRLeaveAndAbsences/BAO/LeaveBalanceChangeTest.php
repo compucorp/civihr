@@ -5,11 +5,8 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
-use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
-use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
@@ -706,14 +703,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
 
-    TOILRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $entitlement->contact_id,
       'type_id' => $entitlement->type_id,
       'from_date' => CRM_Utils_Date::processDate('today'),
       'to_date' => CRM_Utils_Date::processDate('today'),
-      'duration' => 360,
+      'toil_duration' => 360,
       'toil_to_accrue' => 2,
-      'expiry_date' => CRM_Utils_Date::processDate('+30 days'),
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+30 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     // This will deduct 1 day from the 2 accrued by the toil request
@@ -723,7 +721,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'from_date' => CRM_Utils_Date::processDate('+10 days'),
       'to_date' => CRM_Utils_Date::processDate('+10 days')
     ], true);
-
 
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(1, $balance);
@@ -1346,17 +1343,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'toil_to_accrue' => 1,
-      'duration' => 200,
-      'expiry_date' => CRM_Utils_Date::processDate('2016-01-30'),
+      'toil_duration' => 200,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-01-30'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
-    $balanceChange = $this->findToilRequestBalanceChange($toilRequest->id);
+    $balanceChange = $this->findToilRequestMainBalanceChange($toilRequest->id);
 
     $balanceChangePeriodEntitlement = $balanceChange->getLeavePeriodEntitlement();
 
@@ -1415,15 +1413,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    TOILRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
       'status_id' => $leaveRequestStatuses['Approved'],
       'from_date' => CRM_Utils_Date::processDate('-20 days'),
       'to_date' => CRM_Utils_Date::processDate('-20 days'),
       'toil_to_accrue' => 1,
-      'duration' => 200,
-      'expiry_date' => CRM_Utils_Date::processDate('-10 days'),
+      'toil_duration' => 200,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('-10 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     $numberOfCreatedRecords = LeaveBalanceChange::createExpiryRecords();
@@ -1450,24 +1449,26 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
     ]);
 
-    $toilRequest1 = TOILRequestFabricator::fabricateWithoutValidation([
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-17'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-17'),
-      'expiry_date' => CRM_Utils_Date::processDate('2016-02-17'),
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-02-17'),
       'toil_to_accrue' => 1,
-      'duration' => 100
+      'toil_duration' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
-    $toilRequest2 = TOILRequestFabricator::fabricateWithoutValidation([
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-25'),
       'to_date' => CRM_Utils_Date::processDate('2016-02-25'),
-      'expiry_date' => CRM_Utils_Date::processDate('2016-03-01'),
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-03-01'),
       'toil_to_accrue' => 2,
-      'duration' => 100
+      'toil_duration' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     // This leave request overlaps only the brought forward period
@@ -1538,14 +1539,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
     ]);
 
-    $toilRequest1 = TOILRequestFabricator::fabricateWithoutValidation([
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-17'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-17'),
-      'expiry_date' => CRM_Utils_Date::processDate('2016-02-26'),
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-02-26'),
       'toil_to_accrue' => 1,
-      'duration' => 100
+      'toil_duration' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     // A 7 days Leave Request, overlapping both the TOIL request period and
@@ -1651,14 +1653,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
     ]);
 
-    $toilRequest1 = TOILRequestFabricator::fabricateWithoutValidation([
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-17'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-17'),
-      'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
       'toil_to_accrue' => 1,
-      'duration' => 100
+      'toil_duration' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     // This Leave Request overlaps both toil and brought forward, but will be
@@ -1699,15 +1702,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
       'status_id' => $leaveRequestStatuses['Approved'],
       'from_date' => CRM_Utils_Date::processDate('-20 days'),
       'to_date' => CRM_Utils_Date::processDate('-20 days'),
       'toil_to_accrue' => 2,
-      'duration' => 200,
-      'expiry_date' => CRM_Utils_Date::processDate('-10 days'),
+      'toil_duration' => 200,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('-10 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1788,40 +1792,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   private function getExpiryRecordForToilRequest($toilRequestID) {
-    $record = new LeaveBalanceChange();
-    $record->source_id = $toilRequestID;
-    $record->source_type = LeaveBalanceChange::SOURCE_TOIL_REQUEST;
-    $record->whereAdd('expired_balance_change_id IS NOT NULL');
-    $record->find();
-    if($record->N == 1) {
-      $record->fetch();
+    $toilBalanceChange = $this->findToilRequestMainBalanceChange($toilRequestID);
+
+    $record                            = new LeaveBalanceChange();
+    $record->expired_balance_change_id = $toilBalanceChange->id;
+    $record->find(TRUE);
+    if ($record->N == 1) {
       return $record;
     }
 
-    return null;
-  }
-
-  private function deleteDefaultWorkPattern() {
-    $workPatternTable = WorkPattern::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$workPatternTable} WHERE is_default = 1");
-  }
-
-  public function testGetBalanceChangeForToilLeaveRequest() {
-
-    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
-      'contact_id' => 1,
-      'status_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('+1 days'),
-      'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'to_date_type' => 1,
-      'from_date_type' => 1,
-      'toil_to_accrue' => 2,
-      'duration' => 120,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
-    ], true);
-
-    $this->assertEquals(2, LeaveBalanceChange::getAmountForTOILRequest($toilRequest->id));
+    return NULL;
   }
 
   public function testGetTotalTOILBalanceChangeForContactWithinAGivenPeriod() {
