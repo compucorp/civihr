@@ -65,7 +65,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     );
   }
 
-  public function createExpiredBroughtForwardBalanceChange($entitlementID, $amount, $expiredAmount, $expiredByNoOfDays = null) {
+  public function createExpiredBroughtForwardBalanceChange($entitlementID, $amount, $expiredAmount, $expiry = null) {
     $this->createEntitlementBalanceChange(
       $entitlementID,
       $amount,
@@ -73,16 +73,25 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     );
 
     $broughtForwardBalanceChangeID = $this->getLastIdInTable(LeaveBalanceChange::getTableName());
-    if(!$expiredByNoOfDays) {
-      $expiredByNoOfDays = 2;
+
+    if($expiry instanceof DateTime){
+      $expiryDate = $expiry->format('YmdHis');
     }
+
+    if(!$expiry || is_int($expiry)) {
+      if(!$expiry){
+        $expiry = 2;
+      }
+      $expiryDate = date('YmdHis', strtotime("-{$expiry} day"));
+    }
+
     return LeaveBalanceChange::create([
       'type_id' => $this->getBalanceChangeTypeValue('Brought Forward'),
       'source_id' => $entitlementID,
       'source_type' => 'entitlement',
       'amount' => $expiredAmount * -1, //expired amounts should be negative
       'expired_balance_change_id' => $broughtForwardBalanceChangeID,
-      'expiry_date' => date('YmdHis', strtotime("-{$expiredByNoOfDays} day"))
+      'expiry_date' => $expiryDate
     ]);
   }
 
@@ -128,7 +137,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
    *    The start date of the leave request
    * @param null|string $toDate
    *    The end date of the leave request. If null, it means it starts and ends at the same date
-   * 
+   *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
    */
   public function createLeaveRequestBalanceChange($typeID, $contactID, $status, $fromDate, $toDate = null) {
@@ -175,5 +184,20 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     }
 
     return null;
+  }
+
+  public function createLeaveBalanceChangeServiceMock() {
+    $leaveBalanceChangeService = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange::class)
+      ->setMethods(['recalculateExpiredBalanceChangesForLeaveRequestPastDates', 'createForLeaveRequest'])
+      ->getMock();
+
+    $leaveBalanceChangeService->expects($this->once())
+      ->method('recalculateExpiredBalanceChangesForLeaveRequestPastDates')
+      ->with($this->isInstanceOf(CRM_HRLeaveAndAbsences_BAO_LeaveRequest::class));
+
+    $leaveBalanceChangeService->expects($this->any())
+      ->method('createForLeaveRequest');
+
+    return $leaveBalanceChangeService;
   }
 }

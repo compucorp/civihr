@@ -262,60 +262,31 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
   }
 
-  private function getLeaveRequestService($isAdmin = false, $isManager = false, $allowStatusTransition = true) {
+  private function getLeaveRequestService($isAdmin = false, $isManager = false, $allowStatusTransition = true, $mockBalanceChangeService = false) {
     $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
     $leaveRequestStatusMatrixService = $this->createLeaveRequestStatusMatrixServiceMock($allowStatusTransition);
     $leaveRequestRightsService = new LeaveRequestRightsService($leaveManagerService);
+    $leaveBalanceChangeService = $this->leaveBalanceChangeService;
+
+    if($mockBalanceChangeService) {
+      $leaveBalanceChangeService = $this->createLeaveBalanceChangeServiceMock();
+    }
 
     return new LeaveRequestService(
-      $this->leaveBalanceChangeService,
+      $leaveBalanceChangeService,
       $leaveRequestStatusMatrixService,
       $leaveRequestRightsService
     );
   }
 
-  public function testExpiredBalanceChangeIsRecalculatedOnCreateWhenLeaveRequestHasApprovedPastDatesAndThereAreExpiredBalanceChangesWithinTheLeaveRequestDatesInterval() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('-10 days'),
-      'end_date' => CRM_Utils_Date::processDate('+5 days')
-    ]);
-
-    HRJobContractFabricator::fabricate(
-      ['contact_id' => $this->leaveContact],
-      ['period_start_date' => CRM_Utils_Date::processDate('-10 days')]
-    );
-
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
-
+  public function testLeaveRequestServiceCallsRecalculateExpiredBalanceChangesForLeaveRequestPastDatesMethodWhenALeaveRequestHasPastDates() {
     $params = $this->getDefaultParams([
       'from_date' => CRM_Utils_Date::processDate('-2 days'),
       'to_date' => CRM_Utils_Date::processDate('+1 day'),
       'status' => 1
     ]);
 
-    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
-      'contact_id' => $params['contact_id'],
-      'period_id' => $absencePeriod->id,
-      'type_id' => $params['type_id'],
-    ]);
-
-    $balanceChange = $this->createExpiredBroughtForwardBalanceChange(
-      $periodEntitlement1->id,
-      5,
-      5,
-      2
-    );
-
-    // A leave request with past dates with the first day on the day
-    // the brought forward balance change expired
-    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
-
-    $expiryRecord = new LeaveBalanceChange();
-    $expiryRecord->id = $balanceChange->id;
-    $expiryRecord->find(true);
-
-    //Balance change is recalculated to 4 days
-    $this->assertEquals(-4, $expiryRecord->amount);
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdminWithBalanceChangeServiceMock()->create($params, false);
   }
 
   private function getLeaveRequestServiceWhenStatusTransitionIsNotAllowed() {
@@ -330,6 +301,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     return $this->getLeaveRequestService(false, true);
   }
 
+  private function getLeaveRequestServiceWhenCurrentUserIsAdminWithBalanceChangeServiceMock() {
+    return $this->getLeaveRequestService(true, false, true, true);
+  }
   private function getDefaultParams($params = []) {
     $defaultParams =  [
       'type_id' => 1,
