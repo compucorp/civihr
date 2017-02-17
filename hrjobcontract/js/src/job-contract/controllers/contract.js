@@ -134,22 +134,22 @@ define([
       vm.fetchRevisionDetails = function(revision) {
         return $q.all([
           ContractDetailsService.getOne({
-            jobcontract_revision_id: revision.id
+            jobcontract_revision_id: revision.jobcontract_revision_id
           }),
           ContractHourService.getOne({
-            jobcontract_revision_id: revision.id
+            jobcontract_revision_id: revision.jobcontract_revision_id
           }),
           ContractHealthService.getOne({
-            jobcontract_revision_id: revision.id
+            jobcontract_revision_id: revision.jobcontract_revision_id
           }),
           ContractPayService.getOne({
-            jobcontract_revision_id: revision.id
+            jobcontract_revision_id: revision.jobcontract_revision_id
           }),
           ContractPensionService.getOne({
-            jobcontract_revision_id: revision.id
+            jobcontract_revision_id: revision.jobcontract_revision_id
           }),
           ContractLeaveService.getOne({
-            jobcontract_revision_id: revision.id
+            jobcontract_revision_id: revision.jobcontract_revision_id
           })
         ])
         .then(function(results) {
