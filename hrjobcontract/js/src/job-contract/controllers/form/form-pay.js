@@ -71,7 +71,9 @@ define([
                 var entityHour = $scope.entity.hour;
 
                 if (+entityPay.is_paid) {
-                  entityPay.pay_annualized_est = (entityPay.pay_amount * workPerYear[entityPay.pay_unit] * entityHour.hours_fte || 0).toFixed(2);
+                  var workHoursPerYear = workPerYear['Week'] * entityHour.hours_amount;
+                  var hourlyRate = entityPay.pay_amount * workPerYear[entityPay.pay_unit] / workPerYear['Hour'];
+                  entityPay.pay_annualized_est = workHoursPerYear * hourlyRate;
                 }
             };
 
