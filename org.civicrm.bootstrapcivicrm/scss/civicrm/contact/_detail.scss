@@ -59,6 +59,13 @@
     padding: 0 !important;
   }
 
+  // Summary tab
+  &#contact-summary {
+    float: left !important;
+    padding: 20px !important;
+    width: calc(85% - 40px) !important;
+  }
+
   // Contributions tab
   .CRM_Contribute_Form_Search {
     padding-right: 10px;
@@ -173,7 +180,7 @@
 
   #crm-contactname-content {
     border: none !important;
-    max-height: 60px;
+    max-height: 70px;
 
     .crm-summary-display_name {
       padding: 22px 0; // centering name vertically
@@ -206,6 +213,7 @@
     .crm-inline-edit-form {
       background-color: transparent !important;
       padding: 0;
+      padding-left: 10px;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
@@ -233,7 +241,7 @@
       }
 
       .crm-inline-button {
-        padding: 20px 5px;
+        padding: 27px 5px;
         margin: 0 !important;
         border: 0;
         order: 2;
@@ -472,6 +480,7 @@ input[type="text"] {
   height: 30px;
   line-height: 30px;
   box-sizing: border-box;
+  margin-top: 8px;
 }
 
 .select2-arrow {
