@@ -295,6 +295,10 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Toil To Accrue') ,
           'description' => 'The amount of days accrued for this toil request',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrleaveandabsences_toil_amounts',
+            'optionEditPath' => 'civicrm/admin/options/hrleaveandabsences_toil_amounts',
+          )
         ) ,
         'toil_expiry_date' => array(
           'name' => 'toil_expiry_date',

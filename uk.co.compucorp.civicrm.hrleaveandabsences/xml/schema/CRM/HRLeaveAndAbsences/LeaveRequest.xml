@@ -131,6 +131,9 @@
     <type>int unsigned</type>
     <comment>The amount of days accrued for this toil request</comment>
     <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_toil_amounts</optionGroupName>
+    </pseudoconstant>
   </field>
 
   <field>
