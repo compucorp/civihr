@@ -155,7 +155,7 @@ define([
 
             $scope.$watch('entity.pay.pay_amount', $scope.calcAnnualPayEst);
             $scope.$watch('entity.pay.pay_unit', $scope.calcAnnualPayEst);
-            $scope.$watch('entity.hour.hours_fte', $scope.calcAnnualPayEst);
+            $scope.$watch('entity.hour.hours_amount', $scope.calcAnnualPayEst);
             $scope.$watch('entity.pay.pay_annualized_est', function(){
                 $scope.calcPayPerCycleGross();
                 $scope.calcBenefitsPerCycle();
