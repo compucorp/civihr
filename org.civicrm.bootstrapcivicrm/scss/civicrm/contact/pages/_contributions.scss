@@ -25,7 +25,7 @@
 
             &:not(:first-child) {
               word-break: break-word;
-              min-width: 80px;
+              min-width: 50px;
             }
 
             &:first-child {
