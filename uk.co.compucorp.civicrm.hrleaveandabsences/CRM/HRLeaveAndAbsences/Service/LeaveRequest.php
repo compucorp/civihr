@@ -34,7 +34,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @var array|null
    *   Stores the list of option values for the LeaveRequest status_id field.
    */
-  private static $leaveStatuses;
+  private $leaveStatuses;
 
   /**
    * CRM_HRLeaveAndAbsences_Service_LeaveRequest constructor.
@@ -212,7 +212,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return bool
    */
   private function currentUserCanChangeStatusTo($newStatus, $contactID) {
-    $leaveStatuses = self::getLeaveRequestStatuses();
+    $leaveStatuses = $this->getLeaveRequestStatuses();
 
     switch ($newStatus) {
       case $leaveStatuses['cancelled']:
@@ -298,7 +298,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $leaveRequest = LeaveRequest::create($params, false);
     $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
 
-    $this->reCalculateExpiredBalanceChange($leaveRequest);
+    $this->recalculateExpiredBalanceChange($leaveRequest);
     return $leaveRequest;
   }
 
@@ -320,14 +320,13 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    */
-  private function reCalculateExpiredBalanceChange(LeaveRequest $leaveRequest) {
-    $leaveStatuses = self::getLeaveRequestStatuses();
+  private function recalculateExpiredBalanceChange(LeaveRequest $leaveRequest) {
+    $leaveStatuses = $this->getLeaveRequestStatuses();
     $today = new DateTime();
     $leaveRequestDate = new DateTime($leaveRequest->from_date);
 
     if($leaveRequestDate < $today && $leaveRequest->status_id == $leaveStatuses['approved']) {
-
-      LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
+      $this->leaveBalanceChangeService->recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
     }
   }
 
@@ -336,11 +335,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    *
    * @return array
    */
-  private static function getLeaveRequestStatuses() {
-    if (is_null(self::$leaveStatuses)) {
-      self::$leaveStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+  private function getLeaveRequestStatuses() {
+    if (is_null($this->leaveStatuses)) {
+      $this->leaveStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     }
 
-    return self::$leaveStatuses;
+    return $this->leaveStatuses;
   }
 }

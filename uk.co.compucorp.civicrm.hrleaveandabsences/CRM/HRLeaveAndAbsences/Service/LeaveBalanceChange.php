@@ -88,4 +88,15 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
     $dao->source_type = LeaveBalanceChange::SOURCE_TOIL_REQUEST;
     $dao->delete();
   }
+
+  /**
+   * Recalculates expired TOIL/Brought Forward balance changes for
+   * a leave request with past dates having expired LeaveBalanceChanges that expired on or after the
+   * LeaveRequest past date using the function provided by LeaveBalanceChange BAO
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   */
+  public function recalculateExpiredBalanceChangesForLeaveRequestPastDates(LeaveRequest $leaveRequest) {
+    LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
+  }
 }
