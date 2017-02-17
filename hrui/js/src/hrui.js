@@ -5,24 +5,29 @@
    * Adds the Government ID field on the Personal Details page andon the Edit form
    */
   function addGovernmentIdField(target) {
-    var govfield = "<div class='container crm-summary-row' id='government'><div class='crm-label'>Government ID</div><div id='govValID' class='crm-content'></div></div>";
-
     if (CRM.cid && CRM.hideGId) {
-      $('#row-custom_'+CRM.hideGId, target).hide();
-
-      if ($('div#government').length < 1) {
-        $(govfield).appendTo($('.crm-contact_type_label').parent('div'));
-      }
-
-      fetchGovernmentId().done(function (text) {
-        if (text['govTypeNumber']) {
-          $('#govValID').html(text['govType']+" - "+text['govTypeNumber']);
-        }
+      $('.Inline_Custom_Data .crm-inline-edit').each(function() {
+        $(this).detach();
+        $(this).appendTo($('.crm-contact_type_label').parent('div'));
       });
+
+      $('.Inline_Custom_Data').hide();
+      $('#row-custom_'+CRM.hideGId, target).hide();
     }
 
-    $('#govID').insertAfter($('#nick_name').parent('td')).show();
-    $("#govID").wrap( "<td id='govtfield' colspan='3'></td>");
+    if ($('#customFields').length < 1) {
+      $('#Inline_Custom_Data label').each(function() {
+        $('#nick_name').parent().after('<td colspan="3" id="customFields"></td>');
+        var nodeID = $(this).attr('for');
+        var customField = $('#' + nodeID).detach();
+        $(this).detach();
+
+        $('#customFields').append($(this));
+        $('#customFields').append(customField);
+      });
+
+      $('#Inline_Custom_Data').remove();
+    }
   }
 
   /**

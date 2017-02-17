@@ -74,4 +74,38 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
 
     return TRUE;
   }
+  
+  /**
+   * Adds Custom Inline Data group for fields to be shown within contact details
+   * and a NI / SSN field alphanumeric field for that group.
+   */
+  public function upgrade_4701() {
+    // Add Group
+    $groupData = [
+      'title' => 'Inline Custom Data',
+      'name' => 'Inline_Custom_Data',
+      'extends' => ['0' => 'Individual'],
+      'weight' => 21,
+      'collapse_display' => 1,
+      'style' => 'Inline',
+      'is_active' => 1
+    ];
+    civicrm_api3('CustomGroup', 'create', $groupData);
+
+    // Add NI/SSN Field
+    $fieldData = [
+      'custom_group_id' => 'Inline_Custom_Data',
+      'name' => 'NI_SSN',
+      'label' => 'NI / SSN',
+      'html_type' => 'Text',
+      'data_type' => 'String',
+      'weight' => 1,
+      'is_required' => 0,
+      'is_searchable' => 1,
+      'is_active' => 1
+    ];
+    civicrm_api3('CustomField', 'create', $fieldData);
+
+    return TRUE;
+  }
 }
