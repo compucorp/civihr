@@ -15,6 +15,6 @@
   },
   "casperFlags": [],
   "engine": "phantomjs",
-  "report": ["CLI"],
+  "report": ["CLI", "browser"],
   "debug": false
 }
