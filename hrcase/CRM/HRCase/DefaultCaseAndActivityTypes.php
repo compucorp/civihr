@@ -9,7 +9,7 @@ class CRM_HRCase_DefaultCaseAndActivityTypes {
   private static $activityTypes = [
     'Schedule Exit Interview',
     'Get "No Dues" certification',
-    'Conduct Exit interview',
+    'Conduct Exit Interview',
     'Revoke Access to Database',
     'Block work email ID',
     'Background Check',
@@ -42,7 +42,7 @@ class CRM_HRCase_DefaultCaseAndActivityTypes {
               'activityTypes' => [
                 ['name' => 'Schedule Exit Interview'],
                 ['name' => 'Get "No Dues" certification'],
-                ['name' => 'Conduct Exit interview'],
+                ['name' => 'Conduct Exit Interview'],
                 ['name' => 'Revoke Access to Database'],
                 ['name' => 'Block work email ID'],
                 ['name' => 'Background Check'],
@@ -68,7 +68,7 @@ class CRM_HRCase_DefaultCaseAndActivityTypes {
                       'reference_select' => 'newest'
                     ],
                     [
-                      'name' => 'Conduct Exit interview',
+                      'name' => 'Conduct Exit Interview',
                       'reference_offset' => -3,
                       'reference_activity' => 'Open Case',
                       'reference_select' => 'newest'

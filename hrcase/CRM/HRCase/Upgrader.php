@@ -105,78 +105,14 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     // list of activity types to create/update
     $defaultActivityTypes = CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultActivityTypes();
 
-    // Remove (civicase:act:Background Check) managed entity
-    $dao = new CRM_Core_DAO_Managed();
-    $dao->name = 'civicase:act:Background Check';
-    $dao->entity_type = 'OptionValue';
-    if ($dao->find(TRUE)) {
-      $dao->delete();
-    }
+    // Remove the unneeded (civicase:act:Background Check) managed entity
+    $this->removeManagedEntityRecord('civicase:act:Background Check', 'OptionValue');
 
     // Remove activity types with similar names to the list above that do not belong to CiviTask component
-    civicrm_api3('OptionValue', 'get', [
-      'name' => ['IN' => $defaultActivityTypes],
-      'component_id' => "CiviCase",
-      'option_group_id' => "activity_type",
-      'api.OptionValue.delete' => ['id' => '$value.id'],
-    ]);
+    $this->removeActivityTypesList($defaultActivityTypes, 'CiviCase');
 
-    // fetch activity types belong to CiviTask component
-    $civitaskActivityTypes = civicrm_api3('OptionValue', 'get', [
-      'sequential' => 1,
-      'name' => ['IN' => $defaultActivityTypes],
-      'component_id' => "CiviTask",
-      'option_group_id' => "activity_type",
-      'options' => ['limit' => 0],
-    ]);
-
-    if (!empty($civitaskActivityTypes['values'])) {
-      $civitaskActivityTypes = $civitaskActivityTypes['values'];
-    }
-    else {
-      $civitaskActivityTypes = [];
-    }
-
-    // mysql comparison is case insensitive and in_array function is case sensitive ,
-    // so we need to set activity type names to lower case to be able to compare correctly
-    //$civitaskActivityTypesList = array_map('strtolower', array_column($civitaskActivityTypes['values'], 'name'));
-
-    $dao = new CRM_Core_DAO_Managed();
-    $dao->module = 'org.civicrm.hrcase';
-    $dao->entity_type = 'OptionValue';
-    $dao->find();
-    $managedEntitesActivities = $dao->fetchAll();
-    $managedActivitiesIDs = array_column($managedEntitesActivities, 'entity_id');
-
-    foreach ($civitaskActivityTypes as $activityType) {
-      if (!in_array($activityType['id'], $managedActivitiesIDs)) {
-        $activityTypeToRemove = civicrm_api3('OptionValue', 'get', [
-          'id' => ['<>' => $activityType[ 'id']],
-          'name' => $activityType['name'],
-          'component_id' => "CiviTask",
-          'option_group_id' => "activity_type",
-        ]);
-
-        if (!empty($activityTypeToRemove['id'])) {
-          // update managed entites
-          $dao = new CRM_Core_DAO_Managed();
-          $dao->module = 'org.civicrm.hrcase';
-          $dao->entity_type = 'OptionValue';
-          $dao->entity_id = $activityTypeToRemove['id'];
-          $dao->find(true);
-          if ($dao->id) {
-            $dao->entity_id = $activityType['id'];
-            $dao->save();
-          }
-          $dao->free();
-
-
-          // remove current
-          civicrm_api3('OptionValue', 'delete', ['id' => $activityTypeToRemove['id']]);
-        }
-
-      }
-    }
+    // Cleaning to activity types and managed entities
+    $this->updateManagedActivityTypes($defaultActivityTypes, 'CiviTask');
 
     return TRUE;
   }
@@ -309,6 +245,104 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
       'full_name'
     );
     return  !empty($isEnabled) ? true : false;
+  }
+
+  /**
+   * Removes Managed entity record, given its name and type
+   *
+   * @param string $name
+   *   The name of the managed entity record to remove
+   * @param string $type
+   *   The type of managed entity record to remove ( e.g : OptionValue, Contact ..etc )
+   */
+  private function removeManagedEntityRecord($name, $type) {
+    $dao = new CRM_Core_DAO_Managed();
+    $dao->name = $name;
+    $dao->entity_type = $type;
+
+    if ($dao->find(TRUE)) {
+      $dao->delete();
+    }
+  }
+
+  /**
+   * Removes a list of defined activity types for a given component
+   *
+   * @param array $activityTypes
+   *   A list of activity types names to remove
+   * @param int $componentName
+   *   (e.g : CiviCase, CiviTask .. etc)
+   */
+  private function removeActivityTypesList($activityTypes, $componentName) {
+    civicrm_api3('OptionValue', 'get', [
+      'name' => ['IN' => $activityTypes],
+      'component_id' => $componentName,
+      'option_group_id' => "activity_type",
+      'api.OptionValue.delete' => ['id' => '$value.id'],
+    ]);
+  }
+
+  /**
+   * Ensures that any non-managed activity types for a specified list
+   * of activity types belongs to a certain component do not get deleted
+   * to prevent breaking any existing data that uses them, and instead replace the newly
+   * created managed activities with them.
+   *
+   * @param $activityTypes
+   * @param $componentName
+   */
+  private function updateManagedActivityTypes($activityTypes, $componentName) {
+    // get all current activity types that belongs to the specified component
+    $componentActivityTypes = civicrm_api3('OptionValue', 'get', [
+      'sequential' => 1,
+      'name' => ['IN' => $activityTypes],
+      'component_id' => $componentName,
+      'option_group_id' => "activity_type",
+      'options' => ['limit' => 0],
+    ]);
+
+    if (!empty($componentActivityTypes['values'])) {
+      $componentActivityTypes = $componentActivityTypes['values'];
+    }
+    else {
+      $componentActivityTypes = [];
+    }
+
+    // get all manged option values ( AkA : activity types ) for this extension
+    $dao = new CRM_Core_DAO_Managed();
+    $dao->module = 'org.civicrm.hrcase';
+    $dao->entity_type = 'OptionValue';
+    $dao->find();
+    $managedEntitiesActivityTypes = $dao->fetchAll();
+    $managedActivityTypesIDs = array_column($managedEntitiesActivityTypes, 'entity_id');
+
+    foreach ($componentActivityTypes as $activityType) {
+      if (!in_array($activityType['id'], $managedActivityTypesIDs)) {
+        $activityTypeToRemove = civicrm_api3('OptionValue', 'get', [
+          'id' => ['<>' => $activityType['id']],
+          'name' => $activityType['name'],
+          'component_id' => $componentName,
+          'option_group_id' => "activity_type",
+        ]);
+
+        if (!empty($activityTypeToRemove['id'])) {
+          // update managed activity type ID
+          $dao = new CRM_Core_DAO_Managed();
+          $dao->module = 'org.civicrm.hrcase';
+          $dao->entity_type = 'OptionValue';
+          $dao->entity_id = $activityTypeToRemove['id'];
+          $dao->find(true);
+          if ($dao->id) {
+            $dao->entity_id = $activityType['id'];
+            $dao->save();
+          }
+          $dao->free();
+
+          // Remove the activity type created by managed entities handler
+          civicrm_api3('OptionValue', 'delete', ['id' => $activityTypeToRemove['id']]);
+        }
+      }
+    }
   }
 
 }
