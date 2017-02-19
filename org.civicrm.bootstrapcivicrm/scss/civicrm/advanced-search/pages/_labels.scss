@@ -586,3 +586,13 @@ input[type='checkbox'] + label {
     }
   }
 }
+
+#contributeForm {
+  tr {
+    &:nth-child(6) {
+      tr > td:first-child {
+        vertical-align: middle;
+      }
+    }
+  }
+}
