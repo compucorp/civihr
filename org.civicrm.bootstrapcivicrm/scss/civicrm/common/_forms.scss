@@ -56,6 +56,10 @@ $control-height: 30px;
         left: -$control-spacing;
       }
     }
+
+    .select2-search:before {
+      top: 17px !important;
+    }
   }
 
   table {
