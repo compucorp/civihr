@@ -5,9 +5,12 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
+use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
-use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
+
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest
@@ -20,6 +23,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveRequestStatusMatrixHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
 
   private $leaveBalanceChangeService;
@@ -258,16 +262,31 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
   }
 
-  private function getLeaveRequestService($isAdmin = false, $isManager = false, $allowStatusTransition = true) {
+  private function getLeaveRequestService($isAdmin = false, $isManager = false, $allowStatusTransition = true, $mockBalanceChangeService = false) {
     $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
     $leaveRequestStatusMatrixService = $this->createLeaveRequestStatusMatrixServiceMock($allowStatusTransition);
     $leaveRequestRightsService = new LeaveRequestRightsService($leaveManagerService);
+    $leaveBalanceChangeService = $this->leaveBalanceChangeService;
+
+    if($mockBalanceChangeService) {
+      $leaveBalanceChangeService = $this->createLeaveBalanceChangeServiceMock();
+    }
 
     return new LeaveRequestService(
-      $this->leaveBalanceChangeService,
+      $leaveBalanceChangeService,
       $leaveRequestStatusMatrixService,
       $leaveRequestRightsService
     );
+  }
+
+  public function testLeaveRequestServiceCallsRecalculateExpiredBalanceChangesForLeaveRequestPastDatesMethodWhenALeaveRequestHasPastDates() {
+    $params = $this->getDefaultParams([
+      'from_date' => CRM_Utils_Date::processDate('-2 days'),
+      'to_date' => CRM_Utils_Date::processDate('+1 day'),
+      'status' => 1
+    ]);
+
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdminWithBalanceChangeServiceMock()->create($params, false);
   }
 
   private function getLeaveRequestServiceWhenStatusTransitionIsNotAllowed() {
@@ -282,6 +301,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     return $this->getLeaveRequestService(false, true);
   }
 
+  private function getLeaveRequestServiceWhenCurrentUserIsAdminWithBalanceChangeServiceMock() {
+    return $this->getLeaveRequestService(true, false, true, true);
+  }
   private function getDefaultParams($params = []) {
     $defaultParams =  [
       'type_id' => 1,

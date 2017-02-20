@@ -604,7 +604,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'toil_to_accrue' => 2,
       'duration' => 300,
       'expiry_date' => CRM_Utils_Date::processDate('+100 days')
-    ]);
+    ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get', ['sequential' => 1]);
     $this->assertCount(3, $result['values']);
@@ -989,7 +989,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'toil_to_accrue' => 8,
       'duration' => 300,
       'expiry_date' => CRM_Utils_Date::processDate('+100 days')
-    ]);
+    ], true);
 
     $result = civicrm_api3('LeaveRequest', 'getFull', [
         'sequential' => 1,

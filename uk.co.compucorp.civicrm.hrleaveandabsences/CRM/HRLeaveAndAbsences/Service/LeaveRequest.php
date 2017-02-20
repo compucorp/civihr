@@ -31,6 +31,12 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   protected $oldLeaveRequest;
 
   /**
+   * @var array|null
+   *   Stores the list of option values for the LeaveRequest status_id field.
+   */
+  private $leaveStatuses;
+
+  /**
    * CRM_HRLeaveAndAbsences_Service_LeaveRequest constructor.
    *
    * @param \CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange $leaveBalanceChangeService
@@ -206,7 +212,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return bool
    */
   private function currentUserCanChangeStatusTo($newStatus, $contactID) {
-    $leaveStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $leaveStatuses = $this->getLeaveRequestStatuses();
 
     switch ($newStatus) {
       case $leaveStatuses['cancelled']:
@@ -292,6 +298,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $leaveRequest = LeaveRequest::create($params, false);
     $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
 
+    $this->recalculateExpiredBalanceChange($leaveRequest);
     return $leaveRequest;
   }
 
@@ -304,5 +311,35 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    */
   protected function runValidation($params) {
     LeaveRequest::validateParams($params);
+  }
+
+  /**
+   * Recalculates expired TOIL/Brought Forward balance changes for
+   * a leave request with past dates having expired LeaveBalanceChanges that expired on or after the
+   * LeaveRequest past date.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   */
+  private function recalculateExpiredBalanceChange(LeaveRequest $leaveRequest) {
+    $leaveStatuses = $this->getLeaveRequestStatuses();
+    $today = new DateTime();
+    $leaveRequestDate = new DateTime($leaveRequest->from_date);
+
+    if($leaveRequestDate < $today && $leaveRequest->status_id == $leaveStatuses['approved']) {
+      $this->leaveBalanceChangeService->recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
+    }
+  }
+
+  /**
+   * Returns the array of the option values for the LeaveRequest status_id field.
+   *
+   * @return array
+   */
+  private function getLeaveRequestStatuses() {
+    if (is_null($this->leaveStatuses)) {
+      $this->leaveStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    }
+
+    return $this->leaveStatuses;
   }
 }

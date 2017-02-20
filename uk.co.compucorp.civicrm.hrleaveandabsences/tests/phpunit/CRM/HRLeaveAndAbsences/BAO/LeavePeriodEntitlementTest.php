@@ -916,7 +916,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   public function testGetBreakdown() {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
 
-    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 8, 3);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 8, 3, null);
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
     $result = LeavePeriodEntitlement::getBreakdown([
