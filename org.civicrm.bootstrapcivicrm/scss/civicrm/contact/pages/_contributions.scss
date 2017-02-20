@@ -1,14 +1,10 @@
-.page-civicrm-contribute-add {
+.page-civicrm-contribute {
   #branding h1.page-title {
     margin-bottom: 20px !important;
   }
 }
 
 .page-civicrm-contribute-search {
-  #branding h1.page-title {
-    margin-bottom: 28px !important;
-  }
-
   .CRM_Contribute_Form_Search {
     .crm-search-tasks {
       background-color: $crm-white;
@@ -19,71 +15,28 @@
     }
 
     .selector {
-      td {
-        padding: 10px 20px;
+      @include mx-expandable-table();
 
-        &:not(:first-child) {
-          word-break: break-word;
-          min-width: 80px;
-        }
+      tr {
+        &:not(.crm-child-row) {
+          > td {
+            word-break: normal;
+            min-width: auto;
 
-        &:nth-child(2) {
-          display: flex;
-          align-items: center;
-        }
-      }
+            &:not(:first-child) {
+              word-break: break-word;
+              min-width: 50px;
+            }
 
-      .crm-expand-row {
-        position: relative;
-        background: none;
+            &:first-child {
+              display: table-cell;
+            }
 
-        &:after {
-          @include fa-icon(13px, '\f054');
-          position: absolute;
-          left: 0;
-        }
-
-        &.expanded {
-          &:after {
-            @include fa-icon(13px, '\f078');
+            &:nth-child(2) {
+              display: flex;
+              align-items: center;
+            }
           }
-        }
-      }
-
-      th {
-        background-color: $gray-lighter !important;
-      }
-
-      .crm-child-row {
-        &,
-        > td {
-          padding: 0;
-        }
-
-        #info {
-          th {
-            text-transform: capitalize;
-          }
-
-          td,
-          th {
-            padding-left: 20px;
-          }
-
-          td {
-            padding-top: 10px;
-            padding-bottom: 10px;
-          }
-        }
-      }
-
-      .sticky {
-        tr:first-child {
-          border-bottom: 1px solid $crm-dark-grayblue;
-        }
-
-        th:first-child {
-          text-align: center;
         }
       }
     }
@@ -92,18 +45,42 @@
       > .form-layout {
         > tbody {
           > tr {
-            &:nth-child(2) {
-              display: flex;
+            display: flex;
 
+            &:nth-child(2) {
               > td {
                 width: 30%;
               }
+            }
+
+            &:nth-child(14) {
+              > td {
+                width: 100%;
+              }
+            }
+
+            &:nth-child(11) {
+              > td:last-child {
+                > label:first-child {
+                  padding-right: 10px;
+                }
+              }
+            }
+
+            .select2-container-multi {
+              max-width: 230px;
+            }
+
+            .crm-hover-button.crm-clear-link {
+              position: relative;
+              top: -2px;
             }
 
             &:nth-child(8) {
               table {
                 tr td:first-child {
                   vertical-align: middle;
+                  padding-right: 10px !important;
                 }
               }
             }
@@ -123,6 +100,34 @@
                 td {
                   padding: 0 !important;
                 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: $screen-sm-min) {
+    .crm-accordion-body {
+      > .form-layout {
+        > tbody {
+          > tr {
+            display: block !important;
+
+            td {
+              display: block;
+              width: auto !important;
+
+              .float-left {
+                margin-left: 0 !important;
+                width: 100%;
+              }
+
+              input:not([type='radio']):not([type='checkbox']):not(.crm-form-submit),
+              .select2-container {
+                display: block;
+                width: 100% !important;
               }
             }
           }
@@ -514,5 +519,80 @@
 
   label[for="thankyou_date_time"] {
     top: 5px;
+  }
+}
+
+.CRM_Contribute_Form_ContributionCharts {
+  .ui-tabs-nav {
+    background: $crm-white;
+    padding: 0 20px;
+    border: 0;
+
+    .crm-tab-button {
+      background: none;
+      height: 50px;
+      line-height: 50px;
+      border: 0;
+      border-radius: 0;
+
+      &:hover {
+        background-color: $gray-lighter;
+      }
+
+      a {
+        color: $gray-darker;
+      }
+
+      &.ui-tabs-selected {
+        border-bottom: 3px solid $gray-darker;
+
+        a {
+          color: $gray-darker;
+          background: none;
+        }
+      }
+    }
+
+    + #chartData > #chartData {
+      box-shadow: $box-shadow;
+      padding: 20px;
+
+      table {
+        border: 0;
+        border-top: 1px solid $gray-lighter;
+        margin-top: 20px;
+
+        &.chart td {
+          border: 0;
+        }
+      }
+    }
+  }
+
+  h3 {
+    height: 50px;
+    line-height: 50px;
+    background: $crm-white;
+    box-shadow: $box-shadow;
+    font-size: 13px;
+    font-weight: normal;
+    border-radius: 2px;
+    padding-left: 20px;
+    margin: 20px 0;
+    color: $datepicker-gray-darker;
+  }
+
+  p.description {
+    padding: 0 5px 20px 5px !important;
+  }
+
+  .selector,
+  .report {
+    @include mx-expandable-table();
+  }
+
+  .report {
+    margin-top: 20px;
+    border: solid 1px $crm-background;
   }
 }
