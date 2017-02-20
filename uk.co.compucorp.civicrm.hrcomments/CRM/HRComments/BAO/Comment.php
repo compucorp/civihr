@@ -16,7 +16,7 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
 
-    if($validate){
+    if ($validate) {
       self::validateParams($params);
     }
 
@@ -24,8 +24,6 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
 
     $instance = new self();
     $instance->copyValues($params);
-
-    $instance->created_at = CRM_Utils_Date::processDate('now');
 
     if ($hook == 'create') {
       $instance->created_at = isset($params['created_at']) ? $params['created_at'] : CRM_Utils_Date::processDate('now');
@@ -48,6 +46,7 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
   public static function validateParams($params) {
     self::validateMandatory($params);
     self::validateCommentSoftDeleteDuringUpdate($params);
+    self::validateCommentCreatedAtDateDuringAnUpdate($params);
     self::validateCommentCreatedAtDate($params);
   }
 
@@ -146,6 +145,25 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
   }
 
   /**
+   * Validates that the created_at parameter should not be allowed
+   * to be changed during an update.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRComments_Exception_InvalidCommentException
+   */
+  private static function validateCommentCreatedAtDateDuringAnUpdate($params) {
+    if (isset($params['id']) && !empty($params['created_at'])) {
+      throw new InvalidCommentException(
+        'You cannot update the created_at date of a comment',
+        'comment_cannot_update_created_at',
+        'created_at'
+      );
+    }
+  }
+
+  /**
    * Soft Deletes the comment with the given ID by setting the is_deleted column to 1
    *
    * @param int $id The ID of the comment to be soft deleted
@@ -167,7 +185,7 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
    * @return \CRM_HRComments_BAO_Comment|null
    */
   private static function getLastCommentForEntity($entityName, $entityID) {
-    $comment  = new self();
+    $comment = new self();
     $comment->orderBy('created_at DESC');
     $comment->entity_id = $entityID;
     $comment->entity_name = $entityName;

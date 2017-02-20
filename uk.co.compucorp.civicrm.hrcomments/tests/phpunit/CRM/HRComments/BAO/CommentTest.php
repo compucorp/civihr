@@ -96,7 +96,7 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
     ]);
   }
 
-  public function testCreatedDateIsInsertedCorrectlyWhenNotPassedAsAParameter() {
+  public function testCreatedDateIsInsertedAsTheCurrentDateWhenNotPassedAsAParameter() {
     $comment = Comment::create([
       'entity_id' => 1,
       'entity_name' => 'LeaveRequest',
@@ -126,7 +126,11 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
     $this->assertEquals($created_at, $commentCreatedDate);
   }
 
-  public function testCreatedAtCannotBeChangedWhenUpdatingExistingComment() {
+  /**
+   * @expectedException CRM_HRComments_Exception_InvalidCommentException
+   * @expectedExceptionMessage You cannot update the created_at date of a comment
+   */
+  public function testValidateParamsThrowsAnExceptionWhenTryingToUpdateTheCreatedAtDateForAComment() {
     $comment = Comment::create([
       'entity_id' => 1,
       'entity_name' => 'LeaveRequest',
@@ -134,15 +138,14 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
       'contact_id' => 1,
     ]);
 
-    $comment2 = Comment::create([
+    Comment::validateParams([
       'id' => $comment->id,
+      'entity_id' => $comment->entity_id,
+      'entity_name' => $comment->entity_name,
+      'text' => $comment->text,
+      'contact_id' => $comment->contact_id,
       'created_at' => CRM_Utils_Date::processDate('2016-01-01'),
-    ], false);
-
-    $createdDateTimestamp = new DateTime($comment2->created_at);
-    $timestampNow = new DateTime('now');
-
-    $this->assertEquals($timestampNow, $createdDateTimestamp, '', 10);
+    ]);
   }
 
   public function testSoftDeleteDoesNotDeleteCommentsFromCommentsTableButSetsIsDeletedFlagToOne() {
@@ -214,7 +217,7 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
     $this->assertEquals('This is a random sample comment', $comment->text);
   }
 
-  public function testValidateCommentCreatedAtDate() {
+  public function testCommentCanNotBeCreatedWithACreatedDateLessThanTheCreatedDateOfTheLastCommentForThisEntity() {
     $entityName = 'SickRequest';
     $entityID = 1;
 
@@ -246,7 +249,7 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
 
     //contact tries to manipulate the comment date by setting date to a second before the
     //last comment date for the entity
-    Comment::validateParams([
+    Comment::create([
       'entity_name' => $entityName,
       'entity_id' => $entityID,
       'text' => 'This is probably another sample comment',
