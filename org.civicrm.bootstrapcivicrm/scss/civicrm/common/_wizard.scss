@@ -4,7 +4,7 @@ ul.wizard-bar {
   background-color: $crm-white;
   padding: 0 !important;
   text-align: left !important;
-  border: 1px solid #eff3f5 !important;
+  border: 1px solid $crm-wizard-border !important;
   overflow: hidden;
 
   > li {
@@ -17,7 +17,7 @@ ul.wizard-bar {
     border: 0 !important;
     font-size: 13px !important;
     font-weight: 600;
-    color: #4d5663 !important;
+    color: $gray-darker !important;
     background-color: $crm-white !important;
 
     &:first-child {
@@ -47,7 +47,7 @@ ul.wizard-bar {
       height: 0px;
       border-top: 200px solid transparent;
       border-bottom: 200px solid transparent;
-      border-left: 40px solid #eff3f5;
+      border-left: 40px solid $crm-wizard-border;
       position: absolute;
       top: -167px;
       right: -21px;
@@ -55,11 +55,11 @@ ul.wizard-bar {
     }
 
     &.current-step {
-      background-color: #eff3f5 !important;
-      color: #42afcb !important;
+      background-color: $crm-wizard-border !important;
+      color: $brand-primary !important;
 
       &:before {
-        border-left-color: #eff3f5;
+        border-left-color: $crm-wizard-border;
       }
     }
   }
