@@ -58,6 +58,37 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
     $this->assertEquals($expected, $result['values']);
   }
 
+  public function testAddCanCreateCommentForLeaveRequestWhenCreatedAtIsPartOfTheParametersPassed() {
+    $created_at = new DateTime('2016-10-10 09:20:43');
+    $params = [
+      'leave_request_id' => 1,
+      'text' => 'Random Commenter',
+      'contact_id' => 1,
+      'created_at' => $created_at->format('Y-m-d H:i:s'),
+      'sequential' => 1
+    ];
+
+    $result = $this->leaveRequestCommentService->add($params);
+
+    $comment = new Comment();
+    $comment->find();
+    $this->assertEquals(1, $comment->N);
+    $comment->fetch();
+
+
+    $expected = [
+      [
+        'comment_id' => $comment->id,
+        'leave_request_id' => $comment->entity_id,
+        'text' => $comment->text,
+        'contact_id' => $comment->contact_id,
+        "created_at"=> $created_at->format('YmdHis')
+      ]
+    ];
+
+    $this->assertEquals($expected, $result['values']);
+  }
+
   public function testAddCannotUpdateCommentForLeaveRequest() {
     $params = [
       'leave_request_id' => 1,
