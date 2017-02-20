@@ -1,12 +1,30 @@
 define([
+  'common/lodash',
   'leave-absences/shared/modules/directives',
-  'leave-absences/shared/controllers/leave-request-popup-controller',
-], function (directives) {
+  'leave-absences/shared/controllers/sub-controllers/leave-request-ctrl',
+  'leave-absences/shared/controllers/sub-controllers/sick-request-ctrl',
+], function (_, directives) {
   'use strict';
 
   directives.directive('leaveRequestPopup', ['$log', '$uibModal', 'shared-settings', 'DateFormat',
     function ($log, $modal, settings, DateFormat) {
       $log.debug('leaveRequestPopup');
+
+      /**
+       * gets leave type
+       *
+       * @param {String} leaveTypeParam
+       * @return {String} leave type
+       */
+      function getLeaveType(leaveTypeParam) {
+        var leaveType = 'leave';
+
+        if (leaveTypeParam && leaveTypeParam !== 'holiday / vacation') {
+          leaveType = leaveTypeParam;
+        }
+
+        return leaveType;
+      }
 
       return {
         scope: {
@@ -16,11 +34,13 @@ define([
         },
         restrict: 'EA',
         link: function (scope, element) {
+          var controller = _.capitalize(getLeaveType(scope.leaveType)) + 'RequestCtrl';
+
           element.on('click', function (event) {
             $modal.open({
               templateUrl: settings.pathTpl + 'directives/leave-request-popup.html',
               animation: scope.animationsEnabled,
-              controller: 'LeaveRequestPopupCtrl',
+              controller: controller,
               controllerAs: '$ctrl',
               resolve: {
                 directiveOptions: function () {

@@ -11,27 +11,24 @@ define([
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/shared/models/public-holiday-model',
-  'leave-absences/shared/models/instances/leave-request-instance',
-  'leave-absences/shared/models/instances/sickness-leave-request-instance',
 ], function (components, _, moment) {
   'use strict';
 
-  components.controller('LeaveRequestPopupCtrl', [
-    '$log', '$q', '$rootScope', '$uibModalInstance', 'Contact', 'AbsencePeriod', 'AbsenceType',
-    'api.optionGroup', 'directiveOptions', 'Calendar', 'Entitlement', 'HR_settings',
-    'LeaveRequest', 'LeaveRequestInstance', 'PublicHoliday', 'SicknessRequestInstance', 'shared-settings',
-    function ($log, $q, $rootScope, $modalInstance, Contact, AbsencePeriod, AbsenceType,
-      OptionGroup, directiveOptions, Calendar, Entitlement, HR_settings,
-      LeaveRequest, LeaveRequestInstance, PublicHoliday, SicknessRequestInstance, sharedSettings
+  components.controller('RequestCtrl', [
+    '$log', '$q', '$rootScope', 'Contact', 'AbsencePeriod', 'AbsenceType',
+    'api.optionGroup', 'Calendar', 'Entitlement', 'HR_settings',
+    'LeaveRequest', 'PublicHoliday', 'shared-settings',
+    function ($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType,
+      OptionGroup, Calendar, Entitlement, HR_settings,
+      LeaveRequest, PublicHoliday, sharedSettings
     ) {
-      $log.debug('LeaveRequestPopupCtrl');
+      $log.debug('RequestCtrl');
 
       var absenceTypesAndIds,
         initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
         mode = '', //can be edit, create, view
         role = '', //could be manager, owner or admin
         selectedAbsenceType = {},
-        leaveType = 'leave', //other values could be sick or toil
         vm = {};
 
       vm.absencePeriods = [];
@@ -39,7 +36,7 @@ define([
       vm.calendar = {};
       vm.contact = {};
       vm.error = null;
-      vm.leaveRequestDayTypes = [];
+      vm.requestDayTypes = [];
       vm.period = {};
       vm.statusLabel = '';
       vm.balance = {
@@ -116,7 +113,7 @@ define([
        * reset dates, day types, change balance.
        */
       vm.changeInNoOfDays = function () {
-        reset();
+        this._reset();
         //reinitialize opening balance
         initAbsenceType();
       };
@@ -125,7 +122,7 @@ define([
        * When user cancels the model dialog
        */
       vm.cancel = function () {
-        $modalInstance.dismiss({
+        this.$modalInstance.dismiss({
           $value: 'cancel'
         });
       };
@@ -174,42 +171,26 @@ define([
 
         //check if user has changed any attribute
         if (vm.isMode('edit')) {
-          canSubmit = canSubmit && !_.isEqual(initialLeaveRequestAttributes, vm.leaveRequest.attributes());
+          canSubmit = canSubmit && !_.isEqual(initialLeaveRequestAttributes, vm.request.attributes());
         }
 
         //check if manager has changed status
-        if (vm.isRole('manager') && vm.leaveRequestStatuses) {
-          //waiting_approval will not be available in vm.leaveRequestStatuses if manager has changed selection
-          canSubmit = canSubmit && !!getStatusFromValue(vm.leaveRequest.status_id);
-        }
-
-        if (vm.isLeaveType('sick')) {
-          canSubmit = canSubmit && !!vm.leaveRequest.reason;
+        if (vm.isRole('manager') && vm.requestStatuses) {
+          //waiting_approval will not be available in vm.requestStatuses if manager has changed selection
+          canSubmit = canSubmit && !!getStatusFromValue(vm.request.status_id);
         }
 
         return canSubmit && !vm.isMode('view');
       };
 
       /**
-       * Checks if given value is set for leave request list of document value ie., field required_documents
-       *
-       * @param {String} value
-       * @return {Boolean}
-       */
-      vm.isDocumentInRequest = function (value) {
-        return !!_.find(vm.sicknessDocumentTypes, function (document) {
-          return document.value == value;
-        });
-      };
-
-      /**
-       * Checks if popup is opened in given leave type like `leave` or `sick`
+       * Checks if popup is opened in given leave type like `leave` or `sick` or 'toil'
        *
        * @param {String} leaveTypeParam to check the leave type of current request
        * @return {Boolean}
        */
       vm.isLeaveType = function (leaveTypeParam) {
-        return leaveType === leaveTypeParam;
+        return this.leaveType === leaveTypeParam;
       };
 
       /**
@@ -237,8 +218,8 @@ define([
        */
       vm.ok = function () {
         //todo handle closure to pass data back to callee
-        $modalInstance.close({
-          $value: vm.leaveRequest
+        this.$modalInstance.close({
+          $value: vm.request
         });
       };
 
@@ -252,7 +233,7 @@ define([
           return;
         }
 
-        // current absence type (vm.leaveRequest.type_id) doesn't allow that
+        // current absence type (vm.request.type_id) doesn't allow that
         if (vm.balance.closing < 0 && selectedAbsenceType.allow_overuse == '0') {
           // show an error
           vm.error = 'You are not allowed to apply leave in negative';
@@ -294,8 +275,8 @@ define([
               if (vm.uiOptions.multipleDays && dayType === 'from') {
                 vm.uiOptions.showBalance = false;
                 vm.uiOptions.toDate = null;
-                vm.leaveRequest.to_date = null;
-                vm.leaveRequest.to_date_type = null;
+                vm.request.to_date = null;
+                vm.request.to_date_type = null;
               }
 
               return $q.all([
@@ -333,14 +314,33 @@ define([
       };
 
       /**
-       * Initializes the controller on loading the dialog
+       * Initialize request attributes based on directive
+       *
+       * @return {Object} attributes
        */
-      (function initController() {
-        vm.loading.absenceTypes = true;
-        initLeaveType();
-        initLeaveRequest();
+      vm._initRequestAttributes = function () {
+        var attributes;
 
-        loadStatuses()
+        //if set indicates that leaverequest is either being managed or edited
+        if (this.directiveOptions.leaveRequest) {
+          //get a clone so that it is not the same reference as passed from callee
+          attributes = _.cloneDeep(this.directiveOptions.leaveRequest.attributes());
+        } else {
+          attributes = {
+            contact_id: this.directiveOptions.contactId
+          };
+        }
+
+        return attributes;
+      };
+
+      /**
+       * Initializes the controller on loading the dialog
+       *
+       * @return {Promise}
+       */
+      vm._init = function () {
+        return loadStatuses()
           .then(function () {
             initUserRole();
             initOpenMode();
@@ -359,11 +359,7 @@ define([
             return loadDayTypes();
           })
           .then(function () {
-            return $q.all([
-              initDates(),
-              loadDocuments(),
-              loadReasons()
-            ]);
+            return initDates();
           })
           .then(function () {
             initAbsenceType();
@@ -371,13 +367,31 @@ define([
             initContact();
 
             if (vm.isMode('edit')) {
-              initialLeaveRequestAttributes = vm.leaveRequest.attributes();
+              initialLeaveRequestAttributes = vm.request.attributes();
             }
-          })
-          .finally(function () {
-            vm.loading.absenceTypes = false;
           });
-      })();
+      };
+
+      /**
+       * Resets data in dates, types, balance.
+       */
+      vm._reset = function () {
+        vm.uiOptions.fromDate = vm.uiOptions.toDate = null;
+        vm.uiOptions.workedDate = null;
+        vm.uiOptions.showBalance = false;
+
+        vm.request.from_date_type = vm.request.to_date_type = null;
+        vm.request.from_date = vm.request.to_date = null;
+
+        vm.balance = {
+          closing: 0,
+          opening: 0,
+          change: {
+            amount: 0,
+            breakdown: []
+          }
+        };
+      };
 
       /**
        * Checks if all params are set to calculate balance
@@ -385,17 +399,17 @@ define([
        * @param {Boolean} true if all present else false
        */
       function canCalculateChange() {
-        return !!vm.leaveRequest.from_date && !!vm.leaveRequest.to_date &&
-          !!vm.leaveRequest.from_date_type && !!vm.leaveRequest.to_date_type;
+        return !!vm.request.from_date && !!vm.request.to_date &&
+          !!vm.request.from_date_type && !!vm.request.to_date_type;
       }
 
       /**
        * Creates leaverequest
        */
       function createRequest() {
-        vm.leaveRequest.isValid()
+        vm.request.isValid()
           .then(function () {
-            vm.leaveRequest.create()
+            vm.request.create()
               .then(function () {
                 // refresh the list
                 postSubmit('LeaveRequest::new');
@@ -498,7 +512,7 @@ define([
         }
 
         // Make a copy of the list
-        listToReturn = vm.leaveRequestDayTypes.slice(0);
+        listToReturn = vm.requestDayTypes.slice(0);
 
         date = convertDateFormatToServer(date);
         PublicHoliday.isPublicHoliday(date)
@@ -533,7 +547,7 @@ define([
        * @return {Object} containing required keys for leave request
        */
       function getParamsForBalanceChange() {
-        return _.pick(vm.leaveRequest, ['contact_id', 'from_date',
+        return _.pick(vm.request, ['contact_id', 'from_date',
           'from_date_type', 'to_date', 'to_date_type'
         ]);
       }
@@ -572,7 +586,7 @@ define([
        */
       function getSelectedAbsenceType() {
         return _.find(vm.absenceTypes, function (absenceType) {
-          return absenceType.id == vm.leaveRequest.type_id;
+          return absenceType.id == vm.request.type_id;
         });
       }
 
@@ -583,10 +597,10 @@ define([
        * @return {Object} option group of type status
        */
       function getStatusFromValue(value) {
-        var key, foundStatus, keys = Object.keys(vm.leaveRequestStatuses);
+        var key, foundStatus, keys = Object.keys(vm.requestStatuses);
 
         for (key in keys) {
-          foundStatus = vm.leaveRequestStatuses[keys[key]];
+          foundStatus = vm.requestStatuses[keys[key]];
           if (foundStatus.value == value) {
             return foundStatus;
           }
@@ -617,15 +631,15 @@ define([
        * Initialize open mode of the dialog
        */
       function initOpenMode() {
-        if (vm.leaveRequest.id) {
+        if (vm.request.id) {
           mode = 'edit';
 
           //approved, admin_approved, rejected, cancelled
-          var viewModes = [vm.leaveRequestStatuses['approved'].value, vm.leaveRequestStatuses['admin_approved'].value,
-            vm.leaveRequestStatuses['rejected'].value, vm.leaveRequestStatuses['cancelled'].value
+          var viewModes = [vm.requestStatuses['approved'].value, vm.requestStatuses['admin_approved'].value,
+            vm.requestStatuses['rejected'].value, vm.requestStatuses['cancelled'].value
           ];
 
-          if (vm.isRole('owner') && viewModes.indexOf(vm.leaveRequest.status_id) > -1) {
+          if (vm.isRole('owner') && viewModes.indexOf(vm.request.status_id) > -1) {
             mode = 'view';
           }
 
@@ -638,48 +652,13 @@ define([
        * Initialize user's role
        */
       function initUserRole() {
-        if (directiveOptions.leaveRequest &&
-          directiveOptions.leaveRequest.contact_id != directiveOptions.contactId) {
+        if (vm.directiveOptions.leaveRequest &&
+          vm.directiveOptions.leaveRequest.contact_id != vm.directiveOptions.contactId) {
           //check if manager is responding to leave request
-          return setManagerRole(directiveOptions.contactId);
+          return setManagerRole(vm.directiveOptions.contactId);
         }
         //owner is editing or viewing popup, no api call - direct set
         role = 'owner';
-      }
-
-      /**
-       * Initialize leaverequest based on attributes that come from directive
-       */
-      function initLeaveRequest() {
-        var attributes;
-
-        //if set indicates that leaverequest is either being managed or edited
-        if (directiveOptions.leaveRequest) {
-          //get a clone so that it is not the same reference as passed from callee
-          attributes = _.cloneDeep(directiveOptions.leaveRequest.attributes());
-        } else {
-          attributes = {
-            contact_id: directiveOptions.contactId
-          };
-        }
-
-        //init to get methods like roleOf again on leaverequest instance as cloning removes them
-        if (vm.isLeaveType('sick')) {
-          vm.leaveRequest = SicknessRequestInstance.init(attributes);
-        } else {
-          vm.leaveRequest = LeaveRequestInstance.init(attributes);
-        }
-      }
-
-      /**
-       * Inits leave type
-       */
-      function initLeaveType() {
-        if (directiveOptions.leaveType && directiveOptions.leaveType !== 'holiday / vacation') {
-          leaveType = directiveOptions.leaveType;
-        } else {
-          leaveType = 'leave';
-        }
       }
 
       /**
@@ -700,7 +679,7 @@ define([
         } else {
           // Assign the first absence type to the leave request
           selectedAbsenceType = vm.absenceTypes[0];
-          vm.leaveRequest.type_id = selectedAbsenceType.id;
+          vm.request.type_id = selectedAbsenceType.id;
         }
 
         // Init the `balance` object based on the first absence type
@@ -717,16 +696,16 @@ define([
         var deferred = $q.defer();
 
         if (canViewOrEdit()) {
-          var attributes = vm.leaveRequest.attributes();
+          var attributes = vm.request.attributes();
 
-          vm.uiOptions.fromDate = convertDateFormatFromServer(vm.leaveRequest.from_date);
+          vm.uiOptions.fromDate = convertDateFormatFromServer(vm.request.from_date);
 
           vm.updateAbsencePeriodDatesTypes(vm.uiOptions.fromDate, 'from')
             .then(function () {
               //to_date and type has been reset in above call so reinitialize from clone
-              vm.leaveRequest.to_date = attributes.to_date;
-              vm.leaveRequest.to_date_type = attributes.to_date_type;
-              vm.uiOptions.toDate = convertDateFormatFromServer(vm.leaveRequest.to_date);
+              vm.request.to_date = attributes.to_date;
+              vm.request.to_date_type = attributes.to_date_type;
+              vm.uiOptions.toDate = convertDateFormatFromServer(vm.request.to_date);
               vm.updateAbsencePeriodDatesTypes(vm.uiOptions.toDate, 'to')
                 .then(function () {
                   //resolve only after both from and to day types are also set
@@ -745,13 +724,13 @@ define([
        */
       function initStatus() {
         if (canViewOrEdit()) {
-          //set it before vm.leaveRequestStatuses gets filtered
-          vm.statusLabel = getStatusFromValue(vm.leaveRequest.status_id).label;
+          //set it before vm.requestStatuses gets filtered
+          vm.statusLabel = getStatusFromValue(vm.request.status_id).label;
           if (vm.isRole('manager')) {
             setStatuses();
           }
         } else if (vm.isMode('create')) {
-          vm.leaveRequest.status_id = vm.leaveRequestStatuses['waiting_approval'].value;
+          vm.request.status_id = vm.requestStatuses['waiting_approval'].value;
         }
       }
 
@@ -762,7 +741,7 @@ define([
        */
       function initContact() {
         if (vm.isRole('manager')) {
-          return Contact.find(vm.leaveRequest.contact_id)
+          return Contact.find(vm.request.contact_id)
             .then(function (contact) {
               vm.contact = contact;
             });
@@ -777,7 +756,7 @@ define([
        * @return {Promise}
        */
       function loadCalendar() {
-        return Calendar.get(vm.leaveRequest.contact_id, vm.period.id)
+        return Calendar.get(vm.request.contact_id, vm.period.id)
           .then(function (usersCalendar) {
             vm.calendar = usersCalendar;
           });
@@ -826,31 +805,7 @@ define([
       function loadDayTypes() {
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
           .then(function (dayTypes) {
-            vm.leaveRequestDayTypes = dayTypes;
-          });
-      }
-
-      /**
-       * Initializes leave request documents types required for submission
-       *
-       * @return {Promise}
-       */
-      function loadDocuments() {
-        return OptionGroup.valuesOf('hrleaveandabsences_leave_request_required_document')
-          .then(function (documentTypes) {
-            vm.sicknessDocumentTypes = documentTypes;
-          });
-      }
-
-      /**
-       * Initializes leave request reasons and indexes them by name like accident etc.,
-       *
-       * @return {Promise}
-       */
-      function loadReasons() {
-        return OptionGroup.valuesOf('hrleaveandabsences_sickness_reason')
-          .then(function (reasons) {
-            vm.sicknessReasons = _.indexBy(reasons, 'name');
+            vm.requestDayTypes = dayTypes;
           });
       }
 
@@ -862,7 +817,7 @@ define([
       function loadStatuses() {
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
           .then(function (statuses) {
-            vm.leaveRequestStatuses = _.indexBy(statuses, 'name');
+            vm.requestStatuses = _.indexBy(statuses, 'name');
           });
       }
 
@@ -872,7 +827,7 @@ define([
        * @param {String} eventName name of the event to emit
        */
       function postSubmit(eventName) {
-        $rootScope.$emit(eventName, vm.leaveRequest);
+        $rootScope.$emit(eventName, vm.request);
         vm.error = null;
         // close the modal
         vm.ok();
@@ -888,31 +843,6 @@ define([
       }
 
       /**
-       * Resets data in dates, types, balance.
-       */
-      function reset() {
-        vm.uiOptions.fromDate = vm.uiOptions.toDate = null;
-        vm.uiOptions.workedDate = null;
-        vm.uiOptions.showBalance = false;
-
-        vm.leaveRequest.from_date_type = vm.leaveRequest.to_date_type = null;
-        vm.leaveRequest.from_date = vm.leaveRequest.to_date = null;
-
-        vm.balance = {
-          closing: 0,
-          opening: 0,
-          change: {
-            amount: 0,
-            breakdown: []
-          }
-        };
-
-        if (vm.isLeaveType('sick')) {
-          vm.leaveRequest.reason = null;
-        }
-      }
-
-      /**
        * Sets entitlements and sets the absences type available for the user.
        * It depends on absenceTypesAndIds to be set to list of absence types and ids
        *
@@ -921,7 +851,7 @@ define([
        */
       function setAbsenceTypesFromEntitlements() {
         return Entitlement.all({
-            contact_id: vm.leaveRequest.contact_id,
+            contact_id: vm.request.contact_id,
             period_id: vm.period.id,
             type_id: {
               IN: absenceTypesAndIds.ids
@@ -934,22 +864,22 @@ define([
       }
 
       /**
-       * Sets dates and types for vm.leaveRequest from UI
+       * Sets dates and types for vm.request from UI
        */
       function setDateAndTypes() {
-        vm.leaveRequest.from_date = vm.uiOptions.fromDate ? convertDateFormatToServer(vm.uiOptions.fromDate) : null;
-        vm.leaveRequest.to_date = vm.uiOptions.toDate ? convertDateFormatToServer(vm.uiOptions.toDate) : null;
+        vm.request.from_date = vm.uiOptions.fromDate ? convertDateFormatToServer(vm.uiOptions.fromDate) : null;
+        vm.request.to_date = vm.uiOptions.toDate ? convertDateFormatToServer(vm.uiOptions.toDate) : null;
 
         if (vm.uiOptions.multipleDays) {
-          vm.uiOptions.showBalance = !!vm.leaveRequest.to_date && !!vm.leaveRequest.from_date;
+          vm.uiOptions.showBalance = !!vm.request.to_date && !!vm.request.from_date;
         } else {
           if (vm.uiOptions.fromDate) {
             vm.uiOptions.toDate = vm.uiOptions.fromDate;
-            vm.leaveRequest.to_date = vm.leaveRequest.from_date;
-            vm.leaveRequest.to_date_type = vm.leaveRequest.from_date_type;
+            vm.request.to_date = vm.request.from_date;
+            vm.request.to_date_type = vm.request.from_date_type;
           }
 
-          vm.uiOptions.showBalance = !!vm.leaveRequest.from_date;
+          vm.uiOptions.showBalance = !!vm.request.from_date;
         }
       }
 
@@ -962,10 +892,10 @@ define([
        */
       function setDayType(dayType, listOfDayTypes) {
         //will create either of leaveRequestFromDayTypes or leaveRequestToDayTypes key
-        var keyForDayTypeCollection = 'leaveRequest' + _.startCase(dayType) + 'DayTypes';
+        var keyForDayTypeCollection = 'request' + _.startCase(dayType) + 'DayTypes';
 
         vm[keyForDayTypeCollection] = listOfDayTypes;
-        vm.leaveRequest[dayType + '_date_type'] = vm[keyForDayTypeCollection][0].value;
+        vm.request[dayType + '_date_type'] = vm[keyForDayTypeCollection][0].value;
       }
 
       /**
@@ -975,7 +905,7 @@ define([
        * @return {Promise}
        */
       function setManagerRole(managerContactId) {
-        return vm.leaveRequest.roleOf({
+        return vm.request.roleOf({
             id: managerContactId
           })
           .then(function (roleParam) {
@@ -995,13 +925,13 @@ define([
         if (vm.isRole('manager')) {
           //remove current status of leaverequest
           _.remove(allowedStatuses, function (status) {
-            return status === getStatusFromValue(vm.leaveRequest.status_id).name;
+            return status === getStatusFromValue(vm.request.status_id).name;
           });
 
-          //filter vm.leaveRequestStatuses to contain statues relevant for manager to act
-          for (key in vm.leaveRequestStatuses) {
+          //filter vm.requestStatuses to contain statues relevant for manager to act
+          for (key in vm.requestStatuses) {
             if (!_.includes(allowedStatuses, key)) {
-              delete vm.leaveRequestStatuses[key];
+              delete vm.requestStatuses[key];
             }
           }
         }
@@ -1029,7 +959,7 @@ define([
        * Updates the leaverequest
        */
       function updateRequest() {
-        vm.leaveRequest.update()
+        vm.request.update()
           .then(function () {
             if (vm.isRole('manager')) {
               postSubmit('LeaveRequest::updatedByManager');
