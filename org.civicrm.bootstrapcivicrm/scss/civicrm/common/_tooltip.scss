@@ -12,9 +12,14 @@
       font-weight: 600;
     }
 
+    td {
+      display: table-cell !important;
+      max-width: none !important;
+    }
+
     .crm-table-group-summary {
       &,
-      tr,
+      tbody > tr,
       tr > td {
         background: $crm-dark-blue !important;
       }
@@ -54,7 +59,7 @@ a {
       &::before {
         content: '';
         position: relative;
-        top: -12px;
+        top: -9px;
         left: 30px;
         width: 0;
         height: 0;
@@ -70,7 +75,7 @@ a {
       &::after {
         content: '';
         position: relative;
-        top: 12px;
+        top: 9px;
         left: 30px;
         width: 0;
         height: 0;

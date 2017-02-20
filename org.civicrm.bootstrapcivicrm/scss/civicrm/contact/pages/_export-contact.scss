@@ -57,3 +57,36 @@
     }
   }
 }
+
+.CRM_Export_Form_Map {
+  .help {
+    margin-bottom: 0;
+
+    p {
+      margin-bottom: 10px;
+    }
+  }
+
+  #map-field {
+    > table {
+      width: 100% !important;
+
+      th,
+      td {
+        border-right: 0 !important;
+      }
+
+      td {
+        padding-left: 20px !important;
+      }
+
+      + div {
+        padding-left: 20px;
+
+        td {
+          padding-left: 0 !important;
+        }
+      }
+    }
+  }
+}
