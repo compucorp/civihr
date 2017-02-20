@@ -1,0 +1,78 @@
+.column {
+  .widget-controls {
+    padding: 17px 10px;
+
+    h3 {
+      font-family: $font-family-base;
+      font-size: $font-size-h2;
+    }
+  }
+
+  .widget-content {
+    padding: 0;
+
+    table {
+      background: transparent;
+      border: none;
+      font-family: $font-family-base;
+
+      thead {
+        border-bottom: 1px solid $crm-dark-grayblue;
+
+        th {
+          border-bottom: none;
+          background: $gray-lighter !important;
+          color: $gray-darker !important;
+          vertical-align: middle;
+          border: none;
+          padding: 10px 15px;
+          text-align: left;
+          line-height: 1.5em;
+
+          div {
+            padding: 0;
+          }
+        }
+      }
+
+      tbody {
+
+        tr {
+          background: $crm-white;
+          border-bottom: 1px solid $crm-background;
+
+          td {
+            background: $crm-white;
+            color: $gray-dark;
+            border: none;
+            padding: 10px 15px;
+            text-align: left;
+            line-height: 1.5em;
+          }
+        }
+      }
+    }
+  }
+
+  .crm-activity-selector-dashlet {
+    .crm-search_filters-accordion {
+      .crm-accordion-body {
+        padding: 15px;
+      }
+
+      .crm-inline-edit-field {
+        float: left;
+        width: 50%;
+      }
+    }
+
+    .dataTables_wrapper {
+      padding: 15px;
+
+      table {
+        width: 100%;
+        box-shadow: none;
+      }
+    }
+  }
+}

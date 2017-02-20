@@ -1,0 +1,47 @@
+.page-civicrm-dashboard {
+  #branding {
+    h1 {
+      &.page-title {
+        margin-bottom: 0 !important;
+        background: $crm-accordion-header-color;
+      }
+    }
+  }
+
+  .crm-submit-buttons {
+    margin: 30px 0;
+
+    a {
+      &.button {
+        background: $brand-primary;
+
+        i {
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .crm-dashboard-controls {
+    margin-top: 5px;
+    margin-left: 1px;
+    background: $crm-white;
+    box-shadow: $crm-box-shadow-sub-panel;
+    border-top: 1px solid $crm-dark-grayblue;
+    padding: 5px 5px 15px 5px;
+    position: relative;
+    z-index: 2;
+
+    a {
+      color: $brand-primary !important;
+    }
+  }
+
+  #civicrm-dashboard {
+    @import 'pages/view-dashboard';
+  }
+
+  #configure-dashlet {
+    @import 'pages/edit-dashboard';
+  }
+}
