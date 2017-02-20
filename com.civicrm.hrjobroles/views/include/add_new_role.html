@@ -25,7 +25,7 @@
                                                 <label for="inputTitle" class="col-xs-4 control-label">Title:
                                                     <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="form.title.$error.required"></i>
                                                 </label>
-                                                <div class="col-xs-6 control-label">
+                                                <div class="col-xs-6">
                                                     <input type="text" name="title" class="form-control" id="inputTitle" placeholder="Enter role title" ng-model="edit_data['new_role_id']['title']" ng-change="showSave('new_role_id')" required />
                                                 </div>
                                             </div>
@@ -33,8 +33,23 @@
                                                 <label for="newContractId" class="col-xs-4 control-label">Contract:
                                                     <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="form.contract.$error.required"></i>
                                                 </label>
-                                                <div class="col-xs-6 control-label">
-                                                    <select id="newContractId" ng-change="onContractSelected($event)" name="contract" ng-options="k as v.label for (k, v) in jobroles.contractsData" ng-model="edit_data['new_role_id']['job_contract_id']" class="form-control" required></select>
+                                                <div class="col-xs-6">
+                                                  <span id="bootstrap-theme">
+                                                    <ui-select id="newContractId"
+                                                    ng-model="edit_data['new_role_id']['job_contract_id']"
+                                                    theme="civihr-ui-select"
+                                                    title="Choose a contract"
+                                                    name="contract"
+                                                    ng-required="true"
+                                                    on-select="onContractSelected($event)">
+                                                      <ui-select-match allow-clear placeholder="Select a contract">
+                                                        {{$select.selected.value.label}}
+                                                      </ui-select-match>
+                                                      <ui-select-choices repeat="contract.value.id as (key,contract) in jobroles.contractsData | filter: { value: { label: $select.search }}">
+                                                        <div ng-bind-html="contract.value.label | highlight: $select.search"></div>
+                                                      </ui-select-choices>
+                                                    </ui-select>
+                                                  </span>
                                                 </div>
                                             </div>
 
@@ -42,7 +57,7 @@
                                                 <label for="{{prefix}}newStartDate" class="col-xs-4 control-label">Start Date:
                                                     <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="!edit_data['new_role_id']['newStartDate']"></i>
                                                 </label>
-                                                <div class="col-xs-6 control-label">
+                                                <div class="col-xs-6">
                                                   <p class="input-group input-group-unstyled">
                                                     <input type="text" class="form-control" id="{{prefix}}newStartDate"
                                                       placeholder="{{format}}"
@@ -64,7 +79,7 @@
 
                                             <div class="form-group">
                                               <label for="{{prefix}}newEndDate" class="col-xs-4 control-label">End Date: </label>
-                                              <div class="col-xs-6 control-label">
+                                              <div class="col-xs-6">
                                                 <p class="input-group input-group-unstyled">
                                                   <input type="text" class="form-control" id="{{prefix}}newEndDate"
                                                     placeholder="{{format}}"
@@ -87,26 +102,68 @@
                                         <div class="col-xs-12 col-sm-6">
                                             <div class="form-group">
                                                 <label for="newLocation" class="col-xs-4 control-label">Location:</label>
-                                                <div class="col-xs-6 control-label">
-                                                    <select ng-options="k as v.title for (k, v) in jobroles.LocationsData" ng-model="edit_data['new_role_id']['location']" class="form-control"></select>
+                                                <div class="col-xs-6">
+                                                  <span id="bootstrap-theme">
+                                                    <ui-select
+                                                    ng-model="edit_data['new_role_id']['location']"
+                                                    theme="civihr-ui-select"
+                                                    title="Choose a location"
+                                                    name="newLocation">
+                                                      <ui-select-match allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
+                                                      <ui-select-choices repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
+                                                        <div ng-bind-html="location.value.title | highlight: $select.search"></div>
+                                                      </ui-select-choices>
+                                                    </ui-select>
+                                                  </span>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="newRegion" class="col-xs-4 control-label">Region:</label>
-                                                <div class="col-xs-6 control-label">
-                                                    <select ng-options="k as v.title for (k, v) in jobroles.RegionsData" ng-model="edit_data['new_role_id']['region']" class="form-control"></select>
+                                                <div class="col-xs-6">
+                                                  <span id="bootstrap-theme">
+                                                    <ui-select
+                                                    ng-model="edit_data['new_role_id']['region']"
+                                                    theme="civihr-ui-select"
+                                                    title="Choose a Region"
+                                                    name="newRegion">
+                                                      <ui-select-match allow-clear placeholder="Select a region">{{$select.selected.value.title}}</ui-select-match>
+                                                      <ui-select-choices repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
+                                                        <div ng-bind-html="region.value.title | highlight: $select.search"></div>
+                                                      </ui-select-choices>
+                                                    </ui-select>
+                                                  </span>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="newDepartment" class="col-xs-4 control-label">Department:</label>
-                                                <div class="col-xs-6 control-label">
-                                                    <select ng-options="k as v.title for (k, v) in jobroles.DepartmentsData" ng-model="edit_data['new_role_id']['department']" class="form-control"></select>
+                                                <div class="col-xs-6">
+                                                  <span id="bootstrap-theme">
+                                                    <ui-select
+                                                    ng-model="edit_data['new_role_id']['department']"
+                                                    theme="civihr-ui-select"
+                                                    title="Choose a Department">
+                                                      <ui-select-match allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
+                                                      <ui-select-choices repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
+                                                        <div ng-bind-html="department.value.title | highlight: $select.search"></div>
+                                                      </ui-select-choices>
+                                                    </ui-select>
+                                                  </span>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="newLevel" class="col-xs-4 control-label">Level:</label>
-                                                <div class="col-xs-6 control-label">
-                                                    <select ng-options="k as v.title for (k, v) in jobroles.LevelsData" ng-model="edit_data['new_role_id']['level']" class="form-control"></select>
+                                                <div class="col-xs-6">
+                                                  <span id="bootstrap-theme">
+                                                    <ui-select
+                                                    ng-model="edit_data['new_role_id']['level']"
+                                                    theme="civihr-ui-select"
+                                                    title="Choose a Level">
+                                                      <ui-select-match allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
+                                                      <ui-select-choices repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
+                                                        <div ng-bind-html="level.value.title | highlight: $select.search"></div>
+                                                      </ui-select-choices>
+                                                    </ui-select>
+                                                  </span>
                                                 </div>
                                             </div>
 
