@@ -92,18 +92,42 @@
       > .form-layout {
         > tbody {
           > tr {
-            &:nth-child(2) {
-              display: flex;
+            display: flex;
 
+            &:nth-child(2) {
               > td {
                 width: 30%;
               }
+            }
+
+            &:nth-child(14) {
+              > td {
+                width: 100%;
+              }
+            }
+
+            &:nth-child(11) {
+              > td:last-child {
+                > label:first-child {
+                  padding-right: 10px;
+                }
+              }
+            }
+
+            .select2-container-multi {
+              max-width: 230px;
+            }
+
+            .crm-hover-button.crm-clear-link {
+              position: relative;
+              top: -2px;
             }
 
             &:nth-child(8) {
               table {
                 tr td:first-child {
                   vertical-align: middle;
+                  padding-right: 10px !important;
                 }
               }
             }
@@ -123,6 +147,34 @@
                 td {
                   padding: 0 !important;
                 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: $screen-sm-min) {
+    .crm-accordion-body {
+      > .form-layout {
+        > tbody {
+          > tr {
+            display: block !important;
+
+            td {
+              display: block;
+              width: auto !important;
+
+              .float-left {
+                margin-left: 0 !important;
+                width: 100%;
+              }
+
+              input:not([type='radio']):not([type='checkbox']):not(.crm-form-submit),
+              .select2-container {
+                display: block;
+                width: 100% !important;
               }
             }
           }
