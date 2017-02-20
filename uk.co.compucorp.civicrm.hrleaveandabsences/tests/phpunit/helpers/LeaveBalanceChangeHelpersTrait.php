@@ -74,6 +74,10 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
       $expiryDate = date('YmdHis', strtotime("-{$expiry} day"));
     }
 
+    if ($expiry == null) {
+      $expiryDate = null;
+    }
+
     $this->createEntitlementBalanceChange(
       $entitlementID,
       $amount,
