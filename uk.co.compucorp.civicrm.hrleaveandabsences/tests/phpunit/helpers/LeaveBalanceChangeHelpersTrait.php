@@ -65,25 +65,23 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     );
   }
 
-  public function createExpiredBroughtForwardBalanceChange($entitlementID, $amount, $expiredAmount, $expiry = null) {
-    $this->createEntitlementBalanceChange(
-      $entitlementID,
-      $amount,
-      $this->getBalanceChangeTypeValue('Brought Forward')
-    );
-
-    $broughtForwardBalanceChangeID = $this->getLastIdInTable(LeaveBalanceChange::getTableName());
-
-    if($expiry instanceof DateTime){
+  public function createExpiredBroughtForwardBalanceChange($entitlementID, $amount, $expiredAmount, $expiry = 2) {
+    if ($expiry instanceof DateTime) {
       $expiryDate = $expiry->format('YmdHis');
     }
 
-    if(!$expiry || is_int($expiry)) {
-      if(!$expiry){
-        $expiry = 2;
-      }
+    if (is_int($expiry)) {
       $expiryDate = date('YmdHis', strtotime("-{$expiry} day"));
     }
+
+    $this->createEntitlementBalanceChange(
+      $entitlementID,
+      $amount,
+      $this->getBalanceChangeTypeValue('Brought Forward'),
+      $expiryDate
+    );
+
+    $broughtForwardBalanceChangeID = $this->getLastIdInTable(LeaveBalanceChange::getTableName());
 
     return LeaveBalanceChange::create([
       'type_id' => $this->getBalanceChangeTypeValue('Brought Forward'),
