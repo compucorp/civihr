@@ -68,30 +68,40 @@
                                                     <!-- editable title + validation -->
                                                     <label for="title" class="col-xs-4 control-label">Title:</label>
 
-                                                    <div class="col-xs-8">
+                                                    <div class="col-xs-6">
                                                         <p class="form-control-static"
                                                            editable-text="edit_data[job_roles_data.id]['title']"
                                                            e-name="title"
                                                            onbeforesave="validateTitle($data)"
                                                            e-required>{{
-                                                            edit_data[job_roles_data.id]['title'] ||
-                                                            '-'}}</p>
+                                                            edit_data[job_roles_data.id]['title'] || '-'}}</p>
                                                     </div>
                                                 </div>
                                                 <div class="form-group"
                                                      ng-init="initData(job_roles_data.id, 'job_contract_id', job_roles_data.job_contract_id)">
                                                     <!-- editable contract select list + validation -->
-                                                    <label for="contract"
-                                                           class="col-xs-4 control-label">Contract:</label>
+                                                    <label for="contract" class="col-xs-4 control-label">
+                                                      Contract:
+                                                    </label>
 
-                                                    <div class="col-xs-8">
-                                                        <p class="form-control-static"
-                                                           editable-select="edit_data[job_roles_data.id]['job_contract_id']"
-                                                           e-name="contract"
-                                                           e-ng-change="onContractEdited($data, job_roles_data.id)"
-                                                           e-ng-options="k as v.label for (k, v) in jobroles.contractsData">
-                                                            {{jobroles.contractsData[edit_data[job_roles_data.id]['job_contract_id']]['title'] || '-'}}
-                                                        </p>
+                                                    <div class="col-xs-6">
+                                                        <span ng-show="!editableForm.$visible"> {{jobroles.contractsData[edit_data[job_roles_data.id]['job_contract_id']]['title'] || '-'}} </span>
+                                                        <span id="bootstrap-theme" ng-show="editableForm.$visible">
+                                                          <ui-select
+                                                          ng-model="edit_data[job_roles_data.id]['job_contract_id']"
+                                                          theme="civihr-ui-select"
+                                                          title="Choose a contract"
+                                                          on-select="onContractEdited($data, job_roles_data.id)"
+                                                          ng-required="true">
+                                                            <ui-select-match allow-clear placeholder="Select a contract">
+                                                              {{$select.selected.value.label}}
+                                                            </ui-select-match>
+                                                            <ui-select-choices repeat="contract.value.id as (key,contract) in jobroles.contractsData | filter: { value: { label: $select.search }}">
+                                                              <div ng-bind-html="contract.value.label | highlight: $select.search"></div>
+                                                            </ui-select-choices>
+                                                          </ui-select>
+                                                          <input type="hidden" name="contract" ng-model="edit_data[job_roles_data.id]['job_contract_id']">
+                                                      </span>
                                                     </div>
                                                 </div>
 
@@ -159,12 +169,20 @@
                                                         Location:
                                                     </label>
 
-                                                    <div class="col-xs-8">
-                                                        <p class="form-control-static"
-                                                           editable-select="edit_data[job_roles_data.id]['location']"
-                                                           e-name="newLocation"
-                                                           e-ng-options="k as v.title for (k, v) in jobroles.LocationsData">
-                                                            {{jobroles.LocationsData[edit_data[job_roles_data.id]['location']]['title'] || '-'}}</p>
+                                                    <div class="col-xs-6">
+                                                      <span ng-show="!editableForm.$visible"> {{jobroles.LocationsData[edit_data[job_roles_data.id]['location']]['title'] || '-'}}</span>
+                                                      <span id="bootstrap-theme" ng-show="editableForm.$visible">
+                                                        <ui-select
+                                                        ng-model="edit_data[job_roles_data.id]['location']"
+                                                        theme="civihr-ui-select"
+                                                        name="newLocation"
+                                                        title="Choose a location">
+                                                          <ui-select-match allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
+                                                          <ui-select-choices repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
+                                                            <div ng-bind-html="location.value.title | highlight: $select.search"></div>
+                                                          </ui-select-choices>
+                                                        </ui-select>
+                                                      </span>
                                                     </div>
                                                 </div>
                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'region', job_roles_data.region)">
@@ -172,27 +190,42 @@
                                                         Region:
                                                     </label>
 
-                                                    <div class="col-xs-8">
-                                                        <p class="form-control-static"
-                                                           editable-select="edit_data[job_roles_data.id]['region']"
-                                                           e-name="newRegion"
-                                                           e-ng-options="k as v.title for (k, v) in jobroles.RegionsData">
-                                                            {{jobroles.RegionsData[edit_data[job_roles_data.id]['region']]['title'] || '-'}}
-                                                        </p>
+                                                    <div class="col-xs-6">
+                                                      <span ng-show="!editableForm.$visible"> {{jobroles.RegionsData[edit_data[job_roles_data.id]['region']]['title'] || '-'}} </span>
+                                                      <span id="bootstrap-theme" ng-show="editableForm.$visible">
+                                                          <ui-select
+                                                          ng-model="edit_data[job_roles_data.id]['region']"
+                                                          theme="civihr-ui-select"
+                                                          name="newRegion"
+                                                          title="Choose a Region">
+                                                            <ui-select-match allow-clear placeholder="Select a Region">{{$select.selected.value.title}}</ui-select-match>
+                                                            <ui-select-choices repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
+                                                              <div ng-bind-html="region.value.title | highlight: $select.search"></div>
+                                                            </ui-select-choices>
+                                                          </ui-select>
+                                                      </span>
                                                     </div>
                                                 </div>
+
                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'department', job_roles_data.department)">
                                                     <label for="newDepartment" class="col-xs-4 control-label">
                                                         Department:
                                                     </label>
 
-                                                    <div class="col-xs-8">
-                                                        <p class="form-control-static"
-                                                           editable-select="edit_data[job_roles_data.id]['department']"
-                                                           e-name="newDepartment"
-                                                           e-ng-options="k as v.title for (k, v) in jobroles.DepartmentsData">
-                                                            {{jobroles.DepartmentsData[edit_data[job_roles_data.id]['department']]['title'] || '-'}}
-                                                        </p>
+                                                    <div class="col-xs-6">
+                                                      <span ng-show="!editableForm.$visible"> {{jobroles.DepartmentsData[edit_data[job_roles_data.id]['department']]['title'] || '-'}} </span>
+                                                      <span id="bootstrap-theme" ng-show="editableForm.$visible">
+                                                          <ui-select
+                                                          ng-model="edit_data[job_roles_data.id]['department']"
+                                                          theme="civihr-ui-select"
+                                                          name="newDepartment"
+                                                          title="Choose a Department">
+                                                            <ui-select-match allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
+                                                            <ui-select-choices repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
+                                                              <div ng-bind-html="department.value.title | highlight: $select.search"></div>
+                                                            </ui-select-choices>
+                                                          </ui-select>
+                                                      </span>
                                                     </div>
                                                 </div>
                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'level', job_roles_data.level_type)">
@@ -200,13 +233,20 @@
                                                         Level:
                                                     </label>
 
-                                                    <div class="col-xs-8">
-                                                        <p class="form-control-static"
-                                                           editable-select="edit_data[job_roles_data.id]['level']"
-                                                           e-name="newLevel"
-                                                           e-ng-options="k as v.title for (k, v) in jobroles.LevelsData">
-                                                            {{jobroles.LevelsData[edit_data[job_roles_data.id]['level']]['title'] || '-'}}
-                                                        </p>
+                                                    <div class="col-xs-6">
+                                                      <span ng-show="!editableForm.$visible"> {{jobroles.LevelsData[edit_data[job_roles_data.id]['level']]['title'] || '-'}} </span>
+                                                      <span id="bootstrap-theme" ng-show="editableForm.$visible">
+                                                        <ui-select
+                                                        ng-model="edit_data[job_roles_data.id]['level']"
+                                                        theme="civihr-ui-select"
+                                                        name="newLevel"
+                                                        title="Choose a Level">
+                                                          <ui-select-match allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
+                                                          <ui-select-choices repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
+                                                            <div ng-bind-html="level.value.title | highlight: $select.search"></div>
+                                                          </ui-select-choices>
+                                                        </ui-select>
+                                                      </span>
                                                     </div>
                                                 </div>
                                             </div>
