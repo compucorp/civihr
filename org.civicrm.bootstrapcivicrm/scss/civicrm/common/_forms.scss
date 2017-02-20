@@ -56,7 +56,9 @@ $control-height: 30px;
         left: -$control-spacing;
       }
     }
+  }
 
+  @at-root .page-civicrm-contact-view & {
     .select2-search:before {
       top: 17px !important;
     }
