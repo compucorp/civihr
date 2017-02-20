@@ -29,7 +29,8 @@
             }
 
             &:first-child {
-              display: table-cell;
+              display: table-cell !important;
+              min-width: auto;
             }
 
             &:nth-child(2) {
