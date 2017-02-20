@@ -75,14 +75,13 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
     $this->assertEquals(1, $comment->N);
     $comment->fetch();
 
-
     $expected = [
       [
         'comment_id' => $comment->id,
         'leave_request_id' => $comment->entity_id,
         'text' => $comment->text,
         'contact_id' => $comment->contact_id,
-        "created_at"=> $created_at->format('YmdHis')
+        'created_at'=> $created_at->format('YmdHis')
       ]
     ];
 
