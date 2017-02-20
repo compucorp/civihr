@@ -25,14 +25,15 @@ define([
       $scope.present_job_roles = [];
       $scope.collapsedRows = []; // Tracks collapsed / expanded rows
       $scope.contactList = []; // Contact List IDs array to use for the select lists
-      $scope.contractsData = []; // Store the contractsData
       $scope.edit_data = {}; // Tracks edit data changes on the forms
       $scope.view_tab = []; // Tracks clicked tabs per each row
       $scope.CalendarShow = []; // As default hide the datepickers
-      $scope.DepartmentsData = {}; // Store the department types
-      $scope.LevelsData = {}; // Store the level types
-      $scope.LocationsData = {}; // Store the location types
-      $scope.RegionsData = {}; // Store the region types
+
+      vm.contractsData = []; // Store the contractsData
+      vm.DepartmentsData = {}; // Store the department types
+      vm.LevelsData = {}; // Store the level types
+      vm.LocationsData = {}; // Store the location types
+      vm.RegionsData = {}; // Store the region types
 
       // Define the add new role URL
       $scope.add_new_role_url = $scope.$parent.pathBaseUrl + $scope.$parent.pathIncludeTpl + 'add_new_role.html';
@@ -316,6 +317,14 @@ define([
         var contract = getContractData(id);
         var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data[role_id]['start_date'], $scope.edit_data[role_id]['end_date']);
 
+        if (contract === undefined) {
+          $scope.edit_data[role_id]['job_contract_id'] = undefined;
+          $scope.edit_data[role_id]['start_date'] = undefined;
+          $scope.edit_data[role_id]['end_date'] = undefined;
+
+          return false;
+        }
+
         if (!areDatesCustom) {
           formatRoleDates($scope.edit_data[role_id], {
             start: contract.start_date,
@@ -335,8 +344,12 @@ define([
       $scope.onContractSelected = function () {
         var contract = getContractData($scope.edit_data.new_role_id.job_contract_id);
         var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate);
-
-        formatRoleDates($scope.edit_data.new_role_id, {
+        if(contract === undefined){
+          $scope.edit_data['new_role_id']['job_contract_id'] = undefined;
+          $scope.edit_data['new_role_id']['newStartDate'] = undefined;
+          $scope.edit_data['new_role_id']['newEndDate'] = undefined;
+        } else {
+          formatRoleDates($scope.edit_data.new_role_id, {
             start: areDatesCustom ? $scope.edit_data.new_role_id.newStartDate : contract.start_date,
             end: areDatesCustom ? $scope.edit_data.new_role_id.newEndDate : contract.end_date
           },
@@ -344,6 +357,7 @@ define([
             start: 'newStartDate',
             end: 'newEndDate'
           });
+        }
       };
 
       /**
@@ -403,6 +417,7 @@ define([
         $scope.errors.newStartDate = [];
         $scope.errors.newEndDate = [];
 
+
         var contract = getContractData($scope.edit_data.new_role_id.job_contract_id);
         var validateResponse = validateDates({
           'start': $scope.edit_data.new_role_id.newStartDate,
@@ -416,8 +431,7 @@ define([
         });
 
         if (validateResponse) {
-          newRole = angular.copy($scope.edit_data.new_role_id);
-
+          var newRole = angular.copy($scope.edit_data.new_role_id);
           newRole.newStartDate = convertDateToServerFormat(newRole.newStartDate);
 
           if (newRole.newEndDate) {
@@ -429,7 +443,6 @@ define([
           if (newRole.funders && newRole.funders.length) {
             updateFundersContactsList(newRole.funders);
           }
-
           createJobRole(newRole).then(function () {
             updateHeaderInfo(newRole);
 
@@ -554,9 +567,12 @@ define([
         // Reset Error Messages
         data.start_date.$error.custom = [];
         data.end_date.$error.custom = [];
-
         var contract = getContractData(data.contract.$viewValue);
 
+        if(contract === undefined){
+          $log.debug('Contract missing');
+          return 'Error';
+        }
         var validateResponse = validateDates({
             'start': data.start_date.$viewValue,
             'end': data.end_date.$viewValue,
@@ -881,8 +897,9 @@ define([
                       if (option_group_id === data.values[i]['option_group_id']) {
                         // Build the department list
                         DepartmentList[data.values[i]['value']] = {
-                          id: data.values[i]['value'],
-                          title: data.values[i]['label']
+                          id: data.values[i]['id'],
+                          title: data.values[i]['label'],
+                          is_active: data.values[i]['is_active']
                         };
                       }
 
@@ -892,8 +909,9 @@ define([
                       if (option_group_id === data.values[i]['option_group_id']) {
                         // Build the region list
                         RegionList[data.values[i]['value']] = {
-                          id: data.values[i]['value'],
-                          title: data.values[i]['label']
+                          id: data.values[i]['id'],
+                          title: data.values[i]['label'],
+                          is_active: data.values[i]['is_active']
                         };
                       }
 
@@ -903,8 +921,9 @@ define([
                       if (option_group_id === data.values[i]['option_group_id']) {
                         // Build the contact list
                         LocationList[data.values[i]['value']] = {
-                          id: data.values[i]['value'],
-                          title: data.values[i]['label']
+                          id: data.values[i]['id'],
+                          title: data.values[i]['label'],
+                          is_active: data.values[i]['is_active']
                         };
                       }
 
@@ -914,10 +933,10 @@ define([
                       if (option_group_id === data.values[i]['option_group_id']) {
                         // Build the contact list
                         LevelList[data.values[i]['value']] = {
-                          id: data.values[i]['value'],
-                          title: data.values[i]['label']
+                          id: data.values[i]['id'],
+                          title: data.values[i]['label'],
+                          is_active: data.values[i]['is_active']
                         };
-
                       }
 
                       break;
@@ -925,18 +944,16 @@ define([
                       if (option_group_id === data.values[i]['option_group_id']) {
                         // Build the contact list
                         CostCentreList.push({
-                          id: data.values[i]['value'],
+                          id: data.values[i]['id'],
                           title: data.values[i]['label'],
+                          is_active: data.values[i]['is_active'],
                           weight: data.values[i]['weight']
                         });
                       }
 
                       break;
                   }
-
-
                 }
-
               });
 
               // Store the Department types what we can reuse later
