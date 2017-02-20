@@ -145,7 +145,7 @@ input[type='checkbox'] + label {
 
         @media (min-device-width: 1401px) {
           left: -20px;
-          top: 100%;
+          top: 130%;
         }
       }
     }
@@ -425,7 +425,7 @@ input[type='checkbox'] + label {
   .select2-container {
       width: 230px !important;
   }
-  
+
   @media (max-width: $screen-sm-min) {
     .select2-container {
       width: 100% !important;
@@ -582,6 +582,16 @@ input[type='checkbox'] + label {
     &:nth-child(5) {
       td {
         padding-top: 0;
+      }
+    }
+  }
+}
+
+#contributeForm {
+  tr {
+    &:nth-child(6) {
+      tr > td:first-child {
+        vertical-align: middle;
       }
     }
   }
