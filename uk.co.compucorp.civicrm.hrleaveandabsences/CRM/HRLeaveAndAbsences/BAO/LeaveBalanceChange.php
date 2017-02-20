@@ -396,7 +396,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     $datesOverlappingBalanceChangesToExpire = self::getDatesOverlappingBalanceChangesToExpire($balanceChangesToExpire);
 
-    return self::calculateBalanceChange($balanceChangesToExpire, $datesOverlappingBalanceChangesToExpire);
+    return self::calculateExpiryAmount($balanceChangesToExpire, $datesOverlappingBalanceChangesToExpire);
   }
 
   /**
@@ -847,7 +847,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       return $numberOfRecordsUpdated;
     }
 
-    return self::calculateBalanceChange($expiredBalanceChanges, $leaveRequestPastDates);
+    return self::calculateExpiryAmount($expiredBalanceChanges, $leaveRequestPastDates);
   }
 
   /**
@@ -949,7 +949,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @return int
    *   Number of records created/updated
    */
-  private static function calculateBalanceChange($balanceChanges, $datesOverlappingBalanceChanges) {
+  private static function calculateExpiryAmount($balanceChanges, $datesOverlappingBalanceChanges) {
     $numberOfRecords = 0;
 
     foreach ($balanceChanges as $balanceChange) {
@@ -983,7 +983,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
         // Since these days should be deducted from the entitlement,
         // We need to store the expired amount as a negative number
         'amount' => $remainingAmount * -1,
-        'expiration_date' => $balanceChange['expiry_date']->format('YmdHis'),
+        'expiry_date' => $balanceChange['expiry_date']->format('YmdHis'),
         'expired_balance_change_id' => $balanceChange['id']
       ];
 
