@@ -899,6 +899,7 @@ define([
                         DepartmentList[data.values[i]['value']] = {
                           id: data.values[i]['id'],
                           title: data.values[i]['label'],
+                          value: data.values[i]['value'],
                           is_active: data.values[i]['is_active']
                         };
                       }
@@ -911,6 +912,7 @@ define([
                         RegionList[data.values[i]['value']] = {
                           id: data.values[i]['id'],
                           title: data.values[i]['label'],
+                          value: data.values[i]['value'],
                           is_active: data.values[i]['is_active']
                         };
                       }
@@ -923,6 +925,7 @@ define([
                         LocationList[data.values[i]['value']] = {
                           id: data.values[i]['id'],
                           title: data.values[i]['label'],
+                          value: data.values[i]['value'],
                           is_active: data.values[i]['is_active']
                         };
                       }
@@ -935,6 +938,7 @@ define([
                         LevelList[data.values[i]['value']] = {
                           id: data.values[i]['id'],
                           title: data.values[i]['label'],
+                          value: data.values[i]['value'],
                           is_active: data.values[i]['is_active']
                         };
                       }
