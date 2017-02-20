@@ -128,6 +128,35 @@
     padding-top: 15px !important;
     margin-top: 15px !important;
 
+    tr {
+      display: flex;
+      padding-left: 0 !important;
+
+      > td:not(:last-child),
+      > th:not(:last-child) {
+        align-items: center;
+        flex: 1;
+        display: flex;
+        line-height: 20px;
+        word-break: break-word;
+
+        &:first-child,
+        &:nth-child(2) {
+          max-width: 15px;
+        }
+
+        .privacy-flag {
+          width: 27px;
+          margin-left: 5px;
+        }
+
+        > span {
+         display: flex;
+         align-items: center;
+       }
+      }
+    }
+
     tr.highlight > td {
       background: $gray-light !important;
     }
@@ -158,6 +187,8 @@
     .crm-icon {
       background: none !important;
       text-indent: 0 !important;
+      top: -3px;
+      position: relative;
 
       &::before {
         text-indent: 0 !important;
