@@ -1076,6 +1076,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // Since only the 1 day leave request was counted, 4 days expired
     // 5 - 1 = 4 (we store expired days as a negative number)
     $this->assertEquals(-4, $expiryRecord->amount);
+
+    //assert expiry date is same
+    $expiryRecordDate = new DateTime($expiryRecord->expiry_date);
+    $balanceChangeExpiryDate = new DateTime($balanceChange->expiry_date);
+    $this->assertEquals($expiryRecordDate->format('Y-m-d'), $balanceChangeExpiryDate->format('Y-m-d'));
+
   }
 
   public function testCreateExpiryRecordsPrioritizesAccordingToTheBalanceChangeExpiryDate() {
@@ -1126,6 +1132,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // Since we already deducted 3 days, now we just deduct the remaining 4 days
     // meaning only 1 day will expire
     $this->assertEquals(-1, $expiryRecord1->amount);
+
+    //assert expiry date is same
+    $expiryRecordDate = new DateTime($expiryRecord1->expiry_date);
+    $balanceChangeExpiryDate = new DateTime($balanceChange1->expiry_date);
+    $this->assertEquals($expiryRecordDate->format('Y-m-d'), $balanceChangeExpiryDate->format('Y-m-d'));
+
+    $expiryRecordDate2 = new DateTime($expiryRecord2->expiry_date);
+    $balanceChangeExpiryDate2 = new DateTime($balanceChange2->expiry_date);
+    $this->assertEquals($expiryRecordDate2->format('Y-m-d'), $balanceChangeExpiryDate2->format('Y-m-d'));
   }
 
   public function testCreateExpiryRecordsCalculatesTheExpiredAmountBasedOnlyOnTheApprovedLeaveRequestBalancePriorToTheExpiryDate() {
@@ -1166,6 +1181,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // Since only two days were taken before the brought forward
     // expiry date, the other 3 days will expire
     $this->assertEquals(-3, $expiryRecord->amount);
+
+    //assert expiry date is same
+    $expiryRecordDate = new DateTime($expiryRecord->expiry_date);
+    $balanceChangeExpiryDate = new DateTime($balanceChange->expiry_date);
+    $this->assertEquals($expiryRecordDate->format('Y-m-d'), $balanceChangeExpiryDate->format('Y-m-d'));
   }
 
   public function testCreateExpiryRecordsCalculatesTheExpiredAmountCorrectlyForMoreThanOneContact() {
@@ -1234,6 +1254,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // Since only four days were taken before the brought forward
     // expiry date, the remaining one expire
     $this->assertEquals(-1, $expiryRecord2->amount);
+
+    //assert expiry date is same
+    $expiryRecordDate = new DateTime($expiryRecord1->expiry_date);
+    $balanceChangeExpiryDate = new DateTime($balanceChange1->expiry_date);
+    $this->assertEquals($expiryRecordDate->format('Y-m-d'), $balanceChangeExpiryDate->format('Y-m-d'));
+
+    $expiryRecordDate2 = new DateTime($expiryRecord2->expiry_date);
+    $balanceChangeExpiryDate2 = new DateTime($balanceChange2->expiry_date);
+    $this->assertEquals($expiryRecordDate2->format('Y-m-d'), $balanceChangeExpiryDate2->format('Y-m-d'));
   }
 
   public function testCreateExpiryRecordsWhenExpiredAmountAbsenceTypeIsDifferentFromTheAbsenceTypeOfTheLeaveRequestDates() {
@@ -1279,6 +1308,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // The absence type linked to the balance change that expired is different from
     // the absence type on the leave request, therefore the amount remains intact
     $this->assertEquals(-5, $expiryRecord->amount);
+
+    //assert expiry date is same
+    $expiryRecordDate = new DateTime($expiryRecord->expiry_date);
+    $balanceChangeExpiryDate = new DateTime($balanceChange->expiry_date);
+    $this->assertEquals($expiryRecordDate->format('Y-m-d'), $balanceChangeExpiryDate->format('Y-m-d'));
   }
 
   public function testGetLeavePeriodEntitlementCanReturnThePeriodEntitlementWhenTheSourceTypeIsEntitlement() {
@@ -1741,6 +1775,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     return null;
   }
 
+  private function getBalanceChangeRecord($balanceChangeID) {
+    $record = new LeaveBalanceChange();
+    $record->id = $balanceChangeID;
+    $record->find();
+    if($record->N == 1) {
+      $record->fetch();
+      return $record;
+    }
+
+    return null;
+  }
+
   private function getExpiryRecordForToilRequest($toilRequestID) {
     $record = new LeaveBalanceChange();
     $record->source_id = $toilRequestID;
@@ -1959,21 +2005,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $numberOfUpdatedRecords = LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
     $this->assertEquals(2, $numberOfUpdatedRecords);
 
-    $expiredBroughtForwardPeriod1 = new LeaveBalanceChange();
-    $expiredBroughtForwardPeriod1->id = $broughtForwardPeriod1->id;
-    $expiredBroughtForwardPeriod1->find(true);
-
-    $expiredBroughtForward2Period1 = new LeaveBalanceChange();
-    $expiredBroughtForward2Period1->id = $broughtForward2Period1->id;
-    $expiredBroughtForward2Period1->find(true);
-
-    $expiredAccruedToilPeriod1 = new LeaveBalanceChange();
-    $expiredAccruedToilPeriod1->id = $accruedToilPeriod1->id;
-    $expiredAccruedToilPeriod1->find(true);
+    $expiredBroughtForwardPeriod1 = $this->getBalanceChangeRecord($broughtForwardPeriod1->id);
+    $expiredBroughtForward2Period1 = $this->getBalanceChangeRecord($broughtForward2Period1->id);
+    $expiredAccruedToilPeriod1 = $this->getBalanceChangeRecord($accruedToilPeriod1->id);
 
     $this->assertEquals(0, $expiredBroughtForwardPeriod1->amount);
     $this->assertEquals(-5, $expiredBroughtForward2Period1->amount);
     $this->assertEquals(-3, $expiredAccruedToilPeriod1->amount);
+
+
+    //assert expiry date are same for expired balance change and the record it expired
+    $balanceChangeExpiredByBroughtForwardPeriod1 = $this->getBalanceChangeRecord($expiredBroughtForwardPeriod1->expired_balance_change_id);
+    $this->assertEquals($balanceChangeExpiredByBroughtForwardPeriod1->expiry_date, $expiredBroughtForwardPeriod1->expiry_date);
+
+    $balanceChangeExpiredByBroughtForward2Period1 = $this->getBalanceChangeRecord($expiredBroughtForward2Period1->expired_balance_change_id);
+    $this->assertEquals($balanceChangeExpiredByBroughtForward2Period1->expiry_date, $expiredBroughtForward2Period1->expiry_date);
+
+    $balanceChangeExpiredByAccruedToilPeriod1 = $this->getBalanceChangeRecord($expiredAccruedToilPeriod1->expired_balance_change_id);
+    $this->assertEquals($balanceChangeExpiredByAccruedToilPeriod1->expiry_date, $expiredAccruedToilPeriod1->expiry_date);
   }
 
   public function testRecalculateExpiredBalanceChangesForLeaveRequestPastDatesWhenSomeLeaveRequestDatesArePastAndOthersAreFuture() {
@@ -2010,13 +2059,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $numberOfUpdatedRecords = LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
     $this->assertEquals(1, $numberOfUpdatedRecords);
 
-    $expiredBalanceChangePeriod1 = new LeaveBalanceChange();
-    $expiredBalanceChangePeriod1->id = $balanceChangePeriod1->id;
-    $expiredBalanceChangePeriod1->find(true);
+    $expiredBalanceChangePeriod1 = $this->getBalanceChangeRecord($balanceChangePeriod1->id);
 
     //The first day of the leave request falls on the day $balanceChangePeriod1 expired so only that day is deducted
     //from $balanceChangePeriod1 remaining 4 left after recalculation.
     $this->assertEquals(-4, $expiredBalanceChangePeriod1->amount);
+
+    //assert that both balance changes carry same expiry date
+    $balanceChangeExpiredByBalanceChangePeriod1 = $this->getBalanceChangeRecord($expiredBalanceChangePeriod1->expired_balance_change_id);
+    $this->assertEquals($balanceChangeExpiredByBalanceChangePeriod1->expiry_date, $expiredBalanceChangePeriod1->expiry_date);
   }
 
   public function testRecalculateExpiredBalanceChangesForUnApprovedLeaveRequestPastDates() {
@@ -2053,9 +2104,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $numberOfUpdatedRecords = LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
     $this->assertEquals(0, $numberOfUpdatedRecords);
 
-    $expiredBalanceChangePeriod1 = new LeaveBalanceChange();
-    $expiredBalanceChangePeriod1->id = $balanceChangePeriod1->id;
-    $expiredBalanceChangePeriod1->find(true);
+    $expiredBalanceChangePeriod1 = $this->getBalanceChangeRecord($balanceChangePeriod1->id);
 
     //no recalculation is done because the leave request is not yet approved
     $this->assertEquals(-5, $expiredBalanceChangePeriod1->amount);
@@ -2093,9 +2142,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $numberOfUpdatedRecords = LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
     $this->assertEquals(0, $numberOfUpdatedRecords);
 
-    $expiredBalanceChangePeriod1 = new LeaveBalanceChange();
-    $expiredBalanceChangePeriod1->id = $balanceChangePeriod1->id;
-    $expiredBalanceChangePeriod1->find(true);
+    $expiredBalanceChangePeriod1 = $this->getBalanceChangeRecord($balanceChangePeriod1->id);
 
     //no recalculation is done because the leave request has no past days that falls on days
     //before the brought forward expired
@@ -2140,9 +2187,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $numberOfUpdatedRecords = LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
     $this->assertEquals(0, $numberOfUpdatedRecords);
 
-    $expiredBalanceChangePeriod1 = new LeaveBalanceChange();
-    $expiredBalanceChangePeriod1->id = $balanceChangePeriod1->id;
-    $expiredBalanceChangePeriod1->find(true);
+
+    $expiredBalanceChangePeriod1 = $this->getBalanceChangeRecord($balanceChangePeriod1->id);
 
     //no recalculation is done because the the absence type on the expired brought forward balance change is
     //different from that on the leave request
