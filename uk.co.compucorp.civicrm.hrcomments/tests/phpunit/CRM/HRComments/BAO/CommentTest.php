@@ -130,12 +130,13 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
    * @expectedException CRM_HRComments_Exception_InvalidCommentException
    * @expectedExceptionMessage You cannot update the created_at date of a comment
    */
-  public function testValidateParamsThrowsAnExceptionWhenTryingToUpdateTheCreatedAtDateForAComment() {
+  public function testValidateParamsThrowsAnExceptionWhenTryingToChangeTheCreatedAtDateForACommentDuringAnUpdate() {
     $comment = Comment::create([
       'entity_id' => 1,
       'entity_name' => 'LeaveRequest',
       'text' => 'This is a sample comment',
       'contact_id' => 1,
+      'created_at' => CRM_Utils_Date::processDate('2016-01-01 10:09:11')
     ]);
 
     Comment::validateParams([
@@ -144,7 +145,7 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
       'entity_name' => $comment->entity_name,
       'text' => $comment->text,
       'contact_id' => $comment->contact_id,
-      'created_at' => CRM_Utils_Date::processDate('2016-01-01'),
+      'created_at' => CRM_Utils_Date::processDate('2016-01-01 10:09:15'),
     ]);
   }
 

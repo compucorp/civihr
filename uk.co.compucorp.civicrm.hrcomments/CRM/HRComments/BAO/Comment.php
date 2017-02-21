@@ -155,11 +155,17 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
    */
   private static function validateCommentCreatedAtDateDuringAnUpdate($params) {
     if (isset($params['id']) && !empty($params['created_at'])) {
-      throw new InvalidCommentException(
-        'You cannot update the created_at date of a comment',
-        'comment_cannot_update_created_at',
-        'created_at'
-      );
+      $comment = self::findById($params['id']);
+      $commentDate = new DateTime($comment->created_at);
+      $createdAt = new DateTime($params['created_at']);
+
+      if ($commentDate != $createdAt) {
+        throw new InvalidCommentException(
+          'You cannot update the created_at date of a comment',
+          'comment_cannot_update_created_at',
+          'created_at'
+        );
+      }
     }
   }
 
