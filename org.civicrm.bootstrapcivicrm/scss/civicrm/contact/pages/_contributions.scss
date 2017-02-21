@@ -152,6 +152,19 @@
       }
     }
   }
+
+  .select2-drop,
+  .select2-choice {
+    width: 230px !important;
+  }
+
+  #s2id_product_name_1 {
+    .select2-choice {
+      position: relative;
+      top: 12px;
+      display: inline-block;
+    }
+  }
 }
 
 .CRM_Contribute_Form_Search {
