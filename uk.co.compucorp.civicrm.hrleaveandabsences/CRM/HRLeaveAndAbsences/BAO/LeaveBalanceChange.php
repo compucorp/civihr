@@ -751,7 +751,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
-   * This method calculates the sum of the TOIL(with the given status) balance changes for a given contact
+   * This method calculates the sum of the TOIL (with the given status) balance changes for a given contact
    * over a given period of time.
    *
    * @param int $contactID
@@ -768,16 +768,21 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    */
   public static function getTotalTOILBalanceChangeForContact($contactID, $absenceTypeID, DateTime $startDate, DateTime $endDate, $toilStatus = []) {
     $leaveBalanceChangeTable = self::getTableName();
-    $toilRequestTable = TOILRequest::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
 
     $query = "SELECT SUM(bc.amount) balance
               FROM {$leaveBalanceChangeTable} bc
-              INNER JOIN {$toilRequestTable} tr ON bc.source_id = tr.id AND bc.source_type = %1
-              INNER JOIN {$leaveRequestTable} lr ON tr.leave_request_id = lr.id
-              WHERE lr.contact_id = %2
-              AND lr.from_date >= %3 AND lr.to_date <= %4
-              AND lr.type_id = %5";
+              INNER JOIN {$leaveRequestDateTable} lrd 
+                ON bc.source_id = lrd.id AND bc.source_type = %1
+              INNER JOIN {$leaveRequestTable} lr 
+                ON lrd.leave_request_id = lr.id
+              WHERE 
+                lr.contact_id = %2 AND
+                lr.from_date >= %3 AND 
+                lr.to_date <= %4 AND 
+                lr.type_id = %5 AND 
+                lr.request_type = %6";
 
     if (is_array($toilStatus) && !empty($toilStatus)) {
       array_walk($toilStatus, 'intval');
@@ -785,11 +790,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     }
 
     $params = [
-      1 => [self::SOURCE_TOIL_REQUEST, 'String'],
+      1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
       2 => [$contactID, 'Integer'],
       3 => [$startDate->format('Y-m-d'), 'String'],
       4 => [$endDate->format('Y-m-d'), 'String'],
-      5 => [$absenceTypeID, 'Integer']
+      5 => [$absenceTypeID, 'Integer'],
+      6 => [LeaveRequest::REQUEST_TYPE_TOIL, 'String']
     ];
 
     $result = CRM_Core_DAO::executeQuery($query, $params);

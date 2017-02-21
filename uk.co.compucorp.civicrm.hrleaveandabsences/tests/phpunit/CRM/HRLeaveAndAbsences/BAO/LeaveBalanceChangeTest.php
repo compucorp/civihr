@@ -1807,7 +1807,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   public function testGetTotalTOILBalanceChangeForContactWithinAGivenPeriod() {
     $contactID = 1;
     $absenceTypeID = 1;
-    TOILRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => 1,
@@ -1816,11 +1816,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date_type' => 1,
       'from_date_type' => 1,
       'toil_to_accrue' => 1,
-      'duration' => 120,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+      'toil_duration' => 120,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
     ], true);
 
-    TOILRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => 1,
@@ -1829,11 +1830,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date_type' => 1,
       'from_date_type' => 1,
       'toil_to_accrue' => 2,
-      'duration' => 120,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+      'toil_duration' => 120,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
     ], true);
 
-    TOILRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => 1,
@@ -1842,8 +1844,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date_type' => 1,
       'from_date_type' => 1,
       'toil_to_accrue' => 3,
-      'duration' => 120,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+      'toil_duration' => 120,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
     ], true);
 
     $startDate = new DateTime('+3 days');
@@ -1860,7 +1863,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $absenceTypeID2 = 2;
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
-    TOILRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Approved'],
@@ -1869,11 +1872,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date_type' => 1,
       'from_date_type' => 1,
       'toil_to_accrue' => 1,
-      'duration' => 120,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+      'toil_duration' => 120,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
-    TOILRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Admin Approved'],
@@ -1882,11 +1886,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date_type' => 1,
       'from_date_type' => 1,
       'toil_to_accrue' => 2,
-      'duration' => 120,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+      'toil_duration' => 120,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
-    TOILRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID2,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Admin Approved'],
@@ -1895,11 +1900,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date_type' => 1,
       'from_date_type' => 1,
       'toil_to_accrue' => 2,
-      'duration' => 120,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+      'toil_duration' => 120,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
-    TOILRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Waiting Approval'],
@@ -1908,8 +1914,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date_type' => 1,
       'from_date_type' => 1,
       'toil_to_accrue' => 3,
-      'duration' => 120,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+      'toil_duration' => 120,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     $startDate = new DateTime('+1 day');

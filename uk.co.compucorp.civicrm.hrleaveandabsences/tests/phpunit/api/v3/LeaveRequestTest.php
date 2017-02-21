@@ -2192,6 +2192,144 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilToAccrueIsGreaterThanTheMaximumAllowed() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date'   => CRM_Utils_Date::processDate('+100 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 1,
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'isValid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_to_accrue' => 2,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'toil_to_accrue' => ['leave_request_toil_amount_more_than_maximum_for_absence_type']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilAmountPlusApprovedToilForPeriodIsGreaterThanMaximumAllowed() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date'   => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 4,
+    ]);
+
+    $contactID  = 1;
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    //Approved TOIL for period is 3
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Approved'],
+      'from_date' => CRM_Utils_Date::processDate('-6 days'),
+      'to_date' => CRM_Utils_Date::processDate('-5 days'),
+      'toil_to_accrue' => 3,
+      'toil_duration' => 120,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    //Total TOIL for period = 3 + 2 which is greater than 4 (the allowed maximum)
+    $result = civicrm_api3('LeaveRequest', 'isValid', [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Approved'],
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_to_accrue' => 2,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'toil_to_accrue' => ['leave_request_toil_amount_more_than_maximum_for_absence_type']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testOpenLeaveRequestOfRequestTypeToilWillNotBeUpdatedIfToilToAccrueAmountIsMoreThanMaxLeaveAccrual() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date'   => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'max_leave_accrual' => 3,
+      'allow_accruals_request' => true,
+      'is_active' => 1,
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => date('YmdHis'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => date('YmdHis'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_to_accrue' => 3,
+      'toil_duration' => 300,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ];
+
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    // decrease the max leave accrual
+    AbsenceType::create([
+      'id' => $absenceType->id,
+      'max_leave_accrual' => 1,
+      'allow_accruals_request' => true,
+      'color' => '#000000'
+    ]);
+
+    // update the TOIL request status
+    $params['id'] = $toilRequest->id;
+    $params['status_id'] = 1;
+    $result = civicrm_api3('LeaveRequest', 'isValid', $params);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'toil_to_accrue' => ['leave_request_toil_amount_more_than_maximum_for_absence_type']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
   public function testLeaveRequestIsValidShouldNotReturnErrorWhenValidationsPass() {
     $contactID = 1;
 

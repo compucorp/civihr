@@ -225,8 +225,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
 
-    self::validateTOILToAccrue($params);
+    self::validateTOILToAccrueIsAValidaOptionValue($params);
     self::validateTOILPastDays($params);
+    self::validateTOILToAccruedAmountIsValid($params);
   }
 
   /**
@@ -237,7 +238,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateTOILToAccrue($params) {
+  private static function validateTOILToAccrueIsAValidaOptionValue($params) {
     $toilAmountOptions = self::buildOptions('toil_to_accrue', 'validate');
     if(!array_key_exists($params['toil_to_accrue'], $toilAmountOptions)) {
       throw new InvalidLeaveRequestException(
@@ -272,6 +273,70 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         'from_date'
       );
     }
+  }
+
+  /**
+   * Validate that the TOIL amount to be accrued plus total approved accrued TOIL for the period
+   * is not greater than the maximum defined(if any) for the Absence Type
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateTOILToAccruedAmountIsValid($params) {
+    $absenceType = AbsenceType::findById($params['type_id']);
+    $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual != 0;
+
+    $periodContainingToilDates = AbsencePeriod::getPeriodContainingDates(
+      new DateTime($params['from_date']),
+      new DateTime($params['to_date'])
+    );
+
+    $totalApprovedToilForPeriod = self::getTotalApprovedToilForPeriod(
+      $periodContainingToilDates,
+      $params['contact_id'],
+      $params['type_id']
+    );
+    $totalProjectedToilForPeriod = $totalApprovedToilForPeriod + $params['toil_to_accrue'];
+
+    if ($totalProjectedToilForPeriod > $absenceType->max_leave_accrual && !$unlimitedAccrual) {
+      throw new InvalidLeaveRequestException(
+        'The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type',
+        'leave_request_toil_amount_more_than_maximum_for_absence_type',
+        'toil_to_accrue'
+      );
+    }
+  }
+
+
+  /**
+   * This method returns the total sum of TOIL accrued for an absence type by a contact
+   * over a given absence period
+   *
+   * @param int $contactID
+   * @param int $typeID
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $period
+   *
+   * @return float
+   */
+  private static function getTotalApprovedToilForPeriod(AbsencePeriod $period, $contactID, $typeID) {
+    $leaveRequestStatuses = array_flip(self::buildOptions('status_id'));
+
+    $leaveRequestStatusFilter = [
+      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['Admin Approved']
+    ];
+
+    $totalApprovedTOIL = LeaveBalanceChange::getTotalTOILBalanceChangeForContact(
+      $contactID,
+      $typeID,
+      new DateTime($period->start_date),
+      new DateTime($period->end_date),
+      $leaveRequestStatusFilter
+    );
+
+    return $totalApprovedTOIL;
   }
 
   /**
