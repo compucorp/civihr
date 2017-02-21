@@ -100,6 +100,12 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       $conditions[] = "(r.end_date IS NULL OR r.end_date >= {$today})";
     }
 
+    if(!empty($this->params['expired'])) {
+      $conditions[] = "lbc.expiry_date < '" . date('Y-m-d') . "'";
+      $conditions[] = 'lbc.expired_balance_change_id Is NOT NULL';
+      $conditions[] = 'lbc.amount < 0';
+    }
+
     $customQuery->where($conditions);
   }
 

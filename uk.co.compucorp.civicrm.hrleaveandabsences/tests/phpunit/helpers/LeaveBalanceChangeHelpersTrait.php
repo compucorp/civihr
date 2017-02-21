@@ -5,7 +5,6 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
-use Drupal\civihr_employee_portal\Blocks\Leave;
 
 trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
 
@@ -112,7 +111,12 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
-    $toilBalanceChange = $this->findToilRequestMainBalanceChange($toilRequest->id);
+    return $this->createExpiryBalanceChangeForTOILRequest($toilRequest->id, $expiredAmount);
+  }
+
+  public function createExpiryBalanceChangeForTOILRequest($toilRequestID, $expiredAmount) {
+    $toilBalanceChange = $this->findToilRequestMainBalanceChange($toilRequestID);
+
     return LeaveBalanceChangeFabricator::fabricate([
       'source_id' => $toilBalanceChange->source_id,
       'source_type' => $toilBalanceChange->source_type,

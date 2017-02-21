@@ -83,6 +83,14 @@ function _civicrm_api3_leave_request_get_spec(&$spec) {
     'FKClassName'  => 'CRM_Contact_DAO_Contact',
     'FKApiName'    => 'Contact',
   ];
+
+  $spec['expired'] = [
+    'name'         => 'expired',
+    'title'        => ts('Expired?'),
+    'description'  => ts('When true, only expired expired requests will be returned. Otherwise, only the non-expired ones will be returned'),
+    'type'         => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0
+  ];
 }
 
 /**
@@ -133,6 +141,14 @@ function _civicrm_api3_leave_request_getfull_spec(&$spec) {
     'api.required' => 0,
     'FKClassName'  => 'CRM_Contact_DAO_Contact',
     'FKApiName'    => 'Contact',
+  ];
+
+  $spec['expired'] = [
+    'name'         => 'expired',
+    'title'        => ts('Expired?'),
+    'description'  => ts('When true, only expired expired requests will be returned. Otherwise, only the non-expired ones will be returned'),
+    'type'         => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0
   ];
 }
 
