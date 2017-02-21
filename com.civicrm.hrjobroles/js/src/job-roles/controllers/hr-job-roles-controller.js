@@ -536,6 +536,10 @@ define([
         }
 
         updatedRole = angular.copy(vm.edit_data[role_id]);
+        updatedRole.location = (updatedRole.location === undefined)? updatedRole.location = '' : updatedRole.location;
+        updatedRole.level = (updatedRole.level === undefined)? updatedRole.level = '' : updatedRole.level;
+        updatedRole.department = (updatedRole.department === undefined)? updatedRole.department = '' : updatedRole.department;
+        updatedRole.region = (updatedRole.region === undefined)? updatedRole.region = '' : updatedRole.region;
         updatedRole.start_date = convertDateToServerFormat(updatedRole.start_date);
 
         if (updatedRole.end_date) {
