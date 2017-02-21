@@ -96,7 +96,7 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
     ]);
   }
 
-  public function testCreatedDateIsInsertedCorrectly() {
+  public function testCreatedDateIsInsertedAsTheCurrentDateWhenNotPassedAsAParameter() {
     $comment = Comment::create([
       'entity_id' => 1,
       'entity_name' => 'LeaveRequest',
@@ -112,40 +112,41 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
     $this->assertEquals($timestampNow, $createdDateTimestamp, '', 10);
   }
 
-  public function testCreatedAtWillBeTheCurrentDateTimeIrrespectiveOfTheDateTimeValuePassedViaCreatedAtParameter() {
+  public function testCreatedAtIsInsertedCorrectlyWhenPassedAsAParameter() {
+    $created_at = new DateTime('2016-01-01 09:10:10');
     $comment = Comment::create([
       'entity_id' => 1,
       'entity_name' => 'LeaveRequest',
       'text' => 'This is a sample comment',
       'contact_id' => 1,
-      'created_at' => CRM_Utils_Date::processDate('2016-01-01')
+      'created_at' => $created_at->format('YmdHis')
     ]);
 
-    //the current timestamp is gotten here and asserted
-    //that it is within 10 seconds delta compared to the created_date of the comment entity
-    $createdDateTimestamp = new DateTime($comment->created_at);
-    $timestampNow = new DateTime('now');
-
-    $this->assertEquals($timestampNow, $createdDateTimestamp, '', 10);
+    $commentCreatedDate = new DateTime($comment->created_at);
+    $this->assertEquals($created_at, $commentCreatedDate);
   }
 
-  public function testCreatedAtCannotBeChangedWhenUpdatingExistingComment() {
+  /**
+   * @expectedException CRM_HRComments_Exception_InvalidCommentException
+   * @expectedExceptionMessage You cannot update the created_at date of a comment
+   */
+  public function testValidateParamsThrowsAnExceptionWhenTryingToChangeTheCreatedAtDateForACommentDuringAnUpdate() {
     $comment = Comment::create([
       'entity_id' => 1,
       'entity_name' => 'LeaveRequest',
       'text' => 'This is a sample comment',
       'contact_id' => 1,
+      'created_at' => CRM_Utils_Date::processDate('2016-01-01 10:09:11')
     ]);
 
-    $comment2 = Comment::create([
+    Comment::validateParams([
       'id' => $comment->id,
-      'created_at' => CRM_Utils_Date::processDate('2016-01-01'),
-    ], false);
-
-    $createdDateTimestamp = new DateTime($comment2->created_at);
-    $timestampNow = new DateTime('now');
-
-    $this->assertEquals($timestampNow, $createdDateTimestamp, '', 10);
+      'entity_id' => $comment->entity_id,
+      'entity_name' => $comment->entity_name,
+      'text' => $comment->text,
+      'contact_id' => $comment->contact_id,
+      'created_at' => CRM_Utils_Date::processDate('2016-01-01 10:09:15'),
+    ]);
   }
 
   public function testSoftDeleteDoesNotDeleteCommentsFromCommentsTableButSetsIsDeletedFlagToOne() {
@@ -215,5 +216,46 @@ class CRM_HRComments_BAO_CommentTest extends BaseHeadlessTest  {
     $this->assertEquals(0, $comment->is_deleted);
     $this->assertEquals('SickRequest', $comment->entity_name);
     $this->assertEquals('This is a random sample comment', $comment->text);
+  }
+
+  public function testCommentCanNotBeCreatedWithACreatedDateLessThanTheCreatedDateOfTheLastCommentForThisEntity() {
+    $entityName = 'SickRequest';
+    $entityID = 1;
+
+    $comment1 = Comment::create([
+      'entity_id' => $entityID,
+      'entity_name' => $entityName,
+      'text' => 'This is a random sample comment',
+      'created_at' => CRM_Utils_Date::processDate('2016-01-01'),
+      'contact_id' => 1,
+    ], false);
+
+    $comment2 = Comment::create([
+      'entity_id' => $entityID,
+      'entity_name' => $entityName,
+      'text' => 'This is a another sample comment',
+      'created_at' => CRM_Utils_Date::processDate('2016-01-02 10:10:30'),
+      'contact_id' => 1,
+    ], false);
+
+    $comment3 = Comment::create([
+      'entity_id' => $entityID,
+      'entity_name' => $entityName,
+      'text' => 'This is yet another sample comment',
+      'created_at' => CRM_Utils_Date::processDate('2016-01-03 10:09:20'),
+      'contact_id' => 2,
+    ], false);
+
+    $this->setExpectedException('CRM_HRComments_Exception_InvalidCommentException', "The created_at date must not be less than the last comment created date for this Entity");
+
+    //contact tries to manipulate the comment date by setting date to a second before the
+    //last comment date for the entity
+    Comment::create([
+      'entity_name' => $entityName,
+      'entity_id' => $entityID,
+      'text' => 'This is probably another sample comment',
+      'created_at' => CRM_Utils_Date::processDate('2016-01-03 10:09:19'),
+      'contact_id' => 1,
+    ]);
   }
 }

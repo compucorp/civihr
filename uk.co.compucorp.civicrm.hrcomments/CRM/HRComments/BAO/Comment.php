@@ -16,17 +16,17 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
 
-    if($validate){
+    if ($validate) {
       self::validateParams($params);
     }
-    unset($params['created_at']);
+
     unset($params['is_deleted']);
 
     $instance = new self();
     $instance->copyValues($params);
 
     if ($hook == 'create') {
-      $instance->created_at = CRM_Utils_Date::processDate('now');
+      $instance->created_at = isset($params['created_at']) ? $params['created_at'] : CRM_Utils_Date::processDate('now');
     }
 
     $instance->save();
@@ -46,6 +46,8 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
   public static function validateParams($params) {
     self::validateMandatory($params);
     self::validateCommentSoftDeleteDuringUpdate($params);
+    self::validateCommentCreatedAtDateDuringAnUpdate($params);
+    self::validateCommentCreatedAtDate($params);
   }
 
   /**
@@ -111,6 +113,63 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
   }
 
   /**
+   * This method validates the created_at date parameter passed
+   * when creating a comment. It verifies that the created_at date
+   * is less than the created_at date of the last comment for the same entity
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRComments_Exception_InvalidCommentException
+   */
+  private static function validateCommentCreatedAtDate($params) {
+    if (!empty($params['id']) || empty($params['created_at'])) {
+      return;
+    }
+
+    $lastComment = self::getLastCommentForEntity($params['entity_name'], $params['entity_id']);
+    if (!$lastComment) {
+      return;
+    }
+
+    $createdAt = new DateTime($params['created_at']);
+    $lastCommentCreatedAt = new DateTime($lastComment->created_at);
+
+    if ($createdAt < $lastCommentCreatedAt) {
+      throw new InvalidCommentException(
+        'The created_at date must not be less than the last comment created date for this Entity',
+        'comment_created_at_less_than_last_comment_created_at',
+        'created_at'
+      );
+    }
+  }
+
+  /**
+   * Validates that the created_at parameter should not be allowed
+   * to be changed during an update.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRComments_Exception_InvalidCommentException
+   */
+  private static function validateCommentCreatedAtDateDuringAnUpdate($params) {
+    if (isset($params['id']) && !empty($params['created_at'])) {
+      $comment = self::findById($params['id']);
+      $commentDate = new DateTime($comment->created_at);
+      $createdAt = new DateTime($params['created_at']);
+
+      if ($commentDate != $createdAt) {
+        throw new InvalidCommentException(
+          'You cannot update the created_at date of a comment',
+          'comment_cannot_update_created_at',
+          'created_at'
+        );
+      }
+    }
+  }
+
+  /**
    * Soft Deletes the comment with the given ID by setting the is_deleted column to 1
    *
    * @param int $id The ID of the comment to be soft deleted
@@ -121,5 +180,27 @@ class CRM_HRComments_BAO_Comment extends CRM_HRComments_DAO_Comment {
     $comment = self::findById($id);
     $comment->is_deleted = 1;
     $comment->save();
+  }
+
+  /**
+   * This method fetches the last/latest comment for the given entityName and entityID
+   *
+   * @param string $entityName
+   * @param int $entityID
+   *
+   * @return \CRM_HRComments_BAO_Comment|null
+   */
+  private static function getLastCommentForEntity($entityName, $entityID) {
+    $comment = new self();
+    $comment->orderBy('created_at DESC');
+    $comment->entity_id = $entityID;
+    $comment->entity_name = $entityName;
+    $comment->find(true);
+
+    if($comment->id) {
+      return $comment;
+    }
+
+    return null;
   }
 }
