@@ -208,6 +208,12 @@
     }
   }
 
+  .required {
+    &:after {
+      display: none;
+    }
+  }
+
   .crm-contribution-form-block > .form-layout-compressed {
     td {
       padding: 10px 30px !important;
@@ -218,12 +224,6 @@
 
       &:nth-child(2) {
         padding-left: 0 !important;
-      }
-
-      .required {
-        &:after {
-          display: none;
-        }
       }
     }
   }
