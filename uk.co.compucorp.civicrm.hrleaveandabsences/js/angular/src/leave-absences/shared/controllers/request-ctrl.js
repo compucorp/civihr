@@ -161,9 +161,7 @@ define([
             }
             self.loading.calculateBalanceChange = false;
           })
-          .catch(function (error) {
-            handleError.call(self, error);
-          });
+          .catch(handleError.bind(self));
       };
 
       /**
@@ -222,11 +220,9 @@ define([
        * Dismiss modal on successful creation on submit
        */
       this.ok = function () {
-        var self = this;
-
         //todo handle closure to pass data back to callee
-        self.$modalInstance.close({
-          $value: self.request
+        this.$modalInstance.close({
+          $value: this.request
         });
       };
 
@@ -294,7 +290,7 @@ define([
             }
           })
           .then(function () {
-            setMinMax.call(self);
+            setMinMaxDate.call(self);
 
             return filterLeaveRequestDayTypes.call(self, date, dayType);
           })
@@ -358,7 +354,7 @@ define([
           })
           .then(function () {
             initAbsencePeriod.call(self);
-            setMinMax.call(self);
+            setMinMaxDate.call(self);
 
             return $q.all([
               loadAbsenceTypes.call(self),
@@ -426,13 +422,9 @@ define([
                 // refresh the list
                 postSubmit.call(self, 'LeaveRequest::new');
               })
-              .catch(function (error) {
-                handleError.call(self, error);
-              });
+              .catch(handleError.bind(self));
           })
-          .catch(function (error) {
-            handleError.call(self, error);
-          });
+          .catch(handleError.bind(self));
       }
 
       /**
@@ -974,7 +966,7 @@ define([
       /**
        * Sets the min and max for to date from absence period
        */
-      function setMinMax() {
+      function setMinMaxDate() {
         if (this.uiOptions.fromDate) {
           this.uiOptions.date.to.options.minDate = this.uiOptions.fromDate;
 
@@ -1003,9 +995,7 @@ define([
               postSubmit.call(self, 'LeaveRequest::edit');
             }
           })
-          .catch(function (error) {
-            handleError.call(self, error);
-          });
+          .catch(handleError.bind(self));
       }
 
       return this;
