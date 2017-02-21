@@ -138,6 +138,22 @@
   }
 }
 
+.page-civicrm-contribute-add {
+  .CRM_Contribute_Form_Contribution {
+    .crm-accordion-header:not(.crm-master-accordion-header) + .crm-accordion-body {
+      padding: 20px !important;
+    }
+
+    .crm-contribution-form-block {
+      > .form-layout-compressed {
+        .label {
+          padding-left: 20px !important;
+        }
+      }
+    }
+  }
+}
+
 .CRM_Contribute_Form_Search {
   table {
     background: transparent;
