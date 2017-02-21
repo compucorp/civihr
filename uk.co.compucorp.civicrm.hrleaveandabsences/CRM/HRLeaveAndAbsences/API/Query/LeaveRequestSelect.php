@@ -197,7 +197,8 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       $leaveRequestBao->copyValues($leaveRequest);
 
       if($this->shouldReturnBalanceChange()) {
-        $balanceChange = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequestBao);
+        $expiredOnly = !empty($this->params['expired']);
+        $balanceChange = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequestBao, $expiredOnly);
         $results[$i]['balance_change'] = $balanceChange;
       }
 

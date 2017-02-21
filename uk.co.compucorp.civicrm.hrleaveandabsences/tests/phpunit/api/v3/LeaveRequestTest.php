@@ -1251,6 +1251,68 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertNotEmpty($resultGet['values'][$toilRequest2->id]);
   }
 
+  public function testGetFullReturnsOnlyTheExpiredBalanceWhenTheExpiredParamIsPresent() {
+    $type = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => TRUE,
+      'max_leave_accrual'      => 10
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id'       => $contract['contact_id'],
+      'type_id'          => $type->id,
+      'from_date'        => CRM_Utils_Date::processDate('2016-04-01'),
+      'to_date'          => CRM_Utils_Date::processDate('2016-04-02'),
+      'toil_duration'    => 10,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-06-10'),
+      'toil_to_accrue'   => 5,
+      'request_type'     => LeaveRequest::REQUEST_TYPE_TOIL
+    ], TRUE);
+    // 3 days expired (that is, 2 days have been used)
+    $this->createExpiryBalanceChangeForTOILRequest($toilRequest->id, 3);
+
+    $result = civicrm_api3('LeaveRequest', 'getFull', ['expired' => true]);
+
+    $this->assertEquals(1, $result['count']);
+    $this->assertNotEmpty($result['values'][$toilRequest->id]);
+    $this->assertEquals(-3, $result['values'][$toilRequest->id]['balance_change']);
+  }
+
+  public function testGetFullReturnsOnlyTheOriginalAmountWhenTheExpiredParamIsNotPresent() {
+    $type = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => TRUE,
+      'max_leave_accrual'      => 10
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id'       => $contract['contact_id'],
+      'type_id'          => $type->id,
+      'from_date'        => CRM_Utils_Date::processDate('2016-04-01'),
+      'to_date'          => CRM_Utils_Date::processDate('2016-04-02'),
+      'toil_duration'    => 10,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-06-10'),
+      'toil_to_accrue'   => 5,
+      'request_type'     => LeaveRequest::REQUEST_TYPE_TOIL
+    ], TRUE);
+    // 3 days expired (that is, 2 days have been used)
+    $this->createExpiryBalanceChangeForTOILRequest($toilRequest->id, 3);
+
+    $result = civicrm_api3('LeaveRequest', 'getFull');
+
+    $this->assertEquals(1, $result['count']);
+    $this->assertNotEmpty($result['values'][$toilRequest->id]);
+    $this->assertEquals($toilRequest->toil_to_accrue, $result['values'][$toilRequest->id]['balance_change']);
+  }
+
   public function invalidGetBalanceChangeByAbsenceTypeStatusesOperators() {
     return [
       ['>'],
