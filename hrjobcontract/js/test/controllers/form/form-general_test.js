@@ -69,6 +69,61 @@ define([
           expect($scope.datepickerOptions.start.maxDate).toEqual(moment('2015-12-06').toDate());
           expect($scope.datepickerOptions.end.minDate).toEqual(moment('2015-11-22').toDate());
         });
+
+        it('sets duration calculating number of days including start and end dates', function() {
+          expect($scope.duration).toEqual('17 days');
+        });
+
+        it('calculates duration from nth day of a month to (n-1)th day of next month as 1 month', function() {
+          for (var year = 2016; year < 2018; year++) {
+            for (var month = 1; month < 13; month++) {
+              var startMonthString = month < 10 ? '0' + month.toString() : month.toString();
+              var newMonth = month + 1;
+              var newYear = year;
+
+              if (newMonth > 12) {
+                newMonth = 1;
+                newYear++;
+              }
+
+              var newMonthString = newMonth < 10 ? '0' + newMonth.toString() : newMonth.toString();
+              var fromDate = year.toString() + '-' + startMonthString + '-15';
+              var toDate = newYear.toString() + '-' + newMonthString + '-14';
+
+              _.assign($scope.entity.details, {
+                period_start_date: moment(fromDate).toDate(),
+                period_end_date: moment(toDate).toDate()
+              });
+              $scope.$digest();
+              expect($scope.duration.trim()).toEqual('1 month');
+            }
+          }
+        });
+
+        it('calculates duration from first to last day of months as absolute number of years and months with no day fraction', function() {
+          _.assign($scope.entity.details, {
+            period_start_date: moment('2017-02-01').toDate(),
+            period_end_date: moment('2017-03-31').toDate()
+          });
+          $scope.$digest();
+          expect($scope.duration.trim()).toEqual('2 months');
+
+          _.assign($scope.entity.details, {
+            period_start_date: moment('2016-01-01').toDate(),
+            period_end_date: moment('2018-05-31').toDate()
+          });
+          $scope.$digest();
+          expect($scope.duration.trim()).toEqual('2 years 5 months');
+        });
+
+        it('calculates duration from last day february in a leap year to last day of february on next year as a year and a day', function() {
+          _.assign($scope.entity.details, {
+            period_start_date: moment('2016-02-29').toDate(),
+            period_end_date: moment('2017-02-28').toDate()
+          });
+          $scope.$digest();
+          expect($scope.duration.trim()).toEqual('1 year 1 day');
+        });
       });
     });
 
