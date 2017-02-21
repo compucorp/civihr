@@ -190,6 +190,10 @@
     }
   }
 
+  .selector {
+    @include mx-expandable-table();
+  }
+
   p {
     margin: 0;
 
