@@ -329,21 +329,33 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * Returns the sum of all LeaveBalanceChanges linked to the LeaveRequestDates
    * of the given LeaveRequest.
    *
-   * This basically gets the output of getBreakdownForLeaveRequest()
-   * and sums up the amount of the returned LeaveBalanceChange instances.
+   * This method also accounts for expired/non-expired balance changes. By
+   * default, it will only consider the non expired balance changes. So, for
+   * example, if you have a LeaveRequest of type TOIL, with 5 days accrued and
+   * 3 expired, it will return 5 as the balance change (the original amount,
+   * ignoring the expired days). Now, if you use $expiredOnly = true for the
+   * same leave request, the method will return -3 (the expired amount).
    *
    * @see \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::getBreakdownForLeaveRequest()
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *
+   * @param bool $expiredOnly
+   *  If true, then the method will only account for expiry balance changed.
+   *  Otherwise, only for non expired ones. The default value is false.
+   *
    * @return float
    */
-  public static function getTotalBalanceChangeForLeaveRequest(LeaveRequest $leaveRequest) {
+  public static function getTotalBalanceChangeForLeaveRequest(LeaveRequest $leaveRequest, $expiredOnly = false) {
     $balanceChanges = self::getBreakdownForLeaveRequest($leaveRequest);
 
     $balance = 0.0;
     foreach($balanceChanges as $balanceChange) {
-      $balance += (float)$balanceChange->amount;
+      if((!$expiredOnly && $balanceChange->expired_balance_change_id === null) ||
+         ($expiredOnly && $balanceChange->expired_balance_change_id !== null)
+      ) {
+        $balance += (float)$balanceChange->amount;
+      }
     }
 
     return $balance;

@@ -834,6 +834,44 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
 
+  public function testTheTotalBalanceChangeForALeaveRequestShouldBeOnlyTheExpiredAmountWhenExpiredOnlyIsTrue() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id'       => 1,
+      'type_id'          => 1,
+      'from_date'        => CRM_Utils_Date::processDate('2016-04-01'),
+      'to_date'          => CRM_Utils_Date::processDate('2016-04-02'),
+      'toil_duration'    => 10,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-06-10'),
+      'toil_to_accrue'   => 5,
+      'request_type'     => LeaveRequest::REQUEST_TYPE_TOIL
+    ], TRUE);
+
+    $numberOfExpiredDays = 3;
+    $this->createExpiryBalanceChangeForTOILRequest($leaveRequest->id, $numberOfExpiredDays);
+
+    $expiredOnly = true;
+    $this->assertEquals(-3, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest, $expiredOnly));
+  }
+
+  public function testTheTotalBalanceChangeForALeaveRequestShouldBeTheOriginalAmountWhenExpiredOnlyIsFalse() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id'       => 1,
+      'type_id'          => 1,
+      'from_date'        => CRM_Utils_Date::processDate('2016-04-01'),
+      'to_date'          => CRM_Utils_Date::processDate('2016-04-02'),
+      'toil_duration'    => 10,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-06-10'),
+      'toil_to_accrue'   => 5,
+      'request_type'     => LeaveRequest::REQUEST_TYPE_TOIL
+    ], TRUE);
+
+    $numberOfExpiredDays = 3;
+    $this->createExpiryBalanceChangeForTOILRequest($leaveRequest->id, $numberOfExpiredDays);
+
+    $expiredOnly = false;
+    $this->assertEquals($leaveRequest->toil_to_accrue, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest, $expiredOnly));
+  }
+
   public function testGetExistingBalanceChangeForALeaveRequestDateShouldReturnNullIfThereIsNoRecordLinkedToALeaveRequestDateWithTheGivenDate() {
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = 2;
