@@ -328,6 +328,15 @@ a.crm-clear-link {
   }
 }
 
+#{$address-fields},
+#{$mailings} {
+  input[type='checkbox'] + label {
+    &:after {
+      top: 7px !important;
+    }
+  }
+}
+
 #{$address-fields} {
   .form-layout {
     td {
