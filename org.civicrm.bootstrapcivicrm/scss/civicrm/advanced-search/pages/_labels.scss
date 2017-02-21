@@ -35,6 +35,11 @@ input[type='checkbox'] + label {
   margin-top: 5px !important;
 }
 
+a.crm-clear-link {
+  position: relative;
+  top: -2px;
+}
+
 #{$basic-criteria} {
   .form-layout > tbody {
     > tr {
@@ -82,6 +87,15 @@ input[type='checkbox'] + label {
                 }
               }
             }
+          }
+        }
+      }
+
+      &:last-child {
+        td:last-child {
+          > a.crm-clear-link {
+            position: relative;
+            top: -12px;
           }
         }
       }
@@ -349,6 +363,10 @@ input[type='checkbox'] + label {
             }
           }
         }
+      }
+
+      #s2id_state_province {
+        width: 230px !important;
       }
 
       @media (max-width: $screen-sm-min) {
