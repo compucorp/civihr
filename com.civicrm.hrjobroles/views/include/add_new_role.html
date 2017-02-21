@@ -233,7 +233,7 @@
                                         </td>
                                         <td>
                                             <!-- editable funder type (will restrict the fields to amount or percentage -->
-                                            <span editable-select="funder.type" e-form="tableform" e-name="funder-type" e-ng-options="k as rowType.name for (k, rowType) in rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'funder', key, $data)">
+                                            <span editable-select="funder.type" e-form="tableform" e-name="funder-type" e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'funder', key, $data)">
                                                 {{ jobroles.showRowType(funder) }}
                                             </span>
                                         </td>
@@ -301,7 +301,7 @@
                                         </td>
                                         <td>
                                             <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                                            <span editable-select="cost_centre.type" e-form="tableformcc" e-name="cost-centre-type" e-ng-options="k as rowType.name for (k, rowType) in rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'cost_centre', key, $data)">
+                                            <span editable-select="cost_centre.type" e-form="tableformcc" e-name="cost-centre-type" e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'cost_centre', key, $data)">
                                                 {{ jobroles.showRowType(cost_centre) }}
                                             </span>
                                         </td>

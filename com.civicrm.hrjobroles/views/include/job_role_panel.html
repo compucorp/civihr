@@ -352,7 +352,7 @@
                                                     <!-- editable funder type (will restrict the fields to amount or percentage -->
                                                                         <span editable-select="funder.type"
                                                                               e-form="tableform" e-name="funder-type"
-                                                                              e-ng-options="k as rowType.name for (k, rowType) in rowTypes"
+                                                                              e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"
                                                                               e-ng-change="jobroles.updateAdditionalRowType(job_roles_data.id, 'funder', key, $data)">
                                                                             {{jobroles.showRowType(funder)}}
                                                                         </span>
@@ -451,7 +451,7 @@
                                                                         <span editable-select="cost_centre.type"
                                                                               e-form="tableformcc"
                                                                               e-name="cost-centre-type"
-                                                                              e-ng-options="k as rowType.name for (k, rowType) in rowTypes"
+                                                                              e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"
                                                                               e-ng-change="jobroles.updateAdditionalRowType(job_roles_data.id, 'cost_centre', key, $data)">
                                                                             {{ jobroles.showRowType(cost_centre) }}
                                                                         </span>
