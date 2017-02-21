@@ -322,7 +322,18 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
       //activity_type_id: 3,
 
       // period_id: int or array(int); optional
-      period_id: _.last(_.keys(CRM.absenceApp.periods)),
+      period_id: (function () {
+        var today = moment();
+
+        var current = _.find(CRM.absenceApp.periods, function (period, id) {
+          var start = moment(period.start_date);
+          var end = moment(period.end_date);
+
+          return today.isBetween(start, end, 'day');
+        });
+
+        return current ? [current.id] : [_.last(_.keys(CRM.absenceApp.periods))];
+      }()),
 
       target_contact_id: CRM.absenceApp.contactId,
 
