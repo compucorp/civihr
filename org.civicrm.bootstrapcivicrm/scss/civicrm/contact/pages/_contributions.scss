@@ -383,6 +383,37 @@
       }
     }
   }
+
+  .help {
+    padding: 15px 0;
+  }
+
+  .form-layout-compressed td.label,
+  legend {
+    padding-left: 0 !important;
+  }
+
+  .credit_card_info-group,
+  .billing_name_address-group {
+    input[type="text"] {
+      margin-top: 0 !important;
+    }
+
+    .label {
+      line-height: 29px;
+      text-align: left !important;
+
+      label {
+        width: auto;
+      }
+    }
+  }
+
+  .crm-contribution-form-block-soft_credit_to  {
+    label {
+      width: 150px !important;
+    }
+  }
 }
 
 .CRM_Contribute_Form_ContributionView {
