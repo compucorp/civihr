@@ -19,7 +19,7 @@ define([
       var fundersContacts = {};
       var roles_type = ['funders', 'cost_centers'];
 
-      vm.contactId = $scope.$parent.contactId;
+      vm.contactId = settings.contactId;
       vm.format = HR_settings.DATE_FORMAT;
       vm.loading = true;
       vm.past_job_roles = [];
@@ -36,8 +36,8 @@ define([
       vm.RegionsData = {}; // Store the region types
 
       // Define the add new role URL
-      vm.add_new_role_url = $scope.$parent.pathBaseUrl + $scope.$parent.pathIncludeTpl + 'add_new_role.html';
-      vm.job_role_panel_url = $scope.$parent.pathBaseUrl + $scope.$parent.pathIncludeTpl + 'job_role_panel.html';
+      vm.add_new_role_url = settings.pathBaseUrl + settings.pathIncludeTpl + 'add_new_role.html';
+      vm.job_role_panel_url = settings.pathBaseUrl + settings.pathIncludeTpl + 'job_role_panel.html';
 
       // Select list for Row Types (used for Funders and Cost Centers)
       vm.rowTypes = {};
@@ -417,7 +417,6 @@ define([
         vm.errors.newStartDate = [];
         vm.errors.newEndDate = [];
 
-
         var contract = getContractData(vm.edit_data.new_role_id.job_contract_id);
         var validateResponse = validateDates({
           'start': vm.edit_data.new_role_id.newStartDate,
@@ -569,9 +568,8 @@ define([
         data.end_date.$error.custom = [];
         var contract = getContractData(data.contract.$viewValue);
 
-        if(contract === undefined){
-          $log.debug('Contract missing');
-          return 'Error';
+        if(contract == undefined){
+          return 'Contract is missing';
         }
         var validateResponse = validateDates({
             'start': data.start_date.$viewValue,

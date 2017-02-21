@@ -9,7 +9,7 @@ define([
     'use strict';
 
     describe('HRJobRolesController', function () {
-        var $controller, $filter, $q, $rootScope, DateValidation, HRJobRolesService, ctrl, scope;
+        var $controller, $filter, $q, $rootScope, DateValidation, HRJobRolesService, ctrl, scope, settingsData;
         var contactId = '123';
 
         beforeEach(module('hrjobroles'));
@@ -588,9 +588,11 @@ define([
          */
         function initController() {
             scope = $rootScope.$new();
-            scope.$parent.contactId = contactId;
+            settingsData = {
+              "contactId": contactId
+            };
 
-            ctrl = $controller('HRJobRolesController', { $scope: scope, format: 'DD/MM/YYYY' });
+            ctrl = $controller('HRJobRolesController', { $scope: scope, format: 'DD/MM/YYYY', settings: settingsData });
         }
     });
 });
