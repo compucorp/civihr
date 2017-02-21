@@ -68,6 +68,23 @@ input[type='checkbox'] + label {
           }
         }
       }
+
+      &:nth-child(4) {
+        td {
+          &:first-child {
+            tr:last-child {
+              td:last-child {
+                vertical-align: top !important;
+
+                .helpicon {
+                  top: -30px;
+                  left: 25px;
+                }
+              }
+            }
+          }
+        }
+      }
     }
 
     @media (max-width: $screen-sm-min) {
@@ -88,6 +105,10 @@ input[type='checkbox'] + label {
 
   select + .helpicon {
     right: -50px;
+  }
+
+  #privacy-operator-wrapper {
+    display: flex;
   }
 }
 
