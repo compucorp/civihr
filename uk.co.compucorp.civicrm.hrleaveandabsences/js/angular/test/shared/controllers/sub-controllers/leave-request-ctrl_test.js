@@ -153,8 +153,10 @@
             expect($ctrl.calendar.days).toBeDefined();
           });
 
-          it('gets absence types with false sick param', function() {
-            expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({ is_sick: false })
+          it('gets absence types with false sick param', function () {
+            expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
+              is_sick: false
+            })
           });
 
           describe('leave request instance', function () {
@@ -736,7 +738,7 @@
             expect($ctrl.isRole('owner')).toBeTruthy();
           });
 
-          it('sets mode to edit', function() {
+          it('sets mode to edit', function () {
             expect($ctrl.isMode('edit')).toBeTruthy();
           });
 
@@ -802,8 +804,8 @@
         });
       });
 
-      describe('user opens in view mode', function() {
-        beforeEach(function() {
+      describe('user opens in view mode', function () {
+        beforeEach(function () {
           var approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
           var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', approvalStatus));
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
@@ -815,12 +817,12 @@
           initTestController(directiveOptions);
         });
 
-        it('sets mode to view', function() {
+        it('sets mode to view', function () {
           expect($ctrl.isMode('view')).toBeTruthy();
         });
 
-        describe('on submit', function() {
-          beforeEach(function() {
+        describe('on submit', function () {
+          beforeEach(function () {
             spyOn($ctrl.request, 'update').and.callThrough();
             $ctrl.submit();
             $scope.$apply()

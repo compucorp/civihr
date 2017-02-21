@@ -11,8 +11,8 @@ define([
       var parentRequestCtrl = $controller('RequestCtrl'),
         vm = Object.create(parentRequestCtrl);
 
-      parentRequestCtrl.directiveOptions = directiveOptions;
-      parentRequestCtrl.$modalInstance = $modalInstance;
+      vm.directiveOptions = directiveOptions;
+      vm.$modalInstance = $modalInstance;
       vm.leaveType = 'leave';
 
       /**
@@ -22,7 +22,7 @@ define([
         vm.loading.absenceTypes = true;
         initRequest();
 
-        parentRequestCtrl._init()
+        vm._init()
           .finally(function () {
             vm.loading.absenceTypes = false;
           });
@@ -32,9 +32,9 @@ define([
        * Initialize leaverequest based on attributes that come from directive
        */
       function initRequest() {
-        var attributes = parentRequestCtrl._initRequestAttributes();
+        var attributes = vm._initRequestAttributes();
 
-        parentRequestCtrl.request = LeaveRequestInstance.init(attributes);
+        vm.request = LeaveRequestInstance.init(attributes);
       }
 
       return vm;

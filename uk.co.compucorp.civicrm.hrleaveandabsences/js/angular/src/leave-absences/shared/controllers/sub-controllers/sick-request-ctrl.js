@@ -12,9 +12,9 @@ define([
       var parentRequestCtrl = $controller('RequestCtrl'),
         vm = Object.create(parentRequestCtrl);
 
-      parentRequestCtrl.directiveOptions = directiveOptions;
-      parentRequestCtrl.$modalInstance = $modalInstance;
-      parentRequestCtrl.leaveType = 'sick';
+      vm.directiveOptions = directiveOptions;
+      vm.$modalInstance = $modalInstance;
+      vm.leaveType = 'sick';
 
       /**
        * Checks if submit button can be enabled for user and returns true if successful
@@ -22,7 +22,7 @@ define([
        * @return {Boolean}
        */
       vm.canSubmit = function () {
-        return parentRequestCtrl.canSubmit() && !!vm.request.reason;
+        return parentRequestCtrl.canSubmit.call(this) && !!vm.request.reason;
       };
 
       /**
@@ -41,8 +41,8 @@ define([
        * Resets data in dates, types, balance in parent and reason here.
        */
       vm._reset = function () {
-        parentRequestCtrl._reset();
-        parentRequestCtrl.request.reason = null;
+        parentRequestCtrl._reset.call(this);
+        vm.request.reason = null;
       };
 
       /**
@@ -52,7 +52,7 @@ define([
         vm.loading.absenceTypes = true;
         initRequest();
 
-        parentRequestCtrl._init()
+        vm._init()
           .then(function () {
             return $q.all([
               loadDocuments(),
@@ -68,9 +68,9 @@ define([
        * Initialize leaverequest based on attributes that come from directive
        */
       function initRequest() {
-        var attributes = parentRequestCtrl._initRequestAttributes();
+        var attributes = vm._initRequestAttributes();
 
-        parentRequestCtrl.request = SicknessRequestInstance.init(attributes);
+        vm.request = SicknessRequestInstance.init(attributes);
       }
 
       /**
@@ -96,7 +96,7 @@ define([
             vm.sicknessReasons = _.indexBy(reasons, 'name');
           });
       }
-      
+
       return vm;
     }
   ]);
