@@ -573,7 +573,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($publicHoliday->date, $result['values'][0]['from_date']);
   }
 
-  public function testGetIncludesToilLeaveRequests() {
+  public function testGetIncludesToilLeaveRequestsForAllRequestTypes() {
     HRJobContractFabricator::fabricate(['contact_id' => 1], ['period_start_date' => '-1 day']);
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
@@ -585,15 +585,17 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => $leaveRequestStatuses['Approved']
     ], true);
 
-    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+    $sicknessRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'status_id' => $leaveRequestStatuses['Waiting Approval']
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'sickness_reason' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ], true);
 
-    $toilRequest = TOILRequestFabricator::fabricateWithoutValidation([
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
@@ -602,15 +604,16 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => 1,
       'from_date_type' => 1,
       'toil_to_accrue' => 2,
-      'duration' => 300,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+      'toil_duration' => 300,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get', ['sequential' => 1]);
     $this->assertCount(3, $result['values']);
     $this->assertEquals($leaveRequest1->id, $result['values'][0]['id']);
-    $this->assertEquals($leaveRequest2->id, $result['values'][1]['id']);
-    $this->assertEquals($toilRequest->leave_request_id, $result['values'][2]['id']);
+    $this->assertEquals($sicknessRequest->id, $result['values'][1]['id']);
+    $this->assertEquals($toilRequest->id, $result['values'][2]['id']);
   }
 
   public function testGetCanReturnALeaveRequestWhichOverlapsAContractWithoutEndDate() {
