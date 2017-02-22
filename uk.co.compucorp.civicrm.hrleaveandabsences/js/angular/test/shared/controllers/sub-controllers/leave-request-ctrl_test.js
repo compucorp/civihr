@@ -2,7 +2,6 @@
   define([
     'common/lodash',
     'common/moment',
-    'common/angular',
     'mocks/data/option-group-mock-data',
     'mocks/data/leave-request-data',
     'mocks/helpers/helper',
@@ -17,15 +16,15 @@
     'mocks/apis/option-group-api-mock',
     'mocks/apis/public-holiday-api-mock',
     'common/mocks/services/api/contact-mock',
-    'leave-absences/shared/controllers/leave-request-popup-controller',
+    'leave-absences/shared/controllers/sub-controllers/leave-request-ctrl',
     'leave-absences/shared/modules/shared-settings',
-  ], function (_, moment, angular, optionGroupMock, mockData, helper) {
+  ], function (_, moment, optionGroupMock, mockData, helper) {
     'use strict';
 
-    describe('LeaveRequestPopupCtrl', function () {
+    describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, LeaveRequestInstance, Contact, ContactAPIMock,
-        EntitlementAPI, LeaveRequestAPI, SicknessRequestInstance, WorkPatternAPI,
+        EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl, 
         date2016 = '01/12/2016',
         date2017 = '02/02/2017',
         date2013 = '02/02/2013';
@@ -56,7 +55,7 @@
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_,
         _AbsenceTypeAPI_, _Contact_, _EntitlementAPI_, _LeaveRequestInstance_,
-        _LeaveRequestAPI_, _SicknessRequestInstance_, _WorkPatternAPI_) {
+        _LeaveRequestAPI_, _WorkPatternAPI_) {
 
         $log = _$log_;
         $rootScope = _$rootScope_;
@@ -69,7 +68,6 @@
         AbsenceTypeAPI = _AbsenceTypeAPI_;
 
         LeaveRequestInstance = _LeaveRequestInstance_;
-        SicknessRequestInstance = _SicknessRequestInstance_;
 
         spyOn($log, 'debug');
         spyOn(Contact, 'all').and.callFake(function () {
@@ -80,7 +78,6 @@
         spyOn(EntitlementAPI, 'all').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
         spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
-        spyOn(SicknessRequestInstance, 'init').and.callThrough();
 
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
       }));
@@ -91,10 +88,15 @@
         };
 
         initTestController(directiveOptions);
+        parentRequestCtrl = $controller('RequestCtrl')
       }));
 
       it('is called', function () {
         expect($log.debug).toHaveBeenCalled();
+      });
+
+      it('inherited from request controller', function(){
+        expect($ctrl instanceof parentRequestCtrl.constructor).toBe(true);
       });
 
       describe('when initialized', function () {
@@ -121,7 +123,7 @@
           });
 
           it('has first absence type selected', function () {
-            expect($ctrl.leaveRequest.type_id).toEqual($ctrl.absenceTypes[0].id);
+            expect($ctrl.request.type_id).toEqual($ctrl.absenceTypes[0].id);
           });
 
           it('has no dates selected', function () {
@@ -156,22 +158,24 @@
             expect($ctrl.calendar.days).toBeDefined();
           });
 
-          it('gets absence types with false sick param', function() {
-            expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({ is_sick: false })
+          it('gets absence types with false sick param', function () {
+            expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
+              is_sick: false
+            })
           });
 
           describe('leave request instance', function () {
             it('has new instance created', function () {
-              expect($ctrl.leaveRequest).toEqual(jasmine.any(Object));
+              expect($ctrl.request).toEqual(jasmine.any(Object));
             });
 
             it('has contact_id set', function () {
-              expect($ctrl.leaveRequest.contact_id).toBeDefined();
+              expect($ctrl.request.contact_id).toBeDefined();
             });
 
             it('does not have from/to dates set', function () {
-              expect($ctrl.leaveRequest.from_date).not.toBeDefined();
-              expect($ctrl.leaveRequest.to_date).not.toBeDefined();
+              expect($ctrl.request.from_date).not.toBeDefined();
+              expect($ctrl.request.to_date).not.toBeDefined();
             });
           });
 
@@ -198,11 +202,11 @@
           });
 
           it('has from date set', function () {
-            expect($ctrl.leaveRequest.from_date).toEqual(fromDate);
+            expect($ctrl.request.from_date).toEqual(fromDate);
           });
 
           it('selects first day type', function () {
-            expect($ctrl.leaveRequest.from_date_type).toEqual('1');
+            expect($ctrl.request.from_date_type).toEqual('1');
           });
         });
 
@@ -215,11 +219,11 @@
           });
 
           it('sets to date', function () {
-            expect($ctrl.leaveRequest.to_date).toEqual(toDate);
+            expect($ctrl.request.to_date).toEqual(toDate);
           });
 
           it('select first day type', function () {
-            expect($ctrl.leaveRequest.to_date_type).toEqual('1');
+            expect($ctrl.request.to_date_type).toEqual('1');
           });
         });
 
@@ -250,7 +254,7 @@
 
           beforeEach(function () {
             beforeChangeAbsenceType = $ctrl.absenceTypes[0];
-            $ctrl.leaveRequest.type_id = $ctrl.absenceTypes[1].id;
+            $ctrl.request.type_id = $ctrl.absenceTypes[1].id;
             $ctrl.updateBalance();
             afterChangeAbsenceType = $ctrl.absenceTypes[1];
             $scope.$digest();
@@ -294,8 +298,8 @@
             });
 
             it('sets from and to dates', function () {
-              expect($ctrl.leaveRequest.from_date).not.toBeNull();
-              expect($ctrl.leaveRequest.to_date).not.toBeNull();
+              expect($ctrl.request.from_date).not.toBeNull();
+              expect($ctrl.request.to_date).not.toBeNull();
             });
 
             it('shows balance', function () {
@@ -312,7 +316,7 @@
           });
 
           it('sets from date', function () {
-            expect(moment($ctrl.leaveRequest.from_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
+            expect(moment($ctrl.request.from_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
           });
         });
 
@@ -322,7 +326,7 @@
           });
 
           it('sets to date', function () {
-            expect(moment($ctrl.leaveRequest.to_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
+            expect(moment($ctrl.request.to_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
           });
         });
       });
@@ -337,18 +341,17 @@
           });
 
           it('selects to date type', function () {
-            expect($ctrl.leaveRequest.to_date_type).toEqual(expectedDayType);
+            expect($ctrl.request.to_date_type).toEqual(expectedDayType);
           });
         });
 
         describe('when from and to are selected', function () {
           beforeEach(function () {
-            spyOn($ctrl, 'calculateBalanceChange').and.callThrough();
             setTestDates(date2016, date2016);
           });
 
           it('calculates balance change', function () {
-            expect($ctrl.calculateBalanceChange).toHaveBeenCalled();
+            expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
           });
         });
       });
@@ -358,7 +361,7 @@
           describe('for single day', function () {
             beforeEach(function () {
               //select half_day_am  to get single day mock data
-              $ctrl.leaveRequest.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am');
+              $ctrl.request.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am');
               $ctrl.calculateBalanceChange();
               $scope.$digest();
             });
@@ -377,7 +380,7 @@
               $ctrl.uiOptions.multipleDays = true;
               //select all_day to get multiple day mock data
               setTestDates(date2016, date2016);
-              $ctrl.leaveRequest.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
+              $ctrl.request.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
               $ctrl.calculateBalanceChange();
               $scope.$digest();
             });
@@ -452,18 +455,18 @@
           });
 
           it('has all required fields', function () {
-            expect($ctrl.leaveRequest.from_date).toBeDefined();
-            expect($ctrl.leaveRequest.to_date).toBeDefined();
-            expect($ctrl.leaveRequest.from_date_type).toBeDefined();
-            expect($ctrl.leaveRequest.to_date_type).toBeDefined();
-            expect($ctrl.leaveRequest.contact_id).toBeDefined();
-            expect($ctrl.leaveRequest.status_id).toBeDefined();
-            expect($ctrl.leaveRequest.type_id).toBeDefined();
+            expect($ctrl.request.from_date).toBeDefined();
+            expect($ctrl.request.to_date).toBeDefined();
+            expect($ctrl.request.from_date_type).toBeDefined();
+            expect($ctrl.request.to_date_type).toBeDefined();
+            expect($ctrl.request.contact_id).toBeDefined();
+            expect($ctrl.request.status_id).toBeDefined();
+            expect($ctrl.request.type_id).toBeDefined();
           });
 
           it('is successful', function () {
             expect($ctrl.error).toBeNull();
-            expect($ctrl.leaveRequest.id).toBeDefined();
+            expect($ctrl.request.id).toBeDefined();
           });
 
           it('allows user to submit', function () {
@@ -471,7 +474,7 @@
           });
 
           it('sends event', function () {
-            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.leaveRequest);
+            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.request);
           });
 
           describe('when balance change is negative', function () {
@@ -492,7 +495,7 @@
 
             describe('and absence type allows overuse', function () {
               beforeEach(function () {
-                $ctrl.leaveRequest.type_id = $ctrl.absenceTypes[2].id;
+                $ctrl.request.type_id = $ctrl.absenceTypes[2].id;
                 $ctrl.updateBalance();
                 $ctrl.submit();
                 $scope.$digest();
@@ -531,13 +534,13 @@
           });
 
           it('sets all leaverequest values', function () {
-            expect($ctrl.leaveRequest.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
-            expect($ctrl.leaveRequest.type_id).toEqual(jasmine.any(String));
-            expect($ctrl.leaveRequest.status_id).toEqual(waitingApprovalStatus.value);
-            expect($ctrl.leaveRequest.from_date).toEqual(jasmine.any(String));
-            expect($ctrl.leaveRequest.from_date_type).toEqual(jasmine.any(String));
-            expect($ctrl.leaveRequest.to_date).toEqual(jasmine.any(String));
-            expect($ctrl.leaveRequest.to_date_type).toEqual(jasmine.any(String));
+            expect($ctrl.request.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
+            expect($ctrl.request.type_id).toEqual(jasmine.any(String));
+            expect($ctrl.request.status_id).toEqual(waitingApprovalStatus.value);
+            expect($ctrl.request.from_date).toEqual(jasmine.any(String));
+            expect($ctrl.request.from_date_type).toEqual(jasmine.any(String));
+            expect($ctrl.request.to_date).toEqual(jasmine.any(String));
+            expect($ctrl.request.to_date_type).toEqual(jasmine.any(String));
           });
 
           it('gets contact name', function () {
@@ -553,22 +556,22 @@
           });
 
           it('loads day types', function () {
-            expect($ctrl.leaveRequestFromDayTypes).toBeDefined();
-            expect($ctrl.leaveRequestToDayTypes).toBeDefined();
+            expect($ctrl.requestFromDayTypes).toBeDefined();
+            expect($ctrl.requestToDayTypes).toBeDefined();
           });
         });
 
         describe('on submit', function () {
           beforeEach(function () {
             spyOn($rootScope, '$emit');
-            spyOn($ctrl.leaveRequest, 'update').and.callThrough();
+            spyOn($ctrl.request, 'update').and.callThrough();
 
             //entitlements are randomly generated so resetting them to positive here
             if ($ctrl.balance.closing < 0) {
               $ctrl.balance.closing = 0;
             }
             //set status id manually as manager would set it on UI
-            $ctrl.leaveRequest.status_id = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+            $ctrl.request.status_id = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
             $ctrl.submit();
             $scope.$apply();
           });
@@ -578,11 +581,11 @@
           });
 
           it('calls expected api', function () {
-            expect($ctrl.leaveRequest.update).toHaveBeenCalled();
+            expect($ctrl.request.update).toHaveBeenCalled();
           });
 
           it('sends update event', function () {
-            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', $ctrl.leaveRequest);
+            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', $ctrl.request);
           });
         });
       });
@@ -591,7 +594,7 @@
         describe('for multiple days', function () {
           describe('before from date is selected', function () {
             it('disables to date and to type', function () {
-              expect($ctrl.leaveRequest.from_date).toBeFalsy();
+              expect($ctrl.request.from_date).toBeFalsy();
             });
           });
 
@@ -601,7 +604,7 @@
             });
 
             it('enables to date and to type', function () {
-              expect($ctrl.leaveRequest.from_date).toBeTruthy();
+              expect($ctrl.request.from_date).toBeTruthy();
             });
 
             it('checks if date is in any absence period without errors', function () {
@@ -643,7 +646,7 @@
               });
 
               it('resets to date', function () {
-                expect($ctrl.leaveRequest.to_date).toBeNull();
+                expect($ctrl.request.to_date).toBeNull();
               });
             });
 
@@ -695,7 +698,7 @@
                 });
 
                 it('does not reset to date to equal from date', function () {
-                  expect($ctrl.leaveRequest.to_date).not.toEqual($ctrl.leaveRequest.from_date);
+                  expect($ctrl.request.to_date).not.toEqual($ctrl.request.from_date);
                 });
               });
 
@@ -708,7 +711,7 @@
                 });
 
                 it('changes to date to equal to date', function () {
-                  expect($ctrl.leaveRequest.to_date).toEqual($ctrl.leaveRequest.from_date);
+                  expect($ctrl.request.to_date).toEqual($ctrl.request.from_date);
                 });
               });
             });
@@ -740,18 +743,18 @@
             expect($ctrl.isRole('owner')).toBeTruthy();
           });
 
-          it('sets mode to edit', function() {
+          it('sets mode to edit', function () {
             expect($ctrl.isMode('edit')).toBeTruthy();
           });
 
           it('sets all leaverequest values', function () {
-            expect($ctrl.leaveRequest.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
-            expect($ctrl.leaveRequest.type_id).toEqual('1');
-            expect($ctrl.leaveRequest.status_id).toEqual(waitingApprovalStatus.value);
-            expect($ctrl.leaveRequest.from_date).toEqual('2016-11-23');
-            expect($ctrl.leaveRequest.from_date_type).toEqual('1');
-            expect($ctrl.leaveRequest.to_date).toEqual('2016-11-28');
-            expect($ctrl.leaveRequest.to_date_type).toEqual('1');
+            expect($ctrl.request.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
+            expect($ctrl.request.type_id).toEqual('1');
+            expect($ctrl.request.status_id).toEqual(waitingApprovalStatus.value);
+            expect($ctrl.request.from_date).toEqual('2016-11-23');
+            expect($ctrl.request.from_date_type).toEqual('1');
+            expect($ctrl.request.to_date).toEqual('2016-11-28');
+            expect($ctrl.request.to_date_type).toEqual('1');
           });
 
           it('does not allow user to submit', function () {
@@ -763,15 +766,15 @@
           });
 
           it('loads day types', function () {
-            expect($ctrl.leaveRequestFromDayTypes).toBeDefined();
-            expect($ctrl.leaveRequestToDayTypes).toBeDefined();
+            expect($ctrl.requestFromDayTypes).toBeDefined();
+            expect($ctrl.requestToDayTypes).toBeDefined();
           });
         });
 
         describe('and submits', function () {
           beforeEach(function () {
             spyOn($rootScope, '$emit');
-            spyOn($ctrl.leaveRequest, 'update').and.callThrough();
+            spyOn($ctrl.request, 'update').and.callThrough();
             //change date to enable submit button
             setTestDates(date2016);
 
@@ -789,11 +792,11 @@
           });
 
           it('calls appropriate API endpoint', function () {
-            expect($ctrl.leaveRequest.update).toHaveBeenCalled();
+            expect($ctrl.request.update).toHaveBeenCalled();
           });
 
           it('sends edit event', function () {
-            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::edit', $ctrl.leaveRequest);
+            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::edit', $ctrl.request);
           });
 
           it('has no error', function () {
@@ -806,8 +809,8 @@
         });
       });
 
-      describe('user opens in view mode', function() {
-        beforeEach(function() {
+      describe('user opens in view mode', function () {
+        beforeEach(function () {
           var approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
           var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', approvalStatus));
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
@@ -819,77 +822,19 @@
           initTestController(directiveOptions);
         });
 
-        it('sets mode to view', function() {
+        it('sets mode to view', function () {
           expect($ctrl.isMode('view')).toBeTruthy();
         });
 
-        describe('on submit', function() {
-          beforeEach(function() {
-            spyOn($ctrl.leaveRequest, 'update').and.callThrough();
+        describe('on submit', function () {
+          beforeEach(function () {
+            spyOn($ctrl.request, 'update').and.callThrough();
             $ctrl.submit();
             $scope.$apply()
           });
 
           it('does not update leave request', function () {
-            expect($ctrl.leaveRequest.update).not.toHaveBeenCalled();
-          });
-        });
-      });
-
-      describe('sick request', function() {
-        beforeEach(function() {
-          var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId,
-            leaveType: 'sick'
-          };
-
-          initTestController(directiveOptions);
-        });
-
-        it('has leave type set to sick', function () {
-          expect($ctrl.isLeaveType('sick')).toBeTruthy();
-        });
-
-        it('calls init on sickness instance', function() {
-          expect(SicknessRequestInstance.init).toHaveBeenCalledWith({contact_id: CRM.vars.leaveAndAbsences.contactId});
-        });
-
-        it('loads reasons option types', function() {
-          expect(Object.keys($ctrl.sicknessReasons).length).toBeGreaterThan(0);
-        });
-
-        it('loads documents option types', function() {
-          expect($ctrl.sicknessDocumentTypes.length).toBeGreaterThan(0);
-        });
-
-        it('gets absence types with true sick param', function() {
-          expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({ is_sick: true })
-        });
-
-        it('cannot submit request', function() {
-          expect($ctrl.canSubmit()).toBe(false);
-        });
-
-        describe('with selected reason', function() {
-          beforeEach(function() {
-            var reason = optionGroupMock.specificObject('hrleaveandabsences_sickness_reason', 'name', 'appointment');
-
-            $ctrl.leaveRequest = helper.createRandomSicknessRequest();
-            $ctrl.leaveRequest.reason = reason.value;
-          });
-
-          it('cannot submit request', function() {
-            expect($ctrl.canSubmit()).toBe(true);
-          });
-
-          describe('when user changes number of days selected', function() {
-            beforeEach(function() {
-              $ctrl.changeInNoOfDays();
-            });
-
-            it('resets reason', function() {
-              expect($ctrl.leaveRequest.reason).toBeNull();
-            });
+            expect($ctrl.request.update).not.toHaveBeenCalled();
           });
         });
       });
@@ -902,7 +847,7 @@
       function initTestController(directiveOptions) {
         $scope = $rootScope.$new();
 
-        $ctrl = $controller('LeaveRequestPopupCtrl', {
+        $ctrl = $controller('LeaveRequestCtrl', {
           $scope: $scope,
           $uibModalInstance: modalInstanceSpy,
           directiveOptions: directiveOptions
