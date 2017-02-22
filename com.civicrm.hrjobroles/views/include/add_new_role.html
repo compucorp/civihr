@@ -42,7 +42,7 @@
                                                     name="contract"
                                                     ng-required="true"
                                                     on-select="jobroles.onContractSelected($event)">
-                                                      <ui-select-match allow-clear placeholder="Select a contract">
+                                                      <ui-select-match placeholder="Select a contract">
                                                         {{$select.selected.value.label}}
                                                       </ui-select-match>
                                                       <ui-select-choices repeat="contract.value.id as (key,contract) in jobroles.contractsData | filter: { value: { label: $select.search }}">

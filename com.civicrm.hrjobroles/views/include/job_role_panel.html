@@ -93,7 +93,7 @@
                                                           title="Choose a contract"
                                                           on-select="jobroles.onContractEdited($data, job_roles_data.id)"
                                                           ng-required="true">
-                                                            <ui-select-match allow-clear placeholder="Select a contract">
+                                                            <ui-select-match placeholder="Select a contract">
                                                               {{$select.selected.value.label}}
                                                             </ui-select-match>
                                                             <ui-select-choices repeat="contract.value.id as (key,contract) in jobroles.contractsData | filter: { value: { label: $select.search }}">
@@ -108,6 +108,7 @@
                                                 <div class="form-group" ng-init="jobroles.initData(job_roles_data.id, 'start_date', job_roles_data.start_date)">
                                                     <label for="{{prefix}}start_date" class="col-xs-4 control-label">
                                                         Start Date:
+                                                        <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="!jobroles.edit_data[job_roles_data.id]['start_date']"></i>
                                                     </label>
 
                                                     <!-- FIX: xeditable datepicker doesn't work here as it isn't compatible with input field -->
