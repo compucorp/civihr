@@ -58,6 +58,8 @@
       }));
 
       describe('sick request', function () {
+        var parentRequestCtrl;
+
         beforeEach(function () {
           var directiveOptions = {
             contactId: CRM.vars.leaveAndAbsences.contactId,
@@ -65,10 +67,15 @@
           };
 
           initTestController(directiveOptions);
+          parentRequestCtrl = $controller('RequestCtrl')
         });
 
         it('is called', function () {
           expect($log.debug).toHaveBeenCalled();
+        });
+
+        it('inherited from request controller', function(){
+          expect($ctrl instanceof parentRequestCtrl.constructor).toBe(true);
         });
 
         it('has leave type set to sick', function () {

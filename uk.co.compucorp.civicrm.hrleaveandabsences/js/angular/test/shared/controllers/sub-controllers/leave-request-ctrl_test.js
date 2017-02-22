@@ -24,7 +24,7 @@
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, LeaveRequestInstance, Contact, ContactAPIMock,
-        EntitlementAPI, LeaveRequestAPI, WorkPatternAPI,
+        EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl, 
         date2016 = '01/12/2016',
         date2017 = '02/02/2017',
         date2013 = '02/02/2013';
@@ -88,10 +88,15 @@
         };
 
         initTestController(directiveOptions);
+        parentRequestCtrl = $controller('RequestCtrl')
       }));
 
       it('is called', function () {
         expect($log.debug).toHaveBeenCalled();
+      });
+
+      it('inherited from request controller', function(){
+        expect($ctrl instanceof parentRequestCtrl.constructor).toBe(true);
       });
 
       describe('when initialized', function () {
