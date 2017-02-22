@@ -2,7 +2,6 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
-use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {

@@ -3,7 +3,6 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
-use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
 
 class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
 
@@ -73,25 +72,5 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
       'amount' => -1,
       'type_id' => self::getTypeId('Leave')
     ];
-  }
-
-  public static function fabricateForTOIL(TOILRequest $toilRequest, $toilToAccrue, DateTime $expiryDate = null) {
-    //delete any existing TOIL LeaveBalanceChanges
-    self::deleteForTOIL($toilRequest);
-
-    return self::fabricate([
-      'type_id' => self::getTypeId('Credit'),
-      'amount' => $toilToAccrue,
-      'source_id' => $toilRequest->id,
-      'expiry_date' => $expiryDate ? $expiryDate->format('Ymd') : null,
-      'source_type' => LeaveBalanceChange::SOURCE_TOIL_REQUEST
-    ]);
-  }
-
-  private static function deleteForTOIL(TOILRequest $toilRequest) {
-    $dao = new LeaveBalanceChange();
-    $dao->source_id = $toilRequest->id;
-    $dao->source_type = LeaveBalanceChange::SOURCE_TOIL_REQUEST;
-    $dao->delete();
   }
 }

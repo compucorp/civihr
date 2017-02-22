@@ -60,7 +60,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @return CRM_HRLeaveAndAbsences_DAO_AbsenceType|NULL
    **/
   public static function create($params) {
-    $className = 'CRM_HRLeaveAndAbsences_BAO_AbsenceType';
     $entityName = 'AbsenceType';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
@@ -80,7 +79,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
     $mustUpdatePublicHolidaysLeaveRequests = self::mustUpdatePublicHolidayLeaveRequests($params);
 
-    $instance = new $className();
+    $instance = new self();
 
     if ($hook == 'edit') {
       $instance->loadOldAbsenceType($params['id']);

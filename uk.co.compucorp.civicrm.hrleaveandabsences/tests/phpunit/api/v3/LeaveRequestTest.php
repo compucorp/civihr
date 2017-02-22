@@ -24,7 +24,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
-  use CRM_HRLeaveAndAbsences_TOILRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
 
   /**

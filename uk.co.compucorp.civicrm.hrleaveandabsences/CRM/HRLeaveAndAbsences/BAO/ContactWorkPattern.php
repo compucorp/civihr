@@ -1,9 +1,7 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
-use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 
 class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern {
 
