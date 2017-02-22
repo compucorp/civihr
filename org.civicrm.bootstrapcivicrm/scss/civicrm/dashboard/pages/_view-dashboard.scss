@@ -52,6 +52,81 @@
         }
       }
     }
+
+    #help {
+      clear: both;
+      margin: 0;
+      padding: 15px;
+      border: none;
+      box-shadow: $box-shadow;
+      background-color: $crm-help-success;
+      color: $crm-dasboard-header;
+    }
+
+    h3 {
+      background-color: $gray-lighter;
+      padding: 10px 15px;
+      font-size: $font-size-medium;
+      color: $crm-dasboard-header;
+      border-top: 1px solid $crm-background;
+      border-bottom: 1px solid $crm-dark-grayblue;
+      font-family: $font-family-base;
+    }
+
+    #civicrm-getting-started {
+      table {
+        tbody {
+          tr {
+            border-bottom: 0;
+
+            td {
+              &:nth-child(2) {
+                padding-left: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    #civicrm-news-feed {
+      .ui-widget-header {
+        border-bottom-color: $crm-dark-grayblue;
+
+        .ui-tabs-active {
+            border-bottom: 2px solid $crm-white;
+            border-color: $crm-dark-grayblue;
+            border-bottom-color: $crm-white;
+        }
+      }
+
+      #civicrm-news-feed-blog {
+        padding: 0 !important;
+
+        .crm-accordion-header {
+          background: $crm-white !important;
+          border-bottom: 1px solid $crm-dark-grayblue;
+
+          .crm-news-feed-item-title,
+          .crm-news-feed-item-preview {
+            font-weight: 600 !important;
+            font-family: $font-family-base;
+            color: $crm-dasboard-header;
+          }
+        }
+
+        .crm-accordion-body {
+          padding: 10px 15px !important;
+          font-size: $font-size-small;
+          box-shadow: $crm-box-shadow-inset;
+          font-family: $font-family-base;
+
+          .crm-news-feed-item-link {
+            text-transform: capitalize;
+          }
+        }
+      }
+    }
   }
 
   .crm-activity-selector-dashlet {
@@ -71,6 +146,8 @@
 
       table {
         width: 100%;
+        margin-left: -15px;
+        margin-right: -15px;
         box-shadow: none;
       }
     }
