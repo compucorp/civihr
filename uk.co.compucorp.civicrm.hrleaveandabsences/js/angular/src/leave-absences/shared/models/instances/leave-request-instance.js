@@ -54,8 +54,43 @@ define([
           }.bind(this));
       }
 
+      /**
+       * Save comments which do not have an ID
+       *
+       * @return {Promise}
+       */
+      function saveCommentsWithoutID() {
+        var promises = [],
+          self = this;
+
+        self.comments.map(function (comment, index) {
+          if (!comment.comment_id) {
+            //IIFE is created to keep actual value of 'index' when promise is resolved
+            (function (index) {
+              promises.push(LeaveRequestAPI.saveComment(self.id, comment)
+                .then(function (comment) {
+                  self.comments[index] = comment;
+                }));
+            })(index);
+          }
+        });
+
+        return $q.all(promises);
+      }
+
       return ModelInstance.extend({
 
+        /**
+         * Returns the default custom data (as in, not given by the API)
+         * with its default values
+         *
+         * @return {object}
+         */
+        defaultCustomData: function () {
+          return {
+            comments: []
+          };
+        },
         /**
          * Cancel a leave request
          */
@@ -90,7 +125,10 @@ define([
          * @return {Promise} Resolved with {Object} Updated Leave request
          */
         update: function () {
-          return LeaveRequestAPI.update(this.toAPI());
+          return LeaveRequestAPI.update(this.toAPI())
+            .then(function () {
+              return saveCommentsWithoutID.call(this);
+            }.bind(this));
         },
 
         /**
@@ -103,6 +141,7 @@ define([
           return LeaveRequestAPI.create(this.toAPI())
             .then(function (result) {
               this.id = result.id;
+              return saveCommentsWithoutID.call(this);
             }.bind(this));
         },
 
@@ -195,7 +234,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments'], key)) {
             result[key] = this[key];
           }
         }
