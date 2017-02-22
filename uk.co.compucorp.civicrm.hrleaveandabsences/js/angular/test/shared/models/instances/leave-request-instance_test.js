@@ -235,7 +235,7 @@ define([
         });
       });
 
-      it('calls API to save the newly created comments only(without having ID)', function () {
+      it('calls API to save the newly created comments only', function () {
         promise.then(function () {
           commentsData.getCommentsWithMixedIDs().values.map(function (comment) {
             if (!comment.comment_id) {
