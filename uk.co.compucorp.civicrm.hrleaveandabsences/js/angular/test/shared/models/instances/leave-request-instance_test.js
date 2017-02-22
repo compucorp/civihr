@@ -261,11 +261,9 @@ define([
         $rootScope.$apply();
       });
 
-      it('calls equivalent API method without comments', function () {
+      it('calls equivalent API method', function () {
         instanceCreate.then(function () {
-          expect(LeaveRequestAPI.create).not.toHaveBeenCalledWith(jasmine.objectContaining({
-            comments: jasmine.any(Object)
-          }));
+          expect(LeaveRequestAPI.create).toHaveBeenCalled();
         });
       });
 
@@ -277,13 +275,7 @@ define([
         });
       });
 
-      it('comments are set back after API call', function () {
-        instanceCreate.then(function () {
-          expect(instance.comments).not.toEqual(null);
-        });
-      });
-
-      it('calls API to save the newly created comments only(without having ID)', function () {
+      it('calls API to save the newly created comments only', function () {
         instanceCreate.then(function () {
           commentsData.getCommentsWithMixedIDs().values.map(function (comment) {
             if (!comment.comment_id) {
@@ -631,7 +623,8 @@ define([
         expect(Object.keys(toAPIData)).toEqual(_.without(
           Object.keys(leaveRequest.attributes()),
           'balance_change',
-          'dates'
+          'dates',
+          'comments'
         ));
       });
     });

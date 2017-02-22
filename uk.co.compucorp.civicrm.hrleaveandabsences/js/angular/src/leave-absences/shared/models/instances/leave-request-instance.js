@@ -125,12 +125,8 @@ define([
          * @return {Promise} Resolved with {Object} Updated Leave request
          */
         update: function () {
-          var comments = this.comments;
-          delete this.comments;
-
           return LeaveRequestAPI.update(this.toAPI())
             .then(function () {
-              this.comments = comments;
               return saveCommentsWithoutID.call(this);
             }.bind(this));
         },
@@ -142,13 +138,9 @@ define([
          *  newly created id for this instance
          */
         create: function () {
-          var comments = this.comments;
-          delete this.comments;
-
           return LeaveRequestAPI.create(this.toAPI())
             .then(function (result) {
               this.id = result.id;
-              this.comments = comments;
               return saveCommentsWithoutID.call(this);
             }.bind(this));
         },
@@ -242,7 +234,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments'], key)) {
             result[key] = this[key];
           }
         }
