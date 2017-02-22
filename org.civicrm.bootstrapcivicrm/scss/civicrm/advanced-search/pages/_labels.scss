@@ -35,6 +35,11 @@ input[type='checkbox'] + label {
   margin-top: 5px !important;
 }
 
+a.crm-clear-link {
+  position: relative;
+  top: -2px;
+}
+
 #{$basic-criteria} {
   .form-layout > tbody {
     > tr {
@@ -68,6 +73,32 @@ input[type='checkbox'] + label {
           }
         }
       }
+
+      &:nth-child(4) {
+        td {
+          &:first-child {
+            tr:last-child {
+              td:last-child {
+                vertical-align: top !important;
+
+                .helpicon {
+                  top: -30px;
+                  left: 25px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      &:last-child {
+        td:last-child {
+          > a.crm-clear-link {
+            position: relative;
+            top: -12px;
+          }
+        }
+      }
     }
 
     @media (max-width: $screen-sm-min) {
@@ -88,6 +119,10 @@ input[type='checkbox'] + label {
 
   select + .helpicon {
     right: -50px;
+  }
+
+  #privacy-operator-wrapper {
+    display: flex;
   }
 }
 
@@ -293,6 +328,15 @@ input[type='checkbox'] + label {
   }
 }
 
+#{$address-fields},
+#{$mailings} {
+  input[type='checkbox'] + label {
+    &:after {
+      top: 7px !important;
+    }
+  }
+}
+
 #{$address-fields} {
   .form-layout {
     td {
@@ -328,6 +372,10 @@ input[type='checkbox'] + label {
             }
           }
         }
+      }
+
+      #s2id_state_province {
+        width: 230px !important;
       }
 
       @media (max-width: $screen-sm-min) {
