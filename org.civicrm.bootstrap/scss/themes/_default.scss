@@ -4,7 +4,8 @@
 @import "../vendor/bootstrap/glyphicons";
 
 // Core CSS
-@import "../vendor/bootstrap/scaffolding";
+@import "../overrides/namespace/scaffolding";
+
 @import "../vendor/bootstrap/type";
 @import "../vendor/bootstrap/code";
 @import "../vendor/bootstrap/grid";

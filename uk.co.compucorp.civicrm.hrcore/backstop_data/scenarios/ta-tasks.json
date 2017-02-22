@@ -1,0 +1,105 @@
+{
+  "scenarios": [
+    {
+      "label": "T&A / Tasks",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "delay": 2000,
+      "onReadyScript": "close-any-modal"
+    },
+    {
+      "label": "T&A / Tasks / Advanced Filters",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/advanced-filters"
+    },
+    {
+      "label": "T&A / Tasks / Select Dates",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/select-dates"
+    },
+    {
+      "label": "T&A / Tasks / Assignment / Add",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/add"
+    },
+    {
+      "label": "T&A / Tasks / Assignment / Select Type",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/select-type"
+    },
+    {
+      "label": "T&A / Tasks / Assignment / Add Task",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/add-task"
+    },
+    {
+      "label": "T&A / Tasks / Assignment / Add Document",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/add-document"
+    },
+    {
+      "label": "T&A / Tasks / Assignment / Pick Date",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/pick-date"
+    },
+    {
+      "label": "T&A / Tasks / Task / In Place Edit / Due Date",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-date"
+    },
+    {
+      "label": "T&A / Tasks / Task / In Place Edit / Subject",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-subject"
+    },
+    {
+      "label": "T&A / Tasks / Task / In Place Edit / Target",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-target"
+    },
+    {
+      "label": "T&A / Tasks / Task / In Place Edit / Assigned To",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-assigned"
+    },
+    {
+      "label": "T&A / Tasks / Task / Add",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/add"
+    },
+    {
+      "label": "T&A / Tasks / Task / Pick Date",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/pick-date"
+    },
+    {
+      "label": "T&A / Tasks / Task / Select Assignee",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/select-assignee"
+    },
+    {
+      "label": "T&A / Tasks / Task / Select Type",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/select-type"
+    },
+    {
+      "label": "T&A / Tasks / Task / Show All Fields",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/show-all-fields"
+    },
+    {
+      "label": "T&A / Tasks / Task / Show More",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/show-more"
+    },
+    {
+      "label": "T&A / Tasks / Task / Actions",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/actions"
+    },
+    {
+      "label": "T&A / Tasks / Task / Open",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/open"
+    }
+  ]
+}
