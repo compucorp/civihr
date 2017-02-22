@@ -1,11 +1,13 @@
 define([
   'leave-absences/shared/modules/apis',
   'common/lodash',
+  'common/moment',
   'common/services/api'
-], function (apis, _) {
+], function (apis, _, moment) {
   'use strict';
 
-  apis.factory('LeaveRequestAPI', ['$log', 'api', '$q', function ($log, api, $q) {
+  apis.factory('LeaveRequestAPI', ['$log', 'api', '$q', 'shared-settings',
+    function ($log, api, $q, sharedSettings) {
     $log.debug('LeaveRequestAPI');
 
     /**
@@ -265,18 +267,18 @@ define([
       /**
        * Calls the addcomment backend API.
        *
-       * @param {String} leaveRequestID - ID of leave request
-       * @param {String} commentText - comment text
-       * @param {String} contactID - ID of contact
+       * @param {string} leaveRequestID - ID of Leave Request
+       * @param {Object} comment - Comment object
        * @param {Object} params
        *
        * @return {Promise}
        */
-      saveComment: function (leaveRequestID, commentText, contactID, params) {
+      saveComment: function (leaveRequestID, comment, params) {
         params = _.assign({}, params, {
           leave_request_id: leaveRequestID,
-          text: commentText,
-          contact_id: contactID
+          text: comment.text,
+          contact_id: comment.contact_id,
+          created_at: moment(comment.created_at, sharedSettings.serverDateFormat).format(sharedSettings.serverDateTimeFormat)
         });
 
         return this.sendPOST('LeaveRequest', 'addcomment', params)

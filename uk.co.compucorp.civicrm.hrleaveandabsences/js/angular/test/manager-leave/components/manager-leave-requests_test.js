@@ -158,8 +158,8 @@
           });
 
           it('leave requests have loaded', function () {
-            expect(controller.leaveRequests.table.list).toEqual(leaveRequestData.all().values);
-            expect(controller.leaveRequests.filter.list).toEqual(leaveRequestData.all().values);
+            expect(controller.leaveRequests.table.list.length).toEqual(leaveRequestData.all().values.length);
+            expect(controller.leaveRequests.filter.list.length).toEqual(leaveRequestData.all().values.length);
           });
         });
       });

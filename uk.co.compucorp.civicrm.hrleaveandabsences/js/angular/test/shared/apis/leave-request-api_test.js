@@ -842,16 +842,20 @@ define([
     });
 
     describe('saveComment()', function () {
-      var leaveRequestID = '101',
-        commentText = 'test string',
-        contactID = '202',
+      var commentObject = {
+          comment_id: '101',
+          text: 'test string',
+          contact_id: '202',
+          created_at: '18/01/2017'
+        },
+        leaveRequestID = '102',
         params = {
           key: 'value'
         };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
-        promise = LeaveRequestAPI.saveComment(leaveRequestID, commentText, contactID, params);
+        promise = LeaveRequestAPI.saveComment(leaveRequestID, commentObject, params);
       });
 
       afterEach(function () {
@@ -861,11 +865,12 @@ define([
       it('calls endpoint with leaveRequestID, text and contact_id', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
-            'addcomment', jasmine.objectContaining(_.assign(params, {
+            'addcomment', _.assign(params, {
               leave_request_id: leaveRequestID,
-              text: commentText,
-              contact_id: contactID
-            })));
+              text: commentObject.text,
+              contact_id: commentObject.contact_id,
+              created_at: moment(commentObject.created_at, sharedSettings.serverDateFormat).format(sharedSettings.serverDateTimeFormat)
+            }));
         });
       });
 

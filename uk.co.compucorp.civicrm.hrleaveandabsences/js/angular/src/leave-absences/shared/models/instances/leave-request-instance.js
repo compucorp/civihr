@@ -54,8 +54,43 @@ define([
           }.bind(this));
       }
 
+      /**
+       * Save contacts which do not have an ID
+       *
+       * @return {Promise}
+       */
+      function manageComments() {
+        var promises = [],
+          self = this;
+
+        self.comments.map(function (comment, index) {
+          if (!comment.comment_id) {
+            //IIFE is created to keep actual value of 'index' when promise is resolved
+            (function () {
+              promises.push(LeaveRequestAPI.saveComment(self.id, comment)
+                .then(function (comment) {
+                  self.comments[index] = comment;
+                }));
+            })(index);
+          }
+        });
+
+        return $q.all(promises);
+      }
+
       return ModelInstance.extend({
 
+        /**
+         * Returns the default custom data (as in, not given by the API)
+         * with its default values
+         *
+         * @return {object}
+         */
+        defaultCustomData: function () {
+          return {
+            comments: []
+          };
+        },
         /**
          * Cancel a leave request
          */
@@ -90,7 +125,14 @@ define([
          * @return {Promise} Resolved with {Object} Updated Leave request
          */
         update: function () {
-          return LeaveRequestAPI.update(this.toAPI());
+          var comments = this.comments;
+          this.comments = null;
+
+          return LeaveRequestAPI.update(this.toAPI())
+            .then(function () {
+              this.comments = comments;
+              return manageComments.call(this);
+            }.bind(this));
         },
 
         /**
@@ -100,9 +142,14 @@ define([
          *  newly created id for this instance
          */
         create: function () {
+          var comments = this.comments;
+          this.comments = null;
+
           return LeaveRequestAPI.create(this.toAPI())
             .then(function (result) {
               this.id = result.id;
+              this.comments = comments;
+              return manageComments.call(this);
             }.bind(this));
         },
 
