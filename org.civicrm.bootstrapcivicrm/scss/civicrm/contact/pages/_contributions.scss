@@ -167,6 +167,99 @@
   }
 }
 
+.page-civicrm-contact-view-contribution {
+  #branding {
+    display: block;
+  }
+
+  #page {
+    padding: 20px 0 40px 0;
+    margin-right: 40px;
+    margin-left: 40px;
+  }
+
+  .help {
+    padding: 15px 20px !important;
+  }
+
+  #Contribution {
+
+    td.label,
+    div.label {
+      padding: 0 20px !important;
+      width: 190px;
+    }
+
+    .crm-accordion-body {
+      padding: 15px 0 !important;
+
+      tr {
+        td {
+          padding: 0;
+
+          &:first-child {
+            padding: 0 20px !important;
+
+            label {
+              padding: 0 !important;
+            }
+          }
+
+          &:not(.label) {
+            width: 100%;
+          }
+        }
+
+        &[id*="soft-credit-row"] {
+          td {
+            &:first-child {
+              padding: 0 !important;
+            }
+
+            label {
+              min-width: 205px;
+            }
+          }
+        }
+      }
+
+      table {
+        &.crm-contribution-form-table-credit_to_pcp,
+        &.crm-soft-credit-block {
+          tr {
+            td {
+              padding: 0 !important;
+            }
+          }
+        }
+      }
+
+      #id-premium {
+        td {
+          display: table-cell;
+
+          &:first-child {
+            width: 190px;
+            min-width: 190px;
+            padding: 15px 20px !important;
+          }
+        }
+      }
+    }
+
+
+
+    legend {
+      padding: 15px 20px !important;
+      margin: 0;
+    }
+
+    .crm-submit-buttons {
+      border-bottom: none;
+    }
+  }
+}
+
 .CRM_Contribute_Form_Search {
   table {
     background: transparent;
@@ -232,7 +325,6 @@
     }
   }
 }
-
 
 .CRM_Contribute_Form_Contribution {
   .crm-submit-buttons {
