@@ -1,13 +1,12 @@
 define([
   'leave-absences/shared/modules/apis',
   'common/lodash',
-  'common/moment',
   'common/services/api'
-], function (apis, _, moment) {
+], function (apis, _) {
   'use strict';
 
   apis.factory('LeaveRequestAPI', ['$log', 'api', '$q', 'shared-settings',
-    function ($log, api, $q, sharedSettings) {
+    function ($log, api, $q) {
     $log.debug('LeaveRequestAPI');
 
     /**
@@ -278,7 +277,7 @@ define([
           leave_request_id: leaveRequestID,
           text: comment.text,
           contact_id: comment.contact_id,
-          created_at: moment(comment.created_at, sharedSettings.serverDateFormat).format(sharedSettings.serverDateTimeFormat)
+          created_at: comment.created_at
         });
 
         return this.sendPOST('LeaveRequest', 'addcomment', params)

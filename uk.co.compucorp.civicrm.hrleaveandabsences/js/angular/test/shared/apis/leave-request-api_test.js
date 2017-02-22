@@ -2,13 +2,14 @@ define([
   'mocks/data/leave-request-data',
   'mocks/data/sickness-leave-request-data',
   'mocks/data/toil-leave-request-data',
+  'mocks/data/comments-data',
   'common/moment',
   'mocks/helpers/helper',
   'mocks/data/absence-type-data',
   'mocks/data/option-group-mock-data',
   'leave-absences/shared/apis/leave-request-api',
   'leave-absences/shared/modules/shared-settings',
-], function (mockData, sicknessMockData, toilMockData, moment, helper, absenceTypeData, optionGroupMock) {
+], function (mockData, sicknessMockData, toilMockData, commentsData, moment, helper, absenceTypeData, optionGroupMock) {
   'use strict';
 
   describe('LeaveRequestAPI', function () {
@@ -842,12 +843,7 @@ define([
     });
 
     describe('saveComment()', function () {
-      var commentObject = {
-          comment_id: '101',
-          text: 'test string',
-          contact_id: '202',
-          created_at: '18/01/2017'
-        },
+      var commentObject = commentsData.getComments().values[0],
         leaveRequestID = '102',
         params = {
           key: 'value'
@@ -869,7 +865,7 @@ define([
               leave_request_id: leaveRequestID,
               text: commentObject.text,
               contact_id: commentObject.contact_id,
-              created_at: moment(commentObject.created_at, sharedSettings.serverDateFormat).format(sharedSettings.serverDateTimeFormat)
+              created_at: commentObject.created_at
             }));
         });
       });

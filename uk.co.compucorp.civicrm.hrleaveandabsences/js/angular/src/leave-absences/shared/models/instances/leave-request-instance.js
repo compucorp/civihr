@@ -55,18 +55,18 @@ define([
       }
 
       /**
-       * Save contacts which do not have an ID
+       * Save comments which do not have an ID
        *
        * @return {Promise}
        */
-      function manageComments() {
+      function saveCommentsWithoutID() {
         var promises = [],
           self = this;
 
         self.comments.map(function (comment, index) {
           if (!comment.comment_id) {
             //IIFE is created to keep actual value of 'index' when promise is resolved
-            (function () {
+            (function (index) {
               promises.push(LeaveRequestAPI.saveComment(self.id, comment)
                 .then(function (comment) {
                   self.comments[index] = comment;
@@ -126,12 +126,12 @@ define([
          */
         update: function () {
           var comments = this.comments;
-          this.comments = null;
+          delete this.comments;
 
           return LeaveRequestAPI.update(this.toAPI())
             .then(function () {
               this.comments = comments;
-              return manageComments.call(this);
+              return saveCommentsWithoutID.call(this);
             }.bind(this));
         },
 
@@ -143,13 +143,13 @@ define([
          */
         create: function () {
           var comments = this.comments;
-          this.comments = null;
+          delete this.comments;
 
           return LeaveRequestAPI.create(this.toAPI())
             .then(function (result) {
               this.id = result.id;
               this.comments = comments;
-              return manageComments.call(this);
+              return saveCommentsWithoutID.call(this);
             }.bind(this));
         },
 

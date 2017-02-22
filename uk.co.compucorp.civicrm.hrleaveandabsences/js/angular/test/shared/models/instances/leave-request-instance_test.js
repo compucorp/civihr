@@ -263,8 +263,8 @@ define([
 
       it('calls equivalent API method without comments', function () {
         instanceCreate.then(function () {
-          expect(LeaveRequestAPI.create).toHaveBeenCalledWith(jasmine.objectContaining({
-            comments: null
+          expect(LeaveRequestAPI.create).not.toHaveBeenCalledWith(jasmine.objectContaining({
+            comments: jasmine.any(Object)
           }));
         });
       });
