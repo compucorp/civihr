@@ -2,12 +2,11 @@
 
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_TOILRequest as TOILRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
-use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 /**
@@ -16,6 +15,8 @@ use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
  * @group headless
  */
 class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
+
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
   public function testPostUpdateActionDeletesTOILRequestsWhenTOILGetsDisabled() {
     $absenceType = AbsenceTypeFabricator::fabricate([
@@ -28,24 +29,26 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
       'end_date' => CRM_Utils_Date::processDate('+ 300days'),
     ]);
 
-    TOILRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('+3 days'),
       'to_date' => CRM_Utils_Date::processDate('+3 days'),
       'toil_to_accrue' => 2,
-      'duration' => 120,
-      'expiry_date' => CRM_Utils_Date::processDate('+100 days')
+      'toil_duration' => 120,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+100 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
-    $toilRequest2 = TOILRequestFabricator::fabricateWithoutValidation([
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-03-10'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-10'),
       'toil_to_accrue' => 2,
-      'duration' => 120,
-      'expiry_date' => CRM_Utils_Date::processDate('2016-12-10')
+      'toil_duration' => 120,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-12-10'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     //assert the records exist first before updating absence type
@@ -61,10 +64,6 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
     $leaveRequestDate->find();
     $this->assertEquals($leaveRequestDate->N, 2);
 
-    $toilRequest = new ToilRequest();
-    $toilRequest->find();
-    $this->assertEquals($toilRequest->N, 2);
-
     //disable TOIL
     $updatedAbsenceType = AbsenceType::create([
       'id' => $absenceType->id,
@@ -76,31 +75,22 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
     $absenceTypeService->postUpdateActions($updatedAbsenceType);
 
     //confirm the balance change for the expired TOIL balance was not deleted
-    $balanceChanges = new LeaveBalanceChange();
-    $balanceChanges->find();
-    $this->assertEquals($balanceChanges->N, 1);
-    $balanceChanges->fetch();
-    $this->assertEquals($balanceChanges->source_id, $toilRequest2->id);
+    $balanceChange = new LeaveBalanceChange();
+    $balanceChange->find(true);
+    $this->assertEquals($balanceChange->N, 1);
+    $toilRequestBalanceChange = $this->findToilRequestMainBalanceChange($toilRequest2->id);
+    $this->assertEquals($toilRequestBalanceChange->id, $balanceChange->id);
 
     //confirm the leave request for the expired TOIL balance was not deleted
     $leaveRequest = new LeaveRequest();
-    $leaveRequest->find();
+    $leaveRequest->find(true);
     $this->assertEquals($leaveRequest->N, 1);
-    $leaveRequest->fetch();
-    $this->assertEquals($leaveRequest->id, $toilRequest2->leave_request_id);
+    $this->assertEquals($leaveRequest->id, $toilRequest2->id);
 
     //confirm the leave request dates for the expired TOIL balance was not deleted
     $leaveRequestDate = new LeaveRequestDate();
-    $leaveRequestDate->find();
+    $leaveRequestDate->find(true);
     $this->assertEquals($leaveRequestDate->N, 1);
-    $leaveRequestDate->fetch();
     $this->assertEquals($leaveRequestDate->date, '2016-03-10');
-
-    //confirm the TOIL Request for the expired TOIL balance was not deleted
-    $toilRequest = new ToilRequest();
-    $toilRequest->find();
-    $this->assertEquals($toilRequest->N, 1);
-    $toilRequest->fetch();
-    $this->assertEquals($toilRequest->id, $toilRequest2->id);
   }
 }

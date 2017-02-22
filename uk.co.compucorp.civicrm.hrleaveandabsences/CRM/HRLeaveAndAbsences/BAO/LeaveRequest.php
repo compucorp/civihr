@@ -974,6 +974,42 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
+   * Deletes the TOIL Requests associated with an Absence Type (within the given Absence Period)
+   * and all their LeaveBalanceChanges and LeaveRequestDates.
+   *
+   * @param int $absenceTypeID
+   *   The absence Type that TOIL requests is to be deleted for.
+   * @param DateTime $startDate
+   *   Records linked to LeaveRequests with from_date >= this date will be deleted
+   */
+  public static function deleteAllNonExpiredTOILRequestsForAbsenceType($absenceTypeID, DateTime $startDate) {
+    $leaveBalanceChangeTable = LeaveBalanceChange::getTableName();
+    $leaveRequestTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+
+    $query = "DELETE bc, lrd, lr 
+              FROM {$leaveRequestTable} lr
+              INNER JOIN {$leaveRequestDateTable} lrd 
+                ON lrd.leave_request_id = lr.id 
+              INNER JOIN {$leaveBalanceChangeTable} bc 
+                ON bc.source_id = lrd.id AND bc.source_type = %1 
+              WHERE lr.type_id = %2 AND 
+                    lr.from_date >= %3 AND 
+                    lr.request_type = %4 AND
+                    lr.toil_expiry_date > %5
+              ";
+    $params = [
+      1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$absenceTypeID, 'Integer'],
+      3 => [$startDate->format('Y-m-d'), 'String'],
+      4 => [self::REQUEST_TYPE_TOIL, 'String'],
+      5 => [date('Y-m-d'), 'String']
+    ];
+
+    CRM_Core_DAO::executeQuery($query, $params);
+  }
+
+  /**
    *{@inheritdoc}
    */
   public function addSelectWhereClause() {

@@ -1957,4 +1957,72 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $params['status_id'] = 1;
     LeaveRequest::create($params);
   }
+
+  public function testDeleteAllNonExpiredTOILRequestsForAbsenceType() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+    ]);
+
+    // this one is not expired, but it will not be deleted
+    // because from_date is < than the given start date
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'toil_to_accrue' => 3,
+      'toil_duration' => 300,
+      'toil_expiry_date' => null,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    // this one will not be deleted because from_date is < than the given start date
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'toil_to_accrue' => 3,
+      'toil_duration' => 300,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-03-01'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    // the from_date matches the given start date, but it is already
+    // expired, so it will not be deleted too
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-11'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-12'),
+      'toil_to_accrue' => 3,
+      'toil_duration' => 300,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-06-10'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    // the from_date value matches the given start date
+    // but the expiry_date is in the future, so this one will be
+    // deleted
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('next monday'),
+      'to_date' => CRM_Utils_Date::processDate('next monday'),
+      'toil_to_accrue' => 3,
+      'toil_duration' => 300,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+6 months'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    LeaveRequest::deleteAllNonExpiredTOILRequestsForAbsenceType($absenceType->id, new DateTime('2016-03-11'));
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->find();
+    $this->assertEquals(3, $leaveRequest->N);
+  }
 }
