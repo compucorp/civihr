@@ -101,6 +101,10 @@ a.crm-clear-link {
       }
     }
 
+    #privacy_operator {
+      min-width: 100%;
+    }
+
     @media (max-width: $screen-sm-min) {
       > tr {
         @include mx-responsive-search;

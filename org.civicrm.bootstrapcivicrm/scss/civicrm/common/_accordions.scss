@@ -5,6 +5,7 @@
 
   .crm-accordion-header {
     @extend %no-border-radius;
+    position: relative;
     line-height: 40px;
     padding-top: 0;
     padding-bottom: 0;
@@ -36,6 +37,9 @@
 
     .crm-close-accordion {
       margin-top: 5px;
+      position: absolute;
+      right: 5px;
+      top: -4px;
     }
 
     .helpicon {
