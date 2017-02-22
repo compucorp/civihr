@@ -100,7 +100,7 @@
         }
       }
 
-      #civicrm-news-feed-blog {
+      [id*="civicrm-news-feed-"] {
         padding: 0 !important;
 
         .crm-accordion-header {
@@ -138,11 +138,16 @@
       .crm-inline-edit-field {
         float: left;
         width: 50%;
+
+        .select2-container {
+          width: 98% !important;
+        }
       }
     }
 
     .dataTables_wrapper {
       padding: 15px;
+      overflow: scroll;
 
       table {
         width: 100%;
