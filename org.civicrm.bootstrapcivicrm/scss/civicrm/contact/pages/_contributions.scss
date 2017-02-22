@@ -138,6 +138,35 @@
   }
 }
 
+.page-civicrm-contribute-add {
+  .CRM_Contribute_Form_Contribution {
+    .crm-accordion-header:not(.crm-master-accordion-header) + .crm-accordion-body {
+      padding: 20px !important;
+    }
+
+    .crm-contribution-form-block {
+      > .form-layout-compressed {
+        .label {
+          padding-left: 20px !important;
+        }
+      }
+    }
+  }
+
+  .select2-drop,
+  .select2-choice {
+    width: 230px !important;
+  }
+
+  #s2id_product_name_1 {
+    .select2-choice {
+      position: relative;
+      top: 12px;
+      display: inline-block;
+    }
+  }
+}
+
 .CRM_Contribute_Form_Search {
   table {
     background: transparent;
@@ -385,6 +414,37 @@
         background: none;
         color: $crm-white;
       }
+    }
+  }
+
+  .help {
+    padding: 15px 0;
+  }
+
+  .form-layout-compressed td.label,
+  legend {
+    padding-left: 0 !important;
+  }
+
+  .credit_card_info-group,
+  .billing_name_address-group {
+    input[type="text"] {
+      margin-top: 0 !important;
+    }
+
+    .label {
+      line-height: 29px;
+      text-align: left !important;
+
+      label {
+        width: auto;
+      }
+    }
+  }
+
+  .crm-contribution-form-block-soft_credit_to  {
+    label {
+      width: 150px !important;
     }
   }
 }
