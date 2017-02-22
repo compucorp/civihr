@@ -248,6 +248,12 @@
       }
 
       #info {
+        box-shadow: $box-shadow;
+
+        tr {
+          border: 0 !important;
+        }
+
         th {
           text-transform: capitalize;
         }
