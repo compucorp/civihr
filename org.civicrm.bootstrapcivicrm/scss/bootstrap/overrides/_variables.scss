@@ -1,4 +1,5 @@
 $box-shadow: 0 3px 18px 0 rgba(48, 40, 40, 0.25);
+$crm-box-shadow-sub-panel: 0px 7px 16px 1px rgba(0,0,0,0.1);
 
 //== CiviCRM Page
 //
@@ -17,6 +18,7 @@ $crm-page-topbar-bg-light:     #656C80;
 $crm-page-topbar-color:        #fff !default;
 $crm-page-topbar-item-padding: 15px !default;
 $crm-accordion-header-color:   #f3f6f7;
+$crm-dasboard-header:          #5D677B;
 
 $crm-wizard-border:            #eff3f5;
 
@@ -52,6 +54,7 @@ $brand-success:             #8EC68A !default;
 $brand-info:                #5bc0de !default;
 $brand-warning:             #ECA67F !default;
 $brand-danger:              #E6807F !default;
+$crm-help-success:          #d1e5ce;
 $crm-brand-primary-light:   lighten(desaturate(adjust-hue($brand-primary, 4.9301), 34.7499), 45.6863) !default;
 $crm-brand-primary-lighter: lighten(desaturate(adjust-hue(#3ab1c9, -10.0699), 36.9721), 48.2353) !default;
 
