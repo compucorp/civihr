@@ -20,6 +20,27 @@
     }
   }
 
+  .sticky {
+    th {
+      line-height: 35px !important;
+
+      &:not(:first-child):not(:nth-child(2)) {
+        padding-left: 0 !important;
+      }
+
+      .sticky-header {
+        height: 30px;
+      }
+
+      &:last-child {
+        &,
+        span {
+          line-height: normal;
+        }
+      }
+    }
+  }
+
   #alpha-filter,
   .crm-search-tasks,
   .crm-selection-reset {
@@ -54,21 +75,16 @@
     margin-top: 15px !important;
 
     tr {
-      display: flex;
       padding-left: 0 !important;
+
+      > td,
+      > th {
+        vertical-align: middle;
+      }
 
       > td:not(:last-child),
       > th:not(:last-child) {
-        align-items: center;
-        flex: 1;
-        display: flex;
         line-height: 20px;
-        word-break: break-word;
-
-        &:first-child,
-        &:nth-child(2) {
-          max-width: 15px;
-        }
 
         .privacy-flag {
           width: 27px;
