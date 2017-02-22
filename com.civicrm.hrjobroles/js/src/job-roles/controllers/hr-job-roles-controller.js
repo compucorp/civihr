@@ -3,15 +3,16 @@ define([
   'job-roles/controllers/controllers',
   'common/moment',
   'common/lodash',
-  'common/filters/angular-date/format-date'
+  'common/filters/angular-date/format-date',
+  'common/services/pub-sub'
 ], function (angular, controllers, moment, _) {
   'use strict';
 
   controllers.controller('HRJobRolesController', [
     '$scope', '$log', '$routeParams', '$route', '$uibModal', '$rootElement', '$timeout', '$filter', '$q','settings',
     'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
-    'DOMEventTrigger',
-    function ($scope, $log, $routeParams, $route, $modal, $rootElement, $timeout, $filter, $q, settings, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters, DOMEventTrigger) {
+    'DOMEventTrigger', 'pubSub',
+    function ($scope, $log, $routeParams, $route, $modal, $rootElement, $timeout, $filter, $q, settings, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters, DOMEventTrigger, pubSub) {
       $log.debug('Controller: HRJobRolesController');
 
       var vm = this;
@@ -1254,6 +1255,18 @@ define([
 
         return (errorsCount === 0);
       }
+
+      // pubSub Events
+
+      // Triggers when an new contract is created for a contact.
+      pubSub.subscribe('contract:created', function(contactId){
+        contractIdsFromContact(contactId);
+      });
+
+      // Triggers when a contract is deleted for a contact.
+      pubSub.subscribe('contract:deleted', function(contactId){
+        contractIdsFromContact(contactId);
+      });
     }
   ]);
 });
