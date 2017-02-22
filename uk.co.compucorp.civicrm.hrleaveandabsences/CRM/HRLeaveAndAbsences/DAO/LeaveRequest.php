@@ -312,8 +312,8 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
           'title' => ts('Request Type') ,
           'description' => 'The type of this request (leave, toil, sickness etc)',
           'required' => true,
-          'maxlength' => 10,
-          'size' => CRM_Utils_Type::TWELVE,
+          'maxlength' => 20,
+          'size' => CRM_Utils_Type::MEDIUM,
         ) ,
       );
     }

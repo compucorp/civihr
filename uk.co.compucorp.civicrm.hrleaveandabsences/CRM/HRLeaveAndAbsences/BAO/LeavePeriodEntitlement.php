@@ -345,16 +345,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
           'status_id'      => $leaveRequestStatuses['Admin Approved'],
           'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
           'to_date'        => CRM_Utils_Date::processDate($publicHoliday->date),
-          'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
           'from_date_type' => $leaveRequestDateTypes['All Day'],
           'to_date_type'   => $leaveRequestDateTypes['All Day'],
-          'request_type'   => LeaveRequest::REQUEST_TYPE_LEAVE
+          'request_type'   => LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY
         ]);
 
         $requestDate  = LeaveRequestDate::getDatesForLeaveRequest($leaveRequest->id)[0];
 
         LeaveBalanceChange::create([
-          'type_id'        => $balanceChangeTypes['Debit'],
+          'type_id'        => $balanceChangeTypes['Public Holiday'],
           'amount'         => -1,
           'source_id'      => $requestDate->id,
           'source_type'    => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY

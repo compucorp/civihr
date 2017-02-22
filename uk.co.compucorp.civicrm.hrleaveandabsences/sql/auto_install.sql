@@ -337,7 +337,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_request` (
      `toil_duration` int unsigned    COMMENT 'The duration of the overtime work in minutes',
      `toil_to_accrue` int unsigned    COMMENT 'The amount of days accrued for this toil request',
      `toil_expiry_date` date    COMMENT 'The expiry date of this TOIL Request. When null, it means it never expires.',
-     `request_type` varchar(10) NOT NULL   COMMENT 'The type of this request (leave, toil, sickness etc)',
+     `request_type` varchar(20) NOT NULL   COMMENT 'The type of this request (leave, toil, sickness etc)',
     PRIMARY KEY ( `id` ),
     CONSTRAINT FK_civicrm_hrlaa_leave_request_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
     CONSTRAINT FK_civicrm_hrlaa_leave_request_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE

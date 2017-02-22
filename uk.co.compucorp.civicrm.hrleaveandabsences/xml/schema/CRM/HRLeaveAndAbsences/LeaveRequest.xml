@@ -146,7 +146,7 @@
   <field>
     <name>request_type</name>
     <type>varchar</type>
-    <length>10</length>
+    <length>20</length>
     <required>true</required>
     <comment>The type of this request (leave, toil, sickness etc)</comment>
   </field>

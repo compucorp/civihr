@@ -271,13 +271,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       )";
     }
 
-    $balanceChangeTypes = array_flip(self::buildOptions('type_id'));
     if($excludePublicHolidays) {
-      $query .= " AND leave_balance_change.type_id != '{$balanceChangeTypes['Public Holiday']}'";
+      $query .= " AND leave_request.request_type != '" . LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY . "'";
     }
 
     if($includePublicHolidaysOnly) {
-      $query .= " AND leave_balance_change.type_id = '{$balanceChangeTypes['Public Holiday']}'";
+      $query .= " AND leave_request.request_type = '" . LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY . "'";
     }
 
     $result = CRM_Core_DAO::executeQuery($query);

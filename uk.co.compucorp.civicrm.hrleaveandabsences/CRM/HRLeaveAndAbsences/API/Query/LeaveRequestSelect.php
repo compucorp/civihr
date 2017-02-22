@@ -83,8 +83,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       '(
           a.to_date >= jd.period_start_date OR
           (a.to_date IS NULL AND a.from_date >= jd.period_start_date)
-        )',
-      "lbc.source_id = lrd.id AND lbc.source_type = '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'",
+        )'
     ];
 
     if(!empty($this->params['managed_by'])) {
@@ -106,6 +105,12 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       $conditions[] = 'lbc.amount < 0';
     }
 
+    if(!empty($this->params['public_holiday'])) {
+      $conditions[] = "a.request_type = '" . LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY . "'";
+    } else {
+      $conditions[] = "a.request_type <> '" . LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY . "'";
+    }
+
     $customQuery->where($conditions);
   }
 
@@ -124,16 +129,8 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    * @param \CRM_Utils_SQL_Select $query
    */
   private function addJoins(CRM_Utils_SQL_Select $query) {
-    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
-
-    $balanceChangeJoinCondition = "lbc.type_id <> {$leaveBalanceChangeTypes['Public Holiday']}";
-    if (!empty($this->params['public_holiday'])) {
-      $balanceChangeJoinCondition = "lbc.type_id = {$leaveBalanceChangeTypes['Public Holiday']}";
-    }
-
     $joins = [
       'INNER JOIN ' . LeaveRequestDate::getTableName() . ' lrd ON lrd.leave_request_id = a.id',
-      'INNER JOIN ' . LeaveBalanceChange::getTableName() . ' lbc ON ' . $balanceChangeJoinCondition,
       'INNER JOIN ' . HRJobContract::getTableName() . ' jc ON a.contact_id = jc.contact_id',
       'INNER JOIN ' . HRJobContractRevision::getTableName() . ' jcr ON jcr.id = (SELECT id
                     FROM ' . HRJobContractRevision::getTableName() . ' jcr2
@@ -147,6 +144,12 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     if(!empty($this->params['managed_by'])) {
       $joins[] = 'INNER JOIN ' . Relationship::getTableName() . ' r ON r.contact_id_a = a.contact_id';
       $joins[] = 'INNER JOIN ' . RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id';
+    }
+
+    if(!empty($this->params['expired'])) {
+      $innerJoin = 'INNER JOIN ' . LeaveBalanceChange::getTableName() . ' lbc';
+      $innerJoin .= " ON lbc.source_id = lrd.id AND lbc.source_type = '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'";
+      $joins[] =  $innerJoin;
     }
 
     $query->join(null, $joins);

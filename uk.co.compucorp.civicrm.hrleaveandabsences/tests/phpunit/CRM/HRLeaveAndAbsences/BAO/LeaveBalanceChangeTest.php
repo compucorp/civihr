@@ -1832,7 +1832,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   private function getExpiryRecordForToilRequest($toilRequestID) {
     $toilBalanceChange = $this->findToilRequestMainBalanceChange($toilRequestID);
 
-    $record                            = new LeaveBalanceChange();
+    $record = new LeaveBalanceChange();
     $record->expired_balance_change_id = $toilBalanceChange->id;
     $record->find(TRUE);
     if ($record->N == 1) {
