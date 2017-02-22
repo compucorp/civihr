@@ -1,5 +1,6 @@
 $box-shadow: 0 3px 18px 0 rgba(48, 40, 40, 0.25);
 $crm-box-shadow-sub-panel: 0px 7px 16px 1px rgba(0,0,0,0.1);
+$crm-box-shadow-inset: inset 0px -1px 18px -3px rgba(148,148,148,0.62);
 
 //== CiviCRM Page
 //
@@ -79,6 +80,7 @@ $body-bg: $crm-background !default;
 $font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif !default;
 $font-family-base:        "Open Sans", $font-family-sans-serif !default;
 
+$font-size-small:         12px !default;
 $font-size-base:          13px !default;
 $font-size-medium:        14px !default;
 $font-size-xs:            9px !default;
