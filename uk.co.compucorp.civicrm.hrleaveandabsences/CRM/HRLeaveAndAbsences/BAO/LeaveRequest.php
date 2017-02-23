@@ -112,8 +112,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         );
       }
     }
-
-
   }
 
   /**
@@ -269,7 +267,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       );
     }
   }
-
 
   /**
    * This method returns the total sum of TOIL accrued for an absence type by a contact
