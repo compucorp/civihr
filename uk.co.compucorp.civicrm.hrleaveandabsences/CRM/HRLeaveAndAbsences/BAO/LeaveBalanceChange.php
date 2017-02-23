@@ -657,8 +657,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * of the LeaveBalanceChange BAO. It also returns a start_date, which is the
    * date this balance change became valid. It's calculated on following this
    * logic:
-   * - If the Balance Change is linked to a TOILRequest, then it will be the
-   * from_date from the LeaveRequest associated with the TOIL Request
+   * - If the Balance Change is linked to a LeaveRequest, then it will be the
+   * from_date of that request
    * - If the Balance Change is linked to a LeavePeriodEntitlement, the the
    * start date will be the start_date of the AbsencePeriod linked to that
    * LeavePeriodEntitlement.
@@ -721,22 +721,22 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
-   * This method calculates the sum of the TOIL (with the given status) balance changes for a given contact
-   * over a given period of time.
+   * This method calculates the sum of the Leave Requests of type toil (with the
+   * given status) balance changes for a given contact over a given period of time.
    *
    * @param int $contactID
    * @param int $absenceTypeID
    * @param DateTime $startDate
-   *   TOILs linked to LeaveRequests with from_date >= this date will be included
+   *   LeaveRequests with from_date >= this date will be included
    * @param DateTime $endDate
-   *   TOILs linked to LeaveRequests with with to_date <= this date will be included
-   * @param array $toilStatus
-   *   The statuses of the TOIL request to be included in the calculation/summation
-   *   - An array of values from Leave Request Status option list
+   *   LeaveRequests with with to_date <= this date will be included
+   * @param array $statuses
+   *   The statuses of the requests to be included in the calculation/summation.
+   *   An array of values from Leave Request Status option list
    *
    * @return float
    */
-  public static function getTotalTOILBalanceChangeForContact($contactID, $absenceTypeID, DateTime $startDate, DateTime $endDate, $toilStatus = []) {
+  public static function getTotalTOILBalanceChangeForContact($contactID, $absenceTypeID, DateTime $startDate, DateTime $endDate, $statuses = []) {
     $leaveBalanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
@@ -754,9 +754,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
                 lr.type_id = %5 AND 
                 lr.request_type = %6";
 
-    if (is_array($toilStatus) && !empty($toilStatus)) {
-      array_walk($toilStatus, 'intval');
-      $query .=' AND (lr.status_id IN('. implode(', ', $toilStatus) .'))';
+    if (is_array($statuses) && !empty($statuses)) {
+      array_walk($statuses, 'intval');
+      $query .=' AND (lr.status_id IN('. implode(', ', $statuses) . '))';
     }
 
     $params = [
