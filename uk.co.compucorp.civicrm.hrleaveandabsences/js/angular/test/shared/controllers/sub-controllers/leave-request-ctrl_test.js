@@ -24,7 +24,7 @@
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, LeaveRequestInstance, Contact, ContactAPIMock,
-        EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl, 
+        EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl,
         date2016 = '01/12/2016',
         date2017 = '02/02/2017',
         date2013 = '02/02/2013';
@@ -160,7 +160,7 @@
 
           it('gets absence types with false sick param', function () {
             expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
-              is_sick: false
+              is_sick: false, allow_accruals_request: false
             })
           });
 

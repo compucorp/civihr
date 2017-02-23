@@ -118,7 +118,8 @@ function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$para
     'getcalendar' => ['work_pattern'],
     'ismanagedby' => ['leave_request'],
     'isvalid' => ['leave_request', 'sickness_request'],
-    'getfull' => ['leave_request', 'sickness_request']
+    'getfull' => ['leave_request', 'sickness_request'],
+    'calculatetoilexpirydate' => ['absence_type']
   ];
 
   foreach ($actionEntities as $action => $entities) {

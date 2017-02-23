@@ -41,7 +41,8 @@ define([
       });
 
       it('default toil Duration value is set', function () {
-        expect(instance.toilDuration).toBe(0);
+        expect(instance.toilDurationHours).toBe(0);
+        expect(instance.toilDurationMinutes).toBe(0);
       })
     });
 
@@ -113,6 +114,23 @@ define([
       it('calls toAPI method', function () {
         expect(instance.toAPI).toHaveBeenCalled();
       });
+    });
+
+    describe('updateDuration()', function () {
+      beforeEach(function () {
+        instance = TOILRequestInstance.init({}, false);
+        instance.toilDurationHours = 1
+        promise = instance.updateDuration();
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      it('updates durations in minutes', function () {
+        expect(instance.duration).toEqual(60);
+      });
+
     });
   });
 });

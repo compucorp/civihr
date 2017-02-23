@@ -22,12 +22,12 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-xs-12 form-horizontal" ng-hide="!$ctrl.uiOptions.multipleDays && $ctrl.isLeaveType('toil')">
+  <div class="col-xs-12 form-horizontal">
     <div class="form-group">
       <label class="col-xs-4 control-label">From Date<i class="fa fa-asterisk"></i>
       </label>
       <div class="col-xs-4">
-        <div ng-hide="$ctrl.isLeaveType('toil')" class="input-group">
+        <div class="input-group">
           <input
             type="text"
             class="form-control"
@@ -46,7 +46,7 @@
               ng-click="$ctrl.uiOptions.date.from.show = true"></button>
           </span>
         </div>
-        <div ng-show="$ctrl.isLeaveType('toil')" class="input-group">
+        <!-- <div ng-show="$ctrl.isLeaveType('toil')" class="input-group">
           <input
             type="text"
             class="form-control"
@@ -61,7 +61,7 @@
               class="btn btn-default fa fa-calendar"
               ng-click="$ctrl.uiOptions.date.from.show = true"></button>
           </span>
-        </div>
+        </div> -->
       </div>
       <div class="col-xs-4" ng-hide="$ctrl.isLeaveType('toil')">
         <crm-loading
@@ -83,13 +83,13 @@
     </div>
   </div>
 </div>
-<div class="row" ng-show="$ctrl.uiOptions.multipleDays">
+<div class="row" ng-hide="!$ctrl.uiOptions.multipleDays">
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
       <label class="col-xs-4 control-label">To Date<i class="fa fa-asterisk"></i>
       </label>
       <div class="col-xs-4">
-        <div ng-hide="$ctrl.isLeaveType('toil')" class="input-group">
+        <div class="input-group">
           <input
             type="text"
             class="form-control"
@@ -108,7 +108,7 @@
               ng-click="$ctrl.uiOptions.date.to.show = $ctrl.request.from_date ? true : false"></button>
           </span>
         </div>
-        <div ng-show="$ctrl.isLeaveType('toil')" class="input-group">
+        <!-- <div ng-show="$ctrl.isLeaveType('toil')" class="input-group">
           <input
             type="text"
             class="form-control"
@@ -123,7 +123,7 @@
               class="btn btn-default fa fa-calendar"
               ng-click="$ctrl.uiOptions.date.to.show = true"></button>
           </span>
-        </div>
+        </div> -->
       </div>
       <div class="col-xs-4" ng-hide="$ctrl.isLeaveType('toil')">
         <crm-loading

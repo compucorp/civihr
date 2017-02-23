@@ -18,7 +18,8 @@ define([
          */
         defaultCustomData: function () {
           return {
-            toilDuration: 0
+            toilDurationHours: 0,
+            toilDurationMinutes: 0,
           };
         },
 
@@ -52,6 +53,25 @@ define([
          */
         update: function () {
           return LeaveRequestAPI.update(this.toAPI(), 'toil');
+        },
+
+        /**
+         * Update duration
+         */
+        updateDuration: function () {
+          this.duration = this.toilDurationHours * 60 + this.toilDurationMinutes;
+        },
+
+        /**
+         * Override of parent method
+         *
+         * @param {object} result - The accumulator object
+         * @param {string} key - The property name
+         */
+        toAPIFilter: function (result, __, key) {
+          if (!_.includes(['toilDurationHours', 'toilDurationMinutes'], key)) {
+            result[key] = this[key];
+          }
         }
       });
     }
