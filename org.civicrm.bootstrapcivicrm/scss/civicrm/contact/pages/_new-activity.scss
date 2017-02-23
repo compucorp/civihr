@@ -25,6 +25,7 @@
         display: flex;
         flex-direction: column;
         margin-bottom: 15px;
+        padding: 0 40px;
 
         &.crm-activity-form-block-attachment,
         &.crm-activity-form-block-recurring_activity,
@@ -45,6 +46,18 @@
             }
           }
         }
+
+        .crm-accordion-body {
+          tr {
+            padding: 0;
+
+            td {
+              &.label {
+                padding: 0;
+              }
+            }
+          }
+        }
       }
     }
 
@@ -60,6 +73,10 @@
       margin-top: 0 !important;
     }
 
+    #cke_details {
+      width: 100%;
+    }
+
     .addon.fa-calendar {
       background-color: #f3f3f6;
       border: 1px solid #c2cfd8;
@@ -69,9 +86,33 @@
       border-bottom-right-radius: 2px;
     }
 
-    .crm-accordion-wrapper {
-      margin-left: -15px;
-      margin-right: -15px;
+    .crm-accordion-header {
+      margin-left: -60px;
+      margin-right: -60px;
+    }
+
+    #s2id_activity_type_id,
+    #s2id_source_contact_id,
+    #s2id_target_contact_id,
+    #s2id_assignee_contact_id,
+    #s2id_status_id {
+      min-width: 500px;
+    }
+
+    .crm-activity-form-block-subject,
+    .crm-activity-form-block-location,
+    .crm-activity-form-block-duration {
+      input {
+        min-width: 500px !important;
+      }
+    }
+
+    .crm-activity-form-block-assignee_contact_id {
+      td {
+        &:last-child {
+          padding: 0px !important;
+        }
+      }
     }
   }
 
@@ -109,12 +150,6 @@
       display: block;
       margin-top: 5px;
       line-height: 1.5em;
-    }
-
-    td {
-      &:last-child {
-        padding: 0 4px !important;
-      }
     }
   }
 
@@ -197,18 +232,6 @@
     }
   }
 
-  .crm-accordion-header {
-    margin-left: -20px;
-    margin-right: -20px;
-
-    + .crm-accordion-body {
-      padding: 0 !important;
-
-      td:first-child {
-        padding-left: 0;
-      }
-    }
-  }
 
   .crm-form-block > .crm-submit-buttons {
     margin-left: 0 !important;
