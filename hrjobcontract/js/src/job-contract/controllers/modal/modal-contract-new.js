@@ -215,6 +215,7 @@ define([
                                 $scope.$broadcast('hrjc-loader-hide');
                                 $modalInstance.close(contract);
 
+                                pubSub.publish('contract:created',settings.contactId);
                                 pubSub.publish('contract-refresh');
                             });
 

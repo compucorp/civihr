@@ -338,7 +338,7 @@ define([
               CRM.api3('OptionValue', 'get', {
                 'sequential': 1,
                 'option_group_id.name': { 'IN': groupNames },
-                'return': [ 'id', 'label', 'weight', 'value', 'option_group_id', 'option_group_id.name' ],
+                'return': [ 'id', 'label', 'weight', 'value', 'is_active', 'option_group_id', 'option_group_id.name' ],
                 'options': {
                   'limit': 1000,
                   'sort': 'id'

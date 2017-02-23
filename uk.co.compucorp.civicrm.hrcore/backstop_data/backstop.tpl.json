@@ -1,0 +1,20 @@
+{
+  "id": "CiviHR",
+  "viewports": [{
+    "name": "desktop",
+    "width": 1920,
+    "height": 900
+  }],
+  "scenarios": [],
+  "paths": {
+    "bitmaps_reference": "backstop_data/screenshots/reference",
+    "bitmaps_test": "backstop_data/screenshots/test",
+    "casper_scripts": "backstop_data/casper_scripts",
+    "html_report": "backstop_data/html_report",
+    "ci_report": "backstop_data/ci_report"
+  },
+  "casperFlags": [],
+  "engine": "phantomjs",
+  "report": ["CLI", "browser"],
+  "debug": false
+}

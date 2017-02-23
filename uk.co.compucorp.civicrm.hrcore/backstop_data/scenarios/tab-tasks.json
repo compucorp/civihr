@@ -1,0 +1,10 @@
+{
+  "scenarios": [
+    {
+      "label": "Tasks",
+      "delay": 2000,
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/tasks/show"
+    }
+  ]
+}
