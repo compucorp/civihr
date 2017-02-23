@@ -4,6 +4,7 @@ define([
   'common/moment',
   'common/lodash',
   'common/filters/angular-date/format-date',
+  'job-roles/filters/option-values-filter',
   'common/services/pub-sub'
 ], function (angular, controllers, moment, _) {
   'use strict';
@@ -17,6 +18,7 @@ define([
 
       var vm = this;
       var formatDate = $filter('formatDate');
+      var getActiveValues = $filter('getActiveValues');
       var fundersContacts = {};
       var roles_type = ['funders', 'cost_centers'];
 
@@ -963,19 +965,19 @@ define([
                 }
               });
 
-              // Store the Department types what we can reuse later
-              vm.DepartmentsData = DepartmentList;
+              // Store the Department types so we can reuse later
+              vm.DepartmentsData = getActiveValues(DepartmentList);
 
-              // Store the Region types what we can reuse later
-              vm.RegionsData = RegionList;
+              // Store the Region types so we can reuse later
+              vm.RegionsData = getActiveValues(RegionList);
 
-              // Store the Location types what we can reuse later
-              vm.LocationsData = LocationList;
+              // Store the Location types so we can reuse later
+              vm.LocationsData = getActiveValues(LocationList);
 
-              // Store the Level types what we can reuse later
-              vm.LevelsData = LevelList;
+              // Store the Level types so we can reuse later
+              vm.LevelsData = getActiveValues(LevelList);
 
-              // Store the Level types what we can reuse later
+              // Store the cost center list so we can reuse later
               vm.CostCentreList = CostCentreList;
 
               vm.message_type = 'alert-success';
