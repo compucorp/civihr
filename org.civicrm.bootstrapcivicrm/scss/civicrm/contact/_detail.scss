@@ -633,16 +633,3 @@ input[type="text"] {
 .ui-dialog-buttonpane {
   display: none;
 }
-
-.select2-drop,
-.select2-choice {
-  width: 230px !important;
-}
-
-#s2id_product_name_1 {
-  .select2-choice {
-    position: relative;
-    top: 10px;
-    display: inline-block;
-  }
-}
