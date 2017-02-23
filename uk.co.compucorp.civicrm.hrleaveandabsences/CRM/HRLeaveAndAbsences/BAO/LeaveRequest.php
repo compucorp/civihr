@@ -92,69 +92,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateMandatory($params) {
-    if (empty($params['from_date'])) {
-      throw new InvalidLeaveRequestException(
-        'Leave Requests should have a start date',
-        'leave_request_empty_from_date',
-        'from_date'
-      );
+    $mandatoryFields = [
+      'from_date',
+      'from_date_type',
+      'contact_id',
+      'type_id',
+      'status_id',
+      'to_date',
+      'to_date_type',
+      'request_type'
+    ];
+
+    foreach($mandatoryFields as $field) {
+      if (empty($params[$field])) {
+        throw new InvalidLeaveRequestException(
+          "The {$field} field should not be empty",
+          "leave_request_empty_{$field}",
+          $field
+        );
+      }
     }
 
-    if (empty($params['from_date_type'])) {
-      throw new InvalidLeaveRequestException(
-        'The type of From Date should not be empty',
-        'leave_request_empty_from_date_type',
-        'from_date_type'
-      );
-    }
 
-    if (empty($params['contact_id'])) {
-      throw new InvalidLeaveRequestException(
-        'Leave Request should have a contact',
-        'leave_request_empty_contact_id',
-        'contact_id'
-      );
-    }
-
-    if (empty($params['type_id'])) {
-      throw new InvalidLeaveRequestException(
-        'Leave Request should have an Absence Type',
-        'leave_request_empty_type_id',
-        'type_id'
-      );
-    }
-
-    if (empty($params['status_id'])) {
-      throw new InvalidLeaveRequestException(
-        'The Leave Request status should not be empty',
-        'leave_request_empty_status_id',
-        'status_id'
-      );
-    }
-
-    if (empty($params['to_date'])) {
-      throw new InvalidLeaveRequestException(
-        'Leave Requests should have an end date',
-        'leave_request_empty_to_date',
-        'to_date'
-      );
-    }
-
-    if (empty($params['to_date_type'])) {
-      throw new InvalidLeaveRequestException(
-        'The type of To Date should not be empty',
-        'leave_request_empty_to_date_type',
-        'to_date_type'
-      );
-    }
-
-    if (empty($params['request_type'])) {
-      throw new InvalidLeaveRequestException(
-        'The request_type should not be empty',
-        'leave_request_empty_request_type',
-        'request_type'
-      );
-    }
   }
 
   /**
