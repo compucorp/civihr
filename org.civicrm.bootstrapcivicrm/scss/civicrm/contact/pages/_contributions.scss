@@ -526,6 +526,22 @@
       width: 150px !important;
     }
   }
+
+  .crm-contribution-form-block-note {
+    .label {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    .crm-form-textarea {
+      min-height: 110px;
+    }
+  }
+
+  .crm-contribution-form-block-pcp_details {
+    position: relative;
+    left: -163px;
+  }
 }
 
 .CRM_Contribute_Form_ContributionView {

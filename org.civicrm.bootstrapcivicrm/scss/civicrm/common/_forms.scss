@@ -160,6 +160,7 @@ $control-height: 30px;
     label {
       @extend .control-label;
       font-weight: 600 !important;
+      font-size: 13px;
       color: $gray-darker;
     }
 
