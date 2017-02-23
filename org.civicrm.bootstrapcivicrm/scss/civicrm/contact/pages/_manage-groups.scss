@@ -22,9 +22,22 @@
   .crm-group-search-form-block {
     padding: 20px !important;
     margin-bottom: 30px !important;
+    overflow: hidden;
 
     h3 {
       @extend .collapsible-title;
+      background: $gray-lighter;
+      color: $gray-darker;
+      font-size: $font-size-h2;
+      font-family: $font-family-base;
+      vertical-align: middle;
+      border: none;
+      padding: 17px 20px;
+      border-bottom: 1px solid $crm-dark-grayblue;
+      margin-top: -20px;
+      margin-bottom: 20px;
+      margin-left: -2% !important;
+      width: 104%;
     }
 
     > table td {
@@ -36,6 +49,12 @@
         td:nth-child(5) {
           label[for*="group_status"] {
             margin-top: 7px;
+          }
+        }
+
+        td {
+          .font-italic {
+            font-style: normal;
           }
         }
       }

@@ -55,14 +55,15 @@
       font-family: $font-family-base;
 
       thead {
+        border-bottom: 1px solid $crm-dark-grayblue;
 
         th {
           border-bottom: none;
-          background: $crm-background;
+          background: $gray-lighter;
           color: $gray-darker;
           vertical-align: middle;
           border: none;
-          padding: 10px 15px;
+          padding: 17px 15px;
 
           div {
             padding: 0;
