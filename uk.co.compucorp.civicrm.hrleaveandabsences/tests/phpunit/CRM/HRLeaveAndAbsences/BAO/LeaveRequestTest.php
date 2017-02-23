@@ -1762,7 +1762,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage This absence type does not allow TOIL requests
    */
-  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilButAbsenceTypeIsNotAToilType() {
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilButAbsenceTypeDoesNotAllowToilAccrual() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2015-12-31'),

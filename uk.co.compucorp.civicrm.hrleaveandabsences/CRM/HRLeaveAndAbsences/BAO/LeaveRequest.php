@@ -68,8 +68,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   public static function validateParams($params) {
     self::validateMandatory($params);
     self::validateRequestType($params);
-    self::validateTOILMandatoryFields($params);
-    self::validateSicknessMandatoryFields($params);
+    self::validateTOILFieldsBasedOnRequestType($params);
+    self::validateSicknessFieldsBasedOnRequestType($params);
     self::validateAbsenceTypeIsActiveAndValid($params);
     self::validateTOILRequest($params);
     self::validateStartDateNotGreaterThanEndDate($params);
@@ -188,7 +188,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateTOILMandatoryFields($params) {
+  private static function validateTOILFieldsBasedOnRequestType($params) {
     $toilRequiredFields = [ 'toil_duration', 'toil_to_accrue' ];
     $toilFields = array_merge($toilRequiredFields, [ 'toil_expiry_date' ]);
 
@@ -227,7 +227,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
 
-    self::validateTOILToAccrueIsAValidaOptionValue($params);
+    self::validateTOILToAccrueIsAValidOptionValue($params);
     self::validateTOILPastDays($params);
     self::validateTOILToAccruedAmountIsValid($params);
   }
@@ -240,7 +240,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateTOILToAccrueIsAValidaOptionValue($params) {
+  private static function validateTOILToAccrueIsAValidOptionValue($params) {
     $toilAmountOptions = self::buildOptions('toil_to_accrue', 'validate');
     if(!array_key_exists($params['toil_to_accrue'], $toilAmountOptions)) {
       throw new InvalidLeaveRequestException(
@@ -348,7 +348,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateSicknessMandatoryFields($params) {
+  private static function validateSicknessFieldsBasedOnRequestType($params) {
     $sicknessRequiredFields = [ 'sickness_reason' ];
     $sicknessFields = array_merge($sicknessRequiredFields, ['sickness_required_documents']);
 

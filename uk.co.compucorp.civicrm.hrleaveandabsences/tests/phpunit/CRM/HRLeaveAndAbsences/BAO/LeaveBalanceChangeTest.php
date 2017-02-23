@@ -26,11 +26,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // In order to make tests simpler, we disable the foreign key checks,
     // as a way to allow the creation of leave request records related
     // to a non-existing leave period entitlement
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
   }
 
   public function tearDown() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 1;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 1;');
   }
 
   /**
@@ -835,14 +835,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testTheTotalBalanceChangeForALeaveRequestShouldBeOnlyTheExpiredAmountWhenExpiredOnlyIsTrue() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'contact_id'       => 1,
-      'type_id'          => 1,
-      'from_date'        => CRM_Utils_Date::processDate('2016-04-01'),
-      'to_date'          => CRM_Utils_Date::processDate('2016-04-02'),
-      'toil_duration'    => 10,
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-04-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-04-02'),
+      'toil_duration' => 10,
       'toil_expiry_date' => CRM_Utils_Date::processDate('2016-06-10'),
-      'toil_to_accrue'   => 5,
-      'request_type'     => LeaveRequest::REQUEST_TYPE_TOIL
+      'toil_to_accrue' => 5,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], TRUE);
 
     $numberOfExpiredDays = 3;
@@ -854,14 +854,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testTheTotalBalanceChangeForALeaveRequestShouldBeTheOriginalAmountWhenExpiredOnlyIsFalse() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'contact_id'       => 1,
-      'type_id'          => 1,
-      'from_date'        => CRM_Utils_Date::processDate('2016-04-01'),
-      'to_date'          => CRM_Utils_Date::processDate('2016-04-02'),
-      'toil_duration'    => 10,
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-04-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-04-02'),
+      'toil_duration' => 10,
       'toil_expiry_date' => CRM_Utils_Date::processDate('2016-06-10'),
-      'toil_to_accrue'   => 5,
-      'request_type'     => LeaveRequest::REQUEST_TYPE_TOIL
+      'toil_to_accrue' => 5,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], TRUE);
 
     $numberOfExpiredDays = 3;

@@ -235,7 +235,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     );
   }
 
-
   public function testCanChangeAbsenceTypeForReturnsTrueWhenCurrentUserIsLeaveContactAndStatusPassedIsInAllowedStatuses() {
     //When user is leave request contact and status is 'More information Requested'
     $this->assertTrue(
