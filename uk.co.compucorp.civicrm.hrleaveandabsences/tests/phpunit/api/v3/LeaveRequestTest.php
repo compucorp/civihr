@@ -1511,11 +1511,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenContactIDIsEmpty() {
-    $fromDate = new DateTime('+4 days');
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('+4 days'),
       'from_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1532,11 +1531,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenTypeIDIsEmpty() {
-    $fromDate = new DateTime('+4 days');
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'status_id' => 1,
       'contact_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('+4 days'),
       'from_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1553,11 +1551,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenStatusIDIsEmpty() {
-    $fromDate = new DateTime('+4 days');
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('+4 days'),
       'from_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1574,15 +1571,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenToDateIsNotEmptyAndToDateTypeIsEmpty() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
@@ -1598,15 +1593,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsEmpty() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
     ]);
 
@@ -1622,15 +1615,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsInvalid() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => 'çrewqvczxewqewqqweasdpoiugfdnmzicx'. microtime()
     ]);
@@ -1647,15 +1638,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsToilAndToilDurationIsEmpty() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
     ]);
@@ -1672,15 +1661,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsToilAndToilToAccrueIsEmpty() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
       'toil_duration' => 1
@@ -1698,15 +1685,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsNotToilAndToilDurationIsNotEmpty() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS,
       'toil_duration' => 1
@@ -1724,15 +1709,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsNotToilAndToilToAccrueIsNotEmpty() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
       'toil_to_accrue' => 1
@@ -1750,18 +1733,16 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsNotToilAndToilExpiryDateIsNotEmpty() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
-      'toil_expiry_date' => $toDate->format('Y-m-d')
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+4 days')
     ]);
 
     $expectedResult = [
@@ -1776,15 +1757,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsSicknessAndSicknessReasonIsEmpty() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS,
     ]);
@@ -1802,15 +1781,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsNotSicknessAndSicknessReasonIsNotEmpty() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
       'sickness_reason' => 1,
@@ -1829,15 +1806,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsNotSicknessAndSicknessRequiredDocumentsIsNotEmpty() {
-    $toDate = new DateTime('+4 days');
-    $fromDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => 1,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
       'sickness_required_documents' => '1',
@@ -1856,15 +1831,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenEndDateIsGreaterThanStartDate() {
-    $fromDate = new DateTime('+4 days');
-    $toDate = new DateTime();
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('+4 days'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('now'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1882,11 +1855,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenThereAreOverlappingLeaveRequests() {
     $contactID = 1;
-    $fromDate1 = new DateTime('2016-11-02');
-    $toDate1 = new DateTime('2016-11-04');
-
-    $fromDate2 = new DateTime('2016-11-05');
-    $toDate2 = new DateTime('2016-11-10');
 
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -1898,9 +1866,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Waiting Approval'],
-      'from_date' => $fromDate1->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2016-11-02'),
       'from_date_type' => 1,
-      'to_date' => $toDate1->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2016-11-04'),
       'to_date_type' => 1
     ], true);
 
@@ -1908,23 +1876,19 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Rejected'],
-      'from_date' => $fromDate2->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2016-11-05'),
       'from_date_type' => 1,
-      'to_date' => $toDate2->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2016-11-10'),
       'to_date_type' => 1
     ], true);
-
-    //from date and to date have date in both leave request
-    $fromDate = new DateTime('2016-11-03');
-    $toDate = new DateTime('2016-11-05');
 
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2016-11-03'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2016-11-05'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);

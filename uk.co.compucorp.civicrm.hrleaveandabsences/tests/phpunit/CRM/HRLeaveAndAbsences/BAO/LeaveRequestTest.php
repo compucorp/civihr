@@ -33,7 +33,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     // In order to make tests simpler, we disable the foreign key checks,
     // as a way to allow the creation of leave request records related
     // to a non-existing leave period entitlement
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
 
     // We delete everything two avoid problems with the default absence types
     // created during the extension installation
@@ -48,7 +48,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function tearDown() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 1;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 1;');
   }
 
   public function testALeaveRequestWithSameStartAndEndDateShouldCreateOnlyOneLeaveRequestDate() {
@@ -562,12 +562,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The to_date field should not be empty
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutAnEndDate() {
-    $fromDate = new DateTime('+4 days');
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('+4 days'),
       'from_date_type' => 1,
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
@@ -579,11 +578,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The contact_id field should not be empty
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutContactID() {
-    $fromDate = new DateTime('+4 days');
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('+4 days'),
       'from_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -594,11 +592,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The type_id field should not be empty
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutTypeID() {
-    $fromDate = new DateTime('+4 days');
     LeaveRequest::create([
       'status_id' => 1,
       'contact_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('+4 days'),
       'from_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -609,11 +606,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The status_id field should not be empty
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutStatusID() {
-    $fromDate = new DateTime('+4 days');
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('+4 days'),
       'from_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -624,15 +620,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The to_date_type field should not be empty
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutToDateType() {
-    $toDate= new DateTime('+4 days');
-    $fromDate = new DateTime();
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
@@ -642,14 +636,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The from_date_type field should not be empty
    */
   public function testALeaveRequestShouldNotBeCreatedWithoutFromDateType() {
-    $toDate= new DateTime('+4 days');
-    $fromDate = new DateTime();
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
-      'to_date' => $toDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -660,16 +652,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The request_type field should not be empty
    */
   public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsEmpty() {
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value']
     ]);
   }
@@ -679,15 +668,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage Leave Request start date cannot be greater than the end date
    */
   public function testALeaveRequestEndDateShouldNotBeGreaterThanStartDate() {
-    $fromDate = new DateTime('+4 days');
-    $toDate = new DateTime();
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('+4 days'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('now'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -702,15 +689,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'is_active' => 0
     ]);
 
-    $fromDate = new DateTime();
-    $toDate = new DateTime('+4 days');
     LeaveRequest::create([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -725,15 +710,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'max_consecutive_leave_days' => 2
     ]);
 
-    $fromDate = new DateTime();
-    $toDate = new DateTime('+4 days');
     LeaveRequest::create([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -747,17 +730,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_NO
     ]);
 
-    $fromDate = new DateTime();
-    $toDate = new DateTime('+4 days');
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Waiting Approval'],
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1
     ]);
 
@@ -768,9 +749,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Cancelled'],
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -784,17 +765,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE
     ]);
 
-    $fromDate = new DateTime('-1 day');
-    $toDate = new DateTime('+4 days');
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Waiting Approval'],
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('-1 day'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1
     ]);
 
@@ -805,9 +784,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['Cancelled'],
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('-1 day'),
       'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1430,16 +1409,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The request_type is invalid
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsInvalid() {
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'request_type' => 'çfdklajfewiojçdasojfdsa'. microtime()
     ]);
@@ -1450,16 +1426,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The toil_duration can not be empty when request_type is toil
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsToilAndToilDurationIsEmpty() {
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
@@ -1470,16 +1443,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The toil_to_accrue can not be empty when request_type is toil
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsToilAndToilToAccrueIsEmpty() {
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'toil_duration' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1491,16 +1461,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The toil_duration should be empty when request_type is not toil
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsNotToilAndToilDurationIsNotEmpty() {
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'toil_duration' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
@@ -1512,16 +1479,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The toil_to_accrue should be empty when request_type is not toil
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsNotToilAndToilToAccrueIsNotEmpty() {
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'toil_to_accrue' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
@@ -1533,18 +1497,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The toil_expiry_date should be empty when request_type is not toil
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsNotToilAndToilExpiryDateIsNotEmpty() {
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'toil_expiry_date' => $fromDate->format('Y-m-d'),
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
@@ -1554,16 +1515,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The sickness_reason can not be empty when request_type is sickness
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsSicknessAndSicknessReasonIsEmpty() {
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ]);
@@ -1574,16 +1532,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The sickness_reason should be empty when request_type is not sickness
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsNotSicknessAndSicknessReasonIsNotEmpty() {
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'sickness_reason' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
@@ -1595,16 +1550,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage The sickness_required_documents should be empty when request_type is not sickness
    */
   public function testLeaveRequestCanNotBeCreatedWhenTheRequestTypeIsNotSicknessAndSicknessRequiredDocumentIsNotEmpty() {
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => $toDate->format('YmdHis'),
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'sickness_required_documents' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
@@ -1622,19 +1574,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     //the dates are outside of the absence period dates
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2015-11-13');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => $fromType,
-      'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType,
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
@@ -1654,19 +1601,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     //four working days which will create a balance change of 0 i.e the days are on weekends
-    $fromDate = new DateTime('2015-11-12');
-    $toDate = new DateTime('2016-01-13');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
-
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => $fromType,
-      'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType,
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2016-11-13'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
@@ -1717,19 +1659,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     //The from date and to date overlaps the two job contracts
-    $fromDate = new DateTime('2016-06-25');
-    $toDate = new DateTime('2016-07-13');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
-
     LeaveRequest::create([
       'type_id' => $periodEntitlement->type_id,
       'contact_id' => $periodEntitlement->contact_id,
       'status_id' => 1,
-      'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => $fromType,
-      'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => $toType,
+      'from_date' => CRM_Utils_Date::processDate('2016-06-25'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2016-07-13'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
