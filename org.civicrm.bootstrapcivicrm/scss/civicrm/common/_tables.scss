@@ -247,9 +247,11 @@
         padding: 0;
       }
 
-      #info {
+      > td {
         box-shadow: $box-shadow;
+      }
 
+      #info {
         tr {
           border: 0 !important;
         }
