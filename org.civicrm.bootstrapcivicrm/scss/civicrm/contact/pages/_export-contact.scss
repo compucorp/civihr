@@ -89,4 +89,15 @@
       }
     }
   }
+
+  #saveDetails {
+    .label {
+      width: 80px;
+    }
+  }
+
+  input[type=checkbox]:checked + label[for]::after {
+    left: 2px;
+    top: 7px;
+  }
 }
