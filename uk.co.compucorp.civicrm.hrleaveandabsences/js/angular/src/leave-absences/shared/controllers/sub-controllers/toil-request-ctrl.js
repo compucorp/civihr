@@ -138,6 +138,8 @@ define([
         var attributes = vm._initRequestAttributes();
 
         vm.request = TOILRequestInstance.init(attributes);
+        //required by leave request so set it to All Day
+        vm.request.to_date_type = vm.request.from_date_type = 1;
       }
 
       /**
