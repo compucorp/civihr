@@ -244,7 +244,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     foreach ($activityTypes as $activityType) {
       civicrm_api3('OptionValue', 'get', [
         'name' => $activityType,
-        'component_id' => "CiviTask",
+        'component_id' => 'CiviTask',
         'api.OptionValue.create' => ['id' => '$value.id', 'is_active' => $status],
       ]);
     }
@@ -280,7 +280,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     civicrm_api3('OptionValue', 'get', [
       'name' => ['IN' => $activityTypes],
       'component_id' => $componentName,
-      'option_group_id' => "activity_type",
+      'option_group_id' => 'activity_type',
       'api.OptionValue.delete' => ['id' => '$value.id'],
     ]);
   }
@@ -329,7 +329,8 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * Creates/Updates default case types to be shipped
    * with this extension
    *
-   * @param $defaultCaseTypes
+   * @param array $defaultCaseTypes
+   *   A list of case types with their related data
    */
   private function up1402_createDefaultCaseTypes($defaultCaseTypes) {
     foreach ($defaultCaseTypes as $caseType) {
@@ -351,24 +352,25 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * Creates default activity types to be shipped
    * with this extension if they are not exits
    *
-   * @param $defaultActivityTypes
+   * @param array $defaultActivityTypes
+   *   A list of activity type names
    */
   private function up1402_createDefaultActivityTypes($defaultActivityTypes) {
     foreach ($defaultActivityTypes as $activityType) {
       $type = civicrm_api3('OptionValue', 'get', [
         'sequential' => 1,
         'name' => $activityType,
-        'option_group_id' => "activity_type",
-        'component_id' => "CiviTask",
+        'option_group_id' => 'activity_type',
+        'component_id' => 'CiviTask',
       ]);
 
       if (empty($type['id'])) {
         civicrm_api3('OptionValue', 'create', [
           'sequential' => 1,
-          'option_group_id' => "activity_type",
+          'option_group_id' => 'activity_type',
           'label' => $activityType,
           'name' => $activityType,
-          'component_id' => "CiviTask",
+          'component_id' => 'CiviTask',
         ]);
       }
     }
@@ -377,16 +379,16 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   /**
    * Changes Activity type component
    *
-   * @param $activityTypeName
+   * @param string $activityTypeName
    *   Activity type name
-   * @param $currentComponent
+   * @param string $currentComponent
    *   Current activity type component
-   * @param $newComponent
+   * @param string $newComponent
    *  New activity type component
    */
   private function changeActivityTypeComponent($activityTypeName, $currentComponent, $newComponent) {
     civicrm_api3('OptionValue', 'get', [
-      'option_group_id' => "activity_type",
+      'option_group_id' => 'activity_type',
       'name' => $activityTypeName,
       'component_id' => $currentComponent,
       'api.OptionValue.create' => ['id' => '$value.id', 'component_id' => $newComponent],
@@ -467,15 +469,6 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
         ]);
       }
     }
-  }
-
-  private function removeActivityTypes($activityTypes) {
-    civicrm_api3('OptionValue', 'get', [
-      'name' => ['IN' => $activityTypes],
-      'component_id' => 'CiviTask',
-      'option_group_id' => "activity_type",
-      'api.OptionValue.delete' => ['id' => '$value.id'],
-    ]);
   }
 
 }
