@@ -1965,7 +1965,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // this one is not expired, but it will not be deleted
     // because from_date is < than the given start date
-    LeaveRequestFabricator::fabricateWithoutValidation([
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 3,
@@ -1978,7 +1978,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     // this one will not be deleted because from_date is < than the given start date
-    LeaveRequestFabricator::fabricateWithoutValidation([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 3,
@@ -1992,7 +1992,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // the from_date matches the given start date, but it is already
     // expired, so it will not be deleted too
-    LeaveRequestFabricator::fabricateWithoutValidation([
+    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 3,
@@ -2024,5 +2024,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $leaveRequest = new LeaveRequest();
     $leaveRequest->find();
     $this->assertEquals(3, $leaveRequest->N);
+
+    $nonDeletedLeaveRequestIDS = [];
+    while($leaveRequest->fetch()) {
+      $nonDeletedLeaveRequestIDS[] = $leaveRequest->id;
+    }
+
+    $this->assertContains($leaveRequest1->id, $nonDeletedLeaveRequestIDS);
+    $this->assertContains($leaveRequest2->id, $nonDeletedLeaveRequestIDS);
+    $this->assertContains($leaveRequest3->id, $nonDeletedLeaveRequestIDS);
   }
 }

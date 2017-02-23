@@ -1621,6 +1621,31 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
+  public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsInvalid() {
+    $toDate = new DateTime('+4 days');
+    $fromDate = new DateTime();
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1,
+      'request_type' => 'çrewqvczxewqewqqweasdpoiugfdnmzicx'. microtime()
+    ]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'values' => [
+        'request_type' => ['leave_request_invalid_request_type']
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
   public function testLeaveRequestIsValidShouldReturnErrorWhenRequestTypeIsToilAndToilDurationIsEmpty() {
     $toDate = new DateTime('+4 days');
     $fromDate = new DateTime();
