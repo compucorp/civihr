@@ -13,17 +13,6 @@
     margin-bottom: 0;
   }
 
-  .crm-pager-nav {
-    padding-left: 0 !important;
-    a {
-      color: $brand-primary !important;
-
-      &:hover {
-        color: $gray !important;
-      }
-    }
-  }
-
   .sticky {
     th {
       line-height: 35px !important;
