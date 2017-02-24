@@ -572,3 +572,53 @@ function civicrm_api3_leave_request_deletecomment($params) {
   return $leaveRequestCommentService->delete($params);
 }
 
+/**
+ * LeaveRequest.getAttachments API spec
+ *
+ * @param array $spec
+ */
+function _civicrm_api3_leave_request_getattachments_spec(&$spec) {
+  $spec['leave_request_id'] = [
+    'name' => 'leave_request_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'LeaveRequest ID',
+    'description' => 'The Leave Request ID to fetch attachments for',
+    'api.required' => 1
+  ];
+}
+
+/**
+ * LeaveRequest.getAttachments API
+ *
+ * Uses the Attachment API to fetch attachments associated
+ * with a LeaveRequest.
+ *
+ * @param array $params
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_getattachments($params) {
+  $params['entity_id'] = $params['leave_request_id'];
+  $params['entity_table'] = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::getTableName();
+
+  $result =  civicrm_api3('Attachment', 'get', $params);
+
+  if ($result['count'] > 0) {
+    array_walk($result['values'], '_civicrm_api3_leave_request_filter_attachment_fields');
+  }
+
+  return $result;
+}
+
+/**
+ * Helper method to filter the returned results from the Attachment.get API
+ * Ensures only relevant fields are returned.
+ *
+ * @param array $item
+ */
+function _civicrm_api3_leave_request_filter_attachment_fields(&$item) {
+  $fields = array_flip(['id', 'name', 'mime_type', 'upload_date', 'url']);
+  $item = array_intersect_key($item, $fields);
+  $item['attachment_id'] = $item['id'];
+  unset($item['id']);
+}

@@ -2605,4 +2605,58 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
     $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
   }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_request_id
+   */
+  public function testGetAttachmentsShouldThrowAnExceptionIfLeaveRequestIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'getattachments');
+  }
+
+  public function testGetAttachments() {
+    $leaveRequestID = 1;
+    $leaveRequestID2 = 2;
+    $attachment1 = $this->createAttachmentForLeaveRequest([
+      'entity_id' => $leaveRequestID,
+      'name' => 'LeaveRequestSampleFile1.txt'
+    ]);
+
+    $attachment2 = $this->createAttachmentForLeaveRequest([
+      'entity_id' => $leaveRequestID,
+      'name' => 'LeaveRequestSampleFile2.txt'
+    ]);
+
+    $attachment3 = $this->createAttachmentForLeaveRequest([
+      'entity_id' => $leaveRequestID2,
+      'name' => 'LeaveRequestSampleFile3.txt'
+    ]);
+
+    $params = ['leave_request_id' => $leaveRequestID, 'sequential' => 1];
+    $result = civicrm_api3('LeaveRequest', 'getAttachments', $params);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 2,
+      'values' => [
+        [
+          'name' => $attachment1['name'],
+          'mime_type' => $attachment1['mime_type'],
+          'upload_date' => $attachment1['upload_date'],
+          'url' => $attachment1['url'],
+          'attachment_id' => $attachment1['id']
+        ],
+        [
+          'name' => $attachment2['name'],
+          'mime_type' => $attachment2['mime_type'],
+          'upload_date' => $attachment2['upload_date'],
+          'url' => $attachment2['url'],
+          'attachment_id' => $attachment2['id']
+        ]
+      ]
+    ];
+
+    $this->assertEquals($result, $expectedResult);
+  }
 }

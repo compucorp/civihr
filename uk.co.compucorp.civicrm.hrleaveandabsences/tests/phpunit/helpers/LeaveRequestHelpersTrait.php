@@ -40,4 +40,18 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
 
     return $this->leaveRequestStatuses;
   }
+
+  protected function createAttachmentForLeaveRequest($params) {
+    $defaultParams = [
+      'entity_table' => LeaveRequest::getTableName(),
+      'name' => 'LeaveRequestSampleFile.txt',
+      'mime_type' => 'text/plain',
+      'content' => '',
+      'sequential' => 1
+    ];
+    $payload = array_merge($defaultParams, $params);
+    $result =  civicrm_api3('Attachment', 'create', $payload);
+
+    return $result['values'][0];
+  }
 }
