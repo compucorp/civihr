@@ -1,6 +1,7 @@
 define([
   'common/angular',
   'common/angularBootstrap',
+  'common/text-angular',
   'common/directives/loading',
   'common/services/angular-date/date-format',
   'leave-absences/shared/ui-router',
@@ -18,6 +19,7 @@ define([
     'ui.router',
     'ui.select',
     'ui.bootstrap',
+    'textAngular',
     'common.angularDate',
     'common.models',
     'common.mocks',

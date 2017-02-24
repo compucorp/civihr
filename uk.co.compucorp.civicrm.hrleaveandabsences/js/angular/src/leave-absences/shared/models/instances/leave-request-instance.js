@@ -201,6 +201,15 @@ define([
           return checkLeaveStatus.call(this, 'more_information_requested');
         },
 
+        loadComments: function () {
+          var self = this;
+
+          return LeaveRequestAPI.getComments(this.id)
+            .then(function (comments) {
+              self.comments = comments;
+            });
+        },
+
         /**
          * Check the role of a given contact in relationship to the leave request.
          *

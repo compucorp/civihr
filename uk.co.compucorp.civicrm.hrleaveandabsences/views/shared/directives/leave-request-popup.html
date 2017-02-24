@@ -116,66 +116,21 @@
                 src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
             </uib-tab>
             <uib-tab heading="Comments">
-              <div class="chr_leave-request-modal__comments">
-                <div class="chr_leave-request-comment">
+              <div class="text-center chr_leave-request-modal__comments_empty" ng-show="$ctrl.request.comments.length === 0">
+                No comments available. Comments can be added below.
+              </div>
+              <div class="chr_leave-request-modal__comments" ng-hide="$ctrl.request.comments.length === 0">
+                <div class="chr_leave-request-comment" ng-repeat="comment in $ctrl.request.comments | orderBy: $ctrl.orderComment : true">
                   <div class="chr_leave-request-comment__meta">
-                    <span class="chr_leave-request-comment__author">John Doe</span>
-                    <span>
-                      -
-                    </span>
-                    <span class="chr_leave-request-comment__date">18/01/2015</span>
-                    <button class="btn btn-link">Remove</button>
+                    <span class="chr_leave-request-comment__author">{{$ctrl.getCommentorName(comment.contact_id)}}</span>
+                    <span> - </span>
+                    <span class="chr_leave-request-comment__date">{{$ctrl.formatDateTime(comment.created_at)}}</span>
+                    <button
+                      class="btn btn-link"
+                      ng-click="$ctrl.removeComment(comment)"
+                      ng-show="$ctrl.removeCommentVisibility(comment)">Remove</button>
                   </div>
-                  <div class="chr_leave-request-comment__text">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis
-                    mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum
-                    metus ut nisi pulvinar pretium.
-                  </div>
-                </div>
-                <div class="chr_leave-request-comment">
-                  <div class="chr_leave-request-comment__meta">
-                    <span class="chr_leave-request-comment__author">John Doe</span>
-                    <span>
-                      -
-                    </span>
-                    <span class="chr_leave-request-comment__date">18/01/2015</span>
-                    <button class="btn btn-link">Remove</button>
-                  </div>
-                  <div class="chr_leave-request-comment__text">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis
-                    mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum
-                    metus ut nisi pulvinar pretium.
-                  </div>
-                </div>
-                <div class="chr_leave-request-comment">
-                  <div class="chr_leave-request-comment__meta">
-                    <span class="chr_leave-request-comment__author">John Doe</span>
-                    <span>
-                      -
-                    </span>
-                    <span class="chr_leave-request-comment__date">18/01/2015</span>
-                    <button class="btn btn-link">Remove</button>
-                  </div>
-                  <div class="chr_leave-request-comment__text">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis
-                    mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum
-                    metus ut nisi pulvinar pretium.
-                  </div>
-                </div>
-                <div class="chr_leave-request-comment">
-                  <div class="chr_leave-request-comment__meta">
-                    <span class="chr_leave-request-comment__author">John Doe</span>
-                    <span>
-                      -
-                    </span>
-                    <span class="chr_leave-request-comment__date">18/01/2015</span>
-                    <button class="btn btn-link">Remove</button>
-                  </div>
-                  <div class="chr_leave-request-comment__text">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis
-                    mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum
-                    metus ut nisi pulvinar pretium.
-                  </div>
+                  <div class="chr_leave-request-comment__text" ng-bind-html="comment.text"></div>
                 </div>
               </div>
               <div
@@ -183,10 +138,13 @@
                 text-angular
                 prevent-animations
                 ta-toolbar="[['bold','italics','underline']]"
-                ng-model="myleave.leaveRequest.comments.text"></div>
+                ng-model="$ctrl.comments.text"></div>
               <div class="chr_wysiwyg__action">
                 <hr/>
-                <button class="btn btn-link">
+                <button
+                  class="btn btn-link"
+                  ng-click="$ctrl.addComment()"
+                  ng-disabled="$ctrl.comments.text.length === 0">
                   <i class="fa fa-comment-o" aria-hidden="true"></i>
                   Add comment
                 </button>
