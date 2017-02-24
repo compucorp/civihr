@@ -55,6 +55,15 @@
 }
 
 .page-civicrm-contact-view {
+  .ui-widget-content {
+    &.ui-tabs-panel {
+      padding-right: 15px !important;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+    }
+  }
+
   .action-link {
     margin-bottom: 30px;
 
