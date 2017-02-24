@@ -121,13 +121,12 @@ define([
         instance = TOILRequestInstance.init({}, false);
         instance.toilDurationHours = 1;
         instance.toilDurationMinutes = 1;
-        promise = instance.updateDuration();
+        instance.updateDuration();
       });
 
       it('updates durations in minutes', function () {
         expect(instance.duration).toEqual(61);
       });
-
     });
   });
 });
