@@ -32,6 +32,13 @@ function hrcase_civicrm_install() {
 }
 
 /**
+ * Implementation of hook_civicrm_postInstall
+ */
+function hrcase_civicrm_postInstall() {
+  return _hrcase_civix_civicrm_postInstall();
+}
+
+/**
  * Implementation of hook_civicrm_uninstall
  */
 function hrcase_civicrm_uninstall() {
