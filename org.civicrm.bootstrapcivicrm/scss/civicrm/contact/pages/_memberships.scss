@@ -21,7 +21,6 @@
 
         tr{
           border-bottom: 1px solid $crm-dark-grayblue;
-          border-right: none;
 
           th {
             border-bottom: none;
@@ -42,6 +41,7 @@
         tr {
           background: $crm-white;
           border-bottom: 1px solid $crm-background;
+          border-right: none;
 
           td {
             background: $crm-white;
