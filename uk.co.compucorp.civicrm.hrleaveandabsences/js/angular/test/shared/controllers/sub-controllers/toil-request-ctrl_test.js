@@ -2,6 +2,7 @@
   define([
     'common/lodash',
     'mocks/data/option-group-mock-data',
+    'mocks/data/absence-type-data',
     'common/angularMocks',
     'leave-absences/shared/config',
     'common/mocks/services/hr-settings-mock',
@@ -15,12 +16,12 @@
     'common/mocks/services/api/contact-mock',
     'leave-absences/shared/controllers/sub-controllers/toil-request-ctrl',
     'leave-absences/shared/modules/shared-settings',
-  ], function (_, optionGroupMock) {
+  ], function (_, optionGroupMock, absenceMockData) {
     'use strict';
 
     describe('SickRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller,
-        $provide, AbsenceTypeAPI, TOILRequestInstance,
+        $provide, AbsenceTypeAPI, TOILRequestInstance, sharedSettings,
         date2016 = '01/12/2016';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
@@ -28,6 +29,11 @@
         function (_$provide_) {
           $provide = _$provide_;
         }));
+
+      beforeEach(inject(['shared-settings',
+        function (_sharedSettings_) {
+        sharedSettings = _sharedSettings_;
+      }]));
 
       beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_,
         _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
@@ -44,7 +50,6 @@
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_,
         _AbsenceTypeAPI_, _TOILRequestInstance_) {
-
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
@@ -113,17 +118,17 @@
             $ctrl.request.toil_to_accrue = toil_accrue.value;
           });
 
-          it('cannot submit request', function () {
+          it('can submit request', function () {
             expect($ctrl.canSubmit()).toBe(true);
           });
 
           it('sets expiry date', function() {
-            expect($ctrl.expiryDate).toEqual('2016-07-08');
+            expect($ctrl.expiryDate).toEqual(absenceMockData.calculateToilExpiryDate().values.expiry_date);
           });
 
           it('calls calculateToilExpiryDate on AbsenceType', function() {
-            expect(AbsenceTypeAPI.calculateToilExpiryDate.calls.mostRecent().args[0]).toEqual('1');
-            expect(AbsenceTypeAPI.calculateToilExpiryDate.calls.mostRecent().args[1]).toEqual('2016-01-12');
+            expect(AbsenceTypeAPI.calculateToilExpiryDate.calls.mostRecent().args[0]).toEqual($ctrl.request.type_id);
+            expect(AbsenceTypeAPI.calculateToilExpiryDate.calls.mostRecent().args[1]).toEqual($ctrl.request.from_date);
           });
 
           describe('when user changes number of days selected', function () {

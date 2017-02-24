@@ -119,16 +119,13 @@ define([
     describe('updateDuration()', function () {
       beforeEach(function () {
         instance = TOILRequestInstance.init({}, false);
-        instance.toilDurationHours = 1
+        instance.toilDurationHours = 1;
+        instance.toilDurationMinutes = 1;
         promise = instance.updateDuration();
       });
 
-      afterEach(function () {
-        $rootScope.$apply();
-      });
-
       it('updates durations in minutes', function () {
-        expect(instance.duration).toEqual(60);
+        expect(instance.duration).toEqual(61);
       });
 
     });

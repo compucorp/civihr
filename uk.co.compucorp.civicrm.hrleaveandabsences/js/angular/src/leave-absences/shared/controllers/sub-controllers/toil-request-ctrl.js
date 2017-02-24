@@ -100,7 +100,7 @@ define([
       };
 
       /**
-       * Resets data in dates, types, balance in parent and reason here.
+       * Resets data for toil.
        */
       vm._reset = function () {
         parentRequestCtrl._reset.call(this);
