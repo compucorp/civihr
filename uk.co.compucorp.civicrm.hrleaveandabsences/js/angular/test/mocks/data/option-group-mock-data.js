@@ -435,8 +435,7 @@ define([
       "is_reserved": "0",
       "is_active": "1"
     }],
-    hrleaveandabsences_sickness_reason: [
-      {
+    hrleaveandabsences_sickness_reason: [{
         "id": "1129",
         "option_group_id": "145",
         "label": "Accident",
@@ -569,8 +568,7 @@ define([
         "is_active": "1"
       }
     ],
-    hrleaveandabsences_leave_request_required_document: [
-      {
+    hrleaveandabsences_leave_request_required_document: [{
         "id": "1126",
         "option_group_id": "144",
         "label": "Self certification form required",
@@ -602,6 +600,163 @@ define([
         "name": "return_to_work_form_required",
         "is_default": "0",
         "weight": "2",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      }
+    ],
+    hrleaveandabsences_toil_amounts: [{
+        "id": "1140",
+        "option_group_id": "146",
+        "label": "0 Days",
+        "value": "0",
+        "name": "zero_days",
+        "is_default": "0",
+        "weight": "1",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1141",
+        "option_group_id": "146",
+        "label": "1/4 Days",
+        "value": "0.25",
+        "name": "quarter_day",
+        "is_default": "0",
+        "weight": "2",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1142",
+        "option_group_id": "146",
+        "label": "1/2 Days",
+        "value": "0.5",
+        "name": "half_day",
+        "is_default": "0",
+        "weight": "3",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1143",
+        "option_group_id": "146",
+        "label": "3/4 Days",
+        "value": "0.75",
+        "name": "three_quarters_day",
+        "is_default": "0",
+        "weight": "4",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1144",
+        "option_group_id": "146",
+        "label": "1 Day",
+        "value": "1",
+        "name": "one_day",
+        "is_default": "0",
+        "weight": "5",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1145",
+        "option_group_id": "146",
+        "label": "1 1/4 Days",
+        "value": "1.25",
+        "name": "one_and_a_quarter_days",
+        "is_default": "0",
+        "weight": "6",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1146",
+        "option_group_id": "146",
+        "label": "1 1/2 Days",
+        "value": "1.5",
+        "name": "one_and_a_half_days",
+        "is_default": "0",
+        "weight": "7",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1147",
+        "option_group_id": "146",
+        "label": "1 3/4 Days",
+        "value": "1.75",
+        "name": "one_and_three_quarters_days",
+        "is_default": "0",
+        "weight": "8",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1148",
+        "option_group_id": "146",
+        "label": "2 Days",
+        "value": "2",
+        "name": "two_days",
+        "is_default": "0",
+        "weight": "9",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1149",
+        "option_group_id": "146",
+        "label": "2 1/4 Days",
+        "value": "2.25",
+        "name": "two_and_a_quarter_days",
+        "is_default": "0",
+        "weight": "10",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1150",
+        "option_group_id": "146",
+        "label": "2 1/2 Days",
+        "value": "2.5",
+        "name": "two_and_a_half_days",
+        "is_default": "0",
+        "weight": "11",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1151",
+        "option_group_id": "146",
+        "label": "2 3/4 Days",
+        "value": "2.75",
+        "name": "two_and_three_quarters_days",
+        "is_default": "0",
+        "weight": "12",
+        "is_optgroup": "0",
+        "is_reserved": "1",
+        "is_active": "1"
+      },
+      {
+        "id": "1152",
+        "option_group_id": "146",
+        "label": "3 Days",
+        "value": "3",
+        "name": "three_days",
+        "is_default": "0",
+        "weight": "13",
         "is_optgroup": "0",
         "is_reserved": "1",
         "is_active": "1"

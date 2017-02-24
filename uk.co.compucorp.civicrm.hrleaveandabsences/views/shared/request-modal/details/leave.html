@@ -22,12 +22,12 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-xs-12 form-horizontal" ng-hide="!$ctrl.uiOptions.multipleDays && $ctrl.isLeaveType('toil')">
+  <div class="col-xs-12 form-horizontal">
     <div class="form-group">
       <label class="col-xs-4 control-label">From Date<i class="fa fa-asterisk"></i>
       </label>
       <div class="col-xs-4">
-        <div ng-hide="$ctrl.isLeaveType('toil')" class="input-group">
+        <div class="input-group">
           <input
             type="text"
             class="form-control"
@@ -41,22 +41,6 @@
           <span class="input-group-btn">
             <button
               ng-disabled="$ctrl.isMode('view')"
-              type="button"
-              class="btn btn-default fa fa-calendar"
-              ng-click="$ctrl.uiOptions.date.from.show = true"></button>
-          </span>
-        </div>
-        <div ng-show="$ctrl.isLeaveType('toil')" class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            uib-datepicker-popup
-            show-button-bar="false"
-            datepicker-options="$ctrl.uiOptions.date.from.options"
-            ng-model="$ctrl.uiOptions.fromDate"
-            is-open="$ctrl.uiOptions.date.from.show"/>
-          <span class="input-group-btn">
-            <button
               type="button"
               class="btn btn-default fa fa-calendar"
               ng-click="$ctrl.uiOptions.date.from.show = true"></button>
@@ -83,13 +67,13 @@
     </div>
   </div>
 </div>
-<div class="row" ng-show="$ctrl.uiOptions.multipleDays">
+<div class="row" ng-hide="!$ctrl.uiOptions.multipleDays">
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
       <label class="col-xs-4 control-label">To Date<i class="fa fa-asterisk"></i>
       </label>
       <div class="col-xs-4">
-        <div ng-hide="$ctrl.isLeaveType('toil')" class="input-group">
+        <div class="input-group">
           <input
             type="text"
             class="form-control"
@@ -106,22 +90,6 @@
               class="btn btn-default fa fa-calendar"
               ng-disabled="$ctrl.isMode('view') || !$ctrl.request.from_date"
               ng-click="$ctrl.uiOptions.date.to.show = $ctrl.request.from_date ? true : false"></button>
-          </span>
-        </div>
-        <div ng-show="$ctrl.isLeaveType('toil')" class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            uib-datepicker-popup
-            show-button-bar="false"
-            datepicker-options="$ctrl.uiOptions.date.to.options"
-            ng-model="$ctrl.uiOptions.toDate"
-            is-open="$ctrl.uiOptions.date.to.show"/>
-          <span class="input-group-btn">
-            <button
-              type="button"
-              class="btn btn-default fa fa-calendar"
-              ng-click="$ctrl.uiOptions.date.to.show = true"></button>
           </span>
         </div>
       </div>

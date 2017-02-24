@@ -94,20 +94,8 @@ define([
               showWeeks: false
             }
           },
-          // temporary, for PCHR-1384
-          dateWorked: {
-            show: false,
-            options: {
-              minDate: null,
-              maxDate: null,
-              startingDay: 1,
-              showWeeks: false
-            }
-          },
         }
       };
-      // temporary, for PCHR-1384
-      this.currentDate = '09/02/2017';
 
       /**
        * Change handler for change request type like multiple or single. It will
@@ -268,7 +256,7 @@ define([
         dayType = dayType || 'from';
         self.loading[dayType + 'DayTypes'] = true;
 
-        return checkAndSetAbsencePeriod.call(self, date)
+        return self._checkAndSetAbsencePeriod.call(self, date)
           .then(function () {
             var isInCurrentPeriod = oldPeriodId == self.period.id;
 
@@ -284,13 +272,13 @@ define([
               }
 
               return $q.all([
-                loadAbsenceTypes.call(self),
-                loadCalendar.call(self)
+                self._loadAbsenceTypes.call(self),
+                self._loadCalendar.call(self)
               ]);
             }
           })
           .then(function () {
-            setMinMaxDate.call(self);
+            self._setMinMaxDate.call(self);
 
             return filterLeaveRequestDayTypes.call(self, date, dayType);
           })
@@ -337,47 +325,6 @@ define([
 
         return attributes;
       };
-
-      /**
-       * Initializes the controller on loading the dialog
-       *
-       * @return {Promise}
-       */
-      this._init = function () {
-        var self = this;
-
-        return loadStatuses.call(self)
-          .then(function () {
-            initUserRole.call(self);
-            initOpenMode.call(self);
-            return loadAbsencePeriods.call(self);
-          })
-          .then(function () {
-            initAbsencePeriod.call(self);
-            setMinMaxDate.call(self);
-
-            return $q.all([
-              loadAbsenceTypes.call(self),
-              loadCalendar.call(self)
-            ]);
-          })
-          .then(function () {
-            return loadDayTypes.call(self);
-          })
-          .then(function () {
-            return initDates.call(self);
-          })
-          .then(function () {
-            initAbsenceType.call(self);
-            initStatus.call(self);
-            initContact.call(self);
-
-            if (self.isMode.call(self, 'edit')) {
-              initialLeaveRequestAttributes = self.request.attributes();
-            }
-          });
-      };
-
       /**
        * Resets data in dates, types, balance.
        */
@@ -397,6 +344,139 @@ define([
             breakdown: []
           }
         };
+
+        this.pagination.totalItems = 0;
+        this.pagination.filteredbreakdown = [];
+      };
+
+      /**
+       * Finds if date is in any absence period and sets absence period for the given date
+       *
+       * @param {Date/String} date
+       * @return {Promise} with true value if period found else rejected false
+       */
+      this._checkAndSetAbsencePeriod = function (date) {
+        var formattedDate = moment(date).format(this.uiOptions.userDateFormat.toUpperCase());
+
+        this.period = _.find(this.absencePeriods, function (period) {
+          return period.isInPeriod(formattedDate);
+        });
+
+        if (!this.period) {
+          //inform user if absence period is not found
+          return $q.reject('Please change date as it is not in any absence period');
+        }
+
+        return $q.resolve(true);
+      };
+
+      /**
+       * Initializes user's calendar (work patterns)
+       *
+       * @return {Promise}
+       */
+      this._loadCalendar = function () {
+        var self = this;
+
+        return Calendar.get(self.request.contact_id, self.period.id)
+          .then(function (usersCalendar) {
+            self.calendar = usersCalendar;
+          });
+      };
+
+      /**
+       * Initializes values for absence types and entitlements when the
+       * leave request popup model is displayed
+       *
+       * @return {Promise}
+       */
+      this._loadAbsenceTypes = function () {
+        var self = this;
+
+        return AbsenceType.all(self.initParams.absenceType)
+          .then(function (absenceTypes) {
+            var absenceTypesIds = absenceTypes.map(function (absenceType) {
+              return absenceType.id;
+            });
+
+            absenceTypesAndIds = {
+              types: absenceTypes,
+              ids: absenceTypesIds
+            };
+
+            return setAbsenceTypesFromEntitlements.call(self, absenceTypesAndIds);
+          });
+      };
+
+      /**
+       * Sets dates and types for this.request from UI
+       */
+      this._setDates = function () {
+        this.request.from_date = this.uiOptions.fromDate ? convertDateFormatToServer(this.uiOptions.fromDate) : null;
+        this.request.to_date = this.uiOptions.toDate ? convertDateFormatToServer(this.uiOptions.toDate) : null;
+
+        if (!this.uiOptions.multipleDays && this.uiOptions.fromDate) {
+          this.uiOptions.toDate = this.uiOptions.fromDate;
+          this.request.to_date = this.request.from_date;
+        }
+      };
+
+      /**
+       * Sets the min and max for to date from absence period
+       */
+      this._setMinMaxDate = function () {
+        if (this.uiOptions.fromDate) {
+          this.uiOptions.date.to.options.minDate = this.uiOptions.fromDate;
+
+          //also re-set to date if from date is changing and less than to date
+          if (this.uiOptions.toDate && moment(this.uiOptions.toDate).isBefore(this.uiOptions.fromDate)) {
+            this.uiOptions.toDate = this.uiOptions.fromDate;
+          }
+        } else {
+          this.uiOptions.date.to.options.minDate = convertDateFormatFromServer(this.period.start_date);
+        }
+
+        this.uiOptions.date.to.options.maxDate = convertDateFormatFromServer(this.period.end_date);
+      };
+
+      /**
+       * Initializes the controller on loading the dialog
+       *
+       * @return {Promise}
+       */
+      this._init = function () {
+        var self = this;
+
+        return loadStatuses.call(self)
+          .then(function () {
+            initUserRole.call(self);
+            initOpenMode.call(self);
+            return loadAbsencePeriods.call(self);
+          })
+          .then(function () {
+            initAbsencePeriod.call(self);
+            self._setMinMaxDate.call(self);
+
+            return $q.all([
+              self._loadAbsenceTypes.call(self),
+              self._loadCalendar.call(self)
+            ]);
+          })
+          .then(function () {
+            return loadDayTypes.call(self);
+          })
+          .then(function () {
+            return initDates.call(self);
+          })
+          .then(function () {
+            initAbsenceType.call(self);
+            initStatus.call(self);
+            initContact.call(self);
+
+            if (self.isMode.call(self, 'edit')) {
+              initialLeaveRequestAttributes = self.request.attributes();
+            }
+          });
       };
 
       /**
@@ -434,27 +514,6 @@ define([
        */
       function canViewOrEdit() {
         return this.isMode('edit') || this.isMode('view');
-      }
-
-      /**
-       * Finds if date is in any absence period and sets absence period for the given date
-       *
-       * @param {Date/String} date
-       * @return {Promise} with true value if period found else rejected false
-       */
-      function checkAndSetAbsencePeriod(date) {
-        var formattedDate = moment(date).format(this.uiOptions.userDateFormat.toUpperCase());
-
-        this.period = _.find(this.absencePeriods, function (period) {
-          return period.isInPeriod(formattedDate);
-        });
-
-        if (!this.period) {
-          //inform user if absence period is not found
-          return $q.reject('Please change date as it is not in any absence period');
-        }
-
-        return $q.resolve(true);
       }
 
       /**
@@ -766,20 +825,6 @@ define([
       }
 
       /**
-       * Initializes user's calendar (work patterns)
-       *
-       * @return {Promise}
-       */
-      function loadCalendar() {
-        var self = this;
-
-        return Calendar.get(self.request.contact_id, self.period.id)
-          .then(function (usersCalendar) {
-            self.calendar = usersCalendar;
-          });
-      }
-
-      /**
        * Loads all absence periods
        */
       function loadAbsencePeriods() {
@@ -788,32 +833,6 @@ define([
         return AbsencePeriod.all()
           .then(function (periods) {
             self.absencePeriods = periods;
-          });
-      }
-
-      /**
-       * Initializes values for absence types and entitlements when the
-       * leave request popup model is displayed
-       *
-       * @return {Promise}
-       */
-      function loadAbsenceTypes() {
-        var self = this;
-
-        return AbsenceType.all({
-            is_sick: self.isLeaveType.call(self, 'sick')
-          })
-          .then(function (absenceTypes) {
-            var absenceTypesIds = absenceTypes.map(function (absenceType) {
-              return absenceType.id;
-            });
-
-            absenceTypesAndIds = {
-              types: absenceTypes,
-              ids: absenceTypesIds
-            };
-
-            return setAbsenceTypesFromEntitlements.call(self, absenceTypesAndIds);
           });
       }
 
@@ -891,15 +910,12 @@ define([
        * Sets dates and types for this.request from UI
        */
       function setDateAndTypes() {
-        this.request.from_date = this.uiOptions.fromDate ? convertDateFormatToServer(this.uiOptions.fromDate) : null;
-        this.request.to_date = this.uiOptions.toDate ? convertDateFormatToServer(this.uiOptions.toDate) : null;
+        this._setDates.call(this);
 
         if (this.uiOptions.multipleDays) {
           this.uiOptions.showBalance = !!this.request.to_date && !!this.request.from_date;
         } else {
           if (this.uiOptions.fromDate) {
-            this.uiOptions.toDate = this.uiOptions.fromDate;
-            this.request.to_date = this.request.from_date;
             this.request.to_date_type = this.request.from_date_type;
           }
 
@@ -961,24 +977,6 @@ define([
             }
           }
         }
-      }
-
-      /**
-       * Sets the min and max for to date from absence period
-       */
-      function setMinMaxDate() {
-        if (this.uiOptions.fromDate) {
-          this.uiOptions.date.to.options.minDate = this.uiOptions.fromDate;
-
-          //also re-set to date if from date is changing and less than to date
-          if (this.uiOptions.toDate && moment(this.uiOptions.toDate).isBefore(this.uiOptions.fromDate)) {
-            this.uiOptions.toDate = this.uiOptions.fromDate;
-          }
-        } else {
-          this.uiOptions.date.to.options.minDate = convertDateFormatFromServer(this.period.start_date);
-        }
-
-        this.uiOptions.date.to.options.maxDate = convertDateFormatFromServer(this.period.end_date);
       }
 
       /**

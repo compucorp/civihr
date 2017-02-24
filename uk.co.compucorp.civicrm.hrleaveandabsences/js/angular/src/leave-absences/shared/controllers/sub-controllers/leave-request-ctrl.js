@@ -14,6 +14,12 @@ define([
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
       vm.leaveType = 'leave';
+      vm.initParams = {
+        absenceType: {
+          is_sick: false,
+          allow_accruals_request: false
+        }
+      };
 
       /**
        * Initializes the controller on loading the dialog

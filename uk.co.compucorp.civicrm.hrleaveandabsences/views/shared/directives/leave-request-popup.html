@@ -34,7 +34,9 @@
         <uib-tabset class="chr_leave-request-modal__tab">
           <uib-tab heading="Details">
             <ng-include src="pathTpl + 'request-modal/details/leave.html'"></ng-include>
-            <ng-include ng-show="$ctrl.isLeaveType('toil')" src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
+            <ng-include
+              ng-show="$ctrl.isLeaveType('toil')"
+              src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
             <crm-loading show="!$ctrl.loading.calculateBalanceChange">
               <div ng-show="$ctrl.uiOptions.showBalance">
                 <hr/>
@@ -43,52 +45,60 @@
                   <div class="col-xs-8">{{$ctrl.balance.opening}}</div>
                 </div>
                 <div
-                  class="row chr_leave-request-modal__form-group text-primary pointer"
-                  ng-click="$ctrl.uiOptions.isChangeExpanded = !$ctrl.uiOptions.isChangeExpanded">
+                  ng-show="$ctrl.isLeaveType('toil')"
+                  class="row chr_leave-request-modal__form-group text-primary">
                   <div class="col-xs-4">
-                    <i
-                      class="fa chr_leave-request-modal__chevron"
-                      aria-hidden="true"
-                      ng-class="{ 'fa-chevron-right': !$ctrl.uiOptions.isChangeExpanded, ' fa-chevron-down': $ctrl.uiOptions.isChangeExpanded }"></i>
                     Change
                   </div>
                   <div class="col-xs-8">{{$ctrl.balance.change.amount}}</div>
                 </div>
-                <table
-                  class="table chr_leave-request-modal__table"
-                  ng-show="$ctrl.uiOptions.isChangeExpanded">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Selection</th>
-                      <th>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr ng-repeat="breakdown in $ctrl.pagination.filteredbreakdown">
-                      <td>{{breakdown.date | date:'EEE '+ $ctrl.uiOptions.userDateFormat}}</td>
-                      <td>{{breakdown.type.label}}</td>
-                      <td>{{breakdown.amount}}</td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colspan="3" class="text-center">
-                        <uib-pagination
-                          ng-if="$ctrl.pagination.totalItems"
-                          total-items="$ctrl.pagination.totalItems"
-                          ng-model="$ctrl.pagination.currentPage"
-                          class="pagination"
-                          ng-change="$ctrl.pagination.pageChanged()"
-                          direction-links="false"
-                          items-per-page="$ctrl.pagination.numPerPage"></uib-pagination>
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-                <div
-                  class="row"
-                  ng-class="{'text-danger': $ctrl.balance.closing < 0}">
+                <div ng-hide="$ctrl.isLeaveType('toil')">
+                  <div
+                    class="row chr_leave-request-modal__form-group text-primary pointer"
+                    ng-click="$ctrl.uiOptions.isChangeExpanded = !$ctrl.uiOptions.isChangeExpanded">
+                    <div class="col-xs-4">
+                      <i
+                        class="fa chr_leave-request-modal__chevron"
+                        aria-hidden="true"
+                        ng-class="{ 'fa-chevron-right': !$ctrl.uiOptions.isChangeExpanded, ' fa-chevron-down': $ctrl.uiOptions.isChangeExpanded }"></i>
+                      Change
+                    </div>
+                    <div class="col-xs-8">{{$ctrl.balance.change.amount}}</div>
+                  </div>
+                  <table
+                    class="table chr_leave-request-modal__table"
+                    ng-show="$ctrl.uiOptions.isChangeExpanded">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Selection</th>
+                        <th>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="breakdown in $ctrl.pagination.filteredbreakdown">
+                        <td>{{breakdown.date | date:'EEE '+ $ctrl.uiOptions.userDateFormat}}</td>
+                        <td>{{breakdown.type.label}}</td>
+                        <td>{{breakdown.amount}}</td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="3" class="text-center">
+                          <uib-pagination
+                            ng-if="$ctrl.pagination.totalItems"
+                            total-items="$ctrl.pagination.totalItems"
+                            ng-model="$ctrl.pagination.currentPage"
+                            class="pagination"
+                            ng-change="$ctrl.pagination.pageChanged()"
+                            direction-links="false"
+                            items-per-page="$ctrl.pagination.numPerPage"></uib-pagination>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                <div class="row" ng-class="{'text-danger': $ctrl.balance.closing < 0}">
                   <div class="col-xs-4">Closing Balance</div>
                   <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
                 </div>
@@ -97,64 +107,123 @@
             <div class="row" ng-show="$ctrl.isLeaveType('toil')">
               <div class="col-xs-12 form-horizontal">
                 <hr>
-                <div class="expire-date">Expiry Date: <span>{{$ctrl.currentDate}}</div>
+                <div class="expire-date">Expiry Date:
+                  <span>{{$ctrl.expiryDate | date: $ctrl.uiOptions.userDateFormat}}</div>
+                </div>
+              </div>
+              <ng-include
+                ng-show="$ctrl.isLeaveType('sick')"
+                src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
+            </uib-tab>
+            <uib-tab heading="Comments">
+              <div class="chr_leave-request-modal__comments">
+                <div class="chr_leave-request-comment">
+                  <div class="chr_leave-request-comment__meta">
+                    <span class="chr_leave-request-comment__author">John Doe</span>
+                    <span>
+                      -
+                    </span>
+                    <span class="chr_leave-request-comment__date">18/01/2015</span>
+                    <button class="btn btn-link">Remove</button>
+                  </div>
+                  <div class="chr_leave-request-comment__text">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis
+                    mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum
+                    metus ut nisi pulvinar pretium.
+                  </div>
+                </div>
+                <div class="chr_leave-request-comment">
+                  <div class="chr_leave-request-comment__meta">
+                    <span class="chr_leave-request-comment__author">John Doe</span>
+                    <span>
+                      -
+                    </span>
+                    <span class="chr_leave-request-comment__date">18/01/2015</span>
+                    <button class="btn btn-link">Remove</button>
+                  </div>
+                  <div class="chr_leave-request-comment__text">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis
+                    mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum
+                    metus ut nisi pulvinar pretium.
+                  </div>
+                </div>
+                <div class="chr_leave-request-comment">
+                  <div class="chr_leave-request-comment__meta">
+                    <span class="chr_leave-request-comment__author">John Doe</span>
+                    <span>
+                      -
+                    </span>
+                    <span class="chr_leave-request-comment__date">18/01/2015</span>
+                    <button class="btn btn-link">Remove</button>
+                  </div>
+                  <div class="chr_leave-request-comment__text">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis
+                    mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum
+                    metus ut nisi pulvinar pretium.
+                  </div>
+                </div>
+                <div class="chr_leave-request-comment">
+                  <div class="chr_leave-request-comment__meta">
+                    <span class="chr_leave-request-comment__author">John Doe</span>
+                    <span>
+                      -
+                    </span>
+                    <span class="chr_leave-request-comment__date">18/01/2015</span>
+                    <button class="btn btn-link">Remove</button>
+                  </div>
+                  <div class="chr_leave-request-comment__text">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis
+                    mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum
+                    metus ut nisi pulvinar pretium.
+                  </div>
+                </div>
+              </div>
+              <div
+                class="chr_wysiwyg"
+                text-angular
+                prevent-animations
+                ta-toolbar="[['bold','italics','underline']]"
+                ng-model="myleave.leaveRequest.comments.text"></div>
+              <div class="chr_wysiwyg__action">
+                <hr/>
+                <button class="btn btn-link">
+                  <i class="fa fa-comment-o" aria-hidden="true"></i>
+                  Add comment
+                </button>
+              </div>
+            </uib-tab>
+            <uib-tab heading="Files"></uib-tab>
+          </uib-tabset>
+        </div>
+      </div>
+      <div
+        ng-show="$ctrl.isRole('manager')"
+        class="row chr_leave-request-modal__response">
+        <div class="col-xs-12 form-horizontal">
+          <div class="form-group">
+            <label class="col-xs-4 control-label">Set status to:<i class="fa fa-asterisk"></i>
+            </label>
+            <div class="col-xs-8">
+              <div class="chr_custom-select chr_custom-select--full">
+                <select
+                  name="statusSelect"
+                  ng-options="status.value as status.label for status in $ctrl.requestStatuses"
+                  ng-model="$ctrl.request.status_id">
+                  <option value="">- select -</option>
+                </select>
               </div>
             </div>
-            <ng-include ng-show="$ctrl.isLeaveType('sick')" src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
-          </uib-tab>
-          <uib-tab heading="Comments">
-            <div class="chr_leave-request-modal__comments">
-              <div class="chr_leave-request-comment">
-                <div class="chr_leave-request-comment__meta">
-                  <span class="chr_leave-request-comment__author">John Doe</span>
-                  <span> - </span>
-                  <span class="chr_leave-request-comment__date">18/01/2015</span>
-                  <button class="btn btn-link">Remove</button>
-                </div>
-                <div class="chr_leave-request-comment__text">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum metus ut nisi pulvinar pretium.
-                </div>
-              </div>
-              <div class="chr_leave-request-comment">
-                <div class="chr_leave-request-comment__meta">
-                  <span class="chr_leave-request-comment__author">John Doe</span>
-                  <span> - </span>
-                  <span class="chr_leave-request-comment__date">18/01/2015</span>
-                  <button class="btn btn-link">Remove</button>
-                </div>
-                <div class="chr_leave-request-comment__text">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum metus ut nisi pulvinar pretium.
-                </div>
-              </div>
-              <div class="chr_leave-request-comment">
-                <div class="chr_leave-request-comment__meta">
-                  <span class="chr_leave-request-comment__author">John Doe</span>
-                  <span> - </span>
-                  <span class="chr_leave-request-comment__date">18/01/2015</span>
-                  <button class="btn btn-link">Remove</button>
-                </div>
-                <div class="chr_leave-request-comment__text">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum metus ut nisi pulvinar pretium.
-                </div>
-              </div>
-              <div class="chr_leave-request-comment">
-                <div class="chr_leave-request-comment__meta">
-                  <span class="chr_leave-request-comment__author">John Doe</span>
-                  <span> - </span>
-                  <span class="chr_leave-request-comment__date">18/01/2015</span>
-                  <button class="btn btn-link">Remove</button>
-                </div>
-                <div class="chr_leave-request-comment__text">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor sagittis mauris in pharetra. Morbi quis congue nisl. Nullam sed mi ligula. Nunc dictum metus ut nisi pulvinar pretium.
-                </div>
-              </div>
-            </div>
+          </div>
+        </div>
+        <div ng-show="$ctrl.request.selectedResponse == 3">
+          <div class="col-xs-12">Please add a comment:</div>
+          <div class="col-xs-12">
             <div
               class="chr_wysiwyg"
               text-angular
               prevent-animations
               ta-toolbar="[['bold','italics','underline']]"
-              ng-model="myleave.leaveRequest.comments.text"></div>
+              ng-model="myleave.request.responseComment"></div>
             <div class="chr_wysiwyg__action">
               <hr/>
               <button class="btn btn-link">
@@ -162,67 +231,27 @@
                 Add comment
               </button>
             </div>
-          </uib-tab>
-          <uib-tab heading="Files"></uib-tab>
-        </uib-tabset>
+          </div>
+        </div>
       </div>
     </div>
     <div
-      ng-show="$ctrl.isRole('manager')"
-      class="row chr_leave-request-modal__response">
-      <div class="col-xs-12 form-horizontal">
-        <div class="form-group">
-          <label class="col-xs-4 control-label">Set status to:<i class="fa fa-asterisk"></i>
-          </label>
-          <div class="col-xs-8">
-            <div class="chr_custom-select chr_custom-select--full">
-              <select
-                name="statusSelect"
-                ng-options="status.value as status.label for status in $ctrl.requestStatuses"
-                ng-model="$ctrl.request.status_id">
-                <option value="">- select -</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div ng-show="$ctrl.request.selectedResponse == 3">
-        <div class="col-xs-12">Please add a comment:</div>
-        <div class="col-xs-12">
-          <div
-            class="chr_wysiwyg"
-            text-angular
-            prevent-animations
-            ta-toolbar="[['bold','italics','underline']]"
-            ng-model="myleave.request.responseComment"></div>
-          <div class="chr_wysiwyg__action">
-            <hr/>
-            <button class="btn btn-link">
-              <i class="fa fa-comment-o" aria-hidden="true"></i>
-              Add comment
-            </button>
-          </div>
-        </div>
-      </div>
+      ng-if="$ctrl.error"
+      uib-alert
+      class="danger"
+      close="$ctrl.closeAlert()"
+      dismiss-on-timeout="5000">{{$ctrl.error}}</div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-primary pull-left"
+        ng-click="$ctrl.cancel()">
+        Back
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        ng-disabled="!$ctrl.canSubmit()"
+        ng-click="$ctrl.submit()">Save</button>
     </div>
-  </div>
-  <div
-    ng-if="$ctrl.error"
-    uib-alert
-    class="danger"
-    close="$ctrl.closeAlert()"
-    dismiss-on-timeout="5000">{{$ctrl.error}}</div>
-  <div class="modal-footer">
-    <button
-      type="button"
-      class="btn btn-primary pull-left"
-      ng-click="$ctrl.cancel()">
-      Back
-    </button>
-    <button
-      type="submit"
-      class="btn btn-primary"
-      ng-disabled="!$ctrl.canSubmit()"
-      ng-click="$ctrl.submit()">Save</button>
-  </div>
-</crm-loading>
+  </crm-loading>

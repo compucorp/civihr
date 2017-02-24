@@ -15,6 +15,11 @@ define([
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
       vm.leaveType = 'sick';
+      vm.initParams = {
+        absenceType: {
+          is_sick: true
+        }
+      };
 
       /**
        * Checks if submit button can be enabled for user and returns true if successful
