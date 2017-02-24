@@ -15,10 +15,14 @@ define([
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
       vm.leaveType = 'toil';
-      vm.initParams = {};
+      vm.initParams = {
+        absenceType: {
+          allow_accruals_request: true
+        }
+      };
 
       /**
-       * Calculate change in balance, it updates local balance variables.
+       * Calculate change in balance, it updates balance variables.
        * It overrides the parent's implementation
        *
        * @return {Promise} empty promise if all required params are not set otherwise promise from server
@@ -58,7 +62,7 @@ define([
        */
       vm.canSubmit = function () {
         return !!vm.request.duration && !!vm.request.toil_to_accrue &&
-          !!this.request.from_date && !!this.request.to_date;
+          !!vm.request.from_date && !!vm.request.to_date;
       };
 
       /**
@@ -117,11 +121,6 @@ define([
         vm.loading.absenceTypes = true;
         initRequest();
 
-        vm.initParams = {
-          absenceType: {
-            allow_accruals_request: true
-          }
-        };
         vm._init()
           .then(function () {
             return loadToilAmounts();

@@ -14,7 +14,12 @@ define([
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
       vm.leaveType = 'leave';
-      vm.initParams = {};
+      vm.initParams = {
+        absenceType: {
+          is_sick: false,
+          allow_accruals_request: false
+        }
+      };
 
       /**
        * Initializes the controller on loading the dialog
@@ -23,12 +28,6 @@ define([
         vm.loading.absenceTypes = true;
         initRequest();
 
-        vm.initParams = {
-          absenceType: {
-            is_sick: false,
-            allow_accruals_request: false
-          }
-        };
         vm._init()
           .finally(function () {
             vm.loading.absenceTypes = false;
