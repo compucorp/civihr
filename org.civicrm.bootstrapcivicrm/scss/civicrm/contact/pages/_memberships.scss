@@ -486,6 +486,18 @@
         position: relative;
         top: -2px;
       }
+
+      #_qf_Search_refresh {
+        color: #fff;
+        background: $brand-primary;
+        border-color: $brand-primary;
+        text-shadow: none;
+        font-size: $font-size-base;
+        font-family: $font-family-base;
+        text-transform: uppercase;
+        padding: 8px 12px;
+        border-radius: 2px;
+      }
     }
   }
 }
