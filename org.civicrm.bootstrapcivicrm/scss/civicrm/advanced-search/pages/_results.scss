@@ -9,15 +9,8 @@
     margin-bottom: 15px !important;
   }
 
-  .crm-pager-nav {
-    padding-left: 0 !important;
-    a {
-      color: $brand-primary !important;
-
-      &:hover {
-        color: $gray !important;
-      }
-    }
+  .crm-pager {
+    margin-bottom: 0;
   }
 
   .sticky {
@@ -147,5 +140,18 @@
         @include fa-icon(13px, '\f1ad');
       }
     }
+  }
+
+  .font-size12pt {
+    font-size: 18px;
+    font-weight: 600;
+    color: $gray-darker;
+    padding-bottom: 10px;
+  }
+
+  .font-size11pt {
+    font-size: 13px;
+    font-weight: 600;
+    color: $gray-darker;
   }
 }
