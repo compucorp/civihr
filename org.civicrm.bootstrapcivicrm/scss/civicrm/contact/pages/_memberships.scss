@@ -462,7 +462,25 @@
 }
 
 .page-civicrm-member-search {
-  .select2-container {
-    max-width: 230px;
+  .CRM_Member_Form_Search {
+    .select2-container {
+      max-width: 230px;
+    }
+
+    .crm-accordion-body {
+      padding: 20px !important;
+
+      tr {
+        &:first-child {
+          td {
+            padding-top: 0;
+          }
+        }
+      }
+
+      td {
+        padding-left: 0;
+      }
+    }
   }
 }
