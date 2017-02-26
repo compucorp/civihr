@@ -125,9 +125,9 @@
       border-bottom: none;
       background-color: $gray-lighter !important;
       color: $gray-darker !important;
-      vertical-align: middle;
-      border: none;
-      padding: 10px;
+      vertical-align: middle !important;
+      border: none !important;
+      padding: 10px !important;
       line-height: 1.1em;
 
       div {
