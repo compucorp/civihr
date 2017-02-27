@@ -32,6 +32,13 @@ function hrcase_civicrm_install() {
 }
 
 /**
+ * Implementation of hook_civicrm_postInstall
+ */
+function hrcase_civicrm_postInstall() {
+  return _hrcase_civix_civicrm_postInstall();
+}
+
+/**
  * Implementation of hook_civicrm_uninstall
  */
 function hrcase_civicrm_uninstall() {
@@ -77,26 +84,6 @@ function hrcase_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  * is installed, disabled, uninstalled.
  */
 function hrcase_civicrm_managed(&$entities) {
-  // Since there is probably some assignments created under these assignment types ( case types)
-  // and because civicrm managed entity handler is broken for case types and do not work very well
-  // we have to keep this list of assignment types (case types) or otherwise errors will appears.
-  $caseTypes = ['Exiting', 'Joining', 'Appraisal', 'Probation'];
-
-  foreach ($caseTypes as $caseType) {
-    $entities[] = [
-      'name' => $caseType,
-      'entity' => 'CaseType',
-      'module' => 'org.civicrm.hrcase',
-      'params' =>
-        [
-          'version' => 3,
-          'name' => $caseType,
-          'title' => $caseType,
-          'is_active' => 1,
-        ]
-    ];
-  }
-
   return _hrcase_civix_civicrm_managed($entities);
 }
 
