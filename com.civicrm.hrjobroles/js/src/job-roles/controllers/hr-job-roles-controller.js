@@ -665,21 +665,10 @@ define([
        */
       function createJobRole(job_roles_data) {
         return HRJobRolesService.createJobRole(job_roles_data).then(function (data) {
-          if (data.is_error === 1) {
-            vm.message_type = 'alert-danger';
-            vm.message = 'Role creation failed!';
-          } else {
-            vm.message_type = 'alert-success';
-            vm.message = 'Role added successfully!';
-          }
-
-          // Hide the message after some seconds
-          $timeout(function () {
-            vm.message = null;
-          }, 3000);
-        }, function (errorMessage) {
-          vm.error = errorMessage;
-        });
+            return data;
+          }, function (errorMessage) {
+            vm.error = errorMessage;
+          });
       }
 
       /**
@@ -746,18 +735,7 @@ define([
        */
       function deleteJobRole(job_role_id) {
         return HRJobRolesService.deleteJobRole(job_role_id).then(function (data) {
-            if (data.is_error === 1) {
-              vm.message_type = 'alert-danger';
-              vm.message = 'Role delete failure!';
-            } else {
-              vm.message_type = 'alert-success';
-              vm.message = 'Role deleted successfully!';
-            }
-
-            // Hide the message after some seconds
-            $timeout(function () {
-              vm.message = null;
-            }, 3000);
+            return data;
           },
           function (errorMessage) {
             vm.error = errorMessage;
@@ -1182,19 +1160,7 @@ define([
        */
       function updateJobRole(role_id, job_roles_data) {
         return HRJobRolesService.updateJobRole(role_id, job_roles_data).then(function (data) {
-
-          if (data.is_error === 1) {
-            vm.message_type = 'alert-danger';
-            vm.message = 'Role update failed!';
-          } else {
-            vm.message_type = 'alert-success';
-            vm.message = 'Role updated successfully!';
-          }
-
-          // Hide the message after some seconds
-          $timeout(function () {
-            vm.message = null;
-          }, 3000);
+          return data;
         }, function (errorMessage) {
           vm.error = errorMessage;
         });
