@@ -53,10 +53,6 @@
           it('sets leave request', function() {
             expect(isolateScope.leaveRequest).toEqual({'contact-id': contactId});
           });
-
-          it('sets leave type', function() {
-            expect(isolateScope.leaveType).toEqual('sick');
-          });
         });
       });
 

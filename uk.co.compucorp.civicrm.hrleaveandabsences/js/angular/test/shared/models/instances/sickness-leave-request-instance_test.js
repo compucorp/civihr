@@ -31,93 +31,31 @@ define([
       }
     ]));
 
-    describe('create()', function () {
-      beforeEach(function () {
-        instance = SicknessRequestInstance.init({}, false);
-        promise = instance.create();
-      });
-
-      afterEach(function () {
-        //to excute the promise force an digest
-        $rootScope.$apply();
-      });
-
-      it('calls equivalent API method', function () {
-        expect(LeaveRequestAPI.create).toHaveBeenCalledWith(jasmine.any(Object), 'sick');
-      });
-
-      it('calls toAPI method', function () {
-        expect(instance.toAPI).toHaveBeenCalled();
-      });
-
-      describe('id field', function() {
-        it('is not appended to instance after API returns data', function() {
-          expect(instance.id).not.toBeDefined();
-        });
-
-        it('is appended to instance after API returns data', function() {
-          promise.then(function () {
-            expect(instance.id).toEqual(jasmine.any(String));
-          });
-        });
-      });
-    });
-
-    describe('isValid()', function () {
-      beforeEach(function () {
-        instance = SicknessRequestInstance.init({}, false);
-        promise = instance.isValid();
-      });
-
-      afterEach(function () {
-        $rootScope.$apply();
-      });
-
-      it('calls equivalent API method', function () {
-        expect(LeaveRequestAPI.isValid).toHaveBeenCalledWith(jasmine.any(Object), 'sick');
-      });
-
-      it('calls toAPI method', function () {
-        expect(instance.toAPI).toHaveBeenCalled();
-      });
-    });
-
-    describe('update()', function () {
-      beforeEach(function () {
-        instance = SicknessRequestInstance.init({}, false);
-        promise = instance.update();
-      });
-
-      afterEach(function () {
-        $rootScope.$apply();
-      });
-
-      it('calls update api method with the return value of toAPI method', function () {
-        expect(LeaveRequestAPI.update).toHaveBeenCalledWith(jasmine.any(Object), 'sick');
-      });
-
-      it('calls toAPI method', function () {
-        expect(instance.toAPI).toHaveBeenCalled();
-      });
-    });
-
     describe('default attributes', function() {
       beforeEach(function() {
-        instance = instance.init({}, false);
+        instance = SicknessRequestInstance.init({}, false);
       });
 
-      it('initializes reason', function() {
-        expect(instance.reason).toBeNull();
+      it('initializes sickness reason', function() {
+        expect(instance.sickness_reason).toBeNull();
       });
 
       it('initializes required documents', function() {
-        expect(instance.required_documents).toEqual('');
+        expect(instance.sickness_required_documents).toEqual('');
+      });
+
+      it('initializes required documents', function() {
+        expect(instance.sickness_required_documents).toEqual('');
+      });
+
+      it('initializes request type', function() {
+        expect(instance.request_type).toEqual('sickness');
       });
     });
 
     describe('toggleDocument()', function() {
       beforeEach(function() {
-        instance = instance.init({}, false);
+        instance = SicknessRequestInstance.init({}, false);
       });
 
       describe('when toggled with unique string value', function() {
@@ -127,7 +65,7 @@ define([
         });
 
         it('appends it to required documents', function() {
-          expect(instance.required_documents).toEqual('1,2');
+          expect(instance.sickness_required_documents).toEqual('1,2');
         });
       });
 
@@ -138,7 +76,7 @@ define([
         });
 
         it('removes string value from required documents', function() {
-          expect(instance.required_documents).toEqual('');
+          expect(instance.sickness_required_documents).toEqual('');
         });
       });
     });

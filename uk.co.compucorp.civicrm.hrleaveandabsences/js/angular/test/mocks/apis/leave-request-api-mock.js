@@ -13,13 +13,9 @@ define([
     function ($q) {
 
       return {
-        all: function (filters, pagination, sort, params, cache, leaveRequestType) {
+        all: function (filters, pagination, sort, params, cache) {
           return $q(function (resolve, reject) {
             var list = mockData.all().values;
-
-            if (leaveRequestType && leaveRequestType === 'sick') {
-              list = sicknessMockData.all().values;
-            }
 
             resolve({
               list: list,
@@ -48,25 +44,25 @@ define([
             resolve(mockData.calculateBalanceChange().values);
           });
         },
-        create: function (params, leaveRequestType) {
+        create: function (params) {
           return $q(function (resolve, reject) {
             if (!params.contact_id || !params.from_date) {
               reject('contact_id, from_date and from_date_type in params are mandatory');
             }
 
 
-            if (leaveRequestType && leaveRequestType === 'sick') {
+            if (params.request_type === 'sick') {
               resolve(sicknessMockData.all().values[0]);
             } else {
               resolve(mockData.all().values[0]);
             }
           });
         },
-        update: function (params, leaveRequestType) {
+        update: function (params) {
           return $q(function (resolve, reject) {
             var newAttributes;
 
-            if (leaveRequestType && leaveRequestType === 'sick') {
+            if (params.request_type === 'sick') {
               newAttributes = _.assign(Object.create(null), sicknessMockData.all().values[0], params);
             } else {
               newAttributes = _.assign(Object.create(null), mockData.all().values[0], params);
@@ -78,7 +74,7 @@ define([
             resolve(newAttributes);
           });
         },
-        isValid: function (params, leaveRequestType) {
+        isValid: function (params) {
           return $q(function (resolve, reject) {
             if (!params.contact_id || !params.from_date) {
               reject(mockData.getNotIsValid().values);

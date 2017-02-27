@@ -18,7 +18,7 @@
   ], function (_, optionGroupMock) {
     'use strict';
 
-    describe('SickRequestCtrl', function () {
+    describe('SicknessRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, SicknessRequestInstance,
         date2016 = '01/12/2016';
@@ -62,8 +62,7 @@
 
         beforeEach(function () {
           var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId,
-            leaveType: 'sick'
+            contactId: CRM.vars.leaveAndAbsences.contactId
           };
 
           initTestController(directiveOptions);
@@ -79,7 +78,7 @@
         });
 
         it('has leave type set to sick', function () {
-          expect($ctrl.isLeaveType('sick')).toBeTruthy();
+          expect($ctrl.isLeaveType('sickness')).toBeTruthy();
         });
 
         it('calls init on sickness instance', function () {
@@ -108,10 +107,8 @@
 
         describe('with selected reason', function () {
           beforeEach(function () {
-            var reason = optionGroupMock.specificObject('hrleaveandabsences_sickness_reason', 'name', 'appointment');
-
             setTestDates(date2016, date2016);
-            $ctrl.request.reason = reason.value;
+            setReason();
           });
 
           it('cannot submit request', function () {
@@ -124,7 +121,60 @@
             });
 
             it('resets reason', function () {
-              expect($ctrl.request.reason).toBeNull();
+              expect($ctrl.request.sickness_reason).toBeNull();
+            });
+          });
+        });
+
+        describe('when submit with valid fields', function () {
+          beforeEach(function () {
+            spyOn($rootScope, '$emit');
+            setTestDates(date2016, date2016);
+            //entitlements are randomly generated so resetting them to positive here
+            $ctrl.balance.closing = 1;
+            setReason();
+            $ctrl.submit();
+            $scope.$digest();
+          });
+
+          it('has all required fields', function () {
+            expect($ctrl.request.from_date).toBeDefined();
+            expect($ctrl.request.to_date).toBeDefined();
+            expect($ctrl.request.from_date_type).toBeDefined();
+            expect($ctrl.request.to_date_type).toBeDefined();
+            expect($ctrl.request.contact_id).toBeDefined();
+            expect($ctrl.request.status_id).toBeDefined();
+            expect($ctrl.request.type_id).toBeDefined();
+            expect($ctrl.request.sickness_reason).toBeDefined();
+            expect($ctrl.request.sickness_required_documents).toBeDefined();
+          });
+
+          it('is successful', function () {
+            expect($ctrl.error).toBeNull();
+            expect($ctrl.request.id).toBeDefined();
+          });
+
+          it('allows user to submit', function () {
+            expect($ctrl.canSubmit()).toBeTruthy();
+          });
+
+          it('sends event', function () {
+            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.request);
+          });
+
+          describe('when balance change is negative', function () {
+            beforeEach(function () {
+              setTestDates(date2016, date2016);
+              //entitlements are randomly generated so resetting them to negative here
+              $ctrl.balance.closing = -1;
+              $ctrl.submit();
+              $scope.$digest();
+            });
+
+            describe('and absence type does not allow overuse', function () {
+              it('does not save and sets error', function () {
+                expect($ctrl.error).toBeDefined();
+              });
             });
           });
         });
@@ -138,7 +188,7 @@
       function initTestController(directiveOptions) {
         $scope = $rootScope.$new();
 
-        $ctrl = $controller('SickRequestCtrl', {
+        $ctrl = $controller('SicknessRequestCtrl', {
           $scope: $scope,
           $uibModalInstance: modalInstanceSpy,
           directiveOptions: directiveOptions
@@ -164,6 +214,14 @@
           $ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to');
           $scope.$digest();
         }
+      }
+
+      /**
+      * Sets reason on request
+      **/
+      function setReason() {
+        var reason = optionGroupMock.specificObject('hrleaveandabsences_sickness_reason', 'name', 'appointment');
+        $ctrl.request.sickness_reason = reason.value;
       }
     });
   });

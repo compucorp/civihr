@@ -13,7 +13,6 @@ define([
 
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
-      vm.leaveType = 'leave';
       vm.initParams = {
         absenceType: {
           is_sick: false,

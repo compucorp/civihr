@@ -88,7 +88,8 @@ define([
          */
         defaultCustomData: function () {
           return {
-            comments: []
+            comments: [],
+            request_type: 'leave'
           };
         },
         /**

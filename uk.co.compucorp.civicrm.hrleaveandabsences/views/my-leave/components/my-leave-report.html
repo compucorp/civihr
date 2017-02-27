@@ -224,7 +224,6 @@
                                     </a>
                                     <a ng-if="action !== 'cancel'" href
                                       leave-request-popup leave-request="request"
-                                      leave-type="{{report.absenceTypes[request.type_id].title | lowercase}}"
                                       contact-id="report.contactId">
                                       {{action}}
                                     </a>
@@ -371,7 +370,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr ng-repeat="request in report.sections.pending.data track by $index">
+                        <tr ng-repeat="request in report.sections.pending.data">
                           <td class="chr_leave-report__label">
                             {{report.absenceTypes[request.type_id].title}}
                           </td>
@@ -395,7 +394,7 @@
                                     </a>
                                   <a ng-if="action !== 'cancel'" href
                                     leave-request-popup leave-request="request"
-                                    leave-type="{{report.absenceTypes[request.type_id].title | lowercase}}" contact-id="report.contactId">
+                                    contact-id="report.contactId">
                                     {{action}}
                                   </a>
                                 </li>
@@ -488,7 +487,6 @@
                                 <li ng-repeat="action in report.actionsFor(request)">
                                   <a href
                                     leave-request-popup leave-request="request"
-                                    leave-type="{{report.absenceTypes[request.type_id].title | lowercase}}"
                                     contact-id="report.contactId">
                                     {{action}}
                                   </a>
