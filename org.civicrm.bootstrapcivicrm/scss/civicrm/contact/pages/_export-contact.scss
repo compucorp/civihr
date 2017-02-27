@@ -67,9 +67,24 @@
     }
   }
 
+  .wizard-bar {
+    margin-bottom: 0 !important;
+  }
+
   #map-field {
     > table {
       width: 100% !important;
+
+      .columnheader {
+        th {
+          padding-left: 20px;
+          font-size: 18px;
+          color: $gray-darker;
+          height: 47px;
+          line-height: 47px;
+          border-top-color: $gray-lighter;
+        }
+      }
 
       th,
       td {
