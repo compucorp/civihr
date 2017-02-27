@@ -88,7 +88,14 @@ define([
                     angular.extend(revisionDataList[i],{
                       effective_date: $filter('date')(revisionList[i].effective_date, 'yyyy/MM/dd') || '',
                       editor_name: revisionList[i].editor_name || '',
-                      change_reason: $rootScope.options.contract.change_reason[revisionList[i].change_reason] || ''
+                      change_reason: $rootScope.options.contract.change_reason[revisionList[i].change_reason] || '',
+                      details_revision_id: revisionList[i].details_revision_id,
+                      health_revision_id: revisionList[i].health_revision_id,
+                      hour_revision_id: revisionList[i].hour_revision_id,
+                      leave_revision_id: revisionList[i].leave_revision_id,
+                      pay_revision_id: revisionList[i].pay_revision_id,
+                      pension_revision_id: revisionList[i].pension_revision_id,
+                      role_revision_id: revisionList[i].role_revision_id
                     })
                     $scope.revisionDataList.push(revisionDataList[i]);
                 }
