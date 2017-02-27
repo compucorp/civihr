@@ -249,27 +249,78 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * @param array $revision
    */
   protected static function buildFullDetailsQuery($entities, $revision) {
-    $query = ['select' => [], 'from' => [], 'where' => []];
+    $query = ['select' => [], 'from' => [], 'where' => [], 'join' => []];
 
     foreach ($entities as $entity) {
-      $class = "CRM_Hrjobcontract_BAO_HRJob" . ucfirst($entity);
-      $table = "civicrm_hrjobcontract_{$entity}";
-      $fields = array_column($class::fields(), 'name');
-
-      foreach ($fields as $field) {
-        $query['select'][] = "{$table}.{$field} as {$entity}__{$field}";
-      }
-
-      $query['from'][] = $table;
-      $query['where'][] = "{$table}.jobcontract_revision_id = " . $revision["{$entity}_revision_id"];
+      $query = self::buildEntityQueryArray($entity, $revision, $query);
     }
 
     return sprintf(
-      "SELECT %s FROM %s WHERE %s ",
+      "SELECT %s FROM %s %s WHERE %s ",
       implode(', ', $query['select']),
       implode(', ', $query['from']),
+      implode(' ', $query['join']),
       implode(' AND ', $query['where'])
     );
+  }
+
+  /**
+   * Adds clauses to given query array, required to obtain information for the
+   * given entity.
+   * 
+   * @param sting $entity
+   *   Name of entity being processed
+   * @param string $table
+   *   Main table fhere entity information is stored
+   * @param array $revision
+   *   Data for contract revision for which information needs to be gathered
+   * @param array $query
+   *   Array from which the query will be built.  Each part of the array is an 
+   *   array of SQL clauses.
+   * 
+   * @return array
+   *   The array to be used to build the query.
+   */
+  private static function buildEntityQueryArray($entity, $revision, $query) {
+    $class = "CRM_Hrjobcontract_BAO_HRJob" . ucfirst($entity);
+    $table = "civicrm_hrjobcontract_{$entity}";
+    $fields = array_column($class::fields(), 'name');
+
+    foreach ($fields as $field) {
+      $query['select'][] = "{$table}.{$field} as {$entity}__{$field}";
+    }
+
+    switch ($entity) {
+      case 'health':
+        // Health Table
+        $query['join'][] = "LEFT JOIN $table ON {$table}.jobcontract_revision_id = " . $revision["{$entity}_revision_id"];
+
+        // Health Insurance Plan Type
+        $query['select'][] = "healthplan_type_ov.label as {$entity}__healthplan_type_label";
+        $query['join'][] = "LEFT JOIN civicrm_option_group healthplan_og ON healthplan_og.name = 'hrjc_insurance_plantype'";
+        $query['join'][] = "
+          LEFT JOIN civicrm_option_value healthplan_type_ov ON (
+            healthplan_type_ov.option_group_id = healthplan_og.id
+            AND healthplan_type_ov.value = {$table}.plan_type
+          )
+        ";
+
+        // Life Insurance Plan Type
+        $query['select'][] = "lifeplan_type_ov.label as {$entity}__lifeplan_type_label";
+        $query['join'][] = "LEFT JOIN civicrm_option_group lifeplan_og ON lifeplan_og.name = 'hrjc_insurance_plantype'";
+        $query['join'][] = "
+          LEFT JOIN civicrm_option_value lifeplan_type_ov ON (
+            lifeplan_type_ov.option_group_id = lifeplan_og.id
+            AND lifeplan_type_ov.value = {$table}.plan_type_life_insurance
+          )
+        ";
+        break;
+      default:
+        $query['from'][] = $table;
+        $query['where'][] = "{$table}.jobcontract_revision_id = " . $revision["{$entity}_revision_id"];
+    }
+
+    return $query;
   }
 
   /**

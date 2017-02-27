@@ -50,7 +50,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   public function delete($useWhere = false) {
       $id = $this->id;
       $result = parent::delete($useWhere);
-      if ($result !== false && module_exists('rules')) {
+      if ($result !== false && is_callable('module_exists') && module_exists('rules')) {
           rules_invoke_event('hrjobcontract_after_delete', $id);
       }
   }

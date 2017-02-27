@@ -3,6 +3,7 @@
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 
 /**
  * Class CRM_Hrjobcontract_Import_Parser_ApiTest
@@ -13,6 +14,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
 
   public $_contractTypeID;
   private $_defaultImportData = [];
+  private $_insurancePlanTypes = [];
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
@@ -27,6 +29,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $session->set('dateTypes', 1);
 
     $this->_contractTypeID = $this->creatTestContractType();
+    $this->createInsurancePlanTypes();
 
     $this->_defaultImportData = [
       'HRJobDetails-title' => 'Test Contract Title',
@@ -301,15 +304,14 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validatePayAutoFields($contactID, $expected);
   }
 
-
-
-  function testInsuranceImport() {
+  public function testInsuranceImport() {
     $contact2Params = array(
       'first_name' => 'John_8',
       'last_name' => 'Snow_8',
       'email' => 'a8@b8.com',
       'contact_type' => 'Individual',
     );
+
     $contactID = $this->createTestContact($contact2Params);
     // TODO : create and add health and life insurance providers to params
     $params = array(
@@ -320,10 +322,10 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-period_start_date' => '2016-01-01',
       'HRJobHealth-dependents' => 'HI Description',
       'HRJobHealth-description' => 'HI dependents',
-      'HRJobHealth-plan_type' => 'Family',
+      'HRJobHealth-plan_type' => $this->_insurancePlanTypes[0]['label'],
       'HRJobHealth-dependents_life_insurance' => 'LI dependents',
       'HRJobHealth-description_life_insurance' => 'LI description',
-      'HRJobHealth-plan_type_life_insurance' => 'Individual',
+      'HRJobHealth-plan_type_life_insurance' => $this->_insurancePlanTypes[1]['label'],
     );
 
     $importResponse = $this->runImport($params);
@@ -332,6 +334,33 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateResult($contactID, 'HRJobHealth');
   }
 
+  public function testWrongInsurancePlanTypeImport() {
+    $contact2Params = array(
+      'first_name' => 'John_8',
+      'last_name' => 'Snow_8',
+      'email' => 'a8@b8.com',
+      'contact_type' => 'Individual',
+    );
+
+    $contactID = $this->createTestContact($contact2Params);
+    $params = array(
+      'HRJobContract-contact_id' => $contactID,
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobHealth-dependents' => 'HI Description',
+      'HRJobHealth-description' => 'HI dependents',
+      'HRJobHealth-plan_type' => 'Wrong Plan Type Label',
+      'HRJobHealth-dependents_life_insurance' => 'LI dependents',
+      'HRJobHealth-description_life_insurance' => 'LI description',
+      'HRJobHealth-plan_type_life_insurance' => $this->_insurancePlanTypes[1]['label'],
+    );
+
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
+  }
+  
   function testPensionImport() {
     $contact2Params = array(
       'first_name' => 'John_9',
@@ -499,17 +528,26 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   }
 
   private function validateResult($contactID, $entity = NULL)  {
-    $result = $this->callAPISuccessGetSingle('HRJobContract', array('contact_id'=>$contactID));
-    $contractID = $result['id'];
-    $result = $this->callAPISuccessGetSingle('HRJobContractRevision', array('jobcontract_id'=>$contractID));
-    $revisionID = $result['details_revision_id'];
+    $contract = $this->callAPISuccessGetSingle('HRJobContract', array('contact_id'=>$contactID));
+    $contractID = $contract['id'];
+    $revision = $this->callAPISuccessGetSingle('HRJobContractRevision', array('jobcontract_id'=>$contractID));
+    $revisionID = $revision['details_revision_id'];
     $this->callAPISuccessGetSingle('HRJobDetails', array('jobcontract_revision_id'=>$revisionID));
+
     if ($entity !== NULl)  {
-      if ($entity == 'HRJobLeave')  {
-        $this->callAPISuccess($entity, 'getcount', array('jobcontract_revision_id'=>$revisionID), 5);
-      }
-      else  {
-        $this->callAPISuccessGetSingle($entity, array('jobcontract_revision_id'=>$revisionID));
+      switch ($entity) {
+        case 'HRJobLeave':
+          $this->callAPISuccess($entity, 'getcount', array('jobcontract_revision_id'=>$revisionID), 5);
+          break;
+
+        case 'HRJobHealth':
+          $result = $this->callAPISuccessGetSingle($entity, array('jobcontract_revision_id'=>$revisionID));
+          $this->assertEquals($this->_insurancePlanTypes[0]['value'], $result['plan_type']);
+          $this->assertEquals($this->_insurancePlanTypes[1]['value'], $result['plan_type_life_insurance']);
+          break;
+
+        default:
+          $this->callAPISuccessGetSingle($entity, array('jobcontract_revision_id'=>$revisionID));
       }
     }
   }
@@ -532,6 +570,20 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'sequential' => 1
     ), 'unable to create contract type');
     return  $contractType['id'];
+  }
+
+  /**
+   * Creates sample insurance plan types as option values to be used in tests.
+   */
+  function createInsurancePlanTypes() {
+    for ($i = 1; $i < 3; $i++) {
+      $this->_insurancePlanTypes[] = OptionValueFabricator::fabricate([
+        'option_group_id' => 'hrjc_insurance_plantype',
+        'name' => 'PlanName_' . $i,
+        'label' => 'Plan Label ' . $i,
+        'value' => 'Plan Value ' . $i
+      ]);
+    }
   }
 
   private function validateHourAutoFields($contactID, $expected)  {

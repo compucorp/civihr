@@ -557,14 +557,6 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   private function validateField($key, $value)  {
     $errorMessage = NULL;
     $convertedValue = $value;
-    $optionReturnType = 'id';
-    // TODO: all values should be stored by values and this part should be removed
-    if ( in_array($key, array('HRJobPension-pension_type', 'HRJobDetails-contract_type')) )  {
-      $optionReturnType = 'label';
-    }
-    elseif ( in_array($key, array('HRJobHour-hours_type', 'HRJobPay-pay_cycle', 'HRJobDetails-location', 'HRJobDetails-end_reason')) )  {
-      $optionReturnType = 'value';
-    }
 
     switch($key)  {
       case 'HRJobContractRevision-jobcontract_id':
@@ -597,15 +589,15 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       case 'HRJobPay-pay_cycle':
       case 'HRJobDetails-location':
       case 'HRJobDetails-end_reason':
-        $optionID = $this->getOptionID($key, $value, $optionReturnType);
+      case 'HRJobHealth-plan_type':
+      case 'HRJobHealth-plan_type_life_insurance':
+        $optionID = $this->convertOptionValue($key, $value);
         if ($optionID !== FALSE) {
           $convertedValue = $optionID;
         } else {
           $errorMessage = "{$this->_fields[$key]->_title} is not valid";
         }
         break;
-      case 'HRJobHealth-plan_type':
-      case 'HRJobHealth-plan_type_life_insurance':
       case 'HRJobPay-pay_unit':
       case 'HRJobDetails-notice_unit_employee':
       case 'HRJobDetails-notice_unit':
@@ -688,6 +680,40 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     }
 
     return array('value'=>$convertedValue, 'error_message'=>$errorMessage);
+  }
+
+  /**
+   * Checks if given field requires returntype to be 'value', 'label' or 'id' 
+   * and obtains its value in DB for given $value.
+   * 
+   * @param string $key
+   *   Key of field to be resolved
+   * @param string $value
+   *   Value to be searched in database, corresponding to option value's label
+   * 
+   * @return string
+   *   Option value value
+   */
+  private function convertOptionValue($key, $value) {
+    // TODO: all values should be stored by values and this part should be removed
+    switch ($key) {
+      case 'HRJobHour-hours_type':
+      case 'HRJobPay-pay_cycle':
+      case 'HRJobDetails-location':
+      case 'HRJobDetails-end_reason':
+      case 'HRJobHealth-plan_type':
+      case 'HRJobHealth-plan_type_life_insurance':
+        $optionReturnType = 'value';
+        break;
+      case 'HRJobPension-pension_type':
+      case 'HRJobDetails-contract_type':
+        $optionReturnType = 'label';
+        break;
+      default:
+        $optionReturnType = 'id';
+    }
+
+    return $this->getOptionID($key, $value, $optionReturnType);
   }
 
   /**
