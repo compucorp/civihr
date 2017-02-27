@@ -2,6 +2,87 @@
   #branding h1.page-title {
     margin-bottom: 20px !important;
   }
+
+  .CRM_Contribute_Form_Task_PDF {
+    background: $crm-white;
+    padding: 15px;
+
+    .status {
+      margin-top: -15px !important;
+      margin-left: -15px;
+      margin-right: -15px;
+    }
+
+    .help {
+      padding: 10px 0;
+    }
+
+    .crm-form-submit {
+      background: $brand-primary;
+      border-color: $brand-primary;
+      padding: 7px;
+      border-radius: 2px;
+      margin-right: 0;
+      text-shadow: none;
+    }
+  }
+
+  form {
+    &[class*="CRM_Contribute_Form_"] {
+      h3 {
+        background: $gray-lighter;
+        color: $crm-h3-color;
+        padding: 17px 15px;
+        margin: 0;
+        font-family: $font-family-base;
+        font-size: $font-size-h2;
+        font-weight: 600;
+      }
+
+      .status {
+        margin-bottom: 0;
+        margin-top: 0;
+      }
+
+      .label-left {
+        padding: 15px;
+        width: 205px;
+      }
+
+      .crm-accordion-body {
+        .crm-form-block {
+          box-shadow: none;
+          padding: 0;
+        }
+
+        .label-left {
+          padding: 15px 0;
+          width: 220px;
+        }
+      }
+
+      .select2-container {
+        width: 300px !important;
+
+        &#s2id_format_id {
+          margin-right: 0 !important;
+        }
+      }
+
+      input {
+        &.crm-form-text {
+          min-width: 300px !important;
+        }
+      }
+
+      .crm-html_email-accordion {
+        .helpIcon {
+          margin-bottom: 20px;
+          margin-right: 0;
+        }
+      }
+    }
+  }
 }
 
 .page-civicrm-contribute-search {
