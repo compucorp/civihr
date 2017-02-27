@@ -475,4 +475,43 @@
   .selector {
     @include mx-expandable-table();
   }
+
+  .CRM_Member_Form_Search {
+    .select2-container {
+      max-width: 230px;
+    }
+
+    .crm-accordion-body {
+      padding: 20px !important;
+
+      tr {
+        &:first-child {
+          td {
+            padding-top: 0;
+          }
+        }
+      }
+
+      td {
+        padding-left: 0;
+      }
+
+      a.crm-clear-link {
+        position: relative;
+        top: -2px;
+      }
+
+      #_qf_Search_refresh {
+        color: $crm-white;
+        background: $brand-primary;
+        border-color: $brand-primary;
+        text-shadow: none;
+        font-size: $font-size-base;
+        font-family: $font-family-base;
+        text-transform: uppercase;
+        padding: 8px 12px;
+        border-radius: 2px;
+      }
+    }
+  }
 }

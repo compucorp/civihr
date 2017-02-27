@@ -326,6 +326,12 @@
     }
   }
 
+  .action-link .crm-hover-button {
+    color: $crm-copy !important;
+    border: 1px solid $crm-copy !important;
+    background-color: $crm-white !important;
+  }
+
   .crm-contribution-form-block > .form-layout-compressed {
     td {
       padding: 10px 30px !important;
@@ -358,6 +364,12 @@
 
     label {
       font-family: $font-family-base;
+    }
+  }
+
+  .crm-contribution-form-block-soft_credit_to {
+    td {
+      padding: 0 !important;
     }
   }
 
@@ -540,7 +552,7 @@
 
   .crm-contribution-form-block-pcp_details {
     position: relative;
-    left: -163px;
+    left: -169px;
   }
 }
 

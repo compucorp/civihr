@@ -119,7 +119,7 @@ $button-border-radius: 2px;
   }
 
   .crm-option-edit-link.crm-hover-button,
-  .crm-hover-button:not(#addMorePermission),
+  .crm-hover-button:not(#addMorePermission):not(.open-inline-noreturn),
   .crm-clear-link {
     border: 0 !important;
     color: $gray-dark;
