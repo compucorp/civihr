@@ -567,18 +567,6 @@
             });
           });
         });
-
-        /**
-         * Open the given section and runs the digest cycle
-         *
-         * @param {string} section
-         */
-        function openSection(section, digest) {
-          digest = typeof digest === 'undefined' ? true : !!digest;
-
-          controller.toggleSection(section);
-          digest && $rootScope.$digest();
-        }
       });
 
       describe('when closing a section', function () {
@@ -821,10 +809,15 @@
           beforeEach(function() {
             spyOn(controller,'refresh').and.callThrough();
             $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+            openSection('pending');
           });
 
           it('refreshes the report', function() {
             expect(controller.refresh).toHaveBeenCalled();
+          });
+
+          it('gets data from the server, does not use cache', function() {
+            expect(LeaveRequest.all.calls.mostRecent().args[4]).toEqual(false);
           });
         });
         /**
@@ -875,6 +868,18 @@
         $scope.$digest();
 
         controller = component.controller('myLeaveReport');
+      }
+
+      /**
+       * Open the given section and runs the digest cycle
+       *
+       * @param {string} section
+       */
+      function openSection(section, digest) {
+        digest = typeof digest === 'undefined' ? true : !!digest;
+
+        controller.toggleSection(section);
+        digest && $rootScope.$digest();
       }
     });
   })
