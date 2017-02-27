@@ -16,11 +16,15 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     $this->setComponentStatuses([
       'CiviCase' => true,
     ]);
-  }
 
-  public function postInstall() {
-    $this->upgrade_1400();
-    $this->upgrade_1402();
+    // Execute upgrader methods during extension installation
+    $revisions = $this->getRevisions();
+    foreach ($revisions as $revision) {
+      $methodName = 'upgrade_' . $revision;
+      if (is_callable([$this, $methodName])) {
+        $this->{$methodName}();
+      }
+    }
   }
 
   public function uninstall() {
