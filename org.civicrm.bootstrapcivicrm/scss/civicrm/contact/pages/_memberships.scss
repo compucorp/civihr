@@ -461,6 +461,36 @@
   }
 }
 
+.CRM_Member_Form_Search {
+  h3 {
+    height: 50px;
+    line-height: 50px;
+    background: $crm-white;
+    box-shadow: $box-shadow;
+    font-size: 13px;
+    font-weight: normal;
+    border-radius: 2px;
+    padding-left: 20px;
+    margin: 20px 0;
+    color: $datepicker-gray-darker;
+  }
+
+  .selector,
+  .report {
+    @include mx-expandable-table();
+  }
+
+  .selector {
+    background-color: $crm-white;
+
+    tr:last-child {
+      td {
+        display: table-cell !important;
+      }
+    }
+  }
+}
+
 .page-civicrm-member-search {
   .crm-search-tasks {
     background-color: $crm-white;
