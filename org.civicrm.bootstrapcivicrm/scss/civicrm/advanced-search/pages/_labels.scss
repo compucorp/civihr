@@ -166,6 +166,10 @@ a.crm-clear-link {
     float: left;
   }
 
+  input[type=checkbox]:checked+label[for]::after {
+    left: 2px !important;
+  }
+
   td {
     position: relative;
 
