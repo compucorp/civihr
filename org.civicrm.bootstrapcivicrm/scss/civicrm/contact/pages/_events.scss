@@ -18,9 +18,11 @@
     font-family: $font-family-base;
 
     thead {
+      border-bottom: 1px solid $crm-dark-grayblue;
+
       th {
         border-bottom: none;
-        background: $crm-background !important;
+        background: $gray-lighter !important;
         color: $gray-darker !important;
         vertical-align: middle;
         border: none;
@@ -47,6 +49,10 @@
         }
       }
     }
+  }
+
+  p {
+    font-family: $font-family-base;
   }
 }
 
@@ -186,9 +192,10 @@
     }
 
     .label {
-      padding: 10px 30px;
+      padding: 20px 15px;
       min-width: 210px;
       line-height: 1.5em;
+      font-size: $font-size-base;
     }
 
     .auto-renew-text {
@@ -207,12 +214,31 @@
     }
   }
 
+  div[class*="-section"]{
+    .label {
+      position: relative;
+      right: 240px;
+    }
+
+    div[class*="-content"],
+    #pricesetTotal,
+    #pricevalue {
+      position: relative;
+      bottom: 45px;
+    }
+  }
+
+  textarea {
+    width: 100% !important;
+    height: 80px;
+  }
+
   #send_confirmation_receipt {
     legend {
       margin: 15px 0;
       float: left;
       width: 100%;
-      padding: 10px 30px;
+      padding: 10px 20px;
     }
 
     #notice {
@@ -270,14 +296,14 @@
       padding: 0;
 
       legend {
-        padding: 10px 30px;
+        padding: 10px 20px;
       }
     }
   }
 
   #billing-payment-block {
     legend {
-      padding: 10px 30px;
+      padding: 10px 20px;
     }
 
     .label {
@@ -348,7 +374,7 @@
   .action-link {
     display: none;
   }
-  
+
   table {
     background: transparent;
     border: none;
