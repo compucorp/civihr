@@ -132,6 +132,11 @@
                   position: relative;
                   left: -19px;
                 }
+
+                label {
+                  padding: 8px 0;
+                  margin: 0 !important;
+                }
               }
             }
           }
@@ -143,6 +148,19 @@
 
         .crm-form-textarea {
           min-height: 70px;
+        }
+
+        #s2id_visibility {
+          &:after {
+            display: none;
+          }
+        }
+
+        .crm-group-form-block-isReserved {
+          .report-label {
+            vertical-align: top;
+            padding-top: 8px;
+          }
         }
 
         div,
@@ -267,6 +285,23 @@
 
       textarea {
         line-height: 1.5em;
+      }
+
+      td {
+        vertical-align: middle;
+        
+        &.label {
+          label {
+            padding: 15px 0;
+            margin: 0;
+          }
+        }
+      }
+
+      #s2id_visibility {
+        &:after {
+          display: none;
+        }
       }
     }
   }
