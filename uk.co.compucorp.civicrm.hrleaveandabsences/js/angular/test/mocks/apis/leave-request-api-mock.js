@@ -2,9 +2,10 @@
 define([
   'mocks/module',
   'mocks/data/leave-request-data',
+  'mocks/data/comments-data',
   'mocks/data/sickness-leave-request-data',
   'common/angularMocks',
-], function (mocks, mockData, sicknessMockData) {
+], function (mocks, mockData, commentsMock, sicknessMockData) {
   'use strict';
 
   mocks.factory('LeaveRequestAPIMock', [
@@ -89,6 +90,11 @@ define([
         isManagedBy: function (params) {
           return $q(function (resolve, reject) {
             resolve(mockData.isManagedBy().values);
+          });
+        },
+        saveComment: function (params) {
+          return $q(function (resolve, reject) {
+            resolve(commentsMock.getCommentsWithMixedIDs().values[0]);
           });
         }
       };
