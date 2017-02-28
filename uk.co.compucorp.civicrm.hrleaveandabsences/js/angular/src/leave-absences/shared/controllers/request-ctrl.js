@@ -27,8 +27,7 @@ define([
       var absenceTypesAndIds,
         initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
         mode = '', //can be edit, create, view
-        role = '', //could be manager, owner or admin
-        selectedAbsenceType = {};
+        role = ''; //could be manager, owner or admin
 
       this.absencePeriods = [];
       this.absenceTypes = [];
@@ -36,6 +35,7 @@ define([
       this.contact = {};
       this.error = null;
       this.requestDayTypes = [];
+      this.selectedAbsenceType = {};
       this.period = {};
       this.statusLabel = '';
       this.balance = {
@@ -181,7 +181,7 @@ define([
        * @return {Boolean}
        */
       this.isLeaveType = function (leaveTypeParam) {
-        return this.leaveType === leaveTypeParam;
+        return this.request.request_type === leaveTypeParam;
       };
 
       /**
@@ -225,7 +225,7 @@ define([
         }
 
         // current absence type (this.request.type_id) doesn't allow self
-        if (this.balance.closing < 0 && selectedAbsenceType.allow_overuse == '0') {
+        if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse == '0') {
           // show an error
           this.error = 'You are not allowed to apply leave in negative';
           return;
@@ -298,9 +298,9 @@ define([
        * dates have been already selected
        */
       this.updateBalance = function () {
-        selectedAbsenceType = getSelectedAbsenceType.call(this);
+        this.selectedAbsenceType = getSelectedAbsenceType.call(this);
         // get the `balance` of the newly selected absence type
-        this.balance.opening = selectedAbsenceType.remainder;
+        this.balance.opening = this.selectedAbsenceType.remainder;
 
         this.calculateBalanceChange.call(this);
       };
@@ -746,15 +746,15 @@ define([
        */
       function initAbsenceType() {
         if (canViewOrEdit.call(this)) {
-          selectedAbsenceType = getSelectedAbsenceType.call(this);
+          this.selectedAbsenceType = getSelectedAbsenceType.call(this);
         } else {
           // Assign the first absence type to the leave request
-          selectedAbsenceType = this.absenceTypes[0];
-          this.request.type_id = selectedAbsenceType.id;
+          this.selectedAbsenceType = this.absenceTypes[0];
+          this.request.type_id = this.selectedAbsenceType.id;
         }
 
         // Init the `balance` object based on the first absence type
-        this.balance.opening = selectedAbsenceType.remainder;
+        this.balance.opening = this.selectedAbsenceType.remainder;
       }
 
       /**

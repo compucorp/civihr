@@ -14,7 +14,6 @@ define([
 
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
-      vm.leaveType = 'toil';
       vm.initParams = {
         absenceType: {
           allow_accruals_request: true
@@ -33,6 +32,7 @@ define([
           vm.balance.change.amount = -vm.request.toil_to_accrue;
           vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
           vm.uiOptions.showBalance = true;
+          vm.request.to_date_type = vm.request.from_date_type = '1';
           vm.loading.calculateBalanceChange = false;
         }
       };
@@ -51,7 +51,7 @@ define([
 
         return AbsenceType.calculateToilExpiryDate(vm.request.type_id, vm.request.from_date)
           .then(function (expiryDate) {
-            vm.expiryDate = expiryDate;
+            vm.request.toil_expiry_date = expiryDate;
           });
       };
 
@@ -61,7 +61,7 @@ define([
        * @return {Boolean}
        */
       vm.canSubmit = function () {
-        return !!vm.request.duration && !!vm.request.toil_to_accrue &&
+        return !!vm.request.toil_duration && !!vm.request.toil_to_accrue &&
           !!vm.request.from_date && !!vm.request.to_date;
       };
 
@@ -138,7 +138,7 @@ define([
 
         vm.request = TOILRequestInstance.init(attributes);
         //required by leave request so set it to All Day
-        vm.request.to_date_type = vm.request.from_date_type = 1;
+        vm.request.to_date_type = vm.request.from_date_type = '1';
       }
 
       /**

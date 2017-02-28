@@ -3,7 +3,7 @@ define([
   'leave-absences/shared/modules/directives',
   'leave-absences/shared/controllers/sub-controllers/leave-request-ctrl',
   'leave-absences/shared/controllers/sub-controllers/sick-request-ctrl',
-  'leave-absences/shared/controllers/sub-controllers/toil-request-ctrl',  
+  'leave-absences/shared/controllers/sub-controllers/toil-request-ctrl',
 ], function (_, directives) {
   'use strict';
 
@@ -12,15 +12,21 @@ define([
       $log.debug('leaveRequestPopup');
 
       /**
-       * gets leave type
+       * Gets leave type.
+       * If leaveTypeParam exits then its a new request, else if request
+       * object exists then its edit request call
        *
        * @param {String} leaveTypeParam
+       * @param {Object} request leave request for edit calls
        * @return {String} leave type
        */
-      function getLeaveType(leaveTypeParam) {
-        var leaveType = 'leave';
+      function getLeaveType(leaveTypeParam, request) {
+        var leaveType;
 
-        if (leaveTypeParam && leaveTypeParam !== 'holiday / vacation') {
+        //reset for edit calls
+        if (request) {
+          leaveType = request.request_type;
+        } else if (leaveTypeParam) {
           leaveType = leaveTypeParam;
         }
 
@@ -35,7 +41,7 @@ define([
         },
         restrict: 'EA',
         link: function (scope, element) {
-          var controller = _.capitalize(getLeaveType(scope.leaveType)) + 'RequestCtrl';
+          var controller = _.capitalize(getLeaveType(scope.leaveType, scope.leaveRequest)) + 'RequestCtrl';
 
           element.on('click', function (event) {
             $modal.open({
@@ -47,8 +53,7 @@ define([
                 directiveOptions: function () {
                   return {
                     contactId: scope.contactId,
-                    leaveRequest: scope.leaveRequest,
-                    leaveType: scope.leaveType
+                    leaveRequest: scope.leaveRequest
                   };
                 },
                 //to set HR_settings DateFormat

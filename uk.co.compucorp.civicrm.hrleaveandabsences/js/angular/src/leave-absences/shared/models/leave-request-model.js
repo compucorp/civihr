@@ -25,11 +25,10 @@ define([
          * @param {string} sort - The field and direction to order by
          * @param  {Object} params
          * @param  {Boolean} cache
-         * @param {String} leaveRequestType whether its leave, sick or toil
          * @return {Promise} resolves with {Object}
          */
-        all: function (filters, pagination, sort, params, cache, leaveRequestType) {
-          return leaveRequestAPI.all(this.processFilters(filters), pagination, sort, params, cache, leaveRequestType)
+        all: function (filters, pagination, sort, params, cache) {
+          return leaveRequestAPI.all(this.processFilters(filters), pagination, sort, params, cache)
             .then(function (response) {
               response.list = response.list.map(function (leaveRequest) {
                 return instance.init(leaveRequest, true);

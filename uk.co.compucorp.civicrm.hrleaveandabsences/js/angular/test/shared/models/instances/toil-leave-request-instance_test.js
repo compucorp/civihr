@@ -1,8 +1,9 @@
 define([
+  'mocks/data/leave-request-data',
   'mocks/apis/leave-request-api-mock',
   'mocks/apis/option-group-api-mock',
   'leave-absences/shared/models/instances/toil-leave-request-instance',
-], function (helper) {
+], function (requestMockData, helper) {
   'use strict';
 
   describe('TOILRequestInstance', function () {
@@ -43,76 +44,10 @@ define([
       it('default toil Duration value is set', function () {
         expect(instance.toilDurationHours).toBe(0);
         expect(instance.toilDurationMinutes).toBe(0);
-      })
-    });
-
-    describe('create()', function () {
-      beforeEach(function () {
-        instance = TOILRequestInstance.init({}, false);
-        promise = instance.create();
       });
 
-      afterEach(function () {
-        //to excute the promise force an digest
-        $rootScope.$apply();
-      });
-
-      it('calls equivalent API method', function () {
-        expect(LeaveRequestAPI.create).toHaveBeenCalledWith(jasmine.any(Object), 'toil');
-      });
-
-      it('calls toAPI method', function () {
-        expect(instance.toAPI).toHaveBeenCalled();
-      });
-
-      describe('id field', function() {
-        it('is not appended to instance after API returns data', function() {
-          expect(instance.id).not.toBeDefined();
-        });
-
-        it('is appended to instance after API returns data', function() {
-          promise.then(function () {
-            expect(instance.id).toEqual(jasmine.any(String));
-          });
-        });
-      });
-    });
-
-    describe('isValid()', function () {
-      beforeEach(function () {
-        instance = TOILRequestInstance.init({}, false);
-        promise = instance.isValid();
-      });
-
-      afterEach(function () {
-        $rootScope.$apply();
-      });
-
-      it('calls equivalent API method', function () {
-        expect(LeaveRequestAPI.isValid).toHaveBeenCalledWith(jasmine.any(Object), 'toil');
-      });
-
-      it('calls toAPI method', function () {
-        expect(instance.toAPI).toHaveBeenCalled();
-      });
-    });
-
-    describe('update()', function () {
-      beforeEach(function () {
-        instance = TOILRequestInstance.init({}, false);
-        promise = instance.update();
-      });
-
-      afterEach(function () {
-        $rootScope.$apply();
-      });
-
-      it('calls update api method with the return value of toAPI method', function () {
-        expect(LeaveRequestAPI.update).toHaveBeenCalledWith(jasmine.any(Object), 'toil');
-      });
-
-      it('calls toAPI method', function () {
-        expect(instance.toAPI).toHaveBeenCalled();
+      it('initializes request type', function() {
+        expect(instance.request_type).toEqual('toil');
       });
     });
 
@@ -125,7 +60,22 @@ define([
       });
 
       it('updates durations in minutes', function () {
-        expect(instance.duration).toEqual(61);
+        expect(instance.toil_duration).toEqual(61);
+      });
+    });
+
+    describe('edit toil', function () {
+      beforeEach(function () {
+        var toilRequest = requestMockData.findBy('request_type', 'toil');
+        instance = TOILRequestInstance.init(toilRequest);
+      });
+
+      it('sets duration hours', function () {
+        expect(instance.toilDurationHours).toEqual('3');
+      });
+
+      it('sets duration minutes', function () {
+        expect(instance.toilDurationMinutes).toEqual('1');
       });
     });
   });

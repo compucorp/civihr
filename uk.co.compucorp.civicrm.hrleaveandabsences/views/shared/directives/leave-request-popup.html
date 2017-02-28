@@ -5,7 +5,7 @@
   </button>
   <h4 class="modal-title">
     <span ng-show="$ctrl.isLeaveType('leave')">Leave Request</span>
-    <span ng-show="$ctrl.isLeaveType('sick')">Sick Absence</span>
+    <span ng-show="$ctrl.isLeaveType('sickness')">Sick Absence</span>
     <span ng-show="$ctrl.isLeaveType('toil')">Accure TOIL for additional work</span>
   </h4>
 </div>
@@ -108,11 +108,11 @@
               <div class="col-xs-12 form-horizontal">
                 <hr>
                 <div class="expire-date">Expiry Date:
-                  <span>{{$ctrl.expiryDate | date: $ctrl.uiOptions.userDateFormat}}</div>
+                  <span>{{$ctrl.request.toil_expiry_date | date: $ctrl.uiOptions.userDateFormat}}</div>
                 </div>
               </div>
               <ng-include
-                ng-show="$ctrl.isLeaveType('sick')"
+                ng-show="$ctrl.isLeaveType('sickness')"
                 src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
             </uib-tab>
             <uib-tab heading="Comments">
