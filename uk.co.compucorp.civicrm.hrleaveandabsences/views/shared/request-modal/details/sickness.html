@@ -8,7 +8,7 @@
           <select
             name="reason"
             ng-options="reason.value as reason.label for reason in $ctrl.sicknessReasons"
-            ng-model="$ctrl.leaveRequest.reason">
+            ng-model="$ctrl.request.reason">
             <option value="">- select -</option>
           </select>
         </div>
@@ -20,7 +20,7 @@
           <input
             ng-disabled="$ctrl.isRole('owner')"
             required type="checkbox" value="document.value"
-            ng-click="$ctrl.leaveRequest.toggleDocument(document.value)"
+            ng-click="$ctrl.request.toggleDocument(document.value)"
             ng-selected="$ctrl.isDocumentInRequest(document.value)">
           <span>{{document.label}}</span>
         </div>

@@ -2640,6 +2640,19 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage created_at is not a valid date: 2016-06-01 10:20:90
+   */
+  public function testAddCommentShouldThrowAnExceptionWhenCreatedAtIsNotAProperDateTimeFormat() {
+    civicrm_api3('LeaveRequest', 'addcomment', [
+      'leave_request_id' => 1,
+      'text' => 'Random Commenter',
+      'contact_id' => 1,
+      'created_at' => '2016-06-01 10:20:90'
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage Mandatory key(s) missing from params array: text
    */
   public function testAddCommentShouldThrowAnExceptionIfTextIsMissing() {

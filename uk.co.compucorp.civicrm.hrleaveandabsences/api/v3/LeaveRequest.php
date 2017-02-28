@@ -485,6 +485,14 @@ function _civicrm_api3_leave_request_addcomment_spec(&$spec) {
     'FKClassName'  => 'CRM_Contact_DAO_Contact',
     'FKApiName'    => 'Contact',
   ];
+
+  $spec['created_at'] = [
+    'name' => 'created_at',
+    'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
+    'title' => 'Created at',
+    'description' => 'Date and time the Comment was created',
+    'api.required' => 0
+  ];
 }
 
 /**

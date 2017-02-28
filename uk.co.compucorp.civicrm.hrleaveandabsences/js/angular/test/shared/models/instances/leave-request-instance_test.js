@@ -1,11 +1,12 @@
 define([
   'mocks/data/leave-request-data',
   'mocks/data/option-group-mock-data',
+  'mocks/data/comments-data',
   'mocks/helpers/helper',
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/models/instances/leave-request-instance',
   'leave-absences/shared/modules/models',
-], function (leaveRequestMockData, optionGroupMockData, helper) {
+], function (leaveRequestMockData, optionGroupMockData, commentsData, helper) {
   'use strict';
 
   describe('LeaveRequestInstance', function () {
@@ -45,8 +46,15 @@ define([
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
         spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
+        spyOn(LeaveRequestAPI, 'saveComment').and.callThrough();
       }
     ]));
+
+    describe('default values', function () {
+      it('comments are empty', function () {
+        expect(LeaveRequestInstance.comments.length).toBe(0);
+      })
+    });
 
     describe('status change methods', function () {
       var optionGroupDeferred,
@@ -206,6 +214,7 @@ define([
         LeaveRequestAPI.update.and.returnValue(defer.promise);
         defer.resolve(jasmine.any(Object));
         spyOn(LeaveRequestInstance, 'toAPI').and.returnValue(toAPIReturnValue);
+        LeaveRequestInstance.comments = commentsData.getCommentsWithMixedIDs().values;
 
         promise = LeaveRequestInstance.update();
       });
@@ -224,7 +233,17 @@ define([
         promise.then(function () {
           expect(LeaveRequestInstance.toAPI).toHaveBeenCalled();
         });
-      })
+      });
+
+      it('calls API to save the newly created comments only', function () {
+        promise.then(function () {
+          commentsData.getCommentsWithMixedIDs().values.map(function (comment) {
+            if (!comment.comment_id) {
+              expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(LeaveRequestInstance.id, comment);
+            }
+          });
+        });
+      });
     });
 
     describe('create()', function () {
@@ -233,6 +252,7 @@ define([
       beforeEach(function () {
         requestData = helper.createRandomLeaveRequest();
         instance = LeaveRequestInstance.init(requestData, false);
+        instance.comments = commentsData.getCommentsWithMixedIDs().values;
         instanceCreate = instance.create();
       });
 
@@ -252,6 +272,16 @@ define([
         instanceCreate.then(function () {
           expect(instance.id).toBeDefined();
           expect(instance.id).toEqual(jasmine.any(String));
+        });
+      });
+
+      it('calls API to save the newly created comments only', function () {
+        instanceCreate.then(function () {
+          commentsData.getCommentsWithMixedIDs().values.map(function (comment) {
+            if (!comment.comment_id) {
+              expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(instance.id, comment);
+            }
+          });
         });
       });
 
@@ -593,7 +623,8 @@ define([
         expect(Object.keys(toAPIData)).toEqual(_.without(
           Object.keys(leaveRequest.attributes()),
           'balance_change',
-          'dates'
+          'dates',
+          'comments'
         ));
       });
     });

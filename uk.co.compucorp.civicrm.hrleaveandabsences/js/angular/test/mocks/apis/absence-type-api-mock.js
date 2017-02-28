@@ -14,7 +14,7 @@ define([
       },
       calculateToilExpiryDate: function (params) {
         return $q(function (resolve, reject) {
-          resolve(mockData.calculateToilExpiryDate().values);
+          resolve(mockData.calculateToilExpiryDate().values.expiry_date);
         });
       }
     }
