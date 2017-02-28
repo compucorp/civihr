@@ -191,6 +191,17 @@
     }
   }
 
+  #recurring-entity-block {
+    input[type=checkbox]:checked+label[for]::after {
+      left: 2px;
+      top: 7px;
+    }
+
+    input[type=radio]:checked+label[for]::after {
+      top: 15px;
+    }
+  }
+
   #s2id_exclude_date_list {
     .fa-calendar {
       display: none;
