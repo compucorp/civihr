@@ -33,6 +33,7 @@
     background: none !important;
     border: none !important;
     color: $gray-darker !important;
+    border-bottom: 1px solid $crm-dark-grayblue !important;
 
     .ui-dialog-title {
       @extend .modal-title, %open-sans-font-family;
@@ -70,7 +71,7 @@
     padding: 20px 20px 0 20px;
     margin-top: 0;
     margin-bottom: 0;
-    padding-bottom: 0;
+    padding-bottom: 20px;
     height: auto !important;
     background: $crm-white;
 
