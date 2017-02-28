@@ -2659,4 +2659,20 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertEquals($result, $expectedResult);
   }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_request_id
+   */
+  public function testDeleteAttachmentShouldThrowAnExceptionIfLeaveRequestIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'deleteattachment', ['attachment_id' => 1]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: attachment_id
+   */
+  public function testDeleteAttachmentShouldThrowAnExceptionIfAttachmentIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'deleteattachment', ['leave_request_id' => 1]);
+  }
 }
