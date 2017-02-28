@@ -622,3 +622,41 @@ function _civicrm_api3_leave_request_filter_attachment_fields(&$item) {
   $item['attachment_id'] = $item['id'];
   unset($item['id']);
 }
+
+/**
+ * LeaveRequest.deleteAttachment API spec
+ *
+ * @param array $spec
+ */
+function _civicrm_api3_leave_request_deleteattachment_spec(&$spec) {
+  $spec['leave_request_id'] = [
+    'name' => 'leave_request_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'LeaveRequest ID',
+    'description' => 'The Leave Request ID to delete attachments for',
+    'api.required' => 1
+  ];
+
+  $spec['attachment_id'] = [
+    'name' => 'attachment_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Attachment ID',
+    'description' => 'The ID of the attachment to delete',
+    'api.required' => 1
+  ];
+}
+
+/**
+ * LeaveRequest.deleteAttachment API
+ *
+ * Uses the LeaveRequestAttachment Service
+ * to delete attachment associated with a LeaveRequest.
+ *
+ * @param array $params
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_deleteattachment($params) {
+  $leaveRequestAttachmentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachment();
+  return $leaveRequestAttachmentService->delete($params);
+}
