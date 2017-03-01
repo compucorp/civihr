@@ -17,49 +17,36 @@ define([
          * @return {object}
          */
         defaultCustomData: function () {
-          return {
+          var toilCustomData = {
             toilDurationHours: 0,
             toilDurationMinutes: 0,
+            request_type: 'toil'
           };
+
+          return _.assign({}, LeaveRequestInstance.defaultCustomData(), toilCustomData);
         },
 
         /**
-         * Create a new TOIL request
+         * Sets the duration hours and minutes from toil_duration on instantiation.
          *
-         * @return {Promise} Resolved with {Object} Created Leave request with
-         *  newly created id for this instance
+         * @param {Object} attributes that need to be transformed
+         * @return {Object} updated attributes object
          */
-        create: function () {
-          return LeaveRequestAPI.create(this.toAPI(), 'toil')
-            .then(function (result) {
-              this.id = result.id;
-            }.bind(this));
-        },
+        transformAttributes: function (attributes) {
+          var duration = Number(attributes.toil_duration);
+          if (duration) {
+            attributes.toilDurationHours = Math.floor(duration / 60).toString();
+            attributes.toilDurationMinutes = (duration % 60).toString();
+          }
 
-        /**
-         * Validate TOIL request instance attributes.
-         *
-         * @return {Promise} empty array if no error found otherwise an object
-         *  with is_error set and array of errors
-         */
-        isValid: function () {
-          return LeaveRequestAPI.isValid(this.toAPI(), 'toil');
-        },
-
-        /**
-         * Update a TOIL request
-         *
-         * @return {Promise} Resolved with {Object} Updated TOIL request
-         */
-        update: function () {
-          return LeaveRequestAPI.update(this.toAPI(), 'toil');
+          return attributes;
         },
 
         /**
          * Update duration
          */
         updateDuration: function () {
-          this.duration = this.toilDurationHours * 60 + this.toilDurationMinutes;
+          this.toil_duration = Number(this.toilDurationHours) * 60 + Number(this.toilDurationMinutes);
         },
 
         /**
@@ -69,7 +56,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['toilDurationHours', 'toilDurationMinutes'], key)) {
+          if (!_.includes(['toilDurationHours', 'toilDurationMinutes', 'comments'], key)) {
             result[key] = this[key];
           }
         }
