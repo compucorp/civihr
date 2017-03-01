@@ -6,6 +6,18 @@
       font-family: $font-family-base;
       font-size: $font-size-h2;
     }
+
+    .fa-caret-down {
+      &:before {
+        content: "\f078";
+      }
+    }
+
+    .fa-caret-right {
+      &:before {
+        content: "\f054";
+      }
+    }
   }
 
   .widget-content {
@@ -97,11 +109,41 @@
             border-bottom: 2px solid $crm-white;
             border-color: $crm-dark-grayblue;
             border-bottom-color: $crm-white;
+
+            a {
+              font-weight: 400;
+            }
+        }
+
+        a {
+          font-family: $font-family-base;
+          font-weight: 600;
         }
       }
 
       [id*="civicrm-news-feed-"] {
         padding: 0 !important;
+        .crm-accordion-wrapper {
+          &.collapsed {
+            .crm-accordion-header {
+              &:before {
+                content: "\f054";
+                color: $gray-darker;
+                font-size: $font-size-base;
+              }
+            }
+          }
+
+          &:not(.collapsed) {
+            .crm-accordion-header {
+              &:before {
+                content: "\f078";
+                color: $gray-darker;
+                font-size: $font-size-base;
+              }
+            }
+          }
+        }
 
         .crm-accordion-header {
           background: $crm-white !important;
@@ -117,9 +159,10 @@
 
         .crm-accordion-body {
           padding: 10px 15px !important;
-          font-size: $font-size-small;
+          font-size: $font-size-base;
           box-shadow: $crm-box-shadow-inset;
           font-family: $font-family-base;
+          color: $crm-copy;
 
           .crm-news-feed-item-link {
             text-transform: capitalize;
@@ -130,6 +173,11 @@
   }
 
   .crm-activity-selector-dashlet {
+    .crm-accordion-header {
+      color: $gray-darker;
+      font-weight: 600 !important;
+    }
+
     .crm-search_filters-accordion {
       .crm-accordion-body {
         padding: 15px;
@@ -146,14 +194,40 @@
     }
 
     .dataTables_wrapper {
-      padding: 15px;
       overflow: scroll;
 
       table {
-        width: 100%;
-        margin-left: -15px;
-        margin-right: -15px;
+        width: 100% !important;
         box-shadow: none;
+      }
+
+      .crm-datatable-pager-top,
+      .crm-datatable-pager-bottom {
+        padding: 15px;
+      }
+
+      .dataTables_paginate {
+        width: 50% !important;
+        margin: 0;
+      }
+
+      .dataTables_info {
+        width: 49%;
+        padding: 10px 0;
+      }
+
+      div[id*="s2id_autogen"] {
+        .select2-choice {
+          background: none;
+          border-radius: 2px;
+          border: 1px solid $crm-darker-grayblue;
+          box-shadow: $crm-select2-box-shadow-inset;
+        }
+
+        .select2-arrow {
+          background: none;
+          padding: 0 5px;
+        }
       }
     }
   }
