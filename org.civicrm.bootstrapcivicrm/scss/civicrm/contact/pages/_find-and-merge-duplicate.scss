@@ -5,6 +5,9 @@
   }
 
   .help {
+    padding-top: 0;
+    padding-bottom: 0;
+
     + .crm-submit-buttons {
       display: none;
     }
@@ -39,6 +42,33 @@
     &Individual,
     &Orgazination {
       margin: 20px 0 !important;
+    }
+  }
+
+  div[id*="browseValues_"] {
+    table {
+      @include mx-expandable-table();
+
+      thead {
+        tr {
+          border: 1px solid $crm-background !important;
+
+          th {
+            border-bottom: none;
+            background: $gray-lighter !important;
+            color: $gray-darker !important;
+            vertical-align: middle;
+            border: none;
+            padding: 0 25px !important;
+            line-height: 1.1em;
+            height: 42px;
+
+            div {
+              padding: 0;
+            }
+          }
+        }
+      }
     }
   }
 
@@ -94,5 +124,82 @@
         }
       }
     }
+  }
+}
+
+
+#DedupeRules {
+  h3 {
+    background: $gray-lighter !important;
+    color: $crm-h3-color;
+    padding: 17px 25px;
+    margin: 0;
+    font-size: $font-size-h2;
+    font-weight: 600;
+  }
+
+  .crm-dedupe-rules-form-block {
+    box-shadow: none;
+
+    table {
+      &.form-layout {
+        & > tbody {
+          & > tr {
+            & > td {
+              &:nth-child(1) {
+                max-width: 120px;
+              }
+
+              &:nth-child(2) {
+                width: 100%;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .crm-dedupe-rules-form-block-fields {
+    table {
+      &.form-layout-compressed {
+        @include mx-expandable-table();
+
+        tr {
+          &.columnheader {
+            border: 1px solid $crm-background !important;
+
+            td {
+              border-bottom: none;
+              background: $gray-lighter !important;
+              color: $gray-darker !important;
+              vertical-align: middle;
+              border: none;
+              padding: 0 25px !important;
+              line-height: 1.1em;
+              height: 42px;
+
+              div {
+                padding: 0;
+              }
+            }
+          }
+
+          td {
+            width: 33.2%;
+
+            input[name*="weight_"],
+            input[name*="length_"] {
+              width: 50px !important;
+              min-width: 50px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .help {
+    padding-left: 5px;
   }
 }
