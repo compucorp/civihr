@@ -37,7 +37,7 @@ define([
       });
 
       it('initializes sickness reason', function() {
-        expect(instance.sickness_reason).toBeNull();
+        expect(instance.sickness_reason).not.toBeUndefined();
       });
 
       it('initializes required documents', function() {

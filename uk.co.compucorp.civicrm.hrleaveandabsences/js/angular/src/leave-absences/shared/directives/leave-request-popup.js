@@ -21,16 +21,12 @@ define([
        * @return {String} leave type
        */
       function getLeaveType(leaveTypeParam, request) {
-        var leaveType;
-
         //reset for edit calls
         if (request) {
-          leaveType = request.request_type;
+          return request.request_type;
         } else if (leaveTypeParam) {
-          leaveType = leaveTypeParam;
+          return leaveTypeParam;
         }
-
-        return leaveType;
       }
 
       return {

@@ -9,6 +9,17 @@ define([
     'LeaveRequestAPI',
     'LeaveRequestInstance',
     function (LeaveRequestAPI, LeaveRequestInstance) {
+      /**
+       * Gets array of documents from comma separated string of documents
+       *
+       * @return {Array}
+       */
+      function getDocumentArray() {
+        var docsArray = this.sickness_required_documents ? this.sickness_required_documents.split(',') : [];
+
+        return docsArray;
+      }
+
       return LeaveRequestInstance.extend({
 
         /**
@@ -28,24 +39,13 @@ define([
         },
 
         /**
-         * Gets array of documnets from comma separated string of documents
-         *
-         * @return {Array}
-         */
-        getDocumentArray: function () {
-          var docsArray = this.sickness_required_documents ? this.sickness_required_documents.split(',') : [];
-
-          return docsArray;
-        },
-
-        /**
          * Checks if given value is added for leave request list of document value ie., field required_documents
          *  otherwise add it to list of required documents (list is actually string of comma separated values for now)
          *
          * @param {String} documentValue required document value like '1'
          */
         toggleDocument: function (documentValue) {
-          var docsArray = this.getDocumentArray();
+          var docsArray = getDocumentArray.call(this);
           var index = docsArray.indexOf(documentValue);
 
           _.contains(docsArray, documentValue) ? docsArray.splice(index, 1) : docsArray.push(documentValue);

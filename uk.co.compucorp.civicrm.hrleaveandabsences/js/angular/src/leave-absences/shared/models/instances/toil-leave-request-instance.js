@@ -29,7 +29,8 @@ define([
         /**
          * Sets the duration hours and minutes from toil_duration on instantiation.
          *
-         * @return {object} updated attributes object
+         * @param {Object} attributes that need to be transformed
+         * @return {Object} updated attributes object
          */
         transformAttributes: function (attributes) {
           var duration = Number(attributes.toil_duration);
