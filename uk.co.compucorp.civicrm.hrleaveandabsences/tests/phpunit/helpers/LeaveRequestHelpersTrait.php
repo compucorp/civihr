@@ -42,7 +42,7 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
   }
 
   public function openLeaveRequestStatusesDataProvider() {
-    $leaveRequestStatuses =  $this->getLeaveRequestStatuses();
+    $leaveRequestStatuses = $this->getLeaveRequestStatuses();
 
     return [
       [$leaveRequestStatuses['More Information Requested']['id']],
@@ -51,7 +51,7 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
   }
 
   public function closedLeaveRequestStatusesDataProvider() {
-    $leaveRequestStatuses =  $this->getLeaveRequestStatuses();
+    $leaveRequestStatuses = $this->getLeaveRequestStatuses();
 
     return [
       [$leaveRequestStatuses['Cancelled']['id']],
@@ -59,5 +59,30 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
       [$leaveRequestStatuses['Admin Approved']['id']],
       [$leaveRequestStatuses['Approved']['id']],
     ];
+  }
+
+  protected function createAttachmentForLeaveRequest($params) {
+    $defaultParams = [
+      'entity_table' => LeaveRequest::getTableName(),
+      'name' => 'LeaveRequestSampleFile.txt',
+      'mime_type' => 'text/plain',
+      'content' => '',
+      'sequential' => 1,
+    ];
+    $payload = array_merge($defaultParams, $params);
+    $result =  civicrm_api3('Attachment', 'create', $payload);
+
+    return $result['values'][0];
+  }
+
+  protected function getAttachmentForLeaveRequest($params) {
+    $defaultParams = [
+      'entity_table' => LeaveRequest::getTableName(),
+      'sequential' => 1
+    ];
+    $payload = array_merge($defaultParams, $params);
+    $result =  civicrm_api3('Attachment', 'get', $payload);
+
+    return $result;
   }
 }
