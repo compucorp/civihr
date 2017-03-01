@@ -16,3 +16,68 @@
     }
   }
 }
+
+&.page-civicrm-admin-custom {
+  #crm-main-content-wrapper {
+    .help + .crm-submit-buttons,
+    .crm-submit-buttons:first-child {
+      border-bottom: 1px solid $gray-lighter;
+      border-top: 0;
+    }
+
+    .crm-submit-buttons {
+      background-color: $crm-white !important;
+      box-shadow: none;
+
+      + .form-layout {
+        box-shadow: none;
+
+        tr {
+          &:first-child {
+            td {
+              padding-top: 20px;
+            }
+          }
+
+          &:last-child {
+            td {
+              padding-bottom: 20px;
+            }
+          }
+
+          td {
+            display: table-cell;
+            text-align: left;
+
+            &:last-child {
+              padding-right: 20px;
+            }
+
+            &.label {
+              padding-left: 20px;
+            }
+
+            .crm-form-text,
+            .crm-form-select,
+            .crm-form-textarea {
+              margin-top: 0 !important;
+            }
+
+            .crm-form-textarea {
+              min-height: 100px;
+            }
+
+            .crm-error-label {
+              display: inline-block;
+              margin-top: 2px;
+            }
+
+            .description {
+              display: block;
+            }
+          }
+        }
+      }
+    }
+  }
+}
