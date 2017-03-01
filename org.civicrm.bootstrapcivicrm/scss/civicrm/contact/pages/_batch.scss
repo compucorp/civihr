@@ -1,0 +1,148 @@
+.page-civicrm-batch {
+  .crm-submit-buttons {
+      margin: 0;
+      margin-bottom: 25px;
+      margin-top: 15px;
+  }
+
+  .crm-batch-search-form-block,
+  .CRM_Batch_Form_Batch {
+    h3 {
+      background: $gray-lighter !important;
+      border-bottom: 1px solid $crm-dark-grayblue;
+      color: $crm-h3-color;
+      padding: 17px 25px;
+      margin: 0;
+      font-size: $font-size-h2;
+      font-weight: 600;
+    }
+
+    table {
+      tr {
+        td {
+          vertical-align: top;
+          padding: 15px 25px;
+
+          &:nth-child(2) {
+            padding: 15px 0;
+          }
+
+          .crm-button {
+            i {
+              top: 15px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .dataTables_wrapper {
+    box-shadow: $box-shadow;
+
+    .crm-datatable-pager-top {
+      border: 1px solid $crm-background !important;
+
+      div[id*="s2id_autogen"] {
+        .select2-choice {
+          background: none;
+          border-radius: 2px;
+          border: 1px solid $crm-darker-grayblue;
+          box-shadow: $crm-select2-box-shadow-inset;
+        }
+
+        .select2-arrow {
+          background: none;
+          padding: 0 5px;
+        }
+      }
+    }
+
+    .crm-datatable-pager-bottom,
+    .crm-datatable-pager-top {
+      background: $crm-white;
+      padding: 10px 15px;
+      display: flex;
+
+      .dataTables_paginate {
+        width: 50% !important;
+        float: right;
+      }
+
+      .dataTables_length,
+      .dataTables_info {
+        width: 49%;
+        float: left;
+      }
+    }
+
+    .dataTable {
+      box-shadow: none !important;
+    }
+  }
+}
+
+.page-civicrm-batch {
+  #Batch {
+    box-shadow: $box-shadow;
+
+    .crm-submit-buttons {
+      margin: 0 15px !important;
+      border: none;
+    }
+
+    .crm-batch-form-block {
+      box-shadow: none;
+
+      td {
+        padding: 0 !important;
+        vertical-align: middle;
+
+        &.label {
+          label {
+            padding: 15px 0px 5px 25px;
+          }
+        }
+      }
+
+      textarea {
+        vertical-align: middle;
+        line-height: 1.5em;
+      }
+    }
+  }
+}
+
+.page-civicrm-batch-entry {
+  #crm-main-content-wrapper {
+    background: $crm-white;
+    padding: 15px;
+
+    .help {
+      padding-left: 0;
+    }
+
+    #crm-batch-entry-table {
+      border-color: $crm-background;
+      margin: 0 !important;
+      overflow-x: auto;
+      width: 100%;
+      display: block;
+    }
+
+    table {
+      border: none !important;
+    }
+
+    .crm-submit-buttons {
+      .crm-form-submit {
+        background: $brand-primary;
+        border-color: $brand-primary;
+        padding: 7px;
+        border-radius: 2px;
+        margin-right: 0;
+        text-shadow: none;
+      }
+    }
+  }
+}
