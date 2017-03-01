@@ -28,55 +28,106 @@
     .crm-submit-buttons {
       background-color: $crm-white !important;
       box-shadow: none;
+    }
+  }
 
-      + .form-layout {
-        box-shadow: none;
+  .form-layout {
+    box-shadow: none !important;
 
-        tr {
-          &:first-child {
-            td {
-              padding-top: 20px;
-            }
+    tr {
+      padding: 0;
+
+      &:first-child {
+        td {
+          padding-top: 20px;
+        }
+      }
+
+      &:last-child {
+        td {
+          padding-bottom: 20px;
+        }
+      }
+
+      &.crm-custom-field-form-block-is_required,
+      &.crm-custom-field-form-block-is_searchable,
+      &.crm-custom-field-form-block-is_view,
+      &.crm-custom-field-form-block-is_active {
+        .html-adjust {
+          br {
+            display: none;
           }
 
-          &:last-child {
-            td {
-              padding-bottom: 20px;
-            }
-          }
-
-          td {
-            display: table-cell;
-            text-align: left;
-
-            &:last-child {
-              padding-right: 20px;
-            }
-
-            &.label {
-              padding-left: 20px;
-            }
-
-            .crm-form-text,
-            .crm-form-select,
-            .crm-form-textarea {
-              margin-top: 0 !important;
-            }
-
-            .crm-form-textarea {
-              min-height: 100px;
-            }
-
-            .crm-error-label {
-              display: inline-block;
-              margin-top: 2px;
-            }
-
-            .description {
-              display: block;
-            }
+          .crm-form-checkbox {
+            margin-top: 4px;
+            margin-left: 0 !important;
+            vertical-align: top;
           }
         }
+      }
+
+      td {
+        display: table-cell;
+        text-align: left;
+
+        &:last-child {
+          padding-right: 20px;
+        }
+
+        &.label {
+          padding-left: 20px;
+        }
+
+        input.crm-form-text,
+        .crm-form-select,
+        .crm-form-textarea {
+          margin-top: 0 !important;
+        }
+
+        .crm-form-textarea {
+          min-height: 100px;
+        }
+
+        .crm-error-label {
+          display: inline-block;
+          margin-top: 2px;
+        }
+
+        .description {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .ui-dialog-content {
+    tr {
+      > td:first-child {
+        padding-left: 0 !important;
+      }
+    }
+
+    #showoption {
+      > td {
+        padding: 0;
+      }
+
+      #option_group {
+        td {
+          padding-top: 10px;
+        }
+      }
+    }
+
+    #multiple {
+      legend {
+        margin-bottom: 0;
+        padding-left: 0;
+      }
+
+      .crm-form-text {
+        min-width: 150px !important;
+        width: 150px !important;
       }
     }
   }
