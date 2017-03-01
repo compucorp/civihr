@@ -47,6 +47,8 @@ define([
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
         spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
         spyOn(LeaveRequestAPI, 'saveComment').and.callThrough();
+        spyOn(LeaveRequestAPI, 'getComments').and.callThrough();
+        spyOn(LeaveRequestAPI, 'deleteComment').and.callThrough();
       }
     ]));
 
@@ -220,6 +222,10 @@ define([
         spyOn(LeaveRequestInstance, 'toAPI').and.returnValue(toAPIReturnValue);
         LeaveRequestInstance.comments = commentsData.getCommentsWithMixedIDs().values;
 
+        var commentToBeDeleted = commentsData.getComments().values[0];
+        commentToBeDeleted.toBeDeleted = true;
+        LeaveRequestInstance.comments.push(commentToBeDeleted);
+
         promise = LeaveRequestInstance.update();
       });
 
@@ -248,6 +254,16 @@ define([
           });
         });
       });
+
+      it('calls API to delete the comments marked for deletion', function () {
+        promise.then(function () {
+          LeaveRequestInstance.comments.map(function (comment) {
+            if(comment.toBeDeleted) {
+              expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
+            }
+          });
+        });
+      });
     });
 
     describe('create()', function () {
@@ -257,6 +273,11 @@ define([
         requestData = helper.createRandomLeaveRequest();
         instance = LeaveRequestInstance.init(requestData, false);
         instance.comments = commentsData.getCommentsWithMixedIDs().values;
+
+        var commentToBeDeleted = commentsData.getComments().values[0];
+        commentToBeDeleted.toBeDeleted = true;
+        instance.comments.push(commentToBeDeleted);
+
         instanceCreate = instance.create();
       });
 
@@ -289,6 +310,16 @@ define([
         });
       });
 
+      it('calls API to delete the comments marked for deletion', function () {
+        instanceCreate.then(function () {
+          instance.comments.map(function (comment) {
+            if(comment.toBeDeleted) {
+              expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
+            }
+          });
+        });
+      });
+
       describe('when one mandatory filed is missing', function () {
 
         beforeEach(function () {
@@ -306,6 +337,30 @@ define([
           instanceCreate.catch(function (error) {
             expect(error).toBe(expectedError);
           });
+        });
+      });
+    });
+
+    describe('loadComments()', function () {
+      var promise;
+
+      beforeEach(function() {
+        promise = LeaveRequestInstance.loadComments();
+      });
+
+      afterEach(function() {
+        $rootScope.$digest();
+      });
+
+      it('calls API with leave request ID', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.getComments).toHaveBeenCalledWith(LeaveRequestInstance.id);
+        });
+      });
+
+      it('the returned comments from API are saved', function () {
+        promise.then(function () {
+          expect(LeaveRequestInstance.comments).toEqual(commentsData.getComments().values);
         });
       });
     });

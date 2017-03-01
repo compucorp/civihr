@@ -556,7 +556,7 @@ define([
           expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest',
             'getcomment', jasmine.objectContaining(_.assign(params, {
               leave_request_id: leaveRequestID
-            })));
+            })), false);
         });
       });
 

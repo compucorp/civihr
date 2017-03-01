@@ -46,6 +46,10 @@ define([
           breakdown: []
         }
       };
+      this.comment = {
+        text: '',
+        contacts: {}
+      };
       this.loading = {
         absenceTypes: true,
         calculateBalanceChange: false,
@@ -75,7 +79,7 @@ define([
         isChangeExpanded: false,
         multipleDays: true,
         workedDate: null,
-        userDateFormat: HR_settings.DATE_FORMAT,
+        userDateFormat: HR_settings.DATE_FORMAT.toUpperCase(),
         showBalance: false,
         date: {
           from: {
@@ -93,8 +97,21 @@ define([
               startingDay: 1,
               showWeeks: false
             }
-          },
+          }
         }
+      };
+
+      /**
+       * Add a comment into comments array, also clears the comments textbox
+       */
+      this.addComment = function () {
+        this.request.comments.push({
+          contact_id: this.directiveOptions.contactId,
+          created_at: moment(new Date()).format(sharedSettings.serverDateTimeFormat),
+          leave_request_id: this.request.id,
+          text: this.comment.text
+        });
+        this.comment.text = '';
       };
 
       /**
@@ -175,6 +192,40 @@ define([
       };
 
       /**
+       * Format a date-time into user format and returns
+       *
+       * @return {String}
+       */
+      this.formatDateTime = function (dateTime) {
+        return moment(dateTime, sharedSettings.serverDateTimeFormat).format(this.uiOptions.userDateFormat + ' HH:mm');
+      };
+
+      /**
+       * Returns the comment author name
+       * @param {String} contact_id
+       *
+       * @return {String}
+       */
+      this.getCommentorName = function (contact_id) {
+        if(contact_id == this.directiveOptions.contactId) {
+          return 'Me';
+        } else if(this.comment.contacts[contact_id]) {
+          return this.comment.contacts[contact_id].display_name;
+        }
+      };
+
+      /**
+       * Returns the comments which are not marked for deletion
+       *
+       * @return {Array}
+       */
+      this.getActiveComments = function () {
+        return this.request.comments.filter(function (comment) {
+          return !comment.toBeDeleted;
+        });
+      };
+
+      /**
        * Checks if popup is opened in given leave type like `leave` or `sick` or 'toil'
        *
        * @param {String} leaveTypeParam to check the leave type of current request
@@ -212,6 +263,42 @@ define([
         this.$modalInstance.close({
           $value: this.request
         });
+      };
+
+      /**
+       * Orders comment, used as a angular filter
+       * @param {Object} comment
+       *
+       * @return {Date}
+       */
+      this.orderComment = function (comment) {
+        return moment(comment.created_at, sharedSettings.serverDateTimeFormat);
+      };
+
+      /**
+       * Removes a comment from memory
+       * @param {Object} commentObj - comment object
+       */
+      this.removeComment = function (commentObj) {
+        //If its an already saved comment, mark a toBeDeleted flag
+        if(commentObj.comment_id) {
+          commentObj.toBeDeleted = true;
+          return;
+        }
+
+        this.request.comments = _.reject(this.request.comments, function (comment) {
+          return commentObj.created_at === comment.created_at && commentObj.text === comment.text;
+        });
+      };
+
+      /**
+       * Decides visiblity of remove comment button
+       * @param {Object} comment - comment object
+       *
+       * @return {Boolean}
+       */
+      this.removeCommentVisibility = function (comment) {
+        return !comment.comment_id || this.isRole('manager');
       };
 
       /**
@@ -459,6 +546,7 @@ define([
 
             return $q.all([
               self._loadAbsenceTypes.call(self),
+              loadCommentsandContactnames.call(self),
               self._loadCalendar.call(self)
             ]);
           })
@@ -474,7 +562,7 @@ define([
             initContact.call(self);
 
             if (self.isMode.call(self, 'edit')) {
-              initialLeaveRequestAttributes = self.request.attributes();
+              initialLeaveRequestAttributes = _.cloneDeep(self.request.attributes());
             }
           });
       };
@@ -822,6 +910,47 @@ define([
         }
 
         return $q.resolve();
+      }
+
+      /**
+       * Loads the comments for current leave request
+       *
+       * @return {Promise}
+       */
+      function loadCommentsandContactnames() {
+        //In CREATE mode dont fetch comments
+        if(!this.isMode('create')) {
+          return this.request.loadComments()
+            .then(loadContactNames.bind(this));
+        }
+
+        return $q.resolve();
+      }
+
+      /**
+       * Loads unique contact names for all the comments
+       *
+       * @return {Promise}
+       */
+      function loadContactNames () {
+        var contactIDs = [],
+          self = this;
+
+        _.each(self.request.comments, function (comment) {
+          //Push only unique contactId's which are not same as logged in user
+          if(comment.contact_id != self.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
+            contactIDs.push(comment.contact_id);
+          }
+        });
+
+        return Contact.all({
+          id: { IN: contactIDs }
+        },{
+          page: 1,
+          size: 0
+        }).then(function (contacts) {
+          self.comment.contacts = _.indexBy(contacts.list, 'contact_id');
+        });
       }
 
       /**

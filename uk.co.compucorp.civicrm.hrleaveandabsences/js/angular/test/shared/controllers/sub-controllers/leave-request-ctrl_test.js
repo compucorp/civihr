@@ -50,6 +50,7 @@
 
       beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
         $provide.value('api.contact', _ContactAPIMock_);
+        ContactAPIMock = _ContactAPIMock_;
         sharedSettings = _sharedSettings_;
       }]));
 
@@ -100,8 +101,19 @@
       });
 
       describe('when initialized', function () {
+        describe('comments', function () {
+          it('text is empty', function () {
+            expect($ctrl.comment.text).toBe('');
+          });
+
+          it('contacts is not loaded', function () {
+            expect($ctrl.comment.contacts).toEqual({});
+          });
+        });
+
         describe('before date is selected', function () {
           beforeEach(function () {
+            $scope.$digest();
             $scope.$digest();
           });
 
@@ -234,6 +246,170 @@
 
           it('does show balance change', function () {
             expect($ctrl.uiOptions.showBalance).toBeTruthy();
+          });
+        });
+      });
+
+      describe('addComment()', function() {
+        beforeEach(function() {
+          $ctrl.request.comments = [];
+          $ctrl.directiveOptions.contactId = '101';
+          $ctrl.comment.text = 'some text';
+          $ctrl.request.id = '102';
+          $ctrl.addComment();
+        });
+
+        it('adds comment to the request', function () {
+          expect($ctrl.request.comments.length).not.toBe(0);
+        });
+
+        it('adds comment with proper values', function () {
+          expect($ctrl.request.comments[0]).toEqual({
+            contact_id: '101',
+            created_at: jasmine.any(String),
+            leave_request_id: '102',
+            text: 'some text'
+          });
+        });
+
+        it('clears the comment text box', function () {
+          expect($ctrl.comment.text).toBe('');
+        });
+      });
+
+      describe('formatDateTime()', function() {
+        var returnValue;
+
+        beforeEach(function() {
+          returnValue = $ctrl.formatDateTime('2017-06-14 12:15:18');
+        });
+
+        it('returns date time in user format', function() {
+          expect(returnValue).toBe('14/06/2017 12:15');
+        });
+      });
+
+      describe('getCommentorName()', function() {
+        var returnValue;
+
+        describe('when comment author is same as logged in user', function() {
+          beforeEach(function() {
+            $ctrl.directiveOptions.contactId = '101';
+            returnValue = $ctrl.getCommentorName('101');
+          });
+
+          it('returns "Me"', function() {
+            expect(returnValue).toBe('Me');
+          });
+        });
+
+        describe('when comment author is not same as logged in user', function() {
+          var displayName = 'MR X';
+
+          beforeEach(function() {
+            $ctrl.directiveOptions.contactId = '101';
+            $ctrl.comment.contacts = {
+              102: {
+                display_name: displayName
+              }
+            };
+            returnValue = $ctrl.getCommentorName('102');
+          });
+
+          it('returns name of the comment author', function() {
+            expect(returnValue).toBe(displayName);
+          });
+        });
+      });
+
+      describe('removeComment()', function() {
+        describe('when comment_id is not present', function () {
+          beforeEach(function() {
+            var commentObject = {
+              created_at: '2017-06-14 12:15:18',
+              text: 'test comment'
+            };
+            $ctrl.request.comments = [commentObject];
+            $ctrl.removeComment(commentObject);
+          });
+
+          it('removes the comment', function() {
+            expect($ctrl.request.comments.length).toBe(0);
+          });
+        });
+
+        describe('when comment_id is  present', function () {
+          var commentObject;
+
+          beforeEach(function() {
+            commentObject = {
+              created_at: '2017-06-14 12:15:18',
+              comment_id: '1',
+              text: 'test comment'
+            };
+            $ctrl.request.comments = [commentObject];
+            $ctrl.removeComment(commentObject);
+          });
+
+          it('marks the comment for deletion', function() {
+            expect(commentObject.toBeDeleted).toBe(true);
+          });
+        });
+      });
+
+      describe('removeCommentVisibility()', function() {
+        var comment = {},
+          returnValue;
+
+        beforeEach(function () {
+          spyOn($ctrl, 'isRole');
+        });
+
+        describe('when comment id is missing and role is not manager', function() {
+          beforeEach(function() {
+            comment.comment_id = null;
+            $ctrl.isRole.and.returnValue(false);
+            returnValue = $ctrl.removeCommentVisibility(comment);
+          });
+
+          it('button should be visible', function() {
+            expect(returnValue).toBe(true);
+          });
+        });
+
+        describe('when comment id is not missing and role is not manager', function() {
+          beforeEach(function() {
+            comment.comment_id = jasmine.any(String);
+            $ctrl.isRole.and.returnValue(false);
+            returnValue = $ctrl.removeCommentVisibility(comment);
+          });
+
+          it('button should not be visible', function() {
+            expect(returnValue).toBe(false);
+          });
+        });
+
+        describe('when comment id is not missing and role is manager', function() {
+          beforeEach(function() {
+            comment.comment_id = jasmine.any(String);
+            $ctrl.isRole.and.returnValue(true);
+            returnValue = $ctrl.removeCommentVisibility(comment);
+          });
+
+          it('button should be visible', function() {
+            expect(returnValue).toBe(true);
+          });
+        });
+
+        describe('when comment id is missing and role is manager', function() {
+          beforeEach(function() {
+            comment.comment_id = null;
+            $ctrl.isRole.and.returnValue(true);
+            returnValue = $ctrl.removeCommentVisibility(comment);
+          });
+
+          it('button should be visible', function() {
+            expect(returnValue).toBe(true);
           });
         });
       });

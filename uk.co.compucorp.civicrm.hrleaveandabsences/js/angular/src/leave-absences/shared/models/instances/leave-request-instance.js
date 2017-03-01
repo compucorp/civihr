@@ -55,23 +55,26 @@ define([
       }
 
       /**
-       * Save comments which do not have an ID
+       * Save comments which do not have an ID and delete comments which are marked for deletion
        *
        * @return {Promise}
        */
-      function saveCommentsWithoutID() {
+      function saveAndDeleteComments() {
         var promises = [],
           self = this;
 
+        //Save comments which dont have an ID
         self.comments.map(function (comment, index) {
           if (!comment.comment_id) {
             //IIFE is created to keep actual value of 'index' when promise is resolved
             (function (index) {
               promises.push(LeaveRequestAPI.saveComment(self.id, comment)
-                .then(function (comment) {
-                  self.comments[index] = comment;
+                .then(function (commentData) {
+                  self.comments[index] = commentData;
                 }));
             })(index);
+          } else if(comment.toBeDeleted) {
+            promises.push(LeaveRequestAPI.deleteComment(comment.comment_id));
           }
         });
 
@@ -128,7 +131,7 @@ define([
         update: function () {
           return LeaveRequestAPI.update(this.toAPI())
             .then(function () {
-              return saveCommentsWithoutID.call(this);
+              return saveAndDeleteComments.call(this);
             }.bind(this));
         },
 
@@ -142,7 +145,7 @@ define([
           return LeaveRequestAPI.create(this.toAPI())
             .then(function (result) {
               this.id = result.id;
-              return saveCommentsWithoutID.call(this);
+              return saveAndDeleteComments.call(this);
             }.bind(this));
         },
 
@@ -199,6 +202,15 @@ define([
          */
         isSentBack: function () {
           return checkLeaveStatus.call(this, 'more_information_requested');
+        },
+
+        loadComments: function () {
+          var self = this;
+
+          return LeaveRequestAPI.getComments(this.id)
+            .then(function (comments) {
+              self.comments = comments;
+            });
         },
 
         /**
