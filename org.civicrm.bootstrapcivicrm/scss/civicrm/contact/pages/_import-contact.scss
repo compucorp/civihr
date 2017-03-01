@@ -165,6 +165,20 @@
     }
   }
 
+  h3 {
+    border-bottom: 0 !important;
+  }
+
+  h3,
+  td.label {
+    padding-left: 0;
+  }
+
+  input[type=checkbox]:checked+label[for]::after {
+    left: 2px;
+    top: 6px;
+  }
+
   .CRM_Contact_Import_Form_DataSource {
     .form-layout {
       width: auto;
@@ -172,15 +186,6 @@
       td.label {
         display: table-cell;
       }
-    }
-
-    h3,
-    td.label {
-      padding-left: 0;
-    }
-
-    h3 {
-      border-bottom: 0 !important;
     }
 
     input[type=radio] + label[for] {
@@ -195,11 +200,6 @@
 
       br {
         display: none;
-      }
-
-      input[type=checkbox]:checked+label[for]::after {
-        left: 2px;
-        top: 6px;
       }
 
       .crm-import_sql-form-block-sqlQuery {
