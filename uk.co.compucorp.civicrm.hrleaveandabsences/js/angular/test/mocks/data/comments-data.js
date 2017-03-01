@@ -22,6 +22,13 @@ define([], function () {
     "created_at": "2017-02-14 13:48:33"
   }];
 
+  var deleteComment = {
+    count: 1,
+    is_error: 0,
+    values: 1,
+    version: 3
+  };
+
   return {
     getComments: function () {
       var returnValue = prefix;
@@ -34,6 +41,9 @@ define([], function () {
       returnValue.values = commentsWithID.concat(commentsWithNoID);
 
       return returnValue;
+    },
+    deleteComment: function () {
+      return deleteComment;
     }
   }
 });

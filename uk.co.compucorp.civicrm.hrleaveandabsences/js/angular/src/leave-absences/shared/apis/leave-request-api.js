@@ -229,7 +229,7 @@ define([
           leave_request_id: leaveRequestID
         });
 
-        return this.sendGET('LeaveRequest', 'getcomment', params)
+        return this.sendGET('LeaveRequest', 'getcomment', params, false)
           .then(function (commentsData) {
             return commentsData.values;
           });

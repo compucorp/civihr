@@ -97,6 +97,11 @@ define([
           return $q(function (resolve, reject) {
             resolve(commentsMock.getComments().values);
           });
+        },
+        deleteComment: function (params) {
+          return $q(function (resolve, reject) {
+            resolve(commentsMock.deleteComment().values);
+          });
         }
       };
     }

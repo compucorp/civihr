@@ -48,6 +48,7 @@ define([
         spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
         spyOn(LeaveRequestAPI, 'saveComment').and.callThrough();
         spyOn(LeaveRequestAPI, 'getComments').and.callThrough();
+        spyOn(LeaveRequestAPI, 'deleteComment').and.callThrough();
       }
     ]));
 
@@ -220,6 +221,7 @@ define([
         defer.resolve(jasmine.any(Object));
         spyOn(LeaveRequestInstance, 'toAPI').and.returnValue(toAPIReturnValue);
         LeaveRequestInstance.comments = commentsData.getCommentsWithMixedIDs().values;
+        LeaveRequestInstance.commentsToBeDeleted = commentsData.getComments().values;
 
         promise = LeaveRequestInstance.update();
       });
@@ -249,6 +251,14 @@ define([
           });
         });
       });
+
+      it('calls API to delete the comments marked for deletion', function () {
+        promise.then(function () {
+          commentsData.getComments().values.map(function (comment) {
+            expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
+          });
+        });
+      });
     });
 
     describe('create()', function () {
@@ -258,6 +268,7 @@ define([
         requestData = helper.createRandomLeaveRequest();
         instance = LeaveRequestInstance.init(requestData, false);
         instance.comments = commentsData.getCommentsWithMixedIDs().values;
+        instance.commentsToBeDeleted = commentsData.getComments().values;
         instanceCreate = instance.create();
       });
 
@@ -286,6 +297,14 @@ define([
             if (!comment.comment_id) {
               expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(instance.id, comment);
             }
+          });
+        });
+      });
+
+      it('calls API to delete the comments marked for deletion', function () {
+        instanceCreate.then(function () {
+          commentsData.getComments().values.map(function (comment) {
+            expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
           });
         });
       });

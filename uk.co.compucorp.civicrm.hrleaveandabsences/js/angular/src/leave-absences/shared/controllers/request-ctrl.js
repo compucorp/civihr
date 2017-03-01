@@ -269,6 +269,12 @@ define([
        * @param {Object} commentObj - comment object
        */
       this.removeComment = function (commentObj) {
+        //If its an already saved comment, store it in another array
+        //for removal from server once SAVE is pressed
+        if(commentObj.comment_id) {
+          this.request.commentsToBeDeleted.push(commentObj);
+        }
+
         this.request.comments = _.reject(this.request.comments, function (comment) {
           return commentObj.created_at === comment.created_at && commentObj.text === comment.text;
         });
@@ -545,7 +551,7 @@ define([
             initContact.call(self);
 
             if (self.isMode.call(self, 'edit')) {
-              initialLeaveRequestAttributes = self.request.attributes();
+              initialLeaveRequestAttributes = _.cloneDeep(self.request.attributes());
             }
           });
       };

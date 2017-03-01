@@ -323,17 +323,37 @@
       });
 
       describe('removeComment()', function() {
-        beforeEach(function() {
-          var commentObject = {
-            created_at: '2017-06-14 12:15:18',
-            text: 'test comment'
-          };
-          $ctrl.request.comments = [commentObject];
-          $ctrl.removeComment(commentObject);
+        describe('when comment_id is not present', function () {
+          beforeEach(function() {
+            var commentObject = {
+              created_at: '2017-06-14 12:15:18',
+              text: 'test comment'
+            };
+            $ctrl.request.comments = [commentObject];
+            $ctrl.removeComment(commentObject);
+          });
+
+          it('removes the comment', function() {
+            expect($ctrl.request.comments.length).toBe(0);
+          });
         });
 
-        it('removes the comment', function() {
-          expect($ctrl.request.comments.length).toBe(0);
+        describe('when comment_id is  present', function () {
+          var commentObject;
+
+          beforeEach(function() {
+            commentObject = {
+              created_at: '2017-06-14 12:15:18',
+              comment_id: '1',
+              text: 'test comment'
+            };
+            $ctrl.request.comments = [commentObject];
+            $ctrl.removeComment(commentObject);
+          });
+
+          it('marks the comment for deletion', function() {
+            expect($ctrl.request.commentsToBeDeleted).toEqual([commentObject]);
+          });
         });
       });
 
