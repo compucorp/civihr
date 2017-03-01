@@ -476,36 +476,6 @@
           it('sends event', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.request);
           });
-
-          describe('when balance change is negative', function () {
-            beforeEach(function () {
-              $ctrl.selectedAbsenceType = $ctrl.absenceTypes[1];
-              setTestDates(date2016, date2016);
-              //entitlements are randomly generated so resetting them to negative here
-              $ctrl.balance.closing = -1;
-              $ctrl.submit();
-              $scope.$digest();
-            });
-
-            describe('and absence type does not allow overuse', function () {
-              it('does not save and sets error', function () {
-                expect($ctrl.error).toBeDefined();
-              });
-            });
-
-            describe('and absence type allows overuse', function () {
-              beforeEach(function () {
-                $ctrl.request.type_id = $ctrl.absenceTypes[2].id;
-                $ctrl.updateBalance();
-                $ctrl.submit();
-                $scope.$digest();
-              });
-
-              it('saves without errors', function () {
-                expect($ctrl.error).toBeNull();
-              });
-            });
-          });
         });
       });
 

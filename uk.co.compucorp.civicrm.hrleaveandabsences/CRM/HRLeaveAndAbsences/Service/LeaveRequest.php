@@ -171,7 +171,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return bool
    */
   protected function canChangeDatesFor($params) {
-    return $this->leaveRequestRightsService->canChangeDatesFor($params['contact_id'], $params['status_id']);
+    return $this->leaveRequestRightsService->canChangeDatesFor(
+      $params['contact_id'],
+      $params['status_id'],
+      $params['request_type']
+    );
   }
 
   /**

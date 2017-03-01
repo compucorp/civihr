@@ -1,7 +1,5 @@
 <?php
 
-use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
-use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;

@@ -18,6 +18,7 @@ define([
         'to_date': '2016-02-03',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -3,
+        'request_type': 'leave',
         "dates": [
           {
             "id": "20",
@@ -42,6 +43,7 @@ define([
         'to_date': '2016-08-25',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -1.5,
+        'request_type': 'leave',
         "dates": [
           {
             "id": "23",
@@ -90,6 +92,7 @@ define([
         'to_date': '2016-02-01',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -1,
+        'request_type': 'leave',
         "dates": [
           {
             "id": "17",
@@ -114,6 +117,7 @@ define([
         'to_date': '2016-11-28',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -5,
+        'request_type': 'leave',
         "dates": [
           {
             "id": "32",
@@ -150,6 +154,7 @@ define([
         'to_date': '2016-06-13',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -10,
+        'request_type': 'sickness',
         "dates": [
           {
             "id": "38",
@@ -206,6 +211,10 @@ define([
         'to_date': '2016-01-01',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -1,
+        'request_type': 'toil',
+        'toil_duration': '181',
+        'toil_expiry_date': '2017-05-25',
+        'toil_to_accrue': '1',
         "dates": [
           {
             "id": "49",

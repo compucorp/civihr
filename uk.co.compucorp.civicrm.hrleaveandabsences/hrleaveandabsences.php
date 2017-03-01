@@ -270,18 +270,6 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern',
     'table' => 'civicrm_hrleaveandabsences_contact_work_pattern',
   ];
-
-  $entityTypes[] = [
-    'name'  => 'SicknessRequest',
-    'class' => 'CRM_HRLeaveAndAbsences_DAO_SicknessRequest',
-    'table' => 'civicrm_hrleaveandabsences_sickness_request',
-  ];
-
-  $entityTypes[] = [
-    'name'  => 'TOILRequest',
-    'class' => 'CRM_HRLeaveAndAbsences_DAO_TOILRequest',
-    'table' => 'civicrm_hrleaveandabsences_toil_request',
-  ];
 }
 
 /**

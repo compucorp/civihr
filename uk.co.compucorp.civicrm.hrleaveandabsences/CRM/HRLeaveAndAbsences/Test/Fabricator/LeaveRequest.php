@@ -13,9 +13,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
 
     $leaveRequest = LeaveRequest::create($params);
     if($withBalanceChanges) {
-      foreach($leaveRequest->getDates() as $date) {
-        LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
-      }
+      LeaveBalanceChangeFabricator::fabricateForLeaveRequest($leaveRequest);
     }
 
     return $leaveRequest;
@@ -34,9 +32,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
     $leaveRequest =  LeaveRequest::create($params, false);
 
     if ($withBalanceChanges) {
-      foreach ($leaveRequest->getDates() as $date) {
-        LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
-      }
+      LeaveBalanceChangeFabricator::fabricateForLeaveRequest($leaveRequest);
     }
 
     return $leaveRequest;
@@ -46,6 +42,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
     $defaultParams = [
       'status_id' => self::getStatusId('Approved'),
       'from_date_type' => self::getDayTypeId('All Day'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
 
     if(!empty($params['to_date']) && empty($params['to_date_type'])) {

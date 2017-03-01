@@ -8,9 +8,6 @@ use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
-
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest
@@ -58,6 +55,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ], false);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
@@ -88,6 +86,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
 
     $leaveRequest = $this->getleaveRequestService()->create($params, false);
@@ -233,6 +232,88 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   /**
+   * @dataProvider openLeaveRequestStatusesDataProvider
+   */
+  public function testCreateDoesNotThrowAnExceptionWhenLeaveManagerUpdatesDatesForAnOpenSicknessRequest($status) {
+    $params = $this->getDefaultParams([
+      'contact_id' => 5,
+      'status_id' => $status,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $toDate = new DateTime($params['to_date']);
+    $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
+    $params['id'] = $leaveRequest->id;
+
+    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
+  }
+
+  /**
+   * @dataProvider openLeaveRequestStatusesDataProvider
+   */
+  public function testCreateDoesNotThrowAnExceptionWhenAdminUpdatesDatesForAnOpenSicknessRequest($status) {
+    $params = $this->getDefaultParams([
+      'contact_id' => 5,
+      'status_id' => $status,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $toDate = new DateTime($params['to_date']);
+    $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
+    $params['id'] = $leaveRequest->id;
+
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+  }
+
+  /**
+   * @dataProvider closedLeaveRequestStatusesDataProvider
+   *
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage You are not allowed to change the request dates
+   */
+  public function testCreateThrowsAnExceptionWhenLeaveManagerUpdatesDatesForAClosedSicknessRequest($status) {
+    $params = $this->getDefaultParams([
+      'contact_id' => 5,
+      'status_id' => $status,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $toDate = new DateTime($params['to_date']);
+    $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
+    $params['id'] = $leaveRequest->id;
+
+    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
+  }
+
+  /**
+   * @dataProvider closedLeaveRequestStatusesDataProvider
+   *
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage You are not allowed to change the request dates
+   */
+  public function testCreateThrowsAnExceptionWhenAdminUpdatesDatesForAClosedSicknessRequest($status) {
+    $params = $this->getDefaultParams([
+      'contact_id' => 5,
+      'status_id' => $status,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $toDate = new DateTime($params['to_date']);
+    $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
+    $params['id'] = $leaveRequest->id;
+
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+  }
+
+  /**
    * @expectedException RuntimeException
    * @expectedExceptionMessage You are not allowed to change the type of a request
    */
@@ -313,6 +394,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
     return array_merge($defaultParams, $params);
   }

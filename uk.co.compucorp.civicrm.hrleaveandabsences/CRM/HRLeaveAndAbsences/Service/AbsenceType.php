@@ -2,7 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
-use CRM_HRLeaveAndAbsences_BAO_TOILRequest as TOILRequest;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
 class CRM_HRLeaveAndAbsences_Service_AbsenceType {
 
@@ -26,6 +26,6 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceType {
   private function onToilDisable(AbsenceType $absenceType) {
     $currentPeriod = AbsencePeriod::getCurrentPeriod();
     $startDate = new DateTime($currentPeriod->start_date);
-    TOILRequest::deleteAllForAbsenceType($absenceType->id, $startDate, null, true);
+    LeaveRequest::deleteAllNonExpiredTOILRequestsForAbsenceType($absenceType->id, $startDate);
   }
 }

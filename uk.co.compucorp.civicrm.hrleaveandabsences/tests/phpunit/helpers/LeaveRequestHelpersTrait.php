@@ -41,6 +41,26 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
     return $this->leaveRequestStatuses;
   }
 
+  public function openLeaveRequestStatusesDataProvider() {
+    $leaveRequestStatuses = $this->getLeaveRequestStatuses();
+
+    return [
+      [$leaveRequestStatuses['More Information Requested']['id']],
+      [$leaveRequestStatuses['Waiting Approval']['id']],
+    ];
+  }
+
+  public function closedLeaveRequestStatusesDataProvider() {
+    $leaveRequestStatuses = $this->getLeaveRequestStatuses();
+
+    return [
+      [$leaveRequestStatuses['Cancelled']['id']],
+      [$leaveRequestStatuses['Rejected']['id']],
+      [$leaveRequestStatuses['Admin Approved']['id']],
+      [$leaveRequestStatuses['Approved']['id']],
+    ];
+  }
+
   protected function createAttachmentForLeaveRequest($params) {
     $defaultParams = [
       'entity_table' => LeaveRequest::getTableName(),

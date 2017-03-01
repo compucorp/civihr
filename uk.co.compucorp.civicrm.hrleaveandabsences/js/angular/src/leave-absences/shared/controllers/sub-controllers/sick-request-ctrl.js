@@ -4,17 +4,16 @@ define([
   'leave-absences/shared/controllers/request-ctrl',
   'leave-absences/shared/models/instances/sickness-leave-request-instance',
 ], function (_, controllers) {
-  controllers.controller('SickRequestCtrl', [
+  controllers.controller('SicknessRequestCtrl', [
     '$controller', '$log', '$q', '$uibModalInstance', 'api.optionGroup', 'directiveOptions', 'SicknessRequestInstance',
     function ($controller, $log, $q, $modalInstance, OptionGroup, directiveOptions, SicknessRequestInstance) {
-      $log.debug('SickRequestCtrl');
+      $log.debug('SicknessRequestCtrl');
 
       var parentRequestCtrl = $controller('RequestCtrl'),
         vm = Object.create(parentRequestCtrl);
 
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
-      vm.leaveType = 'sick';
       vm.initParams = {
         absenceType: {
           is_sick: true
@@ -27,7 +26,7 @@ define([
        * @return {Boolean}
        */
       vm.canSubmit = function () {
-        return parentRequestCtrl.canSubmit.call(this) && !!vm.request.reason;
+        return parentRequestCtrl.canSubmit.call(this) && !!vm.request.sickness_reason;
       };
 
       /**
@@ -47,7 +46,7 @@ define([
        */
       vm._reset = function () {
         parentRequestCtrl._reset.call(this);
-        vm.request.reason = null;
+        vm.request.sickness_reason = null;
       };
 
       /**

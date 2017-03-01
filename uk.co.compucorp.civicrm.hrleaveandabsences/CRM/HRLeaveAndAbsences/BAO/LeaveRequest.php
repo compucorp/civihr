@@ -15,6 +15,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
   use CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait;
 
+  const REQUEST_TYPE_LEAVE = 'leave';
+  const REQUEST_TYPE_SICKNESS = 'sickness';
+  const REQUEST_TYPE_TOIL = 'toil';
+  const REQUEST_TYPE_PUBLIC_HOLIDAY = 'public_holiday';
+
   /**
    * Create a new LeaveRequest based on array-data
    *
@@ -62,8 +67,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    */
   public static function validateParams($params) {
     self::validateMandatory($params);
+    self::validateRequestType($params);
+    self::validateTOILFieldsBasedOnRequestType($params);
+    self::validateSicknessFieldsBasedOnRequestType($params);
+    self::validateAbsenceTypeIsActiveAndValid($params);
+    self::validateTOILRequest($params);
     self::validateStartDateNotGreaterThanEndDate($params);
-    self::validateAbsenceTypeIsActive($params);
     self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params);
     self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params);
     self::validateAbsencePeriod($params);
@@ -83,60 +92,242 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateMandatory($params) {
-    if (empty($params['from_date'])) {
+    $mandatoryFields = [
+      'from_date',
+      'from_date_type',
+      'contact_id',
+      'type_id',
+      'status_id',
+      'to_date',
+      'to_date_type',
+      'request_type'
+    ];
+
+    foreach($mandatoryFields as $field) {
+      if (empty($params[$field])) {
+        throw new InvalidLeaveRequestException(
+          "The {$field} field should not be empty",
+          "leave_request_empty_{$field}",
+          $field
+        );
+      }
+    }
+  }
+
+  /**
+   * Validates the values of the request_type field
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateRequestType($params) {
+    $validRequestTypes = [
+      self::REQUEST_TYPE_LEAVE,
+      self::REQUEST_TYPE_SICKNESS,
+      self::REQUEST_TYPE_TOIL,
+      self::REQUEST_TYPE_PUBLIC_HOLIDAY
+    ];
+
+    if(!in_array($params['request_type'], $validRequestTypes)) {
       throw new InvalidLeaveRequestException(
-        'Leave Requests should have a start date',
-        'leave_request_empty_from_date',
+        'The request_type is invalid',
+        'leave_request_invalid_request_type',
+        'request_type'
+      );
+    }
+  }
+
+  /**
+   * Validates the TOIL mandatory fields according to the value of request_type.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateTOILFieldsBasedOnRequestType($params) {
+    $toilRequiredFields = [ 'toil_duration', 'toil_to_accrue' ];
+    $toilFields = array_merge($toilRequiredFields, [ 'toil_expiry_date' ]);
+
+    if(self::REQUEST_TYPE_TOIL == $params['request_type']) {
+      foreach($toilRequiredFields as $requiredField) {
+        if(empty($params[$requiredField])) {
+          throw new InvalidLeaveRequestException(
+            "The {$requiredField} can not be empty when request_type is toil",
+            "leave_request_empty_{$requiredField}",
+            $requiredField
+          );
+        }
+      }
+    } else {
+      foreach($toilFields as $field) {
+        if(!empty($params[$field])) {
+          throw new InvalidLeaveRequestException(
+            "The {$field} should be empty when request_type is not toil",
+            "leave_request_non_empty_{$field}",
+            $field
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Runs all the validations specific for TOIL Requests
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateTOILRequest($params) {
+    if($params['request_type'] !== self::REQUEST_TYPE_TOIL) {
+      return;
+    }
+
+    self::validateTOILToAccrueIsAValidOptionValue($params);
+    self::validateTOILPastDays($params);
+    self::validateTOILToAccruedAmountIsValid($params);
+  }
+
+  /**
+   * Validates if the value passed to the TOIL To Accrued field is one of the
+   * options available on the hrleaveandabsences_toil_amounts option group
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateTOILToAccrueIsAValidOptionValue($params) {
+    $toilAmountOptions = self::buildOptions('toil_to_accrue', 'validate');
+    if(!array_key_exists($params['toil_to_accrue'], $toilAmountOptions)) {
+      throw new InvalidLeaveRequestException(
+        'The TOIL to accrue amount is not valid',
+        'leave_request_toil_to_accrue_is_invalid',
+        'toil_to_accrue'
+      );
+    }
+  }
+
+  /**
+   * Validate that the user cannot request TOIL for past days
+   * if the absence type is not set up as such.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateTOILPastDays($params) {
+    $absenceType = AbsenceType::findById($params['type_id']);
+
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
+    $todayDate = new DateTime('today');
+    $leaveDatesHasPastDates = $fromDate < $todayDate || $toDate < $todayDate;
+
+    if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past) {
+      throw new InvalidLeaveRequestException(
+        'You cannot request TOIL for past days',
+        'leave_request_toil_cannot_be_requested_for_past_days',
         'from_date'
       );
     }
+  }
 
-    if (empty($params['from_date_type'])) {
+  /**
+   * Validate that the TOIL amount to be accrued plus total approved accrued TOIL for the period
+   * is not greater than the maximum defined(if any) for the Absence Type
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateTOILToAccruedAmountIsValid($params) {
+    $absenceType = AbsenceType::findById($params['type_id']);
+    $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual != 0;
+
+    $periodContainingToilDates = AbsencePeriod::getPeriodContainingDates(
+      new DateTime($params['from_date']),
+      new DateTime($params['to_date'])
+    );
+
+    $totalApprovedToilForPeriod = self::getTotalApprovedToilForPeriod(
+      $periodContainingToilDates,
+      $params['contact_id'],
+      $params['type_id']
+    );
+    $totalProjectedToilForPeriod = $totalApprovedToilForPeriod + $params['toil_to_accrue'];
+
+    if ($totalProjectedToilForPeriod > $absenceType->max_leave_accrual && !$unlimitedAccrual) {
       throw new InvalidLeaveRequestException(
-        'The type of From Date should not be empty',
-        'leave_request_empty_from_date_type',
-        'from_date_type'
+        'The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type',
+        'leave_request_toil_amount_more_than_maximum_for_absence_type',
+        'toil_to_accrue'
       );
     }
+  }
 
-    if (empty($params['contact_id'])) {
-      throw new InvalidLeaveRequestException(
-        'Leave Request should have a contact',
-        'leave_request_empty_contact_id',
-        'contact_id'
-      );
-    }
+  /**
+   * This method returns the total sum of TOIL accrued for an absence type by a contact
+   * over a given absence period
+   *
+   * @param int $contactID
+   * @param int $typeID
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $period
+   *
+   * @return float
+   */
+  private static function getTotalApprovedToilForPeriod(AbsencePeriod $period, $contactID, $typeID) {
+    $leaveRequestStatuses = array_flip(self::buildOptions('status_id'));
 
-    if (empty($params['type_id'])) {
-      throw new InvalidLeaveRequestException(
-        'Leave Request should have an Absence Type',
-        'leave_request_empty_type_id',
-        'type_id'
-      );
-    }
+    $leaveRequestStatusFilter = [
+      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['Admin Approved']
+    ];
 
-    if (empty($params['status_id'])) {
-      throw new InvalidLeaveRequestException(
-        'The Leave Request status should not be empty',
-        'leave_request_empty_status_id',
-        'status_id'
-      );
-    }
+    $totalApprovedTOIL = LeaveBalanceChange::getTotalTOILBalanceChangeForContact(
+      $contactID,
+      $typeID,
+      new DateTime($period->start_date),
+      new DateTime($period->end_date),
+      $leaveRequestStatusFilter
+    );
 
-    if (empty($params['to_date'])) {
-      throw new InvalidLeaveRequestException(
-        'Leave Requests should have an end date',
-        'leave_request_empty_to_date',
-        'to_date'
-      );
-    }
+    return $totalApprovedTOIL;
+  }
 
-    if (empty($params['to_date_type'])) {
-      throw new InvalidLeaveRequestException(
-        'The type of To Date should not be empty',
-        'leave_request_empty_to_date_type',
-        'to_date_type'
-      );
+  /**
+   * Validates the Sickness mandatory fields according to the value of request_type.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateSicknessFieldsBasedOnRequestType($params) {
+    $sicknessRequiredFields = [ 'sickness_reason' ];
+    $sicknessFields = array_merge($sicknessRequiredFields, ['sickness_required_documents']);
+
+    if(self::REQUEST_TYPE_SICKNESS == $params['request_type']) {
+      foreach($sicknessRequiredFields as $requiredField) {
+        if(empty($params[$requiredField])) {
+          throw new InvalidLeaveRequestException(
+            "The {$requiredField} can not be empty when request_type is sickness",
+            "leave_request_empty_{$requiredField}",
+            $requiredField
+          );
+        }
+      }
+    } else {
+      foreach($sicknessFields as $field) {
+        if(!empty($params[$field])) {
+          throw new InvalidLeaveRequestException(
+            "The {$field} should be empty when request_type is not sickness",
+            "leave_request_non_empty_{$field}",
+            $field
+          );
+        }
+      }
     }
   }
 
@@ -401,14 +592,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * This method validates that the absence type is active
+   * This method validates that the absence type is active and is valid for the
+   * type of request. That is, if this is a Sickness Request, then only absence
+   * types where is_sick is set can be used. If it's a TOIL Request, then only
+   * absence types where allow_accruals_request is set can be used.
    *
    * @param array $params
    *   The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateAbsenceTypeIsActive($params) {
+  private static function validateAbsenceTypeIsActiveAndValid($params) {
     $absenceType = AbsenceType::findById($params['type_id']);
 
     if (!$absenceType->is_active) {
@@ -417,6 +611,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         'leave_request_absence_type_not_active',
         'type_id'
       );
+    }
+
+    if($params['request_type'] === self::REQUEST_TYPE_SICKNESS && !$absenceType->is_sick) {
+      throw new InvalidLeaveRequestException(
+        'This absence type does not allow sickness requests',
+        'leave_request_invalid_sickness_absence_type',
+        'type_id'
+      );
+    }
+
+    if($params['request_type'] === self::REQUEST_TYPE_TOIL && !$absenceType->allow_accruals_request) {
+      throw new InvalidLeaveRequestException(
+        'This absence type does not allow TOIL requests',
+        'leave_request_invalid_toil_absence_type',
+        'type_id'
+      );
+
     }
   }
 
@@ -431,33 +642,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|null
    */
   public static function findPublicHolidayLeaveRequest($contactID, PublicHoliday $publicHoliday) {
-    $leaveRequestTable = self::getTableName();
-    $leaveRequestDateTable = LeaveRequestDate::getTableName();
-    $leaveBalanceChangeTable = LeaveBalanceChange::getTableName();
+    $leaveRequest = new self();
+    $leaveRequest->contact_id = (int)$contactID;
+    $leaveRequest->from_date = date('Ymd', strtotime($publicHoliday->date));
+    $leaveRequest->request_type = self::REQUEST_TYPE_PUBLIC_HOLIDAY;
 
-    $query = "
-      SELECT lr.* FROM {$leaveRequestTable} lr
-      INNER JOIN {$leaveRequestDateTable} lrd 
-        ON lrd.leave_request_id = lr.id
-      INNER JOIN {$leaveBalanceChangeTable} lbc
-        ON lbc.source_id = lrd.id AND lbc.source_type = %1
-      WHERE lr.contact_id = %2 AND 
-            lrd.date = %3 AND
-            lbc.type_id = %4
-    ";
-
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
-
-    $params = [
-      1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
-      2 => [$contactID, 'Integer'],
-      3 => [CRM_Utils_Date::processDate($publicHoliday->date, null, false, 'Y-m-d'), 'String'],
-      4 => [$balanceChangeTypes['Public Holiday'], 'Integer']
-    ];
-
-    $leaveRequest = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
-
-    if($leaveRequest->N == 1) {
+    $leaveRequest->find(true);
+    if($leaveRequest->id) {
       $leaveRequest->fetch();
 
       return $leaveRequest;
@@ -506,16 +697,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     if ($excludePublicHolidayLeaveRequests) {
-      $query .= " AND lbc.type_id != %5";
+      $query .= " AND lr.request_type != %5";
     }
-
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
 
     $params = [
       1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
       2 => [$contactID, 'Integer'],
       3 => [CRM_Utils_Date::processDate($fromDate, null, false, 'Y-m-d'), 'String'],
-      5 => [$balanceChangeTypes['Public Holiday'], 'Integer']
+      5 => [self::REQUEST_TYPE_PUBLIC_HOLIDAY, 'String']
     ];
     if (!empty($toDate)) {
       $params[4] = [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String'];
@@ -738,6 +927,42 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       ];
     }
     return $leaveRequestDayTypeOptionsGroup;
+  }
+
+  /**
+   * Deletes the TOIL Requests associated with an Absence Type (within the given Absence Period)
+   * and all their LeaveBalanceChanges and LeaveRequestDates.
+   *
+   * @param int $absenceTypeID
+   *   The absence Type that TOIL requests is to be deleted for.
+   * @param DateTime $startDate
+   *   Records linked to LeaveRequests with from_date >= this date will be deleted
+   */
+  public static function deleteAllNonExpiredTOILRequestsForAbsenceType($absenceTypeID, DateTime $startDate) {
+    $leaveBalanceChangeTable = LeaveBalanceChange::getTableName();
+    $leaveRequestTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+
+    $query = "DELETE bc, lrd, lr 
+              FROM {$leaveRequestTable} lr
+              INNER JOIN {$leaveRequestDateTable} lrd 
+                ON lrd.leave_request_id = lr.id 
+              INNER JOIN {$leaveBalanceChangeTable} bc 
+                ON bc.source_id = lrd.id AND bc.source_type = %1 
+              WHERE lr.type_id = %2 AND 
+                    lr.from_date >= %3 AND 
+                    lr.request_type = %4 AND
+                    lr.toil_expiry_date > %5
+              ";
+    $params = [
+      1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$absenceTypeID, 'Integer'],
+      3 => [$startDate->format('Y-m-d'), 'String'],
+      4 => [self::REQUEST_TYPE_TOIL, 'String'],
+      5 => [date('Y-m-d'), 'String']
+    ];
+
+    CRM_Core_DAO::executeQuery($query, $params);
   }
 
   /**

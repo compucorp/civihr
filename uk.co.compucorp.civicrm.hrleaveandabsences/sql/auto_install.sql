@@ -332,6 +332,12 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_request` (
      `from_date_type` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Request Day Type option group',
      `to_date` date NOT NULL   COMMENT 'The date the leave request ends',
      `to_date_type` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Request Day Type option group',
+     `sickness_reason` varchar(512)    COMMENT 'One of the values of the Sickness Reason option group',
+     `sickness_required_documents` varchar(10)    COMMENT 'A list of values from the LeaveRequestRequiredDocument option group',
+     `toil_duration` int unsigned    COMMENT 'The duration of the overtime work in minutes',
+     `toil_to_accrue` int unsigned    COMMENT 'The amount of days accrued for this toil request',
+     `toil_expiry_date` date    COMMENT 'The expiry date of this TOIL Request. When null, it means it never expires.',
+     `request_type` varchar(20) NOT NULL   COMMENT 'The type of this request (leave, toil, sickness etc)',
     PRIMARY KEY ( `id` ),
     CONSTRAINT FK_civicrm_hrlaa_leave_request_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
     CONSTRAINT FK_civicrm_hrlaa_leave_request_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
@@ -374,39 +380,4 @@ CREATE TABLE `civicrm_hrleaveandabsences_contact_work_pattern` (
     UNIQUE INDEX `unique_pattern_per_effective_date`(contact_id, effective_date),
     CONSTRAINT FK_civicrm_hrlaa_contact_work_pattern_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,
     CONSTRAINT FK_civicrm_hrlaa_contact_work_pattern_pattern_id FOREIGN KEY (`pattern_id`) REFERENCES `civicrm_hrleaveandabsences_work_pattern`(`id`) ON DELETE CASCADE
-)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
-
--- /*******************************************************
--- *
--- * civicrm_hrleaveandabsences_sickness_request
--- *
--- * Sickness Request
--- *
--- *******************************************************/
-CREATE TABLE `civicrm_hrleaveandabsences_sickness_request` (
-
-
-     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique SicknessRequest ID',
-     `leave_request_id` int unsigned NOT NULL   COMMENT 'FK to LeaveRequest',
-     `reason` varchar(512) NOT NULL   COMMENT 'One of the values of the Sickness Reason option group',
-     `required_documents` varchar(10)    COMMENT 'A list of values from the LeaveRequestRequiredDocument option group',
-    PRIMARY KEY ( `id` ),
-    CONSTRAINT FK_civicrm_hrleaveandabsences_sickness_request_leave_request_id FOREIGN KEY (`leave_request_id`) REFERENCES `civicrm_hrleaveandabsences_leave_request`(`id`) ON DELETE CASCADE
-)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
-
--- /*******************************************************
--- *
--- * civicrm_hrleaveandabsences_toil_request
--- *
--- * TOIL Request
--- *
--- *******************************************************/
-CREATE TABLE `civicrm_hrleaveandabsences_toil_request` (
-
-
-     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique TOILRequest ID',
-     `leave_request_id` int unsigned NOT NULL   COMMENT 'FK to LeaveRequest',
-     `duration` int unsigned NOT NULL   COMMENT 'The duration of the overtime work in minutes',
-    PRIMARY KEY ( `id` ),
-    CONSTRAINT FK_civicrm_hrleaveandabsences_toil_request_leave_request_id FOREIGN KEY (`leave_request_id`) REFERENCES `civicrm_hrleaveandabsences_leave_request`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

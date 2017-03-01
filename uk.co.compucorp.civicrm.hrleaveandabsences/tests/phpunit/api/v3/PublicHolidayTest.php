@@ -1,7 +1,6 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
-use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 
 /**

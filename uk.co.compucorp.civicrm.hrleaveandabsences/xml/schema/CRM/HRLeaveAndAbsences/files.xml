@@ -13,6 +13,4 @@
     <xi:include href="LeaveRequest.xml" parse="xml" />
     <xi:include href="LeaveRequestDate.xml" parse="xml" />
     <xi:include href="ContactWorkPattern.xml" parse="xml" />
-    <xi:include href="SicknessRequest.xml" parse="xml" />
-    <xi:include href="TOILRequest.xml" parse="xml" />
 </tables>

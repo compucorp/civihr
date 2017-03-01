@@ -53,7 +53,11 @@ define([
     describe('default values', function () {
       it('comments are empty', function () {
         expect(LeaveRequestInstance.comments.length).toBe(0);
-      })
+      });
+
+      it('initializes request type', function() {
+        expect(LeaveRequestInstance.request_type).toEqual('leave');
+      });
     });
 
     describe('status change methods', function () {
