@@ -46,7 +46,7 @@ define([
           breakdown: []
         }
       };
-      this.comments = {
+      this.comment = {
         text: '',
         contacts: {}
       };
@@ -109,9 +109,9 @@ define([
           contact_id: this.directiveOptions.contactId,
           created_at: moment(new Date()).format(sharedSettings.serverDateTimeFormat),
           leave_request_id: this.request.id,
-          text: this.comments.text
+          text: this.comment.text
         });
-        this.comments.text = '';
+        this.comment.text = '';
       };
 
       /**
@@ -209,8 +209,8 @@ define([
       this.getCommentorName = function (contact_id) {
         if(contact_id == this.directiveOptions.contactId) {
           return 'Me';
-        } else if(this.comments.contacts[contact_id]) {
-          return this.comments.contacts[contact_id].display_name;
+        } else if(this.comment.contacts[contact_id]) {
+          return this.comment.contacts[contact_id].display_name;
         }
       };
 
@@ -949,7 +949,7 @@ define([
           page: 1,
           size: 0
         }).then(function (contacts) {
-          self.comments.contacts = _.indexBy(contacts.list, 'contact_id');
+          self.comment.contacts = _.indexBy(contacts.list, 'contact_id');
         });
       }
 

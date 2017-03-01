@@ -103,11 +103,11 @@
       describe('when initialized', function () {
         describe('comments', function () {
           it('text is empty', function () {
-            expect($ctrl.comments.text).toBe('');
+            expect($ctrl.comment.text).toBe('');
           });
 
           it('contacts is not loaded', function () {
-            expect($ctrl.comments.contacts).toEqual({});
+            expect($ctrl.comment.contacts).toEqual({});
           });
         });
 
@@ -254,7 +254,7 @@
         beforeEach(function() {
           $ctrl.request.comments = [];
           $ctrl.directiveOptions.contactId = '101';
-          $ctrl.comments.text = 'some text';
+          $ctrl.comment.text = 'some text';
           $ctrl.request.id = '102';
           $ctrl.addComment();
         });
@@ -273,7 +273,7 @@
         });
 
         it('clears the comment text box', function () {
-          expect($ctrl.comments.text).toBe('');
+          expect($ctrl.comment.text).toBe('');
         });
       });
 
@@ -308,7 +308,7 @@
 
           beforeEach(function() {
             $ctrl.directiveOptions.contactId = '101';
-            $ctrl.comments.contacts = {
+            $ctrl.comment.contacts = {
               102: {
                 display_name: displayName
               }

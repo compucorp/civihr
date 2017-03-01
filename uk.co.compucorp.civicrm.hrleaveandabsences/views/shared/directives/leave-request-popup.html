@@ -138,13 +138,13 @@
                 text-angular
                 prevent-animations
                 ta-toolbar="[['bold','italics','underline']]"
-                ng-model="$ctrl.comments.text"></div>
+                ng-model="$ctrl.comment.text"></div>
               <div class="chr_wysiwyg__action">
                 <hr/>
                 <button
                   class="btn btn-link"
                   ng-click="$ctrl.addComment()"
-                  ng-disabled="$ctrl.comments.text.length === 0">
+                  ng-disabled="$ctrl.comment.text.length === 0">
                   <i class="fa fa-comment-o" aria-hidden="true"></i>
                   Add comment
                 </button>
