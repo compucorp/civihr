@@ -20,3 +20,18 @@ body,
 %open-sans-font-family {
   font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
 }
+.page-civicrm-contact-view #crm-contact-actions-list .crm-contact-actions-list-inner ul{
+	overflow-y:auto;
+}
+#crm-contact-actions-list {
+  width: 525px;
+}
+#crm-contact-actions-list .crm-contact_actions-list {
+  margin-left: 175px;
+  margin-right: 175px;
+}
+#crm-contact-actions-list .crm-contact_activities-list,
+#crm-contact-actions-list .crm-contact_print-list,
+#crm-contact-actions-list .crm-contact_actions-list {
+  width: 175px;
+}
