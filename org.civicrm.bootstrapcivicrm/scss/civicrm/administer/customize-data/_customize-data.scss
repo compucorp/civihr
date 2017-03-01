@@ -99,14 +99,6 @@
         }
       }
     }
-  }
-
-  .ui-dialog-content {
-    tr {
-      > td:first-child {
-        padding-left: 0 !important;
-      }
-    }
 
     #showoption {
       > td {
@@ -126,9 +118,30 @@
         padding-left: 0;
       }
 
+      > td {
+        padding: 0 20px;
+      }
+
       .crm-form-text {
         min-width: 150px !important;
         width: 150px !important;
+      }
+
+      #optionField {
+        @include mx-expandable-table();
+        margin: 20px 0;
+
+        td {
+          padding: 10px 20px !important;
+        }
+      }
+    }
+  }
+
+  .ui-dialog-content {
+    tr {
+      > td:first-child {
+        padding-left: 0 !important;
       }
     }
   }
