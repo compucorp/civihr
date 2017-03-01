@@ -221,7 +221,10 @@ define([
         defer.resolve(jasmine.any(Object));
         spyOn(LeaveRequestInstance, 'toAPI').and.returnValue(toAPIReturnValue);
         LeaveRequestInstance.comments = commentsData.getCommentsWithMixedIDs().values;
-        LeaveRequestInstance.commentsToBeDeleted = commentsData.getComments().values;
+
+        var commentToBeDeleted = commentsData.getComments().values[0];
+        commentToBeDeleted.toBeDeleted = true;
+        LeaveRequestInstance.comments.push(commentToBeDeleted);
 
         promise = LeaveRequestInstance.update();
       });
@@ -254,8 +257,10 @@ define([
 
       it('calls API to delete the comments marked for deletion', function () {
         promise.then(function () {
-          commentsData.getComments().values.map(function (comment) {
-            expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
+          LeaveRequestInstance.comments.map(function (comment) {
+            if(comment.toBeDeleted) {
+              expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
+            }
           });
         });
       });
@@ -268,7 +273,11 @@ define([
         requestData = helper.createRandomLeaveRequest();
         instance = LeaveRequestInstance.init(requestData, false);
         instance.comments = commentsData.getCommentsWithMixedIDs().values;
-        instance.commentsToBeDeleted = commentsData.getComments().values;
+
+        var commentToBeDeleted = commentsData.getComments().values[0];
+        commentToBeDeleted.toBeDeleted = true;
+        instance.comments.push(commentToBeDeleted);
+
         instanceCreate = instance.create();
       });
 
@@ -303,8 +312,10 @@ define([
 
       it('calls API to delete the comments marked for deletion', function () {
         instanceCreate.then(function () {
-          commentsData.getComments().values.map(function (comment) {
-            expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
+          instance.comments.map(function (comment) {
+            if(comment.toBeDeleted) {
+              expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
+            }
           });
         });
       });

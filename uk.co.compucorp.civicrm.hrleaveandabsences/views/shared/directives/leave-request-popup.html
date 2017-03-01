@@ -116,11 +116,11 @@
                 src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
             </uib-tab>
             <uib-tab heading="Comments">
-              <div class="text-center chr_leave-request-modal__comments_empty" ng-show="$ctrl.request.comments.length === 0">
+              <div class="text-center chr_leave-request-modal__comments_empty" ng-show="$ctrl.getActiveComments().length === 0">
                 No comments available. Comments can be added below.
               </div>
-              <div class="chr_leave-request-modal__comments" ng-hide="$ctrl.request.comments.length === 0">
-                <div class="chr_leave-request-comment" ng-repeat="comment in $ctrl.request.comments | orderBy: $ctrl.orderComment : true">
+              <div class="chr_leave-request-modal__comments" ng-hide="$ctrl.getActiveComments().length === 0">
+                <div class="chr_leave-request-comment" ng-repeat="comment in $ctrl.getActiveComments() | orderBy: $ctrl.orderComment : true">
                   <div class="chr_leave-request-comment__meta">
                     <span class="chr_leave-request-comment__author">{{$ctrl.getCommentorName(comment.contact_id)}}</span>
                     <span> - </span>

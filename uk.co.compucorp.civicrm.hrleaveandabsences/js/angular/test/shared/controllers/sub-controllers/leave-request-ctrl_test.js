@@ -352,7 +352,7 @@
           });
 
           it('marks the comment for deletion', function() {
-            expect($ctrl.request.commentsToBeDeleted).toEqual([commentObject]);
+            expect(commentObject.toBeDeleted).toBe(true);
           });
         });
       });

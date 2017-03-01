@@ -215,6 +215,17 @@ define([
       };
 
       /**
+       * Returns the comments which are not marked for deletion
+       *
+       * @return {Array}
+       */
+      this.getActiveComments = function () {
+        return this.request.comments.filter(function (comment) {
+          return !comment.toBeDeleted;
+        });
+      };
+
+      /**
        * Checks if popup is opened in given leave type like `leave` or `sick` or 'toil'
        *
        * @param {String} leaveTypeParam to check the leave type of current request
@@ -265,14 +276,14 @@ define([
       };
 
       /**
-       * Removes a comment from memory, used as a angular filter
+       * Removes a comment from memory
        * @param {Object} commentObj - comment object
        */
       this.removeComment = function (commentObj) {
-        //If its an already saved comment, store it in another array
-        //for removal from server once SAVE is pressed
+        //If its an already saved comment, mark a toBeDeleted flag
         if(commentObj.comment_id) {
-          this.request.commentsToBeDeleted.push(commentObj);
+          commentObj.toBeDeleted = true;
+          return;
         }
 
         this.request.comments = _.reject(this.request.comments, function (comment) {

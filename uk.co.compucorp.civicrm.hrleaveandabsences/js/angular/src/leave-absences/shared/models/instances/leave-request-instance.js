@@ -69,18 +69,14 @@ define([
             //IIFE is created to keep actual value of 'index' when promise is resolved
             (function (index) {
               promises.push(LeaveRequestAPI.saveComment(self.id, comment)
-                .then(function (comment) {
-                  self.comments[index] = comment[0];
+                .then(function (commentData) {
+                  self.comments[index] = commentData;
                 }));
             })(index);
+          } else if(comment.toBeDeleted) {
+            promises.push(LeaveRequestAPI.deleteComment(comment.comment_id));
           }
         });
-
-        //Delete Comments
-        self.commentsToBeDeleted.map(function (comment) {
-          promises.push(LeaveRequestAPI.deleteComment(comment.comment_id));
-        });
-        self.commentsToBeDeleted = [];
 
         return $q.all(promises);
       }
