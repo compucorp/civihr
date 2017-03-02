@@ -29,8 +29,8 @@ class api_v3_ContactTest extends BaseHeadlessTest {
     $this->registerCurrentLoggedInContactInSession($this->manager['id']);
 
     $this->setLeaveApproverRelationshipTypes([
-      'approves leaves for',
-      'manages things for',
+      'has leaves approved by',
+      'has things managed by',
     ]);
   }
 
@@ -38,10 +38,10 @@ class api_v3_ContactTest extends BaseHeadlessTest {
     $contact3 = ContactFabricator::fabricate(['is_deleted' => 1]);
     $contact4 = ContactFabricator::fabricate(['is_deceased' => 1]);
 
-    $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'manages things for');
-    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1, null, null, true, 'approves leaves for');
-    $this->setContactAsLeaveApproverOf($this->manager, $contact3, null, null, true, 'approves leaves for');
-    $this->setContactAsLeaveApproverOf($this->manager, $contact4, null, null, true, 'manages things for');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'has things managed by');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1, null, null, true, 'has leaves approved by');
+    $this->setContactAsLeaveApproverOf($this->manager, $contact3, null, null, true, 'has leaves approved by');
+    $this->setContactAsLeaveApproverOf($this->manager, $contact4, null, null, true, 'has things managed by');
 
     $result = civicrm_api3('Contact', 'getleavemanagees');
 
@@ -54,7 +54,7 @@ class api_v3_ContactTest extends BaseHeadlessTest {
   }
 
   public function testGetLeaveManageesDoesNotReturnFilteredOutFields() {
-    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1, null, null, true, 'manages things for');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1, null, null, true, 'has things managed by');
 
     $result = civicrm_api3('Contact', 'getleavemanagees');
 
@@ -68,7 +68,7 @@ class api_v3_ContactTest extends BaseHeadlessTest {
   }
 
   public function testGetLeaveManageesDoesNotReturnFilteredOutFieldsWhenFilteredOutFieldsArePartOfFieldsToReturn() {
-    $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'manages things for');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'has things managed by');
 
     $result = civicrm_api3('Contact', 'getleavemanagees', [
       'return' => ['id','hash', 'display_name', 'created_date', 'modified_date']
@@ -87,9 +87,9 @@ class api_v3_ContactTest extends BaseHeadlessTest {
     $contact3 = ContactFabricator::fabricate();
     $manager2 = ContactFabricator::fabricate();
 
-    $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'manages things for');
-    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1, null, null, true, 'approves leaves for');
-    $this->setContactAsLeaveApproverOf($manager2, $contact3, null, null, true, 'approves leaves for');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'has things managed by');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1, null, null, true, 'has leaves approved by');
+    $this->setContactAsLeaveApproverOf($manager2, $contact3, null, null, true, 'has leaves approved by');
 
     $result = civicrm_api3('Contact', 'getleavemanagees');
 

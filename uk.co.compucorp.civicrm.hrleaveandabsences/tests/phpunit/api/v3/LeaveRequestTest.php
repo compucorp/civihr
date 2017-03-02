@@ -2787,8 +2787,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testGetAndGetFullReturnsOnlyDataLinkedToContactsThatLoggedInUserManagesWhenLoggedInUserIsALeaveApproverWithOneOfTheAvailableRelationships() {
     $this->setLeaveApproverRelationshipTypes([
-      'approves leaves for',
-      'manages things for',
+      'has leaves approved by',
+      'has things managed by',
     ]);
 
     $manager1 = ContactFabricator::fabricate();
@@ -2797,9 +2797,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $contact2 = ContactFabricator::fabricate();
     $contact3 = ContactFabricator::fabricate();
 
-    $this->setContactAsLeaveApproverOf($manager1, $contact2, null, null, true, 'manages things for');
-    $this->setContactAsLeaveApproverOf($manager2, $contact1, null, null, true, 'approves leaves for');
-    $this->setContactAsLeaveApproverOf($manager2, $contact3, null, null, true, 'manages leaves for');
+    $this->setContactAsLeaveApproverOf($manager1, $contact2, null, null, true, 'has things managed by');
+    $this->setContactAsLeaveApproverOf($manager2, $contact1, null, null, true, 'has leaves approved by');
+    $this->setContactAsLeaveApproverOf($manager2, $contact3, null, null, true, 'has leaves managed by');
 
     HRJobContractFabricator::fabricate(
       [ 'contact_id' => $contact2['id'] ],
@@ -2857,7 +2857,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
 
-    // Manager1 only manages contact2 (though the 'manages things for' relationship),
+    // Manager1 only manages contact2 (though the 'has things managed by' relationship),
     // so only contact2 leave requests will be returned
     $this->registerCurrentLoggedInContactInSession($manager1['id']);
     $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
@@ -2868,7 +2868,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(1, $result['count']);
     $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
 
-    // Manager2 manages contact1 (through the 'approves leaves for' relationship),
+    // Manager2 manages contact1 (through the 'has leaves approved by' relationship),
     // and contact3 (through the 'manage things for' relationship), so leave
     // requests from both should be returned
     $this->registerCurrentLoggedInContactInSession($manager2['id']);

@@ -425,8 +425,8 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
 
   public function testGetReturnsOnlyDataLinkedToContactsThatLoggedInUserManagesWhenLoggedInIsALeaveApproverWithOneOfTheAvailableRelationships() {
     $this->setLeaveApproverRelationshipTypes([
-      'approves leaves for',
-      'manages things for',
+      'has leaves approved by',
+      'has things managed by',
     ]);
 
     $manager1 = ContactFabricator::fabricate();
@@ -436,7 +436,7 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
     $contact3 = ContactFabricator::fabricate();
 
     $this->setContactAsLeaveApproverOf($manager1, $contact2, null, null, true, 'manage things for');
-    $this->setContactAsLeaveApproverOf($manager2, $contact1, null, null, true, 'approves leaves for');
+    $this->setContactAsLeaveApproverOf($manager2, $contact1, null, null, true, 'has leaves approved by');
     $this->setContactAsLeaveApproverOf($manager2, $contact3, null, null, true, 'manage things for');
 
     $entitlementContact1 = LeavePeriodEntitlementFabricator::fabricate([
@@ -459,14 +459,14 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
 
     CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
 
-    // Manager1 only manages contact2 (though the 'manages things for' relationship),
+    // Manager1 only manages contact2 (though the 'has things managed by' relationship),
     // so only contact2 leave requests will be returned
     $this->registerCurrentLoggedInContactInSession($manager1['id']);
     $result = civicrm_api3('LeavePeriodEntitlement', 'get', ['check_permissions' => true, 'sequential' => 1]);
     $this->assertEquals(1, $result['count']);
     $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
 
-    // Manager2 manages contact1 (through the 'approves leaves for' relationship),
+    // Manager2 manages contact1 (through the 'has leaves approved by' relationship),
     // and contact3 (through the 'manage things for' relationship), so the
     // entitlement for both will be returned
     $this->registerCurrentLoggedInContactInSession($manager2['id']);
