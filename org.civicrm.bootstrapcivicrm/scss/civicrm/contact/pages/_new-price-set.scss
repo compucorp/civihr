@@ -1,0 +1,34 @@
+.page-civicrm-admin-price {
+  .crm-container #crm-main-content-wrapper {
+    .CRM_Price_Form_Set {
+      .crm-form-block {
+        .crm-submit-buttons {
+          box-shadow: none;
+          background-color: $crm-white !important;
+          border-bottom: 1px solid $gray-lighter;
+        }
+
+        .form-layout {
+          margin: 20px 0;
+
+          td.label {
+            padding-left: 20px;
+            display: table-cell;
+            text-align: left;
+            width: 175px;
+          }
+
+          input.crm-form-text,
+          .crm-form-select,
+          .crm-form-textarea {
+            margin-top: 0 !important;
+          }
+
+          .crm-form-textarea {
+            min-height: 100px;
+          }
+        }
+      }
+    }
+  }
+}

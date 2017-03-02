@@ -43,6 +43,12 @@
   }
 }
 
+.required {
+  &:after {
+    display: none;
+  }
+}
+
 .crm-search-tasks {
   background-color: $crm-white;
   border-radius: 0;
