@@ -48,3 +48,28 @@
     display: none;
   }
 }
+
+.crm-search-tasks {
+  background-color: $crm-white;
+  border-radius: 0;
+  margin-bottom: 20px;
+  box-shadow: $box-shadow;
+
+  td {
+    padding: 10px 20px;
+  }
+
+  .font-size12pt {
+    font-size: $font-size-h2;
+    font-weight: 600;
+    color: $gray-darker;
+    padding-bottom: 10px;
+    width: auto !important;
+  }
+
+  .font-size11pt {
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $gray-darker;
+  }
+}

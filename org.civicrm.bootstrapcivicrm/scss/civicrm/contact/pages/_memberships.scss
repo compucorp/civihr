@@ -492,16 +492,6 @@
 }
 
 .page-civicrm-member-search {
-  .crm-search-tasks {
-    background-color: $crm-white;
-    border-radius: 0;
-    margin-bottom: 20px;
-
-    td {
-      padding: 10px 20px;
-    }
-  }
-
   .selector {
     @include mx-expandable-table();
   }
