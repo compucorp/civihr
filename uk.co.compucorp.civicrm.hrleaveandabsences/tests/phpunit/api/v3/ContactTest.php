@@ -71,7 +71,7 @@ class api_v3_ContactTest extends BaseHeadlessTest {
     $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'has things managed by');
 
     $result = civicrm_api3('Contact', 'getleavemanagees', [
-      'return' => ['id','hash', 'display_name', 'created_date', 'modified_date']
+      'return' => ['id', 'hash', 'display_name', 'created_date', 'modified_date']
     ]);
 
     //filtered put fields are hash, created_at, modified_at
@@ -93,7 +93,7 @@ class api_v3_ContactTest extends BaseHeadlessTest {
 
     $result = civicrm_api3('Contact', 'getleavemanagees');
 
-    //only the two contacts who are managed by the manager are returned
+    //only the two contacts who are managed by the current logged in manager are returned
     $this->assertEquals(2, $result['count']);
     $this->assertEquals($result['values'][$this->contact1['id']]['id'], $this->contact1['id']);
     $this->assertEquals($result['values'][$this->contact1['id']]['display_name'], $this->contact1['display_name']);
