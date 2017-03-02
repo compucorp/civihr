@@ -2,7 +2,6 @@
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 
-
 /**
  * Class api_v3_LeaveRequestTest
  *
@@ -55,7 +54,7 @@ class api_v3_ContactTest extends BaseHeadlessTest {
   }
 
   public function testGetLeaveManageesDoesNotReturnFilteredOutFields() {
-    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1, null, null, true, 'manages things for');;
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1, null, null, true, 'manages things for');
 
     $result = civicrm_api3('Contact', 'getleavemanagees');
 
@@ -71,7 +70,9 @@ class api_v3_ContactTest extends BaseHeadlessTest {
   public function testGetLeaveManageesDoesNotReturnFilteredOutFieldsWhenFilteredOutFieldsArePartOfFieldsToReturn() {
     $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'manages things for');
 
-    $result = civicrm_api3('Contact', 'getleavemanagees', ['return' => ['id','hash', 'display_name', 'created_date', 'modified_date']]);
+    $result = civicrm_api3('Contact', 'getleavemanagees', [
+      'return' => ['id','hash', 'display_name', 'created_date', 'modified_date']
+    ]);
 
     //filtered put fields are hash, created_at, modified_at
     $this->assertEquals(1, $result['count']);
@@ -80,5 +81,23 @@ class api_v3_ContactTest extends BaseHeadlessTest {
     $this->assertArrayNotHasKey('hash', $result['values'][$this->contact2['id']]);
     $this->assertArrayNotHasKey('created_date', $result['values'][$this->contact2['id']]);
     $this->assertArrayNotHasKey('modified_date', $result['values'][$this->contact2['id']]);
+  }
+
+  public function testGetLeaveManageesOnlyReturnsContactsManagedByTheCurrentLoggedInManager() {
+    $contact3 = ContactFabricator::fabricate();
+    $manager2 = ContactFabricator::fabricate();
+
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'manages things for');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1, null, null, true, 'approves leaves for');
+    $this->setContactAsLeaveApproverOf($manager2, $contact3, null, null, true, 'approves leaves for');
+
+    $result = civicrm_api3('Contact', 'getleavemanagees');
+
+    //only the two contacts who are managed by the manager are returned
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($result['values'][$this->contact1['id']]['id'], $this->contact1['id']);
+    $this->assertEquals($result['values'][$this->contact1['id']]['display_name'], $this->contact1['display_name']);
+    $this->assertEquals($result['values'][$this->contact2['id']]['id'], $this->contact2['id']);
+    $this->assertEquals($result['values'][$this->contact2['id']]['display_name'], $this->contact2['display_name']);
   }
 }

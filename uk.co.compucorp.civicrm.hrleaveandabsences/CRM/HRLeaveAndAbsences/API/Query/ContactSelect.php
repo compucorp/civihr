@@ -98,7 +98,7 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
     if (empty($this->params['return'])) {
       $allFields = Contact::fieldKeys();
       unset($allFields['created_date'], $allFields['modified_date'], $allFields['hash']);
-      $this->params['return'] = ($allFields);
+      $this->params['return'] = $allFields;
     }
 
     if (!empty($this->params['return'])) {
