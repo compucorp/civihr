@@ -42,3 +42,9 @@
     }
   }
 }
+
+.required {
+  &:after {
+    display: none;
+  }
+}
