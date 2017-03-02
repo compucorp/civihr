@@ -44,7 +44,8 @@ class api_v3_ApiPermissionTest extends BaseHeadlessTest {
       ['OptionGroup', 'get'],
       ['OptionValue', 'get'],
       ['LeavePeriodEntitlement', 'get'],
-      ['PublicHoliday', 'get']
+      ['PublicHoliday', 'get'],
+      ['Contact', 'getleavemanagees']
     ];
   }
 }
