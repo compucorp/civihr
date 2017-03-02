@@ -116,14 +116,22 @@
                 src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
             </uib-tab>
             <uib-tab heading="Comments">
-              <div class="text-center chr_leave-request-modal__comments_empty" ng-show="$ctrl.getActiveComments().length === 0">
+              <div
+                class="text-center chr_leave-request-modal__comments_empty"
+                ng-show="$ctrl.getActiveComments().length === 0">
                 No comments available. Comments can be added below.
               </div>
-              <div class="chr_leave-request-modal__comments" ng-hide="$ctrl.getActiveComments().length === 0">
-                <div class="chr_leave-request-comment" ng-repeat="comment in $ctrl.getActiveComments() | orderBy: $ctrl.orderComment : true">
+              <div
+                class="chr_leave-request-modal__comments"
+                ng-hide="$ctrl.getActiveComments().length === 0">
+                <div
+                  class="chr_leave-request-comment"
+                  ng-repeat="comment in $ctrl.getActiveComments() | orderBy: $ctrl.orderComment : true">
                   <div class="chr_leave-request-comment__meta">
                     <span class="chr_leave-request-comment__author">{{$ctrl.getCommentorName(comment.contact_id)}}</span>
-                    <span> - </span>
+                    <span>
+                      -
+                    </span>
                     <span class="chr_leave-request-comment__date">{{$ctrl.formatDateTime(comment.created_at)}}</span>
                     <button
                       class="btn btn-link"
@@ -150,7 +158,61 @@
                 </button>
               </div>
             </uib-tab>
-            <uib-tab heading="Files"></uib-tab>
+            <uib-tab heading="Files">
+              <div>
+                <ul class="chr_leave-request-files_list">
+                  <li>
+                    <div>John Doe - 18/01/2015</div>
+                    <div class="row">
+                      <div class="text-primary col-xs-6">
+                        <i class="fa fa-file-photo-o" aria-hidden="true"></i>
+                        filename.loremipsum
+                      </div>
+                    </div>
+                    <hr/>
+                  </li>
+                  <li>
+                    <div>Me - 18/01/2015</div>
+                    <div class="row">
+                      <div class="text-primary col-xs-6">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        filename.loremipsum
+                      </div>
+                      <div class="text-danger col-xs-6">
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        Remove
+                      </div>
+                    </div>
+                    <hr/>
+                  </li>
+                  <li>
+                    <div>Me - 18/01/2015</div>
+                    <div class="row">
+                      <div class="text-primary col-xs-6">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        filename.loremipsum
+                      </div>
+                      <div class="text-danger col-xs-6">
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        Remove
+                      </div>
+                    </div>
+                    <hr/>
+                  </li>
+                </ul>
+              </div>
+              <div class="chr_leave-request-files_upload">
+                <div class="row">
+                  Drag and drop file here
+                </div>
+                <div class="row">
+                  or
+                </div>
+                <div class="row">
+                  <button type="submit" class="btn btn-primary">Browse</button>
+                </div>
+              </div>
+            </uib-tab>
           </uib-tabset>
         </div>
       </div>
