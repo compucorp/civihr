@@ -30,5 +30,15 @@
         }
       }
     }
+
+    .dataTables_wrapper {
+      overflow: visible;
+    }
+
+    #option11,
+    #options {
+      @include mx-expandable-table();
+      box-shadow: none !important;
+    }
   }
 }
