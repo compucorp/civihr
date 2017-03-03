@@ -106,6 +106,59 @@
     }
   }
 
+  #crm-main-content-wrapper {
+    div[id*="DataTables_Table_"] {
+      div[id*="s2id_autogen"] {
+        background: $crm-white;
+
+        .select2-choice {
+          background: none;
+          border-radius: 2px;
+          border: 1px solid $crm-darker-grayblue;
+          box-shadow: $crm-select2-box-shadow-inset;
+        }
+
+        .select2-arrow {
+          background: none;
+          padding: 0 5px;
+        }
+      }
+
+      .dataTable {
+        thead {
+          tr {
+            border-bottom: 1px solid $crm-dark-grayblue;
+
+            th {
+              background: $gray-lighter !important;
+            }
+          }
+        }
+      }
+
+      span {
+        &.show-children {
+          background: none;
+
+          &.collapsed {
+            &:after {
+              @include fa-icon($content: '\f054');
+              margin-left: -15px;
+            }
+          }
+
+          &.expanded {
+            &:after {
+              @include fa-icon($content: '\f078');
+              margin-left: -15px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+
   .ui-dialog {
     .help {
       padding: 10px 0;
@@ -289,7 +342,7 @@
 
       td {
         vertical-align: middle;
-        
+
         &.label {
           label {
             padding: 15px 0;
