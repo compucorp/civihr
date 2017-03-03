@@ -564,7 +564,7 @@ define([
         promise.then(function (result) {
           expect(result).toEqual(mockData.getComments().values);
         });
-      })
+      });
     });
 
     describe('saveComment()', function () {
@@ -630,7 +630,71 @@ define([
         promise.then(function (result) {
           expect(result).toEqual(mockData.deleteComment().values);
         });
-      })
+      });
+    });
+
+    describe('getAttachments', function() {
+      var leaveRequestID = '101',
+        params = {
+          key: 'value'
+        };
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+        promise = LeaveRequestAPI.getAttachments(leaveRequestID, params);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls the endpoint with leave request id', function() {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest',
+            'getattachments', jasmine.objectContaining(_.assign(params, {
+              leave_request_id: leaveRequestID
+            })), false);
+        });
+      });
+
+      it('returns attachment data', function() {
+        promise.then(function (result) {
+          expect(result).toEqual(mockData.getAttachments().values);
+        });
+      });
+    });
+
+    describe('deleteAttachment', function() {
+      var leaveRequestID = '101',
+        attachmentID = '10',
+        params = {
+          key: 'value'
+        };
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+        promise = LeaveRequestAPI.deleteAttachment(leaveRequestID, attachmentID, params);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls the endpoints with leave request id and attachment id', function() {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
+            'deleteattachment', jasmine.objectContaining(_.assign(params, {
+              leave_request_id: leaveRequestID,
+              attachment_id: attachmentID
+            })));
+        });
+      });
+
+      it('returns success data', function() {
+        promise.then(function (result) {
+          expect(result).toEqual(mockData.deleteAttachment().values);
+        });
+      });
     });
 
     /**
@@ -657,6 +721,10 @@ define([
       $httpBackend.whenGET(/action\=getcomment&entity\=LeaveRequest/)
         .respond(mockData.getComments());
 
+      //Intercept backend calls for LeaveRequest.getAttachments
+      $httpBackend.whenGET(/action\=getattachments&entity\=LeaveRequest/)
+        .respond(mockData.getAttachments());
+
       //Intercept backend calls for LeaveRequest.create in POST
       $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)
         .respond(function (method, url, data, headers, params) {
@@ -673,14 +741,8 @@ define([
             return [200, mockData.deleteComment()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'addcomment')) {
             return [200, mockData.addComment()];
-          } else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'create')) {
-            return [201, sicknessMockData.all()];
-          } else if (helper.isEntityActionInPost(data, 'SicknessRequest', 'isValid')) {
-            return [200, mockData.getisValid()];
-          } else if (helper.isEntityActionInPost(data, 'TOILRequest', 'create')) {
-            return [201, toilMockData.all()];
-          } else if (helper.isEntityActionInPost(data, 'TOILRequest', 'isValid')) {
-            return [200, mockData.getisValid()];
+          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'deleteattachment')) {
+            return [200, mockData.deleteAttachment()];
           }
         });
     }

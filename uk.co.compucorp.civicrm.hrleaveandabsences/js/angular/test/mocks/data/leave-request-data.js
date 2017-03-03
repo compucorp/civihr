@@ -19,8 +19,7 @@ define([
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -3,
         'request_type': 'leave',
-        "dates": [
-          {
+        "dates": [{
             "id": "20",
             "date": "2016-02-01"
           },
@@ -44,8 +43,7 @@ define([
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -1.5,
         'request_type': 'leave',
-        "dates": [
-          {
+        "dates": [{
             "id": "23",
             "date": "2016-08-17"
           },
@@ -93,8 +91,7 @@ define([
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -1,
         'request_type': 'leave',
-        "dates": [
-          {
+        "dates": [{
             "id": "17",
             "date": "2016-01-30"
           },
@@ -118,8 +115,7 @@ define([
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -5,
         'request_type': 'leave',
-        "dates": [
-          {
+        "dates": [{
             "id": "32",
             "date": "2016-11-23"
           },
@@ -155,8 +151,7 @@ define([
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -10,
         'request_type': 'sickness',
-        "dates": [
-          {
+        "dates": [{
             "id": "38",
             "date": "2016-06-03"
           },
@@ -215,12 +210,10 @@ define([
         'toil_duration': '181',
         'toil_expiry_date': '2017-05-25',
         'toil_to_accrue': '1',
-        "dates": [
-          {
-            "id": "49",
-            "date": "2016-06-01"
-          }
-        ]
+        "dates": [{
+          "id": "49",
+          "date": "2016-06-01"
+        }]
       }]
     },
     singleDataSuccess: {
@@ -236,8 +229,7 @@ define([
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-02-03',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
-        "dates": [
-          {
+        "dates": [{
             "id": "20",
             "date": "2016-02-01"
           },
@@ -394,36 +386,58 @@ define([
       "version": 3,
       "count": 1,
       "id": 3,
-      "values": [
-        {
-          "comment_id": "3",
-          "leave_request_id": "17",
-          "text": "test comment message",
-          "contact_id": "202",
-          "created_at": "2017-02-14 13:48:33"
-        }
-      ]
+      "values": [{
+        "comment_id": "3",
+        "leave_request_id": "17",
+        "text": "test comment message",
+        "contact_id": "202",
+        "created_at": "2017-02-14 13:48:33"
+      }]
     },
     addComment: {
       "is_error": 0,
       "version": 3,
       "count": 1,
       "id": 4,
-      "values": [
-        {
-          "comment_id": "4",
-          "leave_request_id": "17",
-          "text": "111",
-          "contact_id": "202",
-          "created_at": "20170214200205"
-        }
-      ]
+      "values": [{
+        "comment_id": "4",
+        "leave_request_id": "17",
+        "text": "111",
+        "contact_id": "202",
+        "created_at": "20170214200205"
+      }]
     },
     deleteComment: {
       "is_error": 0,
       "version": 3,
       "count": 1,
       "values": 1
+    },
+    getAttachments: {
+      "is_error": 0,
+      "version": 3,
+      "count": 2,
+      "values": [{
+          "name": "LeaveRequestSampleFile1.txt",
+          "mime_type": "text/plain",
+          "upload_date": "2017-03-02 13:38:02",
+          "url": "http://localhost:8900/index.php?q=civicrm/file&amp;reset=1&id=63&eid=1",
+          "attachment_id": "63"
+        },
+        {
+          "name": "LeaveRequestSampleFile2.txt",
+          "mime_type": "text/plain",
+          "upload_date": "2017-03-02 13:38:02",
+          "url": "http://localhost:8900/index.php?q=civicrm/file&amp;reset=1&id=64&eid=1",
+          "attachment_id": "64"
+        }
+      ]
+    },
+    deleteAttachment: {
+      "is_error": 0,
+      "version": 3,
+      "count": 0,
+      "values": []
     }
   };
 
@@ -471,6 +485,12 @@ define([
     },
     deleteComment: function () {
       return mockData.deleteComment;
+    },
+    getAttachments: function () {
+      return mockData.getAttachments;
+    },
+    deleteAttachment: function () {
+      return mockData.deleteAttachment;
     }
   };
 });

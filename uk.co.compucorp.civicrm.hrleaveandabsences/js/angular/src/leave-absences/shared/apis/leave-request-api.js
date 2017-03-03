@@ -275,6 +275,46 @@ define([
           .then(function (commentsData) {
             return commentsData.values;
           });
+      },
+
+      /**
+       * Calls the getattachments backend API.
+       *
+       * @param {String} leaveRequestID - ID of leave request
+       * @param {Object} params
+       *
+       * @return {Promise}
+       */
+      getAttachments: function (leaveRequestID, params) {
+        params = _.assign({}, params, {
+          leave_request_id: leaveRequestID
+        });
+
+        return this.sendGET('LeaveRequest', 'getattachments', params, false)
+          .then(function (attachments) {
+            return attachments.values;
+          });
+      },
+
+      /**
+       * Calls the deletecomment backend API.
+       *
+       * @param {String} leaveRequestID - leave request ID
+       * @param {String} attachmentID - attachment ID
+       * @param {Object} params
+       *
+       * @return {Promise}
+       */
+      deleteAttachment: function (leaveRequestID, attachmentID, params) {
+        params = _.assign({}, params, {
+          leave_request_id: leaveRequestID,
+          attachment_id: attachmentID
+        });
+
+        return this.sendPOST('LeaveRequest', 'deleteattachment', params)
+          .then(function (result) {
+            return result.values;
+          });
       }
     });
   }]);
