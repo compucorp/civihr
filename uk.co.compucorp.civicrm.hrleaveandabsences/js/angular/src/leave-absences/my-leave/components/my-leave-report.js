@@ -361,12 +361,13 @@ define([
           period_id: vm.selectedPeriod.id,
           expired: true
         }),
-        LeaveRequest.all(null, null, null, {
+        LeaveRequest.all({
           contact_id: vm.contactId,
           from_date: {from: vm.selectedPeriod.start_date},
           to_date: {to: vm.selectedPeriod.end_date},
+          request_type: 'toil',
           expired: true
-        }, true, 'toil')
+        })
       ])
         .then(function (results) {
           return $q.all({
@@ -391,7 +392,6 @@ define([
           return section.open;
         })
         .map(function (section) {
-          $log.error(section);
           return callSectionLoadFn(section);
         }));
     }
