@@ -333,6 +333,29 @@ function hrleaveandabsences_civicrm_postInstall() {
   _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_type();
 }
 
+/**
+ * Implementation of hook_civicrm_tabset.
+ *
+ * This is a way for this extension to add its own tabs to
+ * the core tabs interface used for contacts, contributions and events.
+ *
+ * @param string $tabsetName
+ * @param array $tabs
+ * @param array $context
+ */
+function hrleaveandabsences_civicrm_tabset($tabsetName, &$tabs, $context) {
+  //check if the tabset is Contact Summary Page
+  if ($tabsetName == 'civicrm/contact/view') {
+    $contactId = $context['contact_id'];
+    $tabs[] = [
+      'id'        => 'absence',
+      'url'       => CRM_Utils_System::url('civicrm/contact/view/absence', ['cid' => $contactId]),
+      'title'     => ts('Absence'),
+      'weight'    => 10
+    ];
+  }
+}
+
 //----------------------------------------------------------------------------//
 //                               Helper Functions                             //
 //----------------------------------------------------------------------------//
