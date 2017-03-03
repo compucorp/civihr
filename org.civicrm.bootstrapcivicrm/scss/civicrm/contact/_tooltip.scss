@@ -2,6 +2,7 @@
   background: transparent !important;
   margin-top: 20px;
   box-shadow: $box-shadow;
+  width: auto;
 
   &:before {
     content: "";
@@ -20,13 +21,41 @@
     background-color: #FFF;
     padding: 10px 0 !important;
 
+    .crm-contact_activities-list{
+
+    }
     .crm-contact_actions-list {
       border-color: $crm-background !important;
+      width: 175px;
+      margin-left: 175px;
+      margin-right: 175px;
+      ul {
+        .crm-action-new-case {
+          display: none;
+        }
+        .crm-action-new-relationship {
+          display: none;
+        }
+        .crm-action-new-note {
+          display: none;
+        }
+        .crm-action-tag-contact {
+          display: none;
+        }
+      }
+    }
+    .crm-contact_print-list{
+      width: 175px;
+      ul {
+          .crm-contact-print {
+            display: none;
+          }
+      }
     }
 
     ul {
       padding: 0 !important;
-      height: 280px;
+      height: auto;
 
       li {
         padding: 10px !important;
