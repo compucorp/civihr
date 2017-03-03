@@ -9,7 +9,7 @@
     <email>mateusz@coldrun.pl</email>
   </maintainer>
   <releaseDate>2017-03-03</releaseDate>
-  <version>1.6.7</version>
+  <version>1.6.8</version>
   <develStage>beta</develStage>
   <compatibility>
     <ver>4.7</ver>
