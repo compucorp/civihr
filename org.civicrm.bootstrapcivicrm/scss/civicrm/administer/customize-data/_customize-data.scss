@@ -77,12 +77,15 @@
 
         &.label {
           padding-left: 20px;
+          vertical-align: middle;
         }
 
         input.crm-form-text,
         .crm-form-select,
-        .crm-form-textarea {
+        .crm-form-textarea,
+        .select2-container {
           margin-top: 0 !important;
+          margin-bottom: 0 !important;
         }
 
         .crm-form-textarea {
@@ -96,6 +99,13 @@
 
         .description {
           display: block;
+        }
+      }
+
+      &:nth-child(10),
+      &:last-child {
+        td.label {
+          vertical-align: top;
         }
       }
     }

@@ -16,12 +16,23 @@
             display: table-cell;
             text-align: left;
             width: 175px;
+            vertical-align: middle;
+          }
+
+          tr {
+            &:nth-child(6),
+            &:nth-child(8) {
+              td.label {
+                vertical-align: top;
+              }
+            }
           }
 
           input.crm-form-text,
           .crm-form-select,
           .crm-form-textarea {
             margin-top: 0 !important;
+            margin-bottom: 0 !important;
           }
 
           .crm-form-textarea {
@@ -29,6 +40,16 @@
           }
         }
       }
+    }
+
+    .dataTables_wrapper {
+      overflow: visible;
+    }
+
+    #option11,
+    #options {
+      @include mx-expandable-table();
+      box-shadow: none !important;
     }
   }
 }
