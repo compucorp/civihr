@@ -150,9 +150,10 @@ define([
      * which will be used in the view for each date
      *
      * @param  {object} leaveRequest
+     * @param  {object} dateObj - Date UI object which handles look of a calendar cell
      * @return {object}
      */
-    function getStyles(leaveRequest) {
+    function getStyles(leaveRequest, dateObj) {
       var absenceType,
         status = leaveRequestStatuses[leaveRequest.status_id];
 
@@ -162,6 +163,14 @@ define([
         absenceType = _.find(vm.absenceTypes, function (absenceType) {
           return absenceType.id == leaveRequest.type_id;
         });
+
+        //If Balance change is positive, mark as Accrued TOIL
+        if(leaveRequest.balance_change > 0) {
+          dateObj.UI.isAccruedTOIL = true;
+          return {
+            border: '1px solid' + absenceType.color
+          };
+        }
 
         return {
           backgroundColor: absenceType.color,
@@ -331,7 +340,7 @@ define([
 
         // set below props only if leaveRequest is found
         if (leaveRequest) {
-          dateObj.UI.styles = getStyles(leaveRequest);
+          dateObj.UI.styles = getStyles(leaveRequest, dateObj);
           dateObj.UI.isRequested = isPendingApproval(leaveRequest);
           dateObj.UI.isAM = isDayType('half_day_am', leaveRequest, dateObj.date);
           dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
