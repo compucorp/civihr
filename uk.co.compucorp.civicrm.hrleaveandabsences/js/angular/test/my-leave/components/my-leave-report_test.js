@@ -544,6 +544,16 @@
               }));
             });
 
+            it('fetches all expired toil requests', function () {
+              expect(LeaveRequest.all).toHaveBeenCalledWith({
+                contact_id: controller.contactId,
+                from_date: {from: controller.selectedPeriod.start_date},
+                to_date: {to: controller.selectedPeriod.end_date},
+                request_type: 'toil',
+                expired: true
+              });
+            });
+
             it('does not pass to the Model the entitlements already stored', function () {
               expect(Entitlement.breakdown).not.toHaveBeenCalledWith(jasmine.any(Object), controller.entitlements);
             });
@@ -561,8 +571,8 @@
                 }));
               });
 
-              it('groups and flattens all breakdown entries before caching them', function () {
-                expect(controller.sections.expired.data.length).toBe(expectedFormat.length);
+              it('groups and flattens all breakdown and expired TOIL entries before caching them', function () {
+                expect(controller.sections.expired.data.length).toBe(expectedFormat.length + leaveRequestMock.all().values.length);
               });
             });
           });

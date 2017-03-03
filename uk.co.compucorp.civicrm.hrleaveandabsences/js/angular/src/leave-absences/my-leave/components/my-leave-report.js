@@ -355,17 +355,30 @@ define([
      * @return {Promise}
      */
     function loadExpiredBalanceChanges() {
-      return Entitlement.breakdown({
-        contact_id: vm.contactId,
-        period_id: vm.selectedPeriod.id,
-        expired: true
-      })
-      .then(function (expiredBalanceChanges) {
-        return processBreakdownsList(expiredBalanceChanges);
-      })
-      .then(function (expiredBalanceChangesFlatten) {
-        vm.sections.expired.data = expiredBalanceChangesFlatten;
-      });
+      return $q.all([
+        Entitlement.breakdown({
+          contact_id: vm.contactId,
+          period_id: vm.selectedPeriod.id,
+          expired: true
+        }),
+        LeaveRequest.all({
+          contact_id: vm.contactId,
+          from_date: {from: vm.selectedPeriod.start_date},
+          to_date: {to: vm.selectedPeriod.end_date},
+          request_type: 'toil',
+          expired: true
+        })
+      ])
+        .then(function (results) {
+          return $q.all({
+            expiredBalanceChangesFlatten: processBreakdownsList(results[0]),
+            expiredTOILS: processExpiredTOILS(results[1].list)
+          });
+        })
+        .then(function (results) {
+          vm.sections.expired.data = results.expiredBalanceChangesFlatten.concat(results.expiredTOILS);
+        });
+
     }
 
     /**
@@ -470,8 +483,28 @@ define([
     }
 
     /**
-    * Register events which will be called by other modules
-    */
+     * Process each expired TOIL requests
+     *
+     * @param  {Array} list of expired TOIL request
+     * @return {Promise} resolves to the flatten list
+     */
+    function processExpiredTOILS(list) {
+      return $q.resolve()
+        .then(function () {
+          return list.map(function (listEntry) {
+            return {
+              "expiry_date": listEntry.to_date,
+              "type": {
+                "label": "Accrued TOIL"
+              }
+            };
+          });
+        });
+    }
+
+    /**
+     * Register events which will be called by other modules
+     */
     function registerEvents() {
       $rootScope.$on('LeaveRequest::new', function () {
         vm.refresh();
