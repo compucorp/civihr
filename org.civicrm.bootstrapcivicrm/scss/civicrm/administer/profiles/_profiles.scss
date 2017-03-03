@@ -32,3 +32,141 @@
     }
   }
 }
+
+#mainTabContainer {
+  padding: 0;
+  box-shadow: none;
+
+  ul.ui-tabs-nav {
+    padding: 5px;
+    padding-bottom: 0;
+    background: $gray-lighter;
+
+    .ui-tabs-active {
+      background: $crm-white !important;
+      border-bottom: 2px solid $crm-white;
+    }
+
+    a {
+      font-size: $font-size-base;
+      font-family: $font-family-base;
+    }
+  }
+
+  .dataTables_wrapper {
+    overflow: visible;
+
+    thead {
+      tr {
+        background: none;
+
+        th {
+          color: $crm-h3-color;
+          font-family: $font-family-base;
+        }
+      }
+    }
+
+    ul.panel {
+      background: $gray-lighter;
+      border: 1px solid $table-border-color;
+
+      li {
+        background: none;
+      }
+    }
+  }
+}
+
+&.page-civicrm-admin-uf {
+  #crm-main-content-wrapper {
+    box-shadow: $box-shadow;
+
+    .help {
+      box-shadow: none;
+      margin: 0;
+      background: $gray-lighter;
+    }
+
+    .crm-submit-buttons {
+      box-shadow: none;
+      border-bottom: 1px solid $crm-background;
+
+      a.button {
+        background: $brand-primary;
+      }
+    }
+
+    #user-profiles {
+      .crm-submit-buttons {
+        background: $crm-white !important;
+      }
+    }
+
+    a.action-item,
+    span.btn-slide {
+      color: $brand-primary;
+      background: none;
+    }
+  }
+}
+
+.CRM_UF_Form_Preview {
+  #crm-container-inner {
+    padding: 15px;
+  }
+
+  &#Preview {
+    .crm-submit-buttons {
+      background: $crm-white !important;
+
+      input.crm-form-submit {
+        background: $brand-primary;
+        border-color: $brand-primary;
+        color: $crm-white !important;
+      }
+    }
+  }
+}
+
+.CRM_UF_Form_Group {
+  &#Group {
+    .crm-submit-buttons {
+      background: $crm-white !important;
+    }
+
+    td.label {
+      padding: 15px 0 15px 0;
+
+      .helpicon {
+        padding: 0 5px;
+        margin-top: -2px;
+      }
+    }
+
+    td.html-adjust {
+      width: 100%;
+    }
+
+    td {
+      vertical-align: middle;
+    }
+
+    table.form-layout {
+      padding: 25px;
+      display: flex;
+      box-sizing: border-box;
+    }
+
+    .crm-accordion-body {
+      table.form-layout {
+        padding: 0;
+      }
+    }
+
+    textarea {
+      vertical-align: middle;
+      line-height: 1.5em;
+    }
+  }
+}
