@@ -281,6 +281,17 @@
             });
           });
 
+          describe('when balance change is positive', function() {
+            beforeEach(function() {
+              leaveRequest.balance_change = 2;
+              commonSetup();
+            });
+
+            it('AccruedTOIL flag is set', function() {
+              expect(dateObj.UI.isAccruedTOIL).toBe(true);
+            });
+          });
+
           function commonSetup() {
             spyOn(Calendar, 'get').and.callFake(function () {
               return $q.resolve(CalendarInstance.init(workPattern.values));

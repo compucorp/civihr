@@ -54,9 +54,12 @@
                      'chr_leave-calendar__item--type--non-working': day.UI.isNonWorkingDay,
                      'chr_leave-calendar__item--type--public-holiday': day.UI.isPublicHoliday,
                      'chr_leave-calendar__item--requested': day.UI.isRequested,
+                     'chr_leave-calendar__item--alt': day.UI.isAccruedTOIL,
+                     'chr_leave-calendar__item--toil-requested': day.UI.isRequested && day.UI.isAccruedTOIL
                      }">
                   <span ng-if="day.UI.isAM">AM</span>
                   <span ng-if="day.UI.isPM">PM</span>
+                  <span ng-if="day.UI.isAccruedTOIL">AT</span>
                 </div>
               </td>
             </tr>
@@ -123,13 +126,22 @@
             </div>
           </div>
           <div class="row" ng-repeat-end ng-if="absenceType.allow_accruals_request == 1">
-            <div class="col-sm-12">
+            <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item chr_leave-calendar__item--alt"
                      ng-style="{borderColor: absenceType.color}">
-                  <span>A{{absenceType.title.substr(0, 1)}}</span>
+                  <span>AT</span>
                 </div>
-                <span class="chr_leave-calendar__legend__label">Accrued {{absenceType.title}}</span>
+                <span class="chr_leave-calendar__legend__label">Accrued TOIL</span>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="chr_leave-calendar__legend__entry">
+                <div class="chr_leave-calendar__item chr_leave-calendar__item--alt chr_leave-calendar__item--toil-requested"
+                     ng-style="{borderColor: absenceType.color}">
+                  <span>AT</span>
+                </div>
+                <span class="chr_leave-calendar__legend__label">Requested Accrued TOIL</span>
               </div>
             </div>
           </div>
