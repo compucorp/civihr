@@ -160,41 +160,55 @@
             </uib-tab>
             <uib-tab heading="Files">
               <div>
-                <ul class="chr_leave-request-files_list">
+                <ul class="chr_leave-request-files_list container-fluid">
                   <li>
-                    <div>John Doe - 18/01/2015</div>
+                    <div class="chr_leave-request-files_meta">
+                      <span class="chr_leave-request-files_author">John Doe</span>
+                      <span>-</span>
+                      <span class="chr_leave-request-files_date">18/01/2015</span>
+                    </div>
                     <div class="row">
-                      <div class="text-primary col-xs-6">
+                      <div class="chr_leave-request-files_icon text-primary col-xs-6">
                         <i class="fa fa-file-photo-o" aria-hidden="true"></i>
-                        filename.loremipsum
+                        <span>filename.loremipsum</span>
                       </div>
                     </div>
                     <hr/>
                   </li>
                   <li>
-                    <div>Me - 18/01/2015</div>
-                    <div class="row">
-                      <div class="text-primary col-xs-6">
-                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                        filename.loremipsum
+                    <div>
+                      <div class="chr_leave-request-files_meta">
+                        <span class="chr_leave-request-files_author">Me</span>
+                        <span>-</span>
+                        <span class="chr_leave-request-files_date">18/01/2015</span>
                       </div>
-                      <div class="text-danger col-xs-6">
+                    </div>
+                    <div class="row">
+                      <div class="chr_leave-request-files_icon text-primary col-xs-6">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        <span>filename.loremipsum</span>
+                      </div>
+                      <div class="chr_leave-request-files_delete text-danger col-xs-6">
                         <i class="fa fa-trash-o" aria-hidden="true"></i>
-                        Remove
+                        <span>Remove</span>
                       </div>
                     </div>
                     <hr/>
                   </li>
                   <li>
-                    <div>Me - 18/01/2015</div>
+                    <div class="chr_leave-request-files_meta">
+                      <span class="chr_leave-request-files_author">Me</span>
+                      <span>-</span>
+                      <span class="chr_leave-request-files_date">18/01/2015</span>
+                    </div>
                     <div class="row">
-                      <div class="text-primary col-xs-6">
+                      <div class="chr_leave-request-files_icon text-primary col-xs-6">
                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                        filename.loremipsum
+                        <span>filename.loremipsum</span>
                       </div>
-                      <div class="text-danger col-xs-6">
+                      <div class="chr_leave-request-files_delete text-danger col-xs-6">
                         <i class="fa fa-trash-o" aria-hidden="true"></i>
-                        Remove
+                        <span>Remove</span>
                       </div>
                     </div>
                     <hr/>
@@ -202,13 +216,13 @@
                 </ul>
               </div>
               <div class="chr_leave-request-files_upload">
-                <div class="row">
+                <div class="chr_leave-request-files_upload_action row text-center">
                   Drag and drop file here
                 </div>
-                <div class="row">
+                <div class="chr_leave-request-files_upload_action row text-center">
                   or
                 </div>
-                <div class="row">
+                <div class="chr_leave-request-files_upload_action row text-center">
                   <button type="submit" class="btn btn-primary">Browse</button>
                 </div>
               </div>
