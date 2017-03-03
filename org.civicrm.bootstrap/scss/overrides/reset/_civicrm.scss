@@ -1,46 +1,49 @@
-/**
- * Resets css rules that are applied by the CiviCRM style
- *
- * (`initial` was used at first, but there is no support by IE for it)
- */
-h3 {
-  @include initial(background-color, transparent);
-  @include initial(font-family, $font-family-base);
-  @include initial(padding, 0);
-  @include initial(margin, 0);
+// Apply it only if there is a namespace defined
+@if $bootstrap-namespace != "" {
+  /**
+   * Resets css rules that are applied by the CiviCRM style
+   *
+   * (`initial` was used at first, but there is no support by IE for it)
+   */
+  h3 {
+    @include initial(background-color, transparent);
+    @include initial(font-family, $font-family-base);
+    @include initial(padding, 0);
+    @include initial(margin, 0);
 
-  font-weight: 400;
-  font-size: $font-size-h3;
-}
-
-table {
-  @include initial(border, 0);
-  @include initial(margin, 0);
-
-  font-size: inherit;
-
-  td {
-    @include initial(border, 0);
-
-    color: inherit;
+    font-weight: 400;
+    font-size: $font-size-h3;
   }
 
-  th {
-    @include initial(background-color, inherit);
+  table {
     @include initial(border, 0);
-    @include initial(text-transform, none);
+    @include initial(margin, 0);
 
-    color: inherit;
     font-size: inherit;
-    font-weight: 600;
+
+    td {
+      @include initial(border, 0);
+
+      color: inherit;
+    }
+
+    th {
+      @include initial(background-color, inherit);
+      @include initial(border, 0);
+      @include initial(text-transform, none);
+
+      color: inherit;
+      font-size: inherit;
+      font-weight: 600;
+    }
   }
-}
 
-.panel {
-  @include initial(position, static);
-  @include initial(padding, 0);
-  @include initial(width, auto);
-  @include initial(z-index, auto);
+  .panel {
+    @include initial(position, static);
+    @include initial(padding, 0);
+    @include initial(width, auto);
+    @include initial(z-index, auto);
 
-  display: block;
+    display: block;
+  }
 }

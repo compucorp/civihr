@@ -1,0 +1,17 @@
+{
+  "name": "uk.co.compucorp.civicrm.hrcore",
+  "description": "Provides CiviHR generic functionality",
+  "scripts": {
+    "backstop": "backstop"
+  },
+  "devDependencies": {
+    "backstopjs": "^2.3.7",
+    "es6-promise": "^4.0.5",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.2",
+    "gulp-color": "0.0.1",
+    "gulp-file": "^0.3.0",
+    "lodash": "^4.17.4",
+    "yargs": "^6.6.0"
+  }
+}
