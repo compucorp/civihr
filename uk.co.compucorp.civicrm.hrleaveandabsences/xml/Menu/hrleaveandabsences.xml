@@ -42,4 +42,10 @@
     <title>General Settings</title>
     <access_arguments>administer leave and absences</access_arguments>
   </item>
+  <item>
+    <path>civicrm/contact/view/absence</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Page_AbsenceTab</page_callback>
+    <title>Absence</title>
+    <access_arguments>access leave and absences</access_arguments>
+  </item>
 </menu>
