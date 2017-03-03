@@ -129,10 +129,14 @@
   }
 }
 
-.CRM_UF_Form_Group {
-  &#Group {
-    .crm-submit-buttons {
+.CRM_UF_Form_Group,
+.CRM_UF_Form_Field {
+  &#Group,
+  &#Field {
+    .crm-submit-buttons,
+    .action-link {
       background: $crm-white !important;
+      box-shadow: none;
     }
 
     td.label {
@@ -150,10 +154,11 @@
 
     td {
       vertical-align: middle;
+      line-height: 1.5em;
     }
 
     table.form-layout {
-      padding: 25px;
+      padding: 0 25px;
       display: flex;
       box-sizing: border-box;
     }
@@ -162,11 +167,41 @@
       table.form-layout {
         padding: 0;
       }
+
+      .crm-form-block {
+        box-shadow: none;
+      }
     }
 
     textarea {
       vertical-align: middle;
       line-height: 1.5em;
+    }
+
+    input[type=radio] {
+      &:checked {
+        +label[for] {
+          &:after {
+            top: 7px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.ui-dialog-content {
+  .CRM_UF_Form_Group,
+  .CRM_UF_Form_Field {
+    &#Group,
+    &#Field {
+      table.form-layout {
+        padding: 0;
+      }
+
+      .crm-accordion-body {
+        padding: 0 20px !important;
+      }
     }
   }
 }
