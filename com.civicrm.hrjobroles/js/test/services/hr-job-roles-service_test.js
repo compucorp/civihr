@@ -1,14 +1,18 @@
 define([
+  'common/lodash',
+  'mocks/data/job-contracts',
   'common/angularMocks',
   'job-roles/app'
-], function () {
+], function (_, mockedContracts) {
   'use strict';
 
   describe('HRJobRolesService', function () {
-    var HRJobRolesService, deferred;
+    var $q, HRJobRolesService, deferred;
 
     beforeEach(module('hrjobroles'));
-    beforeEach(inject(['$q', 'HRJobRolesService', function ($q, _HRJobRolesService_) {
+    beforeEach(inject(['$q', 'HRJobRolesService', function (_$q_, _HRJobRolesService_) {
+      $q = _$q_;
+
       HRJobRolesService = _HRJobRolesService_;
       deferred = mockDeferred($q);
     }]));
@@ -17,7 +21,7 @@ define([
       var callArgs, finalResult;
 
       beforeEach(function () {
-        mockAPIResponse(mockedResponse());
+        mockAPIResponse(_.cloneDeep(mockedContracts));
 
         HRJobRolesService.getContracts('1');
 
@@ -42,62 +46,71 @@ define([
           })).toBe(true);
         });
       });
+    });
 
-      /**
-       * A mocked list of contracts as they would be returned by the api
-       *
-       * @return {Object}
-       */
-      function mockedResponse() {
-        return {
-          values: [
-            {
-              'id': '1',
-              'contact_id': '1',
-              'is_primary': '1',
-              'deleted': '1',
-              'is_current': '1',
-              'period_start_date': '2016-01-01',
-              'period_end_date': '2016-12-31',
-              'title': 'Title',
-              'api.HRJobContractRevision.get': {
-                'is_error': 0,
-                'version': 3,
-                'count': 1,
-                'id': 1,
-                'values': [
-                  {
-                    'id': '1',
-                    'jobcontract_id': '1',
-                    'api.HRJobDetails.getsingle': {
-                      'id': '1',
-                      'position': 'Position 1',
-                      'title': 'Title 1',
-                      'contract_type': 'Type #1',
-                      'period_start_date': '2016-01-01',
-                      'period_end_date': '2016-05-31',
-                      'jobcontract_revision_id': '1'
-                    }
-                  },
-                  {
-                    'id': '2',
-                    'jobcontract_id': '1',
-                    'api.HRJobDetails.getsingle': {
-                      'id': '2',
-                      'position': 'Position 2',
-                      'title': 'Title 2',
-                      'contract_type': 'Type #2',
-                      'period_start_date': '2016-01-01',
-                      'period_end_date': '2016-12-31',
-                      'jobcontract_revision_id': '2'
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        };
-      }
+    describe('getContactList()', function () {
+      beforeEach(function () {
+        mockAPIResponse();
+      });
+
+      describe('basic test', function () {
+        var args;
+
+        beforeEach(function () {
+          HRJobRolesService.getContactList();
+          args = CRM.api3.calls.mostRecent().args;
+        });
+
+        it('calls the Contact.get api endpoint', function () {
+          expect(args[0]).toBe('Contact');
+          expect(args[1]).toBe('get');
+        });
+
+        it('returns only the id and sort name of each contact', function () {
+          expect(args[2]).toEqual(jasmine.objectContaining({
+            'return': 'id, sort_name'
+          }));
+        });
+      });
+
+      describe('when no specific filter is passed', function () {
+        beforeEach(function () {
+          HRJobRolesService.getContactList();
+        });
+
+        it('sets as `null` the filter properties', function () {
+          expect(CRM.api3.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
+            'id': null,
+            'sort_name': null
+          }));
+        });
+      });
+
+      describe('when filtering by contact name', function () {
+        beforeEach(function () {
+          HRJobRolesService.getContactList('foo');
+        });
+
+        it('passes the name to the api endpoint', function () {
+          expect(CRM.api3.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
+            'sort_name': 'foo'
+          }));
+        });
+      });
+
+      describe('when filtering by contact ids', function () {
+        var idsList = ['1', '2', '3', '4'];
+
+        beforeEach(function () {
+          HRJobRolesService.getContactList(null, idsList);
+        });
+
+        it('passes the ids as an IN parameter to the endpoint', function () {
+          expect(CRM.api3.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
+            'id': { 'IN': idsList }
+          }));
+        });
+      });
     });
 
     describe('getOptionValues()', function () {

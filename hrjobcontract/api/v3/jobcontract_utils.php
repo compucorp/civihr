@@ -91,41 +91,61 @@ function _civicrm_hrjobcontract_api3_create_revision($jobContractId)
     return $result;
 }
 
-function _civicrm_hrjobcontract_api3_get_current_revision($params)
-{
-    $jobContractId = (int)$params['jobcontract_id'];
-    if ($jobContractId)
-    {
-        $deleted = 0;
-        if (!empty($params['deleted']))
-        {
-            $deleted = (int)$params['deleted'];
-        }
-        $revision = civicrm_api3('HRJobContractRevision', 'get', array(
-          'sequential' => 1,
-          'jobcontract_id' => $jobContractId,
-          'effective_date' => array('<=' => date('Y-m-d')),
-          'deleted' => $deleted,
-          'options' => array('sort' => 'effective_date DESC, id DESC', 'limit' => 1),
-        ));
-        if (empty($revision['values']))
-        {
-            $revision = civicrm_api3('HRJobContractRevision', 'get', array(
-              'sequential' => 1,
-              'jobcontract_id' => $jobContractId,
-              'deleted' => $deleted,
-              'options' => array('sort' => 'effective_date ASC, id DESC', 'limit' => 1),
-            ));
-        }
-        
-        if (!empty($revision)) {
-            $row = array_shift($revision['values']);
-            if (!empty($row)) {
-                return civicrm_api3_create_success($row);
-            }
-        }
+/**
+ * Returns current revision. If current revision is for a past contract, and its
+ * terms are changed by future revisions, it will return the latest revision.
+ * 
+ * @param array $params
+ *   Parameter array passed by API call
+ * 
+ * @return mixed
+ *   Returns either:
+ *   - Array with contents of revision if one is found
+ *   - Null on failure
+ */
+function _civicrm_hrjobcontract_api3_get_current_revision($params) {
+  $jobContractId = (int)$params['jobcontract_id'];
+  $deleted = !empty($params['deleted']) ? (int)$params['deleted'] : 0;
+
+  if ($jobContractId) {
+    $revision = civicrm_api3('HRJobContractRevision', 'get', [
+      'sequential' => 1,
+      'jobcontract_id' => $jobContractId,
+      'deleted' => $deleted,
+      'effective_date' => ['<=' => date('Y-m-d')],
+      'options' => ['sort' => 'effective_date DESC, id DESC', 'limit' => 1],
+      'return' => [
+        'id', 'details_revision_id.id', 'jobcontract_id', 'editor_uid',
+        'created_date', 'effective_date', 'effective_end_date', 'modified_date',
+        'details_revision_id', 'health_revision_id', 'hour_revision_id',
+        'leave_revision_id', 'pay_revision_id', 'pension_revision_id', 
+        'role_revision_id', 'deleted', 'editor_name', 
+        'details_revision_id.period_end_date'
+      ],
+    ]);
+    $contractEnd = $revision['values'][0]['details_revision_id.period_end_date'];
+    $revisionEndDate = $revision['values'][0]['effective_end_date'];
+
+    if (
+      empty($revision['values']) 
+      || (!empty($revisionEndDate) && !empty($contractEnd) && strtotime($contractEnd) <= time())
+    ) {
+      $revision = civicrm_api3('HRJobContractRevision', 'get', array(
+        'sequential' => 1,
+        'jobcontract_id' => $jobContractId,
+        'deleted' => $deleted,
+        'options' => array('sort' => 'effective_date DESC, id DESC', 'limit' => 1),
+      ));
     }
-    return null;
+
+    if (!empty($revision)) {
+      $row = array_shift($revision['values']);
+      if (!empty($row)) {
+          return civicrm_api3_create_success($row);
+      }
+    }
+  }
+  return null;
 }
 
 function _civicrm_hrjobcontract_api3_get_latest_revision($params)

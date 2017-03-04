@@ -1,0 +1,64 @@
+{
+  "scenarios": [
+    {
+      "label": "Job Contract",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/summary"
+    },
+    {
+      "label": "Job Contract / Full History",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/full-history"
+    },
+    {
+      "label": "Job Contract / Delete Dialog",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/delete-dialog"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / General",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-general"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Hours",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-hours"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Pay",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-pay"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Leave",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-leave"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Insurance",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-insurance"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Pension",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-pension"
+    },
+    {
+      "label": "Job Contract / Modal / Tab / Funding",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/tab-funding"
+    },
+    {
+      "label": "Job Contract / Modal / Correct Error ",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/correct-error"
+    },
+    {
+      "label": "Job Contract / Modal / Change Terms ",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-contract/change-terms"
+    }
+  ]
+}

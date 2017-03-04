@@ -61,7 +61,7 @@
             </ul>
         </div>
     </div>
-    <table class="table table-striped {{prefix}}table-sort {{prefix}}table-revision-list" hrjc-loader hrjc-loader-show="true">
+    <table class="table table-striped {{prefix}}table-sort {{prefix}}table-revision-list" hrjc-loader hrjc-loader-hide="true">
         <thead>
             <tr>
                 <th ng-hide="!display.effectiveDate"><a href="" ng-click="sortBy('revisionEntityIdObj.effective_date');createPage();">Effective Date <i class="fa"
@@ -123,7 +123,7 @@
     </table>
     <div class="row" ng-show="(revisionDataList.length > itemsPerPage)">
         <div class="col-xs-12 text-center">
-            <pagination boundary-links="true" total-items="revisionDataList.length" rotate="false" items-per-page="itemsPerPage" max-size="maxSize" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+            <uib-pagination boundary-links="true" total-items="revisionDataList.length" rotate="false" items-per-page="itemsPerPage" max-size="maxSize" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
         </div>
     </div>
 </div>

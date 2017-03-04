@@ -1,5 +1,8 @@
 <?php
 
+require_once 'Upgrader/Base.php';
+require_once 'DefaultCaseAndActivityTypes.php';
+
 /**
  * Collection of upgrade steps
  */
@@ -8,225 +11,464 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   // By convention, functions that look like "function upgrade_NNNN()" are
   // upgrade tasks. They are executed in order (like Drupal's hook_update_N).
 
-  /**
-   * Example: Run an external SQL script when the module is installed
-   */
   public function install() {
-    //$this->executeSqlFile('sql/myinstall.sql');
-    $this->setComponentStatuses(array(
+    // Enable CiviCase component
+    $this->setComponentStatuses([
       'CiviCase' => true,
-    ));
-  }
+    ]);
 
-  /**
-   * Example: Run an external SQL script when the module is uninstalled
-   *
-  public function uninstall() {
-   $this->executeSqlFile('sql/myuninstall.sql');
-  }
-
-  /**
-   * Example: Run a simple query when a module is enabled
-   *
-  public function enable() {
-    CRM_Core_DAO::executeQuery('UPDATE foo SET is_active = 1 WHERE bar = "whiz"');
-  }
-
-  /**
-   * Example: Run a simple query when a module is disabled
-   *
-  public function disable() {
-    CRM_Core_DAO::executeQuery('UPDATE foo SET is_active = 0 WHERE bar = "whiz"');
-  }
-
-  /**
-   * Example: Run a couple simple queries
-   *
-   * @return TRUE on success
-   * @throws Exception
-   *
-  public function upgrade_4200() {
-    $this->ctx->log->info('Applying update 4200');
-    CRM_Core_DAO::executeQuery('UPDATE foo SET bar = "whiz"');
-    CRM_Core_DAO::executeQuery('DELETE FROM bang WHERE willy = wonka(2)');
-    return TRUE;
-  } // */
-
-
-  /**
-   * Example: Run an external SQL script
-   *
-   * @return TRUE on success
-   * @throws Exception
-  public function upgrade_4201() {
-    $this->ctx->log->info('Applying update 4201');
-    // this path is relative to the extension base dir
-    $this->executeSqlFile('sql/upgrade_4201.sql');
-    return TRUE;
-  } // */
-
-
-  /**
-   * Example: Run a slow upgrade process by breaking it up into smaller chunk
-   *
-   * @return TRUE on success
-   * @throws Exception
-  public function upgrade_4202() {
-    $this->ctx->log->info('Planning update 4202'); // PEAR Log interface
-
-    $this->addTask(ts('Process first step'), 'processPart1', $arg1, $arg2);
-    $this->addTask(ts('Process second step'), 'processPart2', $arg3, $arg4);
-    $this->addTask(ts('Process second step'), 'processPart3', $arg5);
-    return TRUE;
-  }
-  public function processPart1($arg1, $arg2) { sleep(10); return TRUE; }
-  public function processPart2($arg3, $arg4) { sleep(10); return TRUE; }
-  public function processPart3($arg5) { sleep(10); return TRUE; }
-  // */
-
-
-  /**
-   * Example: Run an upgrade with a query that touches many (potentially
-   * millions) of records by breaking it up into smaller chunks.
-   *
-   * @return TRUE on success
-   * @throws Exception
-  public function upgrade_4203() {
-    $this->ctx->log->info('Planning update 4203'); // PEAR Log interface
-
-    $minId = CRM_Core_DAO::singleValueQuery('SELECT coalesce(min(id),0) FROM civicrm_contribution');
-    $maxId = CRM_Core_DAO::singleValueQuery('SELECT coalesce(max(id),0) FROM civicrm_contribution');
-    for ($startId = $minId; $startId <= $maxId; $startId += self::BATCH_SIZE) {
-      $endId = $startId + self::BATCH_SIZE - 1;
-      $title = ts('Upgrade Batch (%1 => %2)', array(
-        1 => $startId,
-        2 => $endId,
-      ));
-      $sql = '
-        UPDATE civicrm_contribution SET foobar = whiz(wonky()+wanker)
-        WHERE id BETWEEN %1 and %2
-      ';
-      $params = array(
-        1 => array($startId, 'Integer'),
-        2 => array($endId, 'Integer'),
-      );
-      $this->addTask($title, 'executeSql', $sql, $params);
+    // Execute upgrader methods during extension installation
+    $revisions = $this->getRevisions();
+    foreach ($revisions as $revision) {
+      $methodName = 'upgrade_' . $revision;
+      if (is_callable([$this, $methodName])) {
+        $this->{$methodName}();
+      }
     }
-    return TRUE;
-  } // */
+  }
+
+  public function uninstall() {
+    self::activityTypesWordReplacement(true);
+    self::removeRelationshipTypes();
+    self::removeCaseTypesWithData(array_column(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'));
+    $this->removeActivityTypesList(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 'CiviTask');
+  }
+
+  public function enable() {
+    self::toggleRelationshipTypes(1);
+    self::toggleCaseTypes(array_column(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'), 1);
+    self::toggleCaseTypes(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCiviCRMCaseTypes(), 0);
+    self::toggleActivityTypes(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 1);
+    $this->changeActivityTypeComponent('Open Case', 'CiviCase', 'CiviTask');
+  }
+
+  public function disable() {
+    self::toggleRelationshipTypes(0);
+    self::toggleCaseTypes(array_column(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'), 0);
+    self::toggleCaseTypes(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCiviCRMCaseTypes(), 1);
+    self::toggleActivityTypes(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 0);
+    $this->changeActivityTypeComponent('Open Case', 'CiviTask', 'CiviCase');
+  }
 
   /**
    * Set components as enabled or disabled. Leave any other
    * components unmodified.
    *
-   * Note: This API has only been tested with CiviCRM 4.4.
+   * @param array $components
+   *   keys are component names (e.g. "CiviMail"); values are booleans
    *
-   * @param array $components keys are component names (e.g. "CiviMail"); values are booleans
+   * @throws CRM_Core_Exception
+   *
+   * @return bool
    */
   public function setComponentStatuses($components) {
-    $getResult = civicrm_api3('setting', 'getsingle', array(
+    $getResult = civicrm_api3('setting', 'getsingle', [
       'domain_id' => CRM_Core_Config::domainID(),
-      'return' => array('enable_components'),
-    ));
+      'return' => ['enable_components'],
+    ]);
     if (!is_array($getResult['enable_components'])) {
       throw new CRM_Core_Exception("Failed to determine component statuses");
     }
-
     // Merge $components with existing list
     $enableComponents = $getResult['enable_components'];
     foreach ($components as $component => $status) {
       if ($status) {
-        $enableComponents = array_merge($enableComponents, array($component));
+        $enableComponents = array_merge($enableComponents, [$component]);
       } else {
-        $enableComponents = array_diff($enableComponents, array($component));
+        $enableComponents = array_diff($enableComponents, [$component]);
       }
     }
-    civicrm_api3('setting', 'create', array(
+    civicrm_api3('setting', 'create', [
       'domain_id' => CRM_Core_Config::domainID(),
       'enable_components' => array_unique($enableComponents),
-    ));
+    ]);
     CRM_Core_Component::flushEnabledComponents();
   }
 
-  public function upgrade_1200() {
-    $this->ctx->log->info('Applying update 1200');
-    $groupSql = CRM_Core_DAO::executeQuery("SELECT id FROM civicrm_option_group WHERE name = 'case_type'");
-    if ($groupSql->fetch()) {
-      $sql = "UPDATE civicrm_option_value SET is_active = 0 WHERE option_group_id = {$groupSql->id} AND name IN ('adult_day_care_referral', 'housing_support')";
-      CRM_Core_DAO::executeQuery($sql);
-      CRM_Core_BAO_Navigation::resetNavigation();
-    }
-    return TRUE;
-  }
-
-  public function upgrade_1300() {
-    $this->ctx->log->info('Applying update 1300');
-    $sql = "Update civicrm_case_type SET is_active = 0 where name IN ('AdultDayCareReferral', 'HousingSupport', 'adult_day_care_referral', 'housing_support')";
-    CRM_Core_DAO::executeQuery($sql);
-    $values = NULL;
-    $caseTypes = CRM_Case_PseudoConstant::caseType('name', FALSE);
-    foreach (array('Exiting', 'Joining', 'Probation', 'Hrdata') as $caseName) {
-      if ($caseID = array_search($caseName, $caseTypes)) {
-        $values .= " WHEN '{$caseName}' THEN '{$caseID}'";
-      }
-    }
-    if ($values) {
-      $query = "UPDATE civicrm_managed
-        SET entity_id = CASE name
-        {$values}
-        END, entity_type = 'caseType' WHERE name IN ('Exiting', 'Joining', 'Probation', 'Hrdata');";
-      CRM_Core_DAO::executeQuery($query);
-      CRM_Core_BAO_Navigation::resetNavigation();
-    }
-    return TRUE;
-  }
-
-  public function upgrade_1400() {
-    $this->ctx->log->info('Applying update 1400');
-    $i = 3;
-    foreach (array('Joining','Probation') as $caseName) {
-      CRM_Core_DAO::executeQuery("UPDATE civicrm_case_type SET weight = {$i} WHERE name = '{$caseName}'");
-      $i++;
-    }
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_case_type SET weight = 6 WHERE name = 'Exiting'");
-    $this->executeSqlFile('sql/activities_install.sql');
-    require_once 'hrcase.php';
-    $scheduleActions = hrcase_getActionsSchedule();
-    foreach($scheduleActions as $actionName=>$scheduleAction) {
-      $result = civicrm_api3('action_schedule', 'get', array('name' => $actionName));
-      if (empty($result['id'])) {
-        $result = civicrm_api3('action_schedule', 'create', $scheduleAction);
-      }
-    }
-    $existingCaseType = array('Appraisal');
-    $this->manageCaseTypes($existingCaseType);
-    CRM_Core_Invoke::rebuildMenuAndCaches(TRUE);
-
-    //update query to replace Case with Assignment
-    $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
-    $sql = "UPDATE civicrm_option_value SET label= replace(label,'Case','Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID and label <> 'Open Case'";
-    CRM_Core_DAO::executeQuery($sql);
-
-    $sql = "UPDATE civicrm_option_value SET label= replace(label,'Open Case','Created New Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID";
-    CRM_Core_DAO::executeQuery($sql);
-    return TRUE;
-  }
-
-  /** function to check if newly added managed entity exist
-   *  If exist then create mapping for that managed entity
-   *  @param array $caseTypes values are case type names (e.g. "Appraisal")
+  /**
+   * Upgrader to :
+   *   1- Replace (case) keyword with (assignment) keyword for civicrm default activity types.
+   *   2- Create default relationship types.
+   *   2- Disable default CiviCRM case types.
+   *
+   * @return bool
    */
-  public function manageCaseTypes($caseTypes) {
-    $caseType = implode("','", $caseTypes);
-    $sql = "SELECT * from civicrm_case_type WHERE name IN ('{$caseType}')";
-    $caseFetch = CRM_Core_DAO::executeQuery($sql);
-    $values = array();
-    while ($caseFetch->fetch()) {
-      $values[] = "('org.civicrm.hrcase', '{$caseFetch->name}', 'CaseType', {$caseFetch->id}, 'never')";
+  public function upgrade_1400() {
+    self::activityTypesWordReplacement();
+    self::createRelationshipTypes();
+
+    CRM_Core_BAO_Navigation::resetNavigation();
+
+    return TRUE;
+  }
+
+  /**
+   * Upgrader to clean up/create activity types and managed entities
+   * for Task & Assignments extension (CiviTask Component).
+   *
+   * @return bool
+   */
+  public function upgrade_1402() {
+    $defaultCaseTypes = CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes();
+    $defaultActivityTypes = CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultActivityTypes();
+
+    $this->up1402_removedUnusedManagedEntities(array_column($defaultCaseTypes, 'name'), $defaultActivityTypes);
+    $this->up1402_removeUnusedCaseTypes();
+    //Removes CiviCase activity types which should belong to CiviTask component
+    $this->removeActivityTypesList($defaultActivityTypes, 'CiviCase');
+    $this->up1402_createDefaultCaseTypes($defaultCaseTypes);
+    $this->up1402_createDefaultActivityTypes($defaultActivityTypes);
+    $this->changeActivityTypeComponent('Open Case', 'CiviCase', 'CiviTask');
+
+    return TRUE;
+  }
+
+  /**
+   * Replaces (Case) keyword and (Open Case) keyword with (Assignment) keyword
+   * and (Created New Assignment) keyword respectively and vise versa for
+   * civicrm default activity types labels when installing/uninstalling the extension.
+   *
+   * @param boolean $restDefault
+   *   If true revert activity types labels to their default
+   *  ( For uninstall/disable).
+   */
+  public static function activityTypesWordReplacement($restDefault = false) {
+    $replace = 'Assignment';
+    $replaceWith = 'Case';
+    $replaceOpenCase = 'Created New Assignment';
+    $replaceOpenCaseWith = 'Open Case';
+    // Flip values for install/enable
+    if (!$restDefault) {
+      $tmp = $replace;
+      $replace = $replaceWith;
+      $replaceWith = $tmp;
+      $tmp = $replaceOpenCase;
+      $replaceOpenCase = $replaceOpenCaseWith;
+      $replaceOpenCaseWith = $tmp;
     }
-    if (!empty($values)) {
-      $manageSql = "INSERT INTO civicrm_managed (module, name, entity_type, entity_id, cleanup) VALUES " . implode(',', $values) ;
-      CRM_Core_DAO::executeQuery($manageSql);
+    // Replace case activity types
+    $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
+    $sql = "UPDATE civicrm_option_value SET label= replace(label, '{$replace}', '{$replaceWith}') WHERE label like '%{$replace}%' and option_group_id={$optionGroupID} and label <> '{$replaceOpenCase}'";
+    CRM_Core_DAO::executeQuery($sql);
+    // replace (open case) activity type  which is a special case and should be replaced differently
+    $sql = "UPDATE civicrm_option_value SET label= replace(label,'{$replaceOpenCase}', '{$replaceOpenCaseWith}') WHERE label = '{$replaceOpenCase}' and option_group_id={$optionGroupID}";
+    CRM_Core_DAO::executeQuery($sql);
+  }
+  /**
+   * Creates default relationship types
+   */
+  public static function createRelationshipTypes() {
+    foreach(self::defaultRelationshipsTypes() as $relationshipType) {
+      civicrm_api3('RelationshipType', 'create', [
+        'name_a_b' => $relationshipType['name_a_b'],
+        'label_a_b' => $relationshipType['name_b_a'],
+        'name_b_a' => $relationshipType['name_b_a'],
+        'label_b_a' => $relationshipType['name_b_a'],
+        'contact_type_a' => 'Individual',
+        'contact_type_b' => 'Individual',
+        'is_reserved' => 0,
+        'is_active' => 1,
+      ]);
     }
   }
+  /**
+   * Removes default relationship types
+   */
+  public static function removeRelationshipTypes() {
+    foreach(self::defaultRelationshipsTypes() as $relationshipType) {
+      // chained API call to delete the relationship type
+      civicrm_api3('RelationshipType', 'get', [
+        'name_b_a' => $relationshipType['name_b_a'],
+        'api.RelationshipType.delete' => ['id' => '$value.id'],
+      ]);
+    }
+  }
+  /**
+   * (Enables/Disables) a defined list of relationship types
+   *
+   * @param int $setActive
+   *   0 : disable , 1 : enable
+   */
+  public static function toggleRelationshipTypes($setActive) {
+    foreach(self::defaultRelationshipsTypes() as $relationshipType) {
+      // chained API call to activate/disable the relationship type
+      civicrm_api3('RelationshipType', 'get', [
+        'name_b_a' => $relationshipType['name_b_a'],
+        'api.RelationshipType.create' => ['id' => '$value.id', 'name_a_b' => '$value.name_a_b', 'name_b_a' => '$value.name_b_a', 'is_active' => $setActive],
+      ]);
+    }
+  }
+  /**
+   * A list of relationship types to be managed by this extension.
+   *
+   * @return array
+   */
+  public static function defaultRelationshipsTypes() {
+    $list = [
+      ['name_a_b' => 'HR Manager is', 'name_b_a' => 'HR Manager', 'description' => 'HR Manager'],
+      ['name_a_b' => 'Line Manager is', 'name_b_a' => 'Line Manager', 'description' => 'Line Manager'],
+    ];
+    // (Recruiting Manager) should be included only if hrrecruitment extension is disabled.
+    if (!self::isExtensionEnabled('org.civicrm.hrrecruitment')) {
+      $list = array_merge($list, [ ['name_a_b' => 'Recruiting Manager is', 'name_b_a' => 'Recruiting Manager', 'description' => 'Recruiting Manager'] ]);
+    }
+    return $list;
+  }
+
+  /**
+   * (Enables/Disables) case types
+   *
+   * @param array $caseTypes
+   *   Case types list to disable/enable
+   * @param int $status
+   *   0 : disable , 1 : enable
+   */
+  public static function toggleCaseTypes($caseTypes, $status) {
+    foreach ($caseTypes as $caseType) {
+      civicrm_api3('CaseType', 'get', [
+        'name' => $caseType,
+        'api.CaseType.create' => ['id' => '$value.id', 'is_active' => $status],
+      ]);
+    }
+  }
+
+  /**
+   * (Enables/Disables) activity types
+   *
+   * @param array $activityTypes
+   *   Activity types list to disable/enable
+   * @param int $status
+   *   0 : disable , 1 : enable
+   */
+  public static function toggleActivityTypes($activityTypes, $status) {
+    foreach ($activityTypes as $activityType) {
+      civicrm_api3('OptionValue', 'get', [
+        'name' => $activityType,
+        'component_id' => 'CiviTask',
+        'api.OptionValue.create' => ['id' => '$value.id', 'is_active' => $status],
+      ]);
+    }
+  }
+
+  /**
+   * Checks if tasks and assignments extension is installed or enabled
+   *
+   * @param String $key
+   *   Extension unique key
+   *
+   * @return boolean
+   */
+  public static function isExtensionEnabled($key)  {
+    $isEnabled = CRM_Core_DAO::getFieldValue(
+      'CRM_Core_DAO_Extension',
+      $key,
+      'is_active',
+      'full_name'
+    );
+    return  !empty($isEnabled) ? true : false;
+  }
+
+  /**
+   * Removes a list of defined activity types for a given component
+   *
+   * @param array $activityTypes
+   *   A list of activity types names to remove
+   * @param int $componentName
+   *   (e.g : CiviCase, CiviTask .. etc)
+   */
+  private function removeActivityTypesList($activityTypes, $componentName) {
+    civicrm_api3('OptionValue', 'get', [
+      'name' => ['IN' => $activityTypes],
+      'component_id' => $componentName,
+      'option_group_id' => 'activity_type',
+      'api.OptionValue.delete' => ['id' => '$value.id'],
+    ]);
+  }
+
+  /**
+   * Removes a list of unused ( or unneeded ) case and activity types
+   * managed records
+   *
+   * @param array $caseTypes
+   * @param array $activityTypes
+   */
+  private function up1402_removedUnusedManagedEntities($caseTypes, $activityTypes) {
+    $entitiesToRemove['civicase:act:Background Check'] = 'OptionValue';
+
+    foreach (array_merge($caseTypes, ['Appraisal', 'Probation']) as $caseType) {
+      $entitiesToRemove[$caseType] = 'CaseType';
+    }
+
+    foreach ($activityTypes as $activityType) {
+      $entitiesToRemove['civitask:act:' . $activityType] = 'OptionValue';
+    }
+
+    foreach ($entitiesToRemove as $name => $entity) {
+      $extension = 'org.civicrm.hrcase';
+      if ($name == 'civicase:act:Background Check') {
+        $extension = 'civicrm';
+      }
+
+      $this->removeManagedEntityRecord($extension, $name, $entity);
+    }
+  }
+
+  /**
+   * Removes unused ( or unneeded ) case types
+   */
+  private function up1402_removeUnusedCaseTypes() {
+    // Remove (Appraisal) & (Probation) case types
+    $caseTypesToRemove = ['Appraisal', 'Probation'];
+
+    foreach($caseTypesToRemove as $caseType) {
+      $this->removeUnusedCaseType($caseType);
+    }
+  }
+
+  /**
+   * Creates/Updates default case types to be shipped
+   * with this extension
+   *
+   * @param array $defaultCaseTypes
+   *   A list of case types with their related data
+   */
+  private function up1402_createDefaultCaseTypes($defaultCaseTypes) {
+    foreach ($defaultCaseTypes as $caseType) {
+      $type = civicrm_api3('CaseType', 'get', [
+        'sequential' => 1,
+        'name' => $caseType['name'],
+        'limit' => 1
+      ]);
+
+      if (!empty($type['id'])) {
+        $caseType['id'] = $type['id'];
+      }
+
+      civicrm_api3('CaseType', 'create', $caseType);
+    }
+  }
+
+  /**
+   * Creates default activity types to be shipped
+   * with this extension if they are not exits
+   *
+   * @param array $defaultActivityTypes
+   *   A list of activity type names
+   */
+  private function up1402_createDefaultActivityTypes($defaultActivityTypes) {
+    foreach ($defaultActivityTypes as $activityType) {
+      $type = civicrm_api3('OptionValue', 'get', [
+        'sequential' => 1,
+        'name' => $activityType,
+        'option_group_id' => 'activity_type',
+        'component_id' => 'CiviTask',
+      ]);
+
+      if (empty($type['id'])) {
+        civicrm_api3('OptionValue', 'create', [
+          'sequential' => 1,
+          'option_group_id' => 'activity_type',
+          'label' => $activityType,
+          'name' => $activityType,
+          'component_id' => 'CiviTask',
+        ]);
+      }
+    }
+  }
+
+  /**
+   * Changes Activity type component
+   *
+   * @param string $activityTypeName
+   *   Activity type name
+   * @param string $currentComponent
+   *   Current activity type component
+   * @param string $newComponent
+   *  New activity type component
+   */
+  private function changeActivityTypeComponent($activityTypeName, $currentComponent, $newComponent) {
+    civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'activity_type',
+      'name' => $activityTypeName,
+      'component_id' => $currentComponent,
+      'api.OptionValue.create' => ['id' => '$value.id', 'component_id' => $newComponent],
+    ]);
+  }
+
+  /**
+   * Removes Managed entity record, given its name and type
+   *
+   * @param string $extensionKey
+   *   The extension Key/Name which created the managed entity
+   * @param string $name
+   *   The name of the managed entity record to remove
+   * @param string $type
+   *   The type of managed entity record to remove ( e.g : OptionValue, Contact ..etc )
+   */
+  private function removeManagedEntityRecord($extensionKey, $name, $type) {
+    $dao = new CRM_Core_DAO_Managed();
+    $dao->name = $name;
+    $dao->module = $extensionKey;
+    $dao->entity_type = $type;
+
+    if ($dao->find(TRUE)) {
+      $dao->delete();
+    }
+  }
+
+  /**
+   * Removes case type if no cases are attached to it
+   *
+   * @param string $caseTypeName
+   */
+  private function removeUnusedCaseType($caseTypeName) {
+    try {
+      $isCaseAttached = civicrm_api3('Case', 'get', [
+        'sequential' => 1,
+        'case_type_id' => $caseTypeName,
+        'options' => ['limit' => 1],
+      ]);
+
+      if (empty($isCaseAttached['values'])) {
+        civicrm_api3('CaseType', 'get', [
+          'sequential' => 1,
+          'name' => $caseTypeName,
+          'api.CaseType.delete' => ['id' => '$value.id'],
+        ]);
+      }
+    } catch (CiviCRM_API3_Exception $e) {
+      // do nothing
+    }
+  }
+
+  /**
+   * Removes a list of case types along with its related cases
+   *
+   * @param array $caseTypes
+   *   A list of case type names
+   */
+  private function removeCaseTypesWithData($caseTypes) {
+    foreach ($caseTypes as $caseType) {
+      $caseTypeRow = civicrm_api3('CaseType', 'get', [
+        'sequential' => 1,
+        'name' => $caseType,
+        'limit' => 1,
+      ]);
+
+      if (!empty($caseTypeRow['id'])) {
+        // Removing all cases related to this case type , we using
+        // DAO instead of API because API deletion does not supports
+        // batch delete and this should be much faster
+        $caseDAO = new CRM_Case_DAO_Case();
+        $caseDAO->case_type_id = $caseTypeRow['id'];
+        $caseDAO->delete();
+
+        // Now delete the case type
+        civicrm_api3('caseType', 'delete', [
+          'id' => $caseTypeRow['id'],
+        ]);
+      }
+    }
+  }
+
 }

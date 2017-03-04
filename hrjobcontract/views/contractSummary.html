@@ -85,7 +85,7 @@
                     <div class="col-sm-6">
                         <p class="form-control-static">
                                     <span ng-if="health.plan_type || health.provider" class="subfield">
-                                        <span ng-if="health.plan_type">{{health.plan_type}} </span>
+                                        <span ng-if="health.plan_type">{{health.healthplan_type_label}} </span>
                                         <span ng-if="health.provider">(with <span hrjc-contact="health.provider" hrjc-contact-link="true"></span>)</span>
                                     </span>
                             <span ng-if="health.description" class="subfield"><strong>Description:</strong> {{health.description}}</span>
@@ -103,10 +103,9 @@
                     <div class="col-sm-6">
                         <p class="form-control-static">
                                     <span ng-if="health.plan_type_life_insurance || health.provider_life_insurance" class="subfield">
-                                        <span ng-if="health.plan_type_life_insurance">{{health.plan_type_life_insurance}} </span>
+                                        <span ng-if="health.plan_type_life_insurance">{{health.lifeplan_type_label}} </span>
                                         <span ng-if="health.provider_life_insurance">(with <span hrjc-contact="health.provider_life_insurance" hrjc-contact-link="true"></span>)</span>
                                     </span>
-                            <span ng-if="health.plan_type_life_insurance" class="subfield">{{health.plan_type_life_insurance}}</span>
                             <span ng-if="health.description_life_insurance" class="subfield"><strong>Description:</strong> {{health.description_life_insurance}}</span>
                             <span ng-if="health.dependents_life_insurance" class="subfield"><strong>Dependents:</strong> {{health.dependents_life_insurance}}</span>
                         </p>
@@ -157,7 +156,7 @@
                     <div class="col-sm-6">
                         <p class="form-control-static">
                             <span ng-if="pension.is_enrolled !== ''" class="subfield">{{pension.is_enrolled == '2' ? 'Opted out' : pension.is_enrolled == '1' ? 'Enrolled' : 'Not Enrolled'}}</span>
-                            <span ng-if="pension.pension_type" class="subfield"><strong>Pension Type:</strong> {{pension.pension_type}}</span>
+                            <span ng-if="pension.pension_type" class="subfield"><strong>Pension Type:</strong> {{pension.pension_type_label}}</span>
                             <span ng-if="pension.er_contrib_pct" class="subfield"><strong>Employer Contribution (%):</strong> {{pension.er_contrib_pct}}</span>
                             <span ng-if="pension.ee_contrib_pct" class="subfield"><strong>Employee Contribution (%):</strong> {{pension.ee_contrib_pct}}</span>
                             <span ng-if="pension.ee_contrib_abs | parseInt" class="subfield"><strong>Employee Contribution (absolute amount):</strong> {{pension.ee_contrib_abs | formatAmount}}</span>
