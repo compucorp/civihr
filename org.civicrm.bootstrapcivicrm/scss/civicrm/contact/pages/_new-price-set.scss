@@ -1,6 +1,21 @@
 .page-civicrm-admin-price {
+  &,
+  .ui-dialog-content table.form-layout td {
+    input.crm-form-text,
+    .crm-form-select,
+    .crm-form-textarea {
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+    }
+
+    .crm-form-textarea {
+      min-height: 100px;
+    }
+  }
+
   .crm-container #crm-main-content-wrapper {
-    .CRM_Price_Form_Set {
+    .CRM_Price_Form_Set,
+    .CRM_Price_Form_Field {
       .crm-form-block {
         .crm-submit-buttons {
           box-shadow: none;
@@ -27,17 +42,6 @@
               }
             }
           }
-
-          input.crm-form-text,
-          .crm-form-select,
-          .crm-form-textarea {
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-          }
-
-          .crm-form-textarea {
-            min-height: 100px;
-          }
         }
       }
     }
@@ -50,6 +54,54 @@
     #options {
       @include mx-expandable-table();
       box-shadow: none !important;
+    }
+  }
+
+  .CRM_Price_Form_Field {
+    .form-layout {
+      tr {
+        td {
+          display: table-cell;
+          text-align: left;
+          vertical-align: middle;
+
+          &.description {
+            padding-left: 15px;
+          }
+        }
+
+        &.crm-price-field-form-block-is_display_amounts,
+        &.crm-price-field-form-block-weight,
+        &.crm-price-field-form-block-help_post,
+        &.crm-price-field-form-block-active_on,
+        &.crm-price-field-form-block-expire_on {
+          td {
+            vertical-align: top;
+          }
+        }
+      }
+    }
+
+    #showoption {
+      legend,
+      .description,
+      #optionFieldLink {
+        padding: 0 20px;
+      }
+    }
+
+    #optionField {
+      @include mx-expandable-table();
+      margin: 20px 0;
+
+      td {
+        padding: 10px 20px !important;
+
+        .crm-form-text {
+          min-width: 50px !important;
+          width: 50px !important;
+        }
+      }
     }
   }
 }
