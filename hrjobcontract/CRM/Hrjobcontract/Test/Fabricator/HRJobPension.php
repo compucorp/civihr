@@ -13,26 +13,39 @@ class CRM_Hrjobcontract_Test_Fabricator_HRJobPension extends BaseAPIFabricator {
    */
   public static function fabricate($params) {
     if (!empty($params['pension_type'])) {
-      $pensionTypeResult = civicrm_api3('OptionValue', 'get', [
+      $pensionTypeResult = civicrm_api3('Contact', 'get', [
         'sequential' => 1,
-        'option_group_id' => 'hrjc_pension_type',
-        'value' => $params['pension_type'],
+        'contact_type' => "Organization",
+        'contact_sub_type' => "pension_provider",
+        'organization_name' => $params['pension_type'],
       ]);
-      
+
       if ($pensionTypeResult['count'] == 0) {
-        self::createPensionType($params['pension_type']);
+        $pensionTypeResult = self::createPensionType($params['pension_type']);
       }
+      
+      $params['pension_type'] = $pensionTypeResult['id'];
     }
-    
+
     return parent::fabricate($params);
   }
   
+  /**
+   * Creates a new pension provider.
+   * 
+   * @param string $value
+   *   Organization name.
+   * 
+   * @return array
+   *   Result of creating new provider.
+   */
   private static function createPensionType($value) {
-    $result = civicrm_api3('OptionValue', 'create', [
-      'value' => $value, 
-      'name' => 'Test Pension Type ' . mt_rand(1000, 9000), 
-      'option_group_id' => 'hrjc_pension_type'
+    $result = civicrm_api3('Contact', 'create', [
+      'contact_type' => "Organization",
+      'contact_sub_type' => "pension_provider",
+      'organization_name' => $value,
     ]);
+
     return array_shift($result['values']);
   }
 }

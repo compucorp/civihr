@@ -594,7 +594,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         if ($optionID !== FALSE) {
           $convertedValue = $optionID;
         } else {
-          $errorMessage = "{$this->_fields[$key]->_title} is not valid";
+          $errorMessage = "Value '$value' for {$this->_fields[$key]->_title} is not valid";
         }
         break;
       case 'HRJobPay-pay_unit':
@@ -623,11 +623,13 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         }
         break;
       case 'HRJobPension-pension_type':
-        $contactTypeMapping[$key] = 'pension_provider';
       case 'HRJobHealth-provider':
-        $contactTypeMapping[$key] = 'Health_Insurance_Provider';
       case 'HRJobHealth-provider_life_insurance':
-        $contactTypeMapping[$key] = 'Life_Insurance_Provider';
+        $contactTypeMapping = [
+          'HRJobPension-pension_type' => 'pension_provider',
+          'HRJobHealth-provider' => 'Health_Insurance_Provider',
+          'HRJobHealth-provider_life_insurance' => 'Life_Insurance_Provider'
+        ];
 
         $convertedValue = NULL;
         $result = CRM_Hrjobcontract_BAO_HRJobHealth::checkProvider($value, $contactTypeMapping[$key]);
@@ -635,7 +637,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
           $convertedValue = $result;
         }
         else  {
-          $errorMessage = "{$this->_fields[$key]->_title} is not an existing provider";
+          $errorMessage = "{$this->_fields[$key]->_title} with ID [$value] is not an existing provider";
         }
         break;
       case 'HRJobLeave-leave_amount':

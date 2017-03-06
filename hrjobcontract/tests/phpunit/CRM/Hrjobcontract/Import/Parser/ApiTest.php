@@ -355,7 +355,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     );
 
     $contactID = $this->createTestContact($contact2Params);
-    $params = array(
+    $params = [
       'HRJobContract-contact_id' => $contactID,
       'HRJobDetails-title' => 'Test Contract Title',
       'HRJobDetails-position' => 'Test Contract Position',
@@ -367,7 +367,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobHealth-dependents_life_insurance' => 'LI dependents',
       'HRJobHealth-description_life_insurance' => 'LI description',
       'HRJobHealth-plan_type_life_insurance' => $this->_insurancePlanTypes[1]['label'],
-    );
+    ];
 
     $importResponse = $this->runImport($params);
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
@@ -392,13 +392,27 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobPension-ee_contrib_pct' => '12',
       'HRJobPension-ee_contrib_abs' => '4000',
       'HRJobPension-ee_evidence_note' => 'sample',
-      'HRJobPension-pension_type' => 'employer pension',
+      'HRJobPension-pension_type' => $this->createPensionProvider('Pension Provider'),
     );
 
     $importResponse = $this->runImport($params);
     $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
 
     $this->validateResult($contactID, 'HRJobPension');
+
+    $params['HRJobPension-pension_type'] = 'Wrong Pension Provider';
+    $failedImportResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $failedImportResponse);
+  }
+
+  private function createPensionProvider($providerName) {
+    $provider = ContactFabricator::fabricateOrganization([
+      'contact_type' => "Organization",
+      'contact_sub_type' => "pension_provider",
+      'organization_name' => $providerName,
+    ]);
+
+    return $provider['id'];
   }
 
   function testImportingContractWithEndDateWithoutEndReason() {
@@ -569,7 +583,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     return $contactID;
   }
 
-  private function creatTestContractType()  {
+  private function creatTestContractType() {
     $contractTypeGroup = $this->callAPISuccess('OptionGroup', 'get', array(
       'sequential' => 1,
       'name' => "hrjc_contract_type",
