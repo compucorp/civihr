@@ -219,7 +219,7 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                   'pseudoconstant' => array(
                     'table' => 'civicrm_contact',
                     'keyColumn' => 'id',
-                    'labelColumn' => 'Pension Provider',
+                    'labelColumn' => 'display_name',
                   ),
                 ) ,
                 'hrjobcontract_pension_ee_contrib_abs' => array(
