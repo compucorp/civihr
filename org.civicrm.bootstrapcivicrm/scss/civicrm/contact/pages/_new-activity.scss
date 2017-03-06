@@ -274,6 +274,12 @@
         min-height: 100px;
       }
     }
+
+    .crm-activity-form-block-details {
+      td.label {
+        vertical-align: top;
+      }
+    }
   }
 }
 
