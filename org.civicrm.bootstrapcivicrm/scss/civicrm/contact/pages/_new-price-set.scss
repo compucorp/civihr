@@ -1,15 +1,23 @@
 .page-civicrm-admin-price {
   &,
-  .ui-dialog-content table.form-layout td {
-    input.crm-form-text,
-    .crm-form-select,
-    .crm-form-textarea {
-      margin-top: 0 !important;
-      margin-bottom: 0 !important;
+  .ui-dialog-content {
+    table.form-layout td {
+      input.crm-form-text,
+      .crm-form-select,
+      .crm-form-textarea {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+      }
+
+      .crm-form-textarea {
+        min-height: 100px;
+      }
     }
 
-    .crm-form-textarea {
-      min-height: 100px;
+    .ui-button {
+      .ui-icon {
+        top: 17px;
+      }
     }
   }
 
