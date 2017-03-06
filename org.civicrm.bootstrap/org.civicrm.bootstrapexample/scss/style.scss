@@ -1,3 +1,5 @@
+// @import "vendor/font-awesome/scss/font-awesome"; // Example
+
 @import "overrides/variables";
 
 /**
@@ -19,9 +21,5 @@
 @import "fonts/*";
 @import "mixins/*";
 
-#{$bootstrap-namespace} {
-    @import "overrides/style/*";
-    @import "components/*";
-}
-
-// @import "vendor/font-awesome/scss/font-awesome"; // Example
+@import "overrides/style/*";
+@import "components/*";

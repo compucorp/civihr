@@ -9604,33 +9604,3 @@ fieldset[disabled]
 #hrjobroles .hrjobroles-switch[disabled] + .radio-label {
   cursor: not-allowed;
 }
-#hrjobroles .add-new-row {
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.176);
-}
-#hrjobroles .main-row {
-  border: 1px solid #DDD;
-  border-radius: 4px;
-  margin-bottom: 10px;
-}
-#hrjobroles .main-row-header {
-  padding-bottom: 5px;
-  margin: 10px 10px 5px;
-  border-bottom: none;
-}
-#hrjobroles .btn-setup {
-  margin: 10px 10px 10px 10px;
-  clear: both;
-}
-#hrjobroles .clear {
-  clear: both;
-}
-#hrjobroles .page-header {
-  padding-bottom: 0px;
-  border-bottom: 0px;
-  margin: 10px 0px 15px;
-}
-#hrjobroles .createrole {
-  display: inline;
-  float: inherit;
-  margin-bottom: 55px;
-}

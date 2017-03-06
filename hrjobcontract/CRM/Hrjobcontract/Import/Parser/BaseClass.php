@@ -89,8 +89,6 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
     $this->_optionsList['HRJobHour-hours_type'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_hours_type');
     $this->_optionsList['HRJobHour-location_standard_hours'] = CRM_Hrjobcontract_SelectValues::buildHourLocations();
     $this->_optionsList['HRJobPension-pension_type'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_pension_type');
-    $this->_optionsList['HRJobHealth-plan_type'] = CRM_Hrjobcontract_SelectValues::planType();
-    $this->_optionsList['HRJobHealth-plan_type_life_insurance'] = CRM_Hrjobcontract_SelectValues::planTypeLifeInsurance();
     $this->_optionsList['HRJobPay-pay_cycle'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_pay_cycle');
     $this->_optionsList['HRJobPay-pay_scale'] = CRM_Hrjobcontract_SelectValues::buildPayScales();
     $this->_optionsList['HRJobPay-pay_currency'] = CRM_Hrjobcontract_SelectValues::buildCurrency();
@@ -108,6 +106,8 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
     $this->_optionsList['deduction_names'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_deduction_name');
     $this->_optionsList['deduction_types'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_deduction_type');
     $this->_optionsList['HRJobLeave-leave_type'] = CRM_Hrjobcontract_SelectValues::buildLeaveTypes();
+    $this->_optionsList['HRJobHealth-plan_type'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_insurance_plantype');
+    $this->_optionsList['HRJobHealth-plan_type_life_insurance'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_insurance_plantype');
   }
   /**
    * Set fields to an array of importable fields
@@ -190,7 +190,7 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
    * @param String $searchField
    * @param String $returnField
    * @return Integer|String
-   * @access private
+   * @access protected
    */
   protected function getOptionID($option, $value, $returnField = 'id', $searchField = 'label')  {
     if ($searchField != 'value' && is_numeric($value)) {

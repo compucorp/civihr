@@ -1,12 +1,21 @@
-/**
- * Applies the given content to a namespaced body, and to
- * an equivalent namespaced container (which acts like a body-like element)
- */
 @mixin body-namespaced {
+  @if $bootstrap-namespace != "" {
+    // <body> is namespaced and <html> removed so that the style
+    // doesn't leak out of the namespace
     @at-root {
-        body#{$bootstrap-namespace},
-        #{$bootstrap-namespace} {
-            @content;
-        }
+      body#{$bootstrap-namespace},
+      #{$bootstrap-namespace} {
+        @content;
+      }
     }
+  } @else {
+    html {
+      font-size: 10px;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+
+    body {
+      @content
+    }
+  }
 }

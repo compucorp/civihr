@@ -78,25 +78,26 @@ define([
                         revisionDataList[iNext] = model;
                     }
 
-                    if (!angular.isArray(revisionDataList[i])) {
-                        isUnique = isLast || revisionDataList[i].jobcontract_revision_id != revisionDataList[iNext].jobcontract_revision_id;
-                    } else {
-                        isUnique = isLast || revisionDataList[i][0].jobcontract_revision_id != revisionDataList[iNext][0].jobcontract_revision_id;
-
+                    if (angular.isArray(revisionDataList[i])) {
                         revisionDataList[i] = {
                             jobcontract_revision_id: revisionDataList[i][0].jobcontract_revision_id,
                             data: revisionDataList[i]
                         }
                     }
 
-                    if (isUnique) {
-                        angular.extend(revisionDataList[i],{
-                            effective_date: $filter('date')(revisionList[i].effective_date, 'yyyy/MM/dd') || '',
-                            editor_name: revisionList[i].editor_name || '',
-                            change_reason: $rootScope.options.contract.change_reason[revisionList[i].change_reason] || ''
-                        })
-                        $scope.revisionDataList.push(revisionDataList[i]);
-                    }
+                    angular.extend(revisionDataList[i],{
+                      effective_date: $filter('date')(revisionList[i].effective_date, 'yyyy/MM/dd') || '',
+                      editor_name: revisionList[i].editor_name || '',
+                      change_reason: $rootScope.options.contract.change_reason[revisionList[i].change_reason] || '',
+                      details_revision_id: revisionList[i].details_revision_id,
+                      health_revision_id: revisionList[i].health_revision_id,
+                      hour_revision_id: revisionList[i].hour_revision_id,
+                      leave_revision_id: revisionList[i].leave_revision_id,
+                      pay_revision_id: revisionList[i].pay_revision_id,
+                      pension_revision_id: revisionList[i].pension_revision_id,
+                      role_revision_id: revisionList[i].role_revision_id
+                    })
+                    $scope.revisionDataList.push(revisionDataList[i]);
                 }
             })();
 
@@ -201,7 +202,7 @@ define([
                         url += 'fields['+prefix+fieldName+']=1&';
                     }
                 });
-                
+
                 url += 'fields[sort_name]=1' +
                         '&fields[first_name]=1' +
                         '&fields[last_name]=1' +
