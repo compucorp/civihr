@@ -253,4 +253,32 @@
       margin-left: 0;
     }
   }
+
+  .form-layout {
+    td {
+      &.label {
+        display: table-cell;
+        text-align: left;
+        vertical-align: middle;
+        padding-left: 0 !important;
+      }
+
+      input.crm-form-text,
+      .crm-form-select,
+      .crm-form-textarea {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+      }
+
+      .crm-form-textarea {
+        min-height: 100px;
+      }
+    }
+  }
+}
+
+.crm-entityref-filters {
+  .select2-container {
+    width: 100% !important;
+  }
 }
