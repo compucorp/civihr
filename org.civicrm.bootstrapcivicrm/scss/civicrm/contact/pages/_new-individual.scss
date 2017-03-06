@@ -211,6 +211,7 @@
     table {
       td {
         padding-left: 0;
+        vertical-align: middle;
       }
     }
   }
@@ -258,8 +259,8 @@
             @include fa-icon($font-size: 15px, $content: '\f00c', $color: $gray-darker);
             display: inline-block;
             position: absolute;
-            left: 5px;
-            top: 4px;
+            left: 1px;
+            top: 7px;
             margin-top: -5px;
           }
         }
