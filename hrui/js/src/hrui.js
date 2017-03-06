@@ -17,11 +17,9 @@
 
     if ($('#customFields').length < 1) {
       $('#Inline_Custom_Data label').each(function() {
-        $('#nick_name').parent().after('<td colspan="3" id="customFields"></td>');
+        $('#nick_name').parent().after('<td id="customFields"></td>');
         var nodeID = $(this).attr('for');
         var customField = $('#' + nodeID).detach();
-        $(this).detach();
-
         $('#customFields').append($(this));
         $('#customFields').append(customField);
       });
