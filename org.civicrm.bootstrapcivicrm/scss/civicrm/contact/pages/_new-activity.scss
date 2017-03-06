@@ -91,6 +91,12 @@
       margin-right: -60px;
     }
 
+    &#Activity {
+      .crm-accordion-body {
+        padding: 15px 0 !important;
+      }
+    }
+
     #s2id_activity_type_id,
     #s2id_source_contact_id,
     #s2id_target_contact_id,
@@ -120,6 +126,51 @@
     h1 {
       &.page-title {
         margin-bottom: 27px !important;
+      }
+    }
+  }
+}
+
+.page-civicrm-contact-view {
+  .CRM_Activity_Form_Activity {
+    .crm-activity-form-block-assignee_contact_id {
+      td:not(.label) {
+        padding: 0 3px;
+      }
+
+      .helpicon {
+        position: relative;
+        bottom: 2px;
+        left: 5px;
+      }
+    }
+
+    #recurring-entity-block {
+      label {
+        line-height: 1.3em;
+      }
+
+      .helpicon {
+        position: relative;
+        bottom: 2px;
+        left: 5px;
+      }
+
+      select {
+        padding: 0 10px;
+        height: 30px !important;
+      }
+    }
+
+    .crm-accordion-body {
+      td {
+        vertical-align: middle;
+      }
+    }
+
+    #follow-up {
+      td.label {
+        line-height: 1.5em;
       }
     }
   }
@@ -195,10 +246,6 @@
     input[type=checkbox]:checked+label[for]::after {
       left: 2px;
       top: 7px;
-    }
-
-    input[type=radio]:checked+label[for]::after {
-      top: 15px;
     }
   }
 
