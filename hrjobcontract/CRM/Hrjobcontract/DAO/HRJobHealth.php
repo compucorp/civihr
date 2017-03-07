@@ -210,7 +210,7 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
                 'headerPattern' => '',
                 'dataPattern' => '',
                 'pseudoconstant' => array(
-                  'callback' => 'CRM_Hrjobcontract_SelectValues::planType',
+                  'optionGroupName' => 'hrjc_insurance_plantype',
                 ),
                 'headerPattern' => '/^health\s?insurance\s?plan\s?type/i',
               ) ,
@@ -256,7 +256,7 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
                 'headerPattern' => '',
                 'dataPattern' => '',
                 'pseudoconstant' => array(
-                  'callback' => 'CRM_Hrjobcontract_SelectValues::planTypeLifeInsurance',
+                  'optionGroupName' => 'hrjc_insurance_plantype',
                 ),
                 'headerPattern' => '/^life\s?insurance\s?plan\s?type/i',
               ) ,

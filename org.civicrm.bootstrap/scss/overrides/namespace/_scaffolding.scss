@@ -1,8 +1,5 @@
 //
-// Scaffolding for namespaced theme
-//
-// <body> is namespaced and <html> removed so that the style
-// doesn't leak out of the namespace
+// Scaffolding
 // --------------------------------------------------
 
 
@@ -22,7 +19,7 @@
 
 // Body reset
 
-// Namespaced body
+// If there is a namespace defined:
 //
 // The <body> styles defined in the default _scaffolding partials
 // are applied directly either to the body with the namespace, or to

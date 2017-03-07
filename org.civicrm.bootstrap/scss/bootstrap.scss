@@ -7,9 +7,9 @@
 @import "vendor/bootstrap/mixins";
 
 #{$bootstrap-namespace} {
-    // Reset CMS and old CiviCRM style
-    @import "overrides/reset/drupal";
-    @if $bootstrap-namespace != "" { @import "overrides/reset/civicrm"; }
+  // Reset CMS and old CiviCRM style
+  @import "overrides/reset/drupal";
+  @import "overrides/reset/civicrm";
 
-    @import "themes/default";
+  @import "themes/default";
 }

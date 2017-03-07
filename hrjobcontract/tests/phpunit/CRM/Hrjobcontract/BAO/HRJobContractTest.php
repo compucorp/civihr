@@ -396,22 +396,19 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $contactParams = array("first_name" => "chrollo", "last_name" => "lucilfer");
     $contactID =  $this->createContact($contactParams);
 
-    $params = array(
-      'position' => 'spiders boss',
-      'title' => 'spiders boss');
+    $params = ['position' => 'spiders boss', 'title' => 'spiders boss'];
     $this->createJobContract($contactID, '2015-06-01', '2015-10-01', $params);
 
-    $params = array(
-      'position' => 'spiders boss2',
-      'title' => 'spiders boss2');
+    $params['position'] = 'spiders boss2';
+    $params['title'] = 'spiders boss2';
     $this->createJobContract($contactID, '2016-06-01', null, $params);
 
-    $params = array(
-      'position' => 'spiders boss3',
-      'title' => 'spiders boss3');
+    $params['position'] = 'spiders boss3';
+    $params['title'] = 'spiders boss3';
     $this->createJobContract($contactID, '2014-06-01', '2014-10-01', $params);
 
     $currentContract = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contactID);
+    $this->assertNotEquals(null, $currentContract);
     $this->assertEquals('spiders boss2', $currentContract->title);
   }
 

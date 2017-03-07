@@ -48,6 +48,9 @@ define([
 
         return promiseResolvedWith(contact);
       },
+      leaveManagees: function () {
+        return promiseResolvedWith(this.mockedContacts().list)
+      },
 
       /**
        * Adds a spy on every method for testing purposes

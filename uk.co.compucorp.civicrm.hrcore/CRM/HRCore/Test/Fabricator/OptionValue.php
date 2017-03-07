@@ -8,7 +8,7 @@ class CRM_HRCore_Test_Fabricator_OptionValue {
   ];
 
   public static function fabricate($params = []) {
-    $params['value'] = mt_rand(1000, 9000);
+    $params['value'] = empty($params['value']) ? mt_rand(1000, 9000) : $params['value'];
 
     $params = array_merge(self::$defaultParams, $params);
 
