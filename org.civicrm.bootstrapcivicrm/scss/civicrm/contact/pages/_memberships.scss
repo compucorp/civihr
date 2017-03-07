@@ -319,6 +319,16 @@
       }
     }
   }
+
+  table tr td {
+    vertical-align: middle;
+
+    .helpicon {
+      position: relative;
+      bottom: 2px;
+      left: 5px;
+    }
+  }
 }
 
 
