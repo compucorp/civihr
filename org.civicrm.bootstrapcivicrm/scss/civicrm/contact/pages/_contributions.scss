@@ -425,6 +425,20 @@
 }
 
 .CRM_Contribute_Form_Contribution {
+  .crm-accordion-header {
+    font-weight: 600 !important;
+    font-family: $font-family-base;
+  }
+
+  #payment_information {
+    legend {
+      font-size: $font-size-h2;
+      font-family: $font-family-base;
+      font-weight: 600;
+      color: $gray-darker;
+    }
+  }
+
   .crm-submit-buttons {
     .crm-button_qf_Contribution_upload {
       margin-left: 0 !important;
