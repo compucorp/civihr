@@ -62,16 +62,8 @@
       }
 
       .select2-container {
-        width: 300px !important;
-
         &#s2id_format_id {
           margin-right: 0 !important;
-        }
-      }
-
-      input {
-        &.crm-form-text {
-          min-width: 300px !important;
         }
       }
 
@@ -124,14 +116,37 @@
     }
 
     .crm-accordion-body {
+      #_qf_Search_refresh {
+        color: $crm-white;
+        background: $brand-primary;
+        border-color: $brand-primary;
+        text-shadow: none;
+        font-size: $font-size-base;
+        font-family: $font-family-base;
+        text-transform: uppercase;
+        padding: 8px 12px;
+        border-radius: 2px;
+      }
+
       > .form-layout {
         > tbody {
           > tr {
-            display: flex;
-
             &:nth-child(2) {
               > td {
                 width: 30%;
+
+                label {
+                  display: block;
+                }
+              }
+            }
+
+            &:nth-child(5) {
+              > td:first-child {
+                .crm-form-text {
+                  min-width: 100px !important;
+                  width: 100px !important;
+                }
               }
             }
 
@@ -174,6 +189,12 @@
                 .crm-accordion-body {
                   padding: 15px 30px !important;
                 }
+              }
+            }
+
+            &:last-child {
+              td {
+                border-top: 1px solid $crm-background;
               }
             }
 
