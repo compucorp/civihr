@@ -16,41 +16,36 @@
       border: none;
       font-family: $font-family-base;
 
-      thead {
+      thead tr {
+        border-bottom: 1px solid $crm-dark-grayblue;
 
-        tr{
-          border-bottom: 1px solid $crm-dark-grayblue;
+        th {
+          border-bottom: none;
+          background: $gray-lighter;
+          color: $gray-darker;
+          vertical-align: middle;
+          border: none;
+          padding: 10px 20px;
 
-          th {
-            border-bottom: none;
-            background: $gray-lighter;
-            color: $gray-darker;
-            vertical-align: middle;
-            border: none;
-            padding: 10px 20px;
-
-            div {
-              padding: 0;
-            }
+          div {
+            padding: 0;
           }
         }
       }
 
-      tbody {
-        tr {
+      tbody tr {
+        background: $crm-white;
+        border-bottom: 1px solid $crm-background;
+        border-right: none;
+
+        td {
           background: $crm-white;
-          border-bottom: 1px solid $crm-background;
-          border-right: none;
+          color: $gray-dark;
+          border: none;
+          padding: 10px 20px;
 
-          td {
-            background: $crm-white;
-            color: $gray-dark;
-            border: none;
-            padding: 10px 20px;
-
-            a {
-              color: $brand-primary !important;
-            }
+          a {
+            color: $brand-primary !important;
           }
         }
       }
