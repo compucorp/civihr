@@ -225,7 +225,9 @@ define([
              */
             getManageEntitlementsPageURL: function(contactId) {
               var path = 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
-              return CRM.url(path, { cid: contactId });
+              var returnPath = 'civicrm/contact/view';
+              var returnUrl = CRM.url(returnPath, { cid: contactId, selectedChild : 'hrjobcontract' });
+              return CRM.url(path, { cid: contactId, returnUrl : returnUrl });
             }
         }
     }]);

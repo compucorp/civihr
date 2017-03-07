@@ -373,19 +373,16 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
   /**
    * To be able to return to the URL the user was before coming to this form,
-   * we store the Referer in the session.
-   *
+   * we store the return URL in the session.
    */
   private function setReturnUrl() {
     $session = CRM_Core_Session::singleton();
-    $referer = CRM_Utils_System::refererPath();
+    $returnUrl = isset($_GET['returnUrl']) ? urldecode($_GET['returnUrl']) : '';
     $vars = [];
-    parse_str(parse_url($referer, PHP_URL_QUERY), $vars);
-    if(!empty($vars['q']) && $this->isValidReturnPath($vars['q'])) {
-      $q = $vars['q'];
-      unset($vars['q']);
-      $url = CRM_Utils_System::url($q, http_build_query($vars));
-      $session->set('ManageEntitlementsReturnUrl', $url);
+    parse_str(parse_url($returnUrl, PHP_URL_QUERY), $vars);
+    if (!empty($vars['q']) && $this->isValidReturnPath($vars['q'])) {
+      $returnUrl = filter_var($returnUrl, FILTER_SANITIZE_URL);
+      $session->set('ManageEntitlementsReturnUrl', $returnUrl);
     }
   }
 
