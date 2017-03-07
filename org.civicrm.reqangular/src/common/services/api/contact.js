@@ -37,6 +37,20 @@ define([
           .then(function (data) {
             return data.values[0];
           });
+      },
+
+      /**
+       * Finds the contacts who are managed by current logged in user
+       *
+       * @return {Promise} resolves to the found contact
+       */
+      leaveManagees: function () {
+        $log.debug('api.contact.leaveManagees');
+
+        return this.sendGET('Contact', 'getleavemanagees')
+          .then(function (data) {
+            return data.values;
+          });
       }
     });
   }]);
