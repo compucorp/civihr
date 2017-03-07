@@ -46,22 +46,22 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
   /**
    * Add the conditions to the query.
    *
-   * This where it is ensured that only contacts managed by the logged-in user
-   * with the approved relationship types are returned.
+   * This where it is ensured that only contacts managed by the contactID
+   * passed in via the managed_by parameter with the approved relationship types are returned.
    * Also only contacts with is_deleted = 0 and is_deceased = 0 are returned.
    *
    * @param \CRM_Utils_SQL_Select $query
    */
   private function addWhere(CRM_Utils_SQL_Select $query) {
     $today = date('Y-m-d');
-    $loggedInUserID = (int) CRM_Core_Session::getLoggedInContactID();
+    $managerID = $this->params['managed_by'];
     $leaveApproverRelationships = $this->getLeaveApproverRelationshipsTypes();
 
     $whereClauses[] = "(
       r.is_active = 1 AND
       rt.is_active = 1 AND
       rt.id IN(" . implode(',', $leaveApproverRelationships) . ") AND
-      r.contact_id_b = {$loggedInUserID} AND 
+      r.contact_id_b = {$managerID} AND 
       (r.start_date IS NULL OR r.start_date <= '$today') AND
       (r.end_date IS NULL OR r.end_date >= '$today')
     )";
