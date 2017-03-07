@@ -421,9 +421,16 @@
   .crm-contribution-form-block > .form-layout-compressed {
     td {
       padding: 10px 30px !important;
+      line-height: 1.5em;
+      vertical-align: middle;
+      min-height: 40px;
 
       &:first-child {
         padding-right: 0 !important;
+
+        label {
+          margin: 0;
+        }
       }
 
       &:nth-child(2) {
@@ -638,7 +645,21 @@
 
   .crm-contribution-form-block-pcp_details {
     position: relative;
-    left: -162px;
+    left: -214px;
+  }
+
+  .crm-accordion-body {
+    td {
+      vertical-align: middle;
+
+      &.label {
+        min-width: 200px;
+
+        label {
+          padding-left: 10px;
+        }
+      }
+    }
   }
 }
 
