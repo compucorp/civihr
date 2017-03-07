@@ -4,6 +4,7 @@ use Civi\API\SelectQuery;
 use CRM_Contact_BAO_Relationship as Relationship;
 use CRM_Contact_BAO_RelationshipType as RelationshipType;
 use CRM_Contact_BAO_Contact as Contact;
+use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 
 /**
  * This class is basically a wrapper around Civi\API\SelectQuery.
@@ -19,13 +20,25 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
   private $params;
 
   /**
+   * @var \CRM_HRLeaveAndAbsences_Service_LeaveManager
+   */
+  private $leaveManagerService;
+
+  /**
    * @var \Civi\API\SelectQuery
    *  The SelectQuery instance wrapped by this class
    */
   private $query;
 
-  public function __construct($params) {
+  /**
+   * CRM_HRLeaveAndAbsences_API_Query_ContactSelect constructor.
+   *
+   * @param array $params
+   * @param \CRM_HRLeaveAndAbsences_Service_LeaveManager $leaveManagerService
+   */
+  public function __construct($params, LeaveManagerService $leaveManagerService) {
     $this->params = $params;
+    $this->leaveManagerService = $leaveManagerService;
     $this->buildCustomQuery();
   }
 
@@ -46,22 +59,27 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
   /**
    * Add the conditions to the query.
    *
-   * This where it is ensured that only contacts managed by the logged-in user
-   * with the approved relationship types are returned.
+   * This where it is ensured that only contacts managed by the contactID
+   * passed in via the managed_by parameter with the approved relationship types are returned.
    * Also only contacts with is_deleted = 0 and is_deceased = 0 are returned.
    *
    * @param \CRM_Utils_SQL_Select $query
    */
   private function addWhere(CRM_Utils_SQL_Select $query) {
     $today = date('Y-m-d');
-    $loggedInUserID = (int) CRM_Core_Session::getLoggedInContactID();
+    $managerID = (int) CRM_Core_Session::getLoggedInContactID();
+
+    if ($this->leaveManagerService->currentUserIsAdmin()) {
+      $managerID = $this->params['managed_by'];
+    }
+
     $leaveApproverRelationships = $this->getLeaveApproverRelationshipsTypes();
 
     $whereClauses[] = "(
       r.is_active = 1 AND
       rt.is_active = 1 AND
       rt.id IN(" . implode(',', $leaveApproverRelationships) . ") AND
-      r.contact_id_b = {$loggedInUserID} AND 
+      r.contact_id_b = {$managerID} AND 
       (r.start_date IS NULL OR r.start_date <= '$today') AND
       (r.end_date IS NULL OR r.end_date >= '$today')
     )";
