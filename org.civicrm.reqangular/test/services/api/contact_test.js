@@ -23,6 +23,7 @@ define([
     it("has expected interface", function () {
       expect(Object.keys(ContactAPI)).toContain("all");
       expect(Object.keys(ContactAPI)).toContain("find");
+      expect(Object.keys(ContactAPI)).toContain("leaveManagees");
     });
 
     describe("all()", function () {
@@ -77,6 +78,31 @@ define([
 
       it("calls sendGET method", function () {
         expect(ContactAPI.sendGET).toHaveBeenCalledWith('Contact', 'get', {id: '' + contactId}, false);
+      });
+    });
+
+    describe("leaveManagees()", function () {
+      var contactApiPromise;
+
+      beforeEach(function () {
+        spyOn(ContactAPI, 'sendGET').and.returnValue($q.resolve({
+          values: ContactAPIMock.mockedContacts().list
+        }));
+        contactApiPromise = ContactAPI.leaveManagees();
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      it("returns the contacts", function () {
+        contactApiPromise.then(function (result) {
+          expect(result).toEqual(ContactAPIMock.mockedContacts().list);
+        });
+      });
+
+      it("calls sendGET method", function () {
+        expect(ContactAPI.sendGET).toHaveBeenCalledWith('Contact', 'getleavemanagees');
       });
     });
   });
