@@ -367,7 +367,7 @@
         color: $gray-darker !important;
         vertical-align: middle;
         border: none;
-        padding: 10px;
+        padding: 10px !important;
         line-height: 1.1em;
 
         div {
@@ -395,7 +395,7 @@
           color: $gray-darker !important;
           vertical-align: middle;
           border: none;
-          padding: 10px;
+          padding: 10px !important;
           line-height: 1.1em;
 
           &.contriTotalLeft {
