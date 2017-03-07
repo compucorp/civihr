@@ -139,6 +139,12 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         $query->_tables['civicrm_hrjobcontract_pension'] = $query->_whereTables['civicrm_hrjobcontract_pension'] = 1;
         return;
 
+      case 'hrjobcontract_pension_pension_type':
+        $query->_qill[$grouping][]  = 'Pension Provider contains "' . $value . '"';
+        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("pension_provider.sort_name", 'LIKE', '%' . $value . '%');
+        $query->_tables['civicrm_hrjobcontract'] = $query->_whereTables['civicrm_hrjobcontract_pension'] = 1;
+        return;
+
       case 'hrjobcontract_details_period_start_date_low':
       case 'hrjobcontract_details_period_start_date_high':
         $query->dateQueryBuilder($values,
@@ -343,6 +349,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         break;
       case 'civicrm_hrjobcontract_pension':
         $from .= " $side JOIN civicrm_hrjobcontract_pension ON rev.pension_revision_id = civicrm_hrjobcontract_pension.jobcontract_revision_id ";
+        $from .= " $side JOIN civicrm_contact pension_provider ON civicrm_hrjobcontract_pension.pension_type = pension_provider.id ";
         break;
       case 'civicrm_hrjobcontract_pay':
         $from .= " $side JOIN civicrm_hrjobcontract_pay ON rev.pay_revision_id = civicrm_hrjobcontract_pay.jobcontract_revision_id ";
@@ -572,16 +579,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $form->addRule('hrjobcontract_pension_er_contrib_pct_low', ts('Please enter a valid money value (e.g. %1).', array(1 => CRM_Utils_Money::format('9.99', ' '))), 'money');
       $form->add('text', 'hrjobcontract_pension_er_contrib_pct_high', ts('To'), array('size' => 8, 'maxlength' => 8));
       $form->addRule('hrjobcontract_pension_er_contrib_pct_high', ts('Please enter a valid money value (e.g. %1).', array(1 => CRM_Utils_Money::format('99.99', ' '))), 'money');
-
-      $pensionTypes = array();
-      $pensionTypeOptions = array();
-      CRM_Core_OptionGroup::getAssoc('hrjc_pension_type', $pensionTypes, true);
-      foreach ($pensionTypes as $pensionType) {
-          $pensionTypeOptions[$pensionType['value']] = $pensionType['label'];
-      }
-      $form->add('select', 'hrjobcontract_pension_pension_type', ts('Pension Provider'), $pensionTypeOptions, FALSE,
-        array('id' => 'hrjobcontract_pension_pension_type', 'multiple' => true)
-      );
+      $form->addElement('text', 'hrjobcontract_pension_pension_type', ts('Pension Provider (Complete OR Partial Name)'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobPension', 'pension_type'));
 
       $form->add('text', 'hrjobcontract_pension_ee_contrib_abs_low', ts('From'), array('size' => 8, 'maxlength' => 8));
       $form->addRule('hrjobcontract_pension_ee_contrib_abs_low', ts('Please enter a valid money value (e.g. %1).', array(1 => CRM_Utils_Money::format('9.99', ' '))), 'money');
