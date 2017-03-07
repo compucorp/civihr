@@ -111,6 +111,12 @@ class CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern extends CRM_Core_DAO
    */
   public $effective_end_date;
   /**
+   * One of the values of the Job Contract Revision Change Reason option group
+   *
+   * @var string
+   */
+  public $change_reason;
+  /**
    * class constructor
    *
    * @return civicrm_hrleaveandabsences_contact_work_pattern
@@ -177,6 +183,18 @@ class CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern extends CRM_Core_DAO
           'title' => ts('Effective End Date') ,
           'description' => 'The date this work pattern will stop being considered active',
         ) ,
+        'change_reason' => array(
+          'name' => 'change_reason',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Change Reason') ,
+          'description' => 'One of the values of the Job Contract Revision Change Reason option group',
+          'maxlength' => 512,
+          'size' => CRM_Utils_Type::HUGE,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjc_revision_change_reason',
+            'optionEditPath' => 'civicrm/admin/options/hrjc_revision_change_reason',
+          )
+        ) ,
       );
     }
     return self::$_fields;
@@ -196,6 +214,7 @@ class CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern extends CRM_Core_DAO
         'pattern_id' => 'pattern_id',
         'effective_date' => 'effective_date',
         'effective_end_date' => 'effective_end_date',
+        'change_reason' => 'change_reason',
       );
     }
     return self::$_fieldKeys;
