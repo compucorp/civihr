@@ -29,7 +29,8 @@ function _civicrm_api3_contact_getleavemanagees_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_contact_getleavemanagees($params) {
-  $query = new CRM_HRLeaveAndAbsences_API_Query_ContactSelect($params);
+  $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
+  $query = new CRM_HRLeaveAndAbsences_API_Query_ContactSelect($params, $leaveManagerService);
   return civicrm_api3_create_success($query->run(), $params);
 }
 

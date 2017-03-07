@@ -31,6 +31,9 @@ class api_v3_ContactTest extends BaseHeadlessTest {
       'has leaves approved by',
       'has things managed by',
     ]);
+
+    $this->registerCurrentLoggedInContactInSession($this->manager['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
   }
 
   public function testGetLeaveManageesDoesNotReturnDeceasedORDeletedContacts() {
@@ -123,6 +126,15 @@ class api_v3_ContactTest extends BaseHeadlessTest {
 
     $this->assertEquals(1, $result['count']);
     $this->assertEquals($result['values'][$this->contact2['id']]['id'], $this->contact2['id']);
+
+    //this will return the two contacts because both have 'Contact' in their first names
+    $result = civicrm_api3('Contact', 'getleavemanagees', [
+      'managed_by' => "user_contact_id",
+      'display_name' => ['LIKE' => "%Contact%"],
+    ]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($result['values'][$this->contact1['id']]['id'], $this->contact1['id']);
+    $this->assertEquals($result['values'][$this->contact2['id']]['id'], $this->contact2['id']);
   }
 
   /**
@@ -131,5 +143,32 @@ class api_v3_ContactTest extends BaseHeadlessTest {
    */
   public function testGetLeaveManageesThrowsAnExceptionWhenManagedByParameterIsNotPresent() {
     civicrm_api3('Contact', 'getleavemanagees');
+  }
+
+  public function testGetLeaveManageesReturnsEmptyWhenALoggedInManagerIsTryingToAccessTheManageesOfAnotherManager() {
+    $manager2 = ContactFabricator::fabricate();
+
+    $this->setContactAsLeaveApproverOf($manager2, $this->contact2, null, null, true, 'has things managed by');
+    $this->setContactAsLeaveApproverOf($manager2, $this->contact1, null, null, true, 'has leaves approved by');
+
+    $result = civicrm_api3('Contact', 'getleavemanagees', ['managed_by' => $manager2['id']]);
+
+    //No result will be returned because a manager is not allowed to access the managees of another manager
+    $this->assertEquals(0, $result['count']);
+  }
+
+  public function testGetLeaveManageesReturnsResultsWhenALoggedInAdminIsTryingToAccessTheManageesOfAManager() {
+    $adminID = 1;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'has things managed by');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1, null, null, true, 'has leaves approved by');
+
+    $result = civicrm_api3('Contact', 'getleavemanagees', ['managed_by' => $this->manager['id']]);
+
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($result['values'][$this->contact1['id']]['id'], $this->contact1['id']);
+    $this->assertEquals($result['values'][$this->contact2['id']]['id'], $this->contact2['id']);
   }
 }

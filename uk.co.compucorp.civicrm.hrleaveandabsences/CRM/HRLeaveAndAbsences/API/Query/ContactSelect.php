@@ -4,6 +4,7 @@ use Civi\API\SelectQuery;
 use CRM_Contact_BAO_Relationship as Relationship;
 use CRM_Contact_BAO_RelationshipType as RelationshipType;
 use CRM_Contact_BAO_Contact as Contact;
+use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 
 /**
  * This class is basically a wrapper around Civi\API\SelectQuery.
@@ -19,13 +20,25 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
   private $params;
 
   /**
+   * @var \CRM_HRLeaveAndAbsences_Service_LeaveManager
+   */
+  private $leaveManagerService;
+
+  /**
    * @var \Civi\API\SelectQuery
    *  The SelectQuery instance wrapped by this class
    */
   private $query;
 
-  public function __construct($params) {
+  /**
+   * CRM_HRLeaveAndAbsences_API_Query_ContactSelect constructor.
+   *
+   * @param array $params
+   * @param \CRM_HRLeaveAndAbsences_Service_LeaveManager $leaveManagerService
+   */
+  public function __construct($params, LeaveManagerService $leaveManagerService) {
     $this->params = $params;
+    $this->leaveManagerService = $leaveManagerService;
     $this->buildCustomQuery();
   }
 
@@ -54,7 +67,12 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
    */
   private function addWhere(CRM_Utils_SQL_Select $query) {
     $today = date('Y-m-d');
-    $managerID = $this->params['managed_by'];
+    $managerID = (int) CRM_Core_Session::getLoggedInContactID();
+
+    if ($this->leaveManagerService->currentUserIsAdmin()) {
+      $managerID = $this->params['managed_by'];
+    }
+
     $leaveApproverRelationships = $this->getLeaveApproverRelationshipsTypes();
 
     $whereClauses[] = "(
