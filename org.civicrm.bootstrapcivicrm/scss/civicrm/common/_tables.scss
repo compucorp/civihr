@@ -249,7 +249,8 @@
       }
 
       > td {
-        box-shadow: $box-shadow;
+        box-shadow: $crm-nested-table-box-shadow;
+        position: relative;
       }
 
       #info {
