@@ -525,6 +525,10 @@
 
   .crm-link-credit-card-mode {
     margin: 10px 20px 0 0;
+
+    .action-item {
+      border-color: $gray-darker !important;
+    }
   }
 
   #recurringPaymentBlock {
@@ -700,6 +704,21 @@
       }
     }
   }
+}
+
+.page-civicrm-contact-view {
+  .ui-dialog {
+   .CRM_Contribute_Form_Contribution {
+     .crm-contribution-form-block {
+       margin-top: -65px;
+     }
+
+     .crm-link-credit-card-mode {
+       position: relative;
+       top: 65px;
+     }
+   }
+ }
 }
 
 .CRM_Contribute_Form_ContributionView {
