@@ -390,13 +390,17 @@
         }
 
         th {
-          border-bottom: none;
-          background: $crm-background !important;
+          border: none !important;
+          background: $crm-white !important;
           color: $gray-darker !important;
           vertical-align: middle;
           border: none;
           padding: 10px;
           line-height: 1.1em;
+
+          &.contriTotalLeft {
+            padding-left: 0;
+          }
 
           div {
             padding: 0;
