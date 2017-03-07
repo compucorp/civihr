@@ -1,3 +1,101 @@
+.page-civicrm-contact {
+  #GroupContact {
+
+    h3 {
+      padding: 20px;
+      margin: 0;
+      background: $gray-lighter;
+      color: $gray-darker;
+      font-size: $font-size-h2;
+      font-family: $font-family-base;
+      border-bottom: 1px solid $crm-background;
+    }
+
+    table {
+      background: transparent;
+      border: none;
+      font-family: $font-family-base;
+
+      thead {
+
+        tr{
+          border-bottom: 1px solid $crm-dark-grayblue;
+
+          th {
+            border-bottom: none;
+            background: $gray-lighter;
+            color: $gray-darker;
+            vertical-align: middle;
+            border: none;
+            padding: 10px 20px;
+
+            div {
+              padding: 0;
+            }
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          background: $crm-white;
+          border-bottom: 1px solid $crm-background;
+          border-right: none;
+
+          td {
+            background: $crm-white;
+            color: $gray-dark;
+            border: none;
+            padding: 10px 20px;
+
+            a {
+              color: $brand-primary !important;
+            }
+          }
+        }
+      }
+    }
+
+    h3,
+    .accordion,
+    .dataTables_wrapper {
+      box-shadow: $box-shadow;
+    }
+
+    .description {
+      margin: 15px;
+    }
+
+    #_qf_GroupContact_next {
+      border: none;
+      line-height: 25px;
+      background: $brand-primary;
+      text-shadow: unset;
+    }
+
+    .select2-container {
+      background: $crm-white;
+
+      .select2-choice {
+        background: none;
+        border-radius: 2px;
+        line-height: 30px;
+        border: 1px solid $crm-darker-grayblue;
+        box-shadow: $crm-select2-box-shadow-inset;
+      }
+
+      .select2-arrow {
+        background: none;
+        padding: 0 5px;
+      }
+
+      .select2-search-choice-close {
+        right: 35px;
+      }
+    }
+  }
+}
+
 .page-civicrm-group {
   .help {
     + .crm-submit-buttons {
