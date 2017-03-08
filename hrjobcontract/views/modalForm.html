@@ -784,8 +784,8 @@
                                                 ng-model="entity.pension.pension_type">
                                             <ui-select-match
                                                     placeholder="Start typing a name or email...">{{$select.selected.label}}</ui-select-match>
-                                            <ui-select-choices  repeat="contact.id as contact in contacts.pension_provider | filter: $select.search"
-                                                                refresh="refreshContacts($select.search, 'pension_provider')"
+                                            <ui-select-choices  repeat="contact.id as contact in contacts.Pension_Provider | filter: $select.search"
+                                                                refresh="refreshContacts($select.search, 'Pension_Provider')"
                                                                 refresh-delay="0">
                                                 <div ng-bind="contact.label"></div>
                                                 <small ng-bind="contact.description[0]"></small>

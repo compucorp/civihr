@@ -15,8 +15,8 @@ class CRM_Hrjobcontract_Test_Fabricator_HRJobPension extends BaseAPIFabricator {
     if (!empty($params['pension_type'])) {
       $pensionTypeResult = civicrm_api3('Contact', 'get', [
         'sequential' => 1,
-        'contact_type' => "Organization",
-        'contact_sub_type' => "pension_provider",
+        'contact_type' => 'Organization',
+        'contact_sub_type' => 'Pension_Provider',
         'organization_name' => $params['pension_type'],
       ]);
 
@@ -41,8 +41,8 @@ class CRM_Hrjobcontract_Test_Fabricator_HRJobPension extends BaseAPIFabricator {
    */
   private static function createPensionType($value) {
     $result = civicrm_api3('Contact', 'create', [
-      'contact_type' => "Organization",
-      'contact_sub_type' => "pension_provider",
+      'contact_type' => 'Organization',
+      'contact_sub_type' => 'pension_provider',
       'organization_name' => $value,
     ]);
 

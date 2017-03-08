@@ -135,13 +135,13 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
           $display = implode(' ' . ts('or') . ' ', $value);
         }
         $query->_qill[$grouping][]  = ts('%1 %2', array(1 => $fields[$name]['title'], 2 => $op)) . ' ' . $display;
-        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("civicrm_hrjobcontract_pension.is_enrolled", $op, $options);
+        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause('civicrm_hrjobcontract_pension.is_enrolled', $op, $options);
         $query->_tables['civicrm_hrjobcontract_pension'] = $query->_whereTables['civicrm_hrjobcontract_pension'] = 1;
         return;
 
       case 'hrjobcontract_pension_pension_type':
         $query->_qill[$grouping][]  = 'Pension Provider contains "' . $value . '"';
-        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("pension_provider.sort_name", 'LIKE', '%' . $value . '%');
+        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause('pension_provider.sort_name', 'LIKE', '%' . $value . '%');
         $query->_tables['civicrm_hrjobcontract'] = $query->_whereTables['civicrm_hrjobcontract_pension'] = 1;
         return;
 

@@ -28,7 +28,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $session = CRM_Core_Session::singleton();
     $session->set('dateTypes', 1);
 
-    $this->_contractTypeID = $this->creatTestContractType();
+    $this->_contractTypeID = $this->createTestContractType();
     $this->createInsurancePlanTypes();
 
     $this->_defaultImportData = [
@@ -325,16 +325,17 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     );
 
     $contactID = $this->createTestContact($contact2Params);
-    // TODO : create and add health and life insurance providers to params
     $params = array(
       'HRJobContract-contact_id' => $contactID,
       'HRJobDetails-title' => 'Test Contract Title',
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobHealth-provider' => $this->createProvider('Health Provider', 'Health_Insurance_Provider'),
       'HRJobHealth-dependents' => 'HI Description',
       'HRJobHealth-description' => 'HI dependents',
       'HRJobHealth-plan_type' => $this->_insurancePlanTypes[0]['label'],
+      'HRJobHealth-provider_life_insurance' => $this->createProvider('Life Provider', 'Life_Insurance_Provider'),
       'HRJobHealth-dependents_life_insurance' => 'LI dependents',
       'HRJobHealth-description_life_insurance' => 'LI description',
       'HRJobHealth-plan_type_life_insurance' => $this->_insurancePlanTypes[1]['label'],
@@ -392,7 +393,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobPension-ee_contrib_pct' => '12',
       'HRJobPension-ee_contrib_abs' => '4000',
       'HRJobPension-ee_evidence_note' => 'sample',
-      'HRJobPension-pension_type' => $this->createPensionProvider('Pension Provider'),
+      'HRJobPension-pension_type' => $this->createProvider('Pension Provider Contact', 'Pension_Provider'),
     );
 
     $importResponse = $this->runImport($params);
@@ -405,10 +406,10 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->assertEquals(CRM_Import_Parser::ERROR, $failedImportResponse);
   }
 
-  private function createPensionProvider($providerName) {
+  private function createProvider($providerName, $type) {
     $provider = ContactFabricator::fabricateOrganization([
-      'contact_type' => "Organization",
-      'contact_sub_type' => "pension_provider",
+      'contact_type' => 'Organization',
+      'contact_sub_type' => $type,
       'organization_name' => $providerName,
     ]);
 
@@ -583,7 +584,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     return $contactID;
   }
 
-  private function creatTestContractType() {
+  private function createTestContractType() {
     $contractTypeGroup = $this->callAPISuccess('OptionGroup', 'get', array(
       'sequential' => 1,
       'name' => "hrjc_contract_type",

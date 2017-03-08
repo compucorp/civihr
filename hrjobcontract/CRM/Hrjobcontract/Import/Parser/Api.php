@@ -626,7 +626,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       case 'HRJobHealth-provider':
       case 'HRJobHealth-provider_life_insurance':
         $contactTypeMapping = [
-          'HRJobPension-pension_type' => 'pension_provider',
+          'HRJobPension-pension_type' => 'Pension_Provider',
           'HRJobHealth-provider' => 'Health_Insurance_Provider',
           'HRJobHealth-provider_life_insurance' => 'Life_Insurance_Provider'
         ];

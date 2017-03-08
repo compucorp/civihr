@@ -1081,23 +1081,19 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   function upgrade_1027() {
     $messages = [];
     $pensionsTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
-    
+
     $this->createPensionProviderType($messages);
     $this->replacePensionProviders($pensionsTableName, $messages);
     $this->removePensionTypeOptionGroup($messages);
 
-    try {
-      CRM_Core_DAO::executeQuery("
-        ALTER TABLE {$pensionsTableName} 
-        MODIFY pension_type INT(10) unsigned,
-        ADD CONSTRAINT pension_type_contact_id_fk
-        FOREIGN KEY(pension_type)
-        REFERENCES civicrm_contact(id)
-        ON DELETE SET NULL ON UPDATE CASCADE;
-      ");
-    } catch (Exception $e) {
-      $messages[] = "Error altering table $pensionsTableName: " . $e->getMessage();
-    }
+    CRM_Core_DAO::executeQuery("
+      ALTER TABLE {$pensionsTableName} 
+      MODIFY pension_type INT(10) unsigned,
+      ADD CONSTRAINT pension_type_contact_id_fk
+      FOREIGN KEY(pension_type)
+      REFERENCES civicrm_contact(id)
+      ON DELETE SET NULL ON UPDATE CASCADE;
+    ");
 
     if (!empty($messages) && function_exists('drupal_set_message')) {
       foreach ($messages as $message) {
@@ -1121,19 +1117,19 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     try {
       civicrm_api3('OptionGroup', 'get', [
         'sequential' => 1,
-        'name' => "hrjc_pension_type",
+        'name' => 'hrjc_pension_type',
         'api.OptionGroup.delete' => ['id' => '$value.id'],
       ]);
     } catch (Exception $e) {
       $pensionOptionGroup = civicrm_api3('OptionGroup', 'get', [
         'sequential' => 1,
-        'name' => "hrjc_pension_type",
+        'name' => 'hrjc_pension_type',
       ]);
 
       if ($pensionOptionGroup['count'] == 0) {
-        $messages[] = "Error deleting hrjc_pension_type option group: " . $e->getMessage();
+        $messages[] = 'Error deleting hrjc_pension_type option group: ' . $e->getMessage();
       } else {
-        throw new Exception("Error deleting hrjc_pension_type option group: " . $e->getMessage());
+        throw new Exception('Error deleting hrjc_pension_type option group: ' . $e->getMessage());
       }
     }
   }
@@ -1155,10 +1151,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       ]);
     } catch (Exception $e) {
       $pensionTypeOptionGroup = civicrm_api3('OptionGroup', 'get', array(
-        'name' => "hrjc_pension_type",
+        'name' => 'hrjc_pension_type',
       ));
       if ($pensionTypeOptionGroup['count'] > 0) {
-        throw new Exception("Error obtaining option values for 'hrjc_pension_type' option group: " . $e->getMessage());
+        throw new Exception('Error obtaining option values for "hrjc_pension_type" option group: ' . $e->getMessage());
       }
     }
 
@@ -1170,17 +1166,17 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           'first_name' => $pensionType['label'],
           'display_name' => $pensionType['label'],
           'source' => $pensionType['name'] . ',' .$pensionType['value'],
-          'contact_type' => "Organization",
-          'contact_sub_type' => "pension_provider",
+          'contact_type' => 'Organization',
+          'contact_sub_type' => 'Pension_Provider',
         ]);
       } catch (Exception $e) {
-        $messages[] = "Error creating pension provider organization '{$pensionType['label']}': " . $e->getMessage();
+        $messages[] = "Error creating pension provider organization '{$pensionType['label']}': {$e->getMessage()}";
       }
 
       $pensionTypesMapping[$pensionType['value']] = $contact['id'];
     }
 
-    // Replace pension_type value to the corssponding contact ID
+    // Replace pension_type value to the corresponding contact ID
     if (!empty($pensionTypesMapping)) {
 
       foreach ($pensionTypesMapping as $optionValue => $contactID) {
@@ -1193,18 +1189,18 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Creates "Pension Provider" as a Contact Type
+   * Creates 'Pension Provider' as a Contact Type
    * 
    * @param array $messages
    *   Messages for errors found running upgrade
    * 
    * @throws Exception
-   *   If pension_provider contact is not created.
+   *   If Pension_Provider contact type is not created.
    */
   private function createPensionProviderType(&$messages) {
     try {
       civicrm_api3('ContactType', 'create', [
-        'name' => 'pension_provider',
+        'name' => 'Pension_Provider',
         'label' => 'Pension Provider',
         'parent_id' => 'Organization',
         'is_active' => 1,
@@ -1212,13 +1208,13 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       ]);
     } catch (Exception $e) {
       $pensionProviderType = civicrm_api3('ContactType', 'get', array(
-        'name' => "pension_provider",
+        'name' => 'Pension_Provider',
       ));
 
       if ($pensionProviderType['count'] < 1) {
-        throw new Exception("Error creating pension_provider contact type: " . $e->getMessage());
+        throw new Exception('Error creating Pension_Provider contact type: ' . $e->getMessage());
       } else {
-        $messages[] = "Pension_provider contact type already exists: " . $e->getMessage();
+        $messages[] = 'Pension_Provider contact type already exists: ' . $e->getMessage();
       }
     }
   }
