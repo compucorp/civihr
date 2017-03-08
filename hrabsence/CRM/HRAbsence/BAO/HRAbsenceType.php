@@ -267,7 +267,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
   private static function deleteLeaveEntitlements($absenceTypeId) {
     $result = civicrm_api3('HRJobLeave', 'get', [
       'leave_type' => $absenceTypeId,
-      'jobcontract_revision_id' => array('>' => 0),
+      'jobcontract_revision_id' => ['>' => 0],
       'options' => ['limit' => 0]
     ]);
     foreach ($result['values'] as $currentLeave) {

@@ -562,7 +562,9 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
   public function upgrade_1402() {
     $deleteQuery = "DELETE FROM civicrm_hrjobcontract_leave WHERE leave_type NOT IN (
       SELECT id FROM civicrm_hrabsence_type
-    );";
+    )";
     CRM_Core_DAO::executeQuery($deleteQuery);
+
+    return true;
   }
 }
