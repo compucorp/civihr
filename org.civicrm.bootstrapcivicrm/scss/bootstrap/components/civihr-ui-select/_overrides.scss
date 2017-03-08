@@ -86,17 +86,19 @@
 
   .select2-search-choice-close {
     @extend %ui-select-no-background;
-    width: 15px !important;
     height: 15px;
-    right: 45px !important;
     left: unset !important;
+    right: 45px !important;
+    width: 15px !important;
 
     @at-root #{$bootstrap-namespace} & {
+      background: none !important;
       top: 2px !important;
     }
 
     @each $id in $tasks-and-assignments {
       @at-root #{$id} & {
+        background: none !important;
         top: 3px !important;
       }
     }
