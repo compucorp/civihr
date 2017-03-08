@@ -14,7 +14,7 @@ CRM.$(function() {
    * during DOM changes
    */
   var observer = new MutationObserver(debounce(function() {
-    CRM.$('select:visible:not([class^="ui-datepicker"])')
+    CRM.$('select:visible')
       .select2({
         containerCss: {
           display: 'inline-block'
