@@ -10,7 +10,46 @@
     }
   }
 
+  .crm-contactEmail-form-block {
+    padding: 0 20px;
+  }
+
+  .crm-accordion-wrapper,
+  .crm-block > .crm-submit-buttons,
+  .crm-block > .form-layout-compressed {
+    margin-left: -20px !important;
+    margin-right: -20px !important;
+  }
+
+  .crm-block > .form-layout-compressed {
+    td.label {
+      padding-left: 20px !important;
+    }
+  }
+
+  .crm-button_qf_Email_upload {
+    margin-left: 20px !important;
+  }
+
   #editMessageDetails {
-    padding-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  .crm-html_email-accordion > .crm-accordion-body,
+  #editMessageDetails > .section {
+    padding: 20px !important;
+  }
+
+  #attachments,
+  #follow-up {
+    td.label {
+      padding-left: 5px !important;
+    }
+  }
+
+  #editMessageDetails {
+    .section {
+      padding-left: 0 !important;
+    }
   }
 }
