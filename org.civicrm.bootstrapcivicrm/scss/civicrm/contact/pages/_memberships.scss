@@ -491,12 +491,35 @@
     @include mx-expandable-table();
   }
 
+  .report {
+    tr {
+      &.columnfooter {
+        border-top: 1px solid $crm-dark-grayblue !important;
+      }
+
+      th,
+      td {
+        font-size: $font-size-base !important;
+        font-family: $font-family-base;
+      }
+
+      td {
+        padding: 18px 10px 17px 10px !important;
+
+        strong {
+          color: $gray-darker;
+        }
+      }
+    }
+  }
+
   .selector {
     background-color: $crm-white;
 
     tr:last-child {
       td {
         display: table-cell !important;
+        padding: 18px 20px 17px 20px !important;
       }
     }
   }
