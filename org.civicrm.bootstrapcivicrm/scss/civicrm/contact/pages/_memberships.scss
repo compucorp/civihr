@@ -477,8 +477,9 @@
     line-height: 50px;
     background: $crm-white;
     box-shadow: $box-shadow;
-    font-size: 13px;
-    font-weight: normal;
+    font-size: $font-size-h2;
+    font-family: $font-family-base;
+    font-weight: 600;
     border-radius: 2px;
     padding-left: 20px;
     margin: 20px 0;
