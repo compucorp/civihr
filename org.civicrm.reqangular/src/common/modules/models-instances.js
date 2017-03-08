@@ -1,7 +1,9 @@
 define([
-    'common/angular'
+  'common/angular'
 ], function (angular) {
-    'use strict';
+  'use strict';
 
-    return angular.module('common.models.instances', []);
+  return angular.module('common.models.instances', [
+    'common.apis'
+  ]);
 });

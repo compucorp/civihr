@@ -40,14 +40,18 @@ define([
       },
 
       /**
-       * Finds the contacts who are managed by current logged in user
+       * Finds the contacts who are managed by sent contact id
        *
        * @return {Promise} resolves to the found contact
        */
-      leaveManagees: function () {
+      leaveManagees: function (managedBy, params) {
         $log.debug('api.contact.leaveManagees');
 
-        return this.sendGET('Contact', 'getleavemanagees')
+        params = _.assign({}, params, {
+          managed_by: managedBy
+        });
+
+        return this.sendGET('Contact', 'getleavemanagees', params)
           .then(function (data) {
             return data.values;
           });
