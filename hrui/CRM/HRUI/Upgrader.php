@@ -80,31 +80,48 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
    * and a NI / SSN field alphanumeric field for that group.
    */
   public function upgrade_4701() {
-    // Add Group
-    $groupData = [
-      'title' => 'Inline Custom Data',
-      'name' => 'Inline_Custom_Data',
-      'extends' => ['0' => 'Individual'],
-      'weight' => 21,
-      'collapse_display' => 1,
-      'style' => 'Inline',
-      'is_active' => 1
-    ];
-    civicrm_api3('CustomGroup', 'create', $groupData);
+    $inlineCustomGroup = civicrm_api3('CustomGroup', 'getsingle', [
+      'name' => 'Inline_Custom_Data'
+    ]);
+    if ($inlineCustomGroup['count'] == 0) {
+      $groupData = [
+        'title' => 'Inline Custom Data',
+        'name' => 'Inline_Custom_Data',
+        'extends' => ['0' => 'Individual'],
+        'weight' => 21,
+        'collapse_display' => 1,
+        'style' => 'Inline',
+        'is_active' => 1
+      ];
+      $inlineCustomGroup = civicrm_api3('CustomGroup', 'create', $groupData);
 
-    // Add NI/SSN Field
-    $fieldData = [
-      'custom_group_id' => 'Inline_Custom_Data',
-      'name' => 'NI_SSN',
-      'label' => 'NI / SSN',
-      'html_type' => 'Text',
-      'data_type' => 'String',
-      'weight' => 1,
-      'is_required' => 0,
-      'is_searchable' => 1,
-      'is_active' => 1
-    ];
-    civicrm_api3('CustomField', 'create', $fieldData);
+      // Add NI/SSN Field
+      $fieldData = [
+        'custom_group_id' => 'Inline_Custom_Data',
+        'name' => 'NI_SSN',
+        'label' => 'NI / SSN',
+        'html_type' => 'Text',
+        'data_type' => 'String',
+        'weight' => 1,
+        'is_required' => 0,
+        'is_searchable' => 1,
+        'is_active' => 1
+      ];
+      $niSSNField = civicrm_api3('CustomField', 'create', $fieldData);
+    } else {
+      $niSSNField = civicrm_api3('CustomField', 'getsingle', ['name' => 'NI_SSN']);
+    }
+
+    $identTableName = $this->getIdentTableName();
+    $identFieldName = $this->getIdentFieldName();
+
+    $query = "
+      UPDATE {$inlineCustomGroup['table_name']}, $identTableName
+         SET {$niSSNField['column_name']} = $identFieldName
+       WHERE {$inlineCustomGroup['table_name']}.entity_id = $identTableName.entity_id
+         AND is_government = 1
+    ";
+    CRM_Core_DAO::executeQuery($query);
 
     return TRUE;
   }
