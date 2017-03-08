@@ -34,31 +34,42 @@ define([
       expect(Object.keys(fileUploadService)).toContain('uploader', 'uploadAll');
     });
 
-    describe('uploader', function () {
+    describe('uploader()', function () {
       it('creates uploader', function () {
         expect(uploader).toBeDefined();
       });
+    });
 
-      describe('uploading file items', function () {
-        beforeEach(function () {
-          spyOn(uploader, 'uploadAll').and.callThrough();
-          promise = fileUploadService.uploadAll();
-        });
+    describe('uploadAll()', function () {
+      var param;
 
-        afterEach(function () {
-          $rootScope.$apply();
-        });
+      beforeEach(function () {
+        spyOn(fileUploadService, 'uploadAll').and.callThrough();
+        spyOn(uploader, 'uploadAll').and.callThrough();
+        param = {
+          entityID: '12'
+        };
 
-        it('calls fileuploader endpoint', function () {
-          expect(uploader.uploadAll).toHaveBeenCalled();
-        });
+        promise = fileUploadService.uploadAll(param);
+      });
 
-        it('returns success', function () {
-          promise.then(function (result) {
-            var firstObject = result[0];
-            expect(Array.isArray(result)).toBeTruthy();
-            expect(firstObject.file).toBeDefined();
-          });
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      it('calls file upload service endpoint', function () {
+        expect(fileUploadService.uploadAll).toHaveBeenCalledWith(param);
+      });
+
+      it('calls fileuploader endpoint', function () {
+        expect(uploader.uploadAll).toHaveBeenCalledWith();
+      });
+
+      it('returns success', function () {
+        promise.then(function (result) {
+          var firstObject = result[0];
+          expect(Array.isArray(result)).toBeTruthy();
+          expect(firstObject.file).toBeDefined();
         });
       });
     });
