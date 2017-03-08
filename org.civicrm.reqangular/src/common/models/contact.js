@@ -155,20 +155,6 @@ define([
           return contactAPI.find(id).then(function (contact) {
             return instance.init(contact, true);
           });
-        },
-
-        /**
-         * Finds the contacts who are managed by current logged in user
-         *
-         * @return {Promise} resolves to the found contact
-         */
-        leaveManagees: function () {
-          return contactAPI.leaveManagees()
-            .then(function (data) {
-              return data.map(function (contact) {
-                return instance.init(contact, true);
-              });
-            });
         }
       });
     }

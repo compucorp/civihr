@@ -56,7 +56,7 @@ define([
     ]));
 
     it('has the expected api', function () {
-      expect(Object.keys(Contact)).toEqual(['all', 'find', 'leaveManagees']);
+      expect(Object.keys(Contact)).toEqual(['all', 'find']);
     });
 
     describe('all()', function () {
@@ -248,32 +248,6 @@ define([
           expect(ContactInstanceMock.isInstance(contact)).toBe(true);
         })
           .finally(done) && $rootScope.$digest();
-      });
-    });
-
-    describe('leaveManagees()', function () {
-      var promise;
-
-      beforeEach(function () {
-        promise = Contact.leaveManagees();
-      });
-
-      afterEach(function () {
-        $rootScope.$apply();
-      });
-
-      it('calls leaveManagees of Contact API', function () {
-        promise.then(function () {
-          expect(contactAPI.leaveManagees).toHaveBeenCalled();
-        });
-      });
-
-      it('returns Contact Instance', function () {
-        promise.then(function (contacts) {
-          expect(contacts.every(function (contact) {
-            return ContactInstanceMock.isInstance(contact);
-          })).toBe(true);
-        });
       });
     });
   });

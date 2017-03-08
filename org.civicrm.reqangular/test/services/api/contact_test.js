@@ -82,13 +82,17 @@ define([
     });
 
     describe("leaveManagees()", function () {
-      var contactApiPromise;
+      var contactApiPromise,
+        managedBy = '101',
+        params = {
+          key: 'value'
+        };
 
       beforeEach(function () {
         spyOn(ContactAPI, 'sendGET').and.returnValue($q.resolve({
           values: ContactAPIMock.mockedContacts().list
         }));
-        contactApiPromise = ContactAPI.leaveManagees();
+        contactApiPromise = ContactAPI.leaveManagees(managedBy, params);
       });
 
       afterEach(function () {
@@ -102,7 +106,9 @@ define([
       });
 
       it("calls sendGET method", function () {
-        expect(ContactAPI.sendGET).toHaveBeenCalledWith('Contact', 'getleavemanagees');
+        expect(ContactAPI.sendGET).toHaveBeenCalledWith('Contact', 'getleavemanagees', _.assign(params, {
+          managed_by: managedBy
+        }));
       });
     });
   });
