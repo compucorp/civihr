@@ -1,0 +1,137 @@
+.page-civicrm-contact {
+  #contact-summary-relationship-tab {
+
+    .action-link a.button {
+      background: $brand-primary !important;
+    }
+
+    h3 {
+      padding: 20px;
+      margin: 0;
+      background: $gray-lighter;
+      color: $gray-darker;
+      font-size: $font-size-h2;
+      font-family: $font-family-base;
+      border-bottom: 1px solid $crm-background;
+      margin-bottom: 25px;
+    }
+
+    .dataTables_wrapper {
+
+      .dataTables_paginate {
+        width: 50% !important;
+        font-size: $font-size-base;
+        font-family: $font-family-base;
+      }
+
+      .dataTables_info {
+        width: 49%;
+      }
+    }
+
+    div[id*="DataTables_Table_"] table {
+      background: transparent;
+      border: none;
+      font-family: $font-family-base;
+      box-shadow: $box-shadow;
+
+      thead tr {
+        border-bottom: 1px solid $crm-dark-grayblue;
+
+        th {
+          border-bottom: none;
+          background: $gray-lighter !important;
+          color: $gray-darker;
+          vertical-align: middle;
+          border: none;
+          padding: 10px 20px;
+          line-height: 1.5em;
+
+          div {
+            padding: 0;
+          }
+        }
+      }
+
+      tbody tr {
+        background: $crm-white;
+        border-bottom: 1px solid $crm-background;
+        border-right: none;
+
+        td {
+          background: $crm-white;
+          color: $gray-dark;
+          border: none;
+          padding: 10px 20px;
+
+          a,
+          .btn-slide {
+            color: $brand-primary !important;
+            background: none;
+          }
+        }
+      }
+    }
+
+    h3,
+    .accordion {
+      box-shadow: $box-shadow;
+    }
+
+    div[id*="s2id_autogen"] {
+      .select2-choice {
+        background: $crm-white;
+        border-radius: 2px;
+        border: 1px solid $crm-darker-grayblue;
+        box-shadow: $crm-select2-box-shadow-inset;
+      }
+
+      .select2-arrow {
+        background: none;
+        padding: 0 5px;
+      }
+    }
+
+    .crm-icon {
+      text-indent: 0 !important;
+      text-align: center;
+
+      &:before {
+        font-size: $font-size-base !important;
+        position: relative;
+        bottom: 2px;
+      }
+
+      &.Individual-icon {
+        background: none;
+        &:before {
+          @include fa-icon($content: "\f007");
+        }
+      }
+
+      &.Organization-icon {
+        background: none;
+        &:before {
+          @include fa-icon($content: "\f0f7");
+        }
+      }
+
+      &.Household-icon {
+        background: none;
+        &:before {
+          @include fa-icon($content: "\f015");
+        }
+      }
+    }
+  }
+}
+
+.CRM_Contact_Form_Relationship {
+  td {
+    vertical-align: middle;
+  }
+
+  #is_active {
+    margin-left: 0 !important;
+  }
+}
