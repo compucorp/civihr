@@ -1074,26 +1074,29 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Changes Pension Provider to be a contact, instead of an option_value.
+   * Changes Pension Provider to be a contact, instead of an option_value.  All
+   * required changes are wrapped in a transaction and rolled-back if any 
+   * problems arise.
    * 
-   * @return true
+   * @return boolean
+   *   true on success
+   * 
+   * @throws Exception
    */
   function upgrade_1027() {
     $messages = [];
     $pensionsTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
 
-    $this->createPensionProviderType($messages);
-    $this->replacePensionProviders($pensionsTableName, $messages);
-    $this->removePensionTypeOptionGroup($messages);
-
-    CRM_Core_DAO::executeQuery("
-      ALTER TABLE {$pensionsTableName} 
-      MODIFY pension_type INT(10) unsigned,
-      ADD CONSTRAINT pension_type_contact_id_fk
-      FOREIGN KEY(pension_type)
-      REFERENCES civicrm_contact(id)
-      ON DELETE SET NULL ON UPDATE CASCADE;
-    ");
+    $tx = new CRM_Core_Transaction();
+    try {
+      $this->createPensionProviderType($messages);
+      $this->replacePensionProviders($pensionsTableName, $messages);
+      $this->removePensionTypeOptionGroup($messages);
+      $this->alterPensionsTable($pensionsTableName, $messages);
+    } catch (Exception $ex) {
+      $tx->rollback();
+      throw new Exception('Cannot do upgrade - ' . $ex->getMessage());
+    }
 
     if (!empty($messages) && function_exists('drupal_set_message')) {
       foreach ($messages as $message) {
@@ -1101,14 +1104,61 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       }
     }
 
-    return true;
+    return false;
+  }
+
+  /**
+   * Alters pension_type column to be an unsigned integer and adds a foreign
+   * key referencing civicrm_contact.
+   * 
+   * @param type $pensionsTableName
+   *   Name of pension data table
+   * @param type $messages
+   *   Array of messages for salvageable errors found
+   * 
+   * @throws Exception
+   */
+  function alterPensionsTable($pensionsTableName, &$messages) {
+    try {
+      CRM_Core_DAO::executeQuery("
+        ALTER TABLE $pensionsTableName
+        MODIFY pension_type INT(10) unsigned,
+        ADD CONSTRAINT pension_type_contact_id_fk
+        FOREIGN KEY(pension_type)
+        REFERENCES civicrm_contact(id)
+        ON DELETE SET NULL ON UPDATE CASCADE;
+      ");
+    } catch (Exception $e) {
+      $civi_db_settings = parse_url(CIVICRM_DSN);
+      $civi_db_name = trim($civi_db_settings['path'], '/');
+
+      $fkCheck = CRM_Core_DAO::executeQuery($q = "
+        SELECT *
+        FROM information_schema.REFERENTIAL_CONSTRAINTS
+        WHERE CONSTRAINT_SCHEMA = '$civi_db_name'
+        AND TABLE_NAME = '$pensionsTableName'
+        AND REFERENCED_TABLE_NAME = 'civicrm_contact'
+        AND CONSTRAINT_NAME = 'pension_type_contact_id_fk'
+      ");
+      
+      if ($fkCheck->N == 0) {
+        throw new Exception("Error updating $pensionsTableName table: " . $e->getMessage());
+      }
+
+      $pensionTypeColumnCheck = CRM_Core_DAO::executeQuery("DESC $pensionsTableName");
+      while ($pensionTypeColumnCheck->fetch()) {
+        if ($pensionTypeColumnCheck->Field == 'pension_type' && $pensionTypeColumnCheck->Type != 'int(10) unsigned') {
+          throw new Exception("Error updating $pensionsTableName table: " . $e->getMessage());
+        }
+      }
+    }
   }
 
   /**
    * Deletes hrjc_pension_type option group.
    * 
    * @param array $messages
-   *   Array of messages for errors found
+   *   Array of messages for salvageable errors found
    * 
    * @throws Exception
    */
@@ -1126,9 +1176,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'name' => 'hrjc_pension_type',
       ]);
 
-      if ($pensionOptionGroup['count'] == 0) {
-        $messages[] = 'Error deleting hrjc_pension_type option group: ' . $e->getMessage();
-      } else {
+      if ($pensionOptionGroup['count'] > 0) {
         throw new Exception('Error deleting hrjc_pension_type option group: ' . $e->getMessage());
       }
     }
@@ -1140,7 +1188,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * contracts.
    * 
    * @param array $messages
-   *   Array of messages for errors found
+   *   Array of messages for salvageable errors found
+   * 
+   * @throws Exception
+   *   
    */
   private function replacePensionProviders($pensionsTableName, &$messages) {
     try {
@@ -1160,18 +1211,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     $pensionTypesMapping = [];
     foreach($pensionTypeOptions['values'] as $pensionType) {
-      try {
-        $contact = civicrm_api3('Contact', 'create', [
-          'organization_name' => $pensionType['label'],
-          'first_name' => $pensionType['label'],
-          'display_name' => $pensionType['label'],
-          'source' => $pensionType['name'] . ',' .$pensionType['value'],
-          'contact_type' => 'Organization',
-          'contact_sub_type' => 'Pension_Provider',
-        ]);
-      } catch (Exception $e) {
-        $messages[] = "Error creating pension provider organization '{$pensionType['label']}': {$e->getMessage()}";
-      }
+      $contact = civicrm_api3('Contact', 'create', [
+        'organization_name' => $pensionType['label'],
+        'first_name' => $pensionType['label'],
+        'display_name' => $pensionType['label'],
+        'source' => $pensionType['name'] . ',' .$pensionType['value'],
+        'contact_type' => 'Organization',
+        'contact_sub_type' => 'Pension_Provider',
+      ]);
 
       $pensionTypesMapping[$pensionType['value']] = $contact['id'];
     }
@@ -1180,10 +1227,11 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     if (!empty($pensionTypesMapping)) {
 
       foreach ($pensionTypesMapping as $optionValue => $contactID) {
-        $sql = "UPDATE {$pensionsTableName}
-                SET pension_type = {$contactID}
-                WHERE pension_type = '{$optionValue}'";
-        CRM_Core_DAO::executeQuery($sql);
+        CRM_Core_DAO::executeQuery("
+          UPDATE {$pensionsTableName}
+          SET pension_type = {$contactID}
+          WHERE pension_type = '{$optionValue}'
+        ");
       }
     }
   }
@@ -1192,7 +1240,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * Creates 'Pension Provider' as a Contact Type
    * 
    * @param array $messages
-   *   Messages for errors found running upgrade
+   *   Array of messages for salvageable errors found
    * 
    * @throws Exception
    *   If Pension_Provider contact type is not created.
