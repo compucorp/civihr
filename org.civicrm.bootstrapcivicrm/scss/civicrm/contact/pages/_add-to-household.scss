@@ -1,0 +1,42 @@
+.CRM_Contact_Form_Task_AddToHousehold {
+  .form-layout-compressed {
+    tr {
+      td {
+        &:first-child {
+          padding-left: 20px;
+        }
+
+        #_qf_AddToHousehold_refresh {
+          color: $crm-white;
+          background: $brand-primary;
+          border-color: $brand-primary;
+          text-shadow: none;
+          font-size: $font-size-base;
+          font-family: $font-family-base;
+          text-transform: uppercase;
+          padding: 8px 12px;
+          border-radius: 2px;
+          margin-bottom: 20px !important;
+        }
+
+        #_qf_AddToHousehold_cancel {
+          color: $gray-darker;
+          background: $crm-white;
+          border-color: $crm-copy;
+          text-shadow: none;
+          font-size: $font-size-base;
+          font-family: $font-family-base;
+          text-transform: uppercase;
+          padding: 8px 12px;
+          border-radius: 2px;
+          margin-bottom: 20px !important;
+
+          &:hover {
+            color: $crm-white;
+            background: $crm-copy;
+          }
+        }
+      }
+    }
+  }
+}
