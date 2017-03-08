@@ -551,4 +551,18 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
     return TRUE;
   }
+
+  /**
+   * Previously when a leave type was deleted it was only deleting the first 25 civicrm_hrjobcontract_leave
+   * entries for that type. This upgrade is to remove legacy data where civicrm_hrjobcontract_leave points to a
+   * civicrm_hrabsence_type that does not exist
+   *
+   * @see https://compucorp.atlassian.net/browse/PCHR-1892
+   */
+  public function upgrade_1402() {
+    $deleteQuery = "DELETE FROM civicrm_hrjobcontract_leave WHERE leave_type NOT IN (
+      SELECT id FROM civicrm_hrabsence_type
+    );";
+    CRM_Core_DAO::executeQuery($deleteQuery);
+  }
 }
