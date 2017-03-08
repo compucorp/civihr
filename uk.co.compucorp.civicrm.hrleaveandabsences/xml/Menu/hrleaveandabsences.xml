@@ -48,4 +48,10 @@
     <title>Absence</title>
     <access_arguments>access leave and absences</access_arguments>
   </item>
+  <item>
+    <path>civicrm/leaveandabsences/dashboard</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Page_Dashboard</page_callback>
+    <title>Dashboard</title>
+    <access_arguments>administer leave and absences</access_arguments>
+  </item>
 </menu>
