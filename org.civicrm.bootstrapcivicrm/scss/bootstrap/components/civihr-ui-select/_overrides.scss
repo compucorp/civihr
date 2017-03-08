@@ -265,6 +265,7 @@
     border-top: 0 !important;
     border-style: solid;
     border-width: 1px !important;
+    opacity: 1 !important;
 
     @each $id in $tasks-and-assignments {
       @at-root #{$id} & {
