@@ -425,6 +425,20 @@
 }
 
 .CRM_Contribute_Form_Contribution {
+  .crm-accordion-header {
+    font-weight: 600 !important;
+    font-family: $font-family-base;
+  }
+
+  #payment_information {
+    legend {
+      font-size: $font-size-h2;
+      font-family: $font-family-base;
+      font-weight: 600;
+      color: $gray-darker;
+    }
+  }
+
   .crm-submit-buttons {
     .crm-button_qf_Contribution_upload {
       margin-left: 0 !important;
@@ -511,6 +525,12 @@
 
   .crm-link-credit-card-mode {
     margin: 10px 20px 0 0;
+
+    .action-item {
+      border-color: $gray-darker !important;
+      border-radius: 2px;
+      padding: 6px 5px;
+    }
   }
 
   #recurringPaymentBlock {
@@ -686,6 +706,21 @@
       }
     }
   }
+}
+
+.page-civicrm-contact-view {
+  .ui-dialog {
+   .CRM_Contribute_Form_Contribution {
+     .crm-contribution-form-block {
+       margin-top: -65px;
+     }
+
+     .crm-link-credit-card-mode {
+       position: relative;
+       top: 65px;
+     }
+   }
+ }
 }
 
 .CRM_Contribute_Form_ContributionView {
