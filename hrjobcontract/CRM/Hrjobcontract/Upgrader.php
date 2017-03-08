@@ -1084,27 +1084,21 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * @throws Exception
    */
   function upgrade_1027() {
-    $messages = [];
     $pensionsTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
 
     $tx = new CRM_Core_Transaction();
     try {
-      $this->createPensionProviderType($messages);
-      $this->replacePensionProviders($pensionsTableName, $messages);
-      $this->removePensionTypeOptionGroup($messages);
-      $this->alterPensionsTable($pensionsTableName, $messages);
+      $this->createPensionProviderType();
+      $this->replacePensionProviders($pensionsTableName);
+      $this->removePensionTypeOptionGroup();
     } catch (Exception $ex) {
       $tx->rollback();
       throw new Exception('Cannot do upgrade - ' . $ex->getMessage());
     }
 
-    if (!empty($messages) && function_exists('drupal_set_message')) {
-      foreach ($messages as $message) {
-        drupal_set_message($message);
-      }
-    }
+    $this->alterPensionsTable($pensionsTableName);
 
-    return false;
+    return true;
   }
 
   /**
@@ -1113,12 +1107,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * 
    * @param type $pensionsTableName
    *   Name of pension data table
-   * @param type $messages
-   *   Array of messages for salvageable errors found
    * 
    * @throws Exception
    */
-  function alterPensionsTable($pensionsTableName, &$messages) {
+  private function alterPensionsTable($pensionsTableName) {
     try {
       CRM_Core_DAO::executeQuery("
         ALTER TABLE $pensionsTableName
@@ -1129,13 +1121,13 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         ON DELETE SET NULL ON UPDATE CASCADE;
       ");
     } catch (Exception $e) {
-      $civi_db_settings = parse_url(CIVICRM_DSN);
-      $civi_db_name = trim($civi_db_settings['path'], '/');
+      $civiDBSettings = parse_url(CIVICRM_DSN);
+      $civiDBName = trim($civiDBSettings['path'], '/');
 
       $fkCheck = CRM_Core_DAO::executeQuery($q = "
         SELECT *
         FROM information_schema.REFERENTIAL_CONSTRAINTS
-        WHERE CONSTRAINT_SCHEMA = '$civi_db_name'
+        WHERE CONSTRAINT_SCHEMA = '$civiDBName'
         AND TABLE_NAME = '$pensionsTableName'
         AND REFERENCED_TABLE_NAME = 'civicrm_contact'
         AND CONSTRAINT_NAME = 'pension_type_contact_id_fk'
@@ -1157,12 +1149,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   /**
    * Deletes hrjc_pension_type option group.
    * 
-   * @param array $messages
-   *   Array of messages for salvageable errors found
-   * 
    * @throws Exception
    */
-  private function removePensionTypeOptionGroup(&$messages) {
+  private function removePensionTypeOptionGroup() {
     // Remove pension type option group
     try {
       civicrm_api3('OptionGroup', 'get', [
@@ -1187,13 +1176,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * provider type.  Also replaces option_values for contact id's in existing 
    * contracts.
    * 
-   * @param array $messages
-   *   Array of messages for salvageable errors found
-   * 
    * @throws Exception
-   *   
    */
-  private function replacePensionProviders($pensionsTableName, &$messages) {
+  private function replacePensionProviders($pensionsTableName) {
     try {
       $pensionTypeOptions = civicrm_api3('OptionValue', 'get', [
         'sequential' => 1,
@@ -1239,13 +1224,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   /**
    * Creates 'Pension Provider' as a Contact Type
    * 
-   * @param array $messages
-   *   Array of messages for salvageable errors found
-   * 
    * @throws Exception
    *   If Pension_Provider contact type is not created.
    */
-  private function createPensionProviderType(&$messages) {
+  private function createPensionProviderType() {
     try {
       civicrm_api3('ContactType', 'create', [
         'name' => 'Pension_Provider',
@@ -1261,8 +1243,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
       if ($pensionProviderType['count'] < 1) {
         throw new Exception('Error creating Pension_Provider contact type: ' . $e->getMessage());
-      } else {
-        $messages[] = 'Pension_Provider contact type already exists: ' . $e->getMessage();
       }
     }
   }
