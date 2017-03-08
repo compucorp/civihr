@@ -65,6 +65,18 @@
     <add>4.4</add>
   </field>
 
+  <field>
+    <name>change_reason</name>
+    <type>varchar</type>
+    <length>512</length>
+    <label>Change Reason</label>
+    <comment>One of the values of the Job Contract Revision Change Reason option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrjc_revision_change_reason</optionGroupName>
+    </pseudoconstant>
+  </field>
+
   <index>
     <name>unique_pattern_per_effective_date</name>
     <fieldName>contact_id</fieldName>

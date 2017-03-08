@@ -376,6 +376,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_contact_work_pattern` (
      `pattern_id` int unsigned NOT NULL   COMMENT 'FK to the Work Pattern linked to an employee',
      `effective_date` date NOT NULL   COMMENT 'The date this work pattern will start to be considered active',
      `effective_end_date` date  COMMENT 'The date this work pattern will stop being considered active',
+     `change_reason` varchar(512)  COMMENT 'One of the values of the Job Contract Revision Change Reason option group',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `unique_pattern_per_effective_date`(contact_id, effective_date),
     CONSTRAINT FK_civicrm_hrlaa_contact_work_pattern_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,
