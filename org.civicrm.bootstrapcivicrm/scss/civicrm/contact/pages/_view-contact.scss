@@ -66,4 +66,12 @@
       vertical-align: middle;
     }
   }
+
+  .help {
+    font-family: $font-family-base;
+  }
+
+  .action-link a.button {
+    font-size: $font-size-base !important;
+  }
 }
