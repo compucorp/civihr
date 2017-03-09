@@ -3,6 +3,17 @@
     margin-bottom: 20px !important;
   }
 
+  #crm-container #crm-main-content-wrapper .crm-accordion-header {
+    font-weight: 600 !important;
+  }
+
+  .crm-form-submit,
+  .button,
+  .crm-form-submit {
+    text-transform: uppercase;
+    font-family: $font-family-base;
+  }
+
   .CRM_Contribute_Form_Task_PDF {
     background: $crm-white;
     padding: 15px;
