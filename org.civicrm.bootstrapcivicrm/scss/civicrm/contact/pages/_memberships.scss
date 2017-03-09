@@ -122,18 +122,25 @@
   #from_email_address {
     max-width: 230px;
     padding-right: 30px !important;
+    max-height: 33px;
+    line-height: 1.5em;
+    padding: 0 5px !important;
   }
 
   #payment_information {
     div {
       &.label {
-        padding-left: 0;
         text-align: left;
         min-width: 185px;
       }
     }
+
     input {
       margin-top: 0;
+    }
+
+    legend {
+      padding: 5px 20px;
     }
 
     .cvv2-section {
@@ -156,6 +163,10 @@
 
           td {
             border-bottom: 0;
+
+            &:not(.label) {
+              padding-left: 0;
+            }
           }
         }
       }
@@ -163,12 +174,15 @@
 
     .label {
       padding: 10px 20px;
-      min-width: 165px;
+      width: 205px;
+      box-sizing: border-box;
+      height: 50px;
+      vertical-align: middle;
       line-height: 1.5em;
     }
 
     .auto-renew-text {
-      padding: 10px 30px;
+      padding: 10px 20px;
       display: block;
     }
 
@@ -208,6 +222,15 @@
       }
     }
 
+    .crm-membership-form-block-soft-credit-type .crm-option-edit-link{
+      left: 0 !important;
+    }
+
+    #record_contribution {
+      position: relative;
+      bottom: 5px;
+    }
+
     #record-different-contact {
       .label {
         padding-left: 0;
@@ -225,11 +248,22 @@
         td {
           &:nth-child(2) {
             padding-left: 0;
+            width: 100%;
           }
 
           &.label {
-            padding-right: 20px;
+            width: 205px;
+            height: 50px;
+            vertical-align: middle;
+            box-sizing: border-box;
           }
+        }
+      }
+
+      .crm-membership-form-block-contribution-contact {
+        .helpicon {
+          bottom: -1px;
+          left: 0;
         }
       }
     }
