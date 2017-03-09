@@ -1509,6 +1509,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     // No results will be returned because the unassigned parameter has a true value
     // and a manager can only see contacts assigned to him that he manages, the unassigned parameter negates that.
+    // We need to set check permissions to true here so that civi can add
+    // the appropriate ACL clause to the LeaveRequest queries
     $result = civicrm_api3('LeaveRequest', 'get', ['unassigned' => true, 'check_permissions' => true]);
     $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['unassigned' => true, 'check_permissions' => true]);
 
@@ -1564,7 +1566,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
 
     // Only staffMember1 is actively managed by the Leave Manager
-    // therefore only leave requests for staffMember1 is returned
+    // therefore only leave requests for staffMember1 is returned.
+    // We need to set check permissions to true here so that civi can add
+    // the appropriate ACL clause to the LeaveRequest queries
     $result = civicrm_api3('LeaveRequest', 'get', ['unassigned' => false, 'check_permissions' => true]);
     $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['unassigned' => false, 'check_permissions' => true]);
 
@@ -1582,35 +1586,18 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $manager1 = ContactFabricator::fabricate();
-
-    $staffMember1 = ContactFabricator::fabricate();
     $staffMember2 = ContactFabricator::fabricate();
-
-    HRJobContractFabricator::fabricate(
-      ['contact_id' => $staffMember1['id']],
-      ['period_start_date' => '2016-01-01']
-    );
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $staffMember2['id']],
       ['period_start_date' => '2015-10-01']
     );
 
-    // Set Leave Approvers for staffMembers 1 and 2.
+    // Set Leave Approver for staffMembers
     // staffMember2 does not have an active leave manager relationship
-    $this->setContactAsLeaveApproverOf($manager1, $staffMember1, null, null, true, 'has Leaves Approved By');
     $this->setContactAsLeaveApproverOf($manager1, $staffMember2, '2016-01-01', '2016-12-28', true, 'has Leaves Managed By');
 
-    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
-      'contact_id' => $staffMember1['id'],
-      'type_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'from_date_type' => 1,
-      'to_date_type' => 1
-    ], true);
-
-    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
