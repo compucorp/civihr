@@ -560,10 +560,22 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
    * @see https://compucorp.atlassian.net/browse/PCHR-1892
    */
   public function upgrade_1402() {
-    $deleteQuery = "DELETE FROM civicrm_hrjobcontract_leave WHERE leave_type NOT IN (
-      SELECT id FROM civicrm_hrabsence_type
-    )";
-    CRM_Core_DAO::executeQuery($deleteQuery);
+    $absenceTypes = civicrm_api3('HRAbsenceType', 'get',
+      ['options' => ['limit' => 0], 'return' => ['name']]
+    );
+
+    if (empty($absenceTypes['values'])) {
+      return true;
+    }
+
+    $absenceTypeNames = array_column($absenceTypes['values'], 'name');
+
+    civicrm_api3('HRJobLeave', 'get', [
+      'leave_type' => ['NOT IN' => $absenceTypeNames],
+      'options' => ['limit' => 0],
+      'jobcontract_revision_id' => ['>' => 0], // required because an apparent bug in the HRJobLeave API
+      'api.HRJobLeave.delete' => ['id' => "\$value.id"], // chain delete entries without valid leave_type
+    ]);
 
     return true;
   }
