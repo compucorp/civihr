@@ -90,7 +90,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     ];
 
     if($hasUnassignedAsFalse) {
-      $conditions[] = implode(' AND ', $this->hasActiveLeaveManagerCondition());
+      $conditions = array_merge($conditions, $this->hasActiveLeaveManagerCondition());
     }
 
     if($hasUnassignedAsTrue) {
@@ -108,7 +108,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       if(!isset($this->params['unassigned'])) {
         $activeLeaveManagerCondition = $this->hasActiveLeaveManagerCondition();
         $activeLeaveManagerCondition[] = "r.contact_id_b = {$managerID}";
-        $conditions[] = implode(' AND ', $activeLeaveManagerCondition);
+        $conditions = array_merge($conditions, $activeLeaveManagerCondition);
       }
     }
 
