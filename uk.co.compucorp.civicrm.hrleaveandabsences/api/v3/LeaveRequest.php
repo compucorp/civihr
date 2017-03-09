@@ -91,6 +91,14 @@ function _civicrm_api3_leave_request_get_spec(&$spec) {
     'type'         => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0
   ];
+
+  $spec['unassigned'] = [
+    'name' => 'unassigned',
+    'title' => 'Unassigned only?',
+    'description' => 'Include only Leave Requests of contacts without active leave managers?',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0,
+  ];
 }
 
 /**
@@ -114,8 +122,7 @@ function _civicrm_api3_leave_request_get_spec(&$spec) {
  * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_request_get($params) {
-  $settingsManager = Civi::service('hrleaveandabsences.settings_manager');
-  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params, $settingsManager);
+  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params);
   return civicrm_api3_create_success($query->run(), $params, '', 'get');
 }
 
@@ -150,6 +157,14 @@ function _civicrm_api3_leave_request_getfull_spec(&$spec) {
     'type'         => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0
   ];
+
+  $spec['unassigned'] = [
+    'name' => 'unassigned',
+    'title' => 'Unassigned only?',
+    'description' => 'Include only Leave Requests of contacts without active leave managers?',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0,
+  ];
 }
 
 /**
@@ -165,8 +180,7 @@ function _civicrm_api3_leave_request_getfull_spec(&$spec) {
  * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_request_getfull($params) {
-  $settingsManager = Civi::service('hrleaveandabsences.settings_manager');
-  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params, $settingsManager);
+  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params);
   $query->setReturnFullDetails(true);
 
   return civicrm_api3_create_success($query->run(), $params, '', 'getfull');
