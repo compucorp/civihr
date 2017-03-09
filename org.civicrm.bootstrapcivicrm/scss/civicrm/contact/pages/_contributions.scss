@@ -104,11 +104,11 @@
       tr {
         &:not(.crm-child-row) {
           > td {
-            word-break: normal;
+            word-break: normal !important;
             min-width: auto;
+            vertical-align: middle;
 
             &:not(:first-child) {
-              word-break: break-word;
               min-width: 50px;
             }
 
@@ -120,6 +120,15 @@
             &:nth-child(2) {
               display: flex;
               align-items: center;
+              padding: 17px 20px !important;
+            }
+
+            &.crm-contribution-amount {
+              .crm-expand-row {
+                &:after {
+                  top: 2px;
+                }
+              }
             }
           }
         }
@@ -138,6 +147,10 @@
           z-index: 20;
           padding-top: 20px !important;
           padding-bottom: 15px !important;
+
+          .crm-form-checkbox {
+            margin-top: 0;
+          }
         }
       }
     }
