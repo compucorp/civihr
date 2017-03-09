@@ -477,8 +477,9 @@
     line-height: 50px;
     background: $crm-white;
     box-shadow: $box-shadow;
-    font-size: 13px;
-    font-weight: normal;
+    font-size: $font-size-h2;
+    font-family: $font-family-base;
+    font-weight: 600;
     border-radius: 2px;
     padding-left: 20px;
     margin: 20px 0;
@@ -490,12 +491,35 @@
     @include mx-expandable-table();
   }
 
+  .report {
+    tr {
+      &.columnfooter {
+        border-top: 1px solid $crm-dark-grayblue !important;
+      }
+
+      th,
+      td {
+        font-size: $font-size-base !important;
+        font-family: $font-family-base;
+      }
+
+      td {
+        padding: 18px 10px 17px 10px !important;
+
+        strong {
+          color: $gray-darker;
+        }
+      }
+    }
+  }
+
   .selector {
     background-color: $crm-white;
 
     tr:last-child {
       td {
         display: table-cell !important;
+        padding: 18px 20px 17px 20px !important;
       }
     }
   }
