@@ -120,8 +120,10 @@
   font-family: $font-family-base;
   width: 100% !important;
 
-  thead {
-    th {
+  thead,
+  .columnheader {
+    th,
+    td {
       border-bottom: none;
       background-color: $gray-lighter !important;
       color: $gray-darker !important;
@@ -174,6 +176,27 @@
     }
   }
 
+  .crm-icon {
+    background: none !important;
+    text-indent: 0 !important;
+
+    &::before {
+      text-indent: 0 !important;
+    }
+
+    &.Individual-icon::before {
+      @include fa-icon(13px, '\f007');
+    }
+
+    &.Household-icon::before {
+      @include fa-icon(13px, '\f015');
+    }
+
+    &.Organization-icon::before {
+      @include fa-icon(13px, '\f1ad');
+    }
+  }
+
   &.selector {
     &.row-highlight {
       tbody {
@@ -197,27 +220,6 @@
             align-items: center;
           }
         }
-      }
-    }
-
-    .crm-icon {
-      background: none !important;
-      text-indent: 0 !important;
-
-      &::before {
-        text-indent: 0 !important;
-      }
-
-      &.Individual-icon::before {
-        @include fa-icon(13px, '\f007');
-      }
-
-      &.Household-icon::before {
-        @include fa-icon(13px, '\f015');
-      }
-
-      &.Organization-icon::before {
-        @include fa-icon(13px, '\f1ad');
       }
     }
 
