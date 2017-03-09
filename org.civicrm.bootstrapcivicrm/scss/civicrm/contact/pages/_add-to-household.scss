@@ -40,4 +40,29 @@
       }
     }
   }
+
+  fieldset {
+    padding: 0 20px;
+
+    > legend {
+      padding-left: 0;
+    }
+
+    > table {
+      @include mx-expandable-table();
+      margin-top: 20px;
+
+      tr {
+        &.columnheader {
+          border: none !important;
+        }
+
+        &:not(.columnheader) {
+          td:not(:first-child) {
+            padding-left: 10px;
+          }
+        }
+      }
+    }
+  }
 }
