@@ -74,6 +74,9 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    * @param \CRM_Utils_SQL_Select $customQuery
    */
   private function addWhere(CRM_Utils_SQL_Select $customQuery) {
+    $hasUnassignedAsTrue = isset($this->params['unassigned']) && $this->params['unassigned'] == true;
+    $hasUnassignedAsFalse = isset($this->params['unassigned']) && $this->params['unassigned'] == false;
+
     $conditions = [
       'jc.deleted = 0',
       '(
@@ -86,17 +89,27 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
         )'
     ];
 
+    if($hasUnassignedAsFalse) {
+      $conditions[] = implode(' AND ', $this->hasActiveLeaveManagerCondition());
+    }
+
+    if($hasUnassignedAsTrue) {
+      $conditions[] = "NOT (" . implode(' AND ', $this->hasActiveLeaveManagerCondition()) . ") 
+                       OR (r.is_active IS NULL AND rt.is_active IS NULL)";
+    }
+
     if(!empty($this->params['managed_by'])) {
       $managerID = (int)$this->params['managed_by'];
-      $today =  '"' . date('Y-m-d') . '"';
-      $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
 
-      $conditions[] = 'rt.is_active = 1';
-      $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
-      $conditions[] = 'r.is_active = 1';
-      $conditions[] = "r.contact_id_b = {$managerID}";
-      $conditions[] = "(r.start_date IS NULL OR r.start_date <= {$today})";
-      $conditions[] = "(r.end_date IS NULL OR r.end_date >= {$today})";
+      if($hasUnassignedAsFalse) {
+        $conditions[] = "r.contact_id_b = {$managerID}";
+      }
+
+      if(!isset($this->params['unassigned'])) {
+        $activeLeaveManagerCondition = $this->hasActiveLeaveManagerCondition();
+        $activeLeaveManagerCondition[] = "r.contact_id_b = {$managerID}";
+        $conditions[] = implode(' AND ', $activeLeaveManagerCondition);
+      }
     }
 
     if(!empty($this->params['expired'])) {
@@ -141,9 +154,9 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       'INNER JOIN ' . HRJobDetails::getTableName() . ' jd ON jd.jobcontract_revision_id = jcr.details_revision_id'
     ];
 
-    if(!empty($this->params['managed_by'])) {
-      $joins[] = 'INNER JOIN ' . Relationship::getTableName() . ' r ON r.contact_id_a = a.contact_id';
-      $joins[] = 'INNER JOIN ' . RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id';
+    if(!empty($this->params['managed_by']) || isset($this->params['unassigned'])) {
+      $joins[] = 'LEFT JOIN ' . Relationship::getTableName() . ' r ON r.contact_id_a = a.contact_id';
+      $joins[] = 'LEFT JOIN ' . RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id';
     }
 
     if(!empty($this->params['expired'])) {
@@ -171,6 +184,12 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    * @return array
    */
   public function run() {
+    $hasUnassignedAsTrue = isset($this->params['unassigned']) && $this->params['unassigned'] == true;
+    $hasManagedBy = isset($this->params['managed_by']);
+
+    if ($hasManagedBy && $hasUnassignedAsTrue) {
+      return [];
+    }
     $results = $this->query->run();
 
     if($this->returnFullDetails) {
@@ -266,5 +285,26 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
   private function shouldReturnField($field) {
     return empty($this->params['return']) ||
            (is_array($this->params['return']) && in_array($field, $this->params['return']));
+  }
+
+  /**
+   *
+   * Returns the conditions needed to add to the Where clause for
+   * contacts that have active leave managers
+   *
+   * @return array
+   */
+  private function hasActiveLeaveManagerCondition() {
+    $today =  '"' . date('Y-m-d') . '"';
+    $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
+
+    $conditions = [];
+    $conditions[] = 'rt.is_active = 1';
+    $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
+    $conditions[] = 'r.is_active = 1';
+    $conditions[] = "(r.start_date IS NULL OR r.start_date <= {$today})";
+    $conditions[] = "(r.end_date IS NULL OR r.end_date >= {$today})";
+
+    return $conditions;
   }
 }

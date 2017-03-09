@@ -91,6 +91,15 @@ function _civicrm_api3_leave_request_get_spec(&$spec) {
     'type'         => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0
   ];
+
+  $spec['unassigned'] = [
+    'name' => 'unassigned',
+    'title' => 'Unassigned only?',
+    'description' => 'Include only Leave Requests of contacts without active leave managers?',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.default' => FALSE,
+    'api.required' => 0,
+  ];
 }
 
 /**
@@ -148,6 +157,15 @@ function _civicrm_api3_leave_request_getfull_spec(&$spec) {
     'description'  => ts('When true, only expired expired requests will be returned. Otherwise, only the non-expired ones will be returned'),
     'type'         => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0
+  ];
+
+  $spec['unassigned'] = [
+    'name' => 'unassigned',
+    'title' => 'Unassigned only?',
+    'description' => 'Include only Leave Requests of contacts without active leave managers?',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.default' => FALSE,
+    'api.required' => 0,
   ];
 }
 
