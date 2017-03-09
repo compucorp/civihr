@@ -184,6 +184,13 @@
 
   #recurring-entity-block,
   #follow-up {
+    margin-left: -20px;
+    margin-right: -20px;
+
+    .crm-accordion-body {
+      padding: 20px !important;
+    }
+
     td {
       &.label {
         padding-bottom: 5px !important;
@@ -223,6 +230,7 @@
   .crm-option-edit-link {
     position: relative;
     top: -8px;
+    left: initial !important;
   }
 
   .crm-is-multi-activity-wrapper {
