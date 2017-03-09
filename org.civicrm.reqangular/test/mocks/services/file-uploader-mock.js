@@ -36,16 +36,16 @@ define([
         }
       };
 
+      function _onCompleteItem() {
+        //call callbacks from callee
+        this.onCompleteItem({}, response);
+        this.onCompleteAll();
+      }
+
       return {
         uploadAll: function () {
-          this._onCompleteItem();
-        },
-        _onCompleteItem: function () {
-          this.onCompleteItem({}, response);
-          this.onCompleteAll();
-        },
-        onCompleteItem: function (item, response, status, headers) {},
-        onCompleteAll: function () {}
+          _onCompleteItem.call(this);
+        }
       };
     }
 
