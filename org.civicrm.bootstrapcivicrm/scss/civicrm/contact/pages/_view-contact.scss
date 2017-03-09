@@ -15,12 +15,21 @@
         }
 
         .crm-accordion-body .crm-submit-buttons {
-          border-bottom-color: $crm-dark-grayblue;
+          border-bottom: none;
           margin-bottom: 0 !important;
 
-          .crm-hover-button i {
-            position: relative;
-            bottom: 3px;
+
+          .crm-hover-button {
+            background: $brand-primary;
+            color: $crm-white;
+            border-radius: 2px;
+            padding: 5px 12px;
+            line-height: 1.5em;
+
+            i {
+              position: relative;
+              bottom: 2px;
+            }
           }
         }
 
