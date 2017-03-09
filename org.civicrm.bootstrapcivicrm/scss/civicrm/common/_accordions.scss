@@ -73,6 +73,10 @@
     }
   }
 
+  .crm-accordion-header:not(.crm-master-accordion-header) {
+    font-weight: 600;
+  }
+
   .crm-accordion-header:not(.crm-master-accordion-header) + .crm-accordion-body,
   .section {
     padding: 15px !important;
