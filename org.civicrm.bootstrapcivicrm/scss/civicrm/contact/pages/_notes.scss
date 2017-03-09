@@ -1,0 +1,91 @@
+.page-civicrm-contact {
+  #notes {
+    .dataTables_wrapper {
+      .ui-widget-header {
+        border: none;
+        background: none;
+        font-size: $font-size-base;
+        font-family: $font-family-base;
+      }
+
+      .select2-container {
+        background: $crm-white;
+
+        .select2-choice {
+          background: none;
+          border-radius: 2px;
+          line-height: 30px;
+          border: 1px solid $crm-darker-grayblue;
+          box-shadow: $crm-select2-box-shadow-inset;
+        }
+
+        .select2-arrow {
+          background: none;
+          padding: 0 5px;
+        }
+
+        .select2-search-choice-close {
+          right: 35px;
+        }
+      }
+
+      table {
+        background: transparent;
+        border: none;
+        font-family: $font-family-base;
+        box-shadow: $box-shadow;
+
+        thead tr {
+          border-bottom: 1px solid $crm-dark-grayblue;
+
+          th {
+            border-bottom: none;
+            background: $gray-lighter;
+            color: $gray-darker;
+            vertical-align: middle;
+            border: none;
+            padding: 10px 20px;
+
+            div {
+              padding: 0;
+            }
+          }
+        }
+
+        tbody tr {
+          background: $crm-white;
+          border-bottom: 1px solid $crm-background;
+          border-right: none;
+
+          td {
+            background: $crm-white;
+            color: $gray-dark;
+            border: none;
+            padding: 10px 20px;
+            vertical-align: middle;
+
+            a {
+              color: $brand-primary !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #Note {
+    td {
+      vertical-align: middle;
+
+      &.label {
+        width: 210px;
+        box-sizing: border-box;
+      }
+
+      &:not(.label) {
+        width: 100%;
+        padding: 0;
+      }
+    }
+  }
+}
