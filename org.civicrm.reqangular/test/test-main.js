@@ -47,7 +47,7 @@ require.config({
               'common/text-angular-sanitize'
             ]
         },
-        'common/angularFileUpload': {
+        'common/angular-file-upload': {
             deps: ['common/angular']
         },
     },
@@ -64,7 +64,7 @@ require.config({
         'common/ui-select': srcPath + '/vendor/angular/select',
         'common/vendor/perfect-scrollbar': srcPath + '/vendor/perfect-scrollbar.min',
         'common/text-angular-sanitize': srcPath + '/vendor/angular/textAngular-sanitize.min',
-        'common/angularFileUpload': srcPath + '/vendor/angular/angular-file-upload'
+        'common/angular-file-upload': srcPath + '/vendor/angular/angular-file-upload'
     },
     callback: function () {
         // Simple hack to provide value to CRM.vars.reqangular.baseURL

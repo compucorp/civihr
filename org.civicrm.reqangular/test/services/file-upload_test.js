@@ -45,20 +45,16 @@ define([
 
       describe('missing params', function () {
         it('throws error if no param is passed', function () {
-          expect(fileUpload.uploader).toThrow('custom settings object need to be defined in paramter');
+          expect(fileUpload.uploader).toThrow('custom settings object need to be defined in parameter');
         });
 
         it('throws error if entityTable is not defined', function () {
-          expect(function () {
-              fileUpload.uploader({ crmAttachmentToken: '123abc' })
-            })
+          expect(function () { fileUpload.uploader({ crmAttachmentToken: '123abc' }) })
             .toThrow('entityTable missing from custom settings');
         });
 
         it('throws error if crmAttachmentToken is not defined', function () {
-          expect(function () {
-              fileUpload.uploader({ entityTable: 'civicrm_hrleaveandabsences_leave_request' })
-            })
+          expect(function () { fileUpload.uploader({ entityTable: 'civicrm_hrleaveandabsences_leave_request' }) })
             .toThrow('crmAttachmentToken missing from custom settings');
         });
       });

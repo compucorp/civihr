@@ -1,6 +1,6 @@
 define([
   'common/modules/services',
-  'common/angularFileUpload'
+  'common/angular-file-upload'
 ], function (module) {
   'use strict';
 
@@ -28,7 +28,7 @@ define([
          */
         uploader: function (customSettings) {
           if (!customSettings) {
-            throw 'custom settings object need to be defined in paramter';
+            throw 'custom settings object need to be defined in parameter';
           }
 
           return new FileUploader({
@@ -104,7 +104,6 @@ define([
           /**
           * FileUploader callback that gets fired after uploading each file item
           * in a queue or a single file item.
-          *
           */
           fileUploader.onCompleteAll = function () {
             deferred.resolve(results);
@@ -112,7 +111,6 @@ define([
 
           /**
           * FileUploader method to start uploading files.
-          *
           */
           fileUploader.uploadAll();
 
