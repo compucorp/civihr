@@ -331,6 +331,7 @@ function hrleaveandabsences_civicrm_container(\Symfony\Component\DependencyInjec
  */
 function hrleaveandabsences_civicrm_postInstall() {
   _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_type();
+  _hrleaveandabsences_set_default_permissions();
 }
 
 /**
@@ -637,5 +638,33 @@ function _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_t
       'relationship_types_allowed_to_approve_leave',
       [$relationshipType['id']]
     );
+  }
+}
+
+/**
+ * Sets the default CiviCRM permissions for the 3 main roles in CiviHR
+ */
+function _hrleaveandabsences_set_default_permissions() {
+  _hrleaveandabsences_set_roles_permissions(
+    ['civihr_staff', 'civihr_manager', 'civihr_admin'],
+    ['access leave and absences']
+  );
+
+  _hrleaveandabsences_set_roles_permissions(
+    ['civihr_admin'],
+    ['administer leave and absences']
+  );
+}
+
+/**
+ * Grant the given $permissions to the given $roles
+ *
+ * @param array $roles
+ * @param array $permissions
+ */
+function _hrleaveandabsences_set_roles_permissions($roles, $permissions) {
+  foreach($roles as $roleName) {
+    $role = user_role_load_by_name($roleName);
+    user_role_grant_permissions($role->rid, $permissions);
   }
 }
