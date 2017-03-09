@@ -123,6 +123,22 @@
             }
           }
         }
+
+        th {
+          &:first-child {
+            .sticky-header {
+              padding-left: 20px !important;
+            }
+          }
+        }
+
+        .sticky-header {
+          border-bottom: 1px solid $crm-dark-grayblue;
+          background-color: $gray-lighter;
+          z-index: 20;
+          padding-top: 20px !important;
+          padding-bottom: 15px !important;
+        }
       }
     }
 
