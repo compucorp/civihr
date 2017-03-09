@@ -97,7 +97,6 @@ function _civicrm_api3_leave_request_get_spec(&$spec) {
     'title' => 'Unassigned only?',
     'description' => 'Include only Leave Requests of contacts without active leave managers?',
     'type' => CRM_Utils_Type::T_BOOLEAN,
-    'api.default' => FALSE,
     'api.required' => 0,
   ];
 }
@@ -164,7 +163,6 @@ function _civicrm_api3_leave_request_getfull_spec(&$spec) {
     'title' => 'Unassigned only?',
     'description' => 'Include only Leave Requests of contacts without active leave managers?',
     'type' => CRM_Utils_Type::T_BOOLEAN,
-    'api.default' => FALSE,
     'api.required' => 0,
   ];
 }

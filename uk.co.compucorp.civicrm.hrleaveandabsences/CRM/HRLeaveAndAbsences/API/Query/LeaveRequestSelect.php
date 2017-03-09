@@ -288,7 +288,6 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
   }
 
   /**
-   *
    * Returns the conditions needed to add to the Where clause for
    * contacts that have active leave managers
    *
