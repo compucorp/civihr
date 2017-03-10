@@ -1,0 +1,22 @@
+#changeLog {
+  & > div.bold {
+    padding: 20px;
+    margin-bottom: 20px;
+    background: $gray-lighter;
+    color: $gray-darker;
+    font-size: $font-size-h2;
+    font-family: $font-family-base;
+    border-bottom: 1px solid $crm-background;
+    box-shadow: $box-shadow;
+  }
+
+  table {
+    @include mx-expandable-table();
+
+    .columnheader {
+      th {
+        padding: 15px 30px !important;
+      }
+    }
+  }
+}
