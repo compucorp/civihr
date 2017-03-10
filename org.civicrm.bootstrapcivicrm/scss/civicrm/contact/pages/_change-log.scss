@@ -1,0 +1,82 @@
+#changeLog {
+  & > div.bold {
+    padding: 20px;
+    margin-bottom: 20px;
+    background: $gray-lighter;
+    color: $gray-darker;
+    font-size: $font-size-h2;
+    font-family: $font-family-base;
+    border-bottom: 1px solid $crm-background;
+    box-shadow: $box-shadow;
+  }
+
+  table {
+    box-shadow: $box-shadow;
+  }
+
+  .columnheader {
+    border: none;
+    border-bottom: 1px solid $crm-dark-grayblue;
+
+    th {
+      padding: 20px;
+      font-weight: 600;
+      color: $gray-darker;
+      vertical-align: middle;
+      border-top-color: $gray-lighter;
+      text-transform: none;
+      font-family: $font-family-base;
+      border: none;
+    }
+  }
+
+  tr {
+    background: $crm-white;
+    border-bottom: 1px solid $crm-background;
+    border-right: none;
+
+    td {
+      background: $crm-white;
+      color: $gray-dark;
+      border: none;
+      padding: 10px 20px;
+      vertical-align: middle;
+
+      a {
+        color: $brand-primary !important;
+      }
+    }
+  }
+
+  .crm-icon {
+    text-indent: 0 !important;
+    text-align: center;
+
+    &:before {
+      font-size: $font-size-base !important;
+      position: relative;
+      bottom: 2px;
+    }
+
+    &.Individual-icon {
+      background: none;
+      &:before {
+        @include fa-icon($content: "\f007");
+      }
+    }
+
+    &.Organization-icon {
+      background: none;
+      &:before {
+        @include fa-icon($content: "\f0f7");
+      }
+    }
+
+    &.Household-icon {
+      background: none;
+      &:before {
+        @include fa-icon($content: "\f015");
+      }
+    }
+  }
+}
