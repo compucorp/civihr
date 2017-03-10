@@ -16,10 +16,11 @@
   .action-link {
     line-height: normal;
     height: auto;
-    margin: 20px 0;
+    margin: 20px 15px;
 
     .button {
       border: 0 !important;
+      box-shadow: $box-shadow;
     }
   }
 
@@ -46,6 +47,8 @@
   }
 
   div[id*="browseValues_"] {
+    padding: 15px;
+
     table {
       @include mx-expandable-table();
 
@@ -69,6 +72,10 @@
           }
         }
       }
+    }
+
+    a.button {
+      box-shadow: $box-shadow;
     }
   }
 
@@ -129,6 +136,9 @@
 
 
 #DedupeRules {
+  box-shadow: $box-shadow;
+  margin: 15px 10px;
+
   h3 {
     background: $gray-lighter !important;
     color: $crm-h3-color;

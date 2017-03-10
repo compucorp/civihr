@@ -297,8 +297,6 @@
   }
 }
 
-
-
 .page-civicrm-contact {
   .crm-activityLinks .select2-container {
     .select2-choice {
@@ -324,6 +322,28 @@
       right: 35px;
     }
   }
+
+  #Activity {
+    .crm-activity-form-block-assignee_contact_id td:not(.label) {
+      padding: 0 5px;
+    }
+
+    #attachments tr {
+      &:nth-child(4),
+      &:nth-child(7) {
+        td.label {
+          padding: 0;
+        }
+      }
+    }
+
+    .crm-activity-form-block-attachment {
+      .crm-accordion-body {
+        padding: 20px !important;
+      }
+    }
+  }
+
 
   #mainTabContainer {
     .crm-activity-selector-activity {
