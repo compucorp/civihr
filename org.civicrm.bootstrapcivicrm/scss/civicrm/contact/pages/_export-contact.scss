@@ -112,6 +112,15 @@
   #saveDetails {
     .label {
       width: 80px;
+      display: table-cell;
+      text-align: left;
+      vertical-align: middle;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    .crm-form-text {
+      margin-top: 0 !important;
     }
   }
 
