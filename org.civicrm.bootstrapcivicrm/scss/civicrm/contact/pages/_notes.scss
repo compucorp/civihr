@@ -88,13 +88,11 @@
       }
     }
 
-    #attachments {
-      tr {
-        &:nth-child(4),
-        &:nth-child(7) {
-          td.label {
-            padding: 0;
-          }
+    #attachments tr {
+      &:nth-child(4),
+      &:nth-child(7) {
+        td.label {
+          padding: 0;
         }
       }
     }
