@@ -57,9 +57,13 @@
 
 .ui-select-match-text,
 .ui-select-placeholder {
-    color: $input-color;
+    color: $placeholder !important;
     font-weight: 400;
     text-transform: none;
+}
+
+.select2-chosen:not([ng-transclude='']) {
+    color: $placeholder !important;
 }
 
 .ui-select-toggle {
