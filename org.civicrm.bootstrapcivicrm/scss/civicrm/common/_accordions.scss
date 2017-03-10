@@ -12,7 +12,7 @@
     background-image: none !important;
     background: $crm-accordion-header-color !important;
     color: $gray-darker;
-    font-weight: normal !important;
+    font-weight: 600;
 
     &:not(.crm-master-accordion-header) {
       font-size: 13px !important;
