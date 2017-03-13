@@ -168,7 +168,7 @@ define([
         if(leaveRequest.balance_change > 0) {
           dateObj.UI.isAccruedTOIL = true;
           return {
-            border: '1px solid' + absenceType.color
+            border: '1px solid ' + absenceType.color
           };
         }
 
