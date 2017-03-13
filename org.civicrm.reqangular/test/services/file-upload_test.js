@@ -7,7 +7,11 @@ define([
   'use strict';
 
   describe('FileUpload', function () {
-    var $provide, $rootScope, $q, fileUpload, uploader, promise;
+    var $provide, $rootScope, $q, fileUpload, uploader, promise,
+      uploaderParams = {
+        entityTable: 'civicrm_hrleaveandabsences_leave_request',
+        crmAttachmentToken: '123abc'
+      };
 
     beforeEach(module('common.services', 'common.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -34,10 +38,7 @@ define([
 
     describe('uploader()', function () {
       beforeEach(function () {
-        uploader = fileUpload.uploader({
-          entityTable: 'civicrm_hrleaveandabsences_leave_request',
-          crmAttachmentToken: '123abc'
-        });
+        uploader = fileUpload.uploader(uploaderParams);
       });
 
       it('creates uploader', function () {
@@ -65,11 +66,7 @@ define([
       var param = { entityID: '12' };
 
       beforeEach(function () {
-        uploader = fileUpload.uploader({
-          entityTable: 'civicrm_hrleaveandabsences_leave_request',
-          crmAttachmentToken: '123abc'
-        });
-
+        uploader = fileUpload.uploader(uploaderParams);
         promise = uploader.uploadAll(param);
       });
 
@@ -87,6 +84,57 @@ define([
         promise.then(function (result) {
           var firstObject = result[0];
           expect(firstObject.file).toBeDefined();
+        });
+      });
+
+      describe('onBeforeUploadItem()', function () {
+        var testItem = { formData: [] };
+
+        beforeEach(function () {
+          uploader = fileUpload.uploader(uploaderParams);
+
+          spyOn(uploader, 'onBeforeUploadItem').and.callThrough();
+          spyOn(uploader, 'uploadAll').and.callFake(function () {
+            uploader.onBeforeUploadItem(testItem);
+            return $q.resolve({});
+          });
+
+          promise = uploader.uploadAll(param);
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        it('gets called', function () {
+          promise.then(function () {
+            expect(uploader.onBeforeUploadItem).toHaveBeenCalledWith(testItem);
+          });
+        });
+      });
+
+      describe('onErrorItem()', function () {
+        var fileItem = { file: { name: 'filename' } };
+
+        beforeEach(function () {
+          uploader = fileUpload.uploader(uploaderParams);
+
+          spyOn(uploader, 'onErrorItem').and.callThrough();
+          spyOn(uploader, 'uploadAll').and.callFake(function () {
+            uploader.onErrorItem(fileItem);
+            return $q.resolve({});
+          });
+          promise = uploader.uploadAll(param);
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        it('gets called', function () {
+          promise.then(function () {
+            expect(uploader.onErrorItem).toHaveBeenCalledWith(fileItem);
+          });
         });
       });
     });

@@ -9,14 +9,17 @@ define([
 
 
       function _onCompleteItem() {
+        var fileItem = { file: { name: 'filename' } };
+
         //call callbacks from callee
+        this.onErrorItem(fileItem);
+        this.onBeforeUploadItem({ formData: [] });
         this.onCompleteItem({}, mockData.getResponse());
         this.onCompleteAll();
       }
 
       return {
         uploadAll: function () {
-          this.onBeforeUploadItem({ formData: [] });
           _onCompleteItem.call(this);
         },
         //empty callbacks defintion requires for mocks to work
