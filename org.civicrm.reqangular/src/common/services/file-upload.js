@@ -58,6 +58,10 @@ define([
             queueLimit: +customSettings.queueLimit || 1,
             onCompleteItem: function (item, response) { results.push(response); },
             onCompleteAll: function () { deferred.resolve(results); },
+            onErrorItem: function (item) {
+              logError.apply(null, arguments);
+              deferred.reject('Could not upload file: ' + item.file.name);
+            },
             formData: [{
               entity_table: customSettings.entityTable || error('entityTable'),
               crm_attachment_token: customSettings.crmAttachmentToken || error('crmAttachmentToken')
@@ -85,21 +89,10 @@ define([
                */
               uploader.onBeforeUploadItem = function (item) {
                 _.each(additionalFormData, function (val, key) {
-                  item.formData[_.snakeCase(key)] = val;
+                  var modifiedItem = {};
+                  modifiedItem[_.snakeCase(key)] = val;
+                  item.formData.push(modifiedItem);
                 });
-              };
-
-              /**
-               * FileUploader callback to capture error during upload.
-               *
-               * @param {Object} item file item being uploaded
-               * @param {Object} response obtained from server for upload
-               * @param {Number} status
-               * @param {Object} headers
-               */
-              uploader.onErrorItem = function (item, response, status, headers) {
-                logError(item, response, status, headers);
-                deferred.reject('Could not upload file: ' + item.file.name);
               };
 
               oldUploadAll.apply(uploader);

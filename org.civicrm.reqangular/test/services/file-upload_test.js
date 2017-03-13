@@ -1,9 +1,10 @@
 define([
+  'common/lodash',
   'common/angular',
   'common/angularMocks',
   'common/services/file-upload',
   'common/mocks/services/file-uploader-mock',
-], function () {
+], function (_) {
   'use strict';
 
   describe('FileUpload', function () {
@@ -88,28 +89,32 @@ define([
       });
 
       describe('onBeforeUploadItem()', function () {
-        var testItem = { formData: [] };
+        var snakeCasekey, snakeCaseObject, testItem = { formData: [] },
+          modifiedItem = {};
 
         beforeEach(function () {
           uploader = fileUpload.uploader(uploaderParams);
-
-          spyOn(uploader, 'onBeforeUploadItem').and.callThrough();
-          spyOn(uploader, 'uploadAll').and.callFake(function () {
-            uploader.onBeforeUploadItem(testItem);
-            return $q.resolve({});
-          });
-
-          promise = uploader.uploadAll(param);
+          uploader.uploadAll(param);
+          uploader.onBeforeUploadItem(testItem);
+          var keys = Object.keys(param);
+          snakeCasekey = _.snakeCase(keys[0]);
+          modifiedItem[snakeCasekey] = param[keys[0]];
         });
 
         afterEach(function () {
           $rootScope.$apply();
         });
 
-        it('gets called', function () {
-          promise.then(function () {
-            expect(uploader.onBeforeUploadItem).toHaveBeenCalledWith(testItem);
-          });
+        it('converts keys to snake case', function () {
+          expect(_.has(testItem.formData[0], snakeCasekey)).toBeTruthy();
+        });
+
+        it('contains additional parameter values', function () {
+          expect(testItem.formData[0][snakeCasekey]).toEqual('12');
+        });
+
+        it('contains modified object', function () {
+          expect(testItem.formData).toContain(modifiedItem);
         });
       });
 
@@ -118,22 +123,17 @@ define([
 
         beforeEach(function () {
           uploader = fileUpload.uploader(uploaderParams);
-
-          spyOn(uploader, 'onErrorItem').and.callThrough();
-          spyOn(uploader, 'uploadAll').and.callFake(function () {
-            uploader.onErrorItem(fileItem);
-            return $q.resolve({});
-          });
           promise = uploader.uploadAll(param);
+          uploader.onErrorItem(fileItem);
         });
 
         afterEach(function () {
           $rootScope.$apply();
         });
 
-        it('gets called', function () {
-          promise.then(function () {
-            expect(uploader.onErrorItem).toHaveBeenCalledWith(fileItem);
+        it('rejects the promise', function () {
+          promise.catch(function (error) {
+            expect(error).toEqual('Could not upload file: ' + fileItem.file.name);
           });
         });
       });
