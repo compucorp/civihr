@@ -165,6 +165,12 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
    */
   public $request_type;
   /**
+   * Whether this leave request has been deleted or not
+   *
+   * @var boolean
+   */
+  public $is_deleted;
+  /**
    * class constructor
    *
    * @return civicrm_hrleaveandabsences_leave_request
@@ -315,6 +321,11 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
           'maxlength' => 20,
           'size' => CRM_Utils_Type::MEDIUM,
         ) ,
+        'is_deleted' => array(
+          'name' => 'is_deleted',
+          'type' => CRM_Utils_Type::T_BOOLEAN,
+          'description' => 'Whether this leave request has been deleted or not',
+        ) ,
       );
     }
     return self::$_fields;
@@ -343,6 +354,7 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
         'toil_to_accrue' => 'toil_to_accrue',
         'toil_expiry_date' => 'toil_expiry_date',
         'request_type' => 'request_type',
+        'is_deleted' => 'is_deleted',
       );
     }
     return self::$_fieldKeys;
