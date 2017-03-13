@@ -1,0 +1,30 @@
+define([
+  'common/mocks/module',
+  'common/mocks/data/file-upload-data'
+], function (mocks, mockData) {
+  'use strict';
+
+  mocks.factory('FileUploaderMock', function () {
+    var fileUploaderConstructor = function (settings) {
+
+
+      function _onCompleteItem() {
+        this.onCompleteItem({}, mockData.getResponse());
+        this.onCompleteAll();
+      }
+
+      return {
+        uploadAll: function () {
+          _onCompleteItem.call(this);
+        },
+        //empty callbacks defintion requires for mocks to work
+        onCompleteItem: function () {},
+        onCompleteAll: function () {},
+        onErrorItem: settings.onErrorItem,
+        onBeforeUploadItem: function () {}
+      };
+    }
+
+    return fileUploaderConstructor;
+  });
+});
