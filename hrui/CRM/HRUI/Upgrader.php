@@ -80,11 +80,15 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
    * and a NI / SSN field alphanumeric field for that group.
    */
   public function upgrade_4701() {
-    $inlineCustomGroup = civicrm_api3('CustomGroup', 'getsingle', [
+    // Add Inline Custom Group
+    $customGroupResult = civicrm_api3('CustomGroup', 'get', [
+      'sequential' => 1,
       'name' => 'Inline_Custom_Data'
     ]);
-    if ($inlineCustomGroup['count'] == 0) {
+
+    if ($customGroupResult['count'] < 1) {
       $groupData = [
+        'sequential' => 1,
         'title' => 'Inline Custom Data',
         'name' => 'Inline_Custom_Data',
         'extends' => ['0' => 'Individual'],
@@ -93,24 +97,25 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
         'style' => 'Inline',
         'is_active' => 1
       ];
-      $inlineCustomGroup = civicrm_api3('CustomGroup', 'create', $groupData);
-
-      // Add NI/SSN Field
-      $fieldData = [
-        'custom_group_id' => 'Inline_Custom_Data',
-        'name' => 'NI_SSN',
-        'label' => 'NI / SSN',
-        'html_type' => 'Text',
-        'data_type' => 'String',
-        'weight' => 1,
-        'is_required' => 0,
-        'is_searchable' => 1,
-        'is_active' => 1
-      ];
-      $niSSNField = civicrm_api3('CustomField', 'create', $fieldData);
-    } else {
-      $niSSNField = civicrm_api3('CustomField', 'getsingle', ['name' => 'NI_SSN']);
+      $customGroupResult = civicrm_api3('CustomGroup', 'create', $groupData);
     }
+    $inlineCustomGroup = array_shift($customGroupResult['values']);
+    
+    // Add NI/SSN Field
+    $fieldData = [
+      'sequential' => 1,
+      'custom_group_id' => $inlineCustomGroup['id'],
+      'name' => 'NI_SSN',
+      'label' => 'NI / SSN',
+      'html_type' => 'Text',
+      'data_type' => 'String',
+      'weight' => 1,
+      'is_required' => 0,
+      'is_searchable' => 1,
+      'is_active' => 1
+    ];
+    $createResult = civicrm_api3('CustomField', 'create', $fieldData);
+    $niSSNField = array_shift($createResult['values']);
 
     $identTableName = $this->getIdentTableName();
     $identFieldName = $this->getIdentFieldName();
@@ -123,6 +128,24 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
     ";
     CRM_Core_DAO::executeQuery($query);
 
-    return TRUE;
+    return true;
+  }
+
+  private function getIdentTableName() {
+    $customGroupResult = civicrm_api3('CustomGroup', 'get', [
+      'sequential' => 1,
+      'name' => 'Identify'
+    ]);
+
+    return $customGroupResult['values'][0]['table_name'];
+  }
+ 
+  private function getIdentFieldName() {
+    $customFieldResult = civicrm_api3('CustomField', 'get', [
+      'sequential' => 1,
+      'name' => 'Number'
+    ]);
+
+    return $customFieldResult['values'][0]['column_name'];
   }
 }
