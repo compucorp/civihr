@@ -1,0 +1,59 @@
+#Search.CRM_Pledge_Form_Search {
+  table.selector {
+    @include mx-expandable-table();
+  }
+
+  p.description {
+    padding: 10px;
+  }
+
+  .action-link {
+    margin-bottom: 0;
+  }
+}
+
+#Pledge {
+  .crm-pledge-form-block-create_date,
+  .crm-pledge-form-block-start_date,
+  .crm-PaymentReminders-accordion {
+    br {
+      display: none;
+    }
+
+    span.description {
+      display: block;
+    }
+
+    .crm-accordion-body {
+      padding: 20px !important;
+    }
+  }
+
+  span.description {
+    display: block;
+    line-height: 1.5em;
+  }
+
+  td {
+    display: table-cell;
+    vertical-align: middle;
+    line-height: 1.5em;
+    padding: 5px;
+
+    &.label {
+      width: 185px;
+      padding: 17px 0;
+      text-align: left;
+      box-sizing: border-box;
+      vertical-align: top;
+    }
+  }
+
+  #id-paymentReminders {
+    tr:not([class*='crm-contribution-form-block']) {
+      td {
+        padding: 5px;
+      }
+    }
+  }
+}
