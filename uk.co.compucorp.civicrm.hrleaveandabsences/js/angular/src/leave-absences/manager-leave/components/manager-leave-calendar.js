@@ -79,14 +79,17 @@ define([
     /**
      * Returns the calendar information for a specific month
      *
-     * @param  {int} index of contact
+     * @param  {int/string} contactID
      * @param  {int} month
      * @return {array}
      */
-    vm.getMonthData = function (index, month) {
-      if (vm.managedContacts[index] &&
-        vm.managedContacts[index].calendarData) {
-        var calendarData = vm.managedContacts[index].calendarData;
+    vm.getMonthData = function (contactID, month) {
+      var contact = _.find(vm.managedContacts, function (contact) {
+        return contact.id == contactID
+      });
+
+      if (contact && contact.calendarData) {
+        var calendarData = contact.calendarData;
         var datesForTheMonth = [],
           dates = Object.keys(calendarData.days);
 
@@ -174,12 +177,15 @@ define([
     /**
      * Returns the leave request which is in range of the sent date
      *
+     * @param  {int/string} contactID
      * @param  {string} date
      * @return {object}
      */
-    function getLeaveRequestByDate(date) {
+    function getLeaveRequestByDate(contactID, date) {
+      debugger;
       return _.find(leaveRequests, function (leaveRequest) {
-        return !!_.find(leaveRequest.dates, function (leaveRequestDate) {
+        return contactID == leaveRequest.contact_id &&
+          !!_.find(leaveRequest.dates, function (leaveRequestDate) {
           return moment(leaveRequestDate.date).isSame(date);
         });
       });
@@ -290,7 +296,7 @@ define([
       _.each(vm.managedContacts, function (contact, index) {
         promises.push(Calendar.get(contact.id, vm.selectedPeriod.id)
           .then(function (calendar) {
-            vm.managedContacts[index].calendarData = setCalendarProps(calendar);
+            vm.managedContacts[index].calendarData = setCalendarProps(vm.managedContacts[index].id, calendar);
           }));
       });
 
@@ -390,40 +396,6 @@ define([
     }
 
     /**
-     * Sets UI related properties(isWeekend, isNonWorkingDay etc)
-     * to the calendar data
-     *
-     * @param  {object} calendar
-     * @return {object}
-     */
-    function setCalendarProps(calendar) {
-      var dateObj,
-        leaveRequest,
-        dates = Object.keys(calendar.days);
-
-      dates.forEach(function (date) {
-        dateObj = calendar.days[date];
-        leaveRequest = getLeaveRequestByDate(dateObj.date);
-
-        dateObj.UI = {
-          isWeekend: calendar.isWeekend(getDateObjectWithFormat(dateObj.date)),
-          isNonWorkingDay: calendar.isNonWorkingDay(getDateObjectWithFormat(dateObj.date)),
-          isPublicHoliday: vm.isPublicHoliday(dateObj.date)
-        };
-
-        // set below props only if leaveRequest is found
-        if (leaveRequest) {
-          dateObj.UI.styles = getStyles(leaveRequest, dateObj);
-          dateObj.UI.isRequested = isPendingApproval(leaveRequest);
-          dateObj.UI.isAM = isDayType('half_day_am', leaveRequest, dateObj.date);
-          dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
-        }
-      });
-
-      return calendar;
-    }
-
-    /**
      * Loads the regions option values
      *
      * @return {Promise}
@@ -481,7 +453,7 @@ define([
 
       return {
         id: {
-          "IN": vm.filters.contact ? [vm.filters.contact] :
+          "IN": vm.filters.contact ? [vm.filters.contact.id] :
             vm.managedContacts.map(function (contact) {
               return contact.id;
             })
@@ -491,6 +463,41 @@ define([
         location: filters.location ? filters.location.value : null,
         region: filters.region ? filters.region.value : null
       };
+    }
+
+    /**
+     * Sets UI related properties(isWeekend, isNonWorkingDay etc)
+     * to the calendar data
+     *
+     * @param  {int/string} contactID
+     * @param  {object} calendar
+     * @return {object}
+     */
+    function setCalendarProps(contactID, calendar) {
+      var dateObj,
+        leaveRequest,
+        dates = Object.keys(calendar.days);
+
+      dates.forEach(function (date) {
+        dateObj = calendar.days[date];
+        leaveRequest = getLeaveRequestByDate(contactID, dateObj.date);
+
+        dateObj.UI = {
+          isWeekend: calendar.isWeekend(getDateObjectWithFormat(dateObj.date)),
+          isNonWorkingDay: calendar.isNonWorkingDay(getDateObjectWithFormat(dateObj.date)),
+          isPublicHoliday: vm.isPublicHoliday(dateObj.date)
+        };
+
+        // set below props only if leaveRequest is found
+        if (leaveRequest) {
+          dateObj.UI.styles = getStyles(leaveRequest, dateObj);
+          dateObj.UI.isRequested = isPendingApproval(leaveRequest);
+          dateObj.UI.isAM = isDayType('half_day_am', leaveRequest, dateObj.date);
+          dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
+        }
+      });
+
+      return calendar;
     }
 
     return vm;

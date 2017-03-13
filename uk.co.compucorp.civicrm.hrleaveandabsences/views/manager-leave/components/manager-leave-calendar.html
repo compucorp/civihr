@@ -98,7 +98,8 @@
             <thead>
             <tr class="chr_leave-calendar__days">
               <th class="chr_leave-calendar__name">Employee Name</th>
-              <th ng-repeat="day in calendar.getMonthData(0, calendar.months.indexOf(month))">
+              <!--send any contact id to get the days for a month-->
+              <th ng-repeat="day in calendar.getMonthData(calendar.managedContacts[0].id, calendar.months.indexOf(month))">
                 {{calendar.getDayName(day.date)}}
                 <div>{{$index + 1}}</div>
               </th>
@@ -107,7 +108,7 @@
             <tbody>
             <tr class="chr_leave-calendar__items" ng-repeat="contact in calendar.filterContacts()">
               <td class="chr_leave-calendar__name">{{contact.display_name}}</td>
-              <td ng-repeat="day in calendar.getMonthData($index, calendar.months.indexOf(month))">
+              <td ng-repeat="day in calendar.getMonthData(contact.id, calendar.months.indexOf(month))">
                 <div class="chr_leave-calendar__item"
                      ng-style="day.UI.styles"
                      ng-class="{

@@ -190,7 +190,7 @@
           returnValue;
 
         beforeEach(function () {
-          returnValue = controller.getMonthData(0, januaryMonth);
+          returnValue = controller.getMonthData(1, januaryMonth);
         });
 
         it('returns the date which are from the month of january', function () {
@@ -321,6 +321,7 @@
               var status = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), function (status) {
                 return status.name === 'waiting_approval';
               });
+              leaveRequest.contact_id = '203';
               leaveRequest.status_id = status.value;
               leaveRequest.balance_change = -1;
               commonSetup();
