@@ -42,7 +42,6 @@ define([
          *
          * @param {Object} customSettings can have keys like url for file upload path,
          * formData for updating form data, queueLimit to limit number of files that can be uploaded at onCompleteAll
-         *
          * @return {Object} an instance of FileUploader
          * @throws {String} of error if parameters are not set properly
          */
@@ -71,27 +70,23 @@ define([
            * return a promise
            *
            * @param {Object} additionalFormData that has keys like entityID or description
-           *
            * @return {Promise} that resolves to result if successful else error
            */
           uploader.uploadAll = (function () {
-            oldUploadAll = uploader.uploadAll;
+              oldUploadAll = uploader.uploadAll;
 
-            return function (additionalFormData) {
-              /**
-               * FileUploader callback that gets fired before each file item gets
-               * uploaded, useful to insert additional form params like entityId
-               * which are not available at the time of uploader creation.
-               *
-               * @param {Object} item file item being uploaded
-               */
-              uploader.onBeforeUploadItem = function (item) {
-                for (var key in additionalFormData) {
-                  var snakeCaseKey = _.snakeCase(key);
-                  item.formData.push({
-                    snakeCaseKey: additionalFormData[key]
+              return function (additionalFormData) {
+                /**
+                 * FileUploader callback that gets fired before each file item gets
+                 * uploaded, useful to insert additional form params like entityId
+                 * which are not available at the time of uploader creation.
+                 *
+                 * @param {Object} item file item being uploaded
+                 */
+                uploader.onBeforeUploadItem = function (item) {
+                  _.each(additionalFormData, function (val, key) {
+                      item.formData[_.snakeCase(key)] = val;
                   });
-                }
               };
 
               /**
@@ -103,8 +98,8 @@ define([
                * @param {Object} headers
                */
               uploader.onErrorItem = function (item, response, status, headers) {
-                deferred.reject('Could not upload file: ' + item.file.name);
                 logError(item, response, status, headers);
+                deferred.reject('Could not upload file: ' + item.file.name);
               };
 
               oldUploadAll.apply(uploader);
@@ -113,9 +108,8 @@ define([
             }
           }());
 
-          return uploader;
-        }
-      };
-    }
-  ]);
+        return uploader;
+      }
+    };
+  }]);
 });

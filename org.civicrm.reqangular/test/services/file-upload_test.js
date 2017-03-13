@@ -89,32 +89,6 @@ define([
           expect(firstObject.file).toBeDefined();
         });
       });
-
-      describe('onBeforeUploadItem()', function () {
-        beforeEach(function () {
-          spyOn(uploader, 'onBeforeUploadItem').and.callThrough();
-          uploader.onBeforeUploadItem({ formData: [] });
-        });
-
-        it('gets called', function () {
-          //verify if method is getting called and hence a simple case
-          expect(uploader.onBeforeUploadItem).toHaveBeenCalled();
-        });
-      });
-
-      describe('onErrorItem()', function () {
-        var fileItem = { file: { name: 'filename' } };
-
-        beforeEach(function () {
-          spyOn(uploader, 'onErrorItem').and.callThrough();
-          promise = uploader.onErrorItem(fileItem);
-        });
-
-        it('gets called', function () {
-          //verify if method is getting called and hence a simple case
-          expect(uploader.onErrorItem).toHaveBeenCalled();
-        });
-      });
     });
   });
 });
