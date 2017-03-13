@@ -133,7 +133,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(7, $balanceChanges);
     $this->assertCount(7, $dates);
 
-    $this->getleaveRequestService()->delete($leaveRequest->id);
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->delete($leaveRequest->id);
 
     $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
     $dates          = $leaveRequest->getDates();
@@ -341,6 +341,27 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['type_id'] = 2;
 
     $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+  }
+
+  /**
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage You are not allowed to delete a leave request for this employee
+   */
+  public function testDeleteThrowsAnExceptionWhenLeaveApproverTriesToDeleteALeaveRequest() {
+    $contactID = 5;
+    $params = $this->getDefaultParams(['contact_id' => $contactID]);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->delete($leaveRequest->id);
+  }
+
+  /**
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage You are not allowed to delete a leave request for this employee
+   */
+  public function testDeleteThrowsAnExceptionWhenLeaveContactTriesToDeleteALeaveRequest() {
+    $params = $this->getDefaultParams();
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+    $this->getLeaveRequestService()->delete($leaveRequest->id);
   }
 
   private function getLeaveRequestService($isAdmin = false, $isManager = false, $allowStatusTransition = true, $mockBalanceChangeService = false) {

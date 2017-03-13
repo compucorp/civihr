@@ -126,6 +126,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   public function delete($leaveRequestID) {
     $leaveRequest = LeaveRequest::findById($leaveRequestID);
 
+    if(!$this->canDeleteLeaveRequestFor($leaveRequest->contact_id)) {
+      throw new RuntimeException('You are not allowed to delete a leave request for this employee');
+    }
+
     $transaction = new CRM_Core_Transaction();
     try {
       LeaveBalanceChange::deleteAllForLeaveRequest($leaveRequest);
@@ -187,6 +191,17 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    */
   private function canChangeAbsenceTypeFor($params) {
     return $this->leaveRequestRightsService->canChangeAbsenceTypeFor($params['contact_id'], $params['status_id']);
+  }
+
+  /**
+   * Checks if the current user can delete a leave request
+   *
+   * @param int $contactID
+   *
+   * @return bool
+   */
+  private function canDeleteLeaveRequestFor($contactID) {
+    return $this->leaveRequestRightsService->canDeleteFor($contactID);
   }
 
   /**
