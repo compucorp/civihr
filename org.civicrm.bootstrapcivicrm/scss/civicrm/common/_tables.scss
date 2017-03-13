@@ -156,8 +156,9 @@
         background: $crm-white !important;
         border: none !important;
         color: $gray-dark;
-        padding: 10px 30px;
+        padding: 10px;
         line-height: 1.1em;
+        vertical-align: middle;
       }
 
       th {
@@ -216,7 +217,6 @@
           min-width: 10px;
 
           &:first-child {
-            display: flex;
             align-items: center;
           }
         }
@@ -251,8 +251,11 @@
       }
 
       > td {
-        box-shadow: $crm-nested-table-box-shadow;
         position: relative;
+
+        .crm-ajax-container {
+          border: 2px solid $crm-background;
+        }
       }
 
       #info {
