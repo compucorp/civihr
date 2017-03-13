@@ -48,6 +48,11 @@
             color: $gray-dark;
             border: none;
             padding: 10px 20px;
+
+            a,
+            span.btn-slide {
+              color: $brand-primary !important;
+            }
           }
         }
       }
@@ -116,6 +121,7 @@
   .select2-container {
     max-width: 230px;
     width: 230px;
+    min-height: 30px;
   }
 
   select,
@@ -128,6 +134,10 @@
   }
 
   #payment_information {
+    .content {
+      margin-left: 166px;
+    }
+
     div {
       &.label {
         text-align: left;
