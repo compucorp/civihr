@@ -71,11 +71,6 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
    *
    * @var string
    */
-  public $pay_grade;
-  /**
-   *
-   * @var string
-   */
   public $currency;
   /**
    *
@@ -129,16 +124,6 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
-        'pay_grade' => array(
-          'name' => 'pay_grade',
-          'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Pay Grade') ,
-          'maxlength' => 63,
-          'export' => true,
-          'where' => 'civicrm_hrpay_scale.pay_grade',
-          'headerPattern' => '',
-          'dataPattern' => '',
-        ) ,
         'currency' => array(
           'name' => 'currency',
           'type' => CRM_Utils_Type::T_STRING,
@@ -170,6 +155,9 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'where' => 'civicrm_hrpay_scale.periodicity',
           'headerPattern' => '',
           'dataPattern' => '',
+          'pseudoconstant' => array(
+            'callback' => 'CRM_Hrjobcontract_SelectValues::commonUnit',
+          )
         ) ,
         'is_active' => array(
           'name' => 'is_active',
@@ -194,7 +182,6 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
       self::$_fieldKeys = array(
         'id' => 'id',
         'pay_scale' => 'pay_scale',
-        'pay_grade' => 'pay_grade',
         'currency' => 'currency',
         'amount' => 'amount',
         'periodicity' => 'periodicity',

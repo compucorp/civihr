@@ -97,11 +97,10 @@ class CRM_Hrjobcontract_Form_PayScale extends CRM_Core_Form {
     $currencyFormatsKeys = array_keys(CRM_Hrjobcontract_Page_JobContractTab::getCurrencyFormats());
     $currencies = array_combine($currencyFormatsKeys, $currencyFormatsKeys);
     
-    $this->add('text', 'pay_scale', ts('Pay Scale'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_PayScale', 'pay_scale'), TRUE);
-    $this->add('text', 'pay_grade', ts('Pay Grade'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_PayScale', 'pay_grade'), TRUE);
+    $this->add('text', 'pay_scale', ts('Label'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_PayScale', 'pay_scale'), TRUE);
     $this->add('select', 'currency', ts('Currency'), array('' => ts('- select -')) + $currencies, TRUE);
     $this->add('text', 'amount', ts('Amount'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_PayScale', 'amount'), TRUE);
-    $this->add('text', 'periodicity', ts('Periodicity'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_PayScale', 'periodicity'), TRUE);
+    $this->add('select', 'periodicity', ts('Periodicity'), array('' => ts('- select -')) + CRM_Hrjobcontract_SelectValues::commonUnit(), TRUE);
 
     $this->add('checkbox', 'is_active', ts('Enabled?'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_PayScale', 'is_active'));
 

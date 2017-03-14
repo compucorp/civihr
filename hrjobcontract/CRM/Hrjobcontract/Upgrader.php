@@ -1240,10 +1240,26 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       // Skip this
     }
   }
+  /**
+   * Concats data in pay_grade field to pay_scale field, since pay_grade is to
+   * be removed.
+   */
+  public function upgrade_1026() {
+    $query = '
+      UPDATE civicrm_hrpay_scale
+      SET pay_scale = CONCAT(pay_scale, \' - \', pay_grade)
+    ';
+    CRM_Core_DAO::executeQuery($query);
+
+    $dropQuery = 'ALTER TABLE `civicrm_hrpay_scale` DROP `pay_grade`';
+    CRM_Core_DAO::executeQuery($dropQuery);
+
+    return true;
+  }
 
   /**
    * Upgrader to :
-   * 
+   *
    * - Remove unused pay scales except 'Not Applicable'
    * - Remove unused Hour Locations except 'Head Office'
    * - Remove Duplicated 'Employee - Permanent' Contract Type

@@ -346,10 +346,8 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         $result = '';
         if (isset($value)) {
             $result = $this->_payScaleOptions[$value]['pay_scale'];
-            if (!empty($this->_payScaleOptions[$value]['pay_grade']))
-            {
-                $result .= ' - ' .
-                $this->_payScaleOptions[$value]['pay_grade'] . ' - ' .
+            if (!empty($this->_payScaleOptions[$value]['currency'])) {
+                $result .= ' - ' . 
                 $this->_payScaleOptions[$value]['currency'] . ' ' .
                 $this->_payScaleOptions[$value]['amount'] . ' per ' .
                 $this->_payScaleOptions[$value]['periodicity'];

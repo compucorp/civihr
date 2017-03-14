@@ -85,8 +85,7 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
   }
   
   /**
-   * Browse all absence types
-   *
+   * Browse all pay scales types
    *
    * @return void
    * @access public
@@ -112,7 +111,6 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
       // form all action links
       $action = array_sum(array_keys($this->links()));
 
-
       if ($dao->is_active) {
         $action -= CRM_Core_Action::ENABLE;
       }
@@ -120,10 +118,8 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
         $action -= CRM_Core_Action::DISABLE;
       }
 
-      //if this absence type has its related activities/leaves then don't show DELETE action
-      $isDelete = FALSE;
-
-      if ($isDelete) {
+      //Not Applicable pay grade should not be deleted
+      if ($dao->pay_scale === 'Not Applicable') {
         $action -= CRM_Core_Action::DELETE;
       }
 
