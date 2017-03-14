@@ -843,6 +843,6 @@ define([
       return _.find(whichOptionGroup, function (item) {
         return item[key] === value;
       });
-    },
+    }
   }
 });

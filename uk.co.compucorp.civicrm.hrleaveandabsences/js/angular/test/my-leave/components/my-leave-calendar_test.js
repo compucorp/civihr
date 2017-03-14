@@ -231,6 +231,7 @@
                 return status.name === 'waiting_approval';
               });
               leaveRequest.status_id = status.value;
+              leaveRequest.balance_change = -1;
               commonSetup();
               dateObj = controller.calendar.days[getDateObjectWithFormat(leaveRequest.from_date).valueOf()];
             });

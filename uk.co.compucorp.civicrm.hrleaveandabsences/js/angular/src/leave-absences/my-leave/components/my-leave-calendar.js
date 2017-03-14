@@ -39,6 +39,19 @@ define([
     vm.selectedPeriod = null;
 
     /**
+     * Labels the given period according to whether it's current or not
+     *
+     * @param  {object} absenceType
+     * @return {object} style
+     */
+    vm.getAbsenceTypeStyle = function(absenceType) {
+      return {
+        backgroundColor: absenceType.color,
+        borderColor: absenceType.color
+      };
+    };
+
+    /**
      * Returns day name of the sent date(Monday, Tuesday etc.)
      *
      * @param  {string} date
@@ -116,7 +129,7 @@ define([
         vm.legendCollapsed = false;
         return loadLeaveRequestAndCalendar();
       })
-      .then(function () {
+      .finally(function () {
         vm.loading.page = false;
       });
     })();
@@ -168,7 +181,7 @@ define([
         if(leaveRequest.balance_change > 0) {
           dateObj.UI.isAccruedTOIL = true;
           return {
-            border: '1px solid' + absenceType.color
+            border: '1px solid ' + absenceType.color
           };
         }
 
