@@ -1,6 +1,8 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveRequestDateTest
@@ -115,5 +117,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestDateTest extends BaseHeadlessTest {
     LeaveRequestDate::deleteDatesForLeaveRequest(2);
     $this->assertCount(0, LeaveRequestDate::getDatesForLeaveRequest(1));
     $this->assertCount(0, LeaveRequestDate::getDatesForLeaveRequest(2));
+  }
+
+  public function testGetDatesForLeaveRequestReturnsEmptyArrayForSoftDeletedLeaveRequest() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+      'status_id' => 1
+    ]);
+
+    LeaveRequest::softDelete($leaveRequest->id);
+    $leaveRequestDates = LeaveRequestDate::getDatesForLeaveRequest($leaveRequest->id);
+    $this->assertCount(0, $leaveRequestDates);
   }
 }

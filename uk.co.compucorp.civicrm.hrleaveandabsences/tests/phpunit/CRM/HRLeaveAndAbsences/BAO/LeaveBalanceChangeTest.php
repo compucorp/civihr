@@ -794,6 +794,21 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     }
   }
 
+  public function testTheLeaveRequestBreakdownReturnsEmptyArrayForSoftDeletedLeaveRequests() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+      'status_id' => 1
+    ], true);
+
+    LeaveRequest::softDelete($leaveRequest->id);
+    $breakdownBalanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+
+    $this->assertCount(0, $breakdownBalanceChanges);
+  }
+
   public function testTheLeaveRequestBreakdownReturnsAnEmptyArrayIfThereAreNoBalanceChangesForLeaveRequestDates() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
