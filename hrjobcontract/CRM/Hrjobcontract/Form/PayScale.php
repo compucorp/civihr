@@ -112,9 +112,6 @@ class CRM_Hrjobcontract_Form_PayScale extends CRM_Core_Form {
     if (!array_key_exists('pay_scale', $fields)) {
       $errors['pay_scale'] = ts("Please enter Pay Scale value");
     }
-    if (!array_key_exists('pay_grade', $fields)) {
-      $errors['pay_grade'] = ts("Please enter Pay Grade value");
-    }
     if (!array_key_exists('currency', $fields)) {
       $errors['currency'] = ts("Please enter Currency value");
     }
@@ -143,7 +140,7 @@ class CRM_Hrjobcontract_Form_PayScale extends CRM_Core_Form {
       // store the submitted values in an array
       $params = $this->exportValues();
 
-      foreach (array('pay_scale', 'pay_grade', 'currency', 'amount', 'periodicity') as $key => $index) {
+      foreach (array('pay_scale', 'currency', 'amount', 'periodicity') as $key => $index) {
         if(!array_key_exists($index, $params)) {
           $params[$index] = 0;
         }

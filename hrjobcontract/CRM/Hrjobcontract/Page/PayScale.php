@@ -102,7 +102,6 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
       $payScale[$dao->id] = array();
       $payScale[$dao->id]['id'] = $dao->id;
       $payScale[$dao->id]['pay_scale'] = $dao->pay_scale;
-      $payScale[$dao->id]['pay_grade'] = $dao->pay_grade;
       $payScale[$dao->id]['currency'] = $dao->currency;
       $payScale[$dao->id]['amount'] = $dao->amount;
       $payScale[$dao->id]['periodicity'] = $dao->periodicity;

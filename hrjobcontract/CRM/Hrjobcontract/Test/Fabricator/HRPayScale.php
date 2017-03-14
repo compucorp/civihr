@@ -4,7 +4,6 @@ class CRM_Hrjobcontract_Test_Fabricator_HRPayScale {
 
   private static $defaultParams = [
     'pay_scale' => 'test scale',
-    'pay_grade' => 'test grade',
     'currency' => "USD",
     'amount' => "35000.00",
     'periodicity' => "Year",

@@ -15,7 +15,6 @@ class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseCSVP
   public function testProcess() {
     $this->rows[] = [
       'E2',
-      'Head of Department',
       'USD',
       '70000',
       'Year'
@@ -33,7 +32,6 @@ class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseCSVP
   private function importHeadersFixture() {
     return [
       'pay_scale',
-      'pay_grade',
       'currency',
       'amount',
       'periodicity',

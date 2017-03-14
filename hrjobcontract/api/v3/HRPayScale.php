@@ -35,7 +35,6 @@
  */
 function _civicrm_api3_h_r_pay_scale_create_spec(&$spec) {
   $spec['pay_scale']['api.default'] = '';
-  $spec['pay_grade']['api.default'] = '';
   $spec['currency']['api.default'] = '';
   $spec['amount']['api.default'] = 0;
   $spec['periodicity']['api.default'] = '';

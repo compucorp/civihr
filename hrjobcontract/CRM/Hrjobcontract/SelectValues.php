@@ -180,16 +180,15 @@ class CRM_Hrjobcontract_SelectValues {
    * @return array
    */
   public static function buildPayScales() {
-    $query = "SELECT id,pay_scale,pay_grade,currency,amount,periodicity from civicrm_hrpay_scale ".
+    $query = "SELECT id,pay_scale,currency,amount,periodicity from civicrm_hrpay_scale ".
              " WHERE is_active=1";
     $options = array();
     
     $result = CRM_Core_DAO::executeQuery($query);
     while ($result->fetch()) {
       $label = $result->pay_scale;
-      if (!empty($result->pay_grade)) {
+      if (!empty($result->currency)) {
         $label .= ' - ' . 
-          $result->pay_grade . ' - ' . 
           $result->currency . ' ' . 
           $result->amount . ' per ' . 
           $result->periodicity;

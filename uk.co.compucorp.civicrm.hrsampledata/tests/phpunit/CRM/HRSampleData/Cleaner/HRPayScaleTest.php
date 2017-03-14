@@ -21,7 +21,6 @@ class CRM_HRSampleData_Cleaner_HRPayScaleTest extends CRM_HRSampleData_BaseCSVPr
 
     $this->rows[] = [
       $payScale['pay_scale'],
-      'test grade',
       'USD',
       '35000',
       'Year',
@@ -36,7 +35,6 @@ class CRM_HRSampleData_Cleaner_HRPayScaleTest extends CRM_HRSampleData_BaseCSVPr
   private function importHeadersFixture() {
     return [
       'pay_scale',
-      'pay_grade',
       'currency',
       'amount',
       'periodicity',
