@@ -139,6 +139,20 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   }
 
   /**
+   * Upgrader to add new default task type: 'Other Task'
+   */
+  public function upgrade_1403() {
+    civicrm_api3('OptionValue', 'create', [
+      'option_group_id' => "activity_type",
+      'component_id' => "CiviTask",
+      'label' => "Other Task",
+      'name' => "Other Task",
+    ]);
+
+    return true;
+  }
+
+  /**
    * Replaces (Case) keyword and (Open Case) keyword with (Assignment) keyword
    * and (Created New Assignment) keyword respectively and vise versa for
    * civicrm default activity types labels when installing/uninstalling the extension.
