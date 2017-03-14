@@ -470,6 +470,26 @@
     font-family: $font-family-base;
   }
 
+  &#Contribution .crm-accordion-body {
+    padding: 15px 20px !important;
+  }
+
+  #customData,
+  #id-additionalDetail,
+  #paymentDetails_Information,
+  .AdditionalDetail,
+  .Premium,
+  .form-layout-compressed {
+    td:not(.label) {
+      width: 100%;
+      padding: 0;
+    }
+
+    td.label {
+      min-width: 180px;
+    }
+  }
+
   #payment_information {
     legend {
       font-size: $font-size-h2;
@@ -542,6 +562,12 @@
   .crm-contribution-form-block-soft_credit_to {
     td {
       padding: 0 !important;
+    }
+  }
+
+  #softCredit {
+    td label {
+      width: 180px !important;
     }
   }
 
@@ -713,7 +739,7 @@
 
   .crm-contribution-form-block-soft_credit_to  {
     label {
-      width: 150px !important;
+      width: 180px !important;
     }
   }
 
@@ -730,7 +756,7 @@
 
   .crm-contribution-form-block-pcp_details {
     position: relative;
-    left: -214px;
+    left: -185px;
   }
 
   .crm-accordion-body {
@@ -738,7 +764,8 @@
       vertical-align: middle;
 
       &.label {
-        min-width: 200px;
+        min-width: 185px;
+        box-sizing: border-box;
 
         label {
           padding-left: 10px;
@@ -869,6 +896,11 @@
     .helpicon {
       left: 0;
     }
+
+    td:not(.label) {
+      width: 100%;
+      padding: 0;
+    }
   }
 
   #Donor_Information__ {
@@ -898,6 +930,30 @@
 
   label[for="thankyou_date_time"] {
     top: 5px;
+  }
+}
+
+#ContributionView {
+  [id*="Donor_Information_"] {
+    .crm-accordion-wrapper {
+      margin-left: -40px;
+      margin-right: -40px;
+
+      .crm-accordion-body {
+        padding: 20px 43px !important;
+      }
+    }
+
+    td {
+      vertical-align: middle;
+      display: table-cell;
+      min-width: 170px;
+      box-sizing: border-box;
+    }
+
+    .html-adjust {
+      width: 100%;
+    }
   }
 }
 
