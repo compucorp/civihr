@@ -316,7 +316,7 @@
 
           describe('when leave request is not approved', function () {
             beforeEach(function () {
-              var status = filterOptionGroup(
+              var status = optionGroupMock.filterOptionGroup(
                 'hrleaveandabsences_leave_request_status', 'name', 'waiting_approval');
 
               leaveRequest.contact_id = '203';
@@ -349,7 +349,7 @@
 
           describe('when leave request is for half day am', function() {
             beforeEach(function() {
-              var halfDayAMValue = filterOptionGroup(
+              var halfDayAMValue = optionGroupMock.filterOptionGroup(
                 'hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am').value;
 
               leaveRequest.from_date_type = halfDayAMValue;
@@ -363,7 +363,7 @@
 
           describe('when leave request is for half day pm', function() {
             beforeEach(function() {
-              var halfDayPMValue = filterOptionGroup(
+              var halfDayPMValue = optionGroupMock.filterOptionGroup(
                 'hrleaveandabsences_leave_request_day_type', 'name', 'half_day_pm').value;
 
               leaveRequest.from_date_type = halfDayPMValue;
@@ -421,12 +421,6 @@
       function getDate(dayType) {
         return workPatternData.daysData().values.find(function (data) {
           return data.type.name === dayType;
-        });
-      }
-
-      function filterOptionGroup(optionGroupName, property, value) {
-        return _.find(optionGroupMock.getCollection(optionGroupName), function (data) {
-          return data[property] === value;
         });
       }
     });
