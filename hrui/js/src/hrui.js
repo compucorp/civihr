@@ -121,7 +121,7 @@
   $(document).on('crmLoad', function(e) {
     $('#activityCustomData').attr('colspan', 3);
 
-    addUploadFileListener('#custom_87');
+    addUploadFileListener("input[type='file']");
 
     $('.crm-accordion-header.crm-master-accordion-header').on('click', function() {
       window.setTimeout(function() {
