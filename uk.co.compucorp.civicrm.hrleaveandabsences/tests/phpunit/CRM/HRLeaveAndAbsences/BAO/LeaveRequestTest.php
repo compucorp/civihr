@@ -830,13 +830,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
   }
 
-  public function testFindOverlappingLeaveRequestsForMoreThanOneOverlappingLeaveRequests() {
+  public function testFindOverlappingLeaveRequestsDoesNotCountSoftDeletedLeaveRequestAsOverlappingLeaveRequest() {
     $contactID = 1;
     $fromDate1 = new DateTime('2016-11-02');
     $toDate1 = new DateTime('2016-11-04');
 
     $fromDate2 = new DateTime('2016-11-05');
     $toDate2 = new DateTime('2016-11-10');
+
+    $fromDate3 = new DateTime('2016-11-01');
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
@@ -858,7 +860,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => 1
     ], true);
 
-    //The start date and end date has dates in both leave request dates in both leaveRequest1 and leaveRequest2
+    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate3->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $fromDate3->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    LeaveRequest::softDelete($leaveRequest3->id);
+
+    //The start date and end date has dates in leave request dates in leaveRequest1 and leaveRequest2
+    //and leaveRequest3 but leaveRequest3 has been soft deleted and will not be counted
     $startDate = '2016-11-01';
     $endDate = '2016-11-06';
 

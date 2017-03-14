@@ -646,6 +646,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $leaveRequest->contact_id = (int)$contactID;
     $leaveRequest->from_date = date('Ymd', strtotime($publicHoliday->date));
     $leaveRequest->request_type = self::REQUEST_TYPE_PUBLIC_HOLIDAY;
+    $leaveRequest->is_deleted = 0;
 
     $leaveRequest->find(true);
     if($leaveRequest->id) {
@@ -681,15 +682,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         ON lrd.leave_request_id = lr.id
       INNER JOIN {$leaveBalanceChangeTable} lbc
         ON lbc.source_id = lrd.id AND lbc.source_type = %1
-      WHERE lr.contact_id = %2
+      WHERE lr.contact_id = %2 AND lr.is_deleted = 0
+      AND lrd.date BETWEEN %3 AND %4
     ";
-
-    if (!empty($toDate)){
-      $query .= ' AND lrd.date BETWEEN %3 AND %4';
-    }
-    else{
-      $query .= ' AND lrd.date = %3';
-    }
 
     if (is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
       array_walk($leaveRequestStatus, 'intval');
@@ -704,11 +699,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
       2 => [$contactID, 'Integer'],
       3 => [CRM_Utils_Date::processDate($fromDate, null, false, 'Y-m-d'), 'String'],
+      4 => [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String'],
       5 => [self::REQUEST_TYPE_PUBLIC_HOLIDAY, 'String']
     ];
-    if (!empty($toDate)) {
-      $params[4] = [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String'];
-    }
 
     $leaveRequest = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
 
