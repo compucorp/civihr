@@ -733,7 +733,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * Creates and saves LeaveRequestDates for this LeaveRequest
    */
   private function saveDates() {
-    $this->deleteDates();
+    $this->deleteDatesAndBalanceChanges();
 
     $datePeriod = new BasicDatePeriod($this->from_date, $this->to_date);
 
@@ -746,9 +746,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Deletes all the dates related to this LeaveRequest
+   * Deletes all the dates and balance changes related to this LeaveRequest
    */
-  private function deleteDates() {
+  private function deleteDatesAndBalanceChanges() {
+    LeaveBalanceChange::deleteAllForLeaveRequest($this);
     LeaveRequestDate::deleteDatesForLeaveRequest($this->id);
   }
 
@@ -963,6 +964,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     ];
 
     CRM_Core_DAO::executeQuery($query, $params);
+  }
+
+  /**
+   * Soft Deletes the LeaveRequest with the given ID by setting the is_deleted column to 1
+   *
+   * @param int $id The ID of the LeaveRequest to be soft deleted
+   *
+   * @return boolean
+   */
+  public static function softDelete($id) {
+    $leaveRequest = self::findById($id);
+    $leaveRequest->is_deleted = 1;
+    $leaveRequest->save();
   }
 
   /**
