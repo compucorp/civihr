@@ -17,7 +17,7 @@
           <select
             ng-options="region.label for region in calendar.regions track by region.id"
             ng-model="calendar.filters.region"
-            ng-change="calendar.refresh(region)">
+            ng-change="calendar.refresh()">
             <option value="">Region</option>
           </select>
         </div>
@@ -147,20 +147,20 @@
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item"
-                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"></div>
+                     ng-style="calendar.getAbsenceTypeStyle(absenceType)"></div>
                 <span class="chr_leave-calendar__legend__label">{{absenceType.title}}</span>
               </div>
             </div>
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item"
-                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>AM</span>
+                     ng-style="calendar.getAbsenceTypeStyle(absenceType)"><span>AM</span>
                 </div>
                 <span class="chr_leave-calendar__legend__label">{{absenceType.title}} AM Only</span>
               </div>
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item"
-                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>PM</span>
+                     ng-style="calendar.getAbsenceTypeStyle(absenceType)"><span>PM</span>
                 </div>
                 <span class="chr_leave-calendar__legend__label">{{absenceType.title}} PM Only</span>
               </div>
@@ -168,20 +168,20 @@
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
-                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"></div>
+                     ng-style="calendar.getAbsenceTypeStyle(absenceType)"></div>
                 <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}}</span>
               </div>
             </div>
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
-                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>AM</span>
+                     ng-style="calendar.getAbsenceTypeStyle(absenceType)"><span>AM</span>
                 </div>
                 <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}} AM</span>
               </div>
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
-                     ng-style="{backgroundColor: absenceType.color, borderColor: absenceType.color}"><span>PM</span>
+                     ng-style="calendar.getAbsenceTypeStyle(absenceType)"><span>PM</span>
                 </div>
                 <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}} PM</span>
               </div>

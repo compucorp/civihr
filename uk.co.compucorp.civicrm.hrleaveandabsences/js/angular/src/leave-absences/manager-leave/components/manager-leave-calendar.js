@@ -66,6 +66,19 @@ define([
     };
 
     /**
+     * Labels the given period according to whether it's current or not
+     *
+     * @param  {object} absenceType
+     * @return {object} style
+     */
+    vm.getAbsenceTypeStyle = function(absenceType) {
+      return {
+        backgroundColor: absenceType.color,
+        borderColor: absenceType.color
+      };
+    };
+
+    /**
      * Returns day name of the sent date(Monday, Tuesday etc.)
      *
      * @param  {string} date
@@ -152,16 +165,16 @@ define([
         loadStatuses(),
         loadDayTypes()
       ])
-        .then(function () {
-          return loadManagees();
-        })
-        .then(function () {
-          vm.legendCollapsed = false;
-          return loadLeaveRequestsAndCalender();
-        })
-        .then(function () {
-          vm.loading.page = false;
-        });
+      .then(function () {
+        return loadManagees();
+      })
+      .then(function () {
+        vm.legendCollapsed = false;
+        return loadLeaveRequestsAndCalender();
+      })
+      .finally(function () {
+        vm.loading.page = false;
+      });
     })();
 
     /**
@@ -182,7 +195,6 @@ define([
      * @return {object}
      */
     function getLeaveRequestByDate(contactID, date) {
-      debugger;
       return _.find(leaveRequests, function (leaveRequest) {
         return contactID == leaveRequest.contact_id &&
           !!_.find(leaveRequest.dates, function (leaveRequestDate) {

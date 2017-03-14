@@ -219,21 +219,19 @@
         });
 
         describe('when contacts with leaves filter is true', function() {
-          var returnValue;
+          var returnValue,
+            anyLeaveRequest;
 
           beforeEach(function() {
             controller.filters.contacts_with_leaves = true;
+            anyLeaveRequest = leaveRequestData.all().values[0];
             returnValue = controller.filterContacts();
           });
 
-          it('filters the contacts', function() {
-            var filteredContacts = controller.filteredContacts.filter(function (contact) {
-              return leaveRequestData.all().values.find(function (request) {
-                return request.contact_id == contact.id;
-              });
-            });
-
-            expect(returnValue).toEqual(filteredContacts);
+          it('filters the contacts which have a leave request', function() {
+            expect(!!_.find(returnValue, function (contact) {
+              return contact.id == anyLeaveRequest.contact_id;
+            })).toBe(true);
           });
         });
 
@@ -318,9 +316,9 @@
 
           describe('when leave request is not approved', function () {
             beforeEach(function () {
-              var status = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), function (status) {
-                return status.name === 'waiting_approval';
-              });
+              var status = filterOptionGroup(
+                'hrleaveandabsences_leave_request_status', 'name', 'waiting_approval');
+
               leaveRequest.contact_id = '203';
               leaveRequest.status_id = status.value;
               leaveRequest.balance_change = -1;
@@ -351,9 +349,8 @@
 
           describe('when leave request is for half day am', function() {
             beforeEach(function() {
-              var halfDayAMValue = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
-                return absenceType.name === 'half_day_am';
-              }).value;
+              var halfDayAMValue = filterOptionGroup(
+                'hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am').value;
 
               leaveRequest.from_date_type = halfDayAMValue;
               commonSetup();
@@ -366,9 +363,8 @@
 
           describe('when leave request is for half day pm', function() {
             beforeEach(function() {
-              var halfDayPMValue = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
-                return absenceType.name === 'half_day_pm';
-              }).value;
+              var halfDayPMValue = filterOptionGroup(
+                'hrleaveandabsences_leave_request_day_type', 'name', 'half_day_pm').value;
 
               leaveRequest.from_date_type = halfDayPMValue;
               commonSetup();
@@ -425,6 +421,12 @@
       function getDate(dayType) {
         return workPatternData.daysData().values.find(function (data) {
           return data.type.name === dayType;
+        });
+      }
+
+      function filterOptionGroup(optionGroupName, property, value) {
+        return _.find(optionGroupMock.getCollection(optionGroupName), function (data) {
+          return data[property] === value;
         });
       }
     });
