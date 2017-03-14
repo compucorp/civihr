@@ -71,7 +71,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestComment {
     $comments = $this->callCommentAPI('get', $params);
 
     if ($comments['count'] > 0) {
-      $leaveRequest = LeaveRequest::findById($comments['values'][0]['entity_id']);
+      $leaveRequest = LeaveRequest::findRecordById($comments['values'][0]['entity_id']);
       $leaveManagerService = new LeaveManagerService();
 
       if ($leaveManagerService->currentUserIsAdmin() || $leaveManagerService->currentUserIsLeaveManagerOf($leaveRequest->contact_id)) {
