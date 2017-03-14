@@ -355,79 +355,77 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         }
         return $result;
     }
-    public function pay_pay_scale_import($value)
-    {
-        if (!isset($value))
-        {
-            return null;
-        }
-        $keys = preg_split("/( - | per )/", $value);
-        $parts = array();
-        if (isset($keys[2]))
-        {
-            $parts = explode(' ', $keys[2]);
-        }
-
-        if (count($keys) === 4 && count($parts) === 2)
-        {
-            $result = civicrm_api3('HRPayScale', 'get', array(
-                'sequential' => 1,
-                'pay_scale' => $keys[0],
-                'pay_grade' => $keys[1],
-                'currency' => $parts[0],
-                'amount' => $parts[1],
-                'periodicity' => $keys[3],
-            ));
-            if (!empty($result['values']))
-            {
-                return $result['id'];
-            }
-            else
-            {
-                $result = civicrm_api3('HRPayScale', 'create', array(
-                    'sequential' => 1,
-                    'pay_scale' => $keys[0],
-                    'pay_grade' => $keys[1],
-                    'currency' => $parts[0],
-                    'amount' => $parts[1],
-                    'periodicity' => $keys[3],
-                    'is_active' => 1,
-                ));
-                $this->_payScaleOptions[$result['id']] = array(
-                    'pay_scale' => $keys[0],
-                    'pay_grade' => $keys[1],
-                    'currency' => $parts[0],
-                    'amount' => $parts[1],
-                    'periodicity' => $keys[3],
-                );
-                return $result['id'];
-            }
-        }
-        else
-        {
-            $result = civicrm_api3('HRPayScale', 'get', array(
-                'sequential' => 1,
-                'pay_scale' => $value,
-            ));
-            if (!empty($result['values']))
-            {
-                return $result['id'];
-            }
-            else
-            {
-                $result = civicrm_api3('HRPayScale', 'create', array(
-                    'sequential' => 1,
-                    'pay_scale' => $value,
-                    'is_active' => 1,
-                ));
-                $this->_payScaleOptions[$result['id']] = array(
-                    'pay_scale' => $value,
-                );
-                return $result['id'];
-            }
-        }
-
+    
+    /**
+     * Obtains id for given pay scale. If given payscale does not exist in DB,
+     * it will attempt to create it. If given payscale follows the format
+     * "%s - %s %d per %s", the information will be used to populate currency, 
+     * amount and periodicity fields for the pay scale.  Otherwise it will just 
+     * add it with the given label and leave all other values empty.
+     * 
+     * @param string $value
+     *   String for pay scale / grade that needs to be imported
+     * 
+     * @return int
+     *   ID of given pay scale / grade
+     */
+    public function pay_pay_scale_import($value) {
+      if (!isset($value)) {
         return null;
+      }
+
+      $payScale = trim(substr($value, 0, (strrpos($value, '-'))));
+      $payData = trim(substr($value, (strrpos($value, '-') + 1)));
+      $parts = explode(' ', $payData);
+
+      if (count($parts) === 4 && !empty($payScale)) {
+        $payScaleParams = [
+          'pay_scale' => $payScale,
+          'currency' => $parts[0],
+          'amount' => $parts[1],
+          'periodicity' => $parts[3]
+        ];
+      } else {
+        $payScaleParams = [
+          'pay_scale' => $value
+        ];
+      }
+
+      $result = civicrm_api3('HRPayScale', 'get', array_merge(
+        ['sequential' => 1],
+        $payScaleParams
+      ));
+
+      if ($result['count'] == 1) {
+        return $result['id'];
+      } 
+      elseif ($result['count'] > 1) {
+        $payScaleRecord = array_shift($result['values']);
+        return $payScaleRecord['id'];
+      }
+      else {
+        return $this->createPayScale($payScaleParams);
+      }
+
+      return null;
+    }
+
+    /**
+     * Creates pay scale using given parameters.
+     * 
+     * @param array $params
+     *   Fields that are to be set for new pay scale.
+     * 
+     * @return int
+     *   ID of created pay scale / grade
+     */
+    function createPayScale($params) {
+      $defaultParams = ['sequential' => 1, 'is_active' => 1];
+
+      $result = civicrm_api3('HRPayScale', 'create', array_merge($defaultParams, $params));
+      $this->_payScaleOptions[$result['id']] = $params;
+
+      return $result['id'];
     }
 
     public function pension_is_enrolled_export($value)
