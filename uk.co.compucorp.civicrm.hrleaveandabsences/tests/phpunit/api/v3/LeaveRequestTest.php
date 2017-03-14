@@ -1096,6 +1096,50 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(0, $result['values']);
   }
 
+  public function testGetAndGetFullDoesNotReturnSoftDeletedLeaveRequests() {
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+1 days'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], TRUE);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+3 days'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], TRUE);
+
+    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+5 days'),
+      'to_date' => CRM_Utils_Date::processDate('+6 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], TRUE);
+
+    //delete leaverequest2
+    LeaveRequest::softDelete($leaveRequest2->id);
+
+    $resultGet = civicrm_api3('LeaveRequest', 'get');
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull');
+
+    $this->assertEquals(2, $resultGet['count']);
+    $this->assertEquals(2, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGet['values'][$leaveRequest1->id]);
+    $this->assertNotEmpty($resultGet['values'][$leaveRequest3->id]);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest1->id]);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest3->id]);
+  }
+
   public function testGetAndGetFullReturnAllLeaveRequestsWhenTheExpiredParamIsNotPresent() {
     $type = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => TRUE,
