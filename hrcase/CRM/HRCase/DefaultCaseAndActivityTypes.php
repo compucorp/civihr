@@ -26,6 +26,7 @@ class CRM_HRCase_DefaultCaseAndActivityTypes {
       'Probation appraisal (start probation workflow)',
       'Confirm End of Probation Date',
       'Start Probation workflow',
+      'Other Task',
     ],
     'CiviDocument' => [
       'Government Photo ID',
