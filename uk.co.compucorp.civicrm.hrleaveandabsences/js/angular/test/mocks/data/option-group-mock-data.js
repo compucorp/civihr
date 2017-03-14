@@ -843,20 +843,6 @@ define([
       return _.find(whichOptionGroup, function (item) {
         return item[key] === value;
       });
-    },
-
-    /**
-     * Filters options group
-     *
-     * @param {string} optionGroupName - eg. hrleaveandabsences_leave_request_status
-     * @param {string} property - the name of property on which filter would be applied, eg. name
-     * @param {string} value - The value to match
-     * @return {object}
-     */
-    filterOptionGroup: function (optionGroupName, property, value) {
-      return _.find(this.getCollection(optionGroupName), function (data) {
-        return data[property] == value;
-      });
     }
   }
 });

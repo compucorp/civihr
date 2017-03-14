@@ -316,7 +316,7 @@
 
           describe('when leave request is not approved', function () {
             beforeEach(function () {
-              var status = optionGroupMock.filterOptionGroup(
+              var status = optionGroupMock.specificObject(
                 'hrleaveandabsences_leave_request_status', 'name', 'waiting_approval');
 
               leaveRequest.contact_id = '203';
@@ -349,7 +349,7 @@
 
           describe('when leave request is for half day am', function() {
             beforeEach(function() {
-              var halfDayAMValue = optionGroupMock.filterOptionGroup(
+              var halfDayAMValue = optionGroupMock.specificObject(
                 'hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am').value;
 
               leaveRequest.from_date_type = halfDayAMValue;
@@ -363,7 +363,7 @@
 
           describe('when leave request is for half day pm', function() {
             beforeEach(function() {
-              var halfDayPMValue = optionGroupMock.filterOptionGroup(
+              var halfDayPMValue = optionGroupMock.specificObject(
                 'hrleaveandabsences_leave_request_day_type', 'name', 'half_day_pm').value;
 
               leaveRequest.from_date_type = halfDayPMValue;
