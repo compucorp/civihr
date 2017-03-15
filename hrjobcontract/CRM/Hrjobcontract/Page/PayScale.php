@@ -120,6 +120,7 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
       //Not Applicable pay grade should not be deleted
       if ($dao->pay_scale === 'Not Applicable') {
         $action -= CRM_Core_Action::DELETE;
+        $action -= CRM_Core_Action::UPDATE;
       }
 
       $payScale[$dao->id]['action'] = CRM_Core_Action::formLink(self::links(), $action,

@@ -1245,10 +1245,11 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * be removed.
    */
   public function upgrade_1026() {
-    $query = '
+    $query = "
       UPDATE civicrm_hrpay_scale
-      SET pay_scale = CONCAT(pay_scale, \' - \', pay_grade)
-    ';
+      SET pay_scale = CONCAT(pay_scale, ' - ', pay_grade)
+      WHERE pay_scale NOT LIKE 'Not Applicable'
+    ";
     CRM_Core_DAO::executeQuery($query);
 
     $dropQuery = 'ALTER TABLE `civicrm_hrpay_scale` DROP `pay_grade`';
