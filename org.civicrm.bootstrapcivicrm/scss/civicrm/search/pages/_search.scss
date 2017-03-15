@@ -1,11 +1,12 @@
-.CRM_Contact_Form_Search_Basic {
+.CRM_Contact_Form_Search_Basic,
+.CRM_Contact_Form_Search_Advanced {
   label {
     padding: 0 !important;
   }
 
   .crm-search-form-block .crm-accordion-wrapper,
   .crm-content-block .crm-results-block {
-    border-radius: 3px;
+    border-radius: 2px;
     overflow: hidden;
   }
 

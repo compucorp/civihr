@@ -3,6 +3,17 @@
     h3 {
       padding-left: 23px;
       padding-top: 20px;
+      font-family: $font-family-base;
+      font-size: $font-size-h3;
+      font-weight: 600;
+      color: $gray-darker;
+    }
+
+    .crm-submit-buttons {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      padding-left: 15px !important;
+      padding-right: 15px !important;
     }
 
     table.form-layout-compressed {
@@ -21,7 +32,7 @@
       .crm-contact-task-addtodonot-form-block-pref label {
         padding: 15px !important;
         position: relative;
-        
+
         &:after {
           left: 17px;
         }
@@ -30,6 +41,7 @@
       .listing-box {
         max-height: 216px;
         height: auto;
+        border-color: $crm-background;
 
         > div {
           background-color: #ffffff;
