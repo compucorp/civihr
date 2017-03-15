@@ -184,7 +184,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   }
 
   /**
-   * Checks if the current user can delete a leave request
+   * Checks if the current user can delete leave requests for the given $contactID
    *
    * @param int $contactID
    *

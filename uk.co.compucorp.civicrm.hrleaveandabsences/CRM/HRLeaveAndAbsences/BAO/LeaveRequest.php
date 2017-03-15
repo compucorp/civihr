@@ -986,8 +986,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param int $id
    *   The ID of the LeaveRequest to be soft deleted
-   *
-   * @return boolean
    */
   public static function softDelete($id) {
     $leaveRequest = self::findById($id);

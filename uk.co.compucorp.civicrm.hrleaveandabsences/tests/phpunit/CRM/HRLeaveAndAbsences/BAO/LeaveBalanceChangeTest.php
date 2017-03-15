@@ -821,7 +821,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     }
   }
 
-  public function testTheLeaveRequestBreakdownReturnsEmptyArrayForSoftDeletedLeaveRequests() {
+  public function testTheLeaveRequestBreakdownShouldNotReturnSoftDeletedLeaveRequests() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
