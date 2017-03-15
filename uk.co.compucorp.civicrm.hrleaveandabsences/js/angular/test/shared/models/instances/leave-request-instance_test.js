@@ -6,6 +6,7 @@ define([
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/models/instances/leave-request-instance',
   'leave-absences/shared/modules/models',
+  'common/mocks/services/file-uploader-mock',
 ], function (leaveRequestMockData, optionGroupMockData, commentsData, helper) {
   'use strict';
 
@@ -20,14 +21,16 @@ define([
       requestData,
       expectedError;
 
-    beforeEach(module('leave-absences.models', 'leave-absences.models.instances', 'leave-absences.mocks',
+    beforeEach(module('leave-absences.models', 'leave-absences.models.instances',
+      'leave-absences.mocks', 'common.mocks',
       function (_$provide_) {
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (_LeaveRequestAPIMock_) {
+    beforeEach(inject(function (_LeaveRequestAPIMock_, _FileUploaderMock_) {
       //LeaveRequestAPI is internally used by Model and hence need to be mocked
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
+      $provide.value('FileUploader', _FileUploaderMock_);
     }));
 
     beforeEach(inject([
@@ -57,8 +60,12 @@ define([
         expect(LeaveRequestInstance.comments.length).toBe(0);
       });
 
-      it('initializes request type', function() {
+      it('initializes request type', function () {
         expect(LeaveRequestInstance.request_type).toEqual('leave');
+      });
+
+      it('does set uploader', function () {
+        expect(LeaveRequestInstance.uploader).toBeDefined();
       });
     });
 
@@ -258,7 +265,7 @@ define([
       it('calls API to delete the comments marked for deletion', function () {
         promise.then(function () {
           LeaveRequestInstance.comments.map(function (comment) {
-            if(comment.toBeDeleted) {
+            if (comment.toBeDeleted) {
               expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
             }
           });
@@ -313,7 +320,7 @@ define([
       it('calls API to delete the comments marked for deletion', function () {
         instanceCreate.then(function () {
           instance.comments.map(function (comment) {
-            if(comment.toBeDeleted) {
+            if (comment.toBeDeleted) {
               expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
             }
           });
@@ -344,11 +351,11 @@ define([
     describe('loadComments()', function () {
       var promise;
 
-      beforeEach(function() {
+      beforeEach(function () {
         promise = LeaveRequestInstance.loadComments();
       });
 
-      afterEach(function() {
+      afterEach(function () {
         $rootScope.$digest();
       });
 
@@ -678,13 +685,61 @@ define([
         toAPIData = leaveRequest.toAPI();
       });
 
-      it('filters out the `balance_change` and `dates` properties', function () {
+      it('filters out custom properties on leave request instance', function () {
         expect(Object.keys(toAPIData)).toEqual(_.without(
           Object.keys(leaveRequest.attributes()),
           'balance_change',
           'dates',
-          'comments'
+          'comments',
+          'uploader'
         ));
+      });
+    });
+
+    describe('uploading files', function () {
+      var promise;
+
+      beforeEach(function () {
+        requestData = helper.createRandomLeaveRequest();
+        instance = LeaveRequestInstance.init(requestData, false);
+        spyOn(instance.uploader, 'uploadAll').and.callThrough();
+      });
+
+      describe('on create()', function () {
+        beforeEach(function () {
+          promise = instance.create();
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        it('calls corresponding end point', function () {
+          promise.then(function () {
+            expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: jasmine.any(String) });
+          });
+        });
+      });
+
+      describe('on update()', function () {
+        beforeEach(function () {
+          requestData = helper.createRandomLeaveRequest();
+          requestData.id = '12';
+          instance = LeaveRequestInstance.init(requestData, false);
+          spyOn(instance.uploader, 'uploadAll').and.callThrough();
+
+          promise = instance.update();
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        it('calls corresponding end point', function () {
+          promise.then(function () {
+            expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: jasmine.any(String) });
+          });
+        });
       });
     });
   });

@@ -1,16 +1,21 @@
 define([
   'leave-absences/shared/modules/models-instances',
   'common/models/option-group',
-  'common/models/instances/instance'
+  'common/models/instances/instance',
+  'common/services/file-upload',
 ], function (instances) {
   'use strict';
 
   instances.factory('LeaveRequestInstance', [
+    '$log',
     'ModelInstance',
     'LeaveRequestAPI',
     'OptionGroup',
     '$q',
-    function (ModelInstance, LeaveRequestAPI, OptionGroup, $q) {
+    'FileUpload',
+    'shared-settings',
+    function ($log, ModelInstance, LeaveRequestAPI, OptionGroup, $q, FileUpload, sharedSettings) {
+      $log.debug('LeaveRequestInstance');
 
       /**
        * Get ID of an option value
@@ -73,12 +78,11 @@ define([
                   self.comments[index] = commentData;
                 }));
             })(index);
-          } else if(comment.toBeDeleted) {
+          } else if (comment.toBeDeleted) {
             promises.push(LeaveRequestAPI.deleteComment(comment.comment_id));
           }
         });
-
-        return $q.all(promises);
+        return promises.length ? $q.all(promises) : $q.resolve();
       }
 
       return ModelInstance.extend({
@@ -92,7 +96,11 @@ define([
         defaultCustomData: function () {
           return {
             comments: [],
-            request_type: 'leave'
+            request_type: 'leave',
+            uploader: FileUpload.uploader({
+              entityTable: 'civicrm_hrleaveandabsences_leave_request',
+              crmAttachmentToken: sharedSettings.attachmentToken
+            })
           };
         },
         /**
@@ -131,7 +139,10 @@ define([
         update: function () {
           return LeaveRequestAPI.update(this.toAPI())
             .then(function () {
-              return saveAndDeleteComments.call(this);
+              return $q.all([
+                saveAndDeleteComments.call(this),
+                this.uploader.uploadAll({ entityID: this.id })
+              ]);
             }.bind(this));
         },
 
@@ -145,7 +156,10 @@ define([
           return LeaveRequestAPI.create(this.toAPI())
             .then(function (result) {
               this.id = result.id;
-              return saveAndDeleteComments.call(this);
+              return $q.all([
+                saveAndDeleteComments.call(this),
+                this.uploader.uploadAll({ entityID: this.id })
+              ]);
             }.bind(this));
         },
 
@@ -247,7 +261,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates', 'comments'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'uploader'], key)) {
             result[key] = this[key];
           }
         }

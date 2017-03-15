@@ -16,6 +16,7 @@
         'common/mocks/services/api/contact-mock',
         'common/mocks/services/api/group-mock',
         'common/mocks/services/api/group-contact-mock',
-        'common/mocks/services/api/option-group-mock'
+        'common/mocks/services/api/option-group-mock',
+        'common/mocks/services/file-uploader-mock'
     ]
 })

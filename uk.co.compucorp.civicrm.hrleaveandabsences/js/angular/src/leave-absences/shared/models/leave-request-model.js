@@ -2,7 +2,7 @@ define([
   'leave-absences/shared/modules/models',
   'leave-absences/shared/models/instances/leave-request-instance',
   'leave-absences/shared/apis/leave-request-api',
-  'common/models/model'
+  'common/models/model',
 ], function (models) {
   'use strict';
 
@@ -12,6 +12,7 @@ define([
     'LeaveRequestAPI',
     'LeaveRequestInstance',
     function ($log, Model, leaveRequestAPI, instance) {
+      $log.debug('LeaveRequest');
 
       return Model.extend({
 

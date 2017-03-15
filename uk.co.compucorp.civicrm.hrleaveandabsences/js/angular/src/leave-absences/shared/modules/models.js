@@ -5,6 +5,7 @@ define([
   'leave-absences/shared/modules/apis',
   'leave-absences/shared/modules/models-instances',
   'leave-absences/shared/modules/shared-settings',
+  'common/angular-file-upload'
 ], function (angular) {
   'use strict';
 
@@ -13,6 +14,7 @@ define([
     'common.services',
     'leave-absences.apis',
     'leave-absences.models.instances',
-    'leave-absences.settings'
+    'leave-absences.settings',
+    'angularFileUpload'
   ]);
 });

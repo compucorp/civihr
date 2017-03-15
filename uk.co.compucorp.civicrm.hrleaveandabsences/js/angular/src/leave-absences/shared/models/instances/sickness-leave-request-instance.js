@@ -59,7 +59,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['comments'], key)) {
+          if (!_.includes(['comments', 'uploader'], key)) {
             result[key] = this[key];
           }
         }

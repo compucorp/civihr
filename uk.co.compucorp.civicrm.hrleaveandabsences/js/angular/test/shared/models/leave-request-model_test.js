@@ -1,6 +1,7 @@
 define([
   'leave-absences/shared/models/leave-request-model',
   'mocks/apis/leave-request-api-mock',
+  'common/mocks/services/file-uploader-mock',
 ], function () {
   'use strict';
 
@@ -10,12 +11,14 @@ define([
       LeaveRequestAPI,
       $rootScope;
 
-    beforeEach(module('leave-absences.models', 'leave-absences.mocks', function (_$provide_) {
-      $provide = _$provide_;
+    beforeEach(module('leave-absences.models', 'leave-absences.mocks', 'common.mocks',
+      function (_$provide_) {
+        $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (_LeaveRequestAPIMock_) {
+    beforeEach(inject(function (_LeaveRequestAPIMock_, _FileUploaderMock_) {
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
+      $provide.value('FileUploader', _FileUploaderMock_);
     }));
 
     beforeEach(inject(function (_LeaveRequest_, _LeaveRequestAPI_, _$rootScope_) {

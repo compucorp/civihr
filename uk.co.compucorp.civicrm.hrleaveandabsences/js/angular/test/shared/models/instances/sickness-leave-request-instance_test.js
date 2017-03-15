@@ -1,6 +1,7 @@
 define([
   'mocks/apis/leave-request-api-mock',
   'mocks/apis/option-group-api-mock',
+  'common/mocks/services/file-uploader-mock',
   'leave-absences/shared/models/instances/sickness-leave-request-instance',
 ], function () {
   'use strict';
@@ -8,13 +9,16 @@ define([
   describe('SicknessRequestInstance', function () {
     var $rootScope, $provide, SicknessRequestInstance, instance, LeaveRequestAPI, promise;
 
-    beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks', function (_$provide_) {
-      $provide = _$provide_;
+    beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks',
+      'common.mocks', function (_$provide_) {
+        $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (_LeaveRequestAPIMock_, _OptionGroupAPIMock_) {
+    beforeEach(inject(function (_LeaveRequestAPIMock_, _OptionGroupAPIMock_,
+      _FileUploaderMock_) {
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
       $provide.value('OptionGroup', _OptionGroupAPIMock_);
+      $provide.value('FileUploader', _FileUploaderMock_);
     }));
 
     beforeEach(inject([
