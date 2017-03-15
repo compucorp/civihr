@@ -130,7 +130,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     if (isset($params['id']) && !empty($params['is_deleted'])) {
       throw new InvalidLeaveRequestException(
         'Leave Request can not be soft deleted during an update, use the delete method instead!',
-        'leave_request_cannot_soft_delete',
+        'leave_request_cannot_be_soft_deleted',
         'is_deleted'
       );
     }
@@ -984,7 +984,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   /**
    * Soft Deletes the LeaveRequest with the given ID by setting the is_deleted column to 1
    *
-   * @param int $id The ID of the LeaveRequest to be soft deleted
+   * @param int $id
+   *   The ID of the LeaveRequest to be soft deleted
    *
    * @return boolean
    */
