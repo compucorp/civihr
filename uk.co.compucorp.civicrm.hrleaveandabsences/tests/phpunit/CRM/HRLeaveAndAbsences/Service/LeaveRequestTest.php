@@ -115,7 +115,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(11, $balanceChanges);
   }
 
-  public function testDeleteSoftDeletesTheLeaveRequestAndThatFetchingItsBalanceChangesAndDatesReturnsEmpty() {
+  public function testDeleteSoftDeletesTheLeaveRequest() {
     $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -128,17 +128,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => $leaveRequestDateTypes['all_day'],
     ], TRUE);
 
-    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
-    $dates = $leaveRequest->getDates();
-    $this->assertCount(7, $balanceChanges);
-    $this->assertCount(7, $dates);
-
     $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->delete($leaveRequest->id);
-
-    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
-    $dates = $leaveRequest->getDates();
-    $this->assertCount(0, $balanceChanges);
-    $this->assertCount(0, $dates);
 
     $leaveRequestRecord = new LeaveRequest();
     $leaveRequestRecord->id = $leaveRequest->id;
