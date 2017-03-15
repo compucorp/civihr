@@ -3,6 +3,17 @@
     padding: 0 !important;
   }
 
+  .crm-search-form-block .crm-accordion-wrapper,
+  .crm-content-block .crm-results-block {
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .crm-search-form-block,
+  .crm-search-form-block .crm-form-block {
+    border-radius: 3px;
+  }
+
   .crm-basic-criteria-form-block {
     padding: 0 !important;
 

@@ -109,6 +109,10 @@
     }
   }
 
+  &#Participant a.crm-option-edit-link {
+    left: 0;
+  }
+
   textarea {
     vertical-align: middle;
     padding: 0px 5px;
@@ -192,8 +196,9 @@
     }
 
     .label {
-      padding: 20px 15px;
+      padding: 15px;
       min-width: 210px;
+      box-sizing: border-box;
       line-height: 1.5em;
       font-size: $font-size-base;
     }
@@ -214,17 +219,26 @@
     }
   }
 
-  div[class*="-section"]{
+  .crm-event-eventfees-form-block-price_set_amount div[class*="-section"]{
     .label {
       position: relative;
-      right: 240px;
+      right: 210px;
+      width: 210px;
+      box-sizing: border-box;
     }
 
-    div[class*="-content"],
-    #pricesetTotal,
-    #pricevalue {
+    div[class*="-content"] {
       position: relative;
       bottom: 45px;
+    }
+
+    #pricesetTotal {
+      margin-top: -95px;
+
+      #pricelabel {
+        position: relative;
+        top: 40px;
+      }
     }
   }
 
@@ -238,7 +252,7 @@
       margin: 15px 0;
       float: left;
       width: 100%;
-      padding: 10px 20px;
+      padding: 10px 15px;
     }
 
     #notice {
@@ -270,6 +284,12 @@
     }
   }
 
+  .crm-event-eventfees-form-block-receipt_text {
+    td:not(.label) {
+      width: 100%;
+    }
+  }
+
   #priceset,
   #pricesetTotal {
     .label {
@@ -296,18 +316,45 @@
       padding: 0;
 
       legend {
-        padding: 10px 20px;
+        padding: 10px 15px;
       }
+    }
+
+    .crm-section {
+      display: table;
+    }
+    
+    .content {
+      margin-left: 0;
+      padding: 0 15px;
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .label {
+      display: table-cell;
+      vertical-align: middle;
+      text-align: left;
+    }
+
+    input#cvv2 {
+      margin: 0;
+    }
+
+    div.crm-field-wrapper {
+      margin-bottom: 0;
+      display: table;
     }
   }
 
   #billing-payment-block {
     legend {
-      padding: 10px 20px;
+      padding: 10px 15px;
     }
 
     .label {
       text-align: left;
+      width: 210px;
     }
   }
 
@@ -368,7 +415,6 @@
     }
   }
 }
-
 
 .CRM_Event_Form_ParticipantView {
   .action-link {
