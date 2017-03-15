@@ -201,6 +201,7 @@
       box-sizing: border-box;
       line-height: 1.5em;
       font-size: $font-size-base;
+      text-align: left;
     }
 
     .auto-renew-text {
@@ -323,7 +324,7 @@
     .crm-section {
       display: table;
     }
-    
+
     .content {
       margin-left: 0;
       padding: 0 15px;
