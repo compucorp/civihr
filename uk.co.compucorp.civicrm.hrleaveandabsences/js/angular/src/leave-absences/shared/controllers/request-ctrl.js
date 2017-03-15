@@ -310,6 +310,7 @@ define([
         if (this.isMode('view')) {
           return;
         }
+
         // current absence type (this.request.type_id) doesn't allow self
         if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse == '0') {
           // show an error
@@ -581,6 +582,7 @@ define([
        */
       function createRequest() {
         var self = this;
+
         self.request.isValid()
           .then(function () {
             self.request.create()

@@ -83,7 +83,6 @@ define([
 
       it('returns object with file key', function () {
         promise.then(function (result) {
-          console.log('result', result);
           var firstObject = result[0];
           expect(firstObject.file).toBeDefined();
         });

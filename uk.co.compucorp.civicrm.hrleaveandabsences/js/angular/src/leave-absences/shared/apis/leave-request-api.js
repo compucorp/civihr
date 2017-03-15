@@ -148,6 +148,7 @@ define([
       create: function (params) {
         $log.debug('LeaveRequestAPI.create', params);
         var deferred = $q.defer();
+
         if (params) {
           if (params.to_date && !params.to_date_type) {
             deferred.reject('to_date_type is mandatory');
@@ -180,6 +181,7 @@ define([
       isValid: function (params) {
         $log.debug('LeaveRequestAPI.isValid', params);
         var deferred = $q.defer();
+
         this.sendPOST('LeaveRequest', 'isValid', params)
           .then(function (data) {
             if (data.count > 0) {
