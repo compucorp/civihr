@@ -34,10 +34,6 @@
         <td class="html-adjust">{$form.pay_scale.html}</td>
       </tr>
       <tr>
-        <td class="label">{$form.pay_grade.label}</td>
-        <td class="html-adjust">{$form.pay_grade.html}</td>
-      </tr>
-      <tr>
         <td class="label">{$form.currency.label}</td>
         <td class="html-adjust">{$form.currency.html}</td>
       </tr>

@@ -38,7 +38,6 @@
         <table cellpadding="0" cellspacing="0" border="0">
            <thead class="sticky">
             <th>{ts}Pay Scale{/ts}</th>
-            <th>{ts}Pay Grade{/ts}</th>
             <th>{ts}Currency{/ts}</th>
             <th>{ts}Amount{/ts}</th>
             <th>{ts}Periodicity{/ts}</th>
@@ -48,7 +47,6 @@
          {foreach from=$rows item=row}
         <tr id="HRPayScale-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"} {$row.class}{if $row.is_active neq 1} disabled{/if}">
           <td class="crm-editable" data-field="title">{$row.pay_scale}</td>
-          <td>{$row.pay_grade}</td>
           <td>{$row.currency}</td>
           <td>{$row.amount}</td>
           <td>{$row.periodicity}</td>

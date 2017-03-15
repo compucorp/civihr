@@ -137,7 +137,6 @@ define([
                             if (revisionData.pay_scale) {
                                 payScaleGrade = $filter('filter')(utils.payScaleGrade,{id: revisionData.pay_scale})[0] || $filter('filter')(utils.payScaleGrade,{pay_scale: revisionData.pay_scale})[0];
                                 revisionData.pay_scale = payScaleGrade.pay_scale +
-                                (payScaleGrade.pay_grade ? ' - ' + payScaleGrade.pay_grade : '') +
                                 (payScaleGrade.currency ? ' - ' + $rootScope.options.pay.pay_currency[payScaleGrade.currency] : '') +
                                 (payScaleGrade.amount ? ' ' + payScaleGrade.amount : '') +
                                 (payScaleGrade.periodicity ? ' per ' + payScaleGrade.periodicity : '');
