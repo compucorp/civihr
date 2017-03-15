@@ -2016,4 +2016,43 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->setExpectedException('Exception', "Unable to find a " . LeaveRequest::class . " with id {$leaveRequest->id}.");
     LeaveRequest::findRecordById($leaveRequest->id);
   }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Leave Request can not be soft deleted during an update, use the delete method instead!
+   */
+  public function testValidateParamsThrowsAnExceptionWhenTryingToChangeIsDeletedValueForALeaveRequestDuringAnUpdate() {
+    $params = [
+      'id' => 1,
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+      'status_id' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'is_deleted' => 1
+    ];
+
+    LeaveRequest::validateParams($params);
+  }
+
+  public function testLeaveRequestIsDeletedValueCanNotBeSetWhenCreatingALeaveRequest() {
+    $params = [
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+      'status_id' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'is_deleted' => 1
+    ];
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $leaveRequestRecord = LeaveRequest::findById($leaveRequest->id);
+    $this->assertEquals(0, $leaveRequestRecord->is_deleted);
+  }
 }

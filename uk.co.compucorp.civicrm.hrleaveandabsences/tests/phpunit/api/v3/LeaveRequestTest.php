@@ -2056,6 +2056,17 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
+  public function testLeaveRequestIsValidShouldReturnErrorUpdatingIsDeletedForALeaveRequest() {
+    $params = $this->mergeWithDefaultLeaveRequestParams([
+      'id' => 1,
+      'is_deleted' => 1,
+    ]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $expectedResult = $this->getExpectedArrayForIsValidError('is_deleted', 'leave_request_cannot_soft_delete');
+    $this->assertEquals($expectedResult, $result);
+  }
+
   public function testLeaveRequestIsValidShouldReturnErrorWhenThereAreOverlappingLeaveRequests() {
     $contactID = 1;
 

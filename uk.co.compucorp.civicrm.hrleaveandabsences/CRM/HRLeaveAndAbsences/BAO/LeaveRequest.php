@@ -37,6 +37,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     if($validate){
       self::validateParams($params);
     }
+    unset($params['is_deleted']);
+
     $instance = new self();
     $instance->copyValues($params);
 
@@ -67,6 +69,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    */
   public static function validateParams($params) {
     self::validateMandatory($params);
+    self::validateLeaveRequestSoftDeleteDuringUpdate($params);
     self::validateRequestType($params);
     self::validateTOILFieldsBasedOnRequestType($params);
     self::validateSicknessFieldsBasedOnRequestType($params);
@@ -111,6 +114,25 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
           $field
         );
       }
+    }
+  }
+
+  /**
+   * A method for validating that a LeaveRequest cannot be soft deleted
+   * during an update on the BAO.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  public static function validateLeaveRequestSoftDeleteDuringUpdate($params) {
+    if (isset($params['id']) && !empty($params['is_deleted'])) {
+      throw new InvalidLeaveRequestException(
+        'Leave Request can not be soft deleted during an update, use the delete method instead!',
+        'leave_request_cannot_soft_delete',
+        'is_deleted'
+      );
     }
   }
 
