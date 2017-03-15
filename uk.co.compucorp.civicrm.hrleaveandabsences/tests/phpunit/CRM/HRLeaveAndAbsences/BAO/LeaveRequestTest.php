@@ -830,15 +830,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
   }
 
-  public function testFindOverlappingLeaveRequestsDoesNotCountSoftDeletedLeaveRequestAsOverlappingLeaveRequest() {
+  public function testFindOverlappingLeaveRequestsForMoreThanOneOverlappingLeaveRequests() {
     $contactID = 1;
     $fromDate1 = new DateTime('2016-11-02');
     $toDate1 = new DateTime('2016-11-04');
 
     $fromDate2 = new DateTime('2016-11-05');
     $toDate2 = new DateTime('2016-11-10');
-
-    $fromDate3 = new DateTime('2016-11-01');
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
@@ -860,20 +858,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => 1
     ], true);
 
-    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => $this->absenceType->id,
-      'contact_id' => $contactID,
-      'status_id' => 1,
-      'from_date' => $fromDate3->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $fromDate3->format('YmdHis'),
-      'to_date_type' => 1
-    ], true);
-
-    LeaveRequest::softDelete($leaveRequest3->id);
-
-    //The start date and end date has dates in leave request dates in leaveRequest1 and leaveRequest2
-    //and leaveRequest3 but leaveRequest3 has been soft deleted and will not be counted
+    //The start date and end date has dates in both leave request dates in both leaveRequest1 and leaveRequest2
     $startDate = '2016-11-01';
     $endDate = '2016-11-06';
 
@@ -884,6 +869,31 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertEquals($leaveRequest2->id, $overlappingRequests[1]->id);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[1]);
+  }
+
+  public function testFindOverlappingLeaveRequestsDoesNotCountSoftDeletedLeaveRequestAsOverlappingLeaveRequest() {
+    $contactID = 1;
+    $fromDate = new DateTime('2016-11-01');
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $fromDate->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    LeaveRequest::softDelete($leaveRequest->id);
+
+    //The start date and end date has dates in leave request dates in leaveRequest
+    //leaveRequest has been soft deleted and will not be counted as an overlapping leave request
+    $startDate = '2016-11-01';
+    $endDate = '2016-11-02';
+
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate);
+    $this->assertCount(0, $overlappingRequests);
   }
 
   public function testFindOverlappingLeaveRequestsForMultipleOverlappingLeaveRequestAndExcludePublicHolidayTrue() {
@@ -1998,7 +2008,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequest::softDelete($leaveRequest->id);
 
-    $this->setExpectedException('Exception', "Unable to   a " . LeaveRequest::class . " with id {$leaveRequest->id}.");
+    $this->setExpectedException('Exception', "Unable to find a " . LeaveRequest::class . " with id {$leaveRequest->id}.");
     LeaveRequest::findById($leaveRequest->id);
   }
 

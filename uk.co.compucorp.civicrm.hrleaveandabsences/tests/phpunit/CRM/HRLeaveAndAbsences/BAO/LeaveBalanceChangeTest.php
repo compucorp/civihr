@@ -109,7 +109,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(0.8, LeaveBalanceChange::getBalanceForEntitlement($entitlement));
   }
 
-  public function testBalanceForEntitlementCanSumOnlyTheBalanceChangesForLeaveRequestWithSpecificStatusesAndDoesNotSumForSoftDeletedLeaveRequests() {
+  public function testBalanceForEntitlementCanSumOnlyTheBalanceChangesForLeaveRequestWithSpecificStatuses() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('-10 days'),
@@ -167,17 +167,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date' => date('YmdHis', strtotime('-6 days'))
     ], true);
 
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => $entitlement->type_id,
-      'contact_id' => $entitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['More Information Requested'],
-      'from_date' => date('YmdHis', strtotime('-6 days')),
-      'to_date' => date('YmdHis', strtotime('-6 days'))
-    ], true);
-
-    LeaveRequest::softDelete($leaveRequest->id);
-
-    // Including all the balance changes but the soft deleted leave request is not counted
+    // Including all the balance changes
     $this->assertEquals(4, LeaveBalanceChange::getBalanceForEntitlement($entitlement));
 
     // Only Include balance changes from approved leave requests
@@ -198,10 +188,38 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $statusesToInclude = [ $leaveRequestStatuses['Waiting Approval'] ];
     $this->assertEquals(9, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statusesToInclude));
 
-    // Only Include balance changes from leave requests waiting for more information but the soft deleted
-    // leave request with status of more information is not included
+    // Only Include balance changes from leave requests waiting for more information
     $statusesToInclude = [ $leaveRequestStatuses['More Information Requested'] ];
     $this->assertEquals(9, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statusesToInclude));
+  }
+
+  public function testBalanceForEntitlementDoesNotSumForSoftDeletedLeaveRequests() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('-10 days'),
+      new DateTime('+10 days')
+    );
+
+    $this->createLeaveBalanceChange($entitlement->id, 10);
+    $this->assertEquals(10, LeaveBalanceChange::getBalanceForEntitlement($entitlement));
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $entitlement->type_id,
+      'contact_id' => $entitlement->contact_id,
+      'status_id' => $leaveRequestStatuses['More Information Requested'],
+      'from_date' => date('YmdHis', strtotime('-6 days')),
+      'to_date' => date('YmdHis', strtotime('-6 days'))
+    ], true);
+
+    LeaveRequest::softDelete($leaveRequest->id);
+
+    // The soft deleted leave request is not counted
+    $this->assertEquals(10, LeaveBalanceChange::getBalanceForEntitlement($entitlement));
+
+    // Only Include balance changes from leave requests waiting for more information
+    // but the leave request has been soft deleted and is not accounted for.
+    $statusesToInclude = [ $leaveRequestStatuses['More Information Requested'] ];
+    $this->assertEquals(10, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statusesToInclude));
   }
 
   public function testBalanceForEntitlementIncludesExpiredBroughtForwardAndTOIL() {
@@ -710,7 +728,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(0, $balance);
   }
 
-  public function testLeaveRequestBalanceForEntitlementDoesNotAccountForSoftDeletedLeaveRequestsAndShouldIncludeTOILBalanceChanges() {
+  public function testLeaveRequestBalanceForEntitlementShouldIncludeTOILBalanceChanges() {
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('today'),
       new DateTime('+100 days')
@@ -738,6 +756,32 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date' => CRM_Utils_Date::processDate('+10 days')
     ], true);
 
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
+    $this->assertEquals(1, $balance);
+  }
+
+  public function testLeaveRequestBalanceForEntitlementDoesNotAccountForSoftDeletedLeaveRequests() {
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('today'),
+      new DateTime('+100 days')
+    );
+
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
+    $this->assertEquals(0, $balance);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $entitlement->contact_id,
+      'type_id' => $entitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('today'),
+      'to_date' => CRM_Utils_Date::processDate('today'),
+      'toil_duration' => 360,
+      'toil_to_accrue' => 2,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+30 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    // This should have deducted 1 day from the 2 accrued by the toil request
+    //but since it will be soft deleted, it will not be accounted for
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $entitlement->contact_id,
       'type_id' => $entitlement->type_id,
@@ -745,11 +789,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date' => CRM_Utils_Date::processDate('+11 days')
     ], true);
 
-    //The leave request is soft deleted and therefore will nnot be accounted for in the calculation
+    //The leave request is soft deleted and therefore will not be accounted for in the calculation
     LeaveRequest::softDelete($leaveRequest->id);
 
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
-    $this->assertEquals(1, $balance);
+    $this->assertEquals(2, $balance);
   }
 
   public function testLeaveRequestBalanceForEntitlementDoesNotIncludeExpiredTOILBalanceChangeByDefault() {
