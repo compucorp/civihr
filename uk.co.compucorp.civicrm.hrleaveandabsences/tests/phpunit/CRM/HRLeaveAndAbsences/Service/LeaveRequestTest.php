@@ -139,8 +139,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $dates = $leaveRequest->getDates();
     $this->assertCount(0, $balanceChanges);
     $this->assertCount(0, $dates);
-    $leaveRequest = LeaveRequest::findById($leaveRequest->id);
-    $this->assertEquals(1, $leaveRequest->is_deleted);
+
+    $leaveRequestRecord = new LeaveRequest();
+    $leaveRequestRecord->id = $leaveRequest->id;
+    $leaveRequestRecord->find(true);
+    $this->assertEquals(1, $leaveRequestRecord->is_deleted);
   }
 
   /**

@@ -1987,7 +1987,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertContains($leaveRequest3->id, $nonDeletedLeaveRequestIDS);
   }
 
-  public function testFindRecordByIdThrowsAnExceptionWhenFindingASoftDeletedLeaveRequest() {
+  public function testFindByIdThrowsAnExceptionWhenFindingASoftDeletedLeaveRequest() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
@@ -1998,11 +1998,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequest::softDelete($leaveRequest->id);
 
-    $this->setExpectedException('Exception', "Unable to find a " . LeaveRequest::class . " with id {$leaveRequest->id}.");
-    LeaveRequest::findRecordById($leaveRequest->id);
+    $this->setExpectedException('Exception', "Unable to   a " . LeaveRequest::class . " with id {$leaveRequest->id}.");
+    LeaveRequest::findById($leaveRequest->id);
   }
 
-  public function testFindRecordByIdThrowsAnExceptionWhenFindingADeletedLeaveRequest() {
+  public function testFindByIdThrowsAnExceptionWhenFindingADeletedLeaveRequest() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
@@ -2014,7 +2014,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $leaveRequest->delete();
 
     $this->setExpectedException('Exception', "Unable to find a " . LeaveRequest::class . " with id {$leaveRequest->id}.");
-    LeaveRequest::findRecordById($leaveRequest->id);
+    LeaveRequest::findById($leaveRequest->id);
   }
 
   /**

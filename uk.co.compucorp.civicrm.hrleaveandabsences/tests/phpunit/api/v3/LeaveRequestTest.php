@@ -2757,7 +2757,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(0, $balanceChanges);
 
     try {
-      $leaveRequest = LeaveRequest::findRecordById($leaveRequest->id);
+      $leaveRequest = LeaveRequest::findById($leaveRequest->id);
     } catch(Exception $e) {
       return;
     }

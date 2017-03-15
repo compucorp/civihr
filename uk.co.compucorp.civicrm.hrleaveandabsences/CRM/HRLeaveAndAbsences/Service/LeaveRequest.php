@@ -123,7 +123,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @param int $leaveRequestID
    */
   public function delete($leaveRequestID) {
-    $leaveRequest = LeaveRequest::findRecordById($leaveRequestID);
+    $leaveRequest = LeaveRequest::findById($leaveRequestID);
 
     if(!$this->canDeleteLeaveRequestFor($leaveRequest->contact_id)) {
       throw new RuntimeException('You are not allowed to delete a leave request for this employee');
@@ -291,7 +291,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    */
   protected function getOldLeaveRequest($leaveRequestID) {
     if (!$this->oldLeaveRequest) {
-      $this->oldLeaveRequest = LeaveRequest::findRecordById($leaveRequestID);
+      $this->oldLeaveRequest = LeaveRequest::findById($leaveRequestID);
     }
     return $this->oldLeaveRequest;
   }

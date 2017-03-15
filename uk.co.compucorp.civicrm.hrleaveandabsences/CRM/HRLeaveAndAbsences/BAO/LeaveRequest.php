@@ -990,13 +990,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @return boolean
    */
   public static function softDelete($id) {
-    $leaveRequest = self::findRecordById($id);
+    $leaveRequest = self::findById($id);
     $leaveRequest->is_deleted = 1;
     $leaveRequest->save();
   }
 
   /**
-   * This function is a variant of the LeaveRequest::findByID method.
+   * This function overrides the \CRM_Core_DAO::findById method.
    * The difference is that it takes the is_deleted property into consideration when
    * finding a leave request record.
    *
@@ -1007,7 +1007,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @throws \Exception
    */
-  public static function findRecordById($id) {
+  public static function findById($id) {
     $leaveRequest = new self();
     $leaveRequest->id = $id;
     $leaveRequest->is_deleted = 0;

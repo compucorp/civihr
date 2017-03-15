@@ -452,7 +452,7 @@ function _civicrm_api3_leave_request_ismanagedby_spec(&$spec) {
  * @return array
  */
 function civicrm_api3_leave_request_ismanagedby($params) {
-  $leaveRequest = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::findRecordById($params['leave_request_id']);
+  $leaveRequest = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::findById($params['leave_request_id']);
   $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
 
   $result = civicrm_api3_create_success($leaveManagerService->isContactManagedBy(
