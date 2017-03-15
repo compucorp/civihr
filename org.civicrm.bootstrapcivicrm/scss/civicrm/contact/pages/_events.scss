@@ -56,7 +56,7 @@
   }
 }
 
-.CRM_Event_Form_Participant {
+#Participant {
 
   input,
   select,
@@ -92,6 +92,10 @@
         color: $crm-white;
       }
     }
+  }
+
+  input[type="radio"] + label {
+    line-height: 1.3em;
   }
 
   span {
@@ -179,7 +183,6 @@
         .crm-event-eventfees-form-block-line_items {
           & > td {
             &:nth-child(2) {
-              padding-left: 0;
               width: 100%;
 
               .total_amount-section {
@@ -376,48 +379,16 @@
     }
   }
 
-  table.selector {
-    background: transparent;
-    border: none;
-    font-family: $font-family-base;
-    margin: 10px 0;
+  table#info,
+  .crm-event-participantview-form-block-fee_amount table,
+  table.selector,
+  .crm-event-eventfees-form-block-line_items table  {
+    @include mx-expandable-table();
     box-shadow: none !important;
-
-    thead {
-
-      th {
-        border-bottom: none;
-        background: $crm-background !important;
-        color: $gray-darker !important;
-        vertical-align: middle;
-        border: none;
-        padding: 10px;
-        line-height: 1.1em;
-
-        div {
-          padding: 0;
-        }
-      }
-    }
-
-    tbody {
-      tr {
-        background: $crm-white;
-        border: 1px solid $crm-background !important;
-
-        td {
-          border: none;
-          background: $crm-white;
-          color: $gray-dark;
-          padding: 10px 30px;
-          line-height: 1.1em;
-        }
-      }
-    }
   }
 }
 
-.CRM_Event_Form_ParticipantView {
+#ParticipantView {
   .action-link {
     display: none;
   }
@@ -429,18 +400,29 @@
     margin: 10px 0;
     box-shadow: none !important;
 
-    thead {
-      th {
-        border-bottom: none;
-        background: $crm-background !important;
-        color: $gray-darker !important;
-        vertical-align: middle;
-        border: none;
-        padding: 10px;
-        line-height: 1.1em;
+    &.crm-info-panel {
+      width: 105%;
+      margin-top: -20px;
+      margin-left: -20px;
+      margin-right: -20px;
+    }
 
-        div {
-          padding: 0;
+    thead {
+      tr {
+        border: 1px solid $crm-background !important;
+
+        th {
+          border-bottom: none;
+          background: $gray-lighter !important;
+          color: $gray-darker !important;
+          vertical-align: middle;
+          border: none;
+          line-height: 1.1em;
+          height: 42px;
+
+          div {
+            padding: 0;
+          }
         }
       }
     }
@@ -448,19 +430,44 @@
     tbody {
       tr {
         background: $crm-white;
-        border: 1px solid $crm-background !important;
+        border: 1px solid $crm-background;
+        border-right: 0;
+        border-left: 0;
 
+        &.crm-child-row {
+          & > td {
+            padding: 0;
+
+            .crm-ajax-container {
+              table {
+                margin: 0;
+
+                tbody {
+                  border-top: 1px solid $crm-dark-grayblue !important
+                }
+
+                th {
+                  border-bottom: none;
+                  background: $gray-lighter !important;
+                  color: $gray-darker;
+                  vertical-align: middle;
+                  border: none;
+                }
+              }
+            }
+          }
+        }
 
         td {
           border: none;
+          padding: 20px;
+          line-height: 1.1em;
+          background: $crm-white !important;
 
           &.label {
             border-bottom: none;
-            background: $crm-background !important;
             color: $gray-darker !important;
             vertical-align: middle;
-            padding: 10px;
-            line-height: 1.1em;
 
             div {
               padding: 0;
@@ -468,13 +475,152 @@
           }
 
           &:not(.label) {
-            background: $crm-white;
             color: $gray-dark;
-            padding: 10px 30px;
-            line-height: 1.1em;
           }
+        }
+
+        &:last-child {
+          border-bottom: 0;
+        }
+
+        &:first-child {
+          border-top: 0;
         }
       }
     }
+  }
+
+  #paymentDetails_Information {
+    .helpicon {
+      left: 0;
+    }
+
+    td:not(.label) {
+      width: 100%;
+      padding: 0;
+    }
+  }
+
+  .crm-accordion-header {
+    font-size: 13px !important;
+    font-family: $font-family-base;
+
+    + .crm-accordion-body {
+      padding: 20px !important;
+
+      td.label {
+        padding-left: 0 !important;
+      }
+    }
+  }
+
+  label[for="thankyou_date"] {
+    top: 7px;
+  }
+
+  label[for="thankyou_date_time"] {
+    top: 5px;
+  }
+
+  [id*="Food_Preference"] {
+    .crm-accordion-wrapper {
+      margin-left: -40px;
+      margin-right: -40px;
+
+      .crm-accordion-body {
+        padding: 20px 43px !important;
+      }
+    }
+
+    td {
+      vertical-align: middle;
+      display: table-cell;
+      min-width: 170px;
+      box-sizing: border-box;
+    }
+
+    .html-adjust {
+      width: 100%;
+    }
+  }
+
+  table#info,
+  .crm-event-participantview-form-block-fee_amount table,
+  table.selector {
+    @include mx-expandable-table();
+    box-shadow: none !important;
+  }
+}
+
+#ParticipantFeeSelection {
+  .crm-event-eventfees-form-block-line_items table {
+    @include mx-expandable-table();
+    box-shadow: none !important;
+  }
+
+  .crm-event-eventfees-form-block-price_set_amount {
+    td:first-child {
+      display: none;
+    }
+  }
+
+  #priceset {
+    display: table;
+
+    .crm-section {
+      display: table-row;
+    }
+
+    .crm-section .label,
+    .crm-section .content {
+      display: table-cell;
+      text-align: left;
+      min-width: 180px;
+      box-sizing: border-box;
+      vertical-align: top;
+    }
+
+    .crm-section .label {
+      width: 180px;
+    }
+
+    #pricevalue {
+      display: table-cell !important;
+    }
+  }
+
+  .priceset-group {
+    tr:nth-child(2) {
+      td:nth-child(1) {
+        display: none;
+      }
+
+      td:nth-child(2) {
+        display: flex;
+      }
+    }
+  }
+
+  .form-layout tr {
+    td {
+      display: table-cell;
+      text-align: left;
+      box-sizing: border-box;
+      padding-left: 0;
+
+      &.label {
+        min-width: 180px;
+      }
+    }
+  }
+
+  input[type="radio"] + label {
+    line-height: 1.3em;
+  }
+
+  textarea {
+    padding: 5px;
+    line-height: 1em;
+    vertical-align: middle;
   }
 }
