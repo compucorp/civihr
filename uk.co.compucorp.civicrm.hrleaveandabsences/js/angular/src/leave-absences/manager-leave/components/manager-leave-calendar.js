@@ -18,7 +18,9 @@ define([
   });
 
 
-  function controller($log, $q, sharedSettings, OptionGroup, Contact, AbsencePeriod, AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
+  function controller(
+    $log, $q, sharedSettings, OptionGroup, Contact, AbsencePeriod, AbsenceType,
+    Calendar, LeaveRequest, PublicHoliday) {
     $log.debug('Component: manager-leave-calendar');
 
     var dayTypes = [],
@@ -117,16 +119,6 @@ define([
     };
 
     /**
-     * Decides whether sent date is a public holiday
-     *
-     * @param  {string} date
-     * @return {boolean}
-     */
-    vm.isPublicHoliday = function (date) {
-      return !!publicHolidays[getDateObjectWithFormat(date).valueOf()];
-    };
-
-    /**
      * Labels the given period according to whether it's current or not
      *
      * @param  {AbsencePeriodInstance} period
@@ -188,90 +180,6 @@ define([
     }
 
     /**
-     * Returns the leave request which is in range of the sent date
-     *
-     * @param  {int/string} contactID
-     * @param  {string} date
-     * @return {object}
-     */
-    function getLeaveRequestByDate(contactID, date) {
-      return _.find(leaveRequests, function (leaveRequest) {
-        return contactID == leaveRequest.contact_id &&
-          !!_.find(leaveRequest.dates, function (leaveRequestDate) {
-          return moment(leaveRequestDate.date).isSame(date);
-        });
-      });
-    }
-
-    /**
-     * Returns the styles for a specific leaveRequest
-     * which will be used in the view for each date
-     *
-     * @param  {object} leaveRequest
-     * @param  {object} dateObj - Date UI object which handles look of a calendar cell
-     * @return {object}
-     */
-    function getStyles(leaveRequest, dateObj) {
-      var absenceType,
-        status = leaveRequestStatuses[leaveRequest.status_id];
-
-      if (status.name === 'waiting_approval'
-        || status.name === 'approved'
-        || status.name === 'admin_approved') {
-        absenceType = _.find(vm.absenceTypes, function (absenceType) {
-          return absenceType.id == leaveRequest.type_id;
-        });
-
-        //If Balance change is positive, mark as Accrued TOIL
-        if (leaveRequest.balance_change > 0) {
-          dateObj.UI.isAccruedTOIL = true;
-          return {
-            border: '1px solid ' + absenceType.color
-          };
-        }
-
-        return {
-          backgroundColor: absenceType.color,
-          borderColor: absenceType.color
-        };
-      }
-    }
-
-    /**
-     * Returns whether a date is of a specific type
-     * half_day_am or half_day_pm
-     *
-     * @param  {string} name
-     * @param  {object} leaveRequest
-     * @param  {string} date
-     *
-     * @return {boolean}
-     */
-    function isDayType(name, leaveRequest, date) {
-      var dayType = dayTypes[name];
-
-      if (moment(date).isSame(leaveRequest.from_date)) {
-        return dayType.value == leaveRequest.from_date_type;
-      }
-
-      if (moment(date).isSame(leaveRequest.to_date)) {
-        return dayType.value == leaveRequest.to_date_type;
-      }
-    }
-
-    /**
-     * Returns whether a leaveRequest is pending approval
-     *
-     * @param  {object} leaveRequest
-     * @return {boolean}
-     */
-    function isPendingApproval(leaveRequest) {
-      var status = leaveRequestStatuses[leaveRequest.status_id];
-
-      return status.name === 'waiting_approval';
-    }
-
-    /**
      * Loads the absence periods
      *
      * @return {Promise}
@@ -308,7 +216,42 @@ define([
       _.each(vm.managedContacts, function (contact, index) {
         promises.push(Calendar.get(contact.id, vm.selectedPeriod.id)
           .then(function (calendar) {
-            vm.managedContacts[index].calendarData = setCalendarProps(vm.managedContacts[index].id, calendar);
+            var defer = $q.defer();
+            var worker = new Worker(location.origin +
+              '/sites/all/modules/civicrm/tools/extensions/civihr/uk.co.compucorp.civicrm.hrleaveandabsences/' +
+              'js/angular/src/leave-absences/manager-leave/components/worker.js');
+
+            //Send all variables to the web worker context
+            worker.postMessage({
+              command: 'setValue',
+              variables: {
+                calendar: calendar,
+                contactID: vm.managedContacts[index].id,
+                leaveRequests: leaveRequests,
+                publicHolidays: publicHolidays,
+                leaveRequestStatuses: leaveRequestStatuses,
+                absenceTypes: vm.absenceTypes,
+                dayTypes: dayTypes,
+                sharedSettings: sharedSettings
+              }
+            });
+
+            //Start web worker After setting all variables
+            worker.postMessage({
+              command: 'start'
+            });
+
+            //Event listener for messages sent from web worker
+            worker.onmessage = function (e) {
+              if(!e.data.error) {
+                vm.managedContacts[index].calendarData = JSON.parse(e.data.calendar);
+              }
+              defer.resolve();
+              worker.terminate();
+            };
+
+            return defer.promise;
+
           }));
       });
 
@@ -475,41 +418,6 @@ define([
         location: filters.location ? filters.location.value : null,
         region: filters.region ? filters.region.value : null
       };
-    }
-
-    /**
-     * Sets UI related properties(isWeekend, isNonWorkingDay etc)
-     * to the calendar data
-     *
-     * @param  {int/string} contactID
-     * @param  {object} calendar
-     * @return {object}
-     */
-    function setCalendarProps(contactID, calendar) {
-      var dateObj,
-        leaveRequest,
-        dates = Object.keys(calendar.days);
-
-      dates.forEach(function (date) {
-        dateObj = calendar.days[date];
-        leaveRequest = getLeaveRequestByDate(contactID, dateObj.date);
-
-        dateObj.UI = {
-          isWeekend: calendar.isWeekend(getDateObjectWithFormat(dateObj.date)),
-          isNonWorkingDay: calendar.isNonWorkingDay(getDateObjectWithFormat(dateObj.date)),
-          isPublicHoliday: vm.isPublicHoliday(dateObj.date)
-        };
-
-        // set below props only if leaveRequest is found
-        if (leaveRequest) {
-          dateObj.UI.styles = getStyles(leaveRequest, dateObj);
-          dateObj.UI.isRequested = isPendingApproval(leaveRequest);
-          dateObj.UI.isAM = isDayType('half_day_am', leaveRequest, dateObj.date);
-          dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
-        }
-      });
-
-      return calendar;
     }
 
     return vm;
