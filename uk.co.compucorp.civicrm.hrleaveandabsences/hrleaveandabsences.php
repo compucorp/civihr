@@ -110,10 +110,10 @@ function hrleaveandabsences_civicrm_permission(&$permissions) {
 function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $actionEntities = [
     'get' => ['absence_type', 'absence_period', 'option_group', 'option_value',
-              'leave_period_entitlement', 'public_holiday', 'leave_request'],
+              'leave_period_entitlement', 'public_holiday', 'leave_request', 'comment'],
     'getbalancechangebyabsencetype' => ['leave_request'],
     'calculatebalancechange' => ['leave_request'],
-    'create' => ['leave_request', 'sickness_request', 't_o_i_l_request'],
+    'create' => ['leave_request', 'comment', 'sickness_request', 't_o_i_l_request'],
     'update' => ['leave_request', 'sickness_request', 't_o_i_l_request'],
     'getcalendar' => ['work_pattern'],
     'ismanagedby' => ['leave_request'],
@@ -122,7 +122,7 @@ function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$para
     'calculatetoilexpirydate' => ['absence_type'],
     'getleavemanagees' => ['contact'],
     'getcomment' => ['leave_request'],
-    'addcomment' => ['leave_request'],    
+    'addcomment' => ['leave_request'],
     'deletecomment' => ['leave_request'],
     'getattachments' => ['leave_request'],
     'deleteattachment' => ['leave_request'],
