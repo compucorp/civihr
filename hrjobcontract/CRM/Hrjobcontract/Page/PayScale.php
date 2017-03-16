@@ -107,28 +107,39 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
       $payScale[$dao->id]['periodicity'] = $dao->periodicity;
       $payScale[$dao->id]['is_active'] = $dao->is_active;
 
-      // form all action links
-      $action = array_sum(array_keys($this->links()));
-
-      if ($dao->is_active) {
-        $action -= CRM_Core_Action::ENABLE;
-      }
-      else {
-        $action -= CRM_Core_Action::DISABLE;
-      }
-
-      //Not Applicable pay grade should not be deleted
-      if ($dao->pay_scale === 'Not Applicable') {
-        $action -= CRM_Core_Action::DELETE;
-        $action -= CRM_Core_Action::UPDATE;
-      }
-
-      $payScale[$dao->id]['action'] = CRM_Core_Action::formLink(self::links(), $action,
-        array('id' => $dao->id)
+      $payScale[$dao->id]['action'] = $this->generateActionLinks(
+        $dao->id, $dao->pay_scale, $dao->is_active
       );
     }
 
     $this->assign('rows', $payScale);
+  }
+
+  /**
+   * Generates action links for given pay scale ID.
+   * 
+   * @param int $payScaleID
+   *   ID of pay scale for which action links need to be generated
+   * @param string $payScaleName
+   *   Name of pay scale
+   * @param boolean $isActive
+   *   If pay scale is active or not
+   * 
+   * @return string
+   *   HTML code for the actions of given pay scale
+   */
+  private function generateActionLinks($payScaleID, $payScaleName, $isActive) {
+    // form all action links
+    $action = array_sum(array_keys($this->links()));
+    $action -= ($isActive ? CRM_Core_Action::ENABLE : CRM_Core_Action::DISABLE);
+
+    // (Not Applicable) pay scale should neither be deleted nor edited!
+    if ($payScaleName === 'Not Applicable') {
+      $action -= CRM_Core_Action::DELETE;
+      $action -= CRM_Core_Action::UPDATE;
+    }
+
+    return CRM_Core_Action::formLink($this->links(), $action, ['id' => $payScaleID]);
   }
 
   /**

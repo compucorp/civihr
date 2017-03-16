@@ -396,18 +396,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         $payScaleParams
       ));
 
-      if ($result['count'] == 1) {
-        return $result['id'];
-      } 
-      elseif ($result['count'] > 1) {
-        $payScaleRecord = array_shift($result['values']);
-        return $payScaleRecord['id'];
-      }
-      else {
-        return $this->_createPayScale($payScaleParams);
-      }
-
-      return null;
+      return ($result['count'] > 0) ? array_shift($result['values'])['id'] : $this->createPayScale($payScaleParams);      
     }
 
     /**
