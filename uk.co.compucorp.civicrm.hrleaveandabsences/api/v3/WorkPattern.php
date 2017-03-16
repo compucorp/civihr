@@ -31,7 +31,11 @@ function civicrm_api3_work_pattern_create($params) {
  * @throws API_Exception
  */
 function civicrm_api3_work_pattern_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  civicrm_api3_verify_mandatory($params, NULL, ['id']);
+  $workPatternService = new CRM_HRLeaveAndAbsences_Service_WorkPattern();
+  $workPatternService->delete($params['id']);
+
+  return civicrm_api3_create_success(true);
 }
 
 /**
