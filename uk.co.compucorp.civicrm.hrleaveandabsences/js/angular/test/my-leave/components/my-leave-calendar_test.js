@@ -14,7 +14,7 @@
     'mocks/apis/option-group-api-mock',
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
-    'leave-absences/my-leave/app',
+    'leave-absences/my-leave/app'
   ], function (angular, moment, _, optionGroupMock, publicHolidayData, workPatternData, leaveRequestData) {
     'use strict';
 
@@ -22,8 +22,7 @@
       var $compile, $log, $q, $rootScope, component, controller, sharedSettings,
         $provide, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
 
-      beforeEach(module('leave-absences.templates', 'leave-absences.mocks',
-      'my-leave', function (_$provide_) {
+      beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
         $provide = _$provide_;
       }));
 

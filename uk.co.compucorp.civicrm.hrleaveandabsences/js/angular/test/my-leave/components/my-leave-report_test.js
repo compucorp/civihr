@@ -12,7 +12,7 @@
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/entitlement-api-mock',
     'mocks/apis/leave-request-api-mock',
-    'leave-absences/my-leave/app',
+    'leave-absences/my-leave/app'
   ], function (angular, _, helper, entitlementMock, leaveRequestMock, optionGroupMock) {
     'use strict';
 
@@ -21,12 +21,9 @@
       var $compile, $q, $log, $provide, $rootScope, component, controller;
       var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HR_settings, dialog;
 
-      beforeEach(module('leave-absences.templates', 'my-leave',
-      'leave-absences.mocks',
-        function (_$provide_) {
-          $provide = _$provide_;
+      beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', function (_$provide_) {
+        $provide = _$provide_;
       }));
-
       beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock, HR_settingsMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);

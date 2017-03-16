@@ -80,8 +80,8 @@ define([
       }
 
       /**
-      * Upload attachment in file uploer's queue
-      */
+       * Upload attachment in file uploer's queue
+       */
       function uploadAttachments() {
         this.uploader.uploadAll({ entityID: this.id })
       }
@@ -97,12 +97,12 @@ define([
         defaultCustomData: function () {
           return {
             comments: [],
+            files: [],
             request_type: 'leave',
             uploader: FileUpload.uploader({
               entityTable: 'civicrm_hrleaveandabsences_leave_request',
               crmAttachmentToken: sharedSettings.attachmentToken
-            }),
-            files: []
+            })
           };
         },
         /**
@@ -221,6 +221,11 @@ define([
           return checkLeaveStatus.call(this, 'more_information_requested');
         },
 
+        /**
+         * Loads comments for this leave request.
+         *
+         * @return {Promise}
+         */
         loadComments: function () {
           var self = this;
 
@@ -270,11 +275,11 @@ define([
         },
 
         /**
-        * Gets file attachments associated with this leave request
-        *
-        * @return {Promise}
-        */
-        getAttachments: function () {
+         * Loads file attachments associated with this leave request
+         *
+         * @return {Promise}
+         */
+        loadAttachments: function () {
           return LeaveRequestAPI.getAttachments(this.id)
             .then(function (attachments) {
               this.files = attachments;
@@ -282,34 +287,31 @@ define([
         },
 
         /**
-        * Deletes the given attachment from local files array. It sets a flag
-        * to delete in final update call. This can be used by the client to set
-        * file for deletion.
-        */
+         * Sets the flag to mark file for deletion. The file is not yet deleted
+         * from the server.
+         */
         deleteAttachment: function (attachmentID) {
-          this.files = this.files || [];
-
           this.files = this.files.map(function (file) {
-            if(file.attachment_id == attachmentID && !file.toBeDeleted) {
+            if (file.attachment_id == attachmentID && !file.toBeDeleted) {
               file.toBeDeleted = true;
             }
+
             return file;
           });
         },
 
         /**
-        * Deletes the given attachment from server. It iterates through local
-        * files array to find which are to be deleted and deletes them.
-        *
-        * @return {Promise}
-        */
-        deleteAttachments: function (attachmentID) {
+         * Deletes the given attachment from server. It iterates through local
+         * files array to find which are to be deleted and deletes them.
+         *
+         * @return {Promise}
+         */
+        deleteAttachments: function () {
           var promises = [];
-          this.files = this.files || [];
 
           _.forEach(this.files, function (file) {
-            if(file.toBeDeleted) {
-              promises.push(LeaveRequestAPI.deleteAttachment(this.id, attachmentID));
+            if (file.toBeDeleted) {
+              promises.push(LeaveRequestAPI.deleteAttachment(this.id, file.attachment_id));
             }
           }.bind(this));
 

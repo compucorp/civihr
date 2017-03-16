@@ -31,7 +31,7 @@
         OptionGroupAPIMock;
 
       beforeEach(module('leave-absences.templates', 'manager-leave',
-        'leave-absences.mocks', 'common.mocks', function (_$provide_) {
+        'leave-absences.mocks', function (_$provide_) {
           $provide = _$provide_;
       }));
 

@@ -739,28 +739,35 @@ define([
     });
 
     describe('attachments', function () {
-      var promise, test_id = '63';
+      var promise, test_id = '63',
+        numberOfFiles;
 
       beforeEach(function () {
-        promise = LeaveRequestInstance.getAttachments();
+        numberOfFiles = leaveRequestMockData.getAttachments().values.length;
+        promise = LeaveRequestInstance.loadAttachments();
       });
 
       afterEach(function () {
         $rootScope.$apply();
       });
 
-      describe('getAttachments()', function () {
+      describe('loadAttachments()', function () {
         it('initializes files array', function () {
           promise.then(function () {
-            expect(LeaveRequestInstance.files.length).toEqual(2);
+            expect(LeaveRequestInstance.files.length).toEqual(numberOfFiles);
           });
         });
       });
 
       describe('deleteAttachment()', function () {
-        it('sets flag toBeDeleted', function () {
+        beforeEach(function () {
           promise.then(function () {
             LeaveRequestInstance.deleteAttachment(test_id);
+          });
+        });
+
+        it('sets flag toBeDeleted', function () {
+          promise.then(function () {
             _.each(LeaveRequestInstance.files, function (file) {
               if (file.attachment_id == test_id) {
                 expect(file.toBeDeleted).toBeTruthy();
