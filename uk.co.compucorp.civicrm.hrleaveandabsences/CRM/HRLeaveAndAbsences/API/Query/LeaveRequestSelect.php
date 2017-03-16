@@ -78,6 +78,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     $hasUnassignedAsFalse = isset($this->params['unassigned']) && $this->params['unassigned'] == false;
 
     $conditions = [
+      'a.is_deleted = 0',
       'jc.deleted = 0',
       '(
           a.from_date <= jd.period_end_date OR

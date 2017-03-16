@@ -1096,6 +1096,50 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(0, $result['values']);
   }
 
+  public function testGetAndGetFullDoesNotReturnSoftDeletedLeaveRequests() {
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+1 days'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], TRUE);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+3 days'),
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], TRUE);
+
+    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('+5 days'),
+      'to_date' => CRM_Utils_Date::processDate('+6 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], TRUE);
+
+    //delete leaverequest2
+    LeaveRequest::softDelete($leaveRequest2->id);
+
+    $resultGet = civicrm_api3('LeaveRequest', 'get');
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull');
+
+    $this->assertEquals(2, $resultGet['count']);
+    $this->assertEquals(2, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGet['values'][$leaveRequest1->id]);
+    $this->assertNotEmpty($resultGet['values'][$leaveRequest3->id]);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest1->id]);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest3->id]);
+  }
+
   public function testGetAndGetFullReturnAllLeaveRequestsWhenTheExpiredParamIsNotPresent() {
     $type = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => TRUE,
@@ -2009,6 +2053,17 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
     $expectedResult = $this->getExpectedArrayForIsValidError('from_date', 'leave_request_from_date_greater_than_end_date');
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenUpdatingIsDeletedForALeaveRequest() {
+    $params = $this->mergeWithDefaultLeaveRequestParams([
+      'id' => 1,
+      'is_deleted' => 1,
+    ]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $expectedResult = $this->getExpectedArrayForIsValidError('is_deleted', 'leave_request_cannot_be_soft_deleted');
     $this->assertEquals($expectedResult, $result);
   }
 

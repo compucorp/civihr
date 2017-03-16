@@ -74,7 +74,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
              ON leave_balance_change.source_id = leave_request_date.id AND 
                 leave_balance_change.source_type = '". self::SOURCE_LEAVE_REQUEST_DAY ."'
       LEFT JOIN {$leaveRequestTable} leave_request 
-             ON leave_request_date.leave_request_id = leave_request.id
+             ON leave_request_date.leave_request_id = leave_request.id AND
+                leave_request.is_deleted = 0
       WHERE ((
               $whereLeaveRequestDates AND
               leave_request.type_id = {$periodEntitlement->type_id} AND
@@ -228,7 +229,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
               ON leave_balance_change.source_id = leave_request_date.id AND 
                  leave_balance_change.source_type = '" . self::SOURCE_LEAVE_REQUEST_DAY . "'
       INNER JOIN {$leaveRequestTable} leave_request 
-              ON leave_request_date.leave_request_id = leave_request.id
+              ON leave_request_date.leave_request_id = leave_request.id AND
+                 leave_request.is_deleted = 0
       WHERE {$whereLeaveRequestDates} AND
             leave_balance_change.expired_balance_change_id IS NULL AND
             leave_request.type_id = {$periodEntitlement->type_id} AND
@@ -283,6 +285,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       INNER JOIN {$leaveRequestTable} lr
         ON lrd.leave_request_id = lr.id
       WHERE lr.id = %2
+      AND lr.is_deleted = 0
       ORDER BY id
     ";
 
@@ -503,7 +506,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       INNER JOIN {$leaveRequestDateTable} lrd
         ON bc.source_id = lrd.id AND bc.source_type = %1
       INNER JOIN {$leaveRequestTable} lr
-        ON lrd.leave_request_id = lr.id
+        ON lrd.leave_request_id = lr.id AND lr.is_deleted = 0
       WHERE lrd.date = %2 AND
             lr.contact_id = %3
       ORDER BY id
@@ -613,7 +616,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
         INNER JOIN {$leaveBalanceChangeTable} balance_change 
             ON balance_change.source_id = leave_request_date.id AND balance_change.source_type = %1
         INNER JOIN {$leaveRequestTable} leave_request
-            ON leave_request_date.leave_request_id = leave_request.id AND leave_request.request_type IN(%2, %3)
+            ON leave_request_date.leave_request_id = leave_request.id AND 
+               (leave_request.request_type IN(%2, %3) AND leave_request.is_deleted = 0)
         WHERE ({$wherePeriodEntitlementDates}) AND 
               (leave_request_date.date BETWEEN %4 AND %5) AND
               (leave_request.status_id = %6) AND 
@@ -684,7 +688,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       LEFT JOIN {$leaveRequestDateTable} leave_request_date
             ON balance_to_expire.source_type = %1 AND balance_to_expire.source_id = leave_request_date.id
       LEFT JOIN {$leaveRequestTable} leave_request
-            ON leave_request_date.leave_request_id = leave_request.id
+            ON leave_request_date.leave_request_id = leave_request.id AND leave_request.is_deleted = 0
       LEFT JOIN {$periodEntitlementTable} period_entitlement
             ON balance_to_expire.source_type = %2 AND balance_to_expire.source_id = period_entitlement.id
       LEFT JOIN {$absencePeriodTable} absence_period
@@ -746,7 +750,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
               INNER JOIN {$leaveRequestDateTable} lrd 
                 ON bc.source_id = lrd.id AND bc.source_type = %1
               INNER JOIN {$leaveRequestTable} lr 
-                ON lrd.leave_request_id = lr.id
+                ON lrd.leave_request_id = lr.id AND lr.is_deleted = 0
               WHERE 
                 lr.contact_id = %2 AND
                 lr.from_date >= %3 AND 
@@ -835,7 +839,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       LEFT JOIN {$leaveRequestDateTable} leave_request_date
             ON bc.source_type = %1 AND bc.source_id = leave_request_date.id
       LEFT JOIN {$leaveRequestTable} leave_request
-            ON leave_request_date.leave_request_id = leave_request.id
+            ON leave_request_date.leave_request_id = leave_request.id AND leave_request.is_deleted = 0
       LEFT JOIN {$periodEntitlementTable} period_entitlement
             ON bc.source_type = %2 AND bc.source_id = period_entitlement.id
       LEFT JOIN {$absencePeriodTable} absence_period

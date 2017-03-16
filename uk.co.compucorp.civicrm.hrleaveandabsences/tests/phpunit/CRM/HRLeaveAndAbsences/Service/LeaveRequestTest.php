@@ -115,38 +115,25 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(11, $balanceChanges);
   }
 
-  public function testDeleteDeletesTheLeaveRequestItsBalanceChangesAndDates() {
+  public function testDeleteSoftDeletesTheLeaveRequest() {
     $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id'        => 1,
-      'contact_id'     => 1,
-      'status_id'      => 1,
-      'from_date'      => CRM_Utils_Date::processDate('2016-01-01'),
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => $leaveRequestDateTypes['all_day'],
-      'to_date'        => CRM_Utils_Date::processDate('2016-01-07'),
-      'to_date_type'   => $leaveRequestDateTypes['all_day'],
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'to_date_type' => $leaveRequestDateTypes['all_day'],
     ], TRUE);
 
-    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
-    $dates          = $leaveRequest->getDates();
-    $this->assertCount(7, $balanceChanges);
-    $this->assertCount(7, $dates);
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->delete($leaveRequest->id);
 
-    $this->getleaveRequestService()->delete($leaveRequest->id);
-
-    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
-    $dates          = $leaveRequest->getDates();
-    $this->assertCount(0, $balanceChanges);
-    $this->assertCount(0, $dates);
-
-    try {
-      $leaveRequest = LeaveRequest::findById($leaveRequest->id);
-    } catch (Exception $e) {
-      return;
-    }
-
-    $this->fail("Expected to not find the LeaveRequest with {$leaveRequest->id}, but it was found");
+    $leaveRequestRecord = new LeaveRequest();
+    $leaveRequestRecord->id = $leaveRequest->id;
+    $leaveRequestRecord->find(true);
+    $this->assertEquals(1, $leaveRequestRecord->is_deleted);
   }
 
   /**
@@ -341,6 +328,27 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['type_id'] = 2;
 
     $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+  }
+
+  /**
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage You are not allowed to delete a leave request for this employee
+   */
+  public function testDeleteThrowsAnExceptionWhenLeaveApproverTriesToDeleteALeaveRequest() {
+    $contactID = 5;
+    $params = $this->getDefaultParams(['contact_id' => $contactID]);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->delete($leaveRequest->id);
+  }
+
+  /**
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage You are not allowed to delete a leave request for this employee
+   */
+  public function testDeleteThrowsAnExceptionWhenLeaveContactTriesToDeleteALeaveRequest() {
+    $params = $this->getDefaultParams();
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+    $this->getLeaveRequestService()->delete($leaveRequest->id);
   }
 
   private function getLeaveRequestService($isAdmin = false, $isManager = false, $allowStatusTransition = true, $mockBalanceChangeService = false) {

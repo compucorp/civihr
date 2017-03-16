@@ -37,6 +37,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     if($validate){
       self::validateParams($params);
     }
+    unset($params['is_deleted']);
+
     $instance = new self();
     $instance->copyValues($params);
 
@@ -67,6 +69,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    */
   public static function validateParams($params) {
     self::validateMandatory($params);
+    self::validateLeaveRequestSoftDeleteDuringUpdate($params);
     self::validateRequestType($params);
     self::validateTOILFieldsBasedOnRequestType($params);
     self::validateSicknessFieldsBasedOnRequestType($params);
@@ -111,6 +114,25 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
           $field
         );
       }
+    }
+  }
+
+  /**
+   * A method for validating that a LeaveRequest cannot be soft deleted
+   * during an update on the BAO.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  public static function validateLeaveRequestSoftDeleteDuringUpdate($params) {
+    if (isset($params['id']) && !empty($params['is_deleted'])) {
+      throw new InvalidLeaveRequestException(
+        'Leave Request can not be soft deleted during an update, use the delete method instead!',
+        'leave_request_cannot_be_soft_deleted',
+        'is_deleted'
+      );
     }
   }
 
@@ -646,6 +668,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $leaveRequest->contact_id = (int)$contactID;
     $leaveRequest->from_date = date('Ymd', strtotime($publicHoliday->date));
     $leaveRequest->request_type = self::REQUEST_TYPE_PUBLIC_HOLIDAY;
+    $leaveRequest->is_deleted = 0;
 
     $leaveRequest->find(true);
     if($leaveRequest->id) {
@@ -681,15 +704,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         ON lrd.leave_request_id = lr.id
       INNER JOIN {$leaveBalanceChangeTable} lbc
         ON lbc.source_id = lrd.id AND lbc.source_type = %1
-      WHERE lr.contact_id = %2
+      WHERE lr.contact_id = %2 AND lr.is_deleted = 0
+      AND lrd.date BETWEEN %3 AND %4
     ";
-
-    if (!empty($toDate)){
-      $query .= ' AND lrd.date BETWEEN %3 AND %4';
-    }
-    else{
-      $query .= ' AND lrd.date = %3';
-    }
 
     if (is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
       array_walk($leaveRequestStatus, 'intval');
@@ -704,11 +721,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
       2 => [$contactID, 'Integer'],
       3 => [CRM_Utils_Date::processDate($fromDate, null, false, 'Y-m-d'), 'String'],
+      4 => [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String'],
       5 => [self::REQUEST_TYPE_PUBLIC_HOLIDAY, 'String']
     ];
-    if (!empty($toDate)) {
-      $params[4] = [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String'];
-    }
 
     $leaveRequest = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
 
@@ -733,7 +748,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * Creates and saves LeaveRequestDates for this LeaveRequest
    */
   private function saveDates() {
-    $this->deleteDates();
+    $this->deleteDatesAndBalanceChanges();
 
     $datePeriod = new BasicDatePeriod($this->from_date, $this->to_date);
 
@@ -746,9 +761,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Deletes all the dates related to this LeaveRequest
+   * Deletes all the dates and balance changes related to this LeaveRequest
    */
-  private function deleteDates() {
+  private function deleteDatesAndBalanceChanges() {
+    LeaveBalanceChange::deleteAllForLeaveRequest($this);
     LeaveRequestDate::deleteDatesForLeaveRequest($this->id);
   }
 
@@ -963,6 +979,41 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     ];
 
     CRM_Core_DAO::executeQuery($query, $params);
+  }
+
+  /**
+   * Soft Deletes the LeaveRequest with the given ID by setting the is_deleted column to 1
+   *
+   * @param int $id
+   *   The ID of the LeaveRequest to be soft deleted
+   */
+  public static function softDelete($id) {
+    $leaveRequest = self::findById($id);
+    $leaveRequest->is_deleted = 1;
+    $leaveRequest->save();
+  }
+
+  /**
+   * This function overrides the \CRM_Core_DAO::findById method.
+   * The difference is that it takes the is_deleted property into consideration when
+   * finding a leave request record.
+   *
+   * @param int $id
+   *   ID of leave request to be found
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
+   *
+   * @throws \Exception
+   */
+  public static function findById($id) {
+    $leaveRequest = new self();
+    $leaveRequest->id = $id;
+    $leaveRequest->is_deleted = 0;
+    if (!$leaveRequest->find(TRUE)) {
+      throw new Exception("Unable to find a " . self::class . " with id {$id}.");
+    }
+
+    return $leaveRequest;
   }
 
   /**

@@ -151,4 +151,12 @@
     <comment>The type of this request (leave, toil, sickness etc)</comment>
   </field>
 
+  <field>
+    <name>is_deleted</name>
+    <type>boolean</type>
+    <default>0</default>
+    <comment>Whether this leave request has been deleted or not</comment>
+    <add>4.4</add>
+  </field>
+
 </table>

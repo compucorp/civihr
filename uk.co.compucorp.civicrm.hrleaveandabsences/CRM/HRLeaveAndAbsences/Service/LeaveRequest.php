@@ -118,24 +118,18 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   }
 
   /**
-   * Deletes the LeaveRequest with the given $leaveRequestID, including all of
-   * its LeaveRequestDates and LeaveBalanceChanges
+   * Soft Deletes the LeaveRequest with the given $leaveRequestID
    *
    * @param int $leaveRequestID
    */
   public function delete($leaveRequestID) {
     $leaveRequest = LeaveRequest::findById($leaveRequestID);
 
-    $transaction = new CRM_Core_Transaction();
-    try {
-      LeaveBalanceChange::deleteAllForLeaveRequest($leaveRequest);
-      LeaveRequestDate::deleteDatesForLeaveRequest($leaveRequest->id);
-      $leaveRequest->delete();
-
-      $transaction->commit();
-    } catch(Exception $e) {
-      $transaction->rollback();
+    if(!$this->canDeleteLeaveRequestFor($leaveRequest->contact_id)) {
+      throw new RuntimeException('You are not allowed to delete a leave request for this employee');
     }
+
+    LeaveRequest::softDelete($leaveRequestID);
   }
 
   /**
@@ -187,6 +181,17 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    */
   private function canChangeAbsenceTypeFor($params) {
     return $this->leaveRequestRightsService->canChangeAbsenceTypeFor($params['contact_id'], $params['status_id']);
+  }
+
+  /**
+   * Checks if the current user can delete leave requests for the given $contactID
+   *
+   * @param int $contactID
+   *
+   * @return bool
+   */
+  private function canDeleteLeaveRequestFor($contactID) {
+    return $this->leaveRequestRightsService->canDeleteFor($contactID);
   }
 
   /**

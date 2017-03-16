@@ -871,6 +871,31 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[1]);
   }
 
+  public function testFindOverlappingLeaveRequestsDoesNotCountSoftDeletedLeaveRequestAsOverlappingLeaveRequest() {
+    $contactID = 1;
+    $fromDate = new DateTime('2016-11-01');
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $fromDate->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    LeaveRequest::softDelete($leaveRequest->id);
+
+    //The start date and end date has dates in leave request dates in leaveRequest
+    //leaveRequest has been soft deleted and will not be counted as an overlapping leave request
+    $startDate = '2016-11-01';
+    $endDate = '2016-11-02';
+
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate);
+    $this->assertCount(0, $overlappingRequests);
+  }
+
   public function testFindOverlappingLeaveRequestsForMultipleOverlappingLeaveRequestAndExcludePublicHolidayTrue() {
     $contactID = 1;
     $publicHoliday = new PublicHoliday();
@@ -1970,5 +1995,74 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertContains($leaveRequest1->id, $nonDeletedLeaveRequestIDS);
     $this->assertContains($leaveRequest2->id, $nonDeletedLeaveRequestIDS);
     $this->assertContains($leaveRequest3->id, $nonDeletedLeaveRequestIDS);
+  }
+
+  public function testFindByIdThrowsAnExceptionWhenFindingASoftDeletedLeaveRequest() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+      'status_id' => 1
+    ]);
+
+    LeaveRequest::softDelete($leaveRequest->id);
+
+    $this->setExpectedException('Exception', "Unable to find a " . LeaveRequest::class . " with id {$leaveRequest->id}.");
+    LeaveRequest::findById($leaveRequest->id);
+  }
+
+  public function testFindByIdThrowsAnExceptionWhenFindingADeletedLeaveRequest() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+      'status_id' => 1
+    ]);
+
+    $leaveRequest->delete();
+
+    $this->setExpectedException('Exception', "Unable to find a " . LeaveRequest::class . " with id {$leaveRequest->id}.");
+    LeaveRequest::findById($leaveRequest->id);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Leave Request can not be soft deleted during an update, use the delete method instead!
+   */
+  public function testValidateParamsThrowsAnExceptionWhenTryingToChangeIsDeletedValueForALeaveRequestDuringAnUpdate() {
+    $params = [
+      'id' => 1,
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+      'status_id' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'is_deleted' => 1
+    ];
+
+    LeaveRequest::validateParams($params);
+  }
+
+  public function testLeaveRequestIsDeletedValueCanNotBeSetWhenCreatingALeaveRequest() {
+    $params = [
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+      'status_id' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'is_deleted' => 1
+    ];
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $leaveRequestRecord = LeaveRequest::findById($leaveRequest->id);
+    $this->assertEquals(0, $leaveRequestRecord->is_deleted);
   }
 }

@@ -663,6 +663,9 @@ function _hrleaveandabsences_set_default_permissions() {
  * @param array $permissions
  */
 function _hrleaveandabsences_set_roles_permissions($roles, $permissions) {
+  if( !function_exists('user_role_load_by_name') || !function_exists('user_role_grant_permissions')) {
+    return;
+  }
   foreach($roles as $roleName) {
     $role = user_role_load_by_name($roleName);
     user_role_grant_permissions($role->rid, $permissions);
