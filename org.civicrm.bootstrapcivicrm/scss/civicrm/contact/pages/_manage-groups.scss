@@ -163,39 +163,15 @@
   }
 
   #DataTables_Table_0 {
-    width: 100% !important;
-    margin-top: 20px;
+    @include mx-expandable-table();
 
-    th,
-    td {
-      min-width: 100px;
-      line-height: normal !important;
+    .crm-no-children {
+      padding-left: 0;
     }
 
-    .DataTables_sort_icon {
-      display: inline-block;
-    }
-
-    .crm-editable-enabled {
-      white-space: normal !important;
-    }
-
-    .crm-group-group_links {
-      > .crm-hover-button,
-      span > .crm-hover-button {
-        text-transform: lowercase;
-        color: $brand-primary;
-
-        &:hover {
-          background: none !important;
-        }
-
-        &.btn-slide {
-          &:after {
-            top: 5px;
-          }
-        }
-      }
+    .crm-group-count,
+    .crm-row-child td:nth-child(2) {
+      text-align: center;
     }
   }
 
