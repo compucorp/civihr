@@ -1,7 +1,6 @@
 .page-civicrm-tag {
 
   #branding {
-
     .page-title {
       margin-bottom: 20px !important;
     }
@@ -13,6 +12,25 @@
 
   .tabs-secondary {
     float: left;
+  }
+
+  .ui-dialog-content td {
+    vertical-align: middle;
+  }
+
+  #page {
+    .crm-form-block td {
+      vertical-align: middle;
+      display: table-cell;
+      text-align: left;
+    }
+
+    .crm-tag-form-block-is_reserved,
+    .crm-tag-form-block-is_slectable {
+      td.label {
+        vertical-align: top;
+      }
+    }
   }
 
   .crm-submit-buttons {
@@ -50,41 +68,7 @@
     margin: 30px 0;
 
     table {
-      background: transparent;
-      border: none;
-      font-family: $font-family-base;
-
-      thead {
-        border-bottom: 1px solid $crm-dark-grayblue;
-
-        th {
-          border-bottom: none;
-          background: $gray-lighter;
-          color: $gray-darker;
-          vertical-align: middle;
-          border: none;
-          padding: 17px 15px;
-
-          div {
-            padding: 0;
-          }
-        }
-      }
-
-      tbody {
-
-        tr {
-          background: $crm-white;
-          border-bottom: 1px solid $crm-background;
-
-          td {
-            background: $crm-white;
-            color: $gray-dark;
-            border: none;
-            padding: 10px 15px;
-          }
-        }
-      }
+      @include mx-expandable-table();
     }
   }
   a {
