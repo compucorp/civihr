@@ -8,13 +8,13 @@ define([
 
   instances.factory('LeaveRequestInstance', [
     '$log',
-    'ModelInstance',
-    'LeaveRequestAPI',
-    'OptionGroup',
     '$q',
+    'OptionGroup',
     'FileUpload',
     'shared-settings',
-    function ($log, ModelInstance, LeaveRequestAPI, OptionGroup, $q, FileUpload, sharedSettings) {
+    'ModelInstance',
+    'LeaveRequestAPI',
+    function ($log, $q, OptionGroup, FileUpload, sharedSettings, ModelInstance, LeaveRequestAPI) {
       $log.debug('LeaveRequestInstance');
 
       /**
@@ -82,6 +82,7 @@ define([
             promises.push(LeaveRequestAPI.deleteComment(comment.comment_id));
           }
         });
+        
         return promises.length ? $q.all(promises) : $q.resolve();
       }
 

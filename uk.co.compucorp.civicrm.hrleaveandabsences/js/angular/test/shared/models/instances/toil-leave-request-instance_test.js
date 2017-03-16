@@ -1,9 +1,9 @@
 define([
   'mocks/data/leave-request-data',
   'mocks/apis/leave-request-api-mock',
+  'common/mocks/services/file-uploader-mock',
   'mocks/apis/option-group-api-mock',
   'leave-absences/shared/models/instances/toil-leave-request-instance',
-  'common/mocks/services/file-uploader-mock',
 ], function (requestMockData, helper) {
   'use strict';
 

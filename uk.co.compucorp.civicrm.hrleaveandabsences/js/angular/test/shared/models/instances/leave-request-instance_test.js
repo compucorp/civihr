@@ -3,10 +3,10 @@ define([
   'mocks/data/option-group-mock-data',
   'mocks/data/comments-data',
   'mocks/helpers/helper',
+  'common/mocks/services/file-uploader-mock',
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/models/instances/leave-request-instance',
   'leave-absences/shared/modules/models',
-  'common/mocks/services/file-uploader-mock',
 ], function (leaveRequestMockData, optionGroupMockData, commentsData, helper) {
   'use strict';
 
@@ -716,14 +716,13 @@ define([
 
         it('calls corresponding end point', function () {
           promise.then(function () {
-            expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: jasmine.any(String) });
+            expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
           });
         });
       });
 
       describe('on update()', function () {
         beforeEach(function () {
-          requestData = helper.createRandomLeaveRequest();
           requestData.id = '12';
           instance = LeaveRequestInstance.init(requestData, false);
           spyOn(instance.uploader, 'uploadAll').and.callThrough();
@@ -737,7 +736,7 @@ define([
 
         it('calls corresponding end point', function () {
           promise.then(function () {
-            expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: jasmine.any(String) });
+            expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
           });
         });
       });

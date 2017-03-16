@@ -8,6 +8,7 @@
     'common/angularMocks',
     'leave-absences/shared/config',
     'common/mocks/services/hr-settings-mock',
+    'common/mocks/services/file-uploader-mock',
     'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/entitlement-api-mock',
@@ -18,7 +19,6 @@
     'common/mocks/services/api/contact-mock',
     'leave-absences/shared/controllers/sub-controllers/leave-request-ctrl',
     'leave-absences/shared/modules/shared-settings',
-    'common/mocks/services/file-uploader-mock',
   ], function (_, moment, optionGroupMock, mockData, helper) {
     'use strict';
 

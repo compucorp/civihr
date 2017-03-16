@@ -13,7 +13,6 @@
     'mocks/apis/entitlement-api-mock',
     'mocks/apis/leave-request-api-mock',
     'leave-absences/my-leave/app',
-    'common/mocks/services/file-uploader-mock',
   ], function (angular, _, helper, entitlementMock, leaveRequestMock, optionGroupMock) {
     'use strict';
 
@@ -23,18 +22,17 @@
       var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HR_settings, dialog;
 
       beforeEach(module('leave-absences.templates', 'my-leave',
-      'leave-absences.mocks', 'common.mocks',
+      'leave-absences.mocks',
         function (_$provide_) {
           $provide = _$provide_;
       }));
       beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
-        EntitlementAPIMock, LeaveRequestAPIMock, HR_settingsMock, _FileUploaderMock_) {
+        EntitlementAPIMock, LeaveRequestAPIMock, HR_settingsMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('EntitlementAPI', EntitlementAPIMock);
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
         $provide.value('HR_settings', HR_settingsMock);
-        $provide.value('FileUploader', _FileUploaderMock_);
       }));
 
       beforeEach(inject(function (_$compile_, _$q_, _$log_, _$rootScope_, _$httpBackend_) {

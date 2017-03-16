@@ -15,7 +15,6 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/my-leave/app',
-    'common/mocks/services/file-uploader-mock',
   ], function (angular, moment, _, optionGroupMock, publicHolidayData, workPatternData, leaveRequestData) {
     'use strict';
 
@@ -29,13 +28,12 @@
       }));
 
       beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, LeaveRequestAPIMock,
-                                  PublicHolidayAPIMock, WorkPatternAPIMock, _FileUploaderMock_) {
+                                  PublicHolidayAPIMock, WorkPatternAPIMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
         $provide.value('PublicHolidayAPI', PublicHolidayAPIMock);
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
-        $provide.value('FileUploader', _FileUploaderMock_);
       }));
 
       beforeEach(inject(['$compile', '$log', '$q', '$rootScope', 'OptionGroup', 'OptionGroupAPIMock',

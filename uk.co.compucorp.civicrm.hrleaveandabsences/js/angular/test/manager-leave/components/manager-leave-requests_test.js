@@ -4,14 +4,13 @@
     'mocks/data/option-group-mock-data',
     'mocks/data/absence-type-data',
     'mocks/data/leave-request-data',
+    'common/mocks/services/api/contact-mock',
     'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
-    'common/mocks/services/api/contact-mock',
     'leave-absences/shared/config',
     'leave-absences/manager-leave/app',
-    'common/mocks/services/file-uploader-mock',
   ], function (angular, optionGroupMock, absenceTypeData, leaveRequestData) {
     'use strict';
 
@@ -37,11 +36,10 @@
       }));
 
       beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
-        LeaveRequestAPIMock, _FileUploaderMock_) {
+        LeaveRequestAPIMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
-        $provide.value('FileUploader', _FileUploaderMock_);
       }));
 
       beforeEach(inject(['api.contact.mock', function (_ContactAPIMock_) {
