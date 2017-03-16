@@ -63,23 +63,6 @@
     box-shadow: none !important;
   }
 
-  // For the "perfect-scrollbar" plugin to look properly
-  .ps-container {
-    .ps-scrollbar-y-rail {
-      > .ps-scrollbar-y {
-        background-color: $gray-dark !important;
-      }
-
-      &:hover {
-        background-color: $gray-lighter !important;
-
-        > .ps-scrollbar-y {
-          background-color: $gray !important;
-        }
-      }
-    }
-  }
-
   .select2-drop {
     border-radius: $input-border-radius !important;
   }
