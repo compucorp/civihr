@@ -23,7 +23,7 @@
         $provide, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks',
-      'my-leave', 'common.mocks', function (_$provide_) {
+      'my-leave', function (_$provide_) {
         $provide = _$provide_;
       }));
 

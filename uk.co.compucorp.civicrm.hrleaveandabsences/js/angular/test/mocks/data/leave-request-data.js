@@ -487,9 +487,11 @@ define([
       return mockData.deleteComment;
     },
     getAttachments: function () {
+      //LeaveRequest.getAttachments (leave_request_id = 1)
       return mockData.getAttachments;
     },
     deleteAttachment: function () {
+      //LeaveRequest.deleteAttachment (leave_request_id = 1, attachment_id = 2)
       return mockData.deleteAttachment;
     }
   };

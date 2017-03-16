@@ -102,6 +102,16 @@ define([
           return $q(function (resolve, reject) {
             resolve(commentsMock.deleteComment().values);
           });
+        },
+        getAttachments: function (params) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.getAttachments().values);
+          });
+        },
+        deleteAttachment: function (params) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.deleteAttachment().values);
+          });
         }
       };
     }

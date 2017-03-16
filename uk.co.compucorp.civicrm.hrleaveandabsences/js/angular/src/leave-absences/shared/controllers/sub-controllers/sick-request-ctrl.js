@@ -2,7 +2,7 @@ define([
   'common/lodash',
   'leave-absences/shared/modules/controllers',
   'leave-absences/shared/controllers/request-ctrl',
-  'leave-absences/shared/models/instances/sickness-leave-request-instance',
+  'leave-absences/shared/models/instances/sickness-request-instance',
 ], function (_, controllers) {
   controllers.controller('SicknessRequestCtrl', [
     '$controller', '$log', '$q', '$uibModalInstance', 'api.optionGroup', 'directiveOptions', 'SicknessRequestInstance',

@@ -26,8 +26,8 @@
         function (_$provide_) {
           $provide = _$provide_;
       }));
-      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
-        EntitlementAPIMock, LeaveRequestAPIMock, HR_settingsMock) {
+
+      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock, HR_settingsMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('EntitlementAPI', EntitlementAPIMock);

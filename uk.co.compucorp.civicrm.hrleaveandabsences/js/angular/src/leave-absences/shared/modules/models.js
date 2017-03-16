@@ -1,6 +1,5 @@
 define([
   'common/angular',
-  'common/angular-file-upload',  
   'common/modules/models',
   'common/modules/services',
   'leave-absences/shared/modules/apis',
@@ -12,7 +11,6 @@ define([
   return angular.module('leave-absences.models', [
     'common.models',
     'common.services',
-    'angularFileUpload',
     'leave-absences.apis',
     'leave-absences.models.instances',
     'leave-absences.settings',

@@ -3,7 +3,7 @@ define([
   'mocks/apis/leave-request-api-mock',
   'common/mocks/services/file-uploader-mock',
   'mocks/apis/option-group-api-mock',
-  'leave-absences/shared/models/instances/toil-leave-request-instance',
+  'leave-absences/shared/models/instances/toil-request-instance',
 ], function (requestMockData, helper) {
   'use strict';
 

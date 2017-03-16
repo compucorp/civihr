@@ -2,7 +2,7 @@ define([
   'common/mocks/services/file-uploader-mock',
   'mocks/apis/leave-request-api-mock',
   'mocks/apis/option-group-api-mock',
-  'leave-absences/shared/models/instances/sickness-leave-request-instance',
+  'leave-absences/shared/models/instances/sickness-request-instance',
 ], function () {
   'use strict';
 

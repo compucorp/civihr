@@ -6,16 +6,9 @@ define([
 ], function (instances) {
   'use strict';
 
-  instances.factory('LeaveRequestInstance', [
-    '$log',
-    '$q',
-    'OptionGroup',
-    'FileUpload',
-    'shared-settings',
-    'ModelInstance',
-    'LeaveRequestAPI',
-    function ($log, $q, OptionGroup, FileUpload, sharedSettings, ModelInstance, LeaveRequestAPI) {
-      $log.debug('LeaveRequestInstance');
+  instances.factory('LeaveRequestInstance', ['$q', 'OptionGroup', 'FileUpload',
+    'shared-settings', 'ModelInstance', 'LeaveRequestAPI',
+    function ($q, OptionGroup, FileUpload, sharedSettings, ModelInstance, LeaveRequestAPI) {
 
       /**
        * Get ID of an option value
@@ -82,8 +75,15 @@ define([
             promises.push(LeaveRequestAPI.deleteComment(comment.comment_id));
           }
         });
-        
-        return promises.length ? $q.all(promises) : $q.resolve();
+
+        return $q.all(promises);
+      }
+
+      /**
+      * Upload attachment in file uploer's queue
+      */
+      function uploadAttachments() {
+        this.uploader.uploadAll({ entityID: this.id })
       }
 
       return ModelInstance.extend({
@@ -101,7 +101,8 @@ define([
             uploader: FileUpload.uploader({
               entityTable: 'civicrm_hrleaveandabsences_leave_request',
               crmAttachmentToken: sharedSettings.attachmentToken
-            })
+            }),
+            files: []
           };
         },
         /**
@@ -142,7 +143,8 @@ define([
             .then(function () {
               return $q.all([
                 saveAndDeleteComments.call(this),
-                this.uploader.uploadAll({ entityID: this.id })
+                uploadAttachments.call(this),
+                this.deleteAttachments()
               ]);
             }.bind(this));
         },
@@ -159,7 +161,7 @@ define([
               this.id = result.id;
               return $q.all([
                 saveAndDeleteComments.call(this),
-                this.uploader.uploadAll({ entityID: this.id })
+                uploadAttachments.call(this)
               ]);
             }.bind(this));
         },
@@ -262,9 +264,56 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates', 'comments', 'uploader'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'uploader', 'files'], key)) {
             result[key] = this[key];
           }
+        },
+
+        /**
+        * Gets file attachments associated with this leave request
+        *
+        * @return {Promise}
+        */
+        getAttachments: function () {
+          return LeaveRequestAPI.getAttachments(this.id)
+            .then(function (attachments) {
+              this.files = attachments;
+            }.bind(this));
+        },
+
+        /**
+        * Deletes the given attachment from local files array. It sets a flag
+        * to delete in final update call. This can be used by the client to set
+        * file for deletion.
+        */
+        deleteAttachment: function (attachmentID) {
+          this.files = this.files || [];
+
+          this.files = this.files.map(function (file) {
+            if(file.attachment_id == attachmentID && !file.toBeDeleted) {
+              file.toBeDeleted = true;
+            }
+            return file;
+          });
+        },
+
+        /**
+        * Deletes the given attachment from server. It iterates through local
+        * files array to find which are to be deleted and deletes them.
+        *
+        * @return {Promise}
+        */
+        deleteAttachments: function (attachmentID) {
+          var promises = [];
+          this.files = this.files || [];
+
+          _.forEach(this.files, function (file) {
+            if(file.toBeDeleted) {
+              promises.push(LeaveRequestAPI.deleteAttachment(this.id, attachmentID));
+            }
+          }.bind(this));
+
+          return $q.all(promises);
         }
       });
     }

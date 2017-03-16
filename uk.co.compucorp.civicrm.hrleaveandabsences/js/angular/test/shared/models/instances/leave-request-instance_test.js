@@ -52,6 +52,8 @@ define([
         spyOn(LeaveRequestAPI, 'saveComment').and.callThrough();
         spyOn(LeaveRequestAPI, 'getComments').and.callThrough();
         spyOn(LeaveRequestAPI, 'deleteComment').and.callThrough();
+        spyOn(LeaveRequestAPI, 'getAttachments').and.callThrough();
+        spyOn(LeaveRequestAPI, 'deleteAttachment').and.callThrough();
       }
     ]));
 
@@ -278,7 +280,7 @@ define([
 
       beforeEach(function () {
         requestData = helper.createRandomLeaveRequest();
-        instance = LeaveRequestInstance.init(requestData, false);
+        instance = LeaveRequestInstance.init(requestData);
         instance.comments = commentsData.getCommentsWithMixedIDs().values;
 
         var commentToBeDeleted = commentsData.getComments().values[0];
@@ -379,7 +381,7 @@ define([
         requestData = {
           contact_id: '123'
         };
-        instance = LeaveRequestInstance.init(requestData, false);
+        instance = LeaveRequestInstance.init(requestData);
         instanceValid = instance.isValid();
       });
 
@@ -691,7 +693,8 @@ define([
           'balance_change',
           'dates',
           'comments',
-          'uploader'
+          'uploader',
+          'files'
         ));
       });
     });
@@ -701,7 +704,7 @@ define([
 
       beforeEach(function () {
         requestData = helper.createRandomLeaveRequest();
-        instance = LeaveRequestInstance.init(requestData, false);
+        instance = LeaveRequestInstance.init(requestData);
         spyOn(instance.uploader, 'uploadAll').and.callThrough();
       });
 
@@ -714,7 +717,7 @@ define([
           promise = instance.create();
         });
 
-        it('calls corresponding end point', function () {
+        it('uploads file with entity id', function () {
           promise.then(function () {
             expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
           });
@@ -727,9 +730,76 @@ define([
           promise = instance.update();
         });
 
-        it('calls corresponding end point', function () {
+        it('uploads file with entity id', function () {
           promise.then(function () {
             expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
+          });
+        });
+      });
+    });
+
+    describe('attachments', function () {
+      var promise, test_id = '63';
+
+      beforeEach(function () {
+        promise = LeaveRequestInstance.getAttachments();
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      describe('getAttachments()', function () {
+        it('initializes files array', function () {
+          promise.then(function () {
+            expect(LeaveRequestInstance.files.length).toEqual(2);
+          });
+        });
+      });
+
+      describe('deleteAttachment()', function () {
+        it('sets flag toBeDeleted', function () {
+          promise.then(function () {
+            LeaveRequestInstance.deleteAttachment(test_id);
+            _.each(LeaveRequestInstance.files, function (file) {
+              if (file.attachment_id == test_id) {
+                expect(file.toBeDeleted).toBeTruthy();
+              } else {
+                expect(file.toBeDeleted).toBeFalsy();
+              }
+            });
+          });
+        });
+      });
+
+      describe('deleteAttachments', function () {
+        var deletePromise;
+
+        beforeEach(function () {
+          deletePromise = promise.then(function () {
+            LeaveRequestInstance.deleteAttachment(test_id);
+            return LeaveRequestInstance.deleteAttachments();
+          });
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        it('returns expected number of promises', function () {
+          deletePromise.then(function (result) {
+            expect(result.length).toEqual(1);
+          });
+        });
+
+        it('calls corresponding API end point', function () {
+          deletePromise.then(function (result) {
+            expect(result.length).toEqual(1);
+            _.each(LeaveRequestInstance.files, function (file) {
+              if (file.toBeDeleted) {
+                expect(LeaveRequestAPI.deleteAttachment).toHaveBeenCalled();
+              }
+            });
           });
         });
       });

@@ -10,8 +10,7 @@ define([
       LeaveRequestAPI,
       $rootScope;
 
-    beforeEach(module('leave-absences.models', 'leave-absences.mocks',
-      function (_$provide_) {
+    beforeEach(module('leave-absences.models', 'leave-absences.mocks', function (_$provide_) {
         $provide = _$provide_;
     }));
 
