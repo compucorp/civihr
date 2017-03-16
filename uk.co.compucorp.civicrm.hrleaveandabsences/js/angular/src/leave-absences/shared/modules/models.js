@@ -1,8 +1,8 @@
 define([
   'common/angular',
+  'common/angular-file-upload',  
   'common/modules/models',
   'common/modules/services',
-  'common/angular-file-upload',
   'leave-absences/shared/modules/apis',
   'leave-absences/shared/modules/models-instances',
   'leave-absences/shared/modules/shared-settings',

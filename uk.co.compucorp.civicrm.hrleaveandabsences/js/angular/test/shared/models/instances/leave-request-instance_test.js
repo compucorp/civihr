@@ -705,13 +705,13 @@ define([
         spyOn(instance.uploader, 'uploadAll').and.callThrough();
       });
 
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
       describe('on create()', function () {
         beforeEach(function () {
           promise = instance.create();
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
         });
 
         it('calls corresponding end point', function () {
@@ -723,15 +723,8 @@ define([
 
       describe('on update()', function () {
         beforeEach(function () {
-          requestData.id = '12';
-          instance = LeaveRequestInstance.init(requestData, false);
-          spyOn(instance.uploader, 'uploadAll').and.callThrough();
-
+          instance.id = '12';
           promise = instance.update();
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
         });
 
         it('calls corresponding end point', function () {
