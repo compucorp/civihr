@@ -363,6 +363,27 @@ function hrleaveandabsences_civicrm_tabset($tabsetName, &$tabs, $context) {
 }
 
 /**
+ * Implementation of hook_civicrm_selectWhereClause
+ *
+ * @param $entity
+ * @param $clauses
+ */
+function hrleaveandabsences_civicrm_selectWhereClause($entity, &$clauses) {
+
+  // We remove all the ACL clauses here, because we are adding more specific
+  // ones with the hrcomments_selectWhereClause hook.
+  // If we keep the default clauses, users will not be able to see all the
+  // comments they should.
+  // This is not 100% guaranteed to work, because other extensions can add
+  // their own implementation of this and there's no way to know in which order
+  // they will be called. For now it works, because this is the only place where
+  // we deal with Comments ACL
+  if($entity == 'Comment') {
+    $clauses = [];
+  }
+}
+
+/**
  * Implementation of hook_hrcomments_selectWhereClause
  *
  * We use this special custom hook here because it gives us access to the params
