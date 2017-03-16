@@ -45,6 +45,8 @@ class CRM_HRComments_API_Query_CommentSelect {
    * @param \CRM_Utils_SQL_Select $customQuery
    */
   private function addWhere(CRM_Utils_SQL_Select $customQuery) {
+    $conditions = $this->invokeSelectWhereClauseHook();
+
     $conditions[] = 'a.is_deleted = 0';
     $customQuery->where($conditions);
   }
@@ -77,5 +79,42 @@ class CRM_HRComments_API_Query_CommentSelect {
         unset($this->params['return'][$key]);
       }
     }
+  }
+
+  /**
+   * This triggers/declares a custom hook called hook_hrcomments_selectWhereClause.
+   *
+   * This hook works in a similar way to hook_civicrm_selectWhereClause, but is
+   * makes the params array available to the implementations. This way, it's
+   * possible to have conditional ACLs based on things like the entity_name (
+   * For example, we can have ACLs applied only to comments linked to a Leave
+   * Request).
+   *
+   * The hook accepts 2 params:
+   * - $conditions: an array of conditions that will be added to the query. This
+   * param is expected to be received as a reference, so it can be modified by
+   * other hooks
+   * - $params: an array of params passed to the query. Ideally, this should not
+   * be changed, but in case that happens, the query will not be affected and
+   * the query will work with the original params.
+   *
+   * @return array
+   */
+  private function invokeSelectWhereClauseHook() {
+    $conditions = [];
+
+    // make a copy of $params to avoid having them modified by the hook
+    // implementations
+    $params = $this->params;
+    CRM_Utils_Hook::singleton()->invoke(2, $conditions,
+      $params,
+      CRM_Utils_Hook::$_nullObject,
+      CRM_Utils_Hook::$_nullObject,
+      CRM_Utils_Hook::$_nullObject,
+      CRM_Utils_Hook::$_nullObject,
+      'hrcomments_selectWhereClause'
+    );
+
+    return $conditions;
   }
 }
