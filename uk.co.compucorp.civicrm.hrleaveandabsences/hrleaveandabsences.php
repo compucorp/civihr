@@ -362,6 +362,26 @@ function hrleaveandabsences_civicrm_tabset($tabsetName, &$tabs, $context) {
   }
 }
 
+/**
+ * Implementation of hook_hrcomments_selectWhereClause
+ *
+ * We use this special custom hook here because it gives us access to the params
+ * passed to the get operation, and then we can add custom ACLs based on the
+ * entity_name.
+ *
+ * @param array $conditions
+ * @param array $params
+ */
+function hrleaveandabsences_hrcomments_selectWhereClause(&$conditions, $params) {
+  if($params['entity_name'] != 'LeaveRequest') {
+    return;
+  }
+
+  $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
+  $commentsWhereClause = new CRM_HRLeaveAndAbsences_ACL_LeaveRequestCommentsWhereClause($leaveManagerService);
+  $conditions = array_merge($conditions, $commentsWhereClause->get());
+}
+
 //----------------------------------------------------------------------------//
 //                               Helper Functions                             //
 //----------------------------------------------------------------------------//
