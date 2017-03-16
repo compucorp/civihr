@@ -218,14 +218,17 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
       'contact_id' => $contact1['id'],
     ]);
 
-    // Register contact1 in session and make sure that no permission is set (
-    // to ensure the contact won't be considered an admin)
+    // Register contact1 in session and make sure that only the permission to use
+    // the API is set (to ensure the contact won't be considered an admin)
     $this->registerCurrentLoggedInContactInSession($contact1['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
 
     // LeaveRequest 1 belongs to the current logged in user, so all the comments
     // linked to it will be returned (even those linked to a different contact)
-    $result = $this->leaveRequestCommentService->get(['leave_request_id' => $leaveRequest1->id]);
+    $result = $this->leaveRequestCommentService->get([
+      'leave_request_id' => $leaveRequest1->id,
+      'check_permissions' => true
+    ]);
     $this->assertCount(2, $result['values']);
     $this->assertNotEmpty($result['values'][$comment1->id]);
     $this->assertNotEmpty($result['values'][$comment2->id]);
@@ -233,7 +236,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
     // LeaveRequest 2 does not belong to the current logged in user, so nothing
     // will be returned (even if the only comment of that leave request belongs
     // to the logged in user)
-    $result = $this->leaveRequestCommentService->get(['leave_request_id' => $leaveRequest2->id]);
+    $result = $this->leaveRequestCommentService->get([
+      'leave_request_id' => $leaveRequest2->id,
+      'check_permissions' => true
+    ]);
     $this->assertEmpty($result['values']);
   }
 
@@ -296,10 +302,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
       'contact_id' => $manager['id'],
     ]);
 
-    // Register manager in session and make sure that no permission is set (
-    // to ensure the contact won't be considered an admin)
+    // Register manager in session and make sure that only the permission to use
+    // the API is set (to ensure the contact won't be considered an admin)
     $this->registerCurrentLoggedInContactInSession($manager['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
 
     // Manager is the Leave Approver for contacts 1 and 2, but not for 3
     $this->setContactAsLeaveApproverOf($manager, $contact1);
@@ -308,7 +314,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
     // The manager manages contacts 1 and 2, so all the comments added to this
     // leave request will be returned (including comment 3, which belongs to
     // contact 3, who is not managed by the logged in user)
-    $result = $this->leaveRequestCommentService->get([]);
+    $result = $this->leaveRequestCommentService->get(['check_permissions' => true]);
     $this->assertCount(3, $result['values']);
     $this->assertNotEmpty($result['values'][$comment1->id]);
     $this->assertNotEmpty($result['values'][$comment2->id]);
@@ -316,7 +322,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
 
     // Leave Request 3 belongs to contact 3, which is not managed by the current
     // user, so this will return nothing
-    $result = $this->leaveRequestCommentService->get(['leave_request_id' => $leaveRequest3->id]);
+    $result = $this->leaveRequestCommentService->get([
+      'leave_request_id' => $leaveRequest3->id,
+      'check_permissions' => true
+    ]);
     $this->assertEmpty($result['values']);
   }
 
@@ -365,12 +374,15 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
 
     // Register admin in session and make sure that the admin permission is set
     $this->registerCurrentLoggedInContactInSession($admin['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [
+      'access AJAX API',
+      'administer leave and absences'
+    ];
 
     // Even though the current user is not a leave manager of any
     // of the contacts and it's not the author of any of the comments,
     // all of them will still be returned
-    $result = $this->leaveRequestCommentService->get([]);
+    $result = $this->leaveRequestCommentService->get(['check_permissions' => true]);
     $this->assertCount(3, $result['values']);
     $this->assertNotEmpty($result['values'][$comment1->id]);
     $this->assertNotEmpty($result['values'][$comment2->id]);
@@ -399,13 +411,17 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
       'contact_id' => $leaveRequest1->contact_id,
     ]);
 
-    // Register contact1 in session and make sure that no permission is set
+    // Register contact1 in session and make sure that only the permission to use
+    // the API is set (to ensure the contact won't be considered an admin)
     $this->registerCurrentLoggedInContactInSession($contact1['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
 
     // LeaveRequest 1 belongs to the current logged in user, but it has been deleted,
     // so no comments will be returned
-    $result = $this->leaveRequestCommentService->get(['leave_request_id' => $leaveRequest1->id]);
+    $result = $this->leaveRequestCommentService->get([
+      'leave_request_id' => $leaveRequest1->id,
+      'check_permissions' => true
+    ]);
     $this->assertEmpty($result['values']);
   }
 
