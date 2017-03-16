@@ -408,7 +408,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
      * @return int
      *   ID of created pay scale / grade
      */
-    private function _createPayScale($params) {
+    private function createPayScale($params) {
       $defaultParams = ['sequential' => 1, 'is_active' => 1];
 
       $result = civicrm_api3('HRPayScale', 'create', array_merge($defaultParams, $params));
