@@ -42,6 +42,7 @@ class CRM_HRLeaveAndAbsences_ACL_LeaveRequestCommentsWhereClause {
     }
 
     $whereClauses = $this->getLeaveInformationACLWhereConditions('lr.contact_id');
+    $whereClauses .= ' AND (lr.is_deleted = 0)';
 
     $conditions[] = "
       a.entity_id IN (

@@ -3,6 +3,7 @@
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRComments_Test_Fabricator_Comment as CommentFabricator;
 use CRM_HRComments_BAO_Comment as Comment;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 
@@ -374,6 +375,38 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
     $this->assertNotEmpty($result['values'][$comment1->id]);
     $this->assertNotEmpty($result['values'][$comment2->id]);
     $this->assertNotEmpty($result['values'][$comment3->id]);
+  }
+
+  public function testGetDoesNotReturnsCommentsOfSoftDeletedLeaveRequests() {
+    $entityName = 'LeaveRequest';
+
+    $contact1 = ContactFabricator::fabricate();
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact1['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    LeaveRequest::softDelete($leaveRequest1->id);
+
+    CommentFabricator::fabricate([
+      'entity_id' => $leaveRequest1->id,
+      'entity_name' => $entityName,
+      'contact_id' => $leaveRequest1->contact_id,
+    ]);
+
+    // Register contact1 in session and make sure that no permission is set
+    $this->registerCurrentLoggedInContactInSession($contact1['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
+
+    // LeaveRequest 1 belongs to the current logged in user, but it has been deleted,
+    // so no comments will be returned
+    $result = $this->leaveRequestCommentService->get(['leave_request_id' => $leaveRequest1->id]);
+    $this->assertEmpty($result['values']);
   }
 
   /**
