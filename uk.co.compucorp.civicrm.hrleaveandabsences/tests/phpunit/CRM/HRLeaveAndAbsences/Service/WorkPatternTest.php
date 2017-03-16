@@ -29,7 +29,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternTest extends BaseHeadlessTest {
     $this->assertTrue($this->workPatternService->workPatternHasEverBeenUsed($workPattern->id));
   }
 
-  public function testWorkPatternHasEverBeenUsedReturnsTrueWhenWorkPatternIsLinkedToAContactWorkPattern() {
+  public function testWorkPatternHasEverBeenUsedReturnsTrueWhenWorkPatternIsLinkedToAContact() {
     $workPattern = WorkPatternFabricator::fabricate(['is_default' => 0]);
 
     ContactWorkPatternFabricator::fabricate([
@@ -39,7 +39,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternTest extends BaseHeadlessTest {
     $this->assertTrue($this->workPatternService->workPatternHasEverBeenUsed($workPattern->id));
   }
 
-  public function testWorkPatternHasEverBeenUsedReturnsFalseWhenWorkPatternIsNotTheDefaultAndWorkPatternIsNotLinkedToAContactWorkPattern() {
+  public function testWorkPatternHasEverBeenUsedReturnsFalseWhenWorkPatternIsNotTheDefaultAndWorkPatternIsNotLinkedToAContact() {
     $workPattern = WorkPatternFabricator::fabricate(['is_default' => 0]);
     $this->assertFalse($this->workPatternService->workPatternHasEverBeenUsed($workPattern->id));
   }
@@ -48,8 +48,22 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternTest extends BaseHeadlessTest {
    * @expectedException UnexpectedValueException
    * @expectedExceptionMessage Work pattern cannot be deleted because it is used by one or more contacts
    */
-  public function testDeleteThrowsAnExceptionWhenAttemptingToDeleteAWorkPatternThatHasBeenUsed() {
+  public function testDeleteThrowsAnExceptionWhenAttemptingToDeleteADefaultWorkPattern() {
     $workPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
+    $this->workPatternService->delete($workPattern->id);
+  }
+
+  /**
+   * @expectedException UnexpectedValueException
+   * @expectedExceptionMessage Work pattern cannot be deleted because it is used by one or more contacts
+   */
+  public function testDeleteThrowsAnExceptionWhenAttemptingToDeleteAWorkPatternThatIsLinkedToAContact() {
+    $workPattern = WorkPatternFabricator::fabricate(['is_default' => 0]);
+
+    ContactWorkPatternFabricator::fabricate([
+      'pattern_id' => $workPattern->id,
+    ]);
+
     $this->workPatternService->delete($workPattern->id);
   }
 

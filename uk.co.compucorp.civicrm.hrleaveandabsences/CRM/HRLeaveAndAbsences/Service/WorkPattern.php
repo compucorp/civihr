@@ -17,7 +17,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPattern {
    */
   public function workPatternHasEverBeenUsed($workPatternID) {
     if ($this->isDefaultWorkPattern($workPatternID) ||
-      $this->workPatternIsLinkedToAContactWorkPattern($workPatternID))
+      $this->workPatternIsLinkedToAContact($workPatternID))
     {
       return true;
     }
@@ -63,7 +63,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPattern {
    *
    * @return boolean
    */
-  private function workPatternIsLinkedToAContactWorkPattern($workPatternID) {
+  private function workPatternIsLinkedToAContact($workPatternID) {
     $contactWorkPattern = new ContactWorkPattern();
     $contactWorkPattern->pattern_id = $workPatternID;
     $contactWorkPattern->find();
