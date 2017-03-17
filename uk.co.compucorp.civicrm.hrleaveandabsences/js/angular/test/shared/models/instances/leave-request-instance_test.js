@@ -741,11 +741,11 @@ define([
     });
 
     describe('attachments', function () {
-      var promise, test_id = '63',
-        numberOfFiles;
+      var promise, test_id = '63', attachments, numberOfFiles;
 
       beforeEach(function () {
-        numberOfFiles = leaveRequestMockData.getAttachments().values.length;
+        attachments = leaveRequestMockData.getAttachments().values;
+        numberOfFiles = attachments.length;
         promise = LeaveRequestInstance.loadAttachments();
       });
 
@@ -764,7 +764,7 @@ define([
       describe('deleteAttachment()', function () {
         beforeEach(function () {
           promise.then(function () {
-            LeaveRequestInstance.deleteAttachment(test_id);
+            LeaveRequestInstance.deleteAttachment(attachments[0]);
           });
         });
 
@@ -788,7 +788,7 @@ define([
           LeaveRequestInstance.id = '12';
 
           deletePromise = promise.then(function () {
-            LeaveRequestInstance.deleteAttachment(test_id);
+            LeaveRequestInstance.deleteAttachment(attachments[0]);
             return LeaveRequestInstance.update();
           });
         });
@@ -818,7 +818,7 @@ define([
       });
     });
 
-    describe('removeComment()', function () {
+    describe('deleteComment()', function () {
       describe('when comment_id is not present', function () {
         beforeEach(function () {
           var commentObject = {
@@ -826,7 +826,7 @@ define([
             text: 'test comment'
           };
           LeaveRequestInstance.comments = [commentObject];
-          LeaveRequestInstance.removeComment(commentObject);
+          LeaveRequestInstance.deleteComment(commentObject);
         });
 
         it('removes the comment', function () {
@@ -844,7 +844,7 @@ define([
             text: 'test comment'
           };
           LeaveRequestInstance.comments = [commentObject];
-          LeaveRequestInstance.removeComment(commentObject);
+          LeaveRequestInstance.deleteComment(commentObject);
         });
 
         it('marks the comment for deletion', function () {

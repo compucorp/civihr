@@ -105,8 +105,7 @@ define([
       function uploadAttachments() {
         if (this.uploader.queue && this.uploader.queue.length > 0) {
           return this.uploader.uploadAll({ entityID: this.id });
-        }
-        else {
+        } else {
           return $q.resolve([]);
         }
       }
@@ -185,7 +184,6 @@ define([
           return LeaveRequestAPI.create(this.toAPI())
             .then(function (result) {
               this.id = result.id;
-              debugger;
               return $q.all([
                 saveAndDeleteComments.call(this),
                 uploadAttachments.call(this)
@@ -196,15 +194,13 @@ define([
         /**
          * Sets the flag to mark file for deletion. The file is not yet deleted
          * from the server.
+         *
+         * @param {Object} file - Attachment object
          */
-        deleteAttachment: function (attachmentID) {
-          this.files = this.files.map(function (file) {
-            if (file.attachment_id == attachmentID && !file.toBeDeleted) {
-              file.toBeDeleted = true;
-            }
-
-            return file;
-          });
+        deleteAttachment: function (file) {
+          if (!file.toBeDeleted) {
+            file.toBeDeleted = true;
+          }
         },
 
         /**
@@ -212,7 +208,7 @@ define([
          *
          * @param {Object} commentObj - comment object
          */
-        removeComment: function (commentObj) {
+        deleteComment: function (commentObj) {
           //If its an already saved comment, mark a toBeDeleted flag
           if (commentObj.comment_id) {
             commentObj.toBeDeleted = true;

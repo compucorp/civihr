@@ -122,6 +122,7 @@ function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$para
     'calculatetoilexpirydate' => ['absence_type'],
     'getleavemanagees' => ['contact'],
     'getcomment' => ['leave_request'],
+    'addcomment' => ['leave_request'],    
     'deletecomment' => ['leave_request'],
     'getattachments' => ['leave_request'],
     'deleteattachment' => ['leave_request'],

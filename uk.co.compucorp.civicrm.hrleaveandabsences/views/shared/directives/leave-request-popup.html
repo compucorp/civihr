@@ -135,7 +135,7 @@
                     <span class="chr_leave-request-comment__date">{{$ctrl.formatDateTime(comment.created_at)}}</span>
                     <button
                       class="btn btn-link"
-                      ng-click="$ctrl.request.removeComment(comment)"
+                      ng-click="$ctrl.request.deleteComment(comment)"
                       ng-show="$ctrl.removeCommentVisibility(comment)">Remove</button>
                   </div>
                   <div class="chr_leave-request-comment__text" ng-bind-html="comment.text"></div>
