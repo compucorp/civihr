@@ -354,6 +354,7 @@ define([
       var promise;
 
       beforeEach(function () {
+        LeaveRequestInstance.id = '12';
         promise = LeaveRequestInstance.loadComments();
       });
 
@@ -706,6 +707,7 @@ define([
         requestData = helper.createRandomLeaveRequest();
         instance = LeaveRequestInstance.init(requestData);
         spyOn(instance.uploader, 'uploadAll').and.callThrough();
+        instance.uploader.queue = [{ 'key': 2 }];
       });
 
       afterEach(function () {
@@ -783,9 +785,11 @@ define([
         var deletePromise;
 
         beforeEach(function () {
+          LeaveRequestInstance.id = '12';
+
           deletePromise = promise.then(function () {
             LeaveRequestInstance.deleteAttachment(test_id);
-            return LeaveRequestInstance.deleteAttachments();
+            return LeaveRequestInstance.update();
           });
         });
 
@@ -794,13 +798,15 @@ define([
         });
 
         it('returns expected number of promises', function () {
-          deletePromise.then(function (result) {
+          deletePromise.then(function (resolvedPromises) {
+            var result = resolvedPromises[2];
             expect(result.length).toEqual(1);
           });
         });
 
         it('calls corresponding API end point', function () {
-          deletePromise.then(function (result) {
+          deletePromise.then(function (resolvedPromises) {
+            var result = resolvedPromises[2];
             expect(result.length).toEqual(1);
             _.each(LeaveRequestInstance.files, function (file) {
               if (file.toBeDeleted) {
@@ -808,6 +814,41 @@ define([
               }
             });
           });
+        });
+      });
+    });
+
+    describe('removeComment()', function () {
+      describe('when comment_id is not present', function () {
+        beforeEach(function () {
+          var commentObject = {
+            created_at: '2017-06-14 12:15:18',
+            text: 'test comment'
+          };
+          LeaveRequestInstance.comments = [commentObject];
+          LeaveRequestInstance.removeComment(commentObject);
+        });
+
+        it('removes the comment', function () {
+          expect(LeaveRequestInstance.comments.length).toBe(0);
+        });
+      });
+
+      describe('when comment_id is  present', function () {
+        var commentObject;
+
+        beforeEach(function () {
+          commentObject = {
+            created_at: '2017-06-14 12:15:18',
+            comment_id: '1',
+            text: 'test comment'
+          };
+          LeaveRequestInstance.comments = [commentObject];
+          LeaveRequestInstance.removeComment(commentObject);
+        });
+
+        it('marks the comment for deletion', function () {
+          expect(commentObject.toBeDeleted).toBe(true);
         });
       });
     });

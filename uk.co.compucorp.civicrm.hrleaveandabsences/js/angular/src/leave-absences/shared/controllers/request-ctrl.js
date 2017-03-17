@@ -79,7 +79,7 @@ define([
         isChangeExpanded: false,
         multipleDays: true,
         workedDate: null,
-        userDateFormat: HR_settings.DATE_FORMAT.toUpperCase(),
+        userDateFormat: HR_settings.DATE_FORMAT,
         showBalance: false,
         date: {
           from: {
@@ -197,7 +197,7 @@ define([
        * @return {String}
        */
       this.formatDateTime = function (dateTime) {
-        return moment(dateTime, sharedSettings.serverDateTimeFormat).format(this.uiOptions.userDateFormat + ' HH:mm');
+        return moment(dateTime, sharedSettings.serverDateTimeFormat).format(this.uiOptions.userDateFormat.toUpperCase() + ' HH:mm');
       };
 
       /**
@@ -273,22 +273,6 @@ define([
        */
       this.orderComment = function (comment) {
         return moment(comment.created_at, sharedSettings.serverDateTimeFormat);
-      };
-
-      /**
-       * Removes a comment from memory
-       * @param {Object} commentObj - comment object
-       */
-      this.removeComment = function (commentObj) {
-        //If its an already saved comment, mark a toBeDeleted flag
-        if(commentObj.comment_id) {
-          commentObj.toBeDeleted = true;
-          return;
-        }
-
-        this.request.comments = _.reject(this.request.comments, function (comment) {
-          return commentObj.created_at === comment.created_at && commentObj.text === comment.text;
-        });
       };
 
       /**
@@ -586,7 +570,7 @@ define([
         self.request.isValid()
           .then(function () {
             self.request.create()
-              .then(function () {
+              .then(function (result) {
                 // refresh the list
                 postSubmit.call(self, 'LeaveRequest::new');
               })
@@ -776,7 +760,12 @@ define([
         if (errors.error_message)
           this.error = errors.error_message;
         else {
-          this.error = errors;
+          if (_.isObject(errors)) {
+            this.error = JSON.stringify(errors)
+          }
+          else {
+            this.error = errors.toString();
+          }
         }
 
         //reset loading Checks

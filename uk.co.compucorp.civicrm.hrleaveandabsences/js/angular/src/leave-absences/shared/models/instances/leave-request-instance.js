@@ -11,21 +11,6 @@ define([
     function ($q, OptionGroup, FileUpload, sharedSettings, ModelInstance, LeaveRequestAPI) {
 
       /**
-       * Get ID of an option value
-       *
-       * @param {string} name - name of the option value
-       * @return {Promise} Resolved with {Object} - Specific leave request
-       */
-      function getOptionIDByName(name) {
-        return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
-          .then(function (data) {
-            return data.find(function (statusObj) {
-              return statusObj.name === name;
-            })
-          })
-      }
-
-      /**
        * Update status ID
        *
        * @param {string} status - name of the option value
@@ -50,6 +35,39 @@ define([
           .then(function (statusObj) {
             return this.status_id === statusObj.value;
           }.bind(this));
+      }
+
+      /**
+       * Deletes the given attachment from server. It iterates through local
+       * files array to find which are to be deleted and deletes them.
+       *
+       * @return {Promise}
+       */
+      function deleteAttachments() {
+        var promises = [];
+
+        _.forEach(this.files, function (file) {
+          if (file.toBeDeleted) {
+            promises.push(LeaveRequestAPI.deleteAttachment(this.id, file.attachment_id));
+          }
+        }.bind(this));
+
+        return $q.all(promises);
+      }
+
+      /**
+       * Get ID of an option value
+       *
+       * @param {string} name - name of the option value
+       * @return {Promise} Resolved with {Object} - Specific leave request
+       */
+      function getOptionIDByName(name) {
+        return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
+          .then(function (data) {
+            return data.find(function (statusObj) {
+              return statusObj.name === name;
+            })
+          })
       }
 
       /**
@@ -80,10 +98,17 @@ define([
       }
 
       /**
-       * Upload attachment in file uploer's queue
+       * Upload attachment in file uploder's queue
+       *
+       * @return {Promise}
        */
       function uploadAttachments() {
-        this.uploader.uploadAll({ entityID: this.id })
+        if (this.uploader.queue && this.uploader.queue.length > 0) {
+          return this.uploader.uploadAll({ entityID: this.id });
+        }
+        else {
+          return $q.resolve([]);
+        }
       }
 
       return ModelInstance.extend({
@@ -105,6 +130,7 @@ define([
             })
           };
         },
+
         /**
          * Cancel a leave request
          */
@@ -144,7 +170,7 @@ define([
               return $q.all([
                 saveAndDeleteComments.call(this),
                 uploadAttachments.call(this),
-                this.deleteAttachments()
+                deleteAttachments.call(this)
               ]);
             }.bind(this));
         },
@@ -159,11 +185,43 @@ define([
           return LeaveRequestAPI.create(this.toAPI())
             .then(function (result) {
               this.id = result.id;
+              debugger;
               return $q.all([
                 saveAndDeleteComments.call(this),
                 uploadAttachments.call(this)
               ]);
             }.bind(this));
+        },
+
+        /**
+         * Sets the flag to mark file for deletion. The file is not yet deleted
+         * from the server.
+         */
+        deleteAttachment: function (attachmentID) {
+          this.files = this.files.map(function (file) {
+            if (file.attachment_id == attachmentID && !file.toBeDeleted) {
+              file.toBeDeleted = true;
+            }
+
+            return file;
+          });
+        },
+
+        /**
+         * Removes a comment from memory
+         *
+         * @param {Object} commentObj - comment object
+         */
+        removeComment: function (commentObj) {
+          //If its an already saved comment, mark a toBeDeleted flag
+          if (commentObj.comment_id) {
+            commentObj.toBeDeleted = true;
+            return;
+          }
+
+          this.comments = _.reject(this.comments, function (comment) {
+            return commentObj.created_at === comment.created_at && commentObj.text === comment.text;
+          });
         },
 
         /**
@@ -284,38 +342,6 @@ define([
             .then(function (attachments) {
               this.files = attachments;
             }.bind(this));
-        },
-
-        /**
-         * Sets the flag to mark file for deletion. The file is not yet deleted
-         * from the server.
-         */
-        deleteAttachment: function (attachmentID) {
-          this.files = this.files.map(function (file) {
-            if (file.attachment_id == attachmentID && !file.toBeDeleted) {
-              file.toBeDeleted = true;
-            }
-
-            return file;
-          });
-        },
-
-        /**
-         * Deletes the given attachment from server. It iterates through local
-         * files array to find which are to be deleted and deletes them.
-         *
-         * @return {Promise}
-         */
-        deleteAttachments: function () {
-          var promises = [];
-
-          _.forEach(this.files, function (file) {
-            if (file.toBeDeleted) {
-              promises.push(LeaveRequestAPI.deleteAttachment(this.id, file.attachment_id));
-            }
-          }.bind(this));
-
-          return $q.all(promises);
         }
       });
     }
