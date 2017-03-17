@@ -3,6 +3,7 @@ define([
   'mocks/data/option-group-mock-data',
   'mocks/data/comments-data',
   'mocks/helpers/helper',
+  'common/mocks/services/file-uploader-mock',
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/models/instances/leave-request-instance',
   'leave-absences/shared/modules/models',
@@ -20,14 +21,16 @@ define([
       requestData,
       expectedError;
 
-    beforeEach(module('leave-absences.models', 'leave-absences.models.instances', 'leave-absences.mocks',
+    beforeEach(module('leave-absences.models', 'leave-absences.models.instances',
+      'leave-absences.mocks', 'common.mocks',
       function (_$provide_) {
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (_LeaveRequestAPIMock_) {
+    beforeEach(inject(function (_LeaveRequestAPIMock_, _FileUploaderMock_) {
       //LeaveRequestAPI is internally used by Model and hence need to be mocked
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
+      $provide.value('FileUploader', _FileUploaderMock_);
     }));
 
     beforeEach(inject([
@@ -49,6 +52,8 @@ define([
         spyOn(LeaveRequestAPI, 'saveComment').and.callThrough();
         spyOn(LeaveRequestAPI, 'getComments').and.callThrough();
         spyOn(LeaveRequestAPI, 'deleteComment').and.callThrough();
+        spyOn(LeaveRequestAPI, 'getAttachments').and.callThrough();
+        spyOn(LeaveRequestAPI, 'deleteAttachment').and.callThrough();
       }
     ]));
 
@@ -57,8 +62,12 @@ define([
         expect(LeaveRequestInstance.comments.length).toBe(0);
       });
 
-      it('initializes request type', function() {
+      it('initializes request type', function () {
         expect(LeaveRequestInstance.request_type).toEqual('leave');
+      });
+
+      it('does set uploader', function () {
+        expect(LeaveRequestInstance.uploader).toBeDefined();
       });
     });
 
@@ -258,7 +267,7 @@ define([
       it('calls API to delete the comments marked for deletion', function () {
         promise.then(function () {
           LeaveRequestInstance.comments.map(function (comment) {
-            if(comment.toBeDeleted) {
+            if (comment.toBeDeleted) {
               expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
             }
           });
@@ -271,7 +280,7 @@ define([
 
       beforeEach(function () {
         requestData = helper.createRandomLeaveRequest();
-        instance = LeaveRequestInstance.init(requestData, false);
+        instance = LeaveRequestInstance.init(requestData);
         instance.comments = commentsData.getCommentsWithMixedIDs().values;
 
         var commentToBeDeleted = commentsData.getComments().values[0];
@@ -313,7 +322,7 @@ define([
       it('calls API to delete the comments marked for deletion', function () {
         instanceCreate.then(function () {
           instance.comments.map(function (comment) {
-            if(comment.toBeDeleted) {
+            if (comment.toBeDeleted) {
               expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
             }
           });
@@ -344,11 +353,12 @@ define([
     describe('loadComments()', function () {
       var promise;
 
-      beforeEach(function() {
+      beforeEach(function () {
+        LeaveRequestInstance.id = '12';
         promise = LeaveRequestInstance.loadComments();
       });
 
-      afterEach(function() {
+      afterEach(function () {
         $rootScope.$digest();
       });
 
@@ -372,7 +382,7 @@ define([
         requestData = {
           contact_id: '123'
         };
-        instance = LeaveRequestInstance.init(requestData, false);
+        instance = LeaveRequestInstance.init(requestData);
         instanceValid = instance.isValid();
       });
 
@@ -678,13 +688,168 @@ define([
         toAPIData = leaveRequest.toAPI();
       });
 
-      it('filters out the `balance_change` and `dates` properties', function () {
+      it('filters out custom properties on leave request instance', function () {
         expect(Object.keys(toAPIData)).toEqual(_.without(
           Object.keys(leaveRequest.attributes()),
           'balance_change',
           'dates',
-          'comments'
+          'comments',
+          'uploader',
+          'files'
         ));
+      });
+    });
+
+    describe('uploading files', function () {
+      var promise;
+
+      beforeEach(function () {
+        requestData = helper.createRandomLeaveRequest();
+        instance = LeaveRequestInstance.init(requestData);
+        spyOn(instance.uploader, 'uploadAll').and.callThrough();
+        instance.uploader.queue = [{ 'key': 2 }];
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      describe('on create()', function () {
+        beforeEach(function () {
+          promise = instance.create();
+        });
+
+        it('uploads file with entity id', function () {
+          promise.then(function () {
+            expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
+          });
+        });
+      });
+
+      describe('on update()', function () {
+        beforeEach(function () {
+          instance.id = '12';
+          promise = instance.update();
+        });
+
+        it('uploads file with entity id', function () {
+          promise.then(function () {
+            expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
+          });
+        });
+      });
+    });
+
+    describe('attachments', function () {
+      var promise, test_id = '63', attachments, numberOfFiles;
+
+      beforeEach(function () {
+        attachments = leaveRequestMockData.getAttachments().values;
+        numberOfFiles = attachments.length;
+        promise = LeaveRequestInstance.loadAttachments();
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      describe('loadAttachments()', function () {
+        it('initializes files array', function () {
+          promise.then(function () {
+            expect(LeaveRequestInstance.files.length).toEqual(numberOfFiles);
+          });
+        });
+      });
+
+      describe('deleteAttachment()', function () {
+        beforeEach(function () {
+          promise.then(function () {
+            LeaveRequestInstance.deleteAttachment(attachments[0]);
+          });
+        });
+
+        it('sets flag toBeDeleted', function () {
+          promise.then(function () {
+            _.each(LeaveRequestInstance.files, function (file) {
+              if (file.attachment_id == test_id) {
+                expect(file.toBeDeleted).toBeTruthy();
+              } else {
+                expect(file.toBeDeleted).toBeFalsy();
+              }
+            });
+          });
+        });
+      });
+
+      describe('deleteAttachments', function () {
+        var deletePromise;
+
+        beforeEach(function () {
+          LeaveRequestInstance.id = '12';
+
+          deletePromise = promise.then(function () {
+            LeaveRequestInstance.deleteAttachment(attachments[0]);
+            return LeaveRequestInstance.update();
+          });
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        it('returns expected number of promises', function () {
+          deletePromise.then(function (resolvedPromises) {
+            var result = resolvedPromises[2];
+            expect(result.length).toEqual(1);
+          });
+        });
+
+        it('calls corresponding API end point', function () {
+          deletePromise.then(function (resolvedPromises) {
+            var result = resolvedPromises[2];
+            expect(result.length).toEqual(1);
+            _.each(LeaveRequestInstance.files, function (file) {
+              if (file.toBeDeleted) {
+                expect(LeaveRequestAPI.deleteAttachment).toHaveBeenCalled();
+              }
+            });
+          });
+        });
+      });
+    });
+
+    describe('deleteComment()', function () {
+      describe('when comment_id is not present', function () {
+        beforeEach(function () {
+          var commentObject = {
+            created_at: '2017-06-14 12:15:18',
+            text: 'test comment'
+          };
+          LeaveRequestInstance.comments = [commentObject];
+          LeaveRequestInstance.deleteComment(commentObject);
+        });
+
+        it('removes the comment', function () {
+          expect(LeaveRequestInstance.comments.length).toBe(0);
+        });
+      });
+
+      describe('when comment_id is  present', function () {
+        var commentObject;
+
+        beforeEach(function () {
+          commentObject = {
+            created_at: '2017-06-14 12:15:18',
+            comment_id: '1',
+            text: 'test comment'
+          };
+          LeaveRequestInstance.comments = [commentObject];
+          LeaveRequestInstance.deleteComment(commentObject);
+        });
+
+        it('marks the comment for deletion', function () {
+          expect(commentObject.toBeDeleted).toBe(true);
+        });
       });
     });
   });

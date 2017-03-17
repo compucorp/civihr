@@ -1,31 +1,14 @@
 define([
   'leave-absences/shared/modules/models-instances',
   'common/models/option-group',
-  'common/models/instances/instance'
+  'common/models/instances/instance',
+  'common/services/file-upload',
 ], function (instances) {
   'use strict';
 
-  instances.factory('LeaveRequestInstance', [
-    'ModelInstance',
-    'LeaveRequestAPI',
-    'OptionGroup',
-    '$q',
-    function (ModelInstance, LeaveRequestAPI, OptionGroup, $q) {
-
-      /**
-       * Get ID of an option value
-       *
-       * @param {string} name - name of the option value
-       * @return {Promise} Resolved with {Object} - Specific leave request
-       */
-      function getOptionIDByName(name) {
-        return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
-          .then(function (data) {
-            return data.find(function (statusObj) {
-              return statusObj.name === name;
-            })
-          })
-      }
+  instances.factory('LeaveRequestInstance', ['$q', 'OptionGroup', 'FileUpload',
+    'shared-settings', 'ModelInstance', 'LeaveRequestAPI',
+    function ($q, OptionGroup, FileUpload, sharedSettings, ModelInstance, LeaveRequestAPI) {
 
       /**
        * Update status ID
@@ -55,6 +38,39 @@ define([
       }
 
       /**
+       * Deletes the given attachment from server. It iterates through local
+       * files array to find which are to be deleted and deletes them.
+       *
+       * @return {Promise}
+       */
+      function deleteAttachments() {
+        var promises = [];
+
+        _.forEach(this.files, function (file) {
+          if (file.toBeDeleted) {
+            promises.push(LeaveRequestAPI.deleteAttachment(this.id, file.attachment_id));
+          }
+        }.bind(this));
+
+        return $q.all(promises);
+      }
+
+      /**
+       * Get ID of an option value
+       *
+       * @param {string} name - name of the option value
+       * @return {Promise} Resolved with {Object} - Specific leave request
+       */
+      function getOptionIDByName(name) {
+        return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
+          .then(function (data) {
+            return data.find(function (statusObj) {
+              return statusObj.name === name;
+            })
+          })
+      }
+
+      /**
        * Save comments which do not have an ID and delete comments which are marked for deletion
        *
        * @return {Promise}
@@ -73,12 +89,25 @@ define([
                   self.comments[index] = commentData;
                 }));
             })(index);
-          } else if(comment.toBeDeleted) {
+          } else if (comment.toBeDeleted) {
             promises.push(LeaveRequestAPI.deleteComment(comment.comment_id));
           }
         });
 
         return $q.all(promises);
+      }
+
+      /**
+       * Upload attachment in file uploder's queue
+       *
+       * @return {Promise}
+       */
+      function uploadAttachments() {
+        if (this.uploader.queue && this.uploader.queue.length > 0) {
+          return this.uploader.uploadAll({ entityID: this.id });
+        } else {
+          return $q.resolve([]);
+        }
       }
 
       return ModelInstance.extend({
@@ -92,9 +121,15 @@ define([
         defaultCustomData: function () {
           return {
             comments: [],
-            request_type: 'leave'
+            files: [],
+            request_type: 'leave',
+            uploader: FileUpload.uploader({
+              entityTable: 'civicrm_hrleaveandabsences_leave_request',
+              crmAttachmentToken: sharedSettings.attachmentToken
+            })
           };
         },
+
         /**
          * Cancel a leave request
          */
@@ -131,7 +166,11 @@ define([
         update: function () {
           return LeaveRequestAPI.update(this.toAPI())
             .then(function () {
-              return saveAndDeleteComments.call(this);
+              return $q.all([
+                saveAndDeleteComments.call(this),
+                uploadAttachments.call(this),
+                deleteAttachments.call(this)
+              ]);
             }.bind(this));
         },
 
@@ -145,8 +184,40 @@ define([
           return LeaveRequestAPI.create(this.toAPI())
             .then(function (result) {
               this.id = result.id;
-              return saveAndDeleteComments.call(this);
+              return $q.all([
+                saveAndDeleteComments.call(this),
+                uploadAttachments.call(this)
+              ]);
             }.bind(this));
+        },
+
+        /**
+         * Sets the flag to mark file for deletion. The file is not yet deleted
+         * from the server.
+         *
+         * @param {Object} file - Attachment object
+         */
+        deleteAttachment: function (file) {
+          if (!file.toBeDeleted) {
+            file.toBeDeleted = true;
+          }
+        },
+
+        /**
+         * Removes a comment from memory
+         *
+         * @param {Object} commentObj - comment object
+         */
+        deleteComment: function (commentObj) {
+          //If its an already saved comment, mark a toBeDeleted flag
+          if (commentObj.comment_id) {
+            commentObj.toBeDeleted = true;
+            return;
+          }
+
+          this.comments = _.reject(this.comments, function (comment) {
+            return commentObj.created_at === comment.created_at && commentObj.text === comment.text;
+          });
         },
 
         /**
@@ -204,6 +275,11 @@ define([
           return checkLeaveStatus.call(this, 'more_information_requested');
         },
 
+        /**
+         * Loads comments for this leave request.
+         *
+         * @return {Promise}
+         */
         loadComments: function () {
           var self = this;
 
@@ -247,9 +323,21 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates', 'comments'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'uploader', 'files'], key)) {
             result[key] = this[key];
           }
+        },
+
+        /**
+         * Loads file attachments associated with this leave request
+         *
+         * @return {Promise}
+         */
+        loadAttachments: function () {
+          return LeaveRequestAPI.getAttachments(this.id)
+            .then(function (attachments) {
+              this.files = attachments;
+            }.bind(this));
         }
       });
     }

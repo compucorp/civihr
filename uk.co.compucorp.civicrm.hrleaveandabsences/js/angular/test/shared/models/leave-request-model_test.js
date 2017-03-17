@@ -11,7 +11,7 @@ define([
       $rootScope;
 
     beforeEach(module('leave-absences.models', 'leave-absences.mocks', function (_$provide_) {
-      $provide = _$provide_;
+        $provide = _$provide_;
     }));
 
     beforeEach(inject(function (_LeaveRequestAPIMock_) {

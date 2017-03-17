@@ -5,6 +5,7 @@
     'common/angularMocks',
     'leave-absences/shared/config',
     'common/mocks/services/hr-settings-mock',
+    'common/mocks/services/file-uploader-mock',
     'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/entitlement-api-mock',
@@ -31,7 +32,8 @@
 
       beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_,
         _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
-        _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
+        _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_,
+        _FileUploaderMock_) {
         $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
         $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
         $provide.value('EntitlementAPI', _EntitlementAPIMock_);
@@ -40,6 +42,7 @@
         $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
         $provide.value('api.optionGroup', _OptionGroupAPIMock_);
         $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
+        $provide.value('FileUploader', _FileUploaderMock_);
       }));
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_,

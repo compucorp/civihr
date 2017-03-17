@@ -18,8 +18,8 @@ define([
           _onCompleteItem.call(this);
         },
         //empty callbacks defintion requires for mocks to work
-        onCompleteItem: function () {},
-        onCompleteAll: function () {},
+        onCompleteItem: settings.onCompleteItem,
+        onCompleteAll: settings.onCompleteAll,
         onErrorItem: settings.onErrorItem,
         onBeforeUploadItem: function () {}
       };

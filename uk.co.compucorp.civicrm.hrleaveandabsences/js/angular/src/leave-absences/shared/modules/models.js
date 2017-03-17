@@ -13,6 +13,6 @@ define([
     'common.services',
     'leave-absences.apis',
     'leave-absences.models.instances',
-    'leave-absences.settings'
+    'leave-absences.settings',
   ]);
 });

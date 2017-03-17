@@ -6,7 +6,8 @@
       debug: CRM.debug,
       pathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/',
       serverDateFormat: 'YYYY-MM-DD',
-      serverDateTimeFormat: 'YYYY-MM-DD HH:mm:ss'
+      serverDateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
+      attachmentToken: CRM.vars.leaveAndAbsences.attachmentToken
     });
   });
 })(CRM);

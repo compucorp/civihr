@@ -8,6 +8,7 @@
     'common/angularMocks',
     'leave-absences/shared/config',
     'common/mocks/services/hr-settings-mock',
+    'common/mocks/services/file-uploader-mock',
     'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/entitlement-api-mock',
@@ -37,7 +38,8 @@
 
       beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_,
         _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
-        _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
+        _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_,
+        _FileUploaderMock_) {
         $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
         $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
         $provide.value('EntitlementAPI', _EntitlementAPIMock_);
@@ -46,6 +48,7 @@
         $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
         $provide.value('api.optionGroup', _OptionGroupAPIMock_);
         $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
+        $provide.value('FileUploader', _FileUploaderMock_);
       }));
 
       beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
@@ -96,7 +99,7 @@
         expect($log.debug).toHaveBeenCalled();
       });
 
-      it('inherited from request controller', function(){
+      it('inherited from request controller', function () {
         expect($ctrl instanceof parentRequestCtrl.constructor).toBe(true);
       });
 
@@ -172,7 +175,8 @@
 
           it('gets absence types with false sick param', function () {
             expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
-              is_sick: false, allow_accruals_request: false
+              is_sick: false,
+              allow_accruals_request: false
             })
           });
 
@@ -250,8 +254,8 @@
         });
       });
 
-      describe('addComment()', function() {
-        beforeEach(function() {
+      describe('addComment()', function () {
+        beforeEach(function () {
           $ctrl.request.comments = [];
           $ctrl.directiveOptions.contactId = '101';
           $ctrl.comment.text = 'some text';
@@ -277,36 +281,36 @@
         });
       });
 
-      describe('formatDateTime()', function() {
+      describe('formatDateTime()', function () {
         var returnValue;
 
-        beforeEach(function() {
+        beforeEach(function () {
           returnValue = $ctrl.formatDateTime('2017-06-14 12:15:18');
         });
 
-        it('returns date time in user format', function() {
+        it('returns date time in user format', function () {
           expect(returnValue).toBe('14/06/2017 12:15');
         });
       });
 
-      describe('getCommentorName()', function() {
+      describe('getCommentorName()', function () {
         var returnValue;
 
-        describe('when comment author is same as logged in user', function() {
-          beforeEach(function() {
+        describe('when comment author is same as logged in user', function () {
+          beforeEach(function () {
             $ctrl.directiveOptions.contactId = '101';
             returnValue = $ctrl.getCommentorName('101');
           });
 
-          it('returns "Me"', function() {
+          it('returns "Me"', function () {
             expect(returnValue).toBe('Me');
           });
         });
 
-        describe('when comment author is not same as logged in user', function() {
+        describe('when comment author is not same as logged in user', function () {
           var displayName = 'MR X';
 
-          beforeEach(function() {
+          beforeEach(function () {
             $ctrl.directiveOptions.contactId = '101';
             $ctrl.comment.contacts = {
               102: {
@@ -316,48 +320,13 @@
             returnValue = $ctrl.getCommentorName('102');
           });
 
-          it('returns name of the comment author', function() {
+          it('returns name of the comment author', function () {
             expect(returnValue).toBe(displayName);
           });
         });
       });
 
-      describe('removeComment()', function() {
-        describe('when comment_id is not present', function () {
-          beforeEach(function() {
-            var commentObject = {
-              created_at: '2017-06-14 12:15:18',
-              text: 'test comment'
-            };
-            $ctrl.request.comments = [commentObject];
-            $ctrl.removeComment(commentObject);
-          });
-
-          it('removes the comment', function() {
-            expect($ctrl.request.comments.length).toBe(0);
-          });
-        });
-
-        describe('when comment_id is  present', function () {
-          var commentObject;
-
-          beforeEach(function() {
-            commentObject = {
-              created_at: '2017-06-14 12:15:18',
-              comment_id: '1',
-              text: 'test comment'
-            };
-            $ctrl.request.comments = [commentObject];
-            $ctrl.removeComment(commentObject);
-          });
-
-          it('marks the comment for deletion', function() {
-            expect(commentObject.toBeDeleted).toBe(true);
-          });
-        });
-      });
-
-      describe('removeCommentVisibility()', function() {
+      describe('removeCommentVisibility()', function () {
         var comment = {},
           returnValue;
 
@@ -365,50 +334,50 @@
           spyOn($ctrl, 'isRole');
         });
 
-        describe('when comment id is missing and role is not manager', function() {
-          beforeEach(function() {
+        describe('when comment id is missing and role is not manager', function () {
+          beforeEach(function () {
             comment.comment_id = null;
             $ctrl.isRole.and.returnValue(false);
             returnValue = $ctrl.removeCommentVisibility(comment);
           });
 
-          it('button should be visible', function() {
+          it('button should be visible', function () {
             expect(returnValue).toBe(true);
           });
         });
 
-        describe('when comment id is not missing and role is not manager', function() {
-          beforeEach(function() {
+        describe('when comment id is not missing and role is not manager', function () {
+          beforeEach(function () {
             comment.comment_id = jasmine.any(String);
             $ctrl.isRole.and.returnValue(false);
             returnValue = $ctrl.removeCommentVisibility(comment);
           });
 
-          it('button should not be visible', function() {
+          it('button should not be visible', function () {
             expect(returnValue).toBe(false);
           });
         });
 
-        describe('when comment id is not missing and role is manager', function() {
-          beforeEach(function() {
+        describe('when comment id is not missing and role is manager', function () {
+          beforeEach(function () {
             comment.comment_id = jasmine.any(String);
             $ctrl.isRole.and.returnValue(true);
             returnValue = $ctrl.removeCommentVisibility(comment);
           });
 
-          it('button should be visible', function() {
+          it('button should be visible', function () {
             expect(returnValue).toBe(true);
           });
         });
 
-        describe('when comment id is missing and role is manager', function() {
-          beforeEach(function() {
+        describe('when comment id is missing and role is manager', function () {
+          beforeEach(function () {
             comment.comment_id = null;
             $ctrl.isRole.and.returnValue(true);
             returnValue = $ctrl.removeCommentVisibility(comment);
           });
 
-          it('button should be visible', function() {
+          it('button should be visible', function () {
             expect(returnValue).toBe(true);
           });
         });
@@ -612,7 +581,7 @@
           });
 
           it('fails with error', function () {
-            expect($ctrl.error).toEqual(jasmine.any(Object));
+            expect($ctrl.error).toEqual(jasmine.any(String));
           });
 
           it('does not allow user to submit', function () {
