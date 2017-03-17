@@ -1,11 +1,19 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Service_WorkPattern as WorkPatternService;
+
 class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
 
   private $links = array();
 
+  /**
+   * @var \CRM_HRLeaveAndAbsences_Service_WorkPattern
+   */
+  private $workPatternService;
+
   public function run() {
     CRM_Utils_System::setTitle(ts('Work Patterns'));
+    $this->workPatternService = new WorkPatternService();
     parent::run();
   }
 
@@ -168,6 +176,21 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
       $mask -= CRM_Core_Action::BASIC;
     }
 
+    if($this->canNotDelete($workPattern->id)) {
+      $mask -= CRM_Core_Action::DELETE;
+    }
+
     return $mask;
+  }
+
+  /**
+   * Checks whether a WorkPattern object cannot be deleted.
+   *
+   * @param int $workPatternID
+   *
+   * @return bool
+   */
+  private function canNotDelete($workPatternID) {
+    return $this->workPatternService->workPatternHasEverBeenUsed($workPatternID);
   }
 }
