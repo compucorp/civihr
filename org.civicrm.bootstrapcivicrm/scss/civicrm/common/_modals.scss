@@ -39,7 +39,7 @@
       @extend .modal-title, %open-sans-font-family;
       font-size: 18px;
       background: none;
-      padding-left: 10px;
+      padding-left: 0;
       font-weight: 600;
     }
 
@@ -108,12 +108,14 @@
 
   .ui-dialog-buttonpane {
     @extend .modal-footer, %open-sans-font-family;
-    background: $crm-white;
+    background: $gray-lighter;
+    box-shadow: $crm-modal-footer-shadow;
     margin-top: 0;
     display: block;
 
     .ui-dialog-buttonset {
       width: 100%;
+      margin: 0;
 
       button {
         float: right;
