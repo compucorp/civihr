@@ -38,6 +38,11 @@ class api_v3_ApiPermissionTest extends BaseHeadlessTest {
       ['LeaveRequest', 'create'],
       ['LeaveRequest', 'calculatebalancechange'],
       ['LeaveRequest', 'getbalancechangebyabsencetype'],
+      ['LeaveRequest', 'getcomment'],
+      ['LeaveRequest', 'addcomment'],
+      ['LeaveRequest', 'deletecomment'],
+      ['LeaveRequest', 'getattachments'],
+      ['LeaveRequest', 'deleteattachment'],
       ['WorkPattern', 'getcalendar'],
       ['AbsenceType', 'get'],
       ['AbsencePeriod', 'get'],
@@ -45,7 +50,9 @@ class api_v3_ApiPermissionTest extends BaseHeadlessTest {
       ['OptionValue', 'get'],
       ['LeavePeriodEntitlement', 'get'],
       ['PublicHoliday', 'get'],
-      ['Contact', 'getleavemanagees']
+      ['Comment', 'get'],
+      ['Comment', 'create'],
+      ['Contact', 'getleavemanagees'],
     ];
   }
 }
