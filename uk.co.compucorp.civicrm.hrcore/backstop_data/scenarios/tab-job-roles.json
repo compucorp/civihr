@@ -2,49 +2,41 @@
   "scenarios": [
     {
       "label": "Job Roles / Basic Details",
-      "delay": 5000,
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-roles/basic-details"
     },
     {
       "label": "Job Roles / Funding",
-      "delay": 5000,
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-roles/funding"
     },
     {
       "label": "Job Roles / Cost Centres",
-      "delay": 5000,
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-roles/cost-centres"
     },
     {
       "label": "Job Roles / Delete Dialog",
-      "delay": 5000,
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-roles/delete-dialog"
     },
     {
       "label": "Job Roles / Add New",
-      "delay": 5000,
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-roles/add-new"
     },
     {
       "label": "Job Roles / Basic Details / Edit",
-      "delay": 5000,
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-roles/basic-details-edit"
     },
     {
       "label": "Job Roles / Funding / Edit",
-      "delay": 5000,
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-roles/funding-edit"
     },
     {
       "label": "Job Roles / Cost Centres / Edit",
-      "delay": 5000,
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-roles/cost-centres-edit"
     }
