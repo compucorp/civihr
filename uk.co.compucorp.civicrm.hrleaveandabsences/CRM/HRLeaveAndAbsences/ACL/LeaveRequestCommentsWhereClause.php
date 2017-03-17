@@ -1,5 +1,8 @@
 <?php
 
+use CRM_Contact_BAO_Relationship as Relationship;
+use CRM_Contact_BAO_RelationshipType as RelationshipType;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 
 /**
@@ -44,12 +47,16 @@ class CRM_HRLeaveAndAbsences_ACL_LeaveRequestCommentsWhereClause {
     $whereClauses = $this->getLeaveInformationACLWhereConditions('lr.contact_id');
     $whereClauses .= ' AND (lr.is_deleted = 0)';
 
+    $leaveRequestTable = LeaveRequest::getTableName();
+    $relationshipTable = Relationship::getTableName();
+    $relationshipTypeTable = RelationshipType::getTableName();
+
     $conditions[] = "
       a.entity_id IN (
        SELECT lr.id
-       FROM civicrm_hrleaveandabsences_leave_request lr
-        LEFT JOIN civicrm_relationship r ON lr.contact_id = r.contact_id_a
-        LEFT JOIN civicrm_relationship_type rt ON rt.id = r.relationship_type_id
+       FROM {$leaveRequestTable} lr
+        LEFT JOIN {$relationshipTable} r ON lr.contact_id = r.contact_id_a
+        LEFT JOIN {$relationshipTypeTable} rt ON rt.id = r.relationship_type_id
         WHERE $whereClauses
       )
     ";

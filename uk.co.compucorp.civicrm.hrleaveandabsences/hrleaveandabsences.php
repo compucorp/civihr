@@ -365,8 +365,8 @@ function hrleaveandabsences_civicrm_tabset($tabsetName, &$tabs, $context) {
 /**
  * Implementation of hook_civicrm_selectWhereClause
  *
- * @param $entity
- * @param $clauses
+ * @param string $entity
+ * @param array $clauses
  */
 function hrleaveandabsences_civicrm_selectWhereClause($entity, &$clauses) {
 
