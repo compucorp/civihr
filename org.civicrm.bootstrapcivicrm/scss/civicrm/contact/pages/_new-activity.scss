@@ -91,6 +91,19 @@
       margin-right: -60px;
     }
 
+    &#Activity {
+      .crm-accordion-body {
+        padding: 15px 0 !important;
+      }
+
+      #recurring-entity-block,
+      #follow-up {
+        .crm-accordion-body {
+          padding: 15px 0 !important;
+        }
+      }
+    }
+
     #s2id_activity_type_id,
     #s2id_source_contact_id,
     #s2id_target_contact_id,
@@ -184,9 +197,6 @@
 
   #recurring-entity-block,
   #follow-up {
-    margin-left: -20px;
-    margin-right: -20px;
-
     .crm-accordion-body {
       padding: 20px !important;
     }
@@ -202,10 +212,6 @@
     input[type=checkbox]:checked+label[for]::after {
       left: 2px;
       top: 7px;
-    }
-
-    input[type=radio]:checked+label[for]::after {
-      top: 15px;
     }
   }
 
