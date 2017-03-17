@@ -51,31 +51,11 @@
 
     table {
       @include mx-expandable-table();
-
-      thead {
-        tr {
-          border: 1px solid $crm-background !important;
-
-          th {
-            border-bottom: none;
-            background: $gray-lighter !important;
-            color: $gray-darker !important;
-            vertical-align: middle;
-            border: none;
-            padding: 0 25px !important;
-            line-height: 1.1em;
-            height: 42px;
-
-            div {
-              padding: 0;
-            }
-          }
-        }
-      }
     }
 
     a.button {
       box-shadow: $box-shadow;
+      background: $brand-primary;
     }
   }
 
@@ -180,14 +160,7 @@
             border: 1px solid $crm-background !important;
 
             td {
-              border-bottom: none;
-              background: $gray-lighter !important;
-              color: $gray-darker !important;
-              vertical-align: middle;
-              border: none;
-              padding: 0 25px !important;
-              line-height: 1.1em;
-              height: 42px;
+              font-size: 1em;
 
               div {
                 padding: 0;
@@ -211,5 +184,21 @@
 
   .help {
     padding-left: 5px;
+  }
+}
+
+#DedupeFind {
+  .crm-submit-buttons .crm-button {
+    margin-left: 0;
+  }
+
+  table.form-layout-compressed {
+    margin: 0 15px;
+
+    td {
+      vertical-align: middle;
+      display: table-cell;
+      text-align: left;
+    }
   }
 }
