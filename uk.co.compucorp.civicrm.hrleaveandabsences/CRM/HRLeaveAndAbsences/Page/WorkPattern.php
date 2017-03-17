@@ -6,8 +6,14 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
 
   private $links = array();
 
+  /**
+   * @var \CRM_HRLeaveAndAbsences_Service_WorkPattern
+   */
+  private $workPatternService;
+
   public function run() {
     CRM_Utils_System::setTitle(ts('Work Patterns'));
+    $this->workPatternService = new WorkPatternService();
     parent::run();
   }
 
@@ -29,13 +35,8 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
         $rows[$object->id]['number_of_hours'] = ts('Various');
       }
 
-      $links = $this->links();
-
-      if ($this->canNotDelete($object->id)) {
-         unset($links[CRM_Core_Action::DELETE]);
-      }
       $rows[$object->id]['action'] = CRM_Core_Action::formLink(
-          $links,
+          $this->links(),
           $this->calculateLinksMask($object),
           ['id' => $object->id]
       );
@@ -175,6 +176,10 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
       $mask -= CRM_Core_Action::BASIC;
     }
 
+    if($this->canNotDelete($workPattern->id)) {
+      $mask -= CRM_Core_Action::DELETE;
+    }
+
     return $mask;
   }
 
@@ -186,7 +191,6 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
    * @return bool
    */
   private function canNotDelete($workPatternID) {
-    $workPattern = new WorkPatternService();
-    return $workPattern->workPatternHasEverBeenUsed($workPatternID);
+    return $this->workPatternService->workPatternHasEverBeenUsed($workPatternID);
   }
 }

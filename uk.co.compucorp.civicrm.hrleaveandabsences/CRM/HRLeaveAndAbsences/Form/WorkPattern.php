@@ -425,7 +425,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             [ 'type' => 'cancel', 'name' => ts('Cancel') ],
         ];
 
-        if($this->_action & CRM_Core_Action::UPDATE && ($this->canDelete())) {
+        if($this->_action & CRM_Core_Action::UPDATE && $this->canDelete()) {
             $buttons[] = [ 'type' => 'delete', 'name' => ts('Delete') ];
         }
 
