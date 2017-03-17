@@ -4,6 +4,7 @@ require_once 'CRM/Core/Form.php';
 
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_Service_WorkPattern as WorkPatternService;
 
 /**
  * Form controller class
@@ -424,7 +425,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             [ 'type' => 'cancel', 'name' => ts('Cancel') ],
         ];
 
-        if($this->_action & CRM_Core_Action::UPDATE) {
+        if($this->_action & CRM_Core_Action::UPDATE && ($this->canDelete())) {
             $buttons[] = [ 'type' => 'delete', 'name' => ts('Delete') ];
         }
 
@@ -589,5 +590,15 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       }
 
       return $numberOfHours;
+    }
+
+    /**
+     * Checks whether a WorkPattern object can be deleted.
+     *
+     * @return bool
+     */
+    private function canDelete() {
+      $workPattern = new WorkPatternService();
+      return !$workPattern->workPatternHasEverBeenUsed($this->_id);
     }
 }

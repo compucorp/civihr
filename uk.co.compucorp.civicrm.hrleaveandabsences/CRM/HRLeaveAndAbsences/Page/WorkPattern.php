@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Service_WorkPattern as WorkPatternService;
+
 class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
 
   private $links = array();
@@ -27,8 +29,13 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
         $rows[$object->id]['number_of_hours'] = ts('Various');
       }
 
+      $links = $this->links();
+
+      if ($this->canNotDelete($object->id)) {
+         unset($links[CRM_Core_Action::DELETE]);
+      }
       $rows[$object->id]['action'] = CRM_Core_Action::formLink(
-          $this->links(),
+          $links,
           $this->calculateLinksMask($object),
           ['id' => $object->id]
       );
@@ -169,5 +176,17 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
     }
 
     return $mask;
+  }
+
+  /**
+   * Checks whether a WorkPattern object cannot be deleted.
+   *
+   * @param int $workPatternID
+   *
+   * @return bool
+   */
+  private function canNotDelete($workPatternID) {
+    $workPattern = new WorkPatternService();
+    return $workPattern->workPatternHasEverBeenUsed($workPatternID);
   }
 }
