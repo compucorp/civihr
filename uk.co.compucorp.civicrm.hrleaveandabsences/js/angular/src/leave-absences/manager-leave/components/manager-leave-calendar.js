@@ -24,8 +24,23 @@ define([
     var dayTypes = [],
       publicHolidays = [],
       leaveRequests = [],
+      leaveRequestsIndex = [],
       leaveRequestStatuses = [],
-      vm = Object.create(this);
+      vm = Object.create(this),
+      monthStructure = {
+        0: [],
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+        5: [],
+        6: [],
+        7: [],
+        8: [],
+        9: [],
+        10: [],
+        11: []
+      };
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -102,17 +117,7 @@ define([
       });
 
       if (contact && contact.calendarData) {
-        var calendarData = contact.calendarData;
-        var datesForTheMonth = [],
-          dates = Object.keys(calendarData.days);
-
-        dates.forEach(function (date) {
-          if (moment(parseInt(date)).month() === month) {
-            datesForTheMonth.push(calendarData.days[date]);
-          }
-        });
-
-        return datesForTheMonth;
+       return contact.calendarData[vm.months.indexOf(month)]
       }
     };
 
@@ -185,22 +190,6 @@ define([
      */
     function getDateObjectWithFormat(date) {
       return moment(date, sharedSettings.serverDateFormat).clone();
-    }
-
-    /**
-     * Returns the leave request which is in range of the sent date
-     *
-     * @param  {int/string} contactID
-     * @param  {string} date
-     * @return {object}
-     */
-    function getLeaveRequestByDate(contactID, date) {
-      return _.find(leaveRequests, function (leaveRequest) {
-        return contactID == leaveRequest.contact_id &&
-          !!_.find(leaveRequest.dates, function (leaveRequestDate) {
-          return moment(leaveRequestDate.date).isSame(date);
-        });
-      });
     }
 
     /**
@@ -356,6 +345,11 @@ define([
       })
         .then(function (leaveRequestsData) {
           leaveRequests = leaveRequestsData.list;
+          _.each(leaveRequestsData.list, function(leaveRequest){
+            _.each(leaveRequest.dates, function (leaveRequestDate) {
+              leaveRequestsIndex[leaveRequestDate.date] = leaveRequest;
+            });
+          });
           return loadCalendar();
         });
     }
@@ -488,11 +482,14 @@ define([
     function setCalendarProps(contactID, calendar) {
       var dateObj,
         leaveRequest,
-        dates = Object.keys(calendar.days);
+        dates = Object.keys(calendar.days),
+        indexedByMonth = angular.copy(monthStructure);
 
       dates.forEach(function (date) {
         dateObj = calendar.days[date];
-        leaveRequest = getLeaveRequestByDate(contactID, dateObj.date);
+        indexedByMonth[parseInt(moment(dateObj.date).month())].push(dateObj);
+        leaveRequest = leaveRequestsIndex[dateObj.date];
+        leaveRequest = (leaveRequest && leaveRequest.contact_id === contactID) ? leaveRequest : null;
 
         dateObj.UI = {
           isWeekend: calendar.isWeekend(getDateObjectWithFormat(dateObj.date)),
@@ -509,7 +506,7 @@ define([
         }
       });
 
-      return calendar;
+      return indexedByMonth;
     }
 
     return vm;

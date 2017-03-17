@@ -82,52 +82,10 @@
 
     <crm-loading show="!calendar.loading.calendar">
       <section class="panel panel-default"
-               ng-repeat="month in (calendar.selectedMonths.length > 0 ? calendar.selectedMonths : calendar.months)">
-        <header class="panel-heading">
-          <h2 class="panel-title">{{month}}</h2>
-        </header>
-        <div class="table-responsive">
-          <div
-            class="text-center"
-            ng-show="calendar.filterContacts().length === 0">
-            Sorry No Contacts
-          </div>
-          <table
-            ng-hide="calendar.filterContacts().length === 0"
-            class="table table-bordered chr_leave-calendar">
-            <thead>
-            <tr class="chr_leave-calendar__days">
-              <th class="chr_leave-calendar__name">Employee Name</th>
-              <!--send any contact id to get the days for a month-->
-              <th ng-repeat="day in calendar.getMonthData(calendar.managedContacts[0].id, calendar.months.indexOf(month))">
-                {{calendar.getDayName(day.date)}}
-                <div>{{$index + 1}}</div>
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="chr_leave-calendar__items" ng-repeat="contact in calendar.filterContacts()">
-              <td class="chr_leave-calendar__name">{{contact.display_name}}</td>
-              <td ng-repeat="day in calendar.getMonthData(contact.id, calendar.months.indexOf(month))">
-                <div class="chr_leave-calendar__item"
-                     ng-style="day.UI.styles"
-                     ng-class="{
-                       'chr_leave-calendar__item--type--weekend': day.UI.isWeekend,
-                       'chr_leave-calendar__item--type--non-working': day.UI.isNonWorkingDay,
-                       'chr_leave-calendar__item--type--public-holiday': day.UI.isPublicHoliday,
-                       'chr_leave-calendar__item--requested': day.UI.isRequested,
-                       'chr_leave-calendar__item--alt': day.UI.isAccruedTOIL,
-                       'chr_leave-calendar__item--toil-requested': day.UI.isRequested && day.UI.isAccruedTOIL
-                       }">
-                  <span ng-if="day.UI.isAM">AM</span>
-                  <span ng-if="day.UI.isPM">PM</span>
-                  <span ng-if="day.UI.isAccruedTOIL">AT</span>
-                </div>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+               ng-repeat="month in calendar.months">
+        <ng-include
+          ng-hide="calendar.selectedMonths.length !== 0 && calendar.selectedMonths.indexOf(month) === -1"
+          src="$root.settings.pathTpl + 'components/manager-leave-calendar-month.html'"></ng-include>
       </section>
     </crm-loading>
     <section class="panel panel-default" ng-class="{ 'is-collapsed': calendar.legendCollapsed }">

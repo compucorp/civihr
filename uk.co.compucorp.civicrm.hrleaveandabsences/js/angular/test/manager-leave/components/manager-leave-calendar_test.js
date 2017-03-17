@@ -185,21 +185,6 @@
         });
       });
 
-      describe('getMonthData', function () {
-        var januaryMonth = 0,
-          returnValue;
-
-        beforeEach(function () {
-          returnValue = controller.getMonthData(1, januaryMonth);
-        });
-
-        it('returns the date which are from the month of january', function () {
-          _.each(returnValue, function (dateObject) {
-            expect(moment(dateObject.date).month()).toBe(januaryMonth);
-          });
-        });
-      });
-
       describe('filterContacts', function() {
         beforeEach(function() {
           controller.filteredContacts = ContactAPIMock.mockedContacts().list;
