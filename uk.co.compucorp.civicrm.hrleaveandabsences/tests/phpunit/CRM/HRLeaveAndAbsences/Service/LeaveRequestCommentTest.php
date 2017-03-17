@@ -179,8 +179,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
   public function testGetReturnsOnlyCommentsOfLeaveRequestsOfTheCurrentLoggedInUserWhenTheLoggedInUserIsAStaffMember() {
     $entityName = 'LeaveRequest';
 
-    $contact1 = ContactFabricator::fabricate();
-    $contact2 = ContactFabricator::fabricate();
+    $contact1 = ['id' => 1];
+    $contact2 = ['id' => 2];
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
@@ -249,7 +249,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
     $manager = ContactFabricator::fabricate();
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
-    $contact3 = ContactFabricator::fabricate();
+    $contact3 = ['id' => 4];
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
@@ -332,9 +332,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
   public function testGetReturnsAllTheCommentsOfLeaveRequestsWhenTheLoggedInUserIsAnAdmin() {
     $entityName = 'LeaveRequest';
 
-    $admin = ContactFabricator::fabricate();
-    $contact1 = ContactFabricator::fabricate();
-    $contact2 = ContactFabricator::fabricate();
+    $admin = ['id' => 1];
+    $contact1 = ['id' => 2];
+    $contact2 = ['id' => 3];
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
@@ -392,7 +392,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCommentTest extends BaseHeadles
   public function testGetDoesNotReturnsCommentsOfSoftDeletedLeaveRequests() {
     $entityName = 'LeaveRequest';
 
-    $contact1 = ContactFabricator::fabricate();
+    $contact1 = ['id' => 1];
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
