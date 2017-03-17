@@ -45,7 +45,7 @@ class CRM_HRComments_API_Query_CommentSelect {
    * @param \CRM_Utils_SQL_Select $customQuery
    */
   private function addWhere(CRM_Utils_SQL_Select $customQuery) {
-    $conditions = $this->invokeSelectWhereClauseHook();
+    $conditions = $this->getACLConditions();
 
     $conditions[] = 'a.is_deleted = 0';
     $customQuery->where($conditions);
@@ -79,6 +79,20 @@ class CRM_HRComments_API_Query_CommentSelect {
         unset($this->params['return'][$key]);
       }
     }
+  }
+
+  /**
+   * Returns an array of ACL conditions to be added to the query
+   *
+   * @return array
+   *   An array in this format:
+   *   [
+   *      "field == 'foo'",
+   *      "(other_field >= 10 OR other_field IS NULL)"
+   *   ]
+   */
+  private function getACLConditions() {
+    return $this->invokeSelectWhereClauseHook();
   }
 
   /**
