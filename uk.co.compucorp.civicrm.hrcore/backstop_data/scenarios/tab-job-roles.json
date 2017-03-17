@@ -31,6 +31,12 @@
       "onReadyScript": "contact-summary/job-roles/basic-details-edit"
     },
     {
+      "label": "Job Roles / Basic Details / Open ui select",
+      "delay": 5000,
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-summary/job-roles/open-ui-select"
+    },
+    {
       "label": "Job Roles / Funding / Edit",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/job-roles/funding-edit"
