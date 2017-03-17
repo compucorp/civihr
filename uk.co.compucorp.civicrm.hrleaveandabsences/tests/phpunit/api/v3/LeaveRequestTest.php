@@ -3109,7 +3109,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_request_id
    */
   public function testGetCommentShouldThrowAnExceptionIfLeaveRequestIDIsMissing() {
-    civicrm_api3('LeaveRequest', 'addcomment', []);
+    civicrm_api3('LeaveRequest', 'getcomment', []);
   }
 
   /**

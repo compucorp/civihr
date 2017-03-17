@@ -110,19 +110,19 @@ function hrleaveandabsences_civicrm_permission(&$permissions) {
 function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $actionEntities = [
     'get' => ['absence_type', 'absence_period', 'option_group', 'option_value',
-              'leave_period_entitlement', 'public_holiday', 'leave_request'],
+              'leave_period_entitlement', 'public_holiday', 'leave_request', 'comment'],
     'getbalancechangebyabsencetype' => ['leave_request'],
     'calculatebalancechange' => ['leave_request'],
-    'create' => ['leave_request', 'sickness_request', 't_o_i_l_request'],
-    'update' => ['leave_request', 'sickness_request', 't_o_i_l_request'],
+    'create' => ['leave_request', 'comment'],
+    'update' => ['leave_request'],
     'getcalendar' => ['work_pattern'],
     'ismanagedby' => ['leave_request'],
-    'isvalid' => ['leave_request', 'sickness_request', 't_o_i_l_request'],
-    'getfull' => ['leave_request', 'sickness_request'],
+    'isvalid' => ['leave_request'],
+    'getfull' => ['leave_request'],
     'calculatetoilexpirydate' => ['absence_type'],
     'getleavemanagees' => ['contact'],
     'getcomment' => ['leave_request'],
-    'addcomment' => ['leave_request'],    
+    'addcomment' => ['leave_request'],
     'deletecomment' => ['leave_request'],
     'getattachments' => ['leave_request'],
     'deleteattachment' => ['leave_request'],
@@ -360,6 +360,47 @@ function hrleaveandabsences_civicrm_tabset($tabsetName, &$tabs, $context) {
       'weight'    => 10
     ];
   }
+}
+
+/**
+ * Implementation of hook_civicrm_selectWhereClause
+ *
+ * @param string $entity
+ * @param array $clauses
+ */
+function hrleaveandabsences_civicrm_selectWhereClause($entity, &$clauses) {
+
+  // We remove all the ACL clauses here, because we are adding more specific
+  // ones with the hrcomments_selectWhereClause hook.
+  // If we keep the default clauses, users will not be able to see all the
+  // comments they should.
+  // This is not 100% guaranteed to work, because other extensions can add
+  // their own implementation of this and there's no way to know in which order
+  // they will be called. For now it works, because this is the only place where
+  // we deal with Comments ACL
+  if($entity == 'Comment') {
+    $clauses = [];
+  }
+}
+
+/**
+ * Implementation of hook_hrcomments_selectWhereClause
+ *
+ * We use this special custom hook here because it gives us access to the params
+ * passed to the get operation, and then we can add custom ACLs based on the
+ * entity_name.
+ *
+ * @param array $conditions
+ * @param array $params
+ */
+function hrleaveandabsences_hrcomments_selectWhereClause(&$conditions, $params) {
+  if($params['entity_name'] != 'LeaveRequest') {
+    return;
+  }
+
+  $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
+  $commentsWhereClause = new CRM_HRLeaveAndAbsences_ACL_LeaveRequestCommentsWhereClause($leaveManagerService);
+  $conditions = array_merge($conditions, $commentsWhereClause->get());
 }
 
 //----------------------------------------------------------------------------//
@@ -668,9 +709,10 @@ function _hrleaveandabsences_set_default_permissions() {
  * @param array $permissions
  */
 function _hrleaveandabsences_set_roles_permissions($roles, $permissions) {
-  if( !function_exists('user_role_load_by_name') || !function_exists('user_role_grant_permissions')) {
+  if(!function_exists('user_role_load_by_name') || !function_exists('user_role_grant_permissions')) {
     return;
   }
+
   foreach($roles as $roleName) {
     $role = user_role_load_by_name($roleName);
     user_role_grant_permissions($role->rid, $permissions);
