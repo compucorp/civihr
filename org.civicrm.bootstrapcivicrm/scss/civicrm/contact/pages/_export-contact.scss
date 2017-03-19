@@ -79,14 +79,29 @@
 
       .columnheader {
         th {
-          padding-left: 20px;
-          font-size: 18px;
-          font-weight: 600;
-          color: $gray-darker;
+          font-size: $font-size-h2;
           height: 47px;
           line-height: 47px;
-          border-top-color: $gray-lighter;
           text-transform: none;
+        }
+
+        &-dark {
+          th {
+            font-size: $font-size-h3;
+          }
+        }
+
+        &,
+        &-dark {
+          th {
+            padding-left: 20px;
+            color: $gray-darker;
+            font-weight: 600;
+            background-color: $crm-accordion-header-color;
+            border: 0;
+            border-top: 1px solid $crm-background;
+            border-bottom: 1px solid $crm-dark-grayblue;
+          }
         }
       }
 
