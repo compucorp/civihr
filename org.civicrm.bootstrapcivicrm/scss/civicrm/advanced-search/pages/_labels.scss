@@ -104,6 +104,12 @@ a.crm-clear-link {
       min-width: 100%;
     }
 
+    #groupselect {
+      .description {
+        margin-left: 5px;
+      }
+    }
+
     @media (max-width: $screen-sm-min) {
       > tr {
         @include mx-responsive-search;
@@ -288,7 +294,7 @@ a.crm-clear-link {
   }
 
   input.crm-form-text {
-    flex: 5 1 10vw;
+    flex: 5 1 9vw;
     max-width: initial !important;
     width: initial !important;
   }
@@ -369,8 +375,14 @@ a.crm-clear-link {
           &:nth-child(2) {
             display: block;
 
+            .crm-form-text {
+              min-width: 100px !important;
+              max-width: 100px !important;
+            }
+
             [for="postal-code-range-toggle"] {
               position: relative;
+              margin-left: 5px;
 
               &:after {
                 left: 2px;
@@ -383,6 +395,10 @@ a.crm-clear-link {
 
       #s2id_state_province {
         width: 230px !important;
+      }
+
+      label[for="prox_distance"] {
+        flex: auto !important;
       }
 
       @media (max-width: $screen-sm-min) {
@@ -431,6 +447,14 @@ a.crm-clear-link {
     &:nth-child(7) {
       td {
         padding-top: 0;
+      }
+    }
+
+    &:nth-child(4) {
+      padding-top: 0 !important;
+
+      label {
+        display: block;
       }
     }
 
