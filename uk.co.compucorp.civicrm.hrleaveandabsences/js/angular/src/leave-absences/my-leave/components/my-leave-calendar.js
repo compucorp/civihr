@@ -21,7 +21,7 @@ define([
     $log.debug('Component: my-leave-calendar');
 
     var dayTypes = [],
-      leaveRequests = {},
+      leaveRequests = [],
       publicHolidays = [],
       leaveRequestStatuses = [],
       vm = Object.create(this);
@@ -142,6 +142,20 @@ define([
      */
     function getDateObjectWithFormat(date) {
       return moment(date, sharedSettings.serverDateFormat).clone();
+    }
+
+    /**
+     * Returns the leave request which is in range of the sent date
+     *
+     * @param  {string} date
+     * @return {object}
+     */
+    function getLeaveRequestByDate(date) {
+      return _.find(leaveRequests, function(leaveRequest){
+        return !!_.find(leaveRequest.dates, function (leaveRequestDate) {
+          return moment(leaveRequestDate.date).isSame(date);
+        });
+      });
     }
 
     /**
@@ -279,11 +293,7 @@ define([
         }
       })
       .then(function (leaveRequestsData) {
-        _.each(leaveRequestsData.list, function(leaveRequest){
-          _.each(leaveRequest.dates, function (leaveRequestDate) {
-            leaveRequests[leaveRequestDate.date] = leaveRequest;
-          });
-        });
+        leaveRequests = leaveRequestsData.list;
         return loadCalendar();
       });
     }
@@ -333,7 +343,7 @@ define([
 
       dates.forEach(function (date) {
         dateObj = calendar.days[date];
-        leaveRequest = leaveRequests[dateObj.date];
+        leaveRequest = getLeaveRequestByDate(dateObj.date);
 
         dateObj.UI = {
           isWeekend: calendar.isWeekend(getDateObjectWithFormat(dateObj.date)),
