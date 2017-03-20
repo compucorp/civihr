@@ -415,7 +415,7 @@
         });
       });
 
-      describe('number of days selection', function () {
+      describe('number of days selection without date selection', function () {
         describe('when switching to single day', function () {
           beforeEach(function () {
             $ctrl.uiOptions.multipleDays = false;
@@ -424,7 +424,7 @@
           });
 
           it('hides to date and type', function () {
-            expect($ctrl.uiOptions.toDate).toBeNull();
+            expect($ctrl.uiOptions.toDate).not.toBeDefined();
             expect($ctrl.uiOptions.selectedToType).not.toBeDefined();
           });
 

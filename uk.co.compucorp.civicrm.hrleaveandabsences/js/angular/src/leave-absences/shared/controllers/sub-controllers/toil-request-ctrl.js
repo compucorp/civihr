@@ -104,17 +104,6 @@ define([
       };
 
       /**
-       * Resets data for toil.
-       */
-      vm._reset = function () {
-        parentRequestCtrl._reset.call(this);
-        vm.request.toilDurationHours = 0;
-        vm.request.toilDurationMinutes = 0;
-        vm.request.updateDuration();
-        vm.request.toil_to_accrue = "";
-      };
-
-      /**
        * Initializes the controller on loading the dialog
        */
       (function initController() {

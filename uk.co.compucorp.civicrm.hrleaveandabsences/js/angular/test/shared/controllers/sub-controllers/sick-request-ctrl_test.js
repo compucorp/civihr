@@ -123,8 +123,8 @@
               $ctrl.changeInNoOfDays();
             });
 
-            it('resets reason', function () {
-              expect($ctrl.request.sickness_reason).toBeNull();
+            it('does not reset sickness reason', function () {
+              expect($ctrl.request.sickness_reason).not.toBeNull();
             });
           });
         });

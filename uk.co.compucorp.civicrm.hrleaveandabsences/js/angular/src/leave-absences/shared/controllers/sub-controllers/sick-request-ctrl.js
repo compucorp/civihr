@@ -42,14 +42,6 @@ define([
       };
 
       /**
-       * Resets data in dates, types, balance in parent and reason here.
-       */
-      vm._reset = function () {
-        parentRequestCtrl._reset.call(this);
-        vm.request.sickness_reason = null;
-      };
-
-      /**
        * Initializes the controller on loading the dialog
        */
       (function initController() {

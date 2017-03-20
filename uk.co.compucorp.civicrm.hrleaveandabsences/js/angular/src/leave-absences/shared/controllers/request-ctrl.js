@@ -78,7 +78,6 @@ define([
       this.uiOptions = {
         isChangeExpanded: false,
         multipleDays: true,
-        workedDate: null,
         userDateFormat: HR_settings.DATE_FORMAT,
         showBalance: false,
         date: {
@@ -400,24 +399,11 @@ define([
        * Resets data in dates, types, balance.
        */
       this._reset = function () {
-        this.uiOptions.fromDate = this.uiOptions.toDate = null;
-        this.uiOptions.workedDate = null;
-        this.uiOptions.showBalance = false;
+        this.uiOptions.toDate = this.uiOptions.fromDate;
+        this.request.to_date_type = this.request.from_date_type;
+        this.request.to_date = this.request.from_date;
 
-        this.request.from_date_type = this.request.to_date_type = null;
-        this.request.from_date = this.request.to_date = null;
-
-        this.balance = {
-          closing: 0,
-          opening: 0,
-          change: {
-            amount: 0,
-            breakdown: []
-          }
-        };
-
-        this.pagination.totalItems = 0;
-        this.pagination.filteredbreakdown = [];
+        this.calculateBalanceChange();
       };
 
       /**
