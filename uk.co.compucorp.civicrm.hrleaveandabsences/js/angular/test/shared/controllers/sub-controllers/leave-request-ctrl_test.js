@@ -81,6 +81,9 @@
         spyOn(AbsenceTypeAPI, 'all').and.callThrough();
         spyOn(EntitlementAPI, 'all').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
+        spyOn(LeaveRequestAPI, 'create').and.callThrough();
+        spyOn(LeaveRequestAPI, 'update').and.callThrough();
+        spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
         spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
 
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
@@ -618,6 +621,11 @@
             expect($ctrl.canSubmit()).toBeTruthy();
           });
 
+          it('calls corresponding API end points', function () {
+            expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
+            expect(LeaveRequestAPI.create).toHaveBeenCalled();
+          });
+
           it('sends event', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.request);
           });
@@ -695,8 +703,13 @@
             expect($ctrl.canSubmit()).toBeTruthy();
           });
 
-          it('calls expected api', function () {
+          it('calls update method on instance', function () {
             expect($ctrl.request.update).toHaveBeenCalled();
+          });
+
+          it('calls corresponding API end points', function () {
+            expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
+            expect(LeaveRequestAPI.update).toHaveBeenCalled();
           });
 
           it('sends update event', function () {

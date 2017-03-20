@@ -206,9 +206,9 @@ define([
        * @return {String}
        */
       this.getCommentorName = function (contact_id) {
-        if(contact_id == this.directiveOptions.contactId) {
+        if (contact_id == this.directiveOptions.contactId) {
           return 'Me';
-        } else if(this.comment.contacts[contact_id]) {
+        } else if (this.comment.contacts[contact_id]) {
           return this.comment.contacts[contact_id].display_name;
         }
       };
@@ -748,8 +748,7 @@ define([
         else {
           if (_.isObject(errors)) {
             this.error = JSON.stringify(errors)
-          }
-          else {
+          } else {
             this.error = errors.toString();
           }
         }
@@ -894,7 +893,7 @@ define([
        */
       function loadCommentsandContactnames() {
         //In CREATE mode dont fetch comments
-        if(!this.isMode('create')) {
+        if (!this.isMode('create')) {
           return this.request.loadComments()
             .then(loadContactNames.bind(this));
         }
@@ -907,20 +906,20 @@ define([
        *
        * @return {Promise}
        */
-      function loadContactNames () {
+      function loadContactNames() {
         var contactIDs = [],
           self = this;
 
         _.each(self.request.comments, function (comment) {
           //Push only unique contactId's which are not same as logged in user
-          if(comment.contact_id != self.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
+          if (comment.contact_id != self.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
             contactIDs.push(comment.contact_id);
           }
         });
 
         return Contact.all({
           id: { IN: contactIDs }
-        },{
+        }, {
           page: 1,
           size: 0
         }).then(function (contacts) {
@@ -1089,13 +1088,17 @@ define([
       function updateRequest() {
         var self = this;
 
-        self.request.update()
+        self.request.isValid()
           .then(function () {
-            if (self.isRole('manager')) {
-              postSubmit.call(self, 'LeaveRequest::updatedByManager');
-            } else if (self.isRole('owner')) {
-              postSubmit.call(self, 'LeaveRequest::edit');
-            }
+            self.request.update()
+              .then(function (result) {
+                if (self.isRole('manager')) {
+                  postSubmit.call(self, 'LeaveRequest::updatedByManager');
+                } else if (self.isRole('owner')) {
+                  postSubmit.call(self, 'LeaveRequest::edit');
+                }
+              })
+              .catch(handleError.bind(self));
           })
           .catch(handleError.bind(self));
       }
