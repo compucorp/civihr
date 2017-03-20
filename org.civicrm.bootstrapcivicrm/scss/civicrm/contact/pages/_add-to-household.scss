@@ -18,6 +18,7 @@
           padding: 8px 12px;
           border-radius: 2px;
           margin-bottom: 20px !important;
+          margin-right: 3px !important;
         }
 
         input[id*="_cancel"] {
@@ -60,6 +61,7 @@
           border-bottom: 1px solid $crm-dark-grayblue !important;
         }
 
+        &.columnheader > td,
         td {
           padding: 18px 10px 17px 10px !important;
         }
@@ -70,6 +72,22 @@
           }
         }
       }
+    }
+  }
+
+  .form-item {
+    padding: 0 !important;
+    margin: 0 !important;
+
+    .description {
+      margin: 0 !important;
+    }
+
+    .crm-submit-buttons {
+      height: 36px;
+      border-top: 0 !important;
+      margin-top: 0 !important;
+      padding: 20px 0 !important;
     }
   }
 }
