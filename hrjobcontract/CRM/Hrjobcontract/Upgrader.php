@@ -1057,12 +1057,16 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1026() {
-    $optionsValue = ['Bi-Weekly', 'Bi-Monthly'];
-    foreach ($optionsValue as $value) {
+    $optionsValue = [
+      3 => 'Bi-Weekly',
+      4 => 'Bi-Monthly',
+    ];
+    foreach ($optionsValue as $value => $name) {
       $opValueParams = [
         'option_group_id' => 'hrjc_pay_cycle',
-        'name' => $value,
-        'label' => $value,
+        'name' => $name,
+        'label' => $name,
+        'value' => $value
       ];
       civicrm_api3('OptionValue', 'create', $opValueParams);
     }
