@@ -28,7 +28,8 @@
         EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl,
         date2016 = '01/12/2016',
         date2017 = '02/02/2017',
-        date2013 = '02/02/2013';
+        date2013 = '02/02/2013',
+        dateServer2017 = '2017-02-02';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
         'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
@@ -933,6 +934,26 @@
 
           it('closes model popup', function () {
             expect(modalInstanceSpy.close).toHaveBeenCalled();
+          });
+        });
+
+        describe('user selects same from and to date', function () {
+          beforeEach(function () {
+            var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+            var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+            leaveRequest.from_date = leaveRequest.to_date = dateServer2017;
+            leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+            var directiveOptions = {
+              contactId: leaveRequest.contact_id, //owner's contact id
+              leaveRequest: leaveRequest
+            };
+
+            initTestController(directiveOptions);
+          });
+
+          it('selects single day', function () {
+            expect($ctrl.uiOptions.multipleDays).toBeFalsy();
           });
         });
       });

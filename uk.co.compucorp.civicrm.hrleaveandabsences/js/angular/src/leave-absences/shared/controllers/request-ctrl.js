@@ -533,6 +533,10 @@ define([
 
             if (self.isMode.call(self, 'edit')) {
               initialLeaveRequestAttributes = _.cloneDeep(self.request.attributes());
+
+              if (self.request.from_date == self.request.to_date) {
+                self.uiOptions.multipleDays = false;
+              }
             }
           });
       };
