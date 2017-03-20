@@ -680,6 +680,26 @@ $control-height: 30px;
   .help {
     padding: 15px 20px;
   }
+
+  label.crm-error {
+    background: none;
+    color: $gray-darker;
+
+    span {
+      background: none;
+      color: $gray-darker;
+    }
+  }
+
+  #crm-main-content-wrapper input.crm-error,
+  #crm-main-content-wrapper input.error {
+    border-color: $brand-danger;
+  }
+
+  span.crm-error {
+    color: $crm-white;
+    background-color: $brand-danger;
+  }
 }
 
 .crm-form-text:focus + .addon.fa-calendar {
