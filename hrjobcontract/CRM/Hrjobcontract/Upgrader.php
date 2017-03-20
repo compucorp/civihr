@@ -1052,6 +1052,25 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
+   * Add options to choose bi-monthly or bi-weekly for pay cycle
+   *
+   * @return bool
+   */
+  public function upgrade_1026() {
+    $optionsValue = ['Bi-Weekly', 'Bi-Monthly'];
+    foreach ($optionsValue as $value) {
+      $opValueParams = [
+        'option_group_id' => 'hrjc_pay_cycle',
+        'name' => $value,
+        'label' => $value,
+      ];
+      civicrm_api3('OptionValue', 'create', $opValueParams);
+    }
+
+    return TRUE;
+  }
+
+  /**
    * Creates Option Group for Insurance Plan Types.
    */
   public function createInsurancePlanTypes() {
