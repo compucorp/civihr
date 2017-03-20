@@ -453,6 +453,16 @@ a.crm-clear-link {
     &:nth-child(4) {
       padding-top: 0 !important;
 
+      td {
+        &:first-child {
+          width: 450px;
+        }
+
+        &:last-child {
+          padding-top: 2px;
+        }
+      }
+
       label {
         display: block;
       }
