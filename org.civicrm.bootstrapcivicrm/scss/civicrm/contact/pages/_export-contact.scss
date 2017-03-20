@@ -80,9 +80,6 @@
       .columnheader {
         th {
           font-size: $font-size-h2;
-          height: 47px;
-          line-height: 47px;
-          text-transform: none;
         }
 
         &-dark {
@@ -94,11 +91,15 @@
         &,
         &-dark {
           th {
+            height: 47px;
+            line-height: 47px;
+            text-transform: none;
             padding-left: 20px;
             color: $gray-darker;
             font-weight: 600;
             background-color: $crm-accordion-header-color;
             border: 0;
+            border-left: 1px solid $crm-accordion-header-color;
             border-top: 1px solid $crm-background;
             border-bottom: 1px solid $crm-dark-grayblue;
           }
