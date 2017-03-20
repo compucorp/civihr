@@ -126,7 +126,7 @@
 
         it('calendar have loaded for each contact', function () {
           _.each(controller.managedContacts, function (contact) {
-            expect(Object.keys(contact.calendarData.days).length).not.toBe(0);
+            expect(Object.keys(contact.calendarData[0]).length).not.toBe(0);
           });
         });
       });
@@ -240,8 +240,6 @@
         });
 
         describe('isWeekend', function () {
-          var dateObj;
-
           beforeEach(function () {
             controller.refresh();
             $rootScope.$digest();
@@ -249,15 +247,13 @@
 
           it('is set', function () {
             _.each(controller.managedContacts, function (contact) {
-              dateObj = contact.calendarData.days[getDateObjectWithFormat(getDate('weekend').date).valueOf()];
-              expect(dateObj.UI.isWeekend).toBe(true);
+              var date = getDateFromCalendar(contact, 'weekend');
+              expect(date.UI.isWeekend).toBe(true);
             });
           });
         });
 
         describe('isNonWorkingDay', function () {
-          var dateObj;
-
           beforeEach(function () {
             controller.refresh();
             $rootScope.$digest();
@@ -265,8 +261,8 @@
 
           it('is set', function () {
             _.each(controller.managedContacts, function (contact) {
-              dateObj = contact.calendarData.days[getDateObjectWithFormat(getDate('non_working_day').date).valueOf()];
-              expect(dateObj.UI.isNonWorkingDay).toBe(true);
+              var date = getDateFromCalendar(contact, 'non_working_day');
+              expect(date.UI.isNonWorkingDay).toBe(true);
             });
           });
         });
@@ -282,7 +278,7 @@
 
           it('is set', function () {
             _.each(controller.managedContacts, function (contact) {
-              dateObj = contact.calendarData.days[Object.keys(contact.calendarData.days)[0]];
+              dateObj = contact.calendarData[0][0];
               expect(dateObj.UI.isPublicHoliday).toBe(true);
             });
           });
@@ -312,7 +308,7 @@
 
             it('isRequested flag is true', function () {
               _.each(controller.managedContacts, function (contact) {
-                dateObj = contact.calendarData.days[getDateObjectWithFormat(leaveRequest.from_date).valueOf()];
+                dateObj = getDate(contact, leaveRequest.from_date);
                 expect(dateObj.UI.isRequested).toBe(true);
               });
             });
@@ -323,7 +319,7 @@
               }).color;
 
               _.each(controller.managedContacts, function (contact) {
-                dateObj = contact.calendarData.days[getDateObjectWithFormat(leaveRequest.from_date).valueOf()];
+                dateObj = getDate(contact, leaveRequest.from_date);
                 expect(dateObj.UI.styles).toEqual({
                   backgroundColor: color,
                   borderColor: color
@@ -403,10 +399,38 @@
         return moment(date, sharedSettings.serverDateFormat).clone();
       }
 
-      function getDate(dayType) {
+      function getDate(contact, dateStr) {
+        var date;
+
+        _.each(contact.calendarData, function (month) {
+          _.each(month, function (dateObj) {
+            if(dateObj.date == dateStr) {
+              date = dateObj;
+            }
+          });
+        });
+
+        return date;
+      }
+
+      function getDateByType(dayType) {
         return workPatternData.daysData().values.find(function (data) {
           return data.type.name === dayType;
         });
+      }
+
+      function getDateFromCalendar(contact, dayType) {
+        var date;
+
+        _.each(contact.calendarData, function (month) {
+          _.each(month, function (dateObj) {
+            if(dateObj.date == getDateByType(dayType).date) {
+              date = dateObj;
+            }
+          });
+        });
+
+        return date;
       }
     });
   });

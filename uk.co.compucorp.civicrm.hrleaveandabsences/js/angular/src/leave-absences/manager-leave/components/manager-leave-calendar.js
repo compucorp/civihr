@@ -27,6 +27,7 @@ define([
       leaveRequestsIndex = [],
       leaveRequestStatuses = [],
       vm = Object.create(this),
+      tempContactData = [],
       monthStructure = {
         0: [],
         1: [],
@@ -294,10 +295,11 @@ define([
      */
     function loadCalendar() {
       var promises = [];
+      tempContactData = angular.copy(vm.managedContacts);
       _.each(vm.managedContacts, function (contact, index) {
         promises.push(Calendar.get(contact.id, vm.selectedPeriod.id)
           .then(function (calendar) {
-            vm.managedContacts[index].calendarData = setCalendarProps(vm.managedContacts[index].id, calendar);
+            tempContactData[index].calendarData = setCalendarProps(vm.managedContacts[index].id, calendar);
           }));
       });
 
@@ -351,6 +353,9 @@ define([
             });
           });
           return loadCalendar();
+        })
+        .then(function () {
+          vm.managedContacts = tempContactData;
         });
     }
 
