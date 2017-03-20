@@ -18,8 +18,8 @@ define([
          */
         defaultCustomData: function () {
           var toilCustomData = {
-            toilDurationHours: 0,
-            toilDurationMinutes: 0,
+            toilDurationHours: '0',
+            toilDurationMinutes: '0',
             request_type: 'toil'
           };
 

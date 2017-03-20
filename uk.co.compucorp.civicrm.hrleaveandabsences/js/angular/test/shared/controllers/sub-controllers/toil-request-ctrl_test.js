@@ -141,8 +141,8 @@
             });
 
             it('does not reset toil attributes', function () {
-              expect($ctrl.request.toilDurationHours).not.toEqual(0);
-              expect($ctrl.request.toilDurationMinutes).toEqual(0);
+              expect($ctrl.request.toilDurationHours).not.toEqual('0');
+              expect($ctrl.request.toilDurationMinutes).toEqual('0');
               expect($ctrl.request.toil_to_accrue).not.toEqual('');
             });
           });
