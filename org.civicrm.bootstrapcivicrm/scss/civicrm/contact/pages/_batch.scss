@@ -64,6 +64,10 @@
       padding: 10px 15px;
       display: flex;
 
+      &.crm-datatable-pager-top {
+        background: $crm-accordion-header-color;
+      }
+
       .dataTables_paginate {
         width: 50% !important;
         float: right;
@@ -73,11 +77,19 @@
       .dataTables_info {
         width: 49%;
         float: left;
+        padding: 0;
+        position: relative;
+        top: 3px;
+        line-height: 25px;
       }
     }
 
     .dataTable {
       box-shadow: none !important;
+    }
+
+    thead {
+      border-top: 1px solid $crm-dark-grayblue;
     }
   }
 }
