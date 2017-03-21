@@ -52,7 +52,7 @@ define([
       };
       this.loading = {
         absenceTypes: true,
-        calculateBalanceChange: false,
+        showBalanceChange: false,
         fromDayTypes: false,
         toDayTypes: false
       };
@@ -147,14 +147,14 @@ define([
       this.calculateBalanceChange = function () {
         var self = this;
 
-        setDateAndTypes.call(self);
+        self._setDateAndTypes.call(self);
 
         if (!canCalculateChange.call(self)) {
           return $q.resolve();
         }
 
         self.error = null;
-        self.loading.calculateBalanceChange = true;
+        self.loading.showBalanceChange = true;
         return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange.call(self))
           .then(function (balanceChange) {
             if (balanceChange) {
@@ -163,7 +163,7 @@ define([
               self.balance.closing = self.balance.opening + self.balance.change.amount;
               rePaginate.call(self);
             }
-            self.loading.calculateBalanceChange = false;
+            self.loading.showBalanceChange = false;
           })
           .catch(handleError.bind(self));
       };
@@ -478,12 +478,35 @@ define([
         }
       };
 
+
       /**
-       * Sets the min and max for to date from absence period
+       * Sets dates and types for this.request from UI
+       */
+      this._setDateAndTypes = function () {
+        this._setDates.call(this);
+
+        if (this.uiOptions.multipleDays) {
+          this.uiOptions.showBalance = !!this.request.to_date && !!this.request.from_date;
+        } else {
+          if (this.uiOptions.fromDate) {
+            this.request.to_date_type = this.request.from_date_type;
+          }
+
+          this.uiOptions.showBalance = !!this.request.from_date;
+        }
+      }
+
+      /**
+       * Sets the min and max for to date from absence period. It also sets the
+       * init/starting date which user can select from. For multiple days request
+       * user can select to date which is one more than the the start date.
        */
       this._setMinMaxDate = function () {
         if (this.uiOptions.fromDate) {
-          this.uiOptions.date.to.options.minDate = this.uiOptions.fromDate;
+          var nextFromDay = moment(this.uiOptions.fromDate).add(1, 'd').toDate();
+
+          this.uiOptions.date.to.options.minDate = nextFromDay;
+          this.uiOptions.date.to.options.initDate = nextFromDay;
 
           //also re-set to date if from date is changing and less than to date
           if (this.uiOptions.toDate && moment(this.uiOptions.toDate).isBefore(this.uiOptions.fromDate)) {
@@ -491,6 +514,7 @@ define([
           }
         } else {
           this.uiOptions.date.to.options.minDate = convertDateFormatFromServer(this.period.start_date);
+          this.uiOptions.date.to.options.initDate = this.uiOptions.date.to.options.minDate;
         }
 
         this.uiOptions.date.to.options.maxDate = convertDateFormatFromServer(this.period.end_date);
@@ -758,7 +782,7 @@ define([
         }
 
         //reset loading Checks
-        this.loading.calculateBalanceChange = false;
+        this.loading.showBalanceChange = false;
         this.loading.absenceTypes = false;
         this.loading.fromDayTypes = false;
         this.loading.toDayTypes = false;
@@ -1014,23 +1038,6 @@ define([
       }
 
       /**
-       * Sets dates and types for this.request from UI
-       */
-      function setDateAndTypes() {
-        this._setDates.call(this);
-
-        if (this.uiOptions.multipleDays) {
-          this.uiOptions.showBalance = !!this.request.to_date && !!this.request.from_date;
-        } else {
-          if (this.uiOptions.fromDate) {
-            this.request.to_date_type = this.request.from_date_type;
-          }
-
-          this.uiOptions.showBalance = !!this.request.from_date;
-        }
-      }
-
-      /**
        * Sets the collection for given day types to sent list of day types,
        * also initializes the day types
        *
@@ -1042,7 +1049,10 @@ define([
         var keyForDayTypeCollection = 'request' + _.startCase(dayType) + 'DayTypes';
 
         this[keyForDayTypeCollection] = listOfDayTypes;
-        this.request[dayType + '_date_type'] = this[keyForDayTypeCollection][0].value;
+
+        if (!canViewOrEdit.call(this)) {
+          this.request[dayType + '_date_type'] = this[keyForDayTypeCollection][0].value;
+        }
       }
 
       /**

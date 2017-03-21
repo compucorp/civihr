@@ -727,7 +727,7 @@
             });
           });
 
-          describe('after from date is selected', function () {
+          describe('and after from date is selected', function () {
             beforeEach(function () {
               setTestDates(date2017);
             });
@@ -807,15 +807,20 @@
               });
             });
 
-            describe('from date is changed after to date', function () {
-              var from, to;
+            describe('and from date is changed after to date', function () {
+              var from, to, minDate;
 
               beforeEach(function () {
                 setTestDates(date2016);
+                minDate = moment(new Date(date2016)).add(1, 'd').toDate();
               });
 
               it('sets min date to from date', function () {
-                expect($ctrl.uiOptions.date.to.options.minDate).toEqual(new Date(date2016));
+                expect($ctrl.uiOptions.date.to.options.minDate).toEqual(minDate);
+              });
+
+              it('sets init date to from date', function () {
+                expect($ctrl.uiOptions.date.to.options.initDate).toEqual(minDate);
               });
 
               describe('and from date is less than to date', function () {

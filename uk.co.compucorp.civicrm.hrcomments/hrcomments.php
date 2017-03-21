@@ -144,3 +144,15 @@ function hrcomments_civicrm_entityTypes(&$entityTypes) {
   ];
 }
 
+function hrcomments_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  $actionEntities = [
+    'create' => ['comment'],
+    'delete' => ['comment'],
+    'get' => ['comment']
+  ];
+  foreach ($actionEntities as $action => $entities) {
+    foreach ($entities as $entity) {
+      $permissions[$entity][$action] = ['access AJAX API'];
+    }
+  }
+}

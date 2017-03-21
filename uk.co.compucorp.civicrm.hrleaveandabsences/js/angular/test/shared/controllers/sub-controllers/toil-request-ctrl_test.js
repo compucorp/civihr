@@ -215,11 +215,15 @@
           });
 
           it('sets balance', function () {
-            expect($ctrl.balance.opening).toEqual(jasmine.any(Number));
+            expect($ctrl.balance.opening).not.toBeLessThan(0);
           });
 
           it('sets absence types', function () {
             expect(absenceType.id).toEqual(toilRequest.type_id);
+          });
+
+          it('does show balance', function () {
+            expect($ctrl.uiOptions.showBalance).toBeTruthy();
           });
         });
       });

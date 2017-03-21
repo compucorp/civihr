@@ -37,7 +37,7 @@
             <ng-include
               ng-show="$ctrl.isLeaveType('toil')"
               src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
-            <crm-loading show="!$ctrl.loading.calculateBalanceChange">
+            <crm-loading show="!$ctrl.loading.showBalanceChange">
               <div ng-show="$ctrl.uiOptions.showBalance">
                 <hr/>
                 <div class="row chr_leave-request-modal__form-group">
