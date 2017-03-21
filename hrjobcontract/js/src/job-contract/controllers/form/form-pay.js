@@ -18,7 +18,9 @@ define([
                 workPerYear = {
                     Year: 1,
                     Month: 12,
+                    Bimonthly: 24,
                     Week: 52,
+                    Biweekly: 104,
                     Fortnight: 26,
                     Day: 260,
                     Hour: 2080
@@ -43,6 +45,12 @@ define([
                         break;
                     case 2:
                         cycles = workPerYear.Month;
+                        break;
+                    case 3:
+                        cycles = workPerYear.Biweekly;
+                        break;
+                    case 4:
+                        cycles = workPerYear.Bimonthly;
                         break;
                 }
 
