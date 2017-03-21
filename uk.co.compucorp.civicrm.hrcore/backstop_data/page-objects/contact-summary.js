@@ -12,10 +12,13 @@ module.exports = (function () {
     openManageRightsModal: function () {
       var casper = this.casper;
 
-      casper.then(function () {
-        casper.click('#manage-roles-and-teams');
-        casper.waitWhileVisible('.crm_spinner');
-      });
+      return new Promise(function (resolve) {
+        casper.then(function () {
+          casper.click('#manage-roles-and-teams');
+          casper.waitWhileVisible('.crm_spinner');
+          resolve(this.waitForModal('contact-access-rights'));
+        }.bind(this));
+      }.bind(this));
     },
 
     /**

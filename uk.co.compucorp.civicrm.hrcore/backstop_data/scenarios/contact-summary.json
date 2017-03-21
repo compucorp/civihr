@@ -9,11 +9,6 @@
       "label": "Contact Summary / Actions",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
       "onReadyScript": "contact-summary/show-actions"
-    },
-    {
-      "label": "Contact Access Rights",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/show-manage-rights"
     }
   ]
 }
