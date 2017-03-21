@@ -46,6 +46,8 @@
 
   #map-field {
     padding: 20px;
+    margin-left: -20px;
+    margin-right: -20px;
 
     table {
       @include mx-expandable-table();
@@ -63,7 +65,15 @@
 
       tr {
         border-color: $table-border-color !important;
+
+        th {
+          line-height: 30px !important;
+        }
       }
+    }
+
+    .select2-container {
+      width: 250px !important;
     }
   }
 
