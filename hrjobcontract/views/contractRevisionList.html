@@ -53,6 +53,13 @@
         <li>
           <div class="checkbox">
             <label><input type="checkbox"
+              ng-checked="display.changeReason"
+              ng-click="display.changeReason = !display.changeReason"> Change Reason</label>
+          </div>
+        </li>
+        <li>
+          <div class="checkbox">
+            <label><input type="checkbox"
               ng-checked="display.recordedBy"
               ng-click="display.recordedBy = !display.recordedBy"> Change Recorded By</label>
           </div>
@@ -117,6 +124,15 @@
             </i>
           </a>
         </th>
+        <th ng-hide="!display.changeReason">
+          <a href="" ng-click="sortBy('revisionEntityIdObj.change_reason');createPage();">
+            Change Reason
+            <i class="fa"
+              ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+              ng-show="sortCol == 'revisionEntityIdObj.change_reason'">
+            </i>
+          </a>
+        </th>
         <th ng-hide="!display.recordedBy">
           <a href="" ng-click="sortBy('revisionEntityIdObj.editor_name');createPage();">
             Change Recorded By
@@ -138,6 +154,7 @@
         <td ng-hide="!display.totalSalary">{{revision.pay.pay_annualized_est || '-'}} {{options.pay.pay_currency[revision.pay.pay_currency]}}</td>
         <td ng-hide="!display.hours">{{options.hour.hours_type[revision.hour.hours_type] || '-'}}</td>
         <td ng-hide="!display.placeOfWork">{{options.details.location[revision.details.location] || '-'}}</td>
+        <td ng-hide="!display.changeReason">{{options.contract.change_reason[revision.revisionEntityIdObj.change_reason] || '-'}}</td>
         <td ng-hide="!display.recordedBy">{{revision.revisionEntityIdObj.editor_name || '-'}}</td>
         <td></td>
         <td>
