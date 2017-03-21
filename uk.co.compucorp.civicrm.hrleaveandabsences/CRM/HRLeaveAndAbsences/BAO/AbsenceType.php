@@ -105,22 +105,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   /**
    * Deletes the AbsenceType with the given ID.
    *
-   * A reserved AbsenceType cannot be deleted. If the given ID is from a
-   * reserved type, and exception will be thrown.
-   *
    * @param int $id The ID of the AbsenceType to be deleted
-   *
-   * @throws \CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
    */
   public static function del($id) {
     $absenceType = new CRM_HRLeaveAndAbsences_DAO_AbsenceType();
     $absenceType->id = $id;
     $absenceType->find(true);
-
-    if($absenceType->is_reserved) {
-      throw new CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException('Reserved types cannot be deleted!');
-    }
-
     $absenceType->delete();
 
     if($absenceType->must_take_public_holiday_as_leave) {
