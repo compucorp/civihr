@@ -151,6 +151,8 @@ define([
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'balance_change': -10,
         'request_type': 'sickness',
+        "sickness_reason": "2",
+        "sickness_required_documents": "1,2",
         "dates": [{
             "id": "38",
             "date": "2016-06-03"

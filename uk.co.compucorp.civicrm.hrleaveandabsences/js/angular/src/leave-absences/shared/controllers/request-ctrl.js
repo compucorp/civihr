@@ -890,6 +890,8 @@ define([
           this.statusLabel = getStatusFromValue.call(this, this.request.status_id).label;
           if (this.isRole('manager')) {
             setStatuses.call(this);
+          } else if (this.isRole('owner')) {
+            this.request.status_id = this.requestStatuses['waiting_approval'].value;
           }
         } else if (this.isMode('create')) {
           this.request.status_id = this.requestStatuses['waiting_approval'].value;
@@ -1076,17 +1078,12 @@ define([
        * Sets leave requestion statuses
        */
       function setStatuses() {
-        var allowedStatuses = ['approved', 'more_information_requested', 'cancelled'],
+        var allowedStatuses = ['approved', 'more_information_requested', 'cancelled', 'rejected'],
           key,
           status,
           self = this;
 
         if (self.isRole('manager')) {
-          //remove current status of leaverequest
-          _.remove(allowedStatuses, function (status) {
-            return status === getStatusFromValue.call(self, self.request.status_id).name;
-          });
-
           //filter self.requestStatuses to contain statues relevant for manager to act
           for (key in self.requestStatuses) {
             if (!_.includes(allowedStatuses, key)) {

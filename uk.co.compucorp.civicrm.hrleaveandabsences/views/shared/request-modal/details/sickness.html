@@ -22,6 +22,7 @@
             ng-disabled="$ctrl.isRole('owner')"
             required type="checkbox" value="document.value"
             ng-click="$ctrl.request.toggleDocument(document.value)"
+            ng-checked="$ctrl.isChecked(document.value)"
             ng-selected="$ctrl.isDocumentInRequest(document.value)">
           <span>{{document.label}}</span>
         </div>

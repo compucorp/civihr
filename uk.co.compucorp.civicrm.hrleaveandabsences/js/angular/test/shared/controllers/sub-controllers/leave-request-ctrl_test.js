@@ -961,6 +961,28 @@
             expect($ctrl.uiOptions.multipleDays).toBeFalsy();
           });
         });
+
+        describe('manager asks for more information', function () {
+          var expectedStatusValue;
+
+          beforeEach(function () {
+            var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '4');
+            var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+            leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+            var directiveOptions = {
+              contactId: leaveRequest.contact_id, //owner's contact id
+              leaveRequest: leaveRequest
+            };
+
+            initTestController(directiveOptions);
+            expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+          });
+
+          it('status changes to waiting approval', function () {
+            expect($ctrl.request.status_id).toEqual(expectedStatusValue);
+          });
+        });
       });
 
       describe('user opens in view mode', function () {

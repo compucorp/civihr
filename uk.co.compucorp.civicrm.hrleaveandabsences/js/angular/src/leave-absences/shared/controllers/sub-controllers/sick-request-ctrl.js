@@ -30,7 +30,7 @@ define([
       };
 
       /**
-       * Checks if given value is set for leave request list of document value ie., field required_documents
+       * Checks if given value is set for leave request list of document value ie., field sickness_required_documents
        *
        * @param {String} value
        * @return {Boolean}
@@ -38,6 +38,21 @@ define([
       vm.isDocumentInRequest = function (value) {
         return !!_.find(vm.sicknessDocumentTypes, function (document) {
           return document.value == value;
+        });
+      };
+
+      /**
+       * During initialization it will check if given value is set for leave request list
+       * of document value ie., field sickness_required_documents in existing leave request
+       *
+       * @param {String} value
+       * @return {Boolean}
+       */
+      vm.isChecked = function (value) {
+        var docsArray = vm.request.getDocumentArray();
+
+        return !!_.find(docsArray, function (document) {
+          return document == value;
         });
       };
 
