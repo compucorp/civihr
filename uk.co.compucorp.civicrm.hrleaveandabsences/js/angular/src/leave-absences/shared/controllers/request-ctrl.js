@@ -1086,7 +1086,7 @@ define([
         if (self.isRole('manager')) {
           //filter self.requestStatuses to contain statues relevant for manager to act
           for (key in self.requestStatuses) {
-            if (!_.includes(allowedStatuses, key)) {
+            if (!_.some(allowedStatuses, function (value) { return value === key })) {
               delete self.requestStatuses[key];
             }
           }
