@@ -1024,9 +1024,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Creates Option Group and Option Values for Health an Life Insurance Plan 
+   * Creates Option Group and Option Values for Health an Life Insurance Plan
    * Types.
-   * 
+   *
    * @return boolean TRUE
    */
   public function upgrade_1025() {
