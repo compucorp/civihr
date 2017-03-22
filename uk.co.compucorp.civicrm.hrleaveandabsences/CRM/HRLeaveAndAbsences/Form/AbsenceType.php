@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
+
 require_once 'CRM/Core/Form.php';
 
 /**
@@ -39,6 +41,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
         $this->addFieldsRules();
 
         $this->addButtons($this->getAvailableButtons());
+        $this->assign('canDeleteType', $this->canDelete());
         $this->assign('deleteUrl', $this->getDeleteUrl());
         $this->assign('availableColors', json_encode(CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors()));
 
@@ -306,5 +309,15 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
             null,
             false
         );
+    }
+
+    /**
+     * Checks whether an AbsenceType object can be deleted.
+     *
+     * @return bool
+     */
+    private function canDelete() {
+      $absenceTypeService = new AbsenceTypeService();
+      return !$absenceTypeService->absenceTypeHasEverBeenUsed($this->_id);
     }
 }

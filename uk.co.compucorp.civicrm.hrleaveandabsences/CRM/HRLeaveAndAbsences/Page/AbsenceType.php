@@ -1,11 +1,19 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
+
 class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
 
   private $links = array();
 
+  /**
+   * @var \CRM_HRLeaveAndAbsences_Service_AbsenceType
+   */
+  private $absenceTypeService;
+
   public function run() {
     CRM_Utils_System::setTitle(ts('Leave/Absence Types'));
+    $this->absenceTypeService = new AbsenceTypeService();
     parent::run();
   }
 
@@ -141,7 +149,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
   private function calculateLinksMask($absenceType) {
     $mask = array_sum(array_keys($this->links()));
 
-    if($absenceType->is_reserved) {
+    if($this->canNotDelete($absenceType)) {
       $mask -= CRM_Core_Action::DELETE;
     }
 
@@ -156,5 +164,17 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
     }
 
     return $mask;
+  }
+
+  /**
+   * Checks whether an AbsenceType object cannot be deleted.
+   *
+   * @param CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
+   *
+   * @return bool
+   */
+  private function canNotDelete($absenceType) {
+    return $this->absenceTypeService->absenceTypeHasEverBeenUsed($absenceType->id)
+           || $absenceType->is_reserved;
   }
 }
