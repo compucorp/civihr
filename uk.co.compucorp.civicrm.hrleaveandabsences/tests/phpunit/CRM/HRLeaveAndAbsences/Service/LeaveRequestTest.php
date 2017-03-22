@@ -170,22 +170,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($params, false);
   }
 
-  public function testCreateThrowsAnExceptionForLeaveContactWhenUpdatingLeaveStatusWithoutPermission() {
-    //The leave manager creates a leave request with More information requested status
-    $params = $this->getDefaultParams(['status_id' => $this->leaveRequestStatuses['More Information Requested']['id']]);
-    $leaveRequest = $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
-
-    //The leave contact tries to change the status to 'Waiting Approval'
-    //Even though it was a valid status transition but the leave contact does not have the permission
-    $params['id'] = $leaveRequest->id;
-    $params['status_id'] = $this->leaveRequestStatuses['Waiting Approval']['id'];
-
-    $this->setExpectedException(
-      'RuntimeException', "You don't have enough permission to change the status to {$this->leaveRequestStatuses['Waiting Approval']['id']}"
-    );
-    $this->getLeaveRequestService()->create($params, false);
-  }
-
   /**
    * @expectedException RuntimeException
    * @expectedExceptionMessage You are not allowed to change the request dates

@@ -106,14 +106,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       );
     }
 
-    if ($this->statusChanged($params) && !$this->currentUserCanChangeStatusTo(
-      $params['status_id'], $params['contact_id'])
-    ) {
-      throw new RuntimeException(
-        "You don't have enough permission to change the status to {$params['status_id']}"
-      );
-    }
-
     return $this->createRequestWithBalanceChanges($params);
   }
 
@@ -210,38 +202,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $leaveRequestToDate = new DateTime($oldLeaveRequest->to_date);
 
     return $leaveRequestFromDate != $fromDate || $leaveRequestToDate != $toDate;
-  }
-
-  /**
-   * Checks if the current user has permissions to update the leave request to the new status
-   *
-   * @param int $newStatus
-   * @param int $contactID
-   *
-   * @return bool
-   */
-  private function currentUserCanChangeStatusTo($newStatus, $contactID) {
-    $leaveStatuses = $this->getLeaveRequestStatuses();
-
-    switch ($newStatus) {
-      case $leaveStatuses['cancelled']:
-        return $this->leaveRequestRightsService->canCancelFor($contactID);
-
-      case $leaveStatuses['approved']:
-        return $this->leaveRequestRightsService->canApproveFor($contactID);
-
-      case $leaveStatuses['rejected']:
-        return $this->leaveRequestRightsService->canRejectFor($contactID);
-
-      case $leaveStatuses['more_information_requested']:
-        return $this->leaveRequestRightsService->canRequestMoreInformationFor($contactID);
-
-      case $leaveStatuses['waiting_approval']:
-        return $this->leaveRequestRightsService->canPutInWaitingForApprovalFor($contactID);
-
-      default:
-        return false;
-    }
   }
 
   /**
