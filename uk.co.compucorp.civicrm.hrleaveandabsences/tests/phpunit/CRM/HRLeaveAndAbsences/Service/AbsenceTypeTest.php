@@ -124,8 +124,8 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
    * @expectedExceptionMessage Reserved types cannot be deleted!
    */
   public function testDeleteThrowsExceptionWhenDeletingAnAbsenceTypeThatIsReserved() {
-    $absenceTypeID = AbsenceTypeFabricator::createReservedType();
-    $this->absenceTypeService->delete($absenceTypeID);
+    $absenceType = AbsenceTypeFabricator::fabricateReservedType();
+    $this->absenceTypeService->delete($absenceType->id);
   }
 
   public function testDeleteCanDeleteAnAbsenceTypeThatIsNotUsedOrReserved() {
