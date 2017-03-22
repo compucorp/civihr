@@ -22,4 +22,18 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType extends
     return AbsenceType::create($params);
   }
 
+  /**
+   * Since we cannot create reserved types through the API,
+   * we have this helper method to insert one directly in
+   * the database
+   */
+  public static function fabricateReservedType($params = []) {
+    $absenceType = self::fabricate($params);
+    $absenceTypeTable = AbsenceType::getTableName();
+
+    $query = "UPDATE {$absenceTypeTable} SET is_reserved = 1 WHERE id = {$absenceType->id}";
+    CRM_Core_DAO::executeQuery($query);
+
+    return $absenceType;
+  }
 }

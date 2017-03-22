@@ -18,6 +18,12 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
+  private $absenceTypeService;
+
+  public function setUp() {
+    $this->absenceTypeService = new AbsenceTypeService();
+  }
+
   public function testPostUpdateActionDeletesTOILRequestsWhenTOILGetsDisabled() {
     $absenceType = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => true,
@@ -71,8 +77,7 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
       'color' => '#000000'
     ]);
 
-    $absenceTypeService = new AbsenceTypeService();
-    $absenceTypeService->postUpdateActions($updatedAbsenceType);
+    $this->absenceTypeService->postUpdateActions($updatedAbsenceType);
 
     //confirm the balance change for the expired TOIL balance was not deleted
     $balanceChange = new LeaveBalanceChange();
@@ -92,5 +97,68 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
     $leaveRequestDate->find(true);
     $this->assertEquals($leaveRequestDate->N, 1);
     $this->assertEquals($leaveRequestDate->date, '2016-03-10');
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
+   * @expectedExceptionMessage Absence type cannot be deleted because it is linked to one or more leave requests
+   */
+  public function testDeleteThrowsExceptionWhenDeletingAnAbsenceTypeThatIsLinkedToALeaveRequest() {
+    $absenceTypeID = 1;
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], true);
+
+    $this->absenceTypeService->delete($absenceTypeID);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
+   * @expectedExceptionMessage Reserved types cannot be deleted!
+   */
+  public function testDeleteThrowsExceptionWhenDeletingAnAbsenceTypeThatIsReserved() {
+    $absenceType = AbsenceTypeFabricator::fabricateReservedType();
+    $this->absenceTypeService->delete($absenceType->id);
+  }
+
+  public function testDeleteCanDeleteAnAbsenceTypeThatIsNotUsedOrReserved() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $this->absenceTypeService->delete($absenceType->id);
+
+    try {
+      AbsenceType::findById($absenceType->id);
+    } catch(Exception $e) {
+      return;
+    }
+    $this->fail("Expected to not find the AbsenceType with {$absenceType->id}, but it was found");
+  }
+
+  public function testAbsenceTypeHasEverBeenUsedReturnsTrueWhenAbsenceTypeIsLinkedToLeaveRequest() {
+    $absenceTypeID = 1;
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], true);
+
+    $this->assertTrue($this->absenceTypeService->absenceTypeHasEverBeenUsed($absenceTypeID));
+  }
+
+  public function testAbsenceTypeHasEverBeenUsedReturnsFalseWhenAbsenceTypeIsNotLinkedToLeaveRequest() {
+    $absenceTypeID = 1;
+    $this->assertFalse($this->absenceTypeService->absenceTypeHasEverBeenUsed($absenceTypeID));
   }
 }
