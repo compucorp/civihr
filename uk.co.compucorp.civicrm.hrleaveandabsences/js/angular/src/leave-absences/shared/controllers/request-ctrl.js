@@ -52,7 +52,7 @@ define([
       };
       this.loading = {
         absenceTypes: true,
-        calculateBalanceChange: false,
+        showBalanceChange: false,
         fromDayTypes: false,
         toDayTypes: false
       };
@@ -78,7 +78,6 @@ define([
       this.uiOptions = {
         isChangeExpanded: false,
         multipleDays: true,
-        workedDate: null,
         userDateFormat: HR_settings.DATE_FORMAT,
         showBalance: false,
         date: {
@@ -148,14 +147,14 @@ define([
       this.calculateBalanceChange = function () {
         var self = this;
 
-        setDateAndTypes.call(self);
+        self._setDateAndTypes.call(self);
 
         if (!canCalculateChange.call(self)) {
           return $q.resolve();
         }
 
         self.error = null;
-        self.loading.calculateBalanceChange = true;
+        self.loading.showBalanceChange = true;
         return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange.call(self))
           .then(function (balanceChange) {
             if (balanceChange) {
@@ -164,7 +163,7 @@ define([
               self.balance.closing = self.balance.opening + self.balance.change.amount;
               rePaginate.call(self);
             }
-            self.loading.calculateBalanceChange = false;
+            self.loading.showBalanceChange = false;
           })
           .catch(handleError.bind(self));
       };
@@ -207,9 +206,9 @@ define([
        * @return {String}
        */
       this.getCommentorName = function (contact_id) {
-        if(contact_id == this.directiveOptions.contactId) {
+        if (contact_id == this.directiveOptions.contactId) {
           return 'Me';
-        } else if(this.comment.contacts[contact_id]) {
+        } else if (this.comment.contacts[contact_id]) {
           return this.comment.contacts[contact_id].display_name;
         }
       };
@@ -400,24 +399,11 @@ define([
        * Resets data in dates, types, balance.
        */
       this._reset = function () {
-        this.uiOptions.fromDate = this.uiOptions.toDate = null;
-        this.uiOptions.workedDate = null;
-        this.uiOptions.showBalance = false;
+        this.uiOptions.toDate = this.uiOptions.fromDate;
+        this.request.to_date_type = this.request.from_date_type;
+        this.request.to_date = this.request.from_date;
 
-        this.request.from_date_type = this.request.to_date_type = null;
-        this.request.from_date = this.request.to_date = null;
-
-        this.balance = {
-          closing: 0,
-          opening: 0,
-          change: {
-            amount: 0,
-            breakdown: []
-          }
-        };
-
-        this.pagination.totalItems = 0;
-        this.pagination.filteredbreakdown = [];
+        this.calculateBalanceChange();
       };
 
       /**
@@ -492,12 +478,35 @@ define([
         }
       };
 
+
       /**
-       * Sets the min and max for to date from absence period
+       * Sets dates and types for this.request from UI
+       */
+      this._setDateAndTypes = function () {
+        this._setDates.call(this);
+
+        if (this.uiOptions.multipleDays) {
+          this.uiOptions.showBalance = !!this.request.to_date && !!this.request.from_date;
+        } else {
+          if (this.uiOptions.fromDate) {
+            this.request.to_date_type = this.request.from_date_type;
+          }
+
+          this.uiOptions.showBalance = !!this.request.from_date;
+        }
+      }
+
+      /**
+       * Sets the min and max for to date from absence period. It also sets the
+       * init/starting date which user can select from. For multiple days request
+       * user can select to date which is one more than the the start date.
        */
       this._setMinMaxDate = function () {
         if (this.uiOptions.fromDate) {
-          this.uiOptions.date.to.options.minDate = this.uiOptions.fromDate;
+          var nextFromDay = moment(this.uiOptions.fromDate).add(1, 'd').toDate();
+
+          this.uiOptions.date.to.options.minDate = nextFromDay;
+          this.uiOptions.date.to.options.initDate = nextFromDay;
 
           //also re-set to date if from date is changing and less than to date
           if (this.uiOptions.toDate && moment(this.uiOptions.toDate).isBefore(this.uiOptions.fromDate)) {
@@ -505,6 +514,7 @@ define([
           }
         } else {
           this.uiOptions.date.to.options.minDate = convertDateFormatFromServer(this.period.start_date);
+          this.uiOptions.date.to.options.initDate = this.uiOptions.date.to.options.minDate;
         }
 
         this.uiOptions.date.to.options.maxDate = convertDateFormatFromServer(this.period.end_date);
@@ -547,6 +557,10 @@ define([
 
             if (self.isMode.call(self, 'edit')) {
               initialLeaveRequestAttributes = _.cloneDeep(self.request.attributes());
+
+              if (self.request.from_date === self.request.to_date) {
+                self.uiOptions.multipleDays = false;
+              }
             }
           });
       };
@@ -762,14 +776,13 @@ define([
         else {
           if (_.isObject(errors)) {
             this.error = JSON.stringify(errors)
-          }
-          else {
+          } else {
             this.error = errors.toString();
           }
         }
 
         //reset loading Checks
-        this.loading.calculateBalanceChange = false;
+        this.loading.showBalanceChange = false;
         this.loading.absenceTypes = false;
         this.loading.fromDayTypes = false;
         this.loading.toDayTypes = false;
@@ -877,6 +890,8 @@ define([
           this.statusLabel = getStatusFromValue.call(this, this.request.status_id).label;
           if (this.isRole('manager')) {
             setStatuses.call(this);
+          } else if (this.isRole('owner')) {
+            this.request.status_id = this.requestStatuses['waiting_approval'].value;
           }
         } else if (this.isMode('create')) {
           this.request.status_id = this.requestStatuses['waiting_approval'].value;
@@ -908,7 +923,7 @@ define([
        */
       function loadCommentsandContactnames() {
         //In CREATE mode dont fetch comments
-        if(!this.isMode('create')) {
+        if (!this.isMode('create')) {
           return this.request.loadComments()
             .then(loadContactNames.bind(this));
         }
@@ -921,20 +936,20 @@ define([
        *
        * @return {Promise}
        */
-      function loadContactNames () {
+      function loadContactNames() {
         var contactIDs = [],
           self = this;
 
         _.each(self.request.comments, function (comment) {
           //Push only unique contactId's which are not same as logged in user
-          if(comment.contact_id != self.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
+          if (comment.contact_id != self.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
             contactIDs.push(comment.contact_id);
           }
         });
 
         return Contact.all({
           id: { IN: contactIDs }
-        },{
+        }, {
           page: 1,
           size: 0
         }).then(function (contacts) {
@@ -1025,23 +1040,6 @@ define([
       }
 
       /**
-       * Sets dates and types for this.request from UI
-       */
-      function setDateAndTypes() {
-        this._setDates.call(this);
-
-        if (this.uiOptions.multipleDays) {
-          this.uiOptions.showBalance = !!this.request.to_date && !!this.request.from_date;
-        } else {
-          if (this.uiOptions.fromDate) {
-            this.request.to_date_type = this.request.from_date_type;
-          }
-
-          this.uiOptions.showBalance = !!this.request.from_date;
-        }
-      }
-
-      /**
        * Sets the collection for given day types to sent list of day types,
        * also initializes the day types
        *
@@ -1053,7 +1051,10 @@ define([
         var keyForDayTypeCollection = 'request' + _.startCase(dayType) + 'DayTypes';
 
         this[keyForDayTypeCollection] = listOfDayTypes;
-        this.request[dayType + '_date_type'] = this[keyForDayTypeCollection][0].value;
+
+        if (!canViewOrEdit.call(this)) {
+          this.request[dayType + '_date_type'] = this[keyForDayTypeCollection][0].value;
+        }
       }
 
       /**
@@ -1077,20 +1078,15 @@ define([
        * Sets leave requestion statuses
        */
       function setStatuses() {
-        var allowedStatuses = ['approved', 'more_information_requested', 'cancelled'],
+        var allowedStatuses = ['approved', 'more_information_requested', 'cancelled', 'rejected'],
           key,
           status,
           self = this;
 
         if (self.isRole('manager')) {
-          //remove current status of leaverequest
-          _.remove(allowedStatuses, function (status) {
-            return status === getStatusFromValue.call(self, self.request.status_id).name;
-          });
-
           //filter self.requestStatuses to contain statues relevant for manager to act
           for (key in self.requestStatuses) {
-            if (!_.includes(allowedStatuses, key)) {
+            if (!_.some(allowedStatuses, function (value) { return value === key })) {
               delete self.requestStatuses[key];
             }
           }
@@ -1103,13 +1099,17 @@ define([
       function updateRequest() {
         var self = this;
 
-        self.request.update()
+        self.request.isValid()
           .then(function () {
-            if (self.isRole('manager')) {
-              postSubmit.call(self, 'LeaveRequest::updatedByManager');
-            } else if (self.isRole('owner')) {
-              postSubmit.call(self, 'LeaveRequest::edit');
-            }
+            self.request.update()
+              .then(function (result) {
+                if (self.isRole('manager')) {
+                  postSubmit.call(self, 'LeaveRequest::updatedByManager');
+                } else if (self.isRole('owner')) {
+                  postSubmit.call(self, 'LeaveRequest::edit');
+                }
+              })
+              .catch(handleError.bind(self));
           })
           .catch(handleError.bind(self));
       }

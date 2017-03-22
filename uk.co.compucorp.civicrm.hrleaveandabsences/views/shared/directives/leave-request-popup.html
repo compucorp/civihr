@@ -37,7 +37,7 @@
             <ng-include
               ng-show="$ctrl.isLeaveType('toil')"
               src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
-            <crm-loading show="!$ctrl.loading.calculateBalanceChange">
+            <crm-loading show="!$ctrl.loading.showBalanceChange">
               <div ng-show="$ctrl.uiOptions.showBalance">
                 <hr/>
                 <div class="row chr_leave-request-modal__form-group">
@@ -135,6 +135,7 @@
                     <span class="chr_leave-request-comment__date">{{$ctrl.formatDateTime(comment.created_at)}}</span>
                     <button
                       class="btn btn-link"
+                      ng-disabled="$ctrl.isMode('view')"
                       ng-click="$ctrl.request.deleteComment(comment)"
                       ng-show="$ctrl.removeCommentVisibility(comment)">Remove</button>
                   </div>
@@ -145,6 +146,7 @@
                 class="chr_wysiwyg"
                 text-angular
                 prevent-animations
+                ng-disabled="$ctrl.isMode('view')"
                 ta-toolbar="[['bold','italics','underline']]"
                 ng-model="$ctrl.comment.text"></div>
               <div class="chr_wysiwyg__action">
@@ -152,7 +154,7 @@
                 <button
                   class="btn btn-link"
                   ng-click="$ctrl.addComment()"
-                  ng-disabled="$ctrl.comment.text.length === 0">
+                  ng-disabled="$ctrl.comment.text.length === 0 || $ctrl.isMode('view')">
                   <i class="fa fa-comment-o" aria-hidden="true"></i>
                   Add comment
                 </button>

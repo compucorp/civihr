@@ -7,6 +7,7 @@
         <div class="chr_custom-select chr_custom-select--full">
           <select
             name="reason"
+            ng-disabled="$ctrl.isMode('view')"
             ng-options="reason.value as reason.label for reason in $ctrl.sicknessReasons"
             ng-model="$ctrl.request.sickness_reason">
             <option value="">- select -</option>
@@ -21,6 +22,7 @@
             ng-disabled="$ctrl.isRole('owner')"
             required type="checkbox" value="document.value"
             ng-click="$ctrl.request.toggleDocument(document.value)"
+            ng-checked="$ctrl.isChecked(document.value)"
             ng-selected="$ctrl.isDocumentInRequest(document.value)">
           <span>{{document.label}}</span>
         </div>

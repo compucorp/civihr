@@ -18,8 +18,8 @@ define([
          */
         defaultCustomData: function () {
           var toilCustomData = {
-            toilDurationHours: 0,
-            toilDurationMinutes: 0,
+            toilDurationHours: '0',
+            toilDurationMinutes: '0',
             request_type: 'toil'
           };
 
@@ -56,7 +56,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['toilDurationHours', 'toilDurationMinutes', 'comments', 'uploader'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'uploader', 'files', 'toilDurationHours', 'toilDurationMinutes'], key)) {
             result[key] = this[key];
           }
         }

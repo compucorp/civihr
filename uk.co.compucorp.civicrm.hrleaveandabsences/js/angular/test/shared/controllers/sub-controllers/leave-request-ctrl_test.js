@@ -28,7 +28,8 @@
         EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl,
         date2016 = '01/12/2016',
         date2017 = '02/02/2017',
-        date2013 = '02/02/2013';
+        date2013 = '02/02/2013',
+        dateServer2017 = '2017-02-02';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
         'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
@@ -81,6 +82,9 @@
         spyOn(AbsenceTypeAPI, 'all').and.callThrough();
         spyOn(EntitlementAPI, 'all').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
+        spyOn(LeaveRequestAPI, 'create').and.callThrough();
+        spyOn(LeaveRequestAPI, 'update').and.callThrough();
+        spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
         spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
 
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
@@ -415,7 +419,7 @@
         });
       });
 
-      describe('number of days selection', function () {
+      describe('number of days selection without date selection', function () {
         describe('when switching to single day', function () {
           beforeEach(function () {
             $ctrl.uiOptions.multipleDays = false;
@@ -424,7 +428,7 @@
           });
 
           it('hides to date and type', function () {
-            expect($ctrl.uiOptions.toDate).toBeNull();
+            expect($ctrl.uiOptions.toDate).not.toBeDefined();
             expect($ctrl.uiOptions.selectedToType).not.toBeDefined();
           });
 
@@ -618,6 +622,11 @@
             expect($ctrl.canSubmit()).toBeTruthy();
           });
 
+          it('calls corresponding API end points', function () {
+            expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
+            expect(LeaveRequestAPI.create).toHaveBeenCalled();
+          });
+
           it('sends event', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.request);
           });
@@ -695,8 +704,13 @@
             expect($ctrl.canSubmit()).toBeTruthy();
           });
 
-          it('calls expected api', function () {
+          it('calls update method on instance', function () {
             expect($ctrl.request.update).toHaveBeenCalled();
+          });
+
+          it('calls corresponding API end points', function () {
+            expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
+            expect(LeaveRequestAPI.update).toHaveBeenCalled();
           });
 
           it('sends update event', function () {
@@ -713,7 +727,7 @@
             });
           });
 
-          describe('after from date is selected', function () {
+          describe('and after from date is selected', function () {
             beforeEach(function () {
               setTestDates(date2017);
             });
@@ -793,15 +807,20 @@
               });
             });
 
-            describe('from date is changed after to date', function () {
-              var from, to;
+            describe('and from date is changed after to date', function () {
+              var from, to, minDate;
 
               beforeEach(function () {
                 setTestDates(date2016);
+                minDate = moment(new Date(date2016)).add(1, 'd').toDate();
               });
 
               it('sets min date to from date', function () {
-                expect($ctrl.uiOptions.date.to.options.minDate).toEqual(new Date(date2016));
+                expect($ctrl.uiOptions.date.to.options.minDate).toEqual(minDate);
+              });
+
+              it('sets init date to from date', function () {
+                expect($ctrl.uiOptions.date.to.options.initDate).toEqual(minDate);
               });
 
               describe('and from date is less than to date', function () {
@@ -920,6 +939,48 @@
 
           it('closes model popup', function () {
             expect(modalInstanceSpy.close).toHaveBeenCalled();
+          });
+        });
+
+        describe('user selects same from and to date', function () {
+          beforeEach(function () {
+            var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+            var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+            leaveRequest.from_date = leaveRequest.to_date = dateServer2017;
+            leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+            var directiveOptions = {
+              contactId: leaveRequest.contact_id, //owner's contact id
+              leaveRequest: leaveRequest
+            };
+
+            initTestController(directiveOptions);
+          });
+
+          it('selects single day', function () {
+            expect($ctrl.uiOptions.multipleDays).toBeFalsy();
+          });
+        });
+
+        describe('manager asks for more information', function () {
+          var expectedStatusValue;
+
+          beforeEach(function () {
+            var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '4');
+            var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+            leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+            var directiveOptions = {
+              contactId: leaveRequest.contact_id, //owner's contact id
+              leaveRequest: leaveRequest
+            };
+
+            initTestController(directiveOptions);
+            expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+          });
+
+          it('status changes to waiting approval', function () {
+            expect($ctrl.request.status_id).toEqual(expectedStatusValue);
           });
         });
       });

@@ -2,6 +2,7 @@
   define([
     'common/lodash',
     'mocks/data/option-group-mock-data',
+    'mocks/data/leave-request-data',
     'common/angularMocks',
     'leave-absences/shared/config',
     'common/mocks/services/hr-settings-mock',
@@ -16,7 +17,7 @@
     'common/mocks/services/api/contact-mock',
     'leave-absences/shared/controllers/sub-controllers/sick-request-ctrl',
     'leave-absences/shared/modules/shared-settings',
-  ], function (_, optionGroupMock) {
+  ], function (_, optionGroupMock, mockData) {
     'use strict';
 
     describe('SicknessRequestCtrl', function () {
@@ -123,8 +124,8 @@
               $ctrl.changeInNoOfDays();
             });
 
-            it('resets reason', function () {
-              expect($ctrl.request.sickness_reason).toBeNull();
+            it('does not reset sickness reason', function () {
+              expect($ctrl.request.sickness_reason).not.toBeNull();
             });
           });
         });
@@ -183,6 +184,38 @@
         });
       });
 
+      describe('open sickness request in edit mode', function () {
+        var sicknessRequest, absenceType;
+
+        beforeEach(function () {
+          sicknessRequest = SicknessRequestInstance.init(mockData.findBy('request_type', 'sickness'));
+          sicknessRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+          sicknessRequest.sickness_required_documents = '1,2';
+
+          var directiveOptions = {
+            contactId: sicknessRequest.contact_id, //owner's contact id
+            leaveRequest: sicknessRequest
+          };
+
+          initTestController(directiveOptions);
+        });
+
+        it('does show balance', function () {
+          expect($ctrl.uiOptions.showBalance).toBeTruthy();
+        });
+
+        describe('initializes required documents', function() {
+          var testDocumentId = '1', failDocumentId = '3';
+
+          it('checks checkbox', function() {
+            expect($ctrl.isChecked(testDocumentId)).toBeTruthy();
+          });
+
+          it('does not check checkbox', function() {
+            expect($ctrl.isChecked(failDocumentId)).toBeFalsy();
+          });
+        });
+      });
       /**
        * Initialize the controller
        *

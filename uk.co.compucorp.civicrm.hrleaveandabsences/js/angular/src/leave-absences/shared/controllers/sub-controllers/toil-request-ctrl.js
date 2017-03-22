@@ -28,12 +28,13 @@ define([
        */
       vm.calculateBalanceChange = function () {
         if (vm.request.toil_to_accrue) {
-          vm.loading.calculateBalanceChange = true;
-          vm.balance.change.amount = -vm.request.toil_to_accrue;
+          vm.loading.showBalanceChange = true;
+          vm._setDateAndTypes();
+          vm.balance.change.amount = +vm.request.toil_to_accrue;
           vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
           vm.uiOptions.showBalance = true;
           vm.request.to_date_type = vm.request.from_date_type = '1';
-          vm.loading.calculateBalanceChange = false;
+          vm.loading.showBalanceChange = false;
         }
       };
 
@@ -97,21 +98,11 @@ define([
             vm._setMinMaxDate();
             vm._setDates();
             vm.calculateToilExpiryDate();
+            vm.updateBalance();
           })
           .catch(function (error) {
             vm.error = error;
           });
-      };
-
-      /**
-       * Resets data for toil.
-       */
-      vm._reset = function () {
-        parentRequestCtrl._reset.call(this);
-        vm.request.toilDurationHours = 0;
-        vm.request.toilDurationMinutes = 0;
-        vm.request.updateDuration();
-        vm.request.toil_to_accrue = "";
       };
 
       /**

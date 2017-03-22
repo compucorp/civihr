@@ -45,8 +45,8 @@ define([
       });
 
       it('default toil Duration value is set', function () {
-        expect(instance.toilDurationHours).toBe(0);
-        expect(instance.toilDurationMinutes).toBe(0);
+        expect(instance.toilDurationHours).toBe('0');
+        expect(instance.toilDurationMinutes).toBe('0');
       });
 
       it('initializes request type', function() {

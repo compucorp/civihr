@@ -4,8 +4,10 @@
       <label class="col-xs-4 control-label">Duration</label>
       <div class="col-xs-4">
         <div class="chr_custom-select chr_custom-select--full">
-          <select name="hours" ng-model="$ctrl.request.toilDurationHours" ng-change="$ctrl.request.updateDuration()">
-            <option value="0">Hours</option>
+          <select name="hours" ng-model="$ctrl.request.toilDurationHours"
+            ng-disabled="$ctrl.isMode('view')"
+            ng-change="$ctrl.request.updateDuration()">
+            <option value="0" selected="selected">Hours</option>
             <option value="1">1h</option>
             <option value="2">2h</option>
             <option value="3">3h</option>
@@ -23,7 +25,9 @@
       </div>
       <div class="col-xs-4">
         <div class="chr_custom-select chr_custom-select--full">
-          <select name="minutes" ng-model="$ctrl.request.toilDurationMinutes" ng-change="$ctrl.request.updateDuration()">
+          <select name="minutes" ng-model="$ctrl.request.toilDurationMinutes"
+            ng-change="$ctrl.request.updateDuration()"
+            ng-disabled="$ctrl.isMode('view')">
             <option value="0">Mins</option>
             <option value="5">5m</option>
             <option value="10">10m</option>
@@ -49,6 +53,7 @@
         <div class="chr_custom-select chr_custom-select--full">
           <select
             name="toilAmount"
+            ng-disabled="$ctrl.isMode('view')"
             ng-options="amount.value as amount.label for amount in $ctrl.toilAmounts"
             ng-model="$ctrl.request.toil_to_accrue"
             ng-change="$ctrl.calculateBalanceChange()">

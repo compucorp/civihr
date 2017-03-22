@@ -9,16 +9,6 @@ define([
     'LeaveRequestAPI',
     'LeaveRequestInstance',
     function (LeaveRequestAPI, LeaveRequestInstance) {
-      /**
-       * Gets array of documents from comma separated string of documents
-       *
-       * @return {Array}
-       */
-      function getDocumentArray() {
-        var docsArray = this.sickness_required_documents ? this.sickness_required_documents.split(',') : [];
-
-        return docsArray;
-      }
 
       return LeaveRequestInstance.extend({
 
@@ -39,13 +29,24 @@ define([
         },
 
         /**
+         * Gets array of documents from comma separated string of documents
+         *
+         * @return {Array}
+         */
+        getDocumentArray: function () {
+          var docsArray = this.sickness_required_documents ? this.sickness_required_documents.split(',') : [];
+
+          return docsArray;
+        },
+
+        /**
          * Checks if given value is added for leave request list of document value ie., field required_documents
          *  otherwise add it to list of required documents (list is actually string of comma separated values for now)
          *
          * @param {String} documentValue required document value like '1'
          */
         toggleDocument: function (documentValue) {
-          var docsArray = getDocumentArray.call(this);
+          var docsArray = this.getDocumentArray();
           var index = docsArray.indexOf(documentValue);
 
           _.contains(docsArray, documentValue) ? docsArray.splice(index, 1) : docsArray.push(documentValue);
@@ -59,7 +60,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['comments', 'uploader'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'uploader', 'files'], key)) {
             result[key] = this[key];
           }
         }

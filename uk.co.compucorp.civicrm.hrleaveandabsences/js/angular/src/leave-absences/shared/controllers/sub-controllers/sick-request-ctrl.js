@@ -30,7 +30,7 @@ define([
       };
 
       /**
-       * Checks if given value is set for leave request list of document value ie., field required_documents
+       * Checks if given value is set for leave request list of document value ie., field sickness_required_documents
        *
        * @param {String} value
        * @return {Boolean}
@@ -42,11 +42,18 @@ define([
       };
 
       /**
-       * Resets data in dates, types, balance in parent and reason here.
+       * During initialization it will check if given value is set for leave request list
+       * of document value ie., field sickness_required_documents in existing leave request
+       *
+       * @param {String} value
+       * @return {Boolean}
        */
-      vm._reset = function () {
-        parentRequestCtrl._reset.call(this);
-        vm.request.sickness_reason = null;
+      vm.isChecked = function (value) {
+        var docsArray = vm.request.getDocumentArray();
+
+        return !!_.find(docsArray, function (document) {
+          return document == value;
+        });
       };
 
       /**

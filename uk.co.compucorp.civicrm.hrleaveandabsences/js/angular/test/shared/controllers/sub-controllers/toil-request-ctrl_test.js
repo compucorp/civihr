@@ -140,10 +140,10 @@
               $ctrl.changeInNoOfDays();
             });
 
-            it('resets toil attributes', function () {
-              expect($ctrl.request.toilDurationHours).toEqual(0);
-              expect($ctrl.request.toilDurationMinutes).toEqual(0);
-              expect($ctrl.request.toil_to_accrue).toEqual("");
+            it('does not reset toil attributes', function () {
+              expect($ctrl.request.toilDurationHours).not.toEqual('0');
+              expect($ctrl.request.toilDurationMinutes).toEqual('0');
+              expect($ctrl.request.toil_to_accrue).not.toEqual('');
             });
           });
 
@@ -215,11 +215,15 @@
           });
 
           it('sets balance', function () {
-            expect($ctrl.balance.opening).toEqual(jasmine.any(Number));
+            expect($ctrl.balance.opening).not.toBeLessThan(0);
           });
 
           it('sets absence types', function () {
             expect(absenceType.id).toEqual(toilRequest.type_id);
+          });
+
+          it('does show balance', function () {
+            expect($ctrl.uiOptions.showBalance).toBeTruthy();
           });
         });
       });
