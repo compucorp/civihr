@@ -147,7 +147,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
     $session = CRM_Core_Session::singleton();
     $dateType = $session->get('dateTypes');
 
-    /** @var object $contractDetails */
     $contractDetails = NULL;
     if (!empty($params['job_contract_id']))  {
       $contractDetails = CRM_Hrjobcontract_BAO_HRJobContract::checkContract($params['job_contract_id']);
