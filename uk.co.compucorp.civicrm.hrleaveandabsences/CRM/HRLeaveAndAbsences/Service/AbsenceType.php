@@ -38,7 +38,6 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceType {
    * @return boolean
    */
   public function absenceTypeHasEverBeenUsed($absenceTypeID) {
-
     if ($this->absenceTypeIsLinkedToLeaveRequest($absenceTypeID)) {
       return true;
     }
@@ -53,13 +52,12 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceType {
    * @param int $absenceTypeID
    *
    * @throws CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
-   * @throws UnexpectedValueException
    */
   public function delete($absenceTypeID) {
     $absenceType = AbsenceType::findById($absenceTypeID);
 
     if ($this->absenceTypeHasEverBeenUsed($absenceType->id)) {
-      throw new UnexpectedValueException('Absence type cannot be deleted because it is linked to one or more leave requests');
+      throw new OperationNotAllowedException('Absence type cannot be deleted because it is linked to one or more leave requests');
     }
 
     if($absenceType->is_reserved) {

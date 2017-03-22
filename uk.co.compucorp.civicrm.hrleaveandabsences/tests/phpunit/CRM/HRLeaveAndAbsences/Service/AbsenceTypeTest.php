@@ -100,7 +100,7 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
   }
 
   /**
-   * @expectedException UnexpectedValueException
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
    * @expectedExceptionMessage Absence type cannot be deleted because it is linked to one or more leave requests
    */
   public function testDeleteThrowsExceptionWhenDeletingAnAbsenceTypeThatIsLinkedToALeaveRequest() {
@@ -150,17 +150,6 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'to_date_type' => 1,
-      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
-    ], true);
-
-    LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => $absenceTypeID,
-      'contact_id' => 1,
-      'status_id' => 3,
-      'from_date' => CRM_Utils_Date::processDate('2016-01-02'),
-      'from_date_type' => 1,
-      'to_date' => CRM_Utils_Date::processDate('2016-01-02'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ], true);
