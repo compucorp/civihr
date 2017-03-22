@@ -147,6 +147,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
     $session = CRM_Core_Session::singleton();
     $dateType = $session->get('dateTypes');
 
+    /** @var object $contractDetails */
     $contractDetails = NULL;
     if (!empty($params['job_contract_id']))  {
       $contractDetails = CRM_Hrjobcontract_BAO_HRJobContract::checkContract($params['job_contract_id']);
@@ -323,10 +324,9 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
         unset($params['hrjc_role_percent_pay_funder']);
       }
 
-      // check if job role start and end dates if exist matches or within contract start and end dates
-
-      $contractStartDate = CRM_Utils_Date::formatDate($contractDetails->period_start_date, $dateType);
-      $contractEndDate = CRM_Utils_Date::formatDate($contractDetails->period_end_date, $dateType);
+      // use contract dates as fallback if job role dates not set
+      $contractStartDate = $contractDetails->period_start_date;
+      $contractEndDate = $contractDetails->period_end_date;
 
       if (!empty($params['hrjc_role_start_date'])) {
         $roleStartDate = CRM_Utils_Date::formatDate($params['hrjc_role_start_date'], $dateType);
