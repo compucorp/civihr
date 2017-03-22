@@ -325,8 +325,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
       }
 
       // use contract dates as fallback if job role dates not set
-      $contractStartDate = $contractDetails->period_start_date;
-      $contractEndDate = $contractDetails->period_end_date;
+      $contractStartDate = CRM_Utils_Date::formatDate($contractDetails->period_start_date, 1);
+      $contractEndDate = CRM_Utils_Date::formatDate($contractDetails->period_end_date, 1);
 
       if (!empty($params['hrjc_role_start_date'])) {
         $roleStartDate = CRM_Utils_Date::formatDate($params['hrjc_role_start_date'], $dateType);
