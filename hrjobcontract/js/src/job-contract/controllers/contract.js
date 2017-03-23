@@ -78,16 +78,29 @@ define([
        * @param {string || date} newEndDate the date specified by the user
        */
       function updateContractList(newEndDate) {
-        var isCurrentContract = !newEndDate ? true : (moment().diff(newEndDate, "day") <= 0);
+        var isCurrentContract = !newEndDate ? true : (moment().diff(newEndDate, "day") <= 0),
+          contract = $scope.$parent.contract,
+          contractContracts = $scope.$parent.contractCurrent,
+          pastContracts = $scope.$parent.contractPast,
+          currentContractIndex = contractContracts.indexOf(contract),
+          pastContractIndex = pastContracts.indexOf(contract);
 
         if (isCurrentContract) {
-          $scope.$parent.contract.is_current = '1';
-          $scope.$parent.contractCurrent.push($scope.$parent.contract);
-          $scope.$parent.contractPast.splice($scope.$parent.contractPast.indexOf($scope.$parent.contract), 1);
+          contract.is_current = '1';
+          if (currentContractIndex + 1) {
+            angular.extend(contractContracts[currentContractIndex], contract);
+          } else {
+            pastContracts.splice(pastContractIndex, 1);
+            contractContracts.push(contract);
+          }
         } else {
-          $scope.$parent.contract.is_current = '0';
-          $scope.$parent.contractPast.push($scope.$parent.contract);
-          $scope.$parent.contractCurrent.splice($scope.$parent.contractCurrent.indexOf($scope.$parent.contract), 1)
+          contract.is_current = '0';
+          if (pastContractIndex + 1) {
+            angular.extend(pastContracts[pastContractIndex], contract);
+          } else {
+            pastContracts.push(contract);
+            contractContracts.splice(currentContractIndex, 1);
+          }
         }
       }
 
