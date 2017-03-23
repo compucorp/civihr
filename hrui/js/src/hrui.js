@@ -2,19 +2,24 @@
 (function ($, _) {
 
   /**
-   * Adds the Government ID field on the Personal Details page andon the Edit form
+   * Adds the Government ID field on the Personal Details page and on the Edit 
+   * Contact form.
    */
-  function addGovernmentIdField(target) {
+  function addGovernmentIdField() {
+    // Updates Personal Details Page
     if (CRM.cid && CRM.hideGId) {
-      $('.Inline_Custom_Data .crm-inline-edit').each(function() {
-        $(this).detach();
-        $(this).appendTo($('.crm-contact_type_label').parent('div'));
-      });
+      var inlineDataBlock = $('.Inline_Custom_Data');
 
-      $('.Inline_Custom_Data').hide();
-      $('#row-custom_'+CRM.hideGId, target).hide();
+      inlineDataBlock.appendTo($('#contactinfo-block').parent('div').parent('div'));
+      inlineDataBlock.removeClass('crm-collapsible');
+      inlineDataBlock.removeClass('collapsed');
+      inlineDataBlock.addClass('crm-summary-block');
+
+      $('.Inline_Custom_Data div.collapsible-title').css({display: 'none'});
+      $('.Inline_Custom_Data div.crm-summary-block').css({display: 'block'});
     }
 
+    // Updates Edit Contact Form
     if ($('#customFields').length < 1) {
       $('#Inline_Custom_Data label').each(function() {
         $('#nick_name').parent().after('<td id="customFields"></td>');
