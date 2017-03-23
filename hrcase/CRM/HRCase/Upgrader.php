@@ -126,10 +126,8 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   /**
    * Resets all default case types discarding any customization to match new
    * activity workflow
-   *
-   * will be 1404
    */
-  public function upgrade_1412() {
+  public function upgrade_1404() {
     $defaultTypes = CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes();
     $this->createOrUpdateDefaultCaseTypes($defaultTypes);
 
