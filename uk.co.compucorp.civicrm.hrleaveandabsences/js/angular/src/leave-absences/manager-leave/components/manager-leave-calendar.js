@@ -13,35 +13,21 @@ define([
       return settings.pathTpl + 'components/manager-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$log', '$q', 'shared-settings', 'OptionGroup', 'Contact', 'AbsencePeriod', 'AbsenceType',
+    controller: ['$log', '$q', '$timeout', 'shared-settings', 'OptionGroup', 'Contact', 'AbsencePeriod', 'AbsenceType',
       'Calendar', 'LeaveRequest', 'PublicHoliday', controller]
   });
 
 
-  function controller($log, $q, sharedSettings, OptionGroup, Contact, AbsencePeriod, AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
+  function controller($log, $q, $timeout, sharedSettings, OptionGroup, Contact, AbsencePeriod, AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
     $log.debug('Component: manager-leave-calendar');
 
     var dayTypes = [],
       publicHolidays = [],
       leaveRequests = [],
-      leaveRequestsIndex = [],
+      leaveRequestsIndexed = [],
       leaveRequestStatuses = [],
       vm = Object.create(this),
-      tempContactData = [],
-      monthStructure = {
-        0: [],
-        1: [],
-        2: [],
-        3: [],
-        4: [],
-        5: [],
-        6: [],
-        7: [],
-        8: [],
-        9: [],
-        10: [],
-        11: []
-      };
+      tempContactData = [];
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -55,12 +41,15 @@ define([
       region: null,
       contacts_with_leaves: false
     };
-    vm.loading = {
-      calendar: false,
-      page: false
-    };
     vm.months = ['January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'];
+    vm.loading = {
+      calendar: false,
+      months: vm.months.map(function () {
+        return false;
+      }),
+      page: false
+    };
     vm.selectedMonths = [];
     vm.selectedPeriod = null;
 
@@ -70,7 +59,7 @@ define([
      * @return {array}
      */
     vm.filterContacts = function () {
-      if(vm.filters.contacts_with_leaves) {
+      if (vm.filters.contacts_with_leaves) {
         return vm.filteredContacts.filter(function (contact) {
           return leaveRequests.find(function (request) {
             return request.contact_id == contact.id;
@@ -87,7 +76,7 @@ define([
      * @param  {object} absenceType
      * @return {object} style
      */
-    vm.getAbsenceTypeStyle = function(absenceType) {
+    vm.getAbsenceTypeStyle = function (absenceType) {
       return {
         backgroundColor: absenceType.color,
         borderColor: absenceType.color
@@ -118,7 +107,7 @@ define([
       });
 
       if (contact && contact.calendarData) {
-       return contact.calendarData[vm.months.indexOf(month)]
+        return contact.calendarData[vm.months.indexOf(month)];
       }
     };
 
@@ -300,6 +289,7 @@ define([
         promises.push(Calendar.get(contact.id, vm.selectedPeriod.id)
           .then(function (calendar) {
             tempContactData[index].calendarData = setCalendarProps(vm.managedContacts[index].id, calendar);
+            showMonthLoader();
           }));
       });
 
@@ -345,18 +335,22 @@ define([
           to: vm.selectedPeriod.end_date
         }
       })
-        .then(function (leaveRequestsData) {
-          leaveRequests = leaveRequestsData.list;
-          _.each(leaveRequestsData.list, function(leaveRequest){
-            _.each(leaveRequest.dates, function (leaveRequestDate) {
-              leaveRequestsIndex[leaveRequestDate.date] = leaveRequest;
-            });
+      .then(function (leaveRequestsData) {
+        leaveRequests = leaveRequestsData.list;
+
+        _.each(leaveRequests, function (leaveRequest) {
+          leaveRequestsIndexed[leaveRequest.contact_id] = leaveRequestsIndexed[leaveRequest.contact_id] ?
+            leaveRequestsIndexed[leaveRequest.contact_id] : {};
+
+          _.each(leaveRequest.dates, function (leaveRequestDate) {
+            leaveRequestsIndexed[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
           });
-          return loadCalendar();
-        })
-        .then(function () {
-          vm.managedContacts = tempContactData;
         });
+        return loadCalendar();
+      })
+      .then(function () {
+        vm.managedContacts = tempContactData;
+      });
     }
 
     /**
@@ -488,12 +482,14 @@ define([
       var dateObj,
         leaveRequest,
         dates = Object.keys(calendar.days),
-        indexedByMonth = angular.copy(monthStructure);
+        indexedByMonth = angular.copy(vm.months.map(function () {
+          return [];
+        }));
 
       dates.forEach(function (date) {
         dateObj = calendar.days[date];
         indexedByMonth[parseInt(moment(dateObj.date).month())].push(dateObj);
-        leaveRequest = leaveRequestsIndex[dateObj.date];
+        leaveRequest = leaveRequestsIndexed[contactID] ? leaveRequestsIndexed[contactID][dateObj.date]: null;
         leaveRequest = (leaveRequest && leaveRequest.contact_id === contactID) ? leaveRequest : null;
 
         dateObj.UI = {
@@ -512,6 +508,30 @@ define([
       });
 
       return indexedByMonth;
+    }
+
+    /**
+     * Show month loader for all months initially
+     * then hide each loader on the interval of an offset value
+     */
+    function showMonthLoader() {
+      var offset = 0;
+
+      vm.months.forEach(function (month, index) {
+        //show loader
+        vm.loading.months[index] = (index !== vm.months.indexOf(vm.selectedMonths[0]));
+
+        //do not hide the month which is selected by default i.e. the current month
+        if(index !== vm.months.indexOf(vm.selectedMonths[0])) {
+          (function (index) {
+            $timeout(function () {
+              vm.loading.months[index] = false;
+            }, offset);
+          })(index);
+
+          offset += 500;
+        }
+      });
     }
 
     return vm;
