@@ -10,6 +10,9 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceCha
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest
@@ -2400,6 +2403,102 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     //no recalculation is done because the the absence type on the expired brought forward balance change is
     //different from that on the leave request
     $this->assertEquals(-5, $expiredBalanceChangePeriod1->amount);
+  }
+
+  public function testCalculateAmountForDateForAContactWithWorkPatternHavingMultipleWeeks() {
+    $periodStartDate = new DateTime('2016-01-01');
+
+    $contract = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [ 'period_start_date' => $periodStartDate->format('Y-m-d') ]
+    );
+
+    // Week 1 weekdays: monday, wednesday and friday
+    // Week 2 weekdays: tuesday and thursday
+    $pattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contract['contact_id'],
+      'pattern_id' => $pattern->id,
+      'effective_date' => $periodStartDate->format('YmdHis')
+    ]);
+
+    //create a public holidays on on of the days
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = date('2016-08-04');
+    PublicHolidayLeaveRequestFabricator::fabricate($contract['contact_id'], $publicHoliday);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->contact_id = $contract['contact_id'];
+
+    //(2016-07-29) is a friday on first week and a working day
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-07-29'));
+    $this->assertEquals(-1, $amount);
+
+    //(2016-07-31) is a Sunday on first week and non-working day
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-07-31'));
+    $this->assertEquals(0, $amount);
+
+    //(2016-08-01) is on the monday of the second week and not a working day
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-01'));
+    $this->assertEquals(0, $amount);
+
+    //(2016-08-02) is a tuesday, which is a working day on the second week.
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-02'));
+    $this->assertEquals(-1, $amount);
+
+    //(2016-08-03) is a Wednesday which is not a working day on the second week
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-03'));
+    $this->assertEquals(0, $amount);
+
+    //(2016-08-04) is a thursday which is a working day on the second week but there's a public holiday
+    //existing on that particular date.
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-04'));
+    $this->assertEquals(0, $amount);
+  }
+
+  public function testCalculateAmountForDateForAContactWithWorkPatternHavingOneWeek() {
+    $periodStartDate = new DateTime('2016-01-01');
+
+    $contract = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [ 'period_start_date' => $periodStartDate->format('Y-m-d') ]
+    );
+
+    // Working days: monday through friday
+    $pattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contract['contact_id'],
+      'pattern_id' => $pattern->id,
+      'effective_date' => $periodStartDate->format('YmdHis')
+    ]);
+
+    //create a public holidays on on of the days
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = date('2016-08-03');
+    PublicHolidayLeaveRequestFabricator::fabricate($contract['contact_id'], $publicHoliday);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->contact_id = $contract['contact_id'];
+
+    //2016-07-29 is a friday and a working day
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-07-29'));
+    $this->assertEquals(-1, $amount);
+
+    //2016-07-31 is a Sunday  and a non-working day
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-07-31'));
+    $this->assertEquals(0, $amount);
+
+    // (2016-08-01) is a the monday and a working day
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-01'));
+    $this->assertEquals(-1, $amount);
+
+    // (2016-08-02) is a tuesday which is a working day.
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-02'));
+    $this->assertEquals(-1, $amount);
+
+    //(2016-08-03) is a Wednesday which is  a working day but a public holiday was created form this date
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-03'));
+    $this->assertEquals(0, $amount);
   }
 }
 
