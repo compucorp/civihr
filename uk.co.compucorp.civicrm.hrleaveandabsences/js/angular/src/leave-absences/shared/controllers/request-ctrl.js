@@ -38,6 +38,7 @@ define([
       this.selectedAbsenceType = {};
       this.period = {};
       this.statusLabel = '';
+      this.today = Date.now();
       this.balance = {
         closing: 0,
         opening: 0,
@@ -285,6 +286,16 @@ define([
       };
 
       /**
+       * Decides visiblity of remove attachment button
+       * @param {Object} attachment - attachment object
+       *
+       * @return {Boolean}
+       */
+      this.removeAttachmentVisibility = function (attachment) {
+        return !attachment.attachment_id || this.isRole('manager');
+      };
+
+      /**
        * Submits the form, only if the leave request is valid, also emits event
        * to listeners self leaverequest is created.
        * Also, checks if its an update request from manager and accordingly updates leave request
@@ -386,7 +397,7 @@ define([
         //if set indicates self leaverequest is either being managed or edited
         if (this.directiveOptions.leaveRequest) {
           //get a clone so self it is not the same reference as passed from callee
-          attributes = _.cloneDeep(this.directiveOptions.leaveRequest.attributes());
+          attributes = this.directiveOptions.leaveRequest.attributes();
         } else {
           attributes = {
             contact_id: this.directiveOptions.contactId
@@ -541,6 +552,7 @@ define([
             return $q.all([
               self._loadAbsenceTypes.call(self),
               loadCommentsandContactnames.call(self),
+              loadAttachments.call(self),
               self._loadCalendar.call(self)
             ]);
           })
@@ -926,6 +938,20 @@ define([
         if (!this.isMode('create')) {
           return this.request.loadComments()
             .then(loadContactNames.bind(this));
+        }
+
+        return $q.resolve();
+      }
+
+      /**
+       * Loads the attachmentss for current leave request
+       *
+       * @return {Promise}
+       */
+      function loadAttachments() {
+        //In CREATE mode dont fetch comments
+        if (!this.isMode('create')) {
+          return this.request.loadAttachments();
         }
 
         return $q.resolve();
