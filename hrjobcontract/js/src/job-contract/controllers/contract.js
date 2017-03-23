@@ -80,18 +80,18 @@ define([
       function updateContractList(newEndDate) {
         var isCurrentContract = !newEndDate ? true : (moment().diff(newEndDate, "day") <= 0),
           contract = $scope.$parent.contract,
-          contractContracts = $scope.$parent.contractCurrent,
+          currentContracts = $scope.$parent.contractCurrent,
           pastContracts = $scope.$parent.contractPast,
-          currentContractIndex = contractContracts.indexOf(contract),
+          currentContractIndex = currentContracts.indexOf(contract),
           pastContractIndex = pastContracts.indexOf(contract);
 
         if (isCurrentContract) {
           contract.is_current = '1';
           if (currentContractIndex + 1) {
-            angular.extend(contractContracts[currentContractIndex], contract);
+            angular.extend(currentContracts[currentContractIndex], contract);
           } else {
-            pastContracts.splice(pastContractIndex, 1);
-            contractContracts.push(contract);
+            pastContracts.splice(pastContractIndex);
+            currentContracts.push(contract);
           }
         } else {
           contract.is_current = '0';
@@ -99,7 +99,7 @@ define([
             angular.extend(pastContracts[pastContractIndex], contract);
           } else {
             pastContracts.push(contract);
-            contractContracts.splice(currentContractIndex, 1);
+            currentContracts.splice(currentContractIndex);
           }
         }
       }
