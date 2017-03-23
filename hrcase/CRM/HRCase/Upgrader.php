@@ -116,9 +116,22 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     $this->up1402_removeUnusedCaseTypes();
     //Removes CiviCase activity types which should belong to CiviTask component
     $this->removeActivityTypesList($defaultActivityTypes, 'CiviCase');
-    $this->up1402_createDefaultCaseTypes($defaultCaseTypes);
+    $this->createOrUpdateDefaultCaseTypes($defaultCaseTypes);
     $this->up1402_createDefaultActivityTypes($defaultActivityTypes);
     $this->changeActivityTypeComponent('Open Case', 'CiviCase', 'CiviTask');
+
+    return TRUE;
+  }
+
+  /**
+   * Resets all default case types discarding any customization to match new
+   * activity workflow
+   *
+   * will be 1404
+   */
+  public function upgrade_1412() {
+    $defaultTypes = CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes();
+    $this->createOrUpdateDefaultCaseTypes($defaultTypes);
 
     return TRUE;
   }
@@ -329,10 +342,12 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * Creates/Updates default case types to be shipped
    * with this extension
    *
+   * WARNING: Resets activity types for an assignment, discarding customization
+   *
    * @param array $defaultCaseTypes
    *   A list of case types with their related data
    */
-  private function up1402_createDefaultCaseTypes($defaultCaseTypes) {
+  private function createOrUpdateDefaultCaseTypes($defaultCaseTypes) {
     foreach ($defaultCaseTypes as $caseType) {
       $type = civicrm_api3('CaseType', 'get', [
         'sequential' => 1,
