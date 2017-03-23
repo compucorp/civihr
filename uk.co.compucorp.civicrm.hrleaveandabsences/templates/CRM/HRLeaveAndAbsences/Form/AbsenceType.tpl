@@ -254,16 +254,28 @@
 
                 function initDeleteButton() {
                     $('.crm-button-type-delete').on('click', function(e) {
-                        e.preventDefault();
-                        CRM.confirm({
+                      e.preventDefault();
+                      {/literal}
+                      {if $canDeleteType}
+                      {literal}
+                          CRM.confirm({
                             title: ts('Delete Leave/Absence type'),
                             message: ts('Are you sure you want to delete this leave/absence type?'),
                             options: {
-                                yes: ts('Yes'),
-                                no: ts('No')
+                              yes: ts('Yes'),
+                              no: ts('No')
                             }
-                        })
-                        .on('crmConfirm:yes', deleteCallback);
+                          })
+                          .on('crmConfirm:yes', deleteCallback);
+                      {/literal}
+                      {else}
+                      {literal}
+                          CRM.alert("This leave/absence type is in use and cannot be deleted. Please disable it instead.",
+                                    'Delete Leave/Absence type', 'error');
+                      {/literal}
+                      {/if}
+                      {literal}
+
                     });
                 }
 
