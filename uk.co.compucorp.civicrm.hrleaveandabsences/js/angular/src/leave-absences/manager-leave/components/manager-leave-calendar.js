@@ -13,14 +13,14 @@ define([
       return settings.pathTpl + 'components/manager-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$log', '$q', '$timeout', '$rootScope', 'shared-settings', 'OptionGroup', 'Contact',
-      'AbsencePeriod', 'AbsenceType', 'Calendar', 'LeaveRequest', 'PublicHoliday', controller]
+    controller: ['$log', '$q', '$rootScope', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
+      'Calendar', 'Contact', 'OptionGroup', 'LeaveRequest', 'PublicHoliday', controller]
   });
 
 
   function controller(
-    $log, $q, $timeout, $rootScope, sharedSettings, OptionGroup, Contact, AbsencePeriod,
-    AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
+    $log, $q, $rootScope, $timeout, sharedSettings, AbsencePeriod, AbsenceType,
+    Calendar, Contact, OptionGroup, LeaveRequest, PublicHoliday) {
     $log.debug('Component: manager-leave-calendar');
 
     var vm = Object.create(this),
