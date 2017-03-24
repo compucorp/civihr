@@ -13,12 +13,14 @@ define([
       return settings.pathTpl + 'components/manager-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$log', '$q', '$timeout', 'shared-settings', 'OptionGroup', 'Contact', 'AbsencePeriod', 'AbsenceType',
-      'Calendar', 'LeaveRequest', 'PublicHoliday', controller]
+    controller: ['$log', '$q', '$timeout', '$rootScope', 'shared-settings', 'OptionGroup', 'Contact',
+      'AbsencePeriod', 'AbsenceType', 'Calendar', 'LeaveRequest', 'PublicHoliday', controller]
   });
 
 
-  function controller($log, $q, $timeout, sharedSettings, OptionGroup, Contact, AbsencePeriod, AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
+  function controller(
+    $log, $q, $timeout, $rootScope, sharedSettings, OptionGroup, Contact, AbsencePeriod,
+    AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
     $log.debug('Component: manager-leave-calendar');
 
     var vm = Object.create(this),
@@ -183,6 +185,10 @@ define([
       })
       .finally(function () {
         vm.loading.page = false;
+      });
+
+      $rootScope.$on('LeaveRequest::updatedByManager', function () {
+        vm.refresh();
       });
     })();
 
@@ -361,7 +367,7 @@ define([
         to_date: {
           to: vm.selectedPeriod.end_date
         }
-      })
+      }, {}, null, null, false)
       .then(function (leaveRequestsData) {
         indexLeaveRequests(leaveRequestsData.list);
 
@@ -517,6 +523,7 @@ define([
 
         // set below props only if leaveRequest is found
         if (leaveRequest) {
+          dateObj.leaveRequest = leaveRequest;
           dateObj.UI.styles = getStyles(leaveRequest, dateObj);
           dateObj.UI.isRequested = isPendingApproval(leaveRequest);
           dateObj.UI.isAM = isDayType('half_day_am', leaveRequest, dateObj.date);
