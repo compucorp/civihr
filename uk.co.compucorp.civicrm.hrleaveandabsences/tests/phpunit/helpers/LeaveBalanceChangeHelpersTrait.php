@@ -3,8 +3,10 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 
 trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
 
@@ -227,5 +229,31 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
       ->method('createForLeaveRequest');
 
     return $leaveBalanceChangeService;
+  }
+
+  public function createLeaveBalanceChangeServiceForPublicHolidayLeaveRequestMock() {
+    $leaveBalanceChangeService = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange::class)
+      ->setMethods(['calculateAmountToBeDeductedForDate'])
+      ->getMock();
+
+    $leaveBalanceChangeService->expects($this->any())
+      ->method('calculateAmountToBeDeductedForDate')
+      ->will($this->returnValue(-1));
+
+    return $leaveBalanceChangeService;
+  }
+
+  /**
+   * Fabricates a Public Holiday leave request with the balance change amount as -1
+   * Without this method, most of the tests will need to have a work pattern assigned to
+   * the contact or have a default work pattern and will need to be mindful of which day is a
+   * working day or not for the public holiday balance change to be successfully created.
+   *
+   * @param int$contactID
+   * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   */
+  public function fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contactID, PublicHoliday $publicHoliday) {
+    $balanceChangeServiceMock = $this->createLeaveBalanceChangeServiceForPublicHolidayLeaveRequestMock();
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday, $balanceChangeServiceMock);
   }
 }
