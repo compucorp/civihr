@@ -67,7 +67,7 @@ define([
       });
 
       it('does set uploader', function () {
-        expect(LeaveRequestInstance.uploader).toBeDefined();
+        expect(LeaveRequestInstance.fileUploader).toBeDefined();
       });
     });
 
@@ -694,7 +694,7 @@ define([
           'balance_change',
           'dates',
           'comments',
-          'uploader',
+          'fileUploader',
           'files'
         ));
       });
@@ -706,8 +706,8 @@ define([
       beforeEach(function () {
         requestData = helper.createRandomLeaveRequest();
         instance = LeaveRequestInstance.init(requestData);
-        spyOn(instance.uploader, 'uploadAll').and.callThrough();
-        instance.uploader.queue = [{ 'key': 2 }];
+        spyOn(instance.fileUploader, 'uploadAll').and.callThrough();
+        instance.fileUploader.queue = [{ 'key': 2 }];
       });
 
       afterEach(function () {
@@ -721,7 +721,7 @@ define([
 
         it('uploads file with entity id', function () {
           promise.then(function () {
-            expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
+            expect(instance.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
           });
         });
       });
@@ -734,7 +734,7 @@ define([
 
         it('uploads file with entity id', function () {
           promise.then(function () {
-            expect(instance.uploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
+            expect(instance.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
           });
         });
       });
@@ -744,6 +744,7 @@ define([
       var promise, test_id = '63', attachments, numberOfFiles;
 
       beforeEach(function () {
+        LeaveRequestInstance.id = '12';
         attachments = leaveRequestMockData.getAttachments().values;
         numberOfFiles = attachments.length;
         promise = LeaveRequestInstance.loadAttachments();

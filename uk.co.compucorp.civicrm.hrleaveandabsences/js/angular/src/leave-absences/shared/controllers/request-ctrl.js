@@ -80,6 +80,7 @@ define([
         isChangeExpanded: false,
         multipleDays: true,
         userDateFormat: HR_settings.DATE_FORMAT,
+        userDateFormatWithTime: HR_settings.DATE_FORMAT + ' HH:mm',
         showBalance: false,
         date: {
           from: {
@@ -313,7 +314,6 @@ define([
         }
 
         this.error = null;
-        //update leaverequest
 
         if (canViewOrEdit.call(this)) {
           updateRequest.call(this);
@@ -397,6 +397,7 @@ define([
         //if set indicates self leaverequest is either being managed or edited
         if (this.directiveOptions.leaveRequest) {
           //get a clone so self it is not the same reference as passed from callee
+          //_.deepClone or angular.copy were not uploading files correctly
           attributes = this.directiveOptions.leaveRequest.attributes();
         } else {
           attributes = {
@@ -551,8 +552,8 @@ define([
 
             return $q.all([
               self._loadAbsenceTypes.call(self),
-              loadCommentsandContactnames.call(self),
-              loadAttachments.call(self),
+              loadCommentsAndContactNames.call(self),
+              self.request.loadAttachments(),
               self._loadCalendar.call(self)
             ]);
           })
@@ -568,7 +569,7 @@ define([
             initContact.call(self);
 
             if (self.isMode.call(self, 'edit')) {
-              initialLeaveRequestAttributes = _.cloneDeep(self.request.attributes());
+              initialLeaveRequestAttributes = self.request.attributes();
 
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
@@ -775,7 +776,7 @@ define([
           }
         }
 
-        return foundStatus;
+        return null;
       }
 
       /**
@@ -933,28 +934,13 @@ define([
        *
        * @return {Promise}
        */
-      function loadCommentsandContactnames() {
-        //In CREATE mode dont fetch comments
-        if (!this.isMode('create')) {
-          return this.request.loadComments()
-            .then(loadContactNames.bind(this));
-        }
-
-        return $q.resolve();
-      }
-
-      /**
-       * Loads the attachmentss for current leave request
-       *
-       * @return {Promise}
-       */
-      function loadAttachments() {
-        //In CREATE mode dont fetch comments
-        if (!this.isMode('create')) {
-          return this.request.loadAttachments();
-        }
-
-        return $q.resolve();
+      function loadCommentsAndContactNames() {
+        return this.request.loadComments()
+          .then(function (comments) {
+            if (comments) {
+              loadContactNames.call(this);
+            }
+          }.bind(this));
       }
 
       /**

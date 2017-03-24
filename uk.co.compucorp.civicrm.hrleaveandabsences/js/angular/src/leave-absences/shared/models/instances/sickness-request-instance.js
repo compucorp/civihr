@@ -60,7 +60,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates', 'comments', 'uploader', 'files'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'fileUploader', 'files'], key)) {
             result[key] = this[key];
           }
         }

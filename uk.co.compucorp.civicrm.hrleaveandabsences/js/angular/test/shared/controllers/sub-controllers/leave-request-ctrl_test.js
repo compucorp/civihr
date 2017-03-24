@@ -39,8 +39,7 @@
 
       beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_,
         _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
-        _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_,
-        _FileUploaderMock_) {
+        _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
         $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
         $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
         $provide.value('EntitlementAPI', _EntitlementAPIMock_);
@@ -49,7 +48,7 @@
         $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
         $provide.value('api.optionGroup', _OptionGroupAPIMock_);
         $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
-        $provide.value('FileUploader', _FileUploaderMock_);
+        // $provide.value('FileUploader', _FileUploaderMock_);
       }));
 
       beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
@@ -66,6 +65,7 @@
         $rootScope = _$rootScope_;
         $controller = _$controller_;
         $q = _$q_;
+
         Contact = _Contact_;
         EntitlementAPI = _EntitlementAPI_;
         LeaveRequestAPI = _LeaveRequestAPI_;
@@ -115,6 +115,10 @@
 
           it('contacts is not loaded', function () {
             expect($ctrl.comment.contacts).toEqual({});
+          });
+
+          it('has no files to upload', function () {
+            expect($ctrl.request.fileUploader.queue).toEqual([]);
           });
         });
 
@@ -599,6 +603,14 @@
             setTestDates(date2016, date2016);
             //entitlements are randomly generated so resetting them to positive here
             $ctrl.balance.closing = 1;
+            // $ctrl.request.fileUploader.addToQueue({
+            //   lastModifiedDate: new Date(),
+            //   size: 1e6,
+            //   type: 'text/plain',
+            //   name: '/unitTest.txt'
+            // });
+            // spyOn($ctrl.request.fileUploader, 'uploadAll').and.callThrough();
+
             $ctrl.submit();
             $scope.$digest();
           });
@@ -629,6 +641,28 @@
 
           it('sends event', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.request);
+          });
+        });
+
+        describe('when submit with attachments', function () {
+          beforeEach(function () {
+            setTestDates(date2016, date2016);
+            //entitlements are randomly generated so resetting them to positive here
+            $ctrl.balance.closing = 1;
+            $ctrl.request.fileUploader.addToQueue({
+              lastModifiedDate: new Date(),
+              size: 1e6,
+              type: 'text/plain',
+              name: '/unitTest.txt'
+            });
+            spyOn($ctrl.request.fileUploader, 'uploadAll').and.callThrough();
+
+            $ctrl.submit();
+            $scope.$digest();
+          });
+
+          it('upoads attachments', function () {
+            expect($ctrl.request.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: jasmine.any(String) });
           });
         });
       });
