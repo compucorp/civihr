@@ -48,7 +48,6 @@
         $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
         $provide.value('api.optionGroup', _OptionGroupAPIMock_);
         $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
-        // $provide.value('FileUploader', _FileUploaderMock_);
       }));
 
       beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
@@ -603,13 +602,6 @@
             setTestDates(date2016, date2016);
             //entitlements are randomly generated so resetting them to positive here
             $ctrl.balance.closing = 1;
-            // $ctrl.request.fileUploader.addToQueue({
-            //   lastModifiedDate: new Date(),
-            //   size: 1e6,
-            //   type: 'text/plain',
-            //   name: '/unitTest.txt'
-            // });
-            // spyOn($ctrl.request.fileUploader, 'uploadAll').and.callThrough();
 
             $ctrl.submit();
             $scope.$digest();
