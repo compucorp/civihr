@@ -21,13 +21,18 @@ define([
   function controller($log, $q, $timeout, sharedSettings, OptionGroup, Contact, AbsencePeriod, AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
     $log.debug('Component: manager-leave-calendar');
 
-    var dayTypes = [],
-      publicHolidays = [],
-      leaveRequests = [],
-      leaveRequestsIndexed = [],
+    var vm = Object.create(this),
+      dayTypes = [],
+      leaveRequests = {},
       leaveRequestStatuses = [],
-      vm = Object.create(this),
-      tempContactData = [];
+      publicHolidays = [];
+
+    /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
+     * Calendar data saved temporarily in tempContactData and once all the promises are resolved,
+     * data is transferred to vm.managedContacts.
+     * This is done so that browser paints the UI only once.
+     */
+    var tempContactData = [];
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -41,13 +46,22 @@ define([
       region: null,
       contacts_with_leaves: false
     };
-    vm.months = ['January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'];
+    vm.months = [
+      {label: 'January', loading: false},
+      {label: 'February', loading: false},
+      {label: 'March', loading: false},
+      {label: 'April', loading: false},
+      {label: 'May', loading: false},
+      {label: 'June', loading: false},
+      {label: 'July', loading: false},
+      {label: 'August', loading: false},
+      {label: 'September', loading: false},
+      {label: 'October', loading: false},
+      {label: 'November', loading: false},
+      {label: 'December', loading: false}
+    ];
     vm.loading = {
       calendar: false,
-      months: vm.months.map(function () {
-        return false;
-      }),
       page: false
     };
     vm.selectedMonths = [];
@@ -61,9 +75,7 @@ define([
     vm.filterContacts = function () {
       if (vm.filters.contacts_with_leaves) {
         return vm.filteredContacts.filter(function (contact) {
-          return leaveRequests.find(function (request) {
-            return request.contact_id == contact.id;
-          });
+          return (leaveRequests[contact.id] && Object.keys(leaveRequests[contact.id]).length > 0);
         });
       }
 
@@ -107,7 +119,9 @@ define([
       });
 
       if (contact && contact.calendarData) {
-        return contact.calendarData[vm.months.indexOf(month)];
+        return contact.calendarData[_.findIndex(vm.months, function (monthObj) {
+          return monthObj.label === month;
+        })];
       }
     };
 
@@ -148,7 +162,7 @@ define([
     (function init() {
       vm.loading.page = true;
       //Select current month as default
-      vm.selectedMonths = [vm.months[moment().month()]];
+      vm.selectedMonths = [vm.months[moment().month()].label];
       $q.all([
         loadAbsencePeriods(),
         loadAbsenceTypes(),
@@ -214,6 +228,22 @@ define([
           borderColor: absenceType.color
         };
       }
+    }
+
+    /**
+     * Index leave requests by contact_id as first level
+     * and date as second level
+     *
+     * @param  {Array} leaveRequestsData - leave requests array from API
+     */
+    function indexLeaveRequests(leaveRequestsData) {
+      _.each(leaveRequestsData, function (leaveRequest) {
+        leaveRequests[leaveRequest.contact_id] = leaveRequests[leaveRequest.contact_id] || {};
+
+        _.each(leaveRequest.dates, function (leaveRequestDate) {
+          leaveRequests[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
+        });
+      });
     }
 
     /**
@@ -283,17 +313,14 @@ define([
      * @return {Promise}
      */
     function loadCalendar() {
-      var promises = [];
-      tempContactData = angular.copy(vm.managedContacts);
-      _.each(vm.managedContacts, function (contact, index) {
-        promises.push(Calendar.get(contact.id, vm.selectedPeriod.id)
+      tempContactData = _.clone(vm.managedContacts);
+
+      return $q.all(vm.managedContacts.map(function (contact, index) {
+        return Calendar.get(contact.id, vm.selectedPeriod.id)
           .then(function (calendar) {
             tempContactData[index].calendarData = setCalendarProps(vm.managedContacts[index].id, calendar);
-            showMonthLoader();
-          }));
-      });
-
-      return $q.all(promises);
+          });
+      }));
     }
 
     /**
@@ -336,20 +363,13 @@ define([
         }
       })
       .then(function (leaveRequestsData) {
-        leaveRequests = leaveRequestsData.list;
+        indexLeaveRequests(leaveRequestsData.list);
 
-        _.each(leaveRequests, function (leaveRequest) {
-          leaveRequestsIndexed[leaveRequest.contact_id] = leaveRequestsIndexed[leaveRequest.contact_id] ?
-            leaveRequestsIndexed[leaveRequest.contact_id] : {};
-
-          _.each(leaveRequest.dates, function (leaveRequestDate) {
-            leaveRequestsIndexed[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
-          });
-        });
         return loadCalendar();
       })
       .then(function () {
         vm.managedContacts = tempContactData;
+        showMonthLoader();
       });
     }
 
@@ -479,18 +499,15 @@ define([
      * @return {object}
      */
     function setCalendarProps(contactID, calendar) {
-      var dateObj,
-        leaveRequest,
-        dates = Object.keys(calendar.days),
-        indexedByMonth = angular.copy(vm.months.map(function () {
+      var leaveRequest,
+        indexedByMonth = vm.months.map(function () {
           return [];
-        }));
+        });
 
-      dates.forEach(function (date) {
-        dateObj = calendar.days[date];
-        indexedByMonth[parseInt(moment(dateObj.date).month())].push(dateObj);
-        leaveRequest = leaveRequestsIndexed[contactID] ? leaveRequestsIndexed[contactID][dateObj.date]: null;
-        leaveRequest = (leaveRequest && leaveRequest.contact_id === contactID) ? leaveRequest : null;
+      _.each(calendar.days, function (dateObj) {
+        indexedByMonth[moment(dateObj.date).month()].push(dateObj);
+        //fetch leave request, first search by contact_id then by date
+        leaveRequest = leaveRequests[contactID] ? leaveRequests[contactID][dateObj.date] : null;
 
         dateObj.UI = {
           isWeekend: calendar.isWeekend(getDateObjectWithFormat(dateObj.date)),
@@ -515,21 +532,20 @@ define([
      * then hide each loader on the interval of an offset value
      */
     function showMonthLoader() {
-      var offset = 0;
+      var monthLoadDelay = 500,
+        offset = 0;
 
-      vm.months.forEach(function (month, index) {
-        //show loader
-        vm.loading.months[index] = (index !== vm.months.indexOf(vm.selectedMonths[0]));
+      vm.months.forEach(function (month) {
+        // immediately show the current month...
+        month.loading = month.label !== vm.selectedMonths[0];
 
-        //do not hide the month which is selected by default i.e. the current month
-        if(index !== vm.months.indexOf(vm.selectedMonths[0])) {
-          (function (index) {
-            $timeout(function () {
-              vm.loading.months[index] = false;
-            }, offset);
-          })(index);
+        //delay other months
+        if (month.loading) {
+          $timeout(function () {
+            month.loading = false;
+          }, offset);
 
-          offset += 500;
+          offset += monthLoadDelay;
         }
       });
     }

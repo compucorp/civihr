@@ -395,16 +395,12 @@
         controller = component.controller('managerLeaveCalendar');
       }
 
-      function getDateObjectWithFormat(date) {
-        return moment(date, sharedSettings.serverDateFormat).clone();
-      }
-
       function getDate(contact, dateStr) {
         var date;
 
         _.each(contact.calendarData, function (month) {
           _.each(month, function (dateObj) {
-            if(dateObj.date == dateStr) {
+            if (dateObj.date == dateStr) {
               date = dateObj;
             }
           });
