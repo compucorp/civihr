@@ -764,19 +764,12 @@ define([
        * Gets status object for given status value
        *
        * @param value of the status
-       * @return {Object} option group of type status
+       * @return {Object} option group of type status or undefined if not found
        */
       function getStatusFromValue(value) {
-        var key, foundStatus, keys = Object.keys(this.requestStatuses);
-
-        for (key in keys) {
-          foundStatus = this.requestStatuses[keys[key]];
-          if (foundStatus.value == value) {
-            return foundStatus;
-          }
-        }
-
-        return null;
+        return _.find(this.requestStatuses, function (status) {
+          return status.value == value;
+        });
       }
 
       /**
@@ -937,9 +930,7 @@ define([
       function loadCommentsAndContactNames() {
         return this.request.loadComments()
           .then(function (comments) {
-            if (comments) {
-              loadContactNames.call(this);
-            }
+            comments && loadContactNames.call(this);
           }.bind(this));
       }
 
