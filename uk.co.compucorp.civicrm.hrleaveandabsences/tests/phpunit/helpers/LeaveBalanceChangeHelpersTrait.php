@@ -249,7 +249,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
    * the contact or have a default work pattern and will need to be mindful of which day is a
    * working day or not for the public holiday balance change to be successfully created.
    *
-   * @param int$contactID
+   * @param int $contactID
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    */
   public function fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contactID, PublicHoliday $publicHoliday) {

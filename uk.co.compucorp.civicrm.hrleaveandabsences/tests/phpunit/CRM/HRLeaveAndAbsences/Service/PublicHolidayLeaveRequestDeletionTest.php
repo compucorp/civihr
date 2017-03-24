@@ -22,6 +22,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
   use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -49,7 +50,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $publicHoliday = $this->instantiatePublicHoliday('2016-01-01');
 
-    PublicHolidayLeaveRequestFabricator::fabricate($periodEntitlement->contact_id, $publicHoliday);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($periodEntitlement->contact_id, $publicHoliday);
 
     $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
@@ -115,9 +116,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $publicHoliday3 = PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('+2 years')
     ]);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday1);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday2);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday3);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday1);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday2);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday3);
 
     $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
@@ -158,9 +159,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     // The Fabricator will create the leave request even for public holidays in
     // the past
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday1);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday2);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday3);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday1);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday2);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday3);
 
     $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
@@ -201,9 +202,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     // The Fabricator will create the leave request even for public holidays in
     // the past
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday1);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday2);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday3);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday1);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday2);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday3);
 
     $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 

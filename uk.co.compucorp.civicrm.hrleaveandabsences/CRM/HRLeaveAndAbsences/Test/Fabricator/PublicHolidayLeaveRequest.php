@@ -8,7 +8,6 @@ use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as PublicHo
 class CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest {
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
-  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
   /**
    * This Fabricator is a bit different than the others, because a Public Holiday

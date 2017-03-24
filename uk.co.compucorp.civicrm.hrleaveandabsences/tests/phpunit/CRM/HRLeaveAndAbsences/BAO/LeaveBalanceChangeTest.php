@@ -646,7 +646,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = date('Y-m-d', strtotime('+30 days'));
-    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($entitlement->contact_id, $publicHoliday);
 
     // Balance excluding the days deducted from the leave request
     $excludePublicHolidays = true;
@@ -675,11 +675,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $publicHoliday1 = new PublicHoliday();
     $publicHoliday1->date = date('Y-m-d', strtotime('+30 days'));
-    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday1);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($entitlement->contact_id, $publicHoliday1);
 
     $publicHoliday2 = new PublicHoliday();
     $publicHoliday2->date = date('Y-m-d', strtotime('+47 days'));
-    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday2);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($entitlement->contact_id, $publicHoliday2);
 
     // Balance excluding the days deducted from the leave request
     $includePublicHolidaysOnly = true;
@@ -715,7 +715,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $publicHoliday1 = new PublicHoliday();
     $publicHoliday1->date = date('Y-m-d', strtotime('+30 days'));
-    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday1);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($entitlement->contact_id, $publicHoliday1);
 
     // Balance excluding the days deducted from the leave request
     $excludePublicHolidays = true;
@@ -2422,7 +2422,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'effective_date' => $periodStartDate->format('YmdHis')
     ]);
 
-    //create a public holidays on on of the days
+    //create a public holiday on a working day ('2016-08-04'), thursday of second week
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = date('2016-08-04');
     PublicHolidayLeaveRequestFabricator::fabricate($contract['contact_id'], $publicHoliday);
@@ -2472,6 +2472,46 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'effective_date' => $periodStartDate->format('YmdHis')
     ]);
 
+    //create a public holiday on a working day ('2016-08-03')
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = date('2016-08-03');
+    PublicHolidayLeaveRequestFabricator::fabricate($contract['contact_id'], $publicHoliday);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->contact_id = $contract['contact_id'];
+
+    //(2016-07-29) is a friday and a working day
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-07-29'));
+    $this->assertEquals(-1, $amount);
+
+    //(2016-07-31) is a Sunday  and a non-working day
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-07-31'));
+    $this->assertEquals(0, $amount);
+
+    //(2016-08-01) is a monday and a working day
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-01'));
+    $this->assertEquals(-1, $amount);
+
+    //(2016-08-02) is a tuesday which is a working day.
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-02'));
+    $this->assertEquals(-1, $amount);
+
+    //(2016-08-03) is a Wednesday which is  a working day but a public holiday was created on this date
+    $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-03'));
+    $this->assertEquals(0, $amount);
+  }
+
+  public function testCalculateAmountForDateForAContactUsingTheDefaultWorkPattern() {
+    $periodStartDate = new DateTime('2016-01-01');
+
+    $contract = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [ 'period_start_date' => $periodStartDate->format('Y-m-d') ]
+    );
+
+    // Working days: monday through friday
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
     //create a public holidays on on of the days
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = date('2016-08-03');
@@ -2480,23 +2520,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = $contract['contact_id'];
 
-    //2016-07-29 is a friday and a working day
+    //(2016-07-29) is a friday and a working day
     $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-07-29'));
     $this->assertEquals(-1, $amount);
 
-    //2016-07-31 is a Sunday  and a non-working day
+    //(2016-07-31) is a Sunday and a non-working day
     $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-07-31'));
     $this->assertEquals(0, $amount);
 
-    // (2016-08-01) is a the monday and a working day
+    //(2016-08-01) is a monday and a working day
     $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-01'));
     $this->assertEquals(-1, $amount);
 
-    // (2016-08-02) is a tuesday which is a working day.
+    //(2016-08-02) is a tuesday which is a working day.
     $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-02'));
     $this->assertEquals(-1, $amount);
 
-    //(2016-08-03) is a Wednesday which is  a working day but a public holiday was created form this date
+    //(2016-08-03) is a Wednesday which is a working day but a public holiday was created on this date
     $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-03'));
     $this->assertEquals(0, $amount);
   }
