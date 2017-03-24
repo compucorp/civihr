@@ -123,8 +123,10 @@ function _civicrm_hrjobcontract_api3_get_current_revision($params) {
         'details_revision_id.period_end_date'
       ],
     ]);
-    $contractEnd = $revision['values'][0]['details_revision_id.period_end_date'];
-    $revisionEndDate = $revision['values'][0]['effective_end_date'];
+    if ($revision['count'] > 0) {
+      $contractEnd = isset($revision['values'][0]['details_revision_id.period_end_date']) ? $revision['values'][0]['details_revision_id.period_end_date'] : null;
+      $revisionEndDate = isset($revision['values'][0]['effective_end_date']) ? $revision['values'][0]['effective_end_date'] : null;
+    }
 
     if (
       empty($revision['values']) 
