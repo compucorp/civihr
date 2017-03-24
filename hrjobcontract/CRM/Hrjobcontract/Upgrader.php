@@ -543,6 +543,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1017();
     $this->upgrade_1020();
     $this->upgrade_1025();
+    $this->upgrade_1026();
   }
 
   function upgrade_1001() {
@@ -1034,6 +1035,24 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
+   * Alters civicrm_hrjobcontract_hour table to make default values for fte_num
+   * and fte_denom equal to 0.
+   * 
+   * @return boolean
+   *   True on success
+   * @todo Rename upgrade!!  To upgrade_1026()  Include in upgrade bundle!
+   */
+  public function upgrade_1026() {
+    $query = '
+      ALTER TABLE `civicrm_hrjobcontract_hour` 
+      CHANGE `fte_num` `fte_num` INT(10) UNSIGNED NULL DEFAULT \'0\' COMMENT \'.\', 
+      CHANGE `fte_denom` `fte_denom` INT(10) UNSIGNED NULL DEFAULT \'0\' COMMENT \'.\'
+    ';
+    CRM_Core_DAO::executeQuery($query);
+    return true;
+  }
+
+  /**
    * Creates Option Group for Insurance Plan Types.
    */
   public function createInsurancePlanTypes() {
@@ -1062,7 +1081,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       // Skip this
     }
   }
-  
+
   function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
     $array = array();
