@@ -38,6 +38,7 @@ define([
       this.selectedAbsenceType = {};
       this.period = {};
       this.statusLabel = '';
+      this.today = Date.now();
       this.balance = {
         closing: 0,
         opening: 0,
@@ -79,6 +80,7 @@ define([
         isChangeExpanded: false,
         multipleDays: true,
         userDateFormat: HR_settings.DATE_FORMAT,
+        userDateFormatWithTime: HR_settings.DATE_FORMAT + ' HH:mm',
         showBalance: false,
         date: {
           from: {
@@ -285,6 +287,16 @@ define([
       };
 
       /**
+       * Decides visiblity of remove attachment button
+       * @param {Object} attachment - attachment object
+       *
+       * @return {Boolean}
+       */
+      this.removeAttachmentVisibility = function (attachment) {
+        return !attachment.attachment_id || this.isRole('manager');
+      };
+
+      /**
        * Submits the form, only if the leave request is valid, also emits event
        * to listeners self leaverequest is created.
        * Also, checks if its an update request from manager and accordingly updates leave request
@@ -302,7 +314,6 @@ define([
         }
 
         this.error = null;
-        //update leaverequest
 
         if (canViewOrEdit.call(this)) {
           updateRequest.call(this);
@@ -386,7 +397,8 @@ define([
         //if set indicates self leaverequest is either being managed or edited
         if (this.directiveOptions.leaveRequest) {
           //get a clone so self it is not the same reference as passed from callee
-          attributes = _.cloneDeep(this.directiveOptions.leaveRequest.attributes());
+          //_.deepClone or angular.copy were not uploading files correctly
+          attributes = this.directiveOptions.leaveRequest.attributes();
         } else {
           attributes = {
             contact_id: this.directiveOptions.contactId
@@ -540,7 +552,8 @@ define([
 
             return $q.all([
               self._loadAbsenceTypes.call(self),
-              loadCommentsandContactnames.call(self),
+              loadCommentsAndContactNames.call(self),
+              self.request.loadAttachments(),
               self._loadCalendar.call(self)
             ]);
           })
@@ -556,7 +569,7 @@ define([
             initContact.call(self);
 
             if (self.isMode.call(self, 'edit')) {
-              initialLeaveRequestAttributes = _.cloneDeep(self.request.attributes());
+              initialLeaveRequestAttributes = self.request.attributes();
 
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
@@ -751,19 +764,12 @@ define([
        * Gets status object for given status value
        *
        * @param value of the status
-       * @return {Object} option group of type status
+       * @return {Object} option group of type status or undefined if not found
        */
       function getStatusFromValue(value) {
-        var key, foundStatus, keys = Object.keys(this.requestStatuses);
-
-        for (key in keys) {
-          foundStatus = this.requestStatuses[keys[key]];
-          if (foundStatus.value == value) {
-            return foundStatus;
-          }
-        }
-
-        return foundStatus;
+        return _.find(this.requestStatuses, function (status) {
+          return status.value == value;
+        });
       }
 
       /**
@@ -921,14 +927,11 @@ define([
        *
        * @return {Promise}
        */
-      function loadCommentsandContactnames() {
-        //In CREATE mode dont fetch comments
-        if (!this.isMode('create')) {
-          return this.request.loadComments()
-            .then(loadContactNames.bind(this));
-        }
-
-        return $q.resolve();
+      function loadCommentsAndContactNames() {
+        return this.request.loadComments()
+          .then(function (comments) {
+            comments && loadContactNames.call(this);
+          }.bind(this));
       }
 
       /**

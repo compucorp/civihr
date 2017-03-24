@@ -163,61 +163,82 @@
             <uib-tab heading="Files">
               <div>
                 <ul class="chr_leave-request-files_list container-fluid">
-                  <li>
-                    <div class="chr_leave-request-files_meta">
-                      <span class="chr_leave-request-files_author">John Doe</span>
-                      <span> - </span>
-                      <span class="chr_leave-request-files_date">18/01/2015</span>
-                    </div>
-                    <div class="row">
-                      <div class="chr_leave-request-files_icon text-primary col-xs-6">
-                        <i class="fa fa-file-photo-o" aria-hidden="true"></i>
-                        <span>filename.loremipsum</span>
+                  <li ng-repeat="file in $ctrl.request.files">
+                    <span ng-if="!file.toBeDeleted">
+                      <div class="chr_leave-request-files_meta">
+                        <span class="chr_leave-request-files_author">{{$ctrl.getCommentorName(file.contact_id)}}</span>
+                        <span>-</span>
+                        <span class="chr_leave-request-files_date">{{$ctrl.formatDateTime(file.upload_date)}}</span>
                       </div>
-                    </div>
-                    <hr/>
+                      <div class="row">
+                        <div class="chr_leave-request-files_icon text-primary col-xs-8">
+                          <i
+                            class="fa fa-file-o"
+                            ng-class="{
+                              'fa fa-file-pdf-o': file.mime_type == 'application/pdf',
+                              'fa fa-file-image-o': file.mime_type == 'image/png' || file.mime_type == 'image/jpeg' || file.mime_type == 'image/gif',
+                              'fa fa-file-excel-o': file.mime_type == 'application/excel',
+                              'fa fa-file-word-o': file.mime_type == 'application/msword'
+                              }"
+                            aria-hidden="true"></i>
+                          <span>{{file.name}}</span>
+                        </div>
+                        <div
+                          ng-show="$ctrl.removeAttachmentVisibility(file)"
+                          class="chr_leave-request-files_delete text-danger col-xs-4">
+                          <i class="fa fa-trash-o" aria-hidden="true"></i>
+                          <span
+                            class="btn btn-link"
+                            ng-disabled="$ctrl.isMode('view')"
+                            ng-click="$ctrl.request.deleteAttachment(file)">
+                            Remove</span>
+                        </div>
+                      </div>
+                      <hr/>
+                    </span>
                   </li>
-                  <li>
-                    <div>
+                  <span ng-if="$ctrl.request.fileUploader" ng-disabled="$ctrl.isMode('view')">
+                    <li ng-repeat="file in $ctrl.request.fileUploader.queue">
                       <div class="chr_leave-request-files_meta">
                         <span class="chr_leave-request-files_author">Me</span>
-                        <span> - </span>
-                        <span class="chr_leave-request-files_date">18/01/2015</span>
+                        <span>-</span>
+                        <span class="chr_leave-request-files_date">{{$ctrl.today | date: $ctrl.uiOptions.userDateFormatWithTime}}</span>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="chr_leave-request-files_icon text-primary col-xs-6">
-                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                        <span>filename.loremipsum</span>
+                      <div class="row">
+                        <div class="chr_leave-request-files_icon text-primary col-xs-8">
+                          <i
+                            class="fa fa-file-o"
+                            ng-class="{
+                            'fa fa-file-pdf-o': file.file.type == 'application/pdf',
+                            'fa fa-file-image-o': file.file.type == 'image/png' || file.file.type == 'image/jpeg' || file.file.type == 'image/gif',
+                            'fa fa-file-excel-o': file.file.type == 'application/excel',
+                            'fa fa-file-word-o': file.file.type == 'application/msword'
+                            }"
+                            aria-hidden="true"></i>
+                          <span>{{file.file.name}}</span>
+                        </div>
+                        <div
+                          ng-show="$ctrl.removeAttachmentVisibility(file)"
+                          class="chr_leave-request-files_delete text-danger col-xs-4">
+                          <i class="fa fa-trash-o" aria-hidden="true"></i>
+                          <span
+                            class="btn btn-link"
+                            ng-disabled="$ctrl.isMode('view')"
+                            ng-click="$ctrl.request.fileUploader.removeFromQueue(file)">
+                            Remove</span>
+                        </div>
                       </div>
-                      <div class="chr_leave-request-files_delete text-danger col-xs-6">
-                        <i class="fa fa-trash-o" aria-hidden="true"></i>
-                        <span>Remove</span>
-                      </div>
-                    </div>
-                    <hr/>
-                  </li>
-                  <li>
-                    <div class="chr_leave-request-files_meta">
-                      <span class="chr_leave-request-files_author">Me</span>
-                      <span>-</span>
-                      <span class="chr_leave-request-files_date">18/01/2015</span>
-                    </div>
-                    <div class="row">
-                      <div class="chr_leave-request-files_icon text-primary col-xs-6">
-                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                        <span>filename.loremipsum</span>
-                      </div>
-                      <div class="chr_leave-request-files_delete text-danger col-xs-6">
-                        <i class="fa fa-trash-o" aria-hidden="true"></i>
-                        <span>Remove</span>
-                      </div>
-                    </div>
-                    <hr/>
-                  </li>
+                      <hr/>
+                    </li>
+                  </span>
                 </ul>
               </div>
-              <div class="chr_leave-request-files_upload">
+              <div
+                nv-file-drop
+                uploader="$ctrl.request.fileUploader"
+                class="chr_leave-request-files_upload"
+                ng-disabled="$ctrl.isMode('view')"
+                ng-if="$ctrl.request.fileUploader">
                 <div class="chr_leave-request-files_upload_action row text-center">
                   Drag and drop file here
                 </div>
@@ -225,7 +246,15 @@
                   or
                 </div>
                 <div class="chr_leave-request-files_upload_action row text-center">
-                  <button type="submit" class="btn btn-primary">Browse</button>
+                  <label class="btn btn-primary btn-file">
+                    Browse
+                    <input
+                      type="file"
+                      nv-file-select
+                      ng-disabled="$ctrl.isMode('view')"
+                      uploader="$ctrl.request.fileUploader"
+                      style="display:none;">
+                  </label>
                 </div>
               </div>
             </uib-tab>

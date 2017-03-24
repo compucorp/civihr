@@ -103,8 +103,8 @@ define([
        * @return {Promise}
        */
       function uploadAttachments() {
-        if (this.uploader.queue && this.uploader.queue.length > 0) {
-          return this.uploader.uploadAll({ entityID: this.id });
+        if (this.fileUploader.queue && this.fileUploader.queue.length > 0) {
+          return this.fileUploader.uploadAll({ entityID: this.id });
         } else {
           return $q.resolve([]);
         }
@@ -123,9 +123,12 @@ define([
             comments: [],
             files: [],
             request_type: 'leave',
-            uploader: FileUpload.uploader({
+            //FileUpload.uploader has uploader property which was causing circular reference issue
+            //hence renamed this uploader to fileUploader
+            fileUploader: FileUpload.uploader({
               entityTable: 'civicrm_hrleaveandabsences_leave_request',
-              crmAttachmentToken: sharedSettings.attachmentToken
+              crmAttachmentToken: sharedSettings.attachmentToken,
+              queueLimit: 5
             })
           };
         },
@@ -184,6 +187,7 @@ define([
           return LeaveRequestAPI.create(this.toAPI())
             .then(function (result) {
               this.id = result.id;
+
               return $q.all([
                 saveAndDeleteComments.call(this),
                 uploadAttachments.call(this)
@@ -281,12 +285,14 @@ define([
          * @return {Promise}
          */
         loadComments: function () {
-          var self = this;
+          if (this.id) {
+            return LeaveRequestAPI.getComments(this.id)
+              .then(function (comments) {
+                this.comments = comments;
+              }.bind(this));
+          }
 
-          return LeaveRequestAPI.getComments(this.id)
-            .then(function (comments) {
-              self.comments = comments;
-            });
+          return $q.resolve();
         },
 
         /**
@@ -323,7 +329,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates', 'comments', 'uploader', 'files'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'fileUploader', 'files'], key)) {
             result[key] = this[key];
           }
         },
@@ -331,13 +337,17 @@ define([
         /**
          * Loads file attachments associated with this leave request
          *
-         * @return {Promise}
+         * @return {Promise} with array of attachments if leave request is already created else empty promise
          */
         loadAttachments: function () {
-          return LeaveRequestAPI.getAttachments(this.id)
-            .then(function (attachments) {
-              this.files = attachments;
-            }.bind(this));
+          if (this.id) {
+            return LeaveRequestAPI.getAttachments(this.id)
+              .then(function (attachments) {
+                this.files = attachments;
+              }.bind(this));
+          }
+
+          return $q.resolve();
         }
       });
     }
