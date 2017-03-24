@@ -1,4 +1,4 @@
-<header class="panel-heading">
+<header class="panel-heading chr_leave-calendar__month-header">
   <h2 class="panel-title">{{month.label}}</h2>
 </header>
 <crm-loading show="!calendar.months[$index].loading">
@@ -40,6 +40,12 @@
             <span ng-if="day.UI.isAM">AM</span>
             <span ng-if="day.UI.isPM">PM</span>
             <span ng-if="day.UI.isAccruedTOIL">AT</span>
+            <a ng-if="day.leaveRequest"
+               contact-id="calendar.contactId"
+               leave-request-popup
+               leave-request="day.leaveRequest"
+               title="Click to open Leave Request">
+            </a>
           </div>
         </td>
       </tr>
