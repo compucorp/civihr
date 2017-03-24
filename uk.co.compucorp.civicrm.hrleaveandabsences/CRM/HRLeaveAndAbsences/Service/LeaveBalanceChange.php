@@ -108,6 +108,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
    * @return float
    */
   public function calculateAmountToBeDeductedForDate(LeaveRequest $leaveRequest, DateTime $date) {
-    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime($date));
+    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date);
   }
 }
