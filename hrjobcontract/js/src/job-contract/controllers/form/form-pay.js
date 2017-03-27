@@ -68,8 +68,12 @@ define([
             };
 
             $scope.calcAnnualPayEst = function(){
+                var entityHour = $scope.entity.hour;
+
                 if (+entityPay.is_paid) {
-                    entityPay.pay_annualized_est = (entityPay.pay_amount * workPerYear[entityPay.pay_unit] || 0).toFixed(2);
+                  var workHoursPerYear = workPerYear['Week'] * entityHour.hours_amount;
+                  var hourlyRate = entityPay.pay_amount * workPerYear[entityPay.pay_unit] / workPerYear['Hour'];
+                  entityPay.pay_annualized_est = workHoursPerYear * hourlyRate;
                 }
             };
 
@@ -151,6 +155,7 @@ define([
 
             $scope.$watch('entity.pay.pay_amount', $scope.calcAnnualPayEst);
             $scope.$watch('entity.pay.pay_unit', $scope.calcAnnualPayEst);
+            $scope.$watch('entity.hour.hours_amount', $scope.calcAnnualPayEst);
             $scope.$watch('entity.pay.pay_annualized_est', function(){
                 $scope.calcPayPerCycleGross();
                 $scope.calcBenefitsPerCycle();
