@@ -98,6 +98,15 @@ define([
               startingDay: 1,
               showWeeks: false
             }
+          },
+          expiry: {
+            show: false,
+            options: {
+              minDate: null,
+              maxDate: null,
+              startingDay: 1,
+              showWeeks: false
+            }
           }
         }
       };
