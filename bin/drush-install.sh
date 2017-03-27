@@ -14,7 +14,6 @@ org.civicrm.hrdemog,\
 org.civicrm.hrident,\
 org.civicrm.hrjobcontract,\
 com.civicrm.hrjobroles,\
-org.civicrm.hrabsence,\
 org.civicrm.hrmed,\
 org.civicrm.hrqual,\
 org.civicrm.hrvisa,\
