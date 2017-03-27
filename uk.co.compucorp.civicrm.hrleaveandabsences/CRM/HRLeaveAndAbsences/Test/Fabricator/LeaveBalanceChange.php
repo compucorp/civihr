@@ -3,6 +3,7 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
+use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 
 class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
 
@@ -56,6 +57,13 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
     return self::fabricate([
       'source_id' => $leaveRequestDate->id,
       'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
+    ]);
+  }
+
+  public static function fabricateForLeavePeriodEntitlement(LeavePeriodEntitlement $leavePeriodEntitlement) {
+    return self::fabricate([
+      'source_id' => $leavePeriodEntitlement->id,
+      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
     ]);
   }
 

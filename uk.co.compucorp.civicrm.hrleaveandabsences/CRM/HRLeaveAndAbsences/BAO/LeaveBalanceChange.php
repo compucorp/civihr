@@ -546,6 +546,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
+   * Deletes the LeaveBalanceChanges for a LeavePeriodEntitlement
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $leavePeriodEntitlement
+   */
+  public static function deleteForLeavePeriodEntitlement(LeavePeriodEntitlement $leavePeriodEntitlement) {
+    $leaveBalanceChangeTable = self::getTableName();
+    $query = "DELETE FROM {$leaveBalanceChangeTable} WHERE source_id = %1 AND source_type = %2";
+
+    $params = [
+      1 => [$leavePeriodEntitlement->id, 'Integer'],
+      2 => [self::SOURCE_ENTITLEMENT, 'String']
+    ];
+
+    CRM_Core_DAO::executeQuery($query, $params);
+  }
+
+  /**
    * Deletes the LeaveBalanceChanges linked to all of the LeaveRequestDates of
    * the given LeaveRequest
    *
