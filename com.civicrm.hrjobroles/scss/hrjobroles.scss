@@ -79,7 +79,6 @@
   @import "civihr/modules/fonts";
   @import "civihr/modules/angular";
   @import "civihr/modules/utils";
-  @import "civihr/modules/select";
   @import "civihr/modules/textangular";
   @import "civihr/modules/mixins";
   @import "civihr/modules/animate";
@@ -99,7 +98,6 @@
   @import "civihr/partials/page-contact";
   @import "civihr/partials/pagination";
   @import "civihr/partials/panels";
-  @import "civihr/partials/select";
   @import "civihr/partials/tables";
   @import "civihr/partials/tooltip";
   @import "civihr/partials/wells";
@@ -113,7 +111,6 @@
   @import "hrjobroles/partials/global";
   @include global;
   @import "hrjobroles/partials/buttons";
-  @import "hrjobroles/partials/select";
   @import "hrjobroles/partials/collapse";
   @import "hrjobroles/partials/forms";
   @import "hrjobroles/partials/list";
@@ -122,4 +119,6 @@
   @import "hrjobroles/partials/tables";
   @import "hrjobroles/partials/basic-details";
   @import "hrjobroles/partials/switch";
+
+  @import "hrjobroles/modules/civihr-ui-select";
 }

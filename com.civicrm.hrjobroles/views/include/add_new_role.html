@@ -34,22 +34,20 @@
                                                     <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="form.contract.$error.required"></i>
                                                 </label>
                                                 <div class="col-xs-6">
-                                                  <span id="bootstrap-theme">
-                                                    <ui-select id="newContractId"
+                                                  <ui-select id="newContractId"
                                                     ng-model="jobroles.edit_data['new_role_id']['job_contract_id']"
                                                     theme="civihr-ui-select"
                                                     title="Choose a contract"
                                                     name="contract"
                                                     ng-required="true"
                                                     on-select="jobroles.onContractSelected($event)">
-                                                      <ui-select-match placeholder="Select a contract">
-                                                        {{$select.selected.value.label}}
-                                                      </ui-select-match>
-                                                      <ui-select-choices repeat="contract.value.id as (key,contract) in jobroles.contractsData | filter: { value: { label: $select.search }}">
-                                                        <div ng-bind-html="contract.value.label | highlight: $select.search"></div>
-                                                      </ui-select-choices>
-                                                    </ui-select>
-                                                  </span>
+                                                    <ui-select-match placeholder="Select a contract">
+                                                      {{$select.selected.value.label}}
+                                                    </ui-select-match>
+                                                    <ui-select-choices repeat="contract.value.id as (key,contract) in jobroles.contractsData | filter: { value: { label: $select.search }}">
+                                                      <div ng-bind-html="contract.value.label | highlight: $select.search"></div>
+                                                    </ui-select-choices>
+                                                  </ui-select>
                                                 </div>
                                             </div>
 
@@ -103,67 +101,60 @@
                                             <div class="form-group">
                                                 <label for="newLocation" class="col-xs-4 control-label">Location:</label>
                                                 <div class="col-xs-6">
-                                                  <span id="bootstrap-theme">
-                                                    <ui-select
+                                                  <ui-select
                                                     ng-model="jobroles.edit_data['new_role_id']['location']"
                                                     theme="civihr-ui-select"
                                                     title="Choose a location"
                                                     name="newLocation">
-                                                      <ui-select-match allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
-                                                      <ui-select-choices repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
-                                                        <div ng-bind-html="location.value.title | highlight: $select.search"></div>
-                                                      </ui-select-choices>
-                                                    </ui-select>
-                                                  </span>
+                                                    <ui-select-match allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
+                                                    <ui-select-choices repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
+                                                      <div ng-bind-html="location.value.title | highlight: $select.search"></div>
+                                                    </ui-select-choices>
+                                                  </ui-select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="newRegion" class="col-xs-4 control-label">Region:</label>
                                                 <div class="col-xs-6">
-                                                  <span id="bootstrap-theme">
-                                                    <ui-select
+                                                  <ui-select
                                                     ng-model="jobroles.edit_data['new_role_id']['region']"
                                                     theme="civihr-ui-select"
                                                     title="Choose a Region"
                                                     name="newRegion">
-                                                      <ui-select-match allow-clear placeholder="Select a region">{{$select.selected.value.title}}</ui-select-match>
-                                                      <ui-select-choices repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
-                                                        <div ng-bind-html="region.value.title | highlight: $select.search"></div>
-                                                      </ui-select-choices>
-                                                    </ui-select>
-                                                  </span>
+                                                    <ui-select-match allow-clear placeholder="Select a region">{{$select.selected.value.title}}</ui-select-match>
+                                                    <ui-select-choices repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
+                                                      <div ng-bind-html="region.value.title | highlight: $select.search"></div>
+                                                    </ui-select-choices>
+                                                  </ui-select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="newDepartment" class="col-xs-4 control-label">Department:</label>
                                                 <div class="col-xs-6">
-                                                  <span id="bootstrap-theme">
-                                                    <ui-select
+                                                  <ui-select
                                                     ng-model="jobroles.edit_data['new_role_id']['department']"
                                                     theme="civihr-ui-select"
                                                     title="Choose a Department">
-                                                      <ui-select-match allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
-                                                      <ui-select-choices repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
-                                                        <div ng-bind-html="department.value.title | highlight: $select.search"></div>
-                                                      </ui-select-choices>
-                                                    </ui-select>
+                                                    <ui-select-match allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
+                                                    <ui-select-choices repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
+                                                      <div ng-bind-html="department.value.title | highlight: $select.search"></div>
+                                                    </ui-select-choices>
+                                                  </ui-select>
                                                   </span>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="newLevel" class="col-xs-4 control-label">Level:</label>
                                                 <div class="col-xs-6">
-                                                  <span id="bootstrap-theme">
-                                                    <ui-select
+                                                  <ui-select
                                                     ng-model="jobroles.edit_data['new_role_id']['level']"
                                                     theme="civihr-ui-select"
                                                     title="Choose a Level">
-                                                      <ui-select-match allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
-                                                      <ui-select-choices repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
-                                                        <div ng-bind-html="level.value.title | highlight: $select.search"></div>
-                                                      </ui-select-choices>
-                                                    </ui-select>
-                                                  </span>
+                                                    <ui-select-match allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
+                                                    <ui-select-choices repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
+                                                      <div ng-bind-html="level.value.title | highlight: $select.search"></div>
+                                                    </ui-select-choices>
+                                                  </ui-select>
                                                 </div>
                                             </div>
 
@@ -210,7 +201,7 @@
                                     </thead>
                                     <tbody>
                                     <tr ng-repeat="(key, funder) in jobroles.edit_data['new_role_id']['funders']">
-                                        <td id="bootstrap-theme">
+                                        <td>
                                           <!--show ui-select for funder in edit mode-->
                                           <span ng-show="tableform.$visible">
                                             <ui-select class="funder-select"
