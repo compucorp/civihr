@@ -1040,14 +1040,13 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * 
    * @return boolean
    *   True on success
-   * @todo Rename upgrade!!  To upgrade_1026()  Include in upgrade bundle!
    */
   public function upgrade_1026() {
-    $query = '
+    $query = "
       ALTER TABLE `civicrm_hrjobcontract_hour` 
-      CHANGE `fte_num` `fte_num` INT(10) UNSIGNED NULL DEFAULT \'0\' COMMENT \'.\', 
-      CHANGE `fte_denom` `fte_denom` INT(10) UNSIGNED NULL DEFAULT \'0\' COMMENT \'.\'
-    ';
+      CHANGE `fte_num` `fte_num` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT '.', 
+      CHANGE `fte_denom` `fte_denom` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT '.'
+    ";
     CRM_Core_DAO::executeQuery($query);
     return true;
   }
