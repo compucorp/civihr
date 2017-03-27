@@ -6,6 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
+use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
@@ -14,8 +15,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    */
   private $jobContractService;
 
-  public function __construct(JobContractService $jobContractService) {
+  /**
+   * @var \CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange
+   */
+  private $leaveBalanceChangeService;
+
+  public function __construct(JobContractService $jobContractService, LeaveBalanceChangeService $leaveBalanceChangeService) {
     $this->jobContractService = $jobContractService;
+    $this->leaveBalanceChangeService = $leaveBalanceChangeService;
   }
 
   /**
@@ -155,7 +162,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   /**
    * Creates LeaveBalanceChange records for the dates of the given $leaveRequest.
    *
-   * For PublicHolidays, the deducted amount will always be -1.
+   * For PublicHolidays, the deducted amount will be the amount specified by the Work Pattern.
    *
    * If there is already a leave request to this on the same date, the deduction
    * amount for that specific date will be updated to be 0, in order to not
@@ -169,12 +176,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     $dates = $leaveRequest->getDates();
     foreach($dates as $date) {
       $this->zeroDeductionForOverlappingLeaveRequestDate($leaveRequest, $date);
+      $amount = $this->leaveBalanceChangeService
+                     ->calculateAmountToBeDeductedForDate($leaveRequest, new DateTime($date->date));
 
       LeaveBalanceChange::create([
         'source_id'   => $date->id,
         'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
         'type_id'     => $leaveBalanceChangeTypes['Public Holiday'],
-        'amount'      => -1
+        'amount'      => $amount
       ]);
     }
   }

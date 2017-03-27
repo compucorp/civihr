@@ -20,11 +20,14 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabrica
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
    */
   private $absenceType;
+
+  private $creationLogic;
 
   public function setUp() {
     // We delete everything two avoid problems with the default absence types
@@ -32,6 +35,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
 
+    $leaveBalanceChangeService = $this->createLeaveBalanceChangeServiceForPublicHolidayLeaveRequestMock();
+    $this->creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService(), $leaveBalanceChangeService);
     $this->absenceType = AbsenceTypeFabricator::fabricate([
       'must_take_public_holiday_as_leave' => 1
     ]);
@@ -42,11 +47,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $periodEntitlement->contact_id = 2;
     $periodEntitlement->type_id = $this->absenceType->id;
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = CRM_Utils_Date::processDate('first monday of this year');
 
-    $creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday);
+    $this->creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday);
 
     $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
@@ -56,17 +60,15 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $periodEntitlement->contact_id = 2;
     $periodEntitlement->type_id = $this->absenceType->id;
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-
     $date = new DateTime('first monday of this year');
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = $date->format('YmdHis');
 
-    $creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday);
+    $this->creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday);
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($periodEntitlement->contact_id, $date->format('Ymd')));
 
-    $creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday);
+    $this->creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday);
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($periodEntitlement->contact_id, $date->format('Ymd')));
   }
@@ -86,11 +88,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
 
     $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = CRM_Utils_Date::processDate('2016-01-01');
 
-    $creationLogic->createForContact($contactID, $publicHoliday);
+    $this->creationLogic->createForContact($contactID, $publicHoliday);
 
     $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
@@ -125,8 +126,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' =>  CRM_Utils_Date::processDate('+5 days')
     ]);
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-    $creationLogic->createForAllInTheFuture();
+    $this->creationLogic->createForAllInTheFuture();
 
     // It's -2 instead of -3 because the first public holiday is in the past
     // and we should not create a leave request for it
@@ -147,12 +147,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' => $date->format('Ymd')
     ]);
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-    $creationLogic->createForAllInTheFuture();
+    $this->creationLogic->createForAllInTheFuture();
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
 
-    $creationLogic->createForAllInTheFuture();
+    $this->creationLogic->createForAllInTheFuture();
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
   }
@@ -174,8 +173,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' =>  CRM_Utils_Date::processDate('tomorrow')
     ]);
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-    $creationLogic->createForAllInTheFuture();
+    $this->creationLogic->createForAllInTheFuture();
 
     // The Balance is still 0 because no Leave Request was created
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
@@ -216,8 +214,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' =>  CRM_Utils_Date::processDate('+101 days')
     ]);
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-    $creationLogic->createAllForContract($contract['id']);
+    $this->creationLogic->createAllForContract($contract['id']);
 
     // The balance should be -2 because only two leave requests were created:
     // The one for +5 days and the other one for + 47 days.
@@ -258,8 +255,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' =>  CRM_Utils_Date::processDate('+332 days')
     ]);
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-    $creationLogic->createAllForContract($contract['id']);
+    $this->creationLogic->createAllForContract($contract['id']);
 
     // Since there's no end date for the contract,
     // leave request will be created for all the public holidays in the
@@ -281,19 +277,17 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' => $date->format('Ymd')
     ]);
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-    $creationLogic->createAllForContract($contract['id']);
+    $this->creationLogic->createAllForContract($contract['id']);
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
 
-    $creationLogic->createAllForContract($contract['id']);
+    $this->creationLogic->createAllForContract($contract['id']);
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
   }
 
   public function testItDoesntCreateAnythingIfTheContractIDDoesntExist() {
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-    $creationLogic->createAllForContract(9998398298);
+    $this->creationLogic->createAllForContract(9998398298);
 
     $this->assertEquals(0, $this->countNumberOfPublicHolidayBalanceChanges());
   }
@@ -320,8 +314,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-    $creationLogic->createForAllContacts($publicHoliday);
+    $this->creationLogic->createForAllContacts($publicHoliday);
 
     $leaveRequestContact1 = LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday);
     $leaveRequestContact2 = LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday);
@@ -355,8 +348,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-    $creationLogic->createForAllContacts($publicHoliday);
+    $this->creationLogic->createForAllContacts($publicHoliday);
 
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
@@ -382,13 +374,12 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = $date->format('Y-m-d');
 
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
-    $creationLogic->createForAllContacts($publicHoliday);
+    $this->creationLogic->createForAllContacts($publicHoliday);
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact1['id'], $date->format('Ymd')));
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact2['id'], $date->format('Ymd')));
 
-    $creationLogic->createForAllContacts($publicHoliday);
+    $this->creationLogic->createForAllContacts($publicHoliday);
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact1['id'], $date->format('Ymd')));
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact2['id'], $date->format('Ymd')));

@@ -95,4 +95,19 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
   public function recalculateExpiredBalanceChangesForLeaveRequestPastDates(LeaveRequest $leaveRequest) {
     LeaveBalanceChange::recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
   }
+
+  /**
+   * This method uses calculateAmountForDate method of LeaveBalanceChange BAO to
+   * calculates the amount to be deducted for a leave taken by the given contact
+   * on the given date.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *  The LeaveRequest which the $date belongs to
+   * @param \DateTime $date
+   *
+   * @return float
+   */
+  public function calculateAmountToBeDeductedForDate(LeaveRequest $leaveRequest, DateTime $date) {
+    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date);
+  }
 }
