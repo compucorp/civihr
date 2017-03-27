@@ -325,8 +325,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     LeavePeriodEntitlement $periodEntitlement
   ) {
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
-    $leaveRequestDateTypes  = array_flip(LeaveRequest::buildOptions('from_date_type'));
 
     $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
 
@@ -337,28 +335,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
         'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
         'amount'      => count($publicHolidays)
       ]);
-
-      foreach ($publicHolidays as $publicHoliday) {
-        $leaveRequest = LeaveRequest::create([
-          'type_id'        => $periodEntitlement->type_id,
-          'contact_id'     => $periodEntitlement->contact_id,
-          'status_id'      => $leaveRequestStatuses['Admin Approved'],
-          'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
-          'to_date'        => CRM_Utils_Date::processDate($publicHoliday->date),
-          'from_date_type' => $leaveRequestDateTypes['All Day'],
-          'to_date_type'   => $leaveRequestDateTypes['All Day'],
-          'request_type'   => LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY
-        ]);
-
-        $requestDate  = LeaveRequestDate::getDatesForLeaveRequest($leaveRequest->id)[0];
-
-        LeaveBalanceChange::create([
-          'type_id'        => $balanceChangeTypes['Public Holiday'],
-          'amount'         => -1,
-          'source_id'      => $requestDate->id,
-          'source_type'    => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY
-        ]);
-      }
     }
   }
 
