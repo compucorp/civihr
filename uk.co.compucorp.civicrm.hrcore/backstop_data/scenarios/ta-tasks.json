@@ -3,7 +3,6 @@
     {
       "label": "T&A / Tasks",
       "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "delay": 2000,
       "onReadyScript": "close-any-modal"
     },
     {

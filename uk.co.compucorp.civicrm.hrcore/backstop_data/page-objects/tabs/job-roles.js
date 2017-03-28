@@ -29,6 +29,24 @@ module.exports = (function () {
         casper.click('.tab-pane.active form > .btn-tab-action');
         casper.wait(100);
       });
+
+      return this;
+    },
+
+    /**
+     * [openDropdown description]
+     * @param  {[type]} name [description]
+     * @return {[type]}      [description]
+     */
+    openDropdown: function (name) {
+      casper.then(function () {
+        var common = 'jobroles.edit_data[job_roles_data.id]';
+
+        casper.click('[ng-model="' + common + '[\'' + name + '\']"] > a');
+        casper.wait(100);
+      });
+
+      return this;
     },
 
     /**

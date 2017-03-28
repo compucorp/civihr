@@ -132,6 +132,9 @@ var Promise = require('es6-promise').Promise;
         return JSON.parse(fs.readFileSync(scenariosPath + scenarioFile)).scenarios;
       })
       .flatten()
+      .map(function (scenario) {
+        return _.assign(scenario, { delay: scenario.delay || 6000 });
+      })
       .tap(function (scenarios) {
         scenarios[0].onBeforeScript = "login";
 
