@@ -251,13 +251,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   ) {
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
 
-    $proRata = $calculation->getProRata();
+    //The original pro-rata calculation already factors in public holidays
+    //since public holiday balance changes are saved differently, we need to deduct it from the pro rata
+    $adjustedProRata = $calculation->getProRata() - $calculation->getNumberOfPublicHolidaysInEntitlement();
+
 
     LeaveBalanceChange::create([
       'type_id' => $balanceChangeTypes['Leave'],
       'source_id' => $periodEntitlement->id,
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-      'amount' => $proRata
+      'amount' => $adjustedProRata
     ]);
 
 
@@ -272,7 +275,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
         'amount' => $overriddenEntitlement - $proposedEntitlement
       ]);
     }
-
   }
 
   /**
@@ -376,7 +378,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $leavePeriodEntitlement->contact_id = $contactID;
     $leavePeriodEntitlement->find(true);
 
-    LeaveBalanceChange::deleteForLeavePeriodEntitlement($leavePeriodEntitlement);
+    if ($leavePeriodEntitlement->id) {
+      LeaveBalanceChange::deleteForLeavePeriodEntitlement($leavePeriodEntitlement);
+    }
   }
 
   /**
