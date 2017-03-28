@@ -199,11 +199,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateHourAutoFields($contactID, $expected);
   }
 
-  /**
-   * This test verifies FTE for Contracts imported with hours type = "Casual" 
-   * calculates FTE value, FTE numerator and FTE denominator as 0.
-   */
-  public function testFTECalculationOnCasualHoursTypeImport() {
+  public function testFTEFieldsAreSetToZeroWhenImportingCasualHoursType() {
     $contact1 = ContactFabricator::fabricate();
     $casualContract = $this->buildContractInfo([
       'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
@@ -218,11 +214,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateHourAutoFields($contact1['id'], $expected);
   }
 
-  /**
-   * Verifies FTE for Contracts imported with empty hours amount calculates FTE 
-   * value, FTE numerator and FTE denominator as 0.
-   */
-  public function testFTECalculationOnEmptyHoursAmountImport() {
+  public function testFTEFieldsAreSetToZeroWhenImportingEmptyHoursAmount() {
     $contact2 = ContactFabricator::fabricate();
     $emptyHoursContract = $this->buildContractInfo([
       'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
@@ -237,11 +229,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateHourAutoFields($contact2['id'], $expected);
   }
 
-  /**
-   * Verifies if import with only mandatory fields set calculates FTE values as 
-   * 0 for FTE value, FTE numerator and FTE denominator.
-   */
-  public function testFTECalculationOnOnlyMandatoryFieldsImport() {
+  public function testFTEFieldsAreSetToZeroWhenImportingOnlyMandatoryFields() {
     $contact3 = ContactFabricator::fabricate();
     $importResponse = $this->runImport([
       'HRJobContract-contact_id' => $contact3['id'],
