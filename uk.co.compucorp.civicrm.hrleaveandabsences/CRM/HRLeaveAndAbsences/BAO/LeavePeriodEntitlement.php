@@ -184,6 +184,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       $absencePeriodID = $calculation->getAbsencePeriod()->id;
       $absenceTypeID = $calculation->getAbsenceType()->id;
       $contactID = $calculation->getContact()['id'];
+      self::deleteBalanceChangesForLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID);
       self::deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID);
 
       $periodEntitlement = self::create(self::buildLeavePeriodParamsFromCalculation(
@@ -359,6 +360,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     ];
 
     CRM_Core_DAO::executeQuery($query, $params);
+  }
+
+  /**
+   * Deletes the LeaveBalanceChanges for a LeavePeriodEntitlement
+   *
+   * @param int $absencePeriodID
+   * @param int $absenceTypeID
+   * @param int $contactID
+   */
+  private static function deleteBalanceChangesForLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID) {
+    $leavePeriodEntitlement = new self();
+    $leavePeriodEntitlement->period_id = $absencePeriodID;
+    $leavePeriodEntitlement->type_id = $absenceTypeID;
+    $leavePeriodEntitlement->contact_id = $contactID;
+    $leavePeriodEntitlement->find(true);
+
+    LeaveBalanceChange::deleteForLeavePeriodEntitlement($leavePeriodEntitlement);
   }
 
   /**
