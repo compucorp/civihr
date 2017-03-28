@@ -14,14 +14,15 @@ org.civicrm.hrdemog,\
 org.civicrm.hrident,\
 org.civicrm.hrjobcontract,\
 com.civicrm.hrjobroles,\
-org.civicrm.hrabsence,\
 org.civicrm.hrmed,\
 org.civicrm.hrqual,\
 org.civicrm.hrvisa,\
 org.civicrm.hremergency,\
 org.civicrm.hrcareer,\
 uk.co.compucorp.contactaccessrights,\
-uk.co.compucorp.civicrm.tasksassignments
+uk.co.compucorp.civicrm.tasksassignments,\
+uk.co.compucorp.civicrm.hrcomments,\
+uk.co.compucorp.civicrm.hrleaveandabsences
 
 ## List of extensions defining applications/UIs on top of the basic entity types
 APP_EXTS=\
