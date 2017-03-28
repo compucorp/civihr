@@ -129,6 +129,7 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
 
     $absenceTypeResult = civicrm_api3('HRAbsenceType', 'get', array(
         'sequential' => 1,
+        'is_active' => 1,
         'return' => 'id,title',
     ));
 

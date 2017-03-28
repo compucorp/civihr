@@ -57,7 +57,6 @@ function hrui_civicrm_pageRun($page) {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/civihr-popup/civihr-popup.js');
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/hrui.js');
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/contact.js');
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/perfect-scrollbar/perfect-scrollbar.min.js');
   } else {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
   }
@@ -83,30 +82,6 @@ function hrui_civicrm_buildForm($formName, &$form) {
       _hrui_set_phone_type_as_mobile($phoneIndex, $form);
       _hrui_set_phone_location_to_the_default_location($phoneIndex, $form);
     }
-  }
-
-  $ogID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'type_20130502144049', 'id', 'name');
-  //HR-355 -- Add Government ID
-  if ($formName == 'CRM_Contact_Form_Contact' && $ogID && $form->_contactType == 'Individual') {
-    //add government fields
-    $contactID = CRM_Utils_Request::retrieve('cid', 'Integer', $form);
-    $templatePath = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrui'). '/templates';
-    $form->add('text', 'GovernmentId', ts('Government ID'));
-    $form->addElement('select', "govTypeOptions", '', CRM_Core_BAO_OptionValue::getOptionValuesAssocArray($ogID));
-    CRM_Core_Region::instance('page-body')
-      ->add(array('template' => "{$templatePath}/CRM/HRUI/Form/contactField.tpl"));
-
-    $action = CRM_Utils_Request::retrieve('action', 'String', $form);
-    $govVal = CRM_HRIdent_Page_HRIdent::retreiveContactFieldValue($contactID);
-    //set default to government type option
-    $default = array();
-    $default['govTypeOptions'] = CRM_Core_BAO_CustomField::getOptionGroupDefault($ogID, 'select');
-    if ($action == CRM_Core_Action::UPDATE && !empty($govVal)) {
-      //set key for updating specific record of contact id in custom value table
-      $default['govTypeOptions'] = CRM_Utils_Array::value('type', $govVal);
-      $default['GovernmentId'] = CRM_Utils_Array::value('typeNumber',$govVal);
-    }
-    $form->setDefaults($default);
   }
 
   if ($formName == 'CRM_Admin_Form_Extensions') {
