@@ -23,7 +23,7 @@
 
     describe('ToilRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller,
-        $provide, AbsenceTypeAPI, TOILRequestInstance, sharedSettings,
+        $provide, Contact, ContactAPIMock, AbsenceTypeAPI, TOILRequestInstance, sharedSettings,
         date2016 = '01/12/2016';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
@@ -31,12 +31,6 @@
         function (_$provide_) {
           $provide = _$provide_;
         }));
-
-      beforeEach(inject(['shared-settings',
-        function (_sharedSettings_) {
-          sharedSettings = _sharedSettings_;
-        }
-      ]));
 
       beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_,
         _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
@@ -53,7 +47,13 @@
         $provide.value('FileUploader', _FileUploaderMock_);
       }));
 
-      beforeEach(inject(function (_$log_, _$controller_, _$rootScope_,
+      beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
+        $provide.value('api.contact', _ContactAPIMock_);
+        ContactAPIMock = _ContactAPIMock_;
+        sharedSettings = _sharedSettings_;
+      }]));
+
+      beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _Contact_,
         _AbsenceTypeAPI_, _TOILRequestInstance_) {
         $log = _$log_;
         $rootScope = _$rootScope_;
@@ -61,11 +61,16 @@
         AbsenceTypeAPI = _AbsenceTypeAPI_;
         TOILRequestInstance = _TOILRequestInstance_;
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
+        Contact = _Contact_;
 
         spyOn($log, 'debug');
         spyOn(AbsenceTypeAPI, 'all').and.callThrough();
         spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
         spyOn(TOILRequestInstance, 'init').and.callThrough();
+        spyOn(Contact, 'all').and.callFake(function () {
+          return $q.resolve(ContactAPIMock.mockedContacts());
+        });
+
       }));
 
       describe('toil request', function () {
@@ -225,9 +230,64 @@
           it('does show balance', function () {
             expect($ctrl.uiOptions.showBalance).toBeTruthy();
           });
+
+          describe('expiry date', function () {
+            beforeEach(function () {
+              $ctrl.calculateToilExpiryDate();
+            });
+
+            it('is not obtained from server', function () {
+              expect(AbsenceTypeAPI.calculateToilExpiryDate).not.toHaveBeenCalled();
+            });
+          });
         });
       });
 
+      describe('when manager opens leave request popup', function () {
+        beforeEach(function () {
+          var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+          var toilRequest = TOILRequestInstance.init(mockData.findBy('status_id', status));
+          toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+          var directiveOptions = {
+            contactId: 203, //manager's contact id
+            leaveRequest: toilRequest
+          };
+
+          initTestController(directiveOptions);
+        });
+
+        it('manager role is set', function () {
+          expect($ctrl.isRole('manager')).toBeTruthy();
+        });
+
+        it('expiry date is set on ui', function () {
+          expect($ctrl.uiOptions.expiryDate).toEqual(jasmine.any(Date));
+        });
+
+        describe('and changes expiry date', function () {
+          var beforeExpiryDate;
+
+          beforeEach(function () {
+            beforeExpiryDate = $ctrl.request.toil_expiry_date;
+            $ctrl.uiOptions.expiryDate = new Date();
+            $ctrl.updateExpiryDate();
+          });
+
+          it('sets new expiry date', function () {
+            expect(beforeExpiryDate).not.toEqual($ctrl.request.toil_expiry_date);
+          });
+        });
+
+        describe('and does not changes the status', function () {
+          beforeEach(function () {
+            $ctrl.submit();
+          });
+
+          it('sets status to waiting approval', function () {
+            expect($ctrl.request.status_id).toEqual($ctrl.statusBeforeEdit.value);
+          });
+        });
+      });
       /**
        * Initialize the controller
        *

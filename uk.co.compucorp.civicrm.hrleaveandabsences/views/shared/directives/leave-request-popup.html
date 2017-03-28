@@ -14,14 +14,14 @@
     ng-show="$ctrl.isRole('manager')"
     class="row chr_leave-request-modal__user-info">
     <span class="col-xs-6">{{$ctrl.contact.display_name}}</span>
-    <span class="col-xs-6">{{$ctrl.statusLabel}}</span>
+    <span class="col-xs-6">{{$ctrl.statusBeforeEdit.label}}</span>
   </div>
   <div class="modal-body chr_leave-request-modal__form">
     <div class="row">
       <div class="col-xs-12">
         <div class="chr_custom-select chr_custom-select--full">
           <select
-            ng-disabled="$ctrl.isMode('view')"
+            ng-disabled="$ctrl.isMode('view') || $ctrl.isRole('manager')"
             name="absenceTypeSelect"
             ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes"
             ng-model="$ctrl.request.type_id"
@@ -120,6 +120,7 @@
                         datepicker-options="$ctrl.uiOptions.date.expiry.options"
                         show-button-bar="false"
                         ng-model="$ctrl.uiOptions.expiryDate"
+                        ng-change="$ctrl.updateExpiryDate()"
                         is-open="$ctrl.uiOptions.date.expiry.show"/>
                       <span class="input-group-btn">
                         <button
@@ -284,7 +285,7 @@
       </div>
     </div>
     <div
-      ng-show="$ctrl.isRole('manager')"
+      ng-show="$ctrl.isRole('manager') && $ctrl.statusBeforeEdit.label === 'Waiting Approval'"
       class="row chr_leave-request-modal__response">
       <div class="col-xs-12 form-horizontal">
         <div class="form-group">

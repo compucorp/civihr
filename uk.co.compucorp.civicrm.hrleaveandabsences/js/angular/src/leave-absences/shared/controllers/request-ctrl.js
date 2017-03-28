@@ -37,7 +37,7 @@ define([
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
       this.period = {};
-      this.statusLabel = '';
+      this.statusBeforeEdit = {};
       this.today = Date.now();
       this.balance = {
         closing: 0,
@@ -449,6 +449,26 @@ define([
       };
 
       /**
+       * Converts given date to server format
+       *
+       * @param {Date} date
+       * @return {Date} converted to server format
+       */
+      this._convertDateFormatToServer = function (date) {
+        return moment(date).format(sharedSettings.serverDateFormat);
+      }
+
+      /**
+       * Converts given date to javascript date as expected by uib-datepicker
+       *
+       * @param {Date/String} date from server
+       * @return {Date} Javascript date
+       */
+      this._convertDateFormatFromServer = function (date) {
+        return moment(date, sharedSettings.serverDateFormat).clone().toDate();
+      }
+
+      /**
        * Initializes user's calendar (work patterns)
        *
        * @return {Promise}
@@ -490,15 +510,14 @@ define([
        * Sets dates and types for this.request from UI
        */
       this._setDates = function () {
-        this.request.from_date = this.uiOptions.fromDate ? convertDateFormatToServer(this.uiOptions.fromDate) : null;
-        this.request.to_date = this.uiOptions.toDate ? convertDateFormatToServer(this.uiOptions.toDate) : null;
+        this.request.from_date = this.uiOptions.fromDate ? this._convertDateFormatToServer.call(this, this.uiOptions.fromDate) : null;
+        this.request.to_date = this.uiOptions.toDate ? this._convertDateFormatToServer.call(this, this.uiOptions.toDate) : null;
 
         if (!this.uiOptions.multipleDays && this.uiOptions.fromDate) {
           this.uiOptions.toDate = this.uiOptions.fromDate;
           this.request.to_date = this.request.from_date;
         }
       };
-
 
       /**
        * Sets dates and types for this.request from UI
@@ -534,11 +553,11 @@ define([
             this.uiOptions.toDate = this.uiOptions.fromDate;
           }
         } else {
-          this.uiOptions.date.to.options.minDate = convertDateFormatFromServer(this.period.start_date);
+          this.uiOptions.date.to.options.minDate = this._convertDateFormatFromServer(this.period.start_date);
           this.uiOptions.date.to.options.initDate = this.uiOptions.date.to.options.minDate;
         }
 
-        this.uiOptions.date.to.options.maxDate = convertDateFormatFromServer(this.period.end_date);
+        this.uiOptions.date.to.options.maxDate = this._convertDateFormatFromServer(this.period.end_date);
       };
 
       /**
@@ -625,26 +644,6 @@ define([
       }
 
       /**
-       * Converts given date to server format
-       *
-       * @param {Date} date
-       * @return {Date} converted to server format
-       */
-      function convertDateFormatToServer(date) {
-        return moment(date).format(sharedSettings.serverDateFormat);
-      }
-
-      /**
-       * Converts given date to javascript date as expected by uib-datepicker
-       *
-       * @param {Date/String} date from server
-       * @return {Date} Javascript date
-       */
-      function convertDateFormatFromServer(date) {
-        return moment(date, sharedSettings.serverDateFormat).clone().toDate();
-      }
-
-      /**
        * Filters absence type and formats data to be compatible with angular select directives
        *
        * @param {Array} absenceTypes
@@ -691,7 +690,7 @@ define([
         // Make a copy of the list
         listToReturn = self.requestDayTypes.slice(0);
 
-        date = convertDateFormatToServer(date);
+        date = self._convertDateFormatToServer.call(self, date);
         PublicHoliday.isPublicHoliday(date)
           .then(function (result) {
             if (result) {
@@ -875,14 +874,14 @@ define([
         if (canViewOrEdit.call(self)) {
           var attributes = self.request.attributes();
 
-          self.uiOptions.fromDate = convertDateFormatFromServer(self.request.from_date);
+          self.uiOptions.fromDate = this._convertDateFormatFromServer(self.request.from_date);
 
           self.updateAbsencePeriodDatesTypes.call(self, self.uiOptions.fromDate, 'from')
             .then(function () {
               //to_date and type has been reset in above call so reinitialize from clone
               self.request.to_date = attributes.to_date;
               self.request.to_date_type = attributes.to_date_type;
-              self.uiOptions.toDate = convertDateFormatFromServer(self.request.to_date);
+              self.uiOptions.toDate = self._convertDateFormatFromServer(self.request.to_date);
               self.updateAbsencePeriodDatesTypes.call(self, self.uiOptions.toDate, 'to')
                 .then(function () {
                   //resolve only after both from and to day types are also set
@@ -902,7 +901,7 @@ define([
       function initStatus() {
         if (canViewOrEdit.call(this)) {
           //set it before self.requestStatuses gets filtered
-          this.statusLabel = getStatusFromValue.call(this, this.request.status_id).label;
+          this.statusBeforeEdit = getStatusFromValue.call(this, this.request.status_id);
           if (this.isRole('manager')) {
             setStatuses.call(this);
           } else if (this.isRole('owner')) {
@@ -1110,6 +1109,13 @@ define([
        */
       function updateRequest() {
         var self = this;
+
+        if (self.isRole('manager')) {
+          //if manager has not changed the status then reset status
+          if (!self.request.status_id) {
+            self.request.status_id = self.statusBeforeEdit.value;
+          }
+        }
 
         self.request.isValid()
           .then(function () {

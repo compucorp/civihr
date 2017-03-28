@@ -45,6 +45,11 @@ define([
        * @return {Promise}
        */
       vm.calculateToilExpiryDate = function () {
+        //do not calculate expiry date if its already set by manager for this leave request
+        if (vm.isRole('owner') && vm.isMode('edit')) {
+          return $q.resolve(vm.request.toil_expiry_date);
+        }
+
         if (!vm.request.from_date) {
           vm.error = 'Please select from date to find expiry date';
           return $q.reject(vm.error);
@@ -106,6 +111,15 @@ define([
       };
 
       /**
+      * updates expiry date when user changes it on ui
+      */
+      vm.updateExpiryDate = function () {
+        if (vm.uiOptions.expiryDate) {
+          vm.request.toil_expiry_date = vm._convertDateFormatToServer(vm.uiOptions.expiryDate);
+        }
+      };
+
+      /**
        * Initializes the controller on loading the dialog
        */
       (function initController() {
@@ -114,6 +128,8 @@ define([
 
         vm._init()
           .then(function () {
+            initExpiryDate();
+
             return loadToilAmounts();
           })
           .finally(function () {
@@ -142,6 +158,15 @@ define([
           .then(function (amounts) {
             vm.toilAmounts = _.indexBy(amounts, 'value');
           });
+      }
+
+      /**
+       * Initialize expiryDate on UI from server date for manager's edit action
+       */
+      function initExpiryDate () {
+        if (vm.isRole('manager')) {
+          vm.uiOptions.expiryDate = vm._convertDateFormatFromServer(vm.request.toil_expiry_date);
+        }
       }
 
       return vm;
