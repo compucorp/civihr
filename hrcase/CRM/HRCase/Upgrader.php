@@ -128,6 +128,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * activity workflow
    */
   public function upgrade_1404() {
+    $this->installActivityTypes('CiviDocument', ['P45']);
     $defaultTypes = CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes();
     $this->createOrUpdateDefaultCaseTypes($defaultTypes);
 
@@ -484,4 +485,62 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     }
   }
 
+  /**
+   * @param $component
+   * @param array $types
+   */
+  private function installActivityTypes($component, array $types) {
+    $params = $this->fetchActivityTypeParams($component);
+
+    foreach ($types as $type) {
+      civicrm_api3('OptionValue', 'create', array(
+        'sequential' => 1,
+        'option_group_id' => $params['option_group_id'],
+        'component_id' => $params['component_id'],
+        'label' => $type,
+        'name' => $type,
+      ));
+    }
+  }
+
+  /**
+   * Returns the activity type params starting with a component name,
+   * specifically it returns the option group and component id
+   *
+   * @param  string $component
+   * @return array
+   */
+  private function fetchActivityTypeParams($component) {
+    $componentId = NULL;
+    $componentQuery = 'SELECT id FROM civicrm_component WHERE name = %1';
+    $componentParams = [1 => array($component, 'String')];
+    $componentResult = CRM_Core_DAO::executeQuery($componentQuery, $componentParams);
+
+    if ($componentResult->fetch()) {
+      $componentId = $componentResult->id;
+    }
+
+    if (!$componentId) {
+      throw new Exception($component . ' Component not found.');
+    }
+
+    $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
+
+    if (!$optionGroupID) {
+      civicrm_api3('OptionGroup', 'create', [
+        'name' => 'activity_type',
+        'title' => 'Activity Type',
+        'is_active' => 1,
+      ]);
+
+      $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
+    }
+
+    return [
+      'component_id' => $componentId,
+      'option_group_id' => $optionGroupID,
+    ];
+  }
+
 }
+
