@@ -270,8 +270,7 @@ define([
 
       function contractEdit() {
         $scope.$broadcast('hrjc-loader-show');
-        var period_end_date = $scope.entity.details.period_end_date;
-        $scope.entity.details.period_end_date = (!period_end_date)? "" : period_end_date;
+        $scope.entity.details.period_end_date = $scope.entity.details.period_end_date || '';
 
         var entityNew = angular.copy($scope.entity),
           filesTrash = $scope.filesTrash,

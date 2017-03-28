@@ -3,7 +3,7 @@ define([
 ], function() {
   'use strict';
 
-  describe('ModalContractCtrl', function() {
+  describe('ModalContractCtrl', function () {
     var ctrl, $rootScope, $controller, $scope, $q, $uibModal, $httpBackend, $uibModalInstanceMock,
       $uibModalMock, entity, ContractDetailsService;
 
@@ -27,75 +27,83 @@ define([
     });
 
     beforeEach(function() {
-      mockObjects()
+      mockUIBModalInstance();
+      mockUIBModal('edit');
+      mockObjects();
       makeController();
+      createContractDetailsServiceSpy(true);
+      createUIBModalSpy();
     });
 
-    beforeEach(function() {
-      callSpies();
-    });
+    describe("save()", function () {
 
-    describe("After call to save() function", function() {
+      describe("makes call to appropriate service and function", function () {
+        beforeEach(function() {
+          $scope.save();
+          $rootScope.$digest();
+        });
 
-      beforeEach(function() {
-        $scope.save();
-        $rootScope.$digest();
-      });
+        it("calls to validate the dates form ContractDetailsService", function () {
+          expect(ContractDetailsService.validateDates).toHaveBeenCalled();
+        });
 
-      it("calls to validate the dates form ContractDetailsService", function() {
-        expect(ContractDetailsService.validateDates).toHaveBeenCalled();
+        it("gets confirmation fron user to save contract data", function () {
+          expect($uibModalMock.open).toHaveBeenCalled();
 
-        ContractDetailsService.validateDates().then(function(result) {
-          expect(result.success).toBe(true);
+          $uibModalMock.open().result.then(function(data) {
+            expect(data).toBe('edit');
+          });
         });
       });
 
-      it("gets confirmation fron user to save contract data", function() {
-        expect($uibModalMock.open).toHaveBeenCalled();
+      describe("When period_end_date is null", function () {
+        beforeEach(function() {
+          $scope.entity.details.period_end_date = null;
+          $scope.save();
+          $rootScope.$digest();
+        });
 
-        $uibModalMock.open().result.then(function(data) {
-          expect(data).toBe('edit');
+        it("sets contract period_end_date to '' ", function () {
+          expect($scope.entity.details.period_end_date).toBe('');
         });
       });
 
-      it("sets contract period_end_date to ''  if it was null", function() {
-        expect($scope.entity.details.period_end_date).toBe('');
+      describe("When period_end_date is not falsy", function () {
+        var mockDate = '02-03-2017';
+
+        beforeEach(function() {
+          $scope.entity.details.period_end_date = mockDate;
+          $scope.save();
+          $rootScope.$digest();
+        });
+
+        it("sets contract period_end_date to '' ", function () {
+          expect($scope.entity.details.period_end_date).toBe(mockDate);
+        });
       });
     });
 
-    describe("When period_end_date is undefined", function() {
-      beforeEach(function() {
-        $scope.entity.details.period_end_date = undefined;
-        $scope.save();
-        $rootScope.$digest();
-      });
-
-      it("sets contract period_end_date to '' ", function() {
-        expect($scope.entity.details.period_end_date).toBe('');
-      });
-    });
-
-    // $uibModalInstanceSpy for $uibModalInstance.opened.then()
-    $uibModalInstanceMock = {
-      opened: {
-        then: function() {
-          jasmine.createSpy('modalInstance.opened');
+    function mockUIBModalInstance() {
+      $uibModalInstanceMock = {
+        opened: {
+          then: jasmine.createSpy()
         }
-      }
-    };
+      };
+    }
 
-    // $uibModalSpy for $modal.open()
-    $uibModalMock = {
-      open: function() {
-        return {
-          result: {
-            then: function(callback) {
-              callback("edit");
+    function mockUIBModal(mode) {
+      $uibModalMock = {
+        open: function() {
+          return {
+            result: {
+              then: function(callback) {
+                callback(mode);
+              }
             }
           }
         }
-      }
-    };
+      };
+    }
 
     function makeController() {
       $scope = $rootScope.$new();
@@ -116,16 +124,18 @@ define([
       });
     }
 
-    function callSpies() {
+    function createContractDetailsServiceSpy(status) {
       spyOn(ContractDetailsService, "validateDates").and.callFake(function() {
         var deferred = $q.defer();
         deferred.resolve({
-          success: true
+          success: status
         });
 
         return deferred.promise;
       });
+    }
 
+    function createUIBModalSpy() {
       spyOn($uibModalMock, "open").and.callThrough();
     }
 
