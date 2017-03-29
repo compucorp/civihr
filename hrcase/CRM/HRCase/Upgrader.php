@@ -3,6 +3,8 @@
 require_once 'Upgrader/Base.php';
 require_once 'DefaultCaseAndActivityTypes.php';
 
+use CRM_HRCase_DefaultCaseAndActivityTypes as DefaultCaseAndActivityTypes;
+
 /**
  * Collection of upgrade steps
  */
@@ -117,7 +119,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     //Removes CiviCase activity types which should belong to CiviTask component
     $this->removeActivityTypesList($defaultActivityTypes, 'CiviCase');
     $this->createOrUpdateDefaultCaseTypes($defaultCaseTypes);
-    $this->up1402_createDefaultActivityTypes($defaultActivityTypes);
+    $this->createOrUpdateActivityTypes($defaultActivityTypes);
     $this->changeActivityTypeComponent('Open Case', 'CiviCase', 'CiviTask');
 
     return TRUE;
@@ -127,10 +129,11 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * Resets all default case types discarding any customization to match new
    * activity workflow
    */
-  public function upgrade_1404() {
-    $this->installActivityTypes('CiviDocument', ['P45']);
-    $defaultTypes = CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes();
-    $this->createOrUpdateDefaultCaseTypes($defaultTypes);
+  public function upgrade_1429() {
+    $defaultActivityTypes = DefaultCaseAndActivityTypes::getDefaultActivityTypes();
+    $defaultCaseTypes = DefaultCaseAndActivityTypes::getDefaultCaseTypes();
+    $this->createOrUpdateActivityTypes($defaultActivityTypes);
+    $this->createOrUpdateDefaultCaseTypes($defaultCaseTypes);
 
     return TRUE;
   }
@@ -253,12 +256,14 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    *   0 : disable , 1 : enable
    */
   public static function toggleActivityTypes($activityTypes, $status) {
-    foreach ($activityTypes as $activityType) {
-      civicrm_api3('OptionValue', 'get', [
-        'name' => $activityType,
-        'component_id' => 'CiviTask',
-        'api.OptionValue.create' => ['id' => '$value.id', 'is_active' => $status],
-      ]);
+    foreach ($activityTypes as $componentName => $componentActivities) {
+      foreach ($componentActivities as $activityType) {
+        civicrm_api3('OptionValue', 'get', [
+          'name' => $activityType,
+          'component_id' => $componentName,
+          'api.OptionValue.create' => ['id' => '$value.id', 'is_active' => $status],
+        ]);
+      }
     }
   }
 
@@ -289,11 +294,15 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    *   (e.g : CiviCase, CiviTask .. etc)
    */
   private function removeActivityTypesList($activityTypes, $componentName) {
+    $allActivityTypes = [];
+    foreach ($activityTypes as $componentActivities) {
+      $allActivityTypes = array_merge($allActivityTypes, $componentActivities);
+    }
     civicrm_api3('OptionValue', 'get', [
-      'name' => ['IN' => $activityTypes],
-      'component_id' => $componentName,
-      'option_group_id' => 'activity_type',
-      'api.OptionValue.delete' => ['id' => '$value.id'],
+          'name' => ['IN' => $allActivityTypes],
+          'component_id' => $componentName,
+          'option_group_id' => 'activity_type',
+          'api.OptionValue.delete' => ['id' => '$value.id'],
     ]);
   }
 
@@ -367,25 +376,27 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * with this extension if they are not exits
    *
    * @param array $defaultActivityTypes
-   *   A list of activity type names
+   *   A list of activity types grouped by component name
    */
-  private function up1402_createDefaultActivityTypes($defaultActivityTypes) {
-    foreach ($defaultActivityTypes as $activityType) {
-      $type = civicrm_api3('OptionValue', 'get', [
-        'sequential' => 1,
-        'name' => $activityType,
-        'option_group_id' => 'activity_type',
-        'component_id' => 'CiviTask',
-      ]);
-
-      if (empty($type['id'])) {
-        civicrm_api3('OptionValue', 'create', [
+  private function createOrUpdateActivityTypes($defaultActivityTypes) {
+    foreach ($defaultActivityTypes as $componentName => $componentActivities) {
+      foreach ($componentActivities as $activityType) {
+        $type = civicrm_api3('OptionValue', 'get', [
           'sequential' => 1,
-          'option_group_id' => 'activity_type',
-          'label' => $activityType,
           'name' => $activityType,
-          'component_id' => 'CiviTask',
+          'option_group_id' => 'activity_type',
+          'component_id' => $componentName,
         ]);
+
+        if (empty($type['id'])) {
+          civicrm_api3('OptionValue', 'create', [
+            'sequential' => 1,
+            'option_group_id' => 'activity_type',
+            'label' => $activityType,
+            'name' => $activityType,
+            'component_id' => $componentName,
+          ]);
+        }
       }
     }
   }
@@ -485,62 +496,4 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     }
   }
 
-  /**
-   * @param $component
-   * @param array $types
-   */
-  private function installActivityTypes($component, array $types) {
-    $params = $this->fetchActivityTypeParams($component);
-
-    foreach ($types as $type) {
-      civicrm_api3('OptionValue', 'create', array(
-        'sequential' => 1,
-        'option_group_id' => $params['option_group_id'],
-        'component_id' => $params['component_id'],
-        'label' => $type,
-        'name' => $type,
-      ));
-    }
-  }
-
-  /**
-   * Returns the activity type params starting with a component name,
-   * specifically it returns the option group and component id
-   *
-   * @param  string $component
-   * @return array
-   */
-  private function fetchActivityTypeParams($component) {
-    $componentId = NULL;
-    $componentQuery = 'SELECT id FROM civicrm_component WHERE name = %1';
-    $componentParams = [1 => array($component, 'String')];
-    $componentResult = CRM_Core_DAO::executeQuery($componentQuery, $componentParams);
-
-    if ($componentResult->fetch()) {
-      $componentId = $componentResult->id;
-    }
-
-    if (!$componentId) {
-      throw new Exception($component . ' Component not found.');
-    }
-
-    $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
-
-    if (!$optionGroupID) {
-      civicrm_api3('OptionGroup', 'create', [
-        'name' => 'activity_type',
-        'title' => 'Activity Type',
-        'is_active' => 1,
-      ]);
-
-      $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
-    }
-
-    return [
-      'component_id' => $componentId,
-      'option_group_id' => $optionGroupID,
-    ];
-  }
-
 }
-
