@@ -8,23 +8,34 @@
 class CRM_HRCase_DefaultCaseAndActivityTypes {
 
   private static $defaultActivityTypes = [
-    'Schedule Exit Interview',
-    'Get "No Dues" certification',
-    'Conduct Exit Interview',
-    'Revoke Access to Database',
-    'Block work email ID',
-    'Background Check',
-    'References Check',
-    'Schedule joining date',
-    'Issue appointment letter',
-    'Fill Employee Details Form',
-    'Submission of ID/Residence proofs and photos',
-    'Program and work induction by program supervisor',
-    'Enter employee data in CiviHR',
-    'Group Orientation to organization, values, policies',
-    'Probation appraisal (start probation workflow)',
-    'Confirm End of Probation Date',
-    'Start Probation workflow'
+    'CiviTask' => [
+      'Schedule Exit Interview',
+      'Get "No Dues" certification',
+      'Conduct Exit Interview',
+      'Revoke Access to Database',
+      'Block work email ID',
+      'Background Check',
+      'References Check',
+      'Schedule joining date',
+      'Issue appointment letter',
+      'Fill Employee Details Form',
+      'Submission of ID/Residence proofs and photos',
+      'Program and work induction by program supervisor',
+      'Enter employee data in CiviHR',
+      'Group Orientation to organization, values, policies',
+      'Probation appraisal (start probation workflow)',
+      'Confirm End of Probation Date',
+      'Start Probation workflow',
+    ],
+    'CiviDocument' => [
+      'Government Photo ID',
+      'Driving licence',
+      'Identity card',
+      'Certificate of sponsorship (COS)',
+      'P45',
+      'Passport',
+      'VISA',
+    ]
   ];
 
   private static $defaultCaseTypes = [
