@@ -14,7 +14,7 @@
     ng-show="$ctrl.isRole('manager')"
     class="row chr_leave-request-modal__user-info">
     <span class="col-xs-6">{{$ctrl.contact.display_name}}</span>
-    <span class="col-xs-6">{{$ctrl.statusBeforeEdit.label}}</span>
+    <span class="col-xs-6">{{::$ctrl.statusBeforeEdit.label}}</span>
   </div>
   <div class="modal-body chr_leave-request-modal__form">
     <div class="row">
@@ -110,13 +110,17 @@
                 <div class="form-group">
                   <label class="col-xs-4 control-label">Expiry Date</label>
                   <div class="col-xs-4">
-                    <span ng-if="!$ctrl.isRole('manager')">{{$ctrl.request.toil_expiry_date | date: $ctrl.uiOptions.userDateFormat}}</span>
+                    <span class="chr_leave-request-modal__span-expiry"
+                      ng-if="!$ctrl.isRole('manager')">
+                      {{$ctrl.request.toil_expiry_date | date: $ctrl.uiOptions.userDateFormat}}
+                    </span>
                     <div ng-if="$ctrl.isRole('manager')"
                          class="input-group">
                       <input
                         type="text"
                         class="form-control"
                         uib-datepicker-popup
+                        ng-readonly="true"
                         datepicker-options="$ctrl.uiOptions.date.expiry.options"
                         show-button-bar="false"
                         ng-model="$ctrl.uiOptions.expiryDate"
@@ -285,7 +289,7 @@
       </div>
     </div>
     <div
-      ng-show="$ctrl.isRole('manager') && $ctrl.statusBeforeEdit.label === 'Waiting Approval'"
+      ng-show="$ctrl.isRole('manager') && $ctrl.statusBeforeEdit.value === '3'"
       class="row chr_leave-request-modal__response">
       <div class="col-xs-12 form-horizontal">
         <div class="form-group">
@@ -295,7 +299,7 @@
             <div class="chr_custom-select chr_custom-select--full">
               <select
                 name="statusSelect"
-                ng-options="status.value as status.label for status in $ctrl.requestStatuses"
+                ng-options="status.value as status.label for status in $ctrl.getStatuses() | filter:$ctrl.isStatusAvailableForManager"
                 ng-model="$ctrl.request.status_id">
                 <option value="">- select -</option>
               </select>
@@ -326,7 +330,7 @@
   <div
     ng-if="$ctrl.error"
     uib-alert
-    class="danger"
+    type="danger"
     close="$ctrl.closeAlert()"
     dismiss-on-timeout="5000">{{$ctrl.error}}
   </div>

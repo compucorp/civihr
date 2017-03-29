@@ -37,6 +37,7 @@ define([
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
       this.period = {};
+      this.requestStatuses = {};
       this.statusBeforeEdit = {};
       this.today = Date.now();
       this.balance = {
@@ -452,20 +453,30 @@ define([
        * Converts given date to server format
        *
        * @param {Date} date
-       * @return {Date} converted to server format
+       * @return {String} date converted to server format
        */
-      this._convertDateFormatToServer = function (date) {
+      this._convertDateToServerFormat = function (date) {
         return moment(date).format(sharedSettings.serverDateFormat);
       }
 
       /**
        * Converts given date to javascript date as expected by uib-datepicker
        *
-       * @param {Date/String} date from server
-       * @return {Date} Javascript date
+       * @param {String} date from server
+       * @return {Date}
        */
       this._convertDateFormatFromServer = function (date) {
-        return moment(date, sharedSettings.serverDateFormat).clone().toDate();
+        return moment(date, sharedSettings.serverDateFormat).toDate();
+      }
+
+      /**
+       * Flattens statuses from object to array of objects. This is used to
+       * populate the dropdown with array of statuses.
+       *
+       * @return {Array}
+       */
+      this.getStatuses = function () {
+        return Object.values(this.requestStatuses);
       }
 
       /**
@@ -481,6 +492,16 @@ define([
             self.calendar = usersCalendar;
           });
       };
+
+      /**
+       * Checks if given status is available to manager
+       *
+       * @param {String} status
+       * @return {Boolean}
+       */
+      this.isStatusAvailableForManager = function (status) {
+        return !(status.name === 'admin_approved' || status.name === 'waiting_approval');
+      }
 
       /**
        * Initializes values for absence types and entitlements when the
@@ -510,8 +531,8 @@ define([
        * Sets dates and types for this.request from UI
        */
       this._setDates = function () {
-        this.request.from_date = this.uiOptions.fromDate ? this._convertDateFormatToServer.call(this, this.uiOptions.fromDate) : null;
-        this.request.to_date = this.uiOptions.toDate ? this._convertDateFormatToServer.call(this, this.uiOptions.toDate) : null;
+        this.request.from_date = this.uiOptions.fromDate ? this._convertDateToServerFormat(this.uiOptions.fromDate) : null;
+        this.request.to_date = this.uiOptions.toDate ? this._convertDateToServerFormat(this.uiOptions.toDate) : null;
 
         if (!this.uiOptions.multipleDays && this.uiOptions.fromDate) {
           this.uiOptions.toDate = this.uiOptions.fromDate;
@@ -690,7 +711,7 @@ define([
         // Make a copy of the list
         listToReturn = self.requestDayTypes.slice(0);
 
-        date = self._convertDateFormatToServer.call(self, date);
+        date = self._convertDateToServerFormat.call(self, date);
         PublicHoliday.isPublicHoliday(date)
           .then(function (result) {
             if (result) {
@@ -698,7 +719,7 @@ define([
                 return publicHoliday.name === 'public_holiday';
               });
             } else {
-              inCalendarList = getDayTypesFromDate(date, listToReturn);
+              inCalendarList = getDayTypesFromDate.call(self, date, listToReturn);
 
               if (!inCalendarList.length) {
                 // 'All day', '1/2 AM', and '1/2 PM' options
@@ -736,23 +757,17 @@ define([
        * @return {Array} non-empty if found else empty array
        */
       function getDayTypesFromDate(date, listOfDayTypes) {
-        var listToReturn = [];
+        var nameFilter = null;
 
-        try {
-          if (this.calendar.isNonWorkingDay(moment(date))) {
-            listToReturn = listOfDayTypes.filter(function (day) {
-              return day.name === 'non_working_day';
-            });
-          } else if (this.calendar.isWeekend(moment(date))) {
-            listToReturn = listOfDayTypes.filter(function (day) {
-              return day.name === 'weekend';
-            });
-          }
-        } catch (e) {
-          listToReturn = [];
+        if (this.calendar.isNonWorkingDay(moment(date))) {
+          nameFilter = 'non_working_day';
+        } else if (this.calendar.isWeekend(moment(date))) {
+          nameFilter = 'weekend';
         }
 
-        return listToReturn;
+        return !nameFilter ? [] : listOfDayTypes.filter(function (day) {
+          return day.name === nameFilter;
+        });
       }
 
       /**
@@ -789,7 +804,11 @@ define([
           this.error = errors.error_message;
         else {
           if (_.isObject(errors)) {
-            this.error = JSON.stringify(errors)
+            this.error = _.map(errors, function (value, key) {
+              var errorMessage = _.isArray(value) ? value.join(', ') : JSON.stringify(value);
+
+              return errorMessage + ' for key ' + key;
+            }).join(', ');
           } else {
             this.error = errors.toString();
           }
@@ -874,7 +893,7 @@ define([
         if (canViewOrEdit.call(self)) {
           var attributes = self.request.attributes();
 
-          self.uiOptions.fromDate = this._convertDateFormatFromServer(self.request.from_date);
+          self.uiOptions.fromDate = self._convertDateFormatFromServer(self.request.from_date);
 
           self.updateAbsencePeriodDatesTypes.call(self, self.uiOptions.fromDate, 'from')
             .then(function () {
@@ -902,9 +921,8 @@ define([
         if (canViewOrEdit.call(this)) {
           //set it before self.requestStatuses gets filtered
           this.statusBeforeEdit = getStatusFromValue.call(this, this.request.status_id);
-          if (this.isRole('manager')) {
-            setStatuses.call(this);
-          } else if (this.isRole('owner')) {
+
+          if (this.isRole('owner')) {
             this.request.status_id = this.requestStatuses['waiting_approval'].value;
           }
         } else if (this.isMode('create')) {
@@ -1083,25 +1101,6 @@ define([
               role = 'manager';
             }
           });
-      }
-
-      /**
-       * Sets leave requestion statuses
-       */
-      function setStatuses() {
-        var allowedStatuses = ['approved', 'more_information_requested', 'cancelled', 'rejected'],
-          key,
-          status,
-          self = this;
-
-        if (self.isRole('manager')) {
-          //filter self.requestStatuses to contain statues relevant for manager to act
-          for (key in self.requestStatuses) {
-            if (!_.some(allowedStatuses, function (value) { return value === key })) {
-              delete self.requestStatuses[key];
-            }
-          }
-        }
       }
 
       /**

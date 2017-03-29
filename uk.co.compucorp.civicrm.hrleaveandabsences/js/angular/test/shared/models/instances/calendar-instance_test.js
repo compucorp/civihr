@@ -45,8 +45,6 @@ define([
           dateToSearch = moment(getDate("non_working_day").date);
           expect(CalendarInstance.isWorkingDay(dateToSearch)).toBe(false);
         });
-
-        it('throws error if date is not found', testOutofRangeDate);
       });
 
       describe('isNonWorkingDay()', function () {
@@ -60,8 +58,6 @@ define([
           dateToSearch = moment(getDate("working_day").date);
           expect(CalendarInstance.isNonWorkingDay(dateToSearch)).toBe(false);
         });
-
-        it('throws error if date is not found', testOutofRangeDate);
       });
 
       describe('isWeekend()', function () {
@@ -75,18 +71,7 @@ define([
           dateToSearch = moment(getDate("working_day").date);
           expect(CalendarInstance.isWeekend(dateToSearch)).toBe(false);
         });
-
-        it('throws error if date is not found', testOutofRangeDate);
       });
-
-      function testOutofRangeDate() {
-        dateToSearch = moment(('2017-12-12'));
-        var workingDayFn = function () {
-          CalendarInstance.isWorkingDay(dateToSearch)
-        };
-
-        expect(workingDayFn).toThrow(new Error('Date not found'));
-      }
 
       function getDate(dayType) {
         return mockData.daysData().values.find(function (data) {

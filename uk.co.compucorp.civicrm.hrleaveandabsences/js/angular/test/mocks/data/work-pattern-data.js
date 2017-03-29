@@ -6,7 +6,7 @@ define(function () {
       'count': 3,
       'values': [
         {
-          'date': '2016-01-01',
+          'date': '2016-01-05',
           'type': {
             'value': 2,
             'name': 'working_day',

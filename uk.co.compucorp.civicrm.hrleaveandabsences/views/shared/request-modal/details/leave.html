@@ -36,6 +36,7 @@
             datepicker-options="$ctrl.uiOptions.date.from.options"
             ng-model="$ctrl.uiOptions.fromDate"
             is-open="$ctrl.uiOptions.date.from.show"
+            ng-readonly="true"
             ng-disabled="$ctrl.isMode('view') || $ctrl.isRole('manager')"
             ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from')"/>
           <span class="input-group-btn">
@@ -82,6 +83,7 @@
             show-button-bar="false"
             ng-model="$ctrl.uiOptions.toDate"
             is-open="$ctrl.uiOptions.date.to.show"
+            ng-readonly="true"
             ng-disabled="$ctrl.isMode('view') || !$ctrl.request.from_date || $ctrl.isRole('manager')"
             ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to')"/>
           <span class="input-group-btn">
