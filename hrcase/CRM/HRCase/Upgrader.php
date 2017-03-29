@@ -32,23 +32,23 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   public function uninstall() {
     self::activityTypesWordReplacement(true);
     self::removeRelationshipTypes();
-    self::removeCaseTypesWithData(array_column(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'));
-    $this->removeActivityTypesList(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 'CiviTask');
+    self::removeCaseTypesWithData(array_column(DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'));
+    $this->removeActivityTypesList(DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 'CiviTask');
   }
 
   public function enable() {
     self::toggleRelationshipTypes(1);
-    self::toggleCaseTypes(array_column(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'), 1);
-    self::toggleCaseTypes(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCiviCRMCaseTypes(), 0);
-    self::toggleActivityTypes(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 1);
+    self::toggleCaseTypes(array_column(DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'), 1);
+    self::toggleCaseTypes(DefaultCaseAndActivityTypes::getDefaultCiviCRMCaseTypes(), 0);
+    self::toggleActivityTypes(DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 1);
     $this->changeActivityTypeComponent('Open Case', 'CiviCase', 'CiviTask');
   }
 
   public function disable() {
     self::toggleRelationshipTypes(0);
-    self::toggleCaseTypes(array_column(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'), 0);
-    self::toggleCaseTypes(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCiviCRMCaseTypes(), 1);
-    self::toggleActivityTypes(CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 0);
+    self::toggleCaseTypes(array_column(DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'), 0);
+    self::toggleCaseTypes(DefaultCaseAndActivityTypes::getDefaultCiviCRMCaseTypes(), 1);
+    self::toggleActivityTypes(DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 0);
     $this->changeActivityTypeComponent('Open Case', 'CiviTask', 'CiviCase');
   }
 
@@ -111,15 +111,15 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1402() {
-    $defaultCaseTypes = CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultCaseTypes();
-    $defaultActivityTypes = CRM_HRCase_DefaultCaseAndActivityTypes::getDefaultActivityTypes();
+    $defaultCaseTypes = DefaultCaseAndActivityTypes::getDefaultCaseTypes();
+    $defaultActivityTypes = DefaultCaseAndActivityTypes::getDefaultActivityTypes();
 
     $this->up1402_removedUnusedManagedEntities(array_column($defaultCaseTypes, 'name'), $defaultActivityTypes);
     $this->up1402_removeUnusedCaseTypes();
     //Removes CiviCase activity types which should belong to CiviTask component
     $this->removeActivityTypesList($defaultActivityTypes, 'CiviCase');
     $this->createOrUpdateDefaultCaseTypes($defaultCaseTypes);
-    $this->createOrUpdateActivityTypes($defaultActivityTypes);
+    $this->createActivityTypes($defaultActivityTypes);
     $this->changeActivityTypeComponent('Open Case', 'CiviCase', 'CiviTask');
 
     return TRUE;
@@ -132,7 +132,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   public function upgrade_1429() {
     $defaultActivityTypes = DefaultCaseAndActivityTypes::getDefaultActivityTypes();
     $defaultCaseTypes = DefaultCaseAndActivityTypes::getDefaultCaseTypes();
-    $this->createOrUpdateActivityTypes($defaultActivityTypes);
+    $this->createActivityTypes($defaultActivityTypes);
     $this->createOrUpdateDefaultCaseTypes($defaultCaseTypes);
 
     return TRUE;
@@ -298,6 +298,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     foreach ($activityTypes as $componentActivities) {
       $allActivityTypes = array_merge($allActivityTypes, $componentActivities);
     }
+
     civicrm_api3('OptionValue', 'get', [
           'name' => ['IN' => $allActivityTypes],
           'component_id' => $componentName,
@@ -378,7 +379,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * @param array $defaultActivityTypes
    *   A list of activity types grouped by component name
    */
-  private function createOrUpdateActivityTypes($defaultActivityTypes) {
+  private function createActivityTypes($defaultActivityTypes) {
     foreach ($defaultActivityTypes as $componentName => $componentActivities) {
       foreach ($componentActivities as $activityType) {
         $type = civicrm_api3('OptionValue', 'get', [
