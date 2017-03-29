@@ -106,11 +106,32 @@ class CRM_HRAbsence_Form_AbsenceType extends CRM_Core_Form {
     $this->addFormRule(array('CRM_HRAbsence_Form_AbsenceType', 'formRule'), $this);
   }
 
-  static function formRule($fields, $files, $self) {
-    $errors = array();
+  /**
+   * Used in validation from addFormRule
+   *
+   * @param array $fields
+   *  An array of fields from the form
+   * @param array $files
+   *  An array of uploaded files
+   * @param self $self
+   *  An instance of this class
+   * @return array
+   *   An array of errors
+   */
+  public static function formRule($fields, $files, $self) {
+    $errors = [];
     if (!array_key_exists('allow_debits', $fields) && !array_key_exists('allow_credits', $fields)) {
       $errors['allow_debits'] = $errors['allow_credits'] = ts("Please choose either 'Allow Debits' and/or 'Allow Credits'");
     }
+
+    $title = CRM_Utils_Array::value('title', $fields);
+    if ($self->getAction() === CRM_Core_Action::ADD) {
+      $existing = civicrm_api3('HRAbsenceType', 'get', ['name' => $title]);
+      if (isset($existing['count']) && $existing['count'] > 0) {
+        $errors['title'] = ts("An absence type with title '%1' already exists", [1 => $title]);
+      }
+    }
+
     return $errors;
   }
 
