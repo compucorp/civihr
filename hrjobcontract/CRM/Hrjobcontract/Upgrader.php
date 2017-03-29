@@ -1263,27 +1263,31 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
   /**
    * Upgrader to :
-   * 1- Remove all pay scales except 'Not Applicable'
-   * 2- Remove all Hour Locations except 'Head Office'
-   * 3- Add 'Fixed Term' Contract Type
-   * 4- Sort contract types alphabetically
-   * 5- Add 'Retirement' contract end reason
-   * 6- add new contract change reason options
+   * 
+   * - Remove unused pay scales except 'Not Applicable'
+   * - Remove unused Hour Locations except 'Head Office'
+   * - Remove Duplicated 'Employee - Permanent' Contract Type
+   * - Add 'Fixed Term' Contract Type
+   * - Sort contract types alphabetically
+   * - Add 'Retirement' contract end reason
+   * - Add new contract change reason options
    *
    * @return TRUE
    */
   public function upgrade_1027() {
     $this->up1027_removeUnneededPayScales();
     $this->up1027_removeUnneededHourLocations();
+    $this->up1027_removeDuplicateContractType();
+    $this->up1027_removeRevisionChangeReasons();
 
     $optionValues = [
-      ['hrjc_contract_type', ['Fixed Term']],
-      ['hrjc_contract_end_reason', ['Retirement']],
-      ['hrjc_revision_change_reason', ['Promotion', 'Increment', 'Disciplinary'] ],
+      'hrjc_contract_type' => ['Fixed Term'],
+      'hrjc_contract_end_reason' => ['Retirement'],
+      'hrjc_revision_change_reason' => ['Promotion', 'Increment', 'Disciplinary'],
     ];
 
-    foreach ($optionValues as $value) {
-      $this->addOptionValues($value[0], $value[1]);
+    foreach ($optionValues as $optionGroup => $values) {
+      $this->addOptionValues($optionGroup, $values);
     }
 
     $this->up1027_sortContractTypes();
@@ -1291,22 +1295,126 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     return true;
   }
 
+  private function up1027_removeRevisionChangeReasons() {
+    $deleteableReasons = [];
+    $reasons = $this->getEntityRecords('OptionValue', ['option_group_id' => 'hrjc_revision_change_reason']);
+
+    foreach ($reasons as $currentReason) {
+      $q = "
+        SELECT id
+        FROM civicrm_hrjobcontract_revision
+        WHERE change_reason = '{$currentReason['value']}'
+      ";
+      $reasonInContracts = CRM_Core_DAO::executeQuery($q);
+
+      if (!$reasonInContracts->fetch()) {
+        $deleteableReasons[] = $currentReason['id'];
+      }
+    }
+
+    $this->deleteEntityRecords('HRHoursLocation', $deleteableReasons);
+  }
+
   /**
-   * Removes all Pay scales except 'Not Applicable'
+   * Removes duplicates for 'Employee - Permanent' contract type.
+   */
+  private function up1027_removeDuplicateContractType() {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'sequential' => 1,
+      'option_group_id' => 'hrjc_contract_type',
+      'value' => 'Employee - Permanent',
+    ]);
+
+    if ($result['count'] > 1) {
+      for ($i = 1; $i < $result['count']; $i++) {
+        civicrm_api3('OptionValue', 'delete', [
+          'id' => $result['values'][$i]['id'],
+        ]);
+      }
+    }
+  }
+
+  /**
+   * Removes all unused Pay scales except 'Not Applicable'
    */
   private function up1027_removeUnneededPayScales() {
-    $tableName = CRM_Hrjobcontract_DAO_PayScale::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName} WHERE pay_scale != 'Not Applicable'");
+    $deleteableScales = [];
+    $payScales = $this->getEntityRecords('HRPayscale');
+
+    foreach ($payScales as $currentScale) {
+      $q = "
+        SELECT id
+        FROM civicrm_hrjobcontract_pay
+        WHERE pay_scale = {$currentScale['id']}
+      ";
+      $payScaleInContract = CRM_Core_DAO::executeQuery($q);
+
+      if (!$payScaleInContract->fetch() && $currentScale['pay_scale'] != 'Not Applicable') {
+        $deleteableScales[] = $currentScale['id'];
+      }
+    }
+
+    $this->deleteEntityRecords('HRPayscale', $deleteableScales);
   }
 
   /**
-   * Removes all Hour Locations except 'Head Office'
+   * Removes all unused Hour Locations except 'Head Office'
    */
   private function up1027_removeUnneededHourLocations() {
-    $tableName = CRM_Hrjobcontract_DAO_HoursLocation::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName} WHERE location != 'Head office'");
+    $deleteableLocations = [];
+    $locations = $this->getEntityRecords('HRHoursLocation');
+
+    foreach ($locations as $currentLocation) {
+      $q = "
+        SELECT id
+        FROM civicrm_hrjobcontract_hour
+        WHERE location_standard_hours = {$currentLocation['id']}
+      ";
+      $locationInContracts = CRM_Core_DAO::executeQuery($q);
+
+      if (!$locationInContracts->fetch() && $currentLocation['location'] != 'Head office') {
+        $deleteableLocations[] = $currentLocation['id'];
+      }
+    }
+
+    $this->deleteEntityRecords('HRHoursLocation', $deleteableLocations);
   }
 
+  /**
+   * Obtains records in DB for given entity.
+   * 
+   * @param string $entity
+   *   Name of entity
+   * 
+   * @return array
+   *   List of records found in database for given entity.
+   */
+  private function getEntityRecords($entity, $extraParams = []) {
+    $params = array_merge([
+        'sequential' => 1,
+        'options' => ['limit' => 0],
+      ],
+      $extraParams
+    );
+
+    $result = civicrm_api3($entity, 'get', $params);
+
+    if ($result['count'] > 0) {
+      return $result['values'];
+    }
+
+    return [];
+  }
+
+  private function deleteEntityRecords($entity, $deleteableRecordIDs){
+    
+    foreach ($deleteableRecordIDs as $recordID) {
+      civicrm_api3($entity, 'delete', [
+        'id' => $recordID,
+      ]);
+    }
+  }
+ 
   /**
    * Sorts contract types alphabetically
    */
