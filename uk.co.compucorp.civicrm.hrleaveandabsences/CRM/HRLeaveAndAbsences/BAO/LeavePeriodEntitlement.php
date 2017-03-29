@@ -253,14 +253,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
     //The original pro-rata calculation already factors in public holidays
     //since public holiday balance changes are saved differently, we need to deduct it from the pro rata
-    $adjustedProRata = $calculation->getProRata() - $calculation->getNumberOfPublicHolidaysInEntitlement();
-
-
     LeaveBalanceChange::create([
       'type_id' => $balanceChangeTypes['Leave'],
       'source_id' => $periodEntitlement->id,
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-      'amount' => $adjustedProRata
+      'amount' => $calculation->getProRata() - $calculation->getNumberOfPublicHolidaysInEntitlement()
     ]);
 
 
@@ -306,13 +303,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
-   * Saves the Entitlement Calculation Public Holiday as Leave Requests and
-   * Balance Changes.
+   * Saves the Entitlement Calculation Public Holiday as Balance Changes
    *
-   * On Balance Change, of type "Public Holiday", will be created with the amount
-   * equals to the number of Public Holidays in the entitlement. Next, for each of
-   * the Public Holidays, a LeaveRequest will be created, including it's respective
-   * LeaveRequestDates and LeaveBalanceChanges.
+   * Leave Balance Change of type "Public Holiday" will be created with the amount
+   * equals to the number of Public Holidays in the entitlement.
    *
    * @param \CRM_HRLeaveAndAbsences_Service_EntitlementCalculation $calculation
    * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
