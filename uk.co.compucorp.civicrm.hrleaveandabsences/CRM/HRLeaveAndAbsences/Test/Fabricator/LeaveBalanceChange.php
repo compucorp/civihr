@@ -60,13 +60,6 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
     ]);
   }
 
-  public static function fabricateForLeavePeriodEntitlement(LeavePeriodEntitlement $leavePeriodEntitlement) {
-    return self::fabricate([
-      'source_id' => $leavePeriodEntitlement->id,
-      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-    ]);
-  }
-
   private static function getTypeId($typeLabel) {
     if(is_null(self::$balanceChangeTypes)) {
       self::$balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));

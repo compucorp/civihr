@@ -2544,9 +2544,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   public function testCanDeleteTheBalanceChangesForALeavePeriodEntitlement() {
     $leavePeriodEntitlement = $this->createLeavePeriodEntitlement();
 
-    LeaveBalanceChangeFabricator::fabricateForLeavePeriodEntitlement($leavePeriodEntitlement);
-    LeaveBalanceChangeFabricator::fabricateForLeavePeriodEntitlement($leavePeriodEntitlement);
-    LeaveBalanceChangeFabricator::fabricateForLeavePeriodEntitlement($leavePeriodEntitlement);
+    $params = ['source_id' => $leavePeriodEntitlement->id, 'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT];
+    LeaveBalanceChangeFabricator::fabricate($params);
+    LeaveBalanceChangeFabricator::fabricate($params);
+    LeaveBalanceChangeFabricator::fabricate($params);
 
     $record = $this->getBalanceChangesForPeriodEntitlement($leavePeriodEntitlement);
     $this->assertEquals(3, $record->N);
