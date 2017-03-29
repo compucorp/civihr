@@ -287,7 +287,7 @@ class CRM_HRCase_DefaultCaseAndActivityTypes {
                   'reference_select' => 'newest'
                 ],
                 [
-                  'name' => 'Visa',
+                  'name' => 'VISA',
                   'reference_offset' => -10,
                   'reference_activity' => 'Open Case',
                   'status' => 'Scheduled',
