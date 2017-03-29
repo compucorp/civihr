@@ -382,9 +382,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     // 10 + 1 + 3 (Pro Rata + Brought Forward + No. Public Holidays)
     $this->assertEquals(14, $periodEntitlement->getEntitlement());
 
-    //The 3 days deducted because of the Public Holidays
-    $this->assertEquals(-3, $periodEntitlement->getLeaveRequestBalance());
-
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
 
     $breakDownBalanceChanges = LeaveBalanceChange::getBreakdownBalanceChangesForEntitlement($periodEntitlement->id);

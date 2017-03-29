@@ -2540,5 +2540,30 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, new DateTime('2016-08-03'));
     $this->assertEquals(0, $amount);
   }
+
+  public function testCanDeleteTheBalanceChangesForALeavePeriodEntitlement() {
+    $leavePeriodEntitlement = $this->createLeavePeriodEntitlement();
+
+    $params = ['source_id' => $leavePeriodEntitlement->id, 'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT];
+    LeaveBalanceChangeFabricator::fabricate($params);
+    LeaveBalanceChangeFabricator::fabricate($params);
+    LeaveBalanceChangeFabricator::fabricate($params);
+
+    $record = $this->getBalanceChangesForPeriodEntitlement($leavePeriodEntitlement);
+    $this->assertEquals(3, $record->N);
+
+    LeaveBalanceChange::deleteForLeavePeriodEntitlement($leavePeriodEntitlement);
+
+    $record = $this->getBalanceChangesForPeriodEntitlement($leavePeriodEntitlement);
+    $this->assertEquals(0, $record->N);
+  }
+
+  private function getBalanceChangesForPeriodEntitlement($leavePeriodEntitlement) {
+    $record = new LeaveBalanceChange();
+    $record->source_id = $leavePeriodEntitlement->id;
+    $record->source_type = LeaveBalanceChange::SOURCE_ENTITLEMENT;
+    $record->find();
+    return $record;
+  }
 }
 
