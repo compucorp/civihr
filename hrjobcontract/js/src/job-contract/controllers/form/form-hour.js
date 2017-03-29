@@ -20,10 +20,9 @@ define([
       function updateHours(locStandHrs, hrsTypeId) {
         $scope.hrsTypeDefined = !!entityHour.hours_type;
         $scope.hrsAmountDefined = !!entityHour.hours_amount;
+        entityHour.hours_unit = locStandHrs.periodicity;
 
         if ($scope.hrsTypeDefined && !$scope.hrsAmountDefined) {
-          entityHour.hours_unit = locStandHrs.periodicity;
-
           switch(+hrsTypeId) {
             case 8:
               entityHour.hours_amount = locStandHrs.standard_hours;
