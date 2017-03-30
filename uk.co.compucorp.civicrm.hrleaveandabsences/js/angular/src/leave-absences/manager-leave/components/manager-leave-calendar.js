@@ -40,6 +40,9 @@ define([
     vm.absenceTypes = [];
     vm.filteredContacts = [];
     vm.managedContacts = [];
+    vm.months = [];
+    vm.selectedMonths = [];
+    vm.selectedPeriod = null;
     vm.filters = {
       contact: null,
       department: null,
@@ -48,26 +51,32 @@ define([
       region: null,
       contacts_with_leaves: false
     };
-    vm.months = [
-      {label: 'January', loading: false},
-      {label: 'February', loading: false},
-      {label: 'March', loading: false},
-      {label: 'April', loading: false},
-      {label: 'May', loading: false},
-      {label: 'June', loading: false},
-      {label: 'July', loading: false},
-      {label: 'August', loading: false},
-      {label: 'September', loading: false},
-      {label: 'October', loading: false},
-      {label: 'November', loading: false},
-      {label: 'December', loading: false}
-    ];
     vm.loading = {
       calendar: false,
       page: false
     };
-    vm.selectedMonths = [];
-    vm.selectedPeriod = null;
+    vm.monthLabels = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
+
+    /**
+     * Fetch all the months from the current period and
+     * save it in vm.months
+     */
+    function fetchMonthsFromPeriod () {
+      var months = [],
+        startDate = moment(vm.selectedPeriod.start_date),
+        endDate = moment(vm.selectedPeriod.end_date);
+
+      while (startDate.isBefore(endDate)) {
+        months.push({
+          month: startDate.month(),
+          year: startDate.year()
+        });
+        startDate.add(1, 'month');
+      }
+
+      vm.months = months;
+    }
 
     /**
      * Filters contacts if contacts_with_leaves is turned on
@@ -112,18 +121,18 @@ define([
      * Returns the calendar information for a specific month
      *
      * @param  {int/string} contactID
-     * @param  {int} month
+     * @param  {object} monthObj
      * @return {array}
      */
-    vm.getMonthData = function (contactID, month) {
+    vm.getMonthData = function (contactID, monthObj) {
       var contact = _.find(vm.managedContacts, function (contact) {
         return contact.id == contactID
       });
 
       if (contact && contact.calendarData) {
-        return contact.calendarData[_.findIndex(vm.months, function (monthObj) {
-          return monthObj.label === month;
-        })];
+        return _.find(contact.calendarData, function (month) {
+          return (month.month === monthObj.month) && (month.year === monthObj.year);
+        }).data;
       }
     };
 
@@ -164,7 +173,7 @@ define([
     (function init() {
       vm.loading.page = true;
       //Select current month as default
-      vm.selectedMonths = [vm.months[moment().month()].label];
+      vm.selectedMonths = [vm.monthLabels[moment().month()]];
       $q.all([
         loadAbsencePeriods(),
         loadAbsenceTypes(),
@@ -200,6 +209,20 @@ define([
      */
     function getDateObjectWithFormat(date) {
       return moment(date, sharedSettings.serverDateFormat).clone();
+    }
+
+    /**
+     * Find the month which matches with the sent date
+     * and return the related object
+     *
+     * @param {object} date
+     * @param {array} months
+     * @return {object}
+     */
+    function getMonthObjectByDate(date, months) {
+      return _.find(months, function (month) {
+        return (month.month === date.month()) && (month.year === date.year());
+      });
     }
 
     /**
@@ -298,6 +321,7 @@ define([
           vm.selectedPeriod = _.find(vm.absencePeriods, function (period) {
             return !!period.current;
           });
+          fetchMonthsFromPeriod();
         });
     }
 
@@ -506,15 +530,15 @@ define([
      */
     function setCalendarProps(contactID, calendar) {
       var leaveRequest,
-        indexedByMonth = vm.months.map(function () {
-          return [];
+        indexedByMonth = _.map(vm.months, function (month) {
+          return _.extend(month, {
+            data: []
+          })
         });
 
       _.each(calendar.days, function (dateObj) {
-        indexedByMonth[moment(dateObj.date).month()].push(dateObj);
         //fetch leave request, first search by contact_id then by date
         leaveRequest = leaveRequests[contactID] ? leaveRequests[contactID][dateObj.date] : null;
-
         dateObj.UI = {
           isWeekend: calendar.isWeekend(getDateObjectWithFormat(dateObj.date)),
           isNonWorkingDay: calendar.isNonWorkingDay(getDateObjectWithFormat(dateObj.date)),
@@ -529,6 +553,11 @@ define([
           dateObj.UI.isAM = isDayType('half_day_am', leaveRequest, dateObj.date);
           dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
         }
+
+        if(getMonthObjectByDate(moment(dateObj.date), indexedByMonth)) {
+          getMonthObjectByDate(moment(dateObj.date), indexedByMonth).data.push(dateObj);
+        }
+
       });
 
       return indexedByMonth;

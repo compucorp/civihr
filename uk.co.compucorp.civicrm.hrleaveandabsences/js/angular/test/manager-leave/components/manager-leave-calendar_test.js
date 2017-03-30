@@ -3,11 +3,11 @@
     'common/angular',
     'common/lodash',
     'common/moment',
+    'mocks/data/absence-period-data',
     'mocks/data/option-group-mock-data',
     'mocks/data/leave-request-data',
     'mocks/data/public-holiday-data',
     'mocks/data/work-pattern-data',
-    'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/public-holiday-api-mock',
@@ -15,21 +15,20 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/manager-leave/app'
-  ], function (angular, _, moment, optionGroupMock, leaveRequestData, publicHolidayData, workPatternData) {
+  ], function (angular, _, moment, absencePeriodData, optionGroupMock, leaveRequestData, publicHolidayData, workPatternData) {
     'use strict';
 
     describe('managerLeaveCalendar', function () {
       var $compile, $q, $log, $rootScope, component, controller, $provide,
-        OptionGroup, OptionGroupAPIMock, ContactAPIMock, Contact, sharedSettings,
-        LeaveRequest, CalendarInstance, Calendar;
+        OptionGroup, OptionGroupAPIMock, ContactAPIMock, AbsencePeriod,
+        Contact, sharedSettings, LeaveRequest, CalendarInstance, Calendar;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
         $provide = _$provide_;
       }));
 
-      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, LeaveRequestAPIMock,
+      beforeEach(inject(function (AbsenceTypeAPIMock, LeaveRequestAPIMock,
                                   PublicHolidayAPIMock, WorkPatternAPIMock) {
-        $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
         $provide.value('PublicHolidayAPI', PublicHolidayAPIMock);
@@ -43,11 +42,12 @@
 
       beforeEach(inject(function (
         _$compile_, _$q_, _$log_, _$rootScope_, _OptionGroup_, _OptionGroupAPIMock_,
-        _Contact_, _LeaveRequest_, _CalendarInstance_, _Calendar_) {
+        _AbsencePeriod_, _Contact_, _LeaveRequest_, _CalendarInstance_, _Calendar_) {
         $compile = _$compile_;
         $q = _$q_;
         $log = _$log_;
         $rootScope = _$rootScope_;
+        AbsencePeriod = _AbsencePeriod_;
         Contact = _Contact_;
         LeaveRequest = _LeaveRequest_;
         Calendar = _Calendar_;
@@ -71,6 +71,15 @@
           contactInstance.leaveManagees.and.returnValue($q.resolve(ContactAPIMock.leaveManagees()));
 
           return $q.resolve(contactInstance);
+        });
+
+        spyOn(AbsencePeriod, 'all').and.callFake(function () {
+          var data = absencePeriodData.all().values;
+          //Set 2016 as current period, because Calendar loads data only for the current period initially,
+          //and MockedData has 2016 dates
+          data[0].current = true;
+
+          return $q.resolve(data);
         });
 
         compileComponent();
@@ -278,7 +287,8 @@
 
           it('is set', function () {
             _.each(controller.managedContacts, function (contact) {
-              dateObj = contact.calendarData[0][0];
+              //any date
+              dateObj = contact.calendarData[0].data[0];
               expect(dateObj.UI.isPublicHoliday).toBe(true);
             });
           });
@@ -308,6 +318,7 @@
 
             it('isRequested flag is true', function () {
               _.each(controller.managedContacts, function (contact) {
+                debugger
                 dateObj = getDate(contact, leaveRequest.from_date);
                 expect(dateObj.UI.isRequested).toBe(true);
               });
@@ -399,7 +410,7 @@
         var date;
 
         _.each(contact.calendarData, function (month) {
-          _.each(month, function (dateObj) {
+          _.each(month.data, function (dateObj) {
             if (dateObj.date == dateStr) {
               date = dateObj;
             }
@@ -417,9 +428,8 @@
 
       function getDateFromCalendar(contact, dayType) {
         var date;
-
         _.each(contact.calendarData, function (month) {
-          _.each(month, function (dateObj) {
+          _.each(month.data, function (dateObj) {
             if(dateObj.date == getDateByType(dayType).date) {
               date = dateObj;
             }
