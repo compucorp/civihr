@@ -530,6 +530,7 @@ define([
      */
     function setCalendarProps(contactID, calendar) {
       var leaveRequest,
+        monthObject,
         indexedByMonth = _.map(vm.months, function (month) {
           return _.extend(month, {
             data: []
@@ -554,8 +555,9 @@ define([
           dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
         }
 
-        if(getMonthObjectByDate(moment(dateObj.date), indexedByMonth)) {
-          getMonthObjectByDate(moment(dateObj.date), indexedByMonth).data.push(dateObj);
+        monthObject = getMonthObjectByDate(moment(dateObj.date), indexedByMonth);
+        if(monthObject) {
+          monthObject.data.push(dateObj);
         }
 
       });

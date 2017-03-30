@@ -318,7 +318,6 @@
 
             it('isRequested flag is true', function () {
               _.each(controller.managedContacts, function (contact) {
-                debugger
                 dateObj = getDate(contact, leaveRequest.from_date);
                 expect(dateObj.UI.isRequested).toBe(true);
               });
