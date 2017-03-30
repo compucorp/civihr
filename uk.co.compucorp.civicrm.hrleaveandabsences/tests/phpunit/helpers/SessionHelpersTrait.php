@@ -11,4 +11,8 @@ trait CRM_HRLeaveAndAbsences_SessionHelpersTrait {
     $session = CRM_Core_Session::singleton();
     $session->set('userID', null);
   }
+
+  private function setPermissions(array $permissions = []) {
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = $permissions;
+  }
 }
