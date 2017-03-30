@@ -103,7 +103,7 @@ class CRM_HRAbsence_Form_AbsenceType extends CRM_Core_Form {
    $this->add('checkbox', 'allow_debits', ts('Allow Debits?'), CRM_Core_DAO::getAttribute('CRM_HRAbsence_DAO_HRAbsenceType', 'allow_debits'));
     $this->add('checkbox', 'is_active', ts('Enabled?'), CRM_Core_DAO::getAttribute('CRM_HRAbsence_DAO_HRAbsenceType', 'is_active'));
 
-    $this->addFormRule(array('CRM_HRAbsence_Form_AbsenceType', 'formRule'), $this);
+    $this->addFormRule([$this, 'formRule']);
   }
 
   /**
@@ -113,22 +113,23 @@ class CRM_HRAbsence_Form_AbsenceType extends CRM_Core_Form {
    *  An array of fields from the form
    * @param array $files
    *  An array of uploaded files
-   * @param self $self
-   *  An instance of this class
    * @return array
    *   An array of errors
    */
-  public static function formRule($fields, $files, $self) {
+  public function formRule($fields, $files) {
     $errors = [];
     if (!array_key_exists('allow_debits', $fields) && !array_key_exists('allow_credits', $fields)) {
       $errors['allow_debits'] = $errors['allow_credits'] = ts("Please choose either 'Allow Debits' and/or 'Allow Credits'");
     }
 
     $title = CRM_Utils_Array::value('title', $fields);
-    if ($self->getAction() === CRM_Core_Action::ADD) {
+    $isCreation = $this->getAction() === CRM_Core_Action::ADD;
+
+    if ($isCreation) {
       $existing = civicrm_api3('HRAbsenceType', 'get', ['name' => $title]);
       if (isset($existing['count']) && $existing['count'] > 0) {
-        $errors['title'] = ts("An absence type with title '%1' already exists", [1 => $title]);
+        $errorMessage = "An absence type with title '%1' already exists";
+        $errors['title'] = ts($errorMessage, [1 => $title]);
       }
     }
 
