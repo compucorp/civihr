@@ -37,38 +37,6 @@ org.civicrm.shoreditch,\
 org.civicrm.bootstrapcivihr,\
 org.civicrm.styleguide
 
-##
-# Set Default localisation settings
-# It expect one parameter ($1) which points to civicrm absolute path
-function set_default_localisation_settings() {
-  LOC_FILE="en_US"
-  if wget -q -t 3 --timeout=30 "https://download.civicrm.org/civicrm-l10n-core/mo/en_GB/civicrm.mo" > /dev/null; then
-    mkdir -p $1/l10n/en_GB/LC_MESSAGES/
-    mv civicrm.mo $1/l10n/en_GB/LC_MESSAGES/civicrm.mo
-    LOC_FILE="en_GB"
-  else
-    echo "Could not download en_GB translation file";
-  fi
-
-  UKID=$(drush cvapi Country.getsingle return="id" iso_code="GB" | grep -oh '[0-9]*')
-
-  drush cvapi Setting.create defaultCurrency="GBP" \
-  dateformatDatetime="%d/%m/%Y %l:%M %P" dateformatFull="%d/%m/%Y" \
-  dateformatFinancialBatch="%d/%m/%Y" dateInputFormat="dd/mm/yy" \
-  lcMessages=${LOC_FILE} defaultContactCountry=${UKID}
-
-  drush cvapi OptionValue.create option_group_id="currencies_enabled" \
-  label="GBP (£)" value="GBP" is_default=1 is_active=1
-}
-
-##
-# Set Any needed Resource URLs
-function set_resource_urls() {
-  # Set Custom CSS URL
-  drush cvapi Setting.create \
-  customCSSURL="[civicrm.root]/tools/extensions/org.civicrm.shoreditch/css/custom-civicrm.css"
-}
-
 ##################################
 ## Main
 
@@ -89,3 +57,18 @@ fi
 # Install 'masquerade' module
 drush en -y masquerade
 
+# Scheduled Jobs Enabled by Default
+for currentJob in "${ENABLED_JOBS[@]}"
+do
+  JOB_ID=`drush cvapi Job.getvalue return=id name="$currentJob"`
+  echo "Enabling '$currentJob' Job (ID: $JOB_ID)"
+  drush cvapi Job.create id=$JOB_ID is_active=1
+done
+
+# Scheduled Jobs Disabled by Deffault
+for currentJob in "${DISABLED_JOBS[@]}"
+do
+  JOB_ID=`drush cvapi Job.getvalue return=id name="$currentJob"`
+  echo "Disabling '$currentJob' Job (ID: $JOB_ID)"
+  drush cvapi Job.create id=$JOB_ID is_active=0
+done
