@@ -72,7 +72,7 @@
               <select
                 ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
                 ng-model="calendar.selectedPeriod"
-                ng-change="calendar.refresh()">
+                ng-change="calendar.changeSelectedPeriod()">
               </select>
             </div>
           </div>

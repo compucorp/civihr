@@ -58,25 +58,16 @@ define([
     vm.monthLabels = ['January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'];
 
+
     /**
-     * Fetch all the months from the current period and
-     * save it in vm.months
+     * Fetch months from newly selected period and refresh data
+     *
+     * @return {array}
      */
-    function fetchMonthsFromPeriod () {
-      var months = [],
-        startDate = moment(vm.selectedPeriod.start_date),
-        endDate = moment(vm.selectedPeriod.end_date);
-
-      while (startDate.isBefore(endDate)) {
-        months.push({
-          month: startDate.month(),
-          year: startDate.year()
-        });
-        startDate.add(1, 'month');
-      }
-
-      vm.months = months;
-    }
+    vm.changeSelectedPeriod = function() {
+      fetchMonthsFromPeriod();
+      vm.refresh();
+    };
 
     /**
      * Filters contacts if contacts_with_leaves is turned on
@@ -125,14 +116,17 @@ define([
      * @return {array}
      */
     vm.getMonthData = function (contactID, monthObj) {
+      var month;
       var contact = _.find(vm.managedContacts, function (contact) {
         return contact.id == contactID
       });
 
       if (contact && contact.calendarData) {
-        return _.find(contact.calendarData, function (month) {
+        month = _.find(contact.calendarData, function (month) {
           return (month.month === monthObj.month) && (month.year === monthObj.year);
-        }).data;
+        });
+
+        return month ? month.data : [];
       }
     };
 
@@ -200,6 +194,26 @@ define([
         vm.refresh();
       });
     })();
+
+    /**
+     * Fetch all the months from the current period and
+     * save it in vm.months
+     */
+    function fetchMonthsFromPeriod () {
+      var months = [],
+        startDate = moment(vm.selectedPeriod.start_date),
+        endDate = moment(vm.selectedPeriod.end_date);
+
+      while (startDate.isBefore(endDate)) {
+        months.push({
+          month: startDate.month(),
+          year: startDate.year()
+        });
+        startDate.add(1, 'month');
+      }
+
+      vm.months = months;
+    }
 
     /**
      * Converts given date to moment object with server format
@@ -321,6 +335,7 @@ define([
           vm.selectedPeriod = _.find(vm.absencePeriods, function (period) {
             return !!period.current;
           });
+
           fetchMonthsFromPeriod();
         });
     }
@@ -530,8 +545,7 @@ define([
      */
     function setCalendarProps(contactID, calendar) {
       var leaveRequest,
-        monthObject,
-        indexedByMonth = _.map(vm.months, function (month) {
+        monthData = _.map(vm.months, function (month) {
           return _.extend(month, {
             data: []
           })
@@ -555,14 +569,10 @@ define([
           dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
         }
 
-        monthObject = getMonthObjectByDate(moment(dateObj.date), indexedByMonth);
-        if(monthObject) {
-          monthObject.data.push(dateObj);
-        }
-
+        getMonthObjectByDate(moment(dateObj.date), monthData).data.push(dateObj);
       });
 
-      return indexedByMonth;
+      return monthData;
     }
 
     /**
