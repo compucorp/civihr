@@ -1295,6 +1295,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     return true;
   }
 
+  /**
+   * Deletes unused change reasons for Contract Revisions.
+   */
   private function up1027_removeRevisionChangeReasons() {
     $deleteableReasons = [];
     $reasons = $this->getEntityRecords('OptionValue', ['option_group_id' => 'hrjc_revision_change_reason']);
@@ -1385,6 +1388,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * 
    * @param string $entity
    *   Name of entity
+   * @param array $extraParams
+   *   Parameters to be passed to API call to obtain list of records
    * 
    * @return array
    *   List of records found in database for given entity.
@@ -1406,6 +1411,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     return [];
   }
 
+  /**
+   * Deletes records identified by given ID's for the provided Entity.
+   * 
+   * @param string $entity
+   *   Name of Entity
+   * @param array $deleteableRecordIDs
+   *   List of ID's of records to be deleted
+   */
   private function deleteEntityRecords($entity, $deleteableRecordIDs){
     
     foreach ($deleteableRecordIDs as $recordID) {
