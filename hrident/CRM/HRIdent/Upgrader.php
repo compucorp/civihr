@@ -109,5 +109,7 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
       'is_default' => 1,
       'weight' => 0,
     ]);
+    
+    return true;
   }
 }

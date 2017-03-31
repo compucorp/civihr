@@ -113,19 +113,15 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
    * Sets Available Provinces to 'all provinces'
    */
   private function up1000_setAvailableProvinces() {
-    // ToDo : Fetch Provinces via API after upgrading to newer civicrm version since it is not available on civicrm 4.7.9
-    $tableName = CRM_Core_DAO_StateProvince::getTableName();
-    $query = CRM_Core_DAO::executeQuery("SELECT id FROM {$tableName}");
+    $countries = civicrm_api3('Country', 'get', ['sequential' => 1]);
+    $countryIDs = [];    
 
-    $provincesIDs = [];
-    while($query->fetch()) {
-      $provincesIDs[] = $query->id;
+    foreach ($countries['values'] as $currentCountry) {
+      $countryIDs[] = $currentCountry['id'];
     }
 
-    if (!empty($provincesIDs)) {
-      civicrm_api3('Setting', 'create', [
-        'provinceLimit' => $provincesIDs,
-      ]);
+    if (!empty($countryIDs)) {
+      civicrm_api3('Setting', 'create', ['provinceLimit' => $countryIDs]);
     }
   }
 

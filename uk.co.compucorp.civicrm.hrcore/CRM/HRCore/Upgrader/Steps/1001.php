@@ -15,21 +15,21 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
     $this->up1001_listDelete('LocationType', 'name', $this->up1001_civicrmLocationTypesList());
 
     $this->up1001_listDelete(
-      'civicrm_option_value', 
+      'OptionValue', 
       'name', 
       $this->up1001_civicrmActivityTypesList(), 
       ['option_group_id' => 'activity_type']
     );
 
     $this->up1001_listDelete(
-      'civicrm_option_value', 
+      'OptionValue', 
       'name', 
       $this->up1001_civicrmMobileProvidersList(), 
       ['option_group_id' => 'mobile_provider']
     );
 
     $this->up1001_listDelete(
-      'civicrm_option_value', 
+      'OptionValue', 
       'name', 
       $this->up1001_civicrmEthnicityOptionsList(), 
       ['option_group_id' => $this->up1001_getEthnicityGroupName()], 
@@ -38,7 +38,7 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
 
     CRM_Core_BAO_Navigation::resetNavigation();
 
-    return false;
+    return true;
   }
 
   /**
