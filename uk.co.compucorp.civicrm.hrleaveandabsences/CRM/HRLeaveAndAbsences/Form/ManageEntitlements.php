@@ -380,7 +380,10 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
     $returnUrl = isset($_GET['returnUrl']) ? urldecode($_GET['returnUrl']) : '';
     $vars = [];
     parse_str(parse_url($returnUrl, PHP_URL_QUERY), $vars);
-    if (!empty($vars['q']) && $this->isValidReturnPath($vars['q'])) {
+    //q will not exist in $vars for sites with clean Urls enabled
+    $url = empty($vars['q']) ? $returnUrl : $vars['q'];
+    //we need to trim preceding slash when clean url is enabled
+    if (!empty($url) && $this->isValidReturnPath(ltrim($url, '/'))) {
       $returnUrl = filter_var($returnUrl, FILTER_SANITIZE_URL);
       $session->set('ManageEntitlementsReturnUrl', $returnUrl);
     }
