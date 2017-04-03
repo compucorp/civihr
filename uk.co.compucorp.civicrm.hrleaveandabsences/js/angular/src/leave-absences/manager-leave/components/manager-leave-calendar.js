@@ -292,7 +292,7 @@ define([
     vm._setCalendarProps = function (contactID, calendar) {
       var leaveRequest,
         monthData = _.map(vm.months, function (month) {
-          return _.extend(month, {
+          return _.extend(_.clone(month), {
             data: []
           })
         });
