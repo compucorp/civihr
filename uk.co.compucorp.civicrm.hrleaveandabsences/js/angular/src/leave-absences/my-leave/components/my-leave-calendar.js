@@ -12,12 +12,14 @@ define([
       return settings.pathTpl + 'components/my-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$log', '$q', 'shared-settings', 'OptionGroup', 'AbsencePeriod', 'AbsenceType',
-      'Calendar', 'LeaveRequest', 'PublicHoliday', controller]
+    controller: ['$log', '$q', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
+      'Calendar', 'LeaveRequest', 'PublicHoliday', 'OptionGroup', controller]
   });
 
 
-  function controller($log, $q, sharedSettings, OptionGroup, AbsencePeriod, AbsenceType, Calendar, LeaveRequest, PublicHoliday) {
+  function controller(
+    $log, $q, $timeout, sharedSettings, AbsencePeriod, AbsenceType,
+    Calendar, LeaveRequest, PublicHoliday, OptionGroup) {
     $log.debug('Component: my-leave-calendar');
 
     var dayTypes = [],
@@ -28,15 +30,24 @@ define([
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
-    vm.calendar = {};
+    vm.months = [];
+    vm.selectedMonths = [];
+    vm.selectedPeriod = null;
     vm.loading = {
       calendar: false,
       page: false
     };
-    vm.months = ['January', 'February', 'March', 'April', 'May', 'June',
+    vm.monthLabels = ['January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'];
-    vm.selectedMonths = [];
-    vm.selectedPeriod = null;
+
+
+    /**
+     * Fetch months from newly selected period and refresh data
+     */
+    vm.changeSelectedPeriod = function() {
+      fetchMonthsFromPeriod();
+      vm.refresh();
+    };
 
     /**
      * Labels the given period according to whether it's current or not
@@ -65,22 +76,17 @@ define([
     /**
      * Returns the calendar information for a specific month
      *
-     * @param  {int} month
+     * @param  {object} monthObj
      * @return {array}
      */
-    vm.getMonthData = function (month) {
-      if (vm.calendar.days) {
-        var datesForTheMonth = [],
-          dates = Object.keys(vm.calendar.days);
+    vm.getMonthData = function (monthObj) {
+      var month;
 
-        dates.forEach(function (date) {
-          if (moment(parseInt(date)).month() === month) {
-            datesForTheMonth.push(vm.calendar.days[date]);
-          }
-        });
+      month = _.find(vm.months, function (month) {
+        return (month.month === monthObj.month) && (month.year === monthObj.year);
+      });
 
-        return datesForTheMonth;
-      }
+      return month ? month.data : [];
     };
 
     /**
@@ -117,7 +123,7 @@ define([
     (function init() {
       vm.loading.page = true;
       //Select current month as default
-      vm.selectedMonths = [vm.months[moment().month()]];
+      vm.selectedMonths = [vm.monthLabels[moment().month()]];
       $q.all([
         loadAbsencePeriods(),
         loadAbsenceTypes(),
@@ -135,6 +141,27 @@ define([
     })();
 
     /**
+     * Fetch all the months from the current period and
+     * save it in vm.months
+     */
+    function fetchMonthsFromPeriod () {
+      var months = [],
+        startDate = moment(vm.selectedPeriod.start_date),
+        endDate = moment(vm.selectedPeriod.end_date);
+
+      while (startDate.isBefore(endDate)) {
+        months.push({
+          month: startDate.month(),
+          year: startDate.year(),
+          data: []
+        });
+        startDate.add(1, 'month');
+      }
+
+      vm.months = months;
+    }
+
+    /**
      * Converts given date to moment object with server format
      *
      * @param {Date/String} date from server
@@ -145,16 +172,16 @@ define([
     }
 
     /**
-     * Returns the leave request which is in range of the sent date
+     * Find the month which matches with the sent date
+     * and return the related object
      *
-     * @param  {string} date
+     * @param {object} date
+     * @param {array} months
      * @return {object}
      */
-    function getLeaveRequestByDate(date) {
-      return _.find(leaveRequests, function(leaveRequest){
-        return !!_.find(leaveRequest.dates, function (leaveRequestDate) {
-          return moment(leaveRequestDate.date).isSame(date);
-        });
+    function getMonthObjectByDate(date, months) {
+      return _.find(months, function (month) {
+        return (month.month === date.month()) && (month.year === date.year());
       });
     }
 
@@ -190,6 +217,19 @@ define([
           borderColor: absenceType.color
         };
       }
+    }
+
+    /**
+     * Index leave requests by date
+     *
+     * @param  {Array} leaveRequestsData - leave requests array from API
+     */
+    function indexLeaveRequests(leaveRequestsData) {
+      _.each(leaveRequestsData, function (leaveRequest) {
+        _.each(leaveRequest.dates, function (leaveRequestDate) {
+          leaveRequests[leaveRequestDate.date] = leaveRequest;
+        });
+      });
     }
 
     /**
@@ -238,6 +278,8 @@ define([
           vm.selectedPeriod = _.find(vm.absencePeriods, function (period) {
             return !!period.current;
           });
+
+          fetchMonthsFromPeriod();
         });
     }
 
@@ -261,7 +303,7 @@ define([
     function loadCalendar() {
       return Calendar.get(vm.contactId, vm.selectedPeriod.id)
         .then(function (calendar) {
-          vm.calendar = setCalendarProps(calendar);
+          setCalendarProps(calendar);
         });
     }
 
@@ -293,8 +335,12 @@ define([
         }
       })
       .then(function (leaveRequestsData) {
-        leaveRequests = leaveRequestsData.list;
+        indexLeaveRequests(leaveRequestsData.list);
+
         return loadCalendar();
+      })
+      .then(function () {
+        showMonthLoader();
       });
     }
 
@@ -334,16 +380,14 @@ define([
      * to the calendar data
      *
      * @param  {object} calendar
-     * @return {object}
      */
     function setCalendarProps(calendar) {
-      var dateObj,
-        leaveRequest,
-        dates = Object.keys(calendar.days);
+      var leaveRequest,
+        monthData = _.clone(vm.months);
 
-      dates.forEach(function (date) {
-        dateObj = calendar.days[date];
-        leaveRequest = getLeaveRequestByDate(dateObj.date);
+      _.each(calendar.days, function (dateObj) {
+        //fetch leave request, search by date
+        leaveRequest = leaveRequests[dateObj.date];
 
         dateObj.UI = {
           isWeekend: calendar.isWeekend(getDateObjectWithFormat(dateObj.date)),
@@ -358,9 +402,34 @@ define([
           dateObj.UI.isAM = isDayType('half_day_am', leaveRequest, dateObj.date);
           dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
         }
+
+        getMonthObjectByDate(moment(dateObj.date), monthData).data.push(dateObj);
       });
 
-      return calendar;
+      vm.months = monthData;
+    }
+
+    /**
+     * Show month loader for all months initially
+     * then hide each loader on the interval of an offset value
+     */
+    function showMonthLoader() {
+      var monthLoadDelay = 500,
+        offset = 0;
+
+      vm.months.forEach(function (month) {
+        // immediately show the current month...
+        month.loading = month.label !== vm.selectedMonths[0];
+
+        //delay other months
+        if (month.loading) {
+          $timeout(function () {
+            month.loading = false;
+          }, offset);
+
+          offset += monthLoadDelay;
+        }
+      });
     }
 
     return vm;

@@ -39,10 +39,11 @@ define([
     'leave-absences.models',
     'leave-absences.settings'
   ])
-  .run(['$log', '$rootScope', 'shared-settings', function ($log, $rootScope, sharedSettings) {
+  .run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
     $log.debug('app.run');
 
     $rootScope.pathTpl = sharedSettings.pathTpl;
+    $rootScope.settings = settings;
   }]);
 
   return angular;

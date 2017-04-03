@@ -3,6 +3,7 @@
     'common/angular',
     'common/moment',
     'common/lodash',
+    'mocks/data/absence-period-data',
     'mocks/data/option-group-mock-data',
     'mocks/data/public-holiday-data',
     'mocks/data/work-pattern-data',
@@ -15,12 +16,12 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/my-leave/app'
-  ], function (angular, moment, _, optionGroupMock, publicHolidayData, workPatternData, leaveRequestData) {
+  ], function (angular, moment, _, absencePeriodData, optionGroupMock, publicHolidayData, workPatternData, leaveRequestData) {
     'use strict';
 
     describe('myLeaveCalendar', function () {
-      var $compile, $log, $q, $rootScope, component, controller, sharedSettings,
-        $provide, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
+      var $compile, $log, $q, $rootScope, component, controller, sharedSettings, $provide,
+        AbsencePeriod, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -35,14 +36,15 @@
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
 
-      beforeEach(inject(['$compile', '$log', '$q', '$rootScope', 'OptionGroup', 'OptionGroupAPIMock',
+      beforeEach(inject(['$compile', '$log', '$q', '$rootScope', 'AbsencePeriod', 'OptionGroup', 'OptionGroupAPIMock',
         'Calendar', 'CalendarInstance', 'LeaveRequest', 'shared-settings',
-        function (_$compile_, _$log_, _$q_, _$rootScope_, _OptionGroup_, _OptionGroupAPIMock_,
+        function (_$compile_, _$log_, _$q_, _$rootScope_, _AbsencePeriod_, _OptionGroup_, _OptionGroupAPIMock_,
                   _Calendar_, _CalendarInstance_, _LeaveRequest_, _sharedSettings_) {
         $compile = _$compile_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
+        AbsencePeriod = _AbsencePeriod_;
         LeaveRequest = _LeaveRequest_;
         Calendar = _Calendar_;
         CalendarInstance = _CalendarInstance_;
@@ -56,6 +58,14 @@
           return OptionGroupAPIMock.valuesOf(name);
         });
 
+        spyOn(AbsencePeriod, 'all').and.callFake(function () {
+          var data = absencePeriodData.all().values;
+          //Set 2016 as current period, because Calendar loads data only for the current period initially,
+          //and MockedData has 2016 dates
+          data[0].current = true;
+
+          return $q.resolve(data);
+        });
         compileComponent();
       }]));
 
@@ -80,8 +90,10 @@
           expect(controller.absenceTypes.length).not.toBe(0);
         });
 
-        it('calendar have loaded', function () {
-          expect(Object.keys(controller.calendar.days).length).not.toBe(0);
+        it('each month data has loaded', function () {
+          _.each(controller.months, function (month) {
+            expect(Object.keys(month.data.length)).not.toBe(0);
+          });
         });
       });
 
@@ -177,7 +189,7 @@
           beforeEach(function () {
             controller.refresh();
             $rootScope.$digest();
-            dateObj = controller.calendar.days[getDateObjectWithFormat(getDate('weekend').date).valueOf()];
+            dateObj = getDateFromCalendar('weekend');
           });
 
           it('is set', function () {
@@ -191,7 +203,7 @@
           beforeEach(function () {
             controller.refresh();
             $rootScope.$digest();
-            dateObj = controller.calendar.days[getDateObjectWithFormat(getDate('non_working_day').date).valueOf()];
+            dateObj = getDateFromCalendar('non_working_day');
           });
 
           it('is set', function () {
@@ -203,10 +215,12 @@
           var dateObj;
 
           beforeEach(function () {
+            //set this so that every date is marked as public holiday
             spyOn(controller, 'isPublicHoliday').and.returnValue(true);
             controller.refresh();
             $rootScope.$digest();
-            dateObj = controller.calendar.days[Object.keys(controller.calendar.days)[0]];
+            //pick any date
+            dateObj = getDateFromCalendar('non_working_day');
           });
 
           it('is set', function () {
@@ -227,13 +241,13 @@
 
           describe('when leave request is not approved', function () {
             beforeEach(function () {
-              var status = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), function (status) {
-                return status.name === 'waiting_approval';
-              });
+              var status = optionGroupMock.specificObject(
+                'hrleaveandabsences_leave_request_status', 'name', 'waiting_approval');
+
               leaveRequest.status_id = status.value;
               leaveRequest.balance_change = -1;
               commonSetup();
-              dateObj = controller.calendar.days[getDateObjectWithFormat(leaveRequest.from_date).valueOf()];
+              dateObj = getDate(leaveRequest.from_date);
             });
 
             it('isRequested flag is true', function () {
@@ -321,14 +335,29 @@
         controller = component.controller('myLeaveCalendar');
       }
 
-      function getDateObjectWithFormat(date) {
-        return moment(date, sharedSettings.serverDateFormat).clone();
+      function getDate(dateStr) {
+        return workPatternData.daysData().values.find(function (data) {
+          return data.date === dateStr;
+        });
       }
 
-      function getDate(dayType) {
+      function getDateByType(dayType) {
         return workPatternData.daysData().values.find(function (data) {
           return data.type.name === dayType;
         });
+      }
+
+      function getDateFromCalendar(dayType) {
+        var date;
+        _.each(controller.months, function (month) {
+          _.each(month.data, function (dateObj) {
+            if(dateObj.date == getDateByType(dayType).date) {
+              date = dateObj;
+            }
+          });
+        });
+
+        return date;
       }
     });
   });

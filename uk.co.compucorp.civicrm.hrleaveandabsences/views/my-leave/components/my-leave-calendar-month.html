@@ -1,0 +1,39 @@
+<header class="panel-heading chr_leave-calendar__month-header">
+  <h2 class="panel-title">{{calendar.monthLabels[month.month] + " " + month.year}}</h2>
+</header>
+<crm-loading show="!calendar.months[$index].loading">
+</crm-loading>
+<div ng-if="!calendar.months[$index].loading">
+  <div class="table-responsive">
+    <table class="table table-bordered chr_leave-calendar">
+      <thead>
+      <tr class="chr_leave-calendar__days">
+        <th ng-repeat="day in calendar.getMonthData(month)">
+          {{calendar.getDayName(day.date)}}
+          <div>{{$index + 1}}</div>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="chr_leave-calendar__items">
+        <td ng-repeat="day in calendar.getMonthData(month)">
+          <div class="chr_leave-calendar__item"
+               ng-style="day.UI.styles"
+               ng-class="{
+                     'chr_leave-calendar__item--type--weekend': day.UI.isWeekend,
+                     'chr_leave-calendar__item--type--non-working': day.UI.isNonWorkingDay,
+                     'chr_leave-calendar__item--type--public-holiday': day.UI.isPublicHoliday,
+                     'chr_leave-calendar__item--requested': day.UI.isRequested,
+                     'chr_leave-calendar__item--alt': day.UI.isAccruedTOIL,
+                     'chr_leave-calendar__item--toil-requested': day.UI.isRequested && day.UI.isAccruedTOIL
+                     }">
+            <span ng-if="day.UI.isAM">AM</span>
+            <span ng-if="day.UI.isPM">PM</span>
+            <span ng-if="day.UI.isAccruedTOIL">AT</span>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
