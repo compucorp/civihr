@@ -2,6 +2,7 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/manager-leave/modules/components',
+  'leave-absences/shared/controllers/calendar-ctrl',
   'common/models/contact',
 ], function (_, moment, components) {
 
@@ -13,21 +14,14 @@ define([
       return settings.pathTpl + 'components/manager-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$log', '$q', '$rootScope', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
-      'Calendar', 'Contact', 'OptionGroup', 'LeaveRequest', 'PublicHoliday', controller]
+    controller: ['$controller', '$log', '$q', '$rootScope', 'Calendar', 'Contact', 'OptionGroup', 'LeaveRequest', controller]
   });
 
-
-  function controller(
-    $log, $q, $rootScope, $timeout, sharedSettings, AbsencePeriod, AbsenceType,
-    Calendar, Contact, OptionGroup, LeaveRequest, PublicHoliday) {
+  function controller($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup, LeaveRequest) {
     $log.debug('Component: manager-leave-calendar');
 
-    var vm = Object.create(this),
-      dayTypes = [],
-      leaveRequests = {},
-      leaveRequestStatuses = [],
-      publicHolidays = [];
+    var parentCtrl = $controller('CalendarCtrl'),
+      vm = Object.create(parentCtrl);
 
     /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
      * Calendar data saved temporarily in tempContactData and once all the promises are resolved,
@@ -36,13 +30,9 @@ define([
      */
     var tempContactData = [];
 
-    vm.absencePeriods = [];
-    vm.absenceTypes = [];
     vm.filteredContacts = [];
+    vm.leaveRequests = [];
     vm.managedContacts = [];
-    vm.months = [];
-    vm.selectedMonths = [];
-    vm.selectedPeriod = null;
     vm.filters = {
       contact: null,
       department: null,
@@ -50,23 +40,6 @@ define([
       location: null,
       region: null,
       contacts_with_leaves: false
-    };
-    vm.loading = {
-      calendar: false,
-      page: false
-    };
-    vm.monthLabels = ['January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'];
-
-
-    /**
-     * Fetch months from newly selected period and refresh data
-     *
-     * @return {array}
-     */
-    vm.changeSelectedPeriod = function() {
-      fetchMonthsFromPeriod();
-      vm.refresh();
     };
 
     /**
@@ -77,35 +50,11 @@ define([
     vm.filterContacts = function () {
       if (vm.filters.contacts_with_leaves) {
         return vm.filteredContacts.filter(function (contact) {
-          return (leaveRequests[contact.id] && Object.keys(leaveRequests[contact.id]).length > 0);
+          return (vm.leaveRequests[contact.id] && Object.keys(vm.leaveRequests[contact.id]).length > 0);
         });
       }
 
       return vm.filteredContacts;
-    };
-
-    /**
-     * Labels the given period according to whether it's current or not
-     *
-     * @param  {object} absenceType
-     * @return {object} style
-     */
-    vm.getAbsenceTypeStyle = function (absenceType) {
-      return {
-        backgroundColor: absenceType.color,
-        borderColor: absenceType.color
-      };
-    };
-
-    /**
-     * Returns day name of the sent date(Monday, Tuesday etc.)
-     *
-     * @param  {string} date
-     * @return {string}
-     */
-    vm.getDayName = function (date) {
-      var day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      return day[getDateObjectWithFormat(date).day()];
     };
 
     /**
@@ -131,75 +80,24 @@ define([
     };
 
     /**
-     * Decides whether sent date is a public holiday
-     *
-     * @param  {string} date
-     * @return {boolean}
-     */
-    vm.isPublicHoliday = function (date) {
-      return !!publicHolidays[getDateObjectWithFormat(date).valueOf()];
-    };
-
-    /**
-     * Labels the given period according to whether it's current or not
-     *
-     * @param  {AbsencePeriodInstance} period
-     * @return {string}
-     */
-    vm.labelPeriod = function (period) {
-      return period.current ? 'Current Period (' + period.title + ')' : period.title;
-    };
-
-    /**
      * Refresh contacts and calendar data
      */
     vm.refresh = function () {
       vm.loading.calendar = true;
-      loadContacts()
+      vm._loadContacts()
         .then(function () {
-          loadLeaveRequestsAndCalender()
+          vm._loadLeaveRequestsAndCalender()
             .then(function () {
               vm.loading.calendar = false;
             });
         });
     };
 
-    (function init() {
-      vm.loading.page = true;
-      //Select current month as default
-      vm.selectedMonths = [vm.monthLabels[moment().month()]];
-      $q.all([
-        loadAbsencePeriods(),
-        loadAbsenceTypes(),
-        loadPublicHolidays(),
-        loadRegions(),
-        loadDepartments(),
-        loadLocations(),
-        loadLevelTypes(),
-        loadStatuses(),
-        loadDayTypes()
-      ])
-      .then(function () {
-        return loadManagees();
-      })
-      .then(function () {
-        vm.legendCollapsed = false;
-        return loadLeaveRequestsAndCalender();
-      })
-      .finally(function () {
-        vm.loading.page = false;
-      });
-
-      $rootScope.$on('LeaveRequest::updatedByManager', function () {
-        vm.refresh();
-      });
-    })();
-
     /**
      * Fetch all the months from the current period and
      * save it in vm.months
      */
-    function fetchMonthsFromPeriod () {
+    vm._fetchMonthsFromPeriod = function () {
       var months = [],
         startDate = moment(vm.selectedPeriod.start_date),
         endDate = moment(vm.selectedPeriod.end_date);
@@ -213,65 +111,7 @@ define([
       }
 
       vm.months = months;
-    }
-
-    /**
-     * Converts given date to moment object with server format
-     *
-     * @param {Date/String} date from server
-     * @return {Date} Moment date
-     */
-    function getDateObjectWithFormat(date) {
-      return moment(date, sharedSettings.serverDateFormat).clone();
-    }
-
-    /**
-     * Find the month which matches with the sent date
-     * and return the related object
-     *
-     * @param {object} date
-     * @param {array} months
-     * @return {object}
-     */
-    function getMonthObjectByDate(date, months) {
-      return _.find(months, function (month) {
-        return (month.month === date.month()) && (month.year === date.year());
-      });
-    }
-
-    /**
-     * Returns the styles for a specific leaveRequest
-     * which will be used in the view for each date
-     *
-     * @param  {object} leaveRequest
-     * @param  {object} dateObj - Date UI object which handles look of a calendar cell
-     * @return {object}
-     */
-    function getStyles(leaveRequest, dateObj) {
-      var absenceType,
-        status = leaveRequestStatuses[leaveRequest.status_id];
-
-      if (status.name === 'waiting_approval'
-        || status.name === 'approved'
-        || status.name === 'admin_approved') {
-        absenceType = _.find(vm.absenceTypes, function (absenceType) {
-          return absenceType.id == leaveRequest.type_id;
-        });
-
-        //If Balance change is positive, mark as Accrued TOIL
-        if (leaveRequest.balance_change > 0) {
-          dateObj.UI.isAccruedTOIL = true;
-          return {
-            border: '1px solid ' + absenceType.color
-          };
-        }
-
-        return {
-          backgroundColor: absenceType.color,
-          borderColor: absenceType.color
-        };
-      }
-    }
+    };
 
     /**
      * Index leave requests by contact_id as first level
@@ -279,125 +119,62 @@ define([
      *
      * @param  {Array} leaveRequestsData - leave requests array from API
      */
-    function indexLeaveRequests(leaveRequestsData) {
+    vm._indexLeaveRequests = function (leaveRequestsData) {
       _.each(leaveRequestsData, function (leaveRequest) {
-        leaveRequests[leaveRequest.contact_id] = leaveRequests[leaveRequest.contact_id] || {};
+        vm.leaveRequests[leaveRequest.contact_id] = vm.leaveRequests[leaveRequest.contact_id] || {};
 
         _.each(leaveRequest.dates, function (leaveRequestDate) {
-          leaveRequests[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
+          vm.leaveRequests[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
         });
       });
-    }
-
-    /**
-     * Returns whether a date is of a specific type
-     * half_day_am or half_day_pm
-     *
-     * @param  {string} name
-     * @param  {object} leaveRequest
-     * @param  {string} date
-     *
-     * @return {boolean}
-     */
-    function isDayType(name, leaveRequest, date) {
-      var dayType = dayTypes[name];
-
-      if (moment(date).isSame(leaveRequest.from_date)) {
-        return dayType.value == leaveRequest.from_date_type;
-      }
-
-      if (moment(date).isSame(leaveRequest.to_date)) {
-        return dayType.value == leaveRequest.to_date_type;
-      }
-    }
-
-    /**
-     * Returns whether a leaveRequest is pending approval
-     *
-     * @param  {object} leaveRequest
-     * @return {boolean}
-     */
-    function isPendingApproval(leaveRequest) {
-      var status = leaveRequestStatuses[leaveRequest.status_id];
-
-      return status.name === 'waiting_approval';
-    }
-
-    /**
-     * Loads the absence periods
-     *
-     * @return {Promise}
-     */
-    function loadAbsencePeriods() {
-      return AbsencePeriod.all()
-        .then(function (absencePeriods) {
-          vm.absencePeriods = absencePeriods;
-          vm.selectedPeriod = _.find(vm.absencePeriods, function (period) {
-            return !!period.current;
-          });
-
-          fetchMonthsFromPeriod();
-        });
-    }
-
-    /**
-     * Loads the absence types
-     *
-     * @return {Promise}
-     */
-    function loadAbsenceTypes() {
-      return AbsenceType.all()
-        .then(function (absenceTypes) {
-          vm.absenceTypes = absenceTypes;
-        });
-    }
+    };
 
     /**
      * Loads the calendar data
      *
      * @return {Promise}
      */
-    function loadCalendar() {
+    vm._loadCalendar = function () {
       tempContactData = _.clone(vm.managedContacts);
 
       return $q.all(vm.managedContacts.map(function (contact, index) {
         return Calendar.get(contact.id, vm.selectedPeriod.id)
           .then(function (calendar) {
-            tempContactData[index].calendarData = setCalendarProps(vm.managedContacts[index].id, calendar);
+            tempContactData[index].calendarData = vm._setCalendarProps(vm.managedContacts[index].id, calendar);
           });
       }));
-    }
+    };
 
     /**
      * Load all contacts with respect to filters
      *
      * @return {Promise}
      */
-    function loadContacts() {
-      return Contact.all(prepareContactFilters(), {page: 1, size: 0})
+    vm._loadContacts = function () {
+      return Contact.all(vm._prepareContactFilters(), {page: 1, size: 0})
         .then(function (contacts) {
           vm.filteredContacts = contacts.list;
         })
-    }
+    };
 
     /**
      * Loads the leave request day types
      *
      * @return {Promise}
      */
-    function loadDayTypes() {
+    vm._loadDayTypes = function () {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
         .then(function (dayTypesData) {
-          dayTypes = _.indexBy(dayTypesData, 'name');
+          vm._dayTypes = _.indexBy(dayTypesData, 'name');
         });
-    }
+    };
 
     /**
      * Loads the leave requests and calendar
      *
      * @return {Promise}
      */
-    function loadLeaveRequestsAndCalender() {
+    vm._loadLeaveRequestsAndCalender = function () {
       return LeaveRequest.all({
         managed_by: vm.contactId,
         from_date: {
@@ -408,117 +185,86 @@ define([
         }
       }, {}, null, null, false)
       .then(function (leaveRequestsData) {
-        indexLeaveRequests(leaveRequestsData.list);
+        vm._indexLeaveRequests(leaveRequestsData.list);
 
-        return loadCalendar();
+        return vm._loadCalendar();
       })
       .then(function () {
         vm.managedContacts = tempContactData;
-        showMonthLoader();
+        vm._showMonthLoader();
       });
-    }
+    };
 
     /**
      * Loads the managees of currently logged in user
      *
      * @return {Promise}
      */
-    function loadManagees() {
+    vm._loadManagees = function () {
       return Contact.find(vm.contactId)
         .then(function (contact) {
           contact.leaveManagees()
             .then(function (contacts) {
               vm.managedContacts = contacts;
-              return loadContacts();
+              return vm._loadContacts();
             });
         });
-    }
-
-    /**
-     * Loads all the public holidays
-     *
-     * @return {Promise}
-     */
-    function loadPublicHolidays() {
-      return PublicHoliday.all()
-        .then(function (publicHolidaysData) {
-          var datesObj = {};
-
-          // convert to an object with time stamp as key
-          publicHolidaysData.forEach(function (publicHoliday) {
-            datesObj[getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
-          });
-
-          publicHolidays = datesObj;
-        });
-    }
-
-    /**
-     * Loads the status option values
-     *
-     * @return {Promise}
-     */
-    function loadStatuses() {
-      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
-        .then(function (statuses) {
-          leaveRequestStatuses = _.indexBy(statuses, 'value');
-        });
-    }
+    };
 
     /**
      * Loads the regions option values
      *
      * @return {Promise}
      */
-    function loadRegions() {
+    vm._loadRegions = function () {
       return OptionGroup.valuesOf('hrjc_region')
         .then(function (regions) {
           vm.regions = regions;
         });
-    }
+    };
 
     /**
      * Loads the locations option values
      *
      * @return {Promise}
      */
-    function loadLocations() {
+    vm._loadLocations = function () {
       return OptionGroup.valuesOf('hrjc_location')
         .then(function (locations) {
           vm.locations = locations;
         });
-    }
+    };
 
     /**
      * Loads the level types option values
      *
      * @return {Promise}
      */
-    function loadLevelTypes() {
+    vm._loadLevelTypes = function () {
       return OptionGroup.valuesOf('hrjc_level_type')
         .then(function (levels) {
           vm.levelTypes = levels;
         });
-    }
+    };
 
     /**
      * Loads the departments option values
      *
      * @return {Promise}
      */
-    function loadDepartments() {
+    vm._loadDepartments = function () {
       return OptionGroup.valuesOf('hrjc_department')
         .then(function (departments) {
           vm.departments = departments;
         });
-    }
+    };
 
     /**
      * Returns the filter object for contacts api
      *
      * @return {Object}
      */
-    function prepareContactFilters() {
+    vm._prepareContactFilters = function () {
       var filters = vm.filters;
 
       return {
@@ -533,7 +279,7 @@ define([
         location: filters.location ? filters.location.value : null,
         region: filters.region ? filters.region.value : null
       };
-    }
+    };
 
     /**
      * Sets UI related properties(isWeekend, isNonWorkingDay etc)
@@ -543,7 +289,7 @@ define([
      * @param  {object} calendar
      * @return {object}
      */
-    function setCalendarProps(contactID, calendar) {
+    vm._setCalendarProps = function (contactID, calendar) {
       var leaveRequest,
         monthData = _.map(vm.months, function (month) {
           return _.extend(month, {
@@ -553,50 +299,58 @@ define([
 
       _.each(calendar.days, function (dateObj) {
         //fetch leave request, first search by contact_id then by date
-        leaveRequest = leaveRequests[contactID] ? leaveRequests[contactID][dateObj.date] : null;
+        leaveRequest = vm.leaveRequests[contactID] ? vm.leaveRequests[contactID][dateObj.date] : null;
         dateObj.UI = {
-          isWeekend: calendar.isWeekend(getDateObjectWithFormat(dateObj.date)),
-          isNonWorkingDay: calendar.isNonWorkingDay(getDateObjectWithFormat(dateObj.date)),
+          isWeekend: calendar.isWeekend(vm._getDateObjectWithFormat(dateObj.date)),
+          isNonWorkingDay: calendar.isNonWorkingDay(vm._getDateObjectWithFormat(dateObj.date)),
           isPublicHoliday: vm.isPublicHoliday(dateObj.date)
         };
 
         // set below props only if leaveRequest is found
         if (leaveRequest) {
           dateObj.leaveRequest = leaveRequest;
-          dateObj.UI.styles = getStyles(leaveRequest, dateObj);
-          dateObj.UI.isRequested = isPendingApproval(leaveRequest);
-          dateObj.UI.isAM = isDayType('half_day_am', leaveRequest, dateObj.date);
-          dateObj.UI.isPM = isDayType('half_day_pm', leaveRequest, dateObj.date);
+          dateObj.UI.styles = vm._getStyles(leaveRequest, dateObj);
+          dateObj.UI.isRequested = vm._isPendingApproval(leaveRequest);
+          dateObj.UI.isAM = vm._isDayType('half_day_am', leaveRequest, dateObj.date);
+          dateObj.UI.isPM = vm._isDayType('half_day_pm', leaveRequest, dateObj.date);
         }
 
-        getMonthObjectByDate(moment(dateObj.date), monthData).data.push(dateObj);
+        vm._getMonthObjectByDate(moment(dateObj.date), monthData).data.push(dateObj);
       });
 
       return monthData;
-    }
+    };
 
-    /**
-     * Show month loader for all months initially
-     * then hide each loader on the interval of an offset value
-     */
-    function showMonthLoader() {
-      var monthLoadDelay = 500,
-        offset = 0;
-
-      vm.months.forEach(function (month) {
-        // immediately show the current month...
-        month.loading = month.label !== vm.selectedMonths[0];
-
-        //delay other months
-        if (month.loading) {
-          $timeout(function () {
-            month.loading = false;
-          }, offset);
-
-          offset += monthLoadDelay;
-        }
+    (function init() {
+      vm.loading.page = true;
+      //Select current month as default
+      vm.selectedMonths = [vm.monthLabels[moment().month()]];
+      $q.all([
+        vm._loadAbsencePeriods(),
+        vm._loadAbsenceTypes(),
+        vm._loadPublicHolidays(),
+        vm._loadRegions(),
+        vm._loadDepartments(),
+        vm._loadLocations(),
+        vm._loadLevelTypes(),
+        vm._loadStatuses(),
+        vm._loadDayTypes()
+      ])
+      .then(function () {
+        return vm._loadManagees();
+      })
+      .then(function () {
+        vm.legendCollapsed = false;
+        return vm._loadLeaveRequestsAndCalender();
+      })
+      .finally(function () {
+        vm.loading.page = false;
       });
-    }
+
+      $rootScope.$on('LeaveRequest::updatedByManager', function () {
+        vm.refresh();
+      });
+    })();
 
     return vm;
   }
