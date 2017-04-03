@@ -49,9 +49,11 @@ define([
         },
         getOptions: function(fieldName, callAPI) {
           var deffered = $q.defer(),
+            params = {},
             data;
 
           if (!callAPI) {
+            debugger
             var data = settings.CRM.options.HRJobHealth || {};
 
             if (fieldName && typeof fieldName === 'string') {
@@ -60,7 +62,22 @@ define([
 
             deffered.resolve(data || {});
           } else {
-            //TODO call2API
+            params.sequential = 1;
+            params.field = "hrjobcontract_health_life_insurance_plan_type";
+
+            ContractHealth.get({
+              action: 'getoptions',
+              json: params
+            },
+            function(data) {
+              if (!data.values) {
+                deffered.reject('Unable to fetch contract insurance fields');
+              }
+              deffered.resolve(data.values);
+            },
+            function() {
+              deffered.reject('Unable to fetch contract insurance fields');
+            });
           }
 
           return deffered.promise;
