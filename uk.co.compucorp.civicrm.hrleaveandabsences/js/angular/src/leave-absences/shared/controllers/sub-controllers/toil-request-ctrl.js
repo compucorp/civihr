@@ -106,6 +106,15 @@ define([
       };
 
       /**
+       * Updates expiry date when user changes it on ui
+       */
+      vm.updateExpiryDate = function () {
+        if (vm.uiOptions.expiryDate) {
+          vm.request.toil_expiry_date = vm._convertDateToServerFormat(vm.uiOptions.expiryDate);
+        }
+      };
+
+      /**
        * Initializes the controller on loading the dialog
        */
       (function initController() {
@@ -114,6 +123,8 @@ define([
 
         vm._init()
           .then(function () {
+            initExpiryDate();
+
             return loadToilAmounts();
           })
           .finally(function () {
@@ -142,6 +153,15 @@ define([
           .then(function (amounts) {
             vm.toilAmounts = _.indexBy(amounts, 'value');
           });
+      }
+
+      /**
+       * Initialize expiryDate on UI from server's toil_expiry_date
+       */
+      function initExpiryDate() {
+        if (vm.isRole('manager')) {
+          vm.uiOptions.expiryDate = vm._convertDateFormatFromServer(vm.request.toil_expiry_date);
+        }
       }
 
       return vm;

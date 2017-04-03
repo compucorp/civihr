@@ -21,12 +21,8 @@ define([
        */
       function checkDate(date, dayType) {
         var searchedDate = this.days[getDateObjectWithFormat(date).valueOf()];
-
-        if (!searchedDate) {
-          throw new Error('Date not found');
-        }
-
-        return searchedDate.type.name === dayType;
+        
+        return searchedDate ? searchedDate.type.name === dayType : false;
       }
 
       /**

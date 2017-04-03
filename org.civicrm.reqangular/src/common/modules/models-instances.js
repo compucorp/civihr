@@ -1,5 +1,6 @@
 define([
-  'common/angular'
+  'common/angular',
+  'common/modules/apis'
 ], function (angular) {
   'use strict';
 

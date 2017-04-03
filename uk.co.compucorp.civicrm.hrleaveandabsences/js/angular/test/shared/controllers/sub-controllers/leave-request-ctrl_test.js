@@ -106,6 +106,10 @@
         expect($ctrl instanceof parentRequestCtrl.constructor).toBe(true);
       });
 
+      it('getStatuses returns an array', function() {
+        expect($ctrl.getStatuses()).toEqual(jasmine.any(Array));
+      });
+
       describe('when initialized', function () {
         describe('comments', function () {
           it('text is empty', function () {
@@ -230,6 +234,45 @@
 
           it('selects first day type', function () {
             expect($ctrl.request.from_date_type).toEqual('1');
+          });
+
+          describe('and from date is weekend', function() {
+            var testDate;
+
+            beforeEach(function() {
+              testDate = helper.getDate('weekend');
+              setTestDates(testDate.date);
+            });
+
+            it('sets weekend day type', function() {
+              expect($ctrl.requestFromDayTypes[0].label).toEqual('Weekend');
+            });
+          });
+
+          describe('and from date is non working day', function() {
+            var testDate;
+
+            beforeEach(function() {
+              testDate = helper.getDate('non_working_day');
+              setTestDates(testDate.date);
+            });
+
+            it('sets non_working_day day type', function() {
+              expect($ctrl.requestFromDayTypes[0].label).toEqual('Non Working Day');
+            });
+          });
+
+          describe('and from date is working day', function() {
+            var testDate;
+
+            beforeEach(function() {
+              testDate = helper.getDate('working_day');
+              setTestDates(testDate.date);
+            });
+
+            it('sets non_working_day day type', function() {
+              expect($ctrl.requestFromDayTypes.length).toEqual(3);
+            });
           });
         });
 
