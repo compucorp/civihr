@@ -4,9 +4,9 @@
  * Collection of upgrade steps
  */
 class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
-
+  private $_enities;
+  
   public function install() {
-
     // $this->executeCustomDataFile('xml/customdata.xml');
     $this->executeSqlFile('sql/install.sql');
     $this->upgradeBundle();
@@ -1315,7 +1315,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       }
     }
 
-    $this->deleteEntityRecords('HRHoursLocation', $deleteableReasons);
+    $this->deleteEntityRecords('OptionValue', $deleteableReasons);
   }
 
   /**
@@ -1342,22 +1342,22 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   private function up1027_removeUnneededPayScales() {
     $deleteableScales = [];
-    $payScales = $this->getEntityRecords('HRPayscale');
+    $payScales = $this->getTableRecords('civicrm_hrpay_scale');
 
     foreach ($payScales as $currentScale) {
       $q = "
         SELECT id
         FROM civicrm_hrjobcontract_pay
-        WHERE pay_scale = {$currentScale['id']}
+        WHERE pay_scale = {$currentScale->id}
       ";
       $payScaleInContract = CRM_Core_DAO::executeQuery($q);
 
-      if (!$payScaleInContract->fetch() && $currentScale['pay_scale'] != 'Not Applicable') {
-        $deleteableScales[] = $currentScale['id'];
+      if (!$payScaleInContract->fetch() && $currentScale->pay_scale != 'Not Applicable') {
+        $deleteableScales[] = $currentScale->id;
       }
     }
 
-    $this->deleteEntityRecords('HRPayscale', $deleteableScales);
+    $this->deleteTableRecords('civicrm_hrpay_scale', $deleteableScales);
   }
 
   /**
@@ -1365,24 +1365,24 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   private function up1027_removeUnneededHourLocations() {
     $deleteableLocations = [];
-    $locations = $this->getEntityRecords('HRHoursLocation');
+    $locations = $this->getTableRecords('civicrm_hrhours_location');
 
     foreach ($locations as $currentLocation) {
       $q = "
         SELECT id
         FROM civicrm_hrjobcontract_hour
-        WHERE location_standard_hours = {$currentLocation['id']}
+        WHERE location_standard_hours = {$currentLocation->id}
       ";
       $locationInContracts = CRM_Core_DAO::executeQuery($q);
 
-      if (!$locationInContracts->fetch() && $currentLocation['location'] != 'Head office') {
-        $deleteableLocations[] = $currentLocation['id'];
+      if (!$locationInContracts->fetch() && $currentLocation->location != 'Head office') {
+        $deleteableLocations[] = $currentLocation->id;
       }
     }
 
-    $this->deleteEntityRecords('HRHoursLocation', $deleteableLocations);
+    $this->deleteTableRecords('civicrm_hrhours_location', $deleteableLocations);
   }
-
+  
   /**
    * Obtains records in DB for given entity.
    * 
@@ -1420,11 +1420,52 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    *   List of ID's of records to be deleted
    */
   private function deleteEntityRecords($entity, $deleteableRecordIDs){
-    
+
     foreach ($deleteableRecordIDs as $recordID) {
       civicrm_api3($entity, 'delete', [
         'id' => $recordID,
       ]);
+    }
+  }
+  
+
+  /**
+   * Obtains records in DB for given table.
+   * 
+   * @param string $table
+   *   Table for which to obtain records
+   * 
+   * @return array
+   *   List of records found in database for given entity.
+   */
+  private function getTableRecords($table) {
+    $result = [];
+    
+    $dbResult = CRM_Core_DAO::executeQuery("
+      SELECT *
+      FROM $table 
+    ");
+    while ($dbResult->fetch()) {
+      $result[] = clone $dbResult;
+    }
+    
+    return $result;
+  }
+
+  /**
+   * Deletes records identified by given ID's for the provided Entity.
+   * 
+   * @param string $entity
+   *   Name of Entity
+   * @param array $deleteableRecordIDs
+   *   List of ID's of records to be deleted
+   */
+  private function deleteTableRecords($entity, $deleteableRecordIDs){
+    if (sizeof($deleteableRecordIDs) > 0) {
+      CRM_Core_DAO::executeQuery("
+        DELETE FROM $entity
+        WHERE id IN (" . implode(', ', $deleteableRecordIDs) . ")
+      ");
     }
   }
  
