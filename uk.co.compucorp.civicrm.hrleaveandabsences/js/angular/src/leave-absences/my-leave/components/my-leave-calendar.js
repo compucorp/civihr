@@ -45,10 +45,7 @@ define([
      */
     vm.refresh = function () {
       vm.loading.calendar = true;
-      vm._loadLeaveRequestsAndCalendar()
-        .then(function () {
-          vm.loading.calendar = false;
-        });
+      vm._loadLeaveRequestsAndCalendar();
     };
 
     /**
@@ -96,10 +93,7 @@ define([
      * @return {Promise}
      */
     vm._loadLeaveRequestsAndCalendar = function () {
-      return parentCtrl._loadLeaveRequestsAndCalendar.call(vm, 'contact_id', true)
-        .then(function () {
-          vm._showMonthLoader();
-        });
+      return parentCtrl._loadLeaveRequestsAndCalendar.call(vm, 'contact_id', true);
     };
 
     /**

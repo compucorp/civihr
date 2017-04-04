@@ -269,9 +269,12 @@ define([
      *
      * @param {string} contactParamName - contact parameter key name
      * @param {boolean} cache
+     * @param {function} intermediateSteps
      * @return {Promise}
      */
-    this._loadLeaveRequestsAndCalendar = function (contactParamName, cache) {
+    this._loadLeaveRequestsAndCalendar = function (contactParamName, cache, intermediateSteps) {
+      cache = cache === undefined ? true : cache;
+
       var params = {
         from_date: {
           from: this.selectedPeriod.start_date
@@ -287,6 +290,11 @@ define([
           this._indexLeaveRequests(leaveRequestsData.list);
 
           return this._loadCalendar();
+        }.bind(this))
+        .then(function () {
+          intermediateSteps ? intermediateSteps() : false;
+          this.loading.calendar = false;
+          this._showMonthLoader();
         }.bind(this));
     };
 

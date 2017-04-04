@@ -86,10 +86,7 @@ define([
       vm.loading.calendar = true;
       vm._loadContacts()
         .then(function () {
-          vm._loadLeaveRequestsAndCalendar()
-            .then(function () {
-              vm.loading.calendar = false;
-            });
+          vm._loadLeaveRequestsAndCalendar();
         });
     };
 
@@ -156,11 +153,9 @@ define([
      * @return {Promise}
      */
     vm._loadLeaveRequestsAndCalendar = function () {
-      return parentCtrl._loadLeaveRequestsAndCalendar.call(vm, 'managed_by', false)
-        .then(function () {
-          vm.managedContacts = tempContactData;
-          vm._showMonthLoader();
-        });
+      return parentCtrl._loadLeaveRequestsAndCalendar.call(vm, 'managed_by', false, function () {
+        vm.managedContacts = tempContactData;
+      });
     };
 
     /**
