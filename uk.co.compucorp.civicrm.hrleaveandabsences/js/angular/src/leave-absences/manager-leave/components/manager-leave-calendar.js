@@ -276,7 +276,6 @@ define([
 
         // set below props only if leaveRequest is found
         if (leaveRequest) {
-          dateObj.leaveRequest = leaveRequest;
           dateObj.UI.styles = vm._getStyles(leaveRequest, dateObj);
           dateObj.UI.isRequested = vm._isPendingApproval(leaveRequest);
           dateObj.UI.isAM = vm._isDayType('half_day_am', leaveRequest, dateObj.date);

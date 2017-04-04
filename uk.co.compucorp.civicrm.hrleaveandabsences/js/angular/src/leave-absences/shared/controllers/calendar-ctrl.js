@@ -136,6 +136,10 @@ define([
         return {};
       }
 
+      //Attach leave request to the date object only if the leave status is not one of
+      //['waiting_approval', 'approved', 'admin_approved'].
+      dateObj.leaveRequest = leaveRequest;
+
       absenceType = _.find(this.absenceTypes, function (absenceType) {
         return absenceType.id == leaveRequest.type_id;
       });
