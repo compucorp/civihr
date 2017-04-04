@@ -20,8 +20,7 @@ define([
   function controller($controller, $log, $q, Calendar, LeaveRequest) {
     $log.debug('Component: my-leave-calendar');
 
-    var parentCtrl = $controller('CalendarCtrl'),
-      vm = Object.create(parentCtrl);
+    var vm = Object.create($controller('CalendarCtrl'));
 
     vm.leaveRequests = {};
 
@@ -53,24 +52,17 @@ define([
     };
 
     /**
-     * Fetch all the months from the current period and
-     * save it in vm.months
+     * Returns skeleton for the month object
+     *
+     * @param  {Object} startDate
+     * @return {Object}
      */
-    vm._fetchMonthsFromPeriod = function () {
-      var months = [],
-        startDate = moment(vm.selectedPeriod.start_date),
-        endDate = moment(vm.selectedPeriod.end_date);
-
-      while (startDate.isBefore(endDate)) {
-        months.push({
-          month: startDate.month(),
-          year: startDate.year(),
-          data: []
-        });
-        startDate.add(1, 'month');
-      }
-
-      vm.months = months;
+    vm._getMonthSkeleton = function (startDate) {
+      return {
+        month: startDate.month(),
+        year: startDate.year(),
+        data: []
+      };
     };
 
     /**
@@ -78,8 +70,8 @@ define([
      *
      * @param  {Array} leaveRequestsData - leave requests array from API
      */
-    vm._indexLeaveRequests = function (leaveRequestsData) {
-      _.each(leaveRequestsData, function (leaveRequest) {
+    vm._indexLeaveRequests = function (leaveRequests) {
+      _.each(leaveRequests, function (leaveRequest) {
         _.each(leaveRequest.dates, function (leaveRequestDate) {
           vm.leaveRequests[leaveRequestDate.date] = leaveRequest;
         });

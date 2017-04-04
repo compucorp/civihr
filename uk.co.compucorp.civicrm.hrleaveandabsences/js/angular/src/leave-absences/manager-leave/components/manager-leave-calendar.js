@@ -20,8 +20,7 @@ define([
   function controller($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup, LeaveRequest) {
     $log.debug('Component: manager-leave-calendar');
 
-    var parentCtrl = $controller('CalendarCtrl'),
-      vm = Object.create(parentCtrl);
+    var vm = Object.create($controller('CalendarCtrl'));
 
     /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
      * Calendar data saved temporarily in tempContactData and once all the promises are resolved,
@@ -94,23 +93,16 @@ define([
     };
 
     /**
-     * Fetch all the months from the current period and
-     * save it in vm.months
+     * Returns skeleton for the month object
+     *
+     * @param  {Object} startDate
+     * @return {Object}
      */
-    vm._fetchMonthsFromPeriod = function () {
-      var months = [],
-        startDate = moment(vm.selectedPeriod.start_date),
-        endDate = moment(vm.selectedPeriod.end_date);
-
-      while (startDate.isBefore(endDate)) {
-        months.push({
-          month: startDate.month(),
-          year: startDate.year()
-        });
-        startDate.add(1, 'month');
-      }
-
-      vm.months = months;
+    vm._getMonthSkeleton = function (startDate) {
+      return {
+        month: startDate.month(),
+        year: startDate.year()
+      };
     };
 
     /**
@@ -119,8 +111,8 @@ define([
      *
      * @param  {Array} leaveRequestsData - leave requests array from API
      */
-    vm._indexLeaveRequests = function (leaveRequestsData) {
-      _.each(leaveRequestsData, function (leaveRequest) {
+    vm._indexLeaveRequests = function (leaveRequests) {
+      _.each(leaveRequests, function (leaveRequest) {
         vm.leaveRequests[leaveRequest.contact_id] = vm.leaveRequests[leaveRequest.contact_id] || {};
 
         _.each(leaveRequest.dates, function (leaveRequestDate) {

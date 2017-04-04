@@ -29,7 +29,7 @@ define([
       'July', 'August', 'September', 'October', 'November', 'December'];
 
     /**
-     * Fetch months from newly selected period and refresh data
+     * Fetches months from newly selected period and refresh data
      */
     this.changeSelectedPeriod = function () {
       this._fetchMonthsFromPeriod();
@@ -56,8 +56,7 @@ define([
      * @return {string}
      */
     this.getDayName = function (date) {
-      var day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      return day[this._getDateObjectWithFormat(date).day()];
+      return this._getDateObjectWithFormat(date).format('ddd');
     };
 
     /**
@@ -81,17 +80,34 @@ define([
     };
 
     /**
+     * Fetch all the months from the current period and
+     * save it in vm.months
+     */
+    this._fetchMonthsFromPeriod = function () {
+      var months = [],
+        startDate = moment(this.selectedPeriod.start_date),
+        endDate = moment(this.selectedPeriod.end_date);
+
+      while (startDate.isBefore(endDate)) {
+        months.push(this._getMonthSkeleton(startDate));
+        startDate.add(1, 'month');
+      }
+
+      this.months = months;
+    };
+
+    /**
      * Converts given date to moment object with server format
      *
      * @param {Date/String} date from server
      * @return {Date} Moment date
      */
     this._getDateObjectWithFormat = function (date) {
-      return moment(date, sharedSettings.serverDateFormat).clone();
+      return moment(date, sharedSettings.serverDateFormat);
     };
 
     /**
-     * Find the month which matches with the sent date
+     * Finds the month which matches with the sent date
      * and return the related object
      *
      * @param {object} date
@@ -116,26 +132,27 @@ define([
       var absenceType,
         status = this._leaveRequestStatuses[leaveRequest.status_id];
 
-      if (status.name === 'waiting_approval'
-        || status.name === 'approved'
-        || status.name === 'admin_approved') {
-        absenceType = _.find(this.absenceTypes, function (absenceType) {
-          return absenceType.id == leaveRequest.type_id;
-        });
+      if (!_.includes(['waiting_approval', 'approved', 'admin_approved'], status.name)) {
+        return {};
+      }
 
-        //If Balance change is positive, mark as Accrued TOIL
-        if (leaveRequest.balance_change > 0) {
-          dateObj.UI.isAccruedTOIL = true;
-          return {
-            border: '1px solid ' + absenceType.color
-          };
-        }
+      absenceType = _.find(this.absenceTypes, function (absenceType) {
+        return absenceType.id == leaveRequest.type_id;
+      });
+
+      //If Balance change is positive, mark as Accrued TOIL
+      if (leaveRequest.balance_change > 0) {
+        dateObj.UI.isAccruedTOIL = true;
 
         return {
-          backgroundColor: absenceType.color,
           borderColor: absenceType.color
         };
       }
+
+      return {
+        backgroundColor: absenceType.color,
+        borderColor: absenceType.color
+      };
     };
 
     /**
@@ -178,17 +195,15 @@ define([
      * @return {Promise}
      */
     this._loadAbsencePeriods = function () {
-      var self = this;
-
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
-          self.absencePeriods = absencePeriods;
-          self.selectedPeriod = _.find(self.absencePeriods, function (period) {
+          this.absencePeriods = absencePeriods;
+          this.selectedPeriod = _.find(this.absencePeriods, function (period) {
             return !!period.current;
           });
 
-          self._fetchMonthsFromPeriod();
-        });
+          this._fetchMonthsFromPeriod();
+        }.bind(this));
     };
 
     /**
@@ -197,12 +212,10 @@ define([
      * @return {Promise}
      */
     this._loadAbsenceTypes = function () {
-      var self = this;
-
       return AbsenceType.all()
         .then(function (absenceTypes) {
-          self.absenceTypes = absenceTypes;
-        });
+          this.absenceTypes = absenceTypes;
+        }.bind(this));
     };
 
     /**
@@ -211,12 +224,10 @@ define([
      * @return {Promise}
      */
     this._loadDayTypes = function () {
-      var self = this;
-
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
         .then(function (dayTypesData) {
-          self._dayTypes = _.indexBy(dayTypesData, 'name');
-        });
+          this._dayTypes = _.indexBy(dayTypesData, 'name');
+        }.bind(this));
     };
 
     /**
@@ -225,19 +236,13 @@ define([
      * @return {Promise}
      */
     this._loadPublicHolidays = function () {
-      var self = this;
-
       return PublicHoliday.all()
-        .then(function (publicHolidaysData) {
-          var datesObj = {};
-
+        .then(function (publicHolidays) {
           // convert to an object with time stamp as key
-          publicHolidaysData.forEach(function (publicHoliday) {
-            datesObj[self._getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
-          });
-
-          self._publicHolidays = datesObj;
-        });
+          this._publicHolidays = _.transform(publicHolidays, function(result, publicHoliday) {
+            result[this._getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
+          }.bind(this), {});
+        }.bind(this));
     };
 
     /**
@@ -246,12 +251,10 @@ define([
      * @return {Promise}
      */
     this._loadStatuses = function () {
-      var self = this;
-
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
-          self._leaveRequestStatuses = _.indexBy(statuses, 'value');
-        });
+          this._leaveRequestStatuses = _.indexBy(statuses, 'value');
+        }.bind(this));
     };
 
     /**
@@ -260,12 +263,11 @@ define([
      */
     this._showMonthLoader = function () {
       var monthLoadDelay = 500,
-        offset = 0,
-        self = this;
+        offset = 0;
 
-      self.months.forEach(function (month) {
+      this.months.forEach(function (month) {
         // immediately show the current month...
-        month.loading = month.label !== self.selectedMonths[0];
+        month.loading = month.label !== this.selectedMonths[0];
 
         //delay other months
         if (month.loading) {
@@ -275,7 +277,7 @@ define([
 
           offset += monthLoadDelay;
         }
-      });
+      }.bind(this));
     };
 
     return this;
