@@ -8,13 +8,13 @@ define([
 ], function (controllers, _, moment) {
   'use strict';
 
-  controllers.controller('CalendarCtrl', ['$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
-    'PublicHoliday', 'OptionGroup', controller]);
+  controllers.controller('CalendarCtrl', ['$q', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
+    'LeaveRequest', 'PublicHoliday', 'OptionGroup', controller]);
 
-  function controller($timeout, sharedSettings, AbsencePeriod, AbsenceType, PublicHoliday, OptionGroup) {
-    this._dayTypes = [];
-    this._publicHolidays = [];
-    this._leaveRequestStatuses = [];
+  function controller($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup) {
+    var dayTypes = [],
+      leaveRequestStatuses = [],
+      publicHolidays = [];
 
     this.absencePeriods = [];
     this.absenceTypes = [];
@@ -66,7 +66,7 @@ define([
      * @return {boolean}
      */
     this.isPublicHoliday = function (date) {
-      return !!this._publicHolidays[this._getDateObjectWithFormat(date).valueOf()];
+      return !!publicHolidays[this._getDateObjectWithFormat(date).valueOf()];
     };
 
     /**
@@ -130,7 +130,7 @@ define([
      */
     this._getStyles = function (leaveRequest, dateObj) {
       var absenceType,
-        status = this._leaveRequestStatuses[leaveRequest.status_id];
+        status = leaveRequestStatuses[leaveRequest.status_id];
 
       if (!_.includes(['waiting_approval', 'approved', 'admin_approved'], status.name)) {
         return {};
@@ -156,6 +156,36 @@ define([
     };
 
     /**
+     * Initialize the calendar
+     *
+     * @param {function} intermediateSteps
+     */
+    this._init = function (intermediateSteps) {
+      this.loading.page = true;
+      //Select current month as default
+      this.selectedMonths = [this.monthLabels[moment().month()]];
+
+      $q.all([
+        this._loadAbsencePeriods(),
+        this._loadAbsenceTypes(),
+        this._loadPublicHolidays(),
+        this._loadStatuses(),
+        this._loadDayTypes()
+      ])
+      .then(function () {
+        return intermediateSteps ? intermediateSteps() : null;
+      })
+      .then(function () {
+        this.legendCollapsed = false;
+
+        return this._loadLeaveRequestsAndCalendar();
+      }.bind(this))
+      .finally(function () {
+        this.loading.page = false;
+      }.bind(this));
+    };
+
+    /**
      * Returns whether a date is of a specific type
      * half_day_am or half_day_pm
      *
@@ -166,7 +196,7 @@ define([
      * @return {boolean}
      */
     this._isDayType = function (name, leaveRequest, date) {
-      var dayType = this._dayTypes[name];
+      var dayType = dayTypes[name];
 
       if (moment(date).isSame(leaveRequest.from_date)) {
         return dayType.value == leaveRequest.from_date_type;
@@ -184,7 +214,7 @@ define([
      * @return {boolean}
      */
     this._isPendingApproval = function (leaveRequest) {
-      var status = this._leaveRequestStatuses[leaveRequest.status_id];
+      var status = leaveRequestStatuses[leaveRequest.status_id];
 
       return status.name === 'waiting_approval';
     };
@@ -226,7 +256,33 @@ define([
     this._loadDayTypes = function () {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
         .then(function (dayTypesData) {
-          this._dayTypes = _.indexBy(dayTypesData, 'name');
+          dayTypes = _.indexBy(dayTypesData, 'name');
+        });
+    };
+
+    /**
+     * Loads all the leave requests and calls calendar load function
+     *
+     * @param {string} contactParamName - contact parameter key name
+     * @param {boolean} cache
+     * @return {Promise}
+     */
+    this._loadLeaveRequestsAndCalendar = function (contactParamName, cache) {
+      var params = {
+        from_date: {
+          from: this.selectedPeriod.start_date
+        },
+        to_date: {
+          to: this.selectedPeriod.end_date
+        }
+      };
+      params[contactParamName] = this.contactId;
+
+      return LeaveRequest.all(params, {}, null, null, cache)
+        .then(function (leaveRequestsData) {
+          this._indexLeaveRequests(leaveRequestsData.list);
+
+          return this._loadCalendar();
         }.bind(this));
     };
 
@@ -237,9 +293,9 @@ define([
      */
     this._loadPublicHolidays = function () {
       return PublicHoliday.all()
-        .then(function (publicHolidays) {
+        .then(function (publicHolidaysData) {
           // convert to an object with time stamp as key
-          this._publicHolidays = _.transform(publicHolidays, function(result, publicHoliday) {
+          publicHolidays = _.transform(publicHolidaysData, function(result, publicHoliday) {
             result[this._getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
           }.bind(this), {});
         }.bind(this));
@@ -253,8 +309,8 @@ define([
     this._loadStatuses = function () {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
-          this._leaveRequestStatuses = _.indexBy(statuses, 'value');
-        }.bind(this));
+          leaveRequestStatuses = _.indexBy(statuses, 'value');
+        });
     };
 
     /**

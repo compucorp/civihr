@@ -13,14 +13,14 @@ define([
       return settings.pathTpl + 'components/my-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$controller', '$log', '$q', 'Calendar', 'LeaveRequest', controller]
+    controller: ['$controller', '$log', 'Calendar', controller]
   });
 
-
-  function controller($controller, $log, $q, Calendar, LeaveRequest) {
+  function controller($controller, $log, Calendar) {
     $log.debug('Component: my-leave-calendar');
 
-    var vm = Object.create($controller('CalendarCtrl'));
+    var parentCtrl = $controller('CalendarCtrl'),
+      vm = Object.create(parentCtrl);
 
     vm.leaveRequests = {};
 
@@ -45,7 +45,7 @@ define([
      */
     vm.refresh = function () {
       vm.loading.calendar = true;
-      vm._loadLeaveRequestAndCalendar()
+      vm._loadLeaveRequestsAndCalendar()
         .then(function () {
           vm.loading.calendar = false;
         });
@@ -68,7 +68,7 @@ define([
     /**
      * Index leave requests by date
      *
-     * @param  {Array} leaveRequestsData - leave requests array from API
+     * @param  {Array} leaveRequests - leave requests array from API
      */
     vm._indexLeaveRequests = function (leaveRequests) {
       _.each(leaveRequests, function (leaveRequest) {
@@ -95,24 +95,11 @@ define([
      *
      * @return {Promise}
      */
-    vm._loadLeaveRequestAndCalendar = function () {
-      return LeaveRequest.all({
-        contact_id: vm.contactId,
-        from_date: {
-          from: vm.selectedPeriod.start_date
-        },
-        to_date: {
-          to: vm.selectedPeriod.end_date
-        }
-      })
-      .then(function (leaveRequestsData) {
-        vm._indexLeaveRequests(leaveRequestsData.list);
-
-        return vm._loadCalendar();
-      })
-      .then(function () {
-        vm._showMonthLoader();
-      });
+    vm._loadLeaveRequestsAndCalendar = function () {
+      return parentCtrl._loadLeaveRequestsAndCalendar.call(vm, 'contact_id', true)
+        .then(function () {
+          vm._showMonthLoader();
+        });
     };
 
     /**
@@ -150,23 +137,7 @@ define([
     };
 
     (function init() {
-      vm.loading.page = true;
-      //Select current month as default
-      vm.selectedMonths = [vm.monthLabels[moment().month()]];
-      $q.all([
-        vm._loadAbsencePeriods(),
-        vm._loadAbsenceTypes(),
-        vm._loadPublicHolidays(),
-        vm._loadStatuses(),
-        vm._loadDayTypes()
-      ])
-      .then(function () {
-        vm.legendCollapsed = false;
-        return vm._loadLeaveRequestAndCalendar();
-      })
-      .finally(function () {
-        vm.loading.page = false;
-      });
+      vm._init();
     })();
 
     return vm;

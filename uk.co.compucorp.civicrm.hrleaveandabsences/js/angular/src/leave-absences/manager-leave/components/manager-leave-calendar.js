@@ -20,7 +20,8 @@ define([
   function controller($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup, LeaveRequest) {
     $log.debug('Component: manager-leave-calendar');
 
-    var vm = Object.create($controller('CalendarCtrl'));
+    var parentCtrl = $controller('CalendarCtrl'),
+      vm = Object.create(parentCtrl);
 
     /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
      * Calendar data saved temporarily in tempContactData and once all the promises are resolved,
@@ -85,7 +86,7 @@ define([
       vm.loading.calendar = true;
       vm._loadContacts()
         .then(function () {
-          vm._loadLeaveRequestsAndCalender()
+          vm._loadLeaveRequestsAndCalendar()
             .then(function () {
               vm.loading.calendar = false;
             });
@@ -109,7 +110,7 @@ define([
      * Index leave requests by contact_id as first level
      * and date as second level
      *
-     * @param  {Array} leaveRequestsData - leave requests array from API
+     * @param  {Array} leaveRequests - leave requests array from API
      */
     vm._indexLeaveRequests = function (leaveRequests) {
       _.each(leaveRequests, function (leaveRequest) {
@@ -150,41 +151,16 @@ define([
     };
 
     /**
-     * Loads the leave request day types
-     *
-     * @return {Promise}
-     */
-    vm._loadDayTypes = function () {
-      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
-        .then(function (dayTypesData) {
-          vm._dayTypes = _.indexBy(dayTypesData, 'name');
-        });
-    };
-
-    /**
      * Loads the leave requests and calendar
      *
      * @return {Promise}
      */
-    vm._loadLeaveRequestsAndCalender = function () {
-      return LeaveRequest.all({
-        managed_by: vm.contactId,
-        from_date: {
-          from: vm.selectedPeriod.start_date
-        },
-        to_date: {
-          to: vm.selectedPeriod.end_date
-        }
-      }, {}, null, null, false)
-      .then(function (leaveRequestsData) {
-        vm._indexLeaveRequests(leaveRequestsData.list);
-
-        return vm._loadCalendar();
-      })
-      .then(function () {
-        vm.managedContacts = tempContactData;
-        vm._showMonthLoader();
-      });
+    vm._loadLeaveRequestsAndCalendar = function () {
+      return parentCtrl._loadLeaveRequestsAndCalendar.call(vm, 'managed_by', false)
+        .then(function () {
+          vm.managedContacts = tempContactData;
+          vm._showMonthLoader();
+        });
     };
 
     /**
@@ -314,31 +290,17 @@ define([
     };
 
     (function init() {
-      vm.loading.page = true;
-      //Select current month as default
-      vm.selectedMonths = [vm.monthLabels[moment().month()]];
-      $q.all([
-        vm._loadAbsencePeriods(),
-        vm._loadAbsenceTypes(),
-        vm._loadPublicHolidays(),
-        vm._loadRegions(),
-        vm._loadDepartments(),
-        vm._loadLocations(),
-        vm._loadLevelTypes(),
-        vm._loadStatuses(),
-        vm._loadDayTypes()
-      ])
-      .then(function () {
-        return vm._loadManagees();
-      })
-      .then(function () {
-        vm.legendCollapsed = false;
-        return vm._loadLeaveRequestsAndCalender();
-      })
-      .finally(function () {
-        vm.loading.page = false;
+      vm._init(function () {
+        return $q.all([
+          vm._loadRegions(),
+          vm._loadDepartments(),
+          vm._loadLocations(),
+          vm._loadLevelTypes()
+        ])
+        .then(function () {
+          return vm._loadManagees();
+        });
       });
-
       $rootScope.$on('LeaveRequest::updatedByManager', function () {
         vm.refresh();
       });
