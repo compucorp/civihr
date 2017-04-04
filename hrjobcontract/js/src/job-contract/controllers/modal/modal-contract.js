@@ -55,7 +55,6 @@ define([
 
       angular.copy(entity, $scope.entity);
       angular.copy(files, $scope.files);
-
       $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
       $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
 
@@ -215,6 +214,9 @@ define([
           $scope.$broadcast('hrjc-loader-hide');
         }
       }
+
+      // Call to fetch updated Health Plan Types
+      fetchHealthPlanTypes();
 
       /**
        * # TO DO: This should probably happen inside the service that returns the data #
@@ -553,6 +555,22 @@ define([
           $scope.$broadcast('hrjc-loader-hide');
           $modalInstance.close();
         }
+      }
+
+      /**
+       * fetchHealthPlanTypes Fetches and assigns the updated Health Plan Types
+       */
+      function fetchHealthPlanTypes() {
+        ContractHealthService.getOptions(null, true)
+        .then(function (results) {
+          var plan_types = {};
+
+          for (var i = 0, planLength = results.length; i < planLength; i++) {
+            plan_types[results[i].key] = results[i].value
+          }
+
+          $rootScope.options.health.plan_type = plan_types;
+        });
       }
     }
   ]);

@@ -53,7 +53,6 @@ define([
             data;
 
           if (!callAPI) {
-            debugger
             var data = settings.CRM.options.HRJobHealth || {};
 
             if (fieldName && typeof fieldName === 'string') {
