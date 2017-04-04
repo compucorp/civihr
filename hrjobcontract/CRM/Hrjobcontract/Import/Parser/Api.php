@@ -818,13 +818,16 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   }
 
   /**
-   * calculate and set hour tab auto populated fields
+   * Calculate and set hour tab auto populated fields
    *
    * @access private
    */
   private function setHourAutoPopulatedFields()  {
-    $params = $this->_params;
+    $this->_params['HRJobHour-fte_num'] = 0;
+    $this->_params['HRJobHour-fte_denom'] = 0;
+    $this->_params['HRJobHour-hours_fte'] = 0;
 
+    $params = $this->_params;
     if (isset($params['HRJobHour-location_standard_hours'])
       && $params['HRJobHour-location_standard_hours'] != ''
       && isset($params['HRJobHour-hours_type'])
@@ -856,11 +859,6 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
           $this->_params['HRJobHour-fte_denom'] = $denom;
           $this->_params['HRJobHour-hours_fte'] = $fte;
         } 
-        else {
-          $this->_params['HRJobHour-fte_num'] = 0;
-          $this->_params['HRJobHour-fte_denom'] = 0;
-          $this->_params['HRJobHour-hours_fte'] = 0;
-        }
       }
     }
   }
