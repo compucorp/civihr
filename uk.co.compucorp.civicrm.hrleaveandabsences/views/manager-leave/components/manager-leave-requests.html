@@ -21,7 +21,7 @@
         <span class="chr_manager_dashboard__filter pointer" ng-click="ctrl.isFilterExpanded = !ctrl.isFilterExpanded">
           <i class="fa"
              aria-hidden="true"
-             ng-class="{ 'fa-chevron-right': !isFilterExpanded, ' fa-chevron-down': isFilterExpanded }">
+             ng-class="{ 'fa-chevron-right': !ctrl.isFilterExpanded, ' fa-chevron-down': ctrl.isFilterExpanded }">
           </i>
           Filter
       </span>
@@ -75,7 +75,7 @@
         <label>
           <input type="checkbox"
                  ng-change = "ctrl.refresh()"
-                 ng-model="ctrl.filters.leaveRequest.pending_requests"> Show pending requests only
+                 ng-model="ctrl.filters.leaveRequest.pending_requests"> Pending only
         </label>
       </div>
     </div>

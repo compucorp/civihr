@@ -1,73 +1,41 @@
 <section>
   <crm-loading show="!calendar.loading.page">
-    <crm-loading show="!calendar.loading.calendar">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="row">
-            <div class="col-sm-5">
-              <ui-select multiple
-                         limit="4"
-                         ng-model="calendar.selectedMonths">
-                <ui-select-match placeholder="Select Months">
-                  <span ng-bind="$item"></span>
-                </ui-select-match>
-                <ui-select-choices repeat="month in (calendar.months | filter: $select.search)">
-                  <span ng-bind="month"></span>
-                </ui-select-choices>
-              </ui-select>
-            </div>
-            <div class="col-sm-offset-4 col-sm-3">
-              <div class="chr_custom-select chr_custom-select--full">
-                <select
-                  ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
-                  ng-model="calendar.selectedPeriod"
-                  ng-change="calendar.refresh()">
-                </select>
-              </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-sm-5">
+            <ui-select multiple
+                       limit="4"
+                       ng-model="calendar.selectedMonths">
+              <ui-select-match placeholder="Select Months">
+                <span ng-bind="$item"></span>
+              </ui-select-match>
+              <ui-select-choices repeat="month in (calendar.monthLabels | filter: $select.search)">
+                <span ng-bind="month"></span>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+          <div class="col-sm-offset-4 col-sm-3">
+            <div class="chr_custom-select chr_custom-select--full">
+              <select
+                ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
+                ng-model="calendar.selectedPeriod"
+                ng-change="calendar.changeSelectedPeriod()">
+              </select>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <section class="panel panel-default"
-               ng-repeat="month in (calendar.selectedMonths.length > 0 ? calendar.selectedMonths : calendar.months)">
-        <header class="panel-heading chr_leave-calendar__month-header">
-          <h2 class="panel-title">{{month}}</h2>
-        </header>
-        <div class="table-responsive">
-          <table class="table table-bordered chr_leave-calendar">
-            <thead>
-            <tr class="chr_leave-calendar__days">
-              <th ng-repeat="day in calendar.getMonthData(calendar.months.indexOf(month))">
-                {{calendar.getDayName(day.date)}}
-                <div>{{$index + 1}}</div>
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="chr_leave-calendar__items">
-              <td ng-repeat="day in calendar.getMonthData(calendar.months.indexOf(month))">
-                <div class="chr_leave-calendar__item"
-                     ng-style="day.UI.styles"
-                     ng-class="{
-                     'chr_leave-calendar__item--type--weekend': day.UI.isWeekend,
-                     'chr_leave-calendar__item--type--non-working': day.UI.isNonWorkingDay,
-                     'chr_leave-calendar__item--type--public-holiday': day.UI.isPublicHoliday,
-                     'chr_leave-calendar__item--requested': day.UI.isRequested,
-                     'chr_leave-calendar__item--alt': day.UI.isAccruedTOIL,
-                     'chr_leave-calendar__item--toil-requested': day.UI.isRequested && day.UI.isAccruedTOIL
-                     }">
-                  <span ng-if="day.UI.isAM">AM</span>
-                  <span ng-if="day.UI.isPM">PM</span>
-                  <span ng-if="day.UI.isAccruedTOIL">AT</span>
-                </div>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </crm-loading>
+    <crm-loading show="!calendar.loading.calendar">
+    <section class="panel panel-default"
+             ng-repeat="month in calendar.months track by $index">
+      <ng-include
+        ng-hide="(calendar.selectedMonths.length !== 0 && calendar.selectedMonths.indexOf(calendar.monthLabels[month.month]) === -1)"
+        src="$root.settings.pathTpl + 'components/my-leave-calendar-month.html'"></ng-include>
+    </section>
+
     <section class="panel panel-default" ng-class="{ 'is-collapsed': calendar.legendCollapsed }">
       <header class="panel-heading panel-heading-plain">
         <h2 class="panel-title" role="button" ng-click="calendar.legendCollapsed = !calendar.legendCollapsed">

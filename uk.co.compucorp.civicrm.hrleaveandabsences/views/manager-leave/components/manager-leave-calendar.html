@@ -60,10 +60,10 @@
                        limit="4"
                        ng-model="calendar.selectedMonths">
               <ui-select-match placeholder="Select Months">
-                <span ng-bind="$item.label"></span>
+                <span ng-bind="$item"></span>
               </ui-select-match>
-              <ui-select-choices repeat="month.label as month in (calendar.months | filter: $select.search)">
-                <span ng-bind="month.label"></span>
+              <ui-select-choices repeat="month in (calendar.monthLabels | filter: $select.search)">
+                <span ng-bind="month"></span>
               </ui-select-choices>
             </ui-select>
           </div>
@@ -72,7 +72,7 @@
               <select
                 ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
                 ng-model="calendar.selectedPeriod"
-                ng-change="calendar.refresh()">
+                ng-change="calendar.changeSelectedPeriod()">
               </select>
             </div>
           </div>
@@ -82,9 +82,9 @@
 
     <crm-loading show="!calendar.loading.calendar">
       <section class="panel panel-default"
-               ng-repeat="month in ::calendar.months track by $index">
+               ng-repeat="month in calendar.months track by $index">
         <ng-include
-          ng-hide="(calendar.selectedMonths.length !== 0 && calendar.selectedMonths.indexOf(month.label) === -1)"
+          ng-hide="(calendar.selectedMonths.length !== 0 && calendar.selectedMonths.indexOf(calendar.monthLabels[month.month]) === -1)"
           src="$root.settings.pathTpl + 'components/manager-leave-calendar-month.html'"></ng-include>
       </section>
     </crm-loading>
