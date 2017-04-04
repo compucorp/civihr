@@ -129,6 +129,18 @@ define([
           return null;
         }
 
+        // Fetch newly upated list of helth plan types on displaying modal
+        ContractHealthService.getOptions(null, true)
+        .then(function (results) {
+          var plan_types = {};
+
+          for (var i = 0, planLength = results.length; i < planLength; i++) {
+            plan_types[results[i].key] = results[i].value
+          }
+
+          $rootScope.options.health.plan_type = plan_types;
+        });
+
         var modalInstance,
           options = {
             appendTo: $rootElement.find('div').eq(0),
