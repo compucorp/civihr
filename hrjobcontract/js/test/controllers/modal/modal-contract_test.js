@@ -23,6 +23,7 @@ define([
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
       $httpBackend.whenPOST(/action=create&entity/).respond({});
       $httpBackend.whenPOST(/action=replace&entity/).respond({});
+      $httpBackend.whenGET(/action=getoptions&entity=HRJobHealth/).respond({});
       $httpBackend.whenGET(/views.*/).respond({});
     });
 
