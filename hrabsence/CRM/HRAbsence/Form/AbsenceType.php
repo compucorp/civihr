@@ -125,10 +125,14 @@ class CRM_HRAbsence_Form_AbsenceType extends CRM_Core_Form {
     $title = CRM_Utils_Array::value('title', $fields);
     $isCreation = $this->getAction() === CRM_Core_Action::ADD;
 
+    $getCount = function ($field, $val) {
+      return civicrm_api3('HRAbsenceType', 'getcount', [$field => $val]);
+    };
+
     if ($isCreation) {
-      $existing = civicrm_api3('HRAbsenceType', 'get', ['name' => $title]);
-      if (isset($existing['count']) && $existing['count'] > 0) {
-        $errorMessage = "An absence type with title '%1' already exists";
+      $count = $getCount('title', $title) + $getCount('name', $title);
+      if ($count > 0) {
+        $errorMessage = "An absence type with title or name '%1' already exists";
         $errors['title'] = ts($errorMessage, [1 => $title]);
       }
     }
