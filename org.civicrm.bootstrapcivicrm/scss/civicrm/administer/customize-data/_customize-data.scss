@@ -18,21 +18,36 @@
 }
 
 &.page-civicrm-admin-custom {
+
   #crm-main-content-wrapper {
+
     .help + .crm-submit-buttons,
     .crm-submit-buttons:first-child {
       border-bottom: 1px solid $gray-lighter;
       border-top: 0;
+      border-radius: 2px 2px 0 0;
     }
 
     .crm-submit-buttons {
       background-color: $crm-white !important;
-      box-shadow: none;
+      border-radius: 0 0 2px 2px;
     }
   }
 
   .form-layout {
     box-shadow: none !important;
+    position: relative;
+
+    &:before {
+      box-shadow: $crm-form-layout-shadow;
+      content: "";
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: -1;
+    }
 
     tr {
       padding: 0;
@@ -149,9 +164,26 @@
   }
 
   .ui-dialog-content {
+
     tr {
+
       > td:first-child {
         padding-left: 0 !important;
+      }
+
+      td {
+
+        &.html-adjust {
+
+          input[type="checkbox"] {
+            position: absolute;
+            display: block;
+
+            + .description , + br + .description {
+              padding-left: 20px;
+            }
+          }
+        }
       }
     }
   }

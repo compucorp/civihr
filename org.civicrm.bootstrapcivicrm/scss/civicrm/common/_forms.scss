@@ -79,6 +79,16 @@ $control-height: 30px;
           bottom: initial !important;
         }
 
+        > select,
+        > select.crm-form-multiselect {
+           margin: 1px 0 $control-spacing / 2 0 !important;
+
+           + .crm-error {
+            position: relative;
+            top: 7px;
+          }
+        }
+
         &.view-value {
           > div.cke {
             width: 95%;
