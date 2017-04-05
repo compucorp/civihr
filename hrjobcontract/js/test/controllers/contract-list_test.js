@@ -8,28 +8,26 @@ define([
 
     beforeEach(module('hrjc'));
 
-    beforeEach(module(function ($provide) {
+    beforeEach(module(function($provide) {
       $provide.factory('ContractHealthService', function() {
         return {
-          getOptions: function () {},
-          getFields: function () {}
+          getOptions: function() {},
+          getFields: function() {}
         }
       });
     }));
 
-    beforeEach(inject(function (_$controller_, _$rootScope_, _$q_, _$httpBackend_, _ContractHealthService_) {
+    beforeEach(inject(function(_$controller_, _$rootScope_, _$q_, _$httpBackend_, _ContractHealthService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
       $q = _$q_;
       ContractHealthService = _ContractHealthService_;
-
       contractHealthServiceSpy()
-
       makeController();
     }));
 
-    beforeEach(function () {
+    beforeEach(function() {
       $httpBackend.whenGET(/action=get&entity=HRHoursLocation/).respond({});
       $httpBackend.whenGET(/action=get&entity=HRPayScale/).respond({});
       $httpBackend.whenGET(/action=getfields&entity=HRJobDetails/).respond({});
@@ -43,17 +41,18 @@ define([
       $httpBackend.whenGET(/views.*/).respond({});
     });
 
-    describe("Fetch Health Plans Options on opening new ontract modal", function () {
-      describe("when calling modalContract(params)", function() {
+    describe("modalContract()", function() {
+      describe("when clicking Add New Job Contract Button", function () {
         beforeEach(function() {
           $rootScope.$digest();
         });
 
         beforeEach(function() {
           var action = "new",
-            health = {}
+          health = {};
 
-          health.plan_type = {}
+          health.plan_type = {};
+          health.plan_type_life_insurance = {};
           $rootScope.options = {
             health: health
           };
@@ -62,7 +61,7 @@ define([
         });
 
         var result = {
-          FamilyOne: "FamilyOne",
+          Family: "Family",
           Individual: "Individual"
         }
 
@@ -70,13 +69,18 @@ define([
           expect(ContractHealthService.getOptions).toHaveBeenCalled();
         });
 
-        it("fetches health plan types", function() {
+        it("fetches health insurance plan types", function() {
           expect($rootScope.options.health.plan_type).toEqual(result)
         });
-      });
+
+        it("fetches life insurance plan types", function() {
+          expect($rootScope.options.health.plan_type_life_insurance).toEqual(result)
+        });
+
+      })
     });
 
-    function makeController () {
+    function makeController() {
       $scope = $rootScope.$new();
       ctrl = $controller('ContractListCtrl', {
         $scope: $scope,
@@ -85,21 +89,18 @@ define([
       });
     }
 
-    function contractHealthServiceSpy () {
-      spyOn(ContractHealthService, "getOptions").and.callFake(function () {
-        var deferred = $q.defer();
-        deferred.resolve([
+    function contractHealthServiceSpy() {
+      spyOn(ContractHealthService, "getOptions").and.callFake(function() {
+        return $q.resolve([
           {
-            "key": "FamilyOne",
-            "value": "FamilyOne"
+            "key": "Family",
+            "value": "Family"
           },
           {
             "key": "Individual",
             "value": "Individual"
           }
         ]);
-
-        return deferred.promise;
       })
     }
   });
