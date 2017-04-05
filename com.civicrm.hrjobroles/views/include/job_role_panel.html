@@ -86,7 +86,7 @@
 
                                                     <div class="col-xs-6">
                                                         <span ng-show="!editableForm.$visible"> {{jobroles.contractsData[jobroles.edit_data[job_roles_data.id]['job_contract_id']]['title'] || '-'}} </span>
-                                                        <span id="bootstrap-theme" ng-show="editableForm.$visible">
+                                                        <span ng-show="editableForm.$visible">
                                                           <ui-select
                                                           ng-model="jobroles.edit_data[job_roles_data.id]['job_contract_id']"
                                                           theme="civihr-ui-select"
@@ -172,7 +172,7 @@
 
                                                     <div class="col-xs-6">
                                                       <span ng-show="!editableForm.$visible"> {{jobroles.LocationsData[jobroles.edit_data[job_roles_data.id]['location']]['title'] || '-'}}</span>
-                                                      <span id="bootstrap-theme" ng-show="editableForm.$visible">
+                                                      <span ng-show="editableForm.$visible">
                                                         <ui-select
                                                         ng-model="jobroles.edit_data[job_roles_data.id]['location']"
                                                         theme="civihr-ui-select"
@@ -193,7 +193,7 @@
 
                                                     <div class="col-xs-6">
                                                       <span ng-show="!editableForm.$visible"> {{jobroles.RegionsData[jobroles.edit_data[job_roles_data.id]['region']]['title'] || '-'}} </span>
-                                                      <span id="bootstrap-theme" ng-show="editableForm.$visible">
+                                                      <span ng-show="editableForm.$visible">
                                                           <ui-select
                                                           ng-model="jobroles.edit_data[job_roles_data.id]['region']"
                                                           theme="civihr-ui-select"
@@ -215,7 +215,7 @@
 
                                                     <div class="col-xs-6">
                                                       <span ng-show="!editableForm.$visible"> {{jobroles.DepartmentsData[jobroles.edit_data[job_roles_data.id]['department']]['title'] || '-'}} </span>
-                                                      <span id="bootstrap-theme" ng-show="editableForm.$visible">
+                                                      <span ng-show="editableForm.$visible">
                                                           <ui-select
                                                           ng-model="jobroles.edit_data[job_roles_data.id]['department']"
                                                           theme="civihr-ui-select"
@@ -236,7 +236,7 @@
 
                                                     <div class="col-xs-6">
                                                       <span ng-show="!editableForm.$visible"> {{jobroles.LevelsData[jobroles.edit_data[job_roles_data.id]['level']]['title'] || '-'}} </span>
-                                                      <span id="bootstrap-theme" ng-show="editableForm.$visible">
+                                                      <span ng-show="editableForm.$visible">
                                                         <ui-select
                                                         ng-model="jobroles.edit_data[job_roles_data.id]['level']"
                                                         theme="civihr-ui-select"
@@ -328,7 +328,7 @@
                                             </thead>
                                             <tbody>
                                             <tr ng-repeat="(key, funder) in jobroles.edit_data[job_roles_data.id]['funders']">
-                                                <td id="bootstrap-theme">
+                                                <td>
                                                   <!--show ui-select for funder in edit mode-->
                                                   <span ng-show="tableform.$visible">
                                                     <ui-select class="funder-select"

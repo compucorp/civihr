@@ -109,24 +109,3 @@ input[type="checkbox"],
   border: 1px dashed $input-border;
   color: $headings-color;
 }
-
-.ui-select-placeholder,
-.ui-select-match-text {
-  font-weight: normal;
-  text-transform: none;
-}
-
-.ui-select-match-text {
-  color: $input-color;
-}
-
-.ui-select-toggle[disabled] {
-  background-color: $input-bg-disabled;
-  opacity: 1;
-
-  &:hover,
-  &:focus,
-  &:active {
-    background-color: $input-bg-disabled;
-  }
-}

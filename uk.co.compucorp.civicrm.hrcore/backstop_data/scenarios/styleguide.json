@@ -1,0 +1,9 @@
+{
+  "scenarios": [
+    {
+      "label": "Styleguide",
+      "url": "/civicrm/styleguide/bootstrap",
+      "onReadyScript": "close-any-modal"
+    }
+  ]
+}
