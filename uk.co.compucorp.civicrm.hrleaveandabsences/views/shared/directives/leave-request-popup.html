@@ -13,23 +13,29 @@
   <div
     ng-show="$ctrl.isRole('manager')"
     class="row chr_leave-request-modal__user-info">
-    <span class="col-xs-6">{{$ctrl.contact.display_name}}</span>
+    <span class="col-xs-6">{{$ctrl.contactName}}</span>
     <span class="col-xs-6">{{::$ctrl.statusBeforeEdit.label}}</span>
   </div>
-  <div class="modal-body chr_leave-request-modal__form" ng-cloak>
+  <!-- ng-show is required in model as it was not showing the list of managees for ui-select-choices-->
+  <div class="modal-body chr_leave-request-modal__form">
     <div ng-show="$ctrl.directiveOptions.forStaff">
-      <ui-select ng-model="$ctrl.contact" ng-change="$ctrl.contactSelected()">
-        <ui-select-match placeholder="Staff Member" allow-clear>
+      <ui-select
+        autofocus
+        ng-model="$ctrl.request.contact_id"
+        ng-change="$ctrl.initAfterContactSelection()"
+        theme="civihr-ui-select"
+        ng-required="true">
+        <ui-select-match placeholder="Search Staff Member" allow-clear>
           <span ng-bind="$select.selected.display_name"></span>
         </ui-select-match>
-        <ui-select-choices
-          repeat="user in $ctrl.managedContacts | filter: $select.search track by user.id">
+        <ui-select-choices repeat="user.id as user in ($ctrl.managedContacts | filter: $select.search) track by user.id">
           <span ng-bind="user.display_name"></span>
         </ui-select-choices>
       </ui-select>
-      <hr/>
     </div>
-    <div ng-class="{'chr_leave-request-modal__disabled': !$ctrl.contact}" ng-show="!$ctrl.loading.absenceTypes">
+    <div
+      ng-class="{'chr_disabled': !$ctrl.request.contact_id}"
+      ng-show="!$ctrl.loading.absenceTypes">
       <div class="row">
         <div class="col-xs-12">
           <div class="chr_custom-select chr_custom-select--full">
@@ -42,6 +48,7 @@
           </div>
         </div>
       </div>
+      <hr/>
       <div class="row">
         <div class="col-xs-12">
           <uib-tabset class="chr_leave-request-modal__tab">
@@ -312,7 +319,7 @@
               <div class="chr_custom-select chr_custom-select--full">
                 <select
                   name="statusSelect"
-                  ng-options="status.value as status.label for status in $ctrl.getStatuses() | filter:$ctrl.isStatusAvailableForManager(status)"
+                  ng-options="status.value as status.label for status in $ctrl.getStatuses()"
                   ng-model="$ctrl.request.status_id">
                   <option value="">- select -</option>
                 </select>

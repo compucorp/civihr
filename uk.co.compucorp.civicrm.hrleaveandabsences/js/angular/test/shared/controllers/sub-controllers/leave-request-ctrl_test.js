@@ -973,10 +973,12 @@
           });
         });
 
-        describe('user opens in view mode', function () {
+        describe('in view mode', function () {
+          var leaveRequest;
+
           beforeEach(function () {
             var approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
-            var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', approvalStatus));
+            leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', approvalStatus));
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             var directiveOptions = {
               contactId: leaveRequest.contact_id, //owner's contact id
@@ -990,8 +992,8 @@
             expect($ctrl.isMode('view')).toBeTruthy();
           });
 
-          it('sets contact object', function () {
-            expect($ctrl.contact).toEqual({ contact_id: '202' });
+          it('sets contact id', function () {
+            expect($ctrl.request.contact_id).toEqual(leaveRequest.contact_id);
           });
 
           describe('on submit', function () {
@@ -1042,7 +1044,7 @@
           });
 
           it('gets contact name', function () {
-            expect($ctrl.contact.display_name).toEqual(jasmine.any(String));
+            expect($ctrl.contactName).toEqual(jasmine.any(String));
           });
 
           it('does not allow user to submit', function () {
@@ -1104,15 +1106,11 @@
         });
 
         it('does not set contact', function () {
-          expect($ctrl.contact).toBeNull();
+          expect($ctrl.contactName).toBeNull();
         });
 
-        it('sets manager role', function () {
-          expect($ctrl.isRole('manager')).toBeFalsy();
-        });
-
-        it('does not initialize absence period', function () {
-          expect(AbsencePeriodAPI.all).not.toHaveBeenCalled();
+        it('does not initialize absence types', function () {
+          expect(AbsenceTypeAPI.all).not.toHaveBeenCalled();
         });
 
         describe('after contact is selected', function () {
@@ -1120,8 +1118,7 @@
 
           beforeEach(function () {
             approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
-            $ctrl.contact = { id: CRM.vars.leaveAndAbsences.contactId.toString() };
-            $ctrl.contactSelected();
+            $ctrl.initAfterContactSelection();
             $scope.$digest();
           });
 
@@ -1133,8 +1130,8 @@
             expect($ctrl.isMode('create')).toBeTruthy();
           });
 
-          it('does initialize absence period', function () {
-            expect(AbsencePeriodAPI.all).toHaveBeenCalled();
+          it('does not initialize absence types', function () {
+            expect(AbsenceTypeAPI.all).toHaveBeenCalled();
           });
 
           it('sets status to approved', function () {
@@ -1142,15 +1139,15 @@
           });
 
           describe('cancelled status', function () {
-            var cancelStatus, testFunction;
+            var cancelStatus, availableStatuses;
 
             beforeEach(function () {
               cancelStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'cancelled');
-              testFunction = $ctrl.isStatusAvailableForManager();
+              availableStatuses = $ctrl.getStatuses();
             });
 
             it('is not available', function () {
-              expect(testFunction(cancelStatus)).toBeFalsy();
+              expect(availableStatuses).not.toContain(cancelStatus);
             });
           });
         });
