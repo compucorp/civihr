@@ -13,21 +13,21 @@ define([
       };
 
       $scope.refreshContacts = function(input, contactSubType){
-          if (!input) {
-            return;
-          }
+        if (!input) {
+          return;
+        }
 
         ContactService.search(input, {
           contact_type: 'Organization',
           contact_sub_type: contactSubType
-        }).then(function(results){
-          $scope.contacts[contactSubType] = results;
+        }).then(function (contactSubTypes) {
+          $scope.contacts[contactSubType] = contactSubTypes;
         });
       };
 
       if ($scope.entity.pension.pension_type) {
-        ContactService.getOne($scope.entity.pension.pension_type).then(function(result){
-          $scope.contacts.Pension_Provider.push(result);
+        ContactService.getOne($scope.entity.pension.pension_type).then(function (provider) {
+          $scope.contacts.Pension_Provider.push(provider);
         });
       }
     }]);
