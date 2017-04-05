@@ -58,13 +58,26 @@ define([
       $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
       $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
 
-      angular.forEach($scope.files, function(entityFiles, entityName) {
-        $scope.filesTrash[entityName] = [];
-      });
+      // Init
+      (function init() {
+        angular.forEach($scope.files, function(entityFiles, entityName) {
+          $scope.filesTrash[entityName] = [];
+        });
 
-      $modalInstance.opened.then(function() {
-        $rootScope.$broadcast('hrjc-loader-hide');
-      });
+        $modalInstance.opened.then(function() {
+          $rootScope.$broadcast('hrjc-loader-hide');
+        });
+
+        angular.forEach($scope.uploader, function(entity) {
+          angular.forEach(entity, function(field) {
+            field.onAfterAddingAll = function() {
+              $scope.filesValidate();
+            }
+          });
+        });
+
+        fetchHealthPlanTypes();
+      }());
 
       $scope.cancel = function() {
 
@@ -150,14 +163,6 @@ define([
         $scope.contractForm.$setValidity('maxFileSize', isValid);
       };
 
-      angular.forEach($scope.uploader, function(entity) {
-        angular.forEach(entity, function(field) {
-          field.onAfterAddingAll = function() {
-            $scope.filesValidate();
-          }
-        });
-      });
-
       if ($scope.allowSave) {
         $scope.save = function() {
           $scope.$broadcast('hrjc-loader-show');
@@ -214,9 +219,6 @@ define([
           $scope.$broadcast('hrjc-loader-hide');
         }
       }
-
-      // Call to fetch updated Health Plan Types
-      fetchHealthPlanTypes();
 
       /**
        * # TO DO: This should probably happen inside the service that returns the data #
@@ -558,19 +560,22 @@ define([
       }
 
       /**
-       * fetchHealthPlanTypes Fetches and assigns the updated Health Plan Types
+       * Fetches and assigns the updated  Health and Life Insurance Plan Types
        */
       function fetchHealthPlanTypes() {
-        ContractHealthService.getOptions(null, true)
-        .then(function (results) {
-          var plan_types = {};
+        ContractHealthService.getOptions("hrjobcontract_health_health_plan_type", true)
+          .then(function (healthPlanTypes) {
+            $rootScope.options.health.plan_type = _.transform(healthPlanTypes, function(insurancePlanTypes, type) {
+              insurancePlanTypes[type.key] = type.value;
+            }, {});
+          });
 
-          for (var i = 0, planLength = results.length; i < planLength; i++) {
-            plan_types[results[i].key] = results[i].value
-          }
-
-          $rootScope.options.health.plan_type = plan_types;
-        });
+        ContractHealthService.getOptions("hrjobcontract_health_life_insurance_plan_type", true)
+          .then(function (lifePlanTypes) {
+            $rootScope.options.health.plan_type_life_insurance = _.transform(lifePlanTypes, function(insurancePlanTypes, type) {
+              insurancePlanTypes[type.key] = type.value;
+            }, {});
+          });
       }
     }
   ]);

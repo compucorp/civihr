@@ -129,17 +129,20 @@ define([
           return null;
         }
 
-        // Fetch newly upated list of helth plan types on displaying modal
-        ContractHealthService.getOptions(null, true)
-        .then(function (results) {
-          var plan_types = {};
+        // Fetch updated Health and Life Insurance Plan Types
+        ContractHealthService.getOptions("hrjobcontract_health_health_plan_type", true)
+          .then(function (healthPlanTypes) {
+            $rootScope.options.health.plan_type = _.transform(healthPlanTypes, function(insurancePlanTypes, type) {
+              insurancePlanTypes[type.key] = type.value;
+            }, {});
+          });
 
-          for (var i = 0, planLength = results.length; i < planLength; i++) {
-            plan_types[results[i].key] = results[i].value
-          }
-
-          $rootScope.options.health.plan_type = plan_types;
-        });
+        ContractHealthService.getOptions("hrjobcontract_health_life_insurance_plan_type", true)
+          .then(function (lifePlanTypes) {
+            $rootScope.options.health.plan_type_life_insurance = _.transform(lifePlanTypes, function(insurancePlanTypes, type) {
+              insurancePlanTypes[type.key] = type.value;
+            }, {});
+          });
 
         var modalInstance,
           options = {
