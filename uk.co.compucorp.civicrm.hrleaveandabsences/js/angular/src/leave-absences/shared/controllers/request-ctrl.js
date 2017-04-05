@@ -32,8 +32,9 @@ define([
       this.absencePeriods = [];
       this.absenceTypes = [];
       this.calendar = {};
-      this.contact = {};
+      this.contact = null;
       this.error = null;
+      this.managedContacts = [];
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
       this.period = {};
@@ -200,6 +201,16 @@ define([
         }
 
         return canSubmit && !this.isMode('view');
+      };
+
+      /**
+       * Manager selects the contact when applying leave on their behalf.
+       * Reinitialize all as the leave request is based on contact selection.
+       *
+       */
+      this.contactSelected = function () {
+        this.request.contact_id = this.contact.id;
+        this._init();
       };
 
       /**
@@ -409,10 +420,14 @@ define([
           //get a clone so self it is not the same reference as passed from callee
           //_.deepClone or angular.copy were not uploading files correctly
           attributes = this.directiveOptions.leaveRequest.attributes();
+          
+          this.contact = { contact_id: attributes.contact_id };
         } else {
-          attributes = {
-            contact_id: this.directiveOptions.contactId
-          };
+          if (!this.directiveOptions.forStaff) {
+            this.contact = { contact_id: this.directiveOptions.contactId }
+          }
+
+          attributes = this.contact || {};
         }
 
         return attributes;
@@ -494,13 +509,21 @@ define([
       };
 
       /**
-       * Checks if given status is available to manager
+       * Checks if given status is available to manager. If manager applies leave
+       * on behalf of staff then cancelled is also removed from her list of available statuses.
        *
-       * @param {String} status
-       * @return {Boolean}
+       * @return {Function} that takes status as param and returns a boolean
        */
-      this.isStatusAvailableForManager = function (status) {
-        return !(status.name === 'admin_approved' || status.name === 'waiting_approval');
+      this.isStatusAvailableForManager = function () {
+        var self = this;
+
+        return function (status) {
+          var canRemoveStatus = (status.name === 'admin_approved' || status.name === 'waiting_approval');
+
+          canRemoveStatus = self.directiveOptions.forStaff ? canRemoveStatus || status.name === 'cancelled' : canRemoveStatus;
+
+          return !canRemoveStatus;
+        }
       }
 
       /**
@@ -591,8 +614,19 @@ define([
 
         return loadStatuses.call(self)
           .then(function () {
-            initUserRole.call(self);
+            return initUserRole.call(self);
+          })
+          .then(function () {
             initOpenMode.call(self);
+
+            if (self.directiveOptions.forStaff) {
+              loadManagees.call(self);
+
+              if (!self.contact) {
+                throw "You have to select a staff to apply absence on their behalf.";
+              }
+            }
+
             return loadAbsencePeriods.call(self);
           })
           .then(function () {
@@ -624,6 +658,8 @@ define([
                 self.uiOptions.multipleDays = false;
               }
             }
+          }).catch(function (error) {
+            return $q.reject(error);
           });
       };
 
@@ -828,7 +864,6 @@ define([
         if (this.request.id) {
           mode = 'edit';
 
-          //approved, admin_approved, rejected, cancelled
           var viewModes = [this.requestStatuses['approved'].value, this.requestStatuses['admin_approved'].value,
             this.requestStatuses['rejected'].value, this.requestStatuses['cancelled'].value
           ];
@@ -836,7 +871,6 @@ define([
           if (this.isRole('owner') && viewModes.indexOf(this.request.status_id) > -1) {
             mode = 'view';
           }
-
         } else {
           mode = 'create';
         }
@@ -846,8 +880,10 @@ define([
        * Initialize user's role
        */
       function initUserRole() {
-        if (this.directiveOptions.leaveRequest &&
-          this.directiveOptions.leaveRequest.contact_id != this.directiveOptions.contactId) {
+        if ((this.directiveOptions.leaveRequest &&
+            this.directiveOptions.leaveRequest.contact_id != this.directiveOptions.contactId) ||
+          (this.directiveOptions.forStaff && this.contact)) {
+
           //check if manager is responding to leave request
           return setManagerRole.call(this, this.directiveOptions.contactId);
         }
@@ -927,6 +963,10 @@ define([
           }
         } else if (this.isMode('create')) {
           this.request.status_id = this.requestStatuses['waiting_approval'].value;
+
+          if (this.directiveOptions.forStaff) {
+            this.request.status_id = this.requestStatuses['approved'].value;
+          }
         }
       }
 
@@ -939,6 +979,7 @@ define([
         var self = this;
 
         if (self.isRole('manager')) {
+
           return Contact.find(self.request.contact_id)
             .then(function (contact) {
               self.contact = contact;
@@ -946,6 +987,23 @@ define([
         }
 
         return $q.resolve();
+      }
+
+      /**
+       * Loads the managees of currently logged in user
+       *
+       * @return {Promise}
+       */
+      function loadManagees() {
+        var self = this;
+
+        return Contact.find(self.directiveOptions.contactId)
+          .then(function (contact) {
+            contact.leaveManagees()
+              .then(function (contacts) {
+                self.managedContacts = contacts;
+              });
+          });
       }
 
       /**

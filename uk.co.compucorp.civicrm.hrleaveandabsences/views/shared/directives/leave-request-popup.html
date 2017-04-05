@@ -16,181 +16,194 @@
     <span class="col-xs-6">{{$ctrl.contact.display_name}}</span>
     <span class="col-xs-6">{{::$ctrl.statusBeforeEdit.label}}</span>
   </div>
-  <div class="modal-body chr_leave-request-modal__form">
-    <div class="row">
-      <div class="col-xs-12">
-        <div class="chr_custom-select chr_custom-select--full">
-          <select
-            ng-disabled="$ctrl.isMode('view') || $ctrl.isRole('manager')"
-            name="absenceTypeSelect"
-            ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes"
-            ng-model="$ctrl.request.type_id"
-            ng-change="$ctrl.updateBalance()"></select>
+  <div class="modal-body chr_leave-request-modal__form" ng-cloak>
+    <div ng-show="$ctrl.directiveOptions.forStaff">
+      <ui-select ng-model="$ctrl.contact" ng-change="$ctrl.contactSelected()">
+        <ui-select-match placeholder="Staff Member" allow-clear>
+          <span ng-bind="$select.selected.display_name"></span>
+        </ui-select-match>
+        <ui-select-choices
+          repeat="user in $ctrl.managedContacts | filter: $select.search track by user.id">
+          <span ng-bind="user.display_name"></span>
+        </ui-select-choices>
+      </ui-select>
+      <hr/>
+    </div>
+    <div ng-class="{'chr_leave-request-modal__disabled': !$ctrl.contact}" ng-show="!$ctrl.loading.absenceTypes">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="chr_custom-select chr_custom-select--full">
+            <select
+              ng-disabled="$ctrl.isMode('view') || $ctrl.isRole('manager')"
+              name="absenceTypeSelect"
+              ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes"
+              ng-model="$ctrl.request.type_id"
+              ng-change="$ctrl.updateBalance()"></select>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-xs-12">
-        <uib-tabset class="chr_leave-request-modal__tab">
-          <uib-tab heading="Details">
-            <ng-include src="pathTpl + 'request-modal/details/leave.html'"></ng-include>
-            <ng-include
-              ng-show="$ctrl.isLeaveType('toil')"
-              src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
-            <crm-loading show="!$ctrl.loading.showBalanceChange">
-              <div ng-show="$ctrl.uiOptions.showBalance">
-                <hr/>
-                <div class="row chr_leave-request-modal__form-group">
-                  <div class="col-xs-4">Opening Balance</div>
-                  <div class="col-xs-8">{{$ctrl.balance.opening}}</div>
-                </div>
-                <div
-                  ng-show="$ctrl.isLeaveType('toil')"
-                  class="row chr_leave-request-modal__form-group text-primary">
-                  <div class="col-xs-4">
-                    Change
+      <div class="row">
+        <div class="col-xs-12">
+          <uib-tabset class="chr_leave-request-modal__tab">
+            <uib-tab heading="Details">
+              <ng-include src="pathTpl + 'request-modal/details/leave.html'"></ng-include>
+              <ng-include
+                ng-show="$ctrl.isLeaveType('toil')"
+                src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
+              <crm-loading show="!$ctrl.loading.showBalanceChange">
+                <div ng-show="$ctrl.uiOptions.showBalance">
+                  <hr/>
+                  <div class="row chr_leave-request-modal__form-group">
+                    <div class="col-xs-4">Opening Balance</div>
+                    <div class="col-xs-8">{{$ctrl.balance.opening}}</div>
                   </div>
-                  <div class="col-xs-8">{{$ctrl.balance.change.amount}}</div>
-                </div>
-                <div ng-hide="$ctrl.isLeaveType('toil')">
                   <div
-                    class="row chr_leave-request-modal__form-group text-primary pointer"
-                    ng-click="$ctrl.uiOptions.isChangeExpanded = !$ctrl.uiOptions.isChangeExpanded">
+                    ng-show="$ctrl.isLeaveType('toil')"
+                    class="row chr_leave-request-modal__form-group text-primary">
                     <div class="col-xs-4">
-                      <i
-                        class="fa chr_leave-request-modal__chevron"
-                        aria-hidden="true"
-                        ng-class="{ 'fa-chevron-right': !$ctrl.uiOptions.isChangeExpanded, ' fa-chevron-down': $ctrl.uiOptions.isChangeExpanded }"></i>
                       Change
                     </div>
                     <div class="col-xs-8">{{$ctrl.balance.change.amount}}</div>
                   </div>
-                  <table
-                    class="table chr_leave-request-modal__table"
-                    ng-show="$ctrl.uiOptions.isChangeExpanded">
-                    <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Selection</th>
-                      <th>Amount</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="breakdown in $ctrl.pagination.filteredbreakdown">
-                      <td>{{breakdown.date | date:'EEE '+ $ctrl.uiOptions.userDateFormat}}</td>
-                      <td>{{breakdown.type.label}}</td>
-                      <td>{{breakdown.amount}}</td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                      <td colspan="3" class="text-center">
-                        <uib-pagination
-                          ng-if="$ctrl.pagination.totalItems"
-                          total-items="$ctrl.pagination.totalItems"
-                          ng-model="$ctrl.pagination.currentPage"
-                          class="pagination"
-                          ng-change="$ctrl.pagination.pageChanged()"
-                          direction-links="false"
-                          items-per-page="$ctrl.pagination.numPerPage"></uib-pagination>
-                      </td>
-                    </tr>
-                    </tfoot>
-                  </table>
+                  <div ng-hide="$ctrl.isLeaveType('toil')">
+                    <div
+                      class="row chr_leave-request-modal__form-group text-primary pointer"
+                      ng-click="$ctrl.uiOptions.isChangeExpanded = !$ctrl.uiOptions.isChangeExpanded">
+                      <div class="col-xs-4">
+                        <i
+                          class="fa chr_leave-request-modal__chevron"
+                          aria-hidden="true"
+                          ng-class="{ 'fa-chevron-right': !$ctrl.uiOptions.isChangeExpanded, ' fa-chevron-down': $ctrl.uiOptions.isChangeExpanded }"></i>
+                        Change
+                      </div>
+                      <div class="col-xs-8">{{$ctrl.balance.change.amount}}</div>
+                    </div>
+                    <table
+                      class="table chr_leave-request-modal__table"
+                      ng-show="$ctrl.uiOptions.isChangeExpanded">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Selection</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="breakdown in $ctrl.pagination.filteredbreakdown">
+                          <td>{{breakdown.date | date:'EEE '+ $ctrl.uiOptions.userDateFormat}}</td>
+                          <td>{{breakdown.type.label}}</td>
+                          <td>{{breakdown.amount}}</td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="3" class="text-center">
+                            <uib-pagination
+                              ng-if="$ctrl.pagination.totalItems"
+                              total-items="$ctrl.pagination.totalItems"
+                              ng-model="$ctrl.pagination.currentPage"
+                              class="pagination"
+                              ng-change="$ctrl.pagination.pageChanged()"
+                              direction-links="false"
+                              items-per-page="$ctrl.pagination.numPerPage"></uib-pagination>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <div class="row" ng-class="{'text-danger': $ctrl.balance.closing < 0}">
+                    <div class="col-xs-4">Closing Balance</div>
+                    <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
+                  </div>
                 </div>
-                <div class="row" ng-class="{'text-danger': $ctrl.balance.closing < 0}">
-                  <div class="col-xs-4">Closing Balance</div>
-                  <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
-                </div>
-              </div>
-            </crm-loading>
-            <div class="row" ng-show="$ctrl.isLeaveType('toil')">
-              <div class="col-xs-12 form-horizontal">
-                <hr>
-                <div class="form-group">
-                  <label class="col-xs-4 control-label">Expiry Date</label>
-                  <div class="col-xs-4">
-                    <span class="chr_leave-request-modal__span-expiry"
-                      ng-if="!$ctrl.isRole('manager')">
-                      {{$ctrl.request.toil_expiry_date | date: $ctrl.uiOptions.userDateFormat}}
-                    </span>
-                    <div ng-if="$ctrl.isRole('manager')"
-                         class="input-group">
-                      <input
-                        type="text"
-                        class="form-control"
-                        uib-datepicker-popup
-                        ng-readonly="true"
-                        datepicker-options="$ctrl.uiOptions.date.expiry.options"
-                        show-button-bar="false"
-                        ng-model="$ctrl.uiOptions.expiryDate"
-                        ng-change="$ctrl.updateExpiryDate()"
-                        is-open="$ctrl.uiOptions.date.expiry.show"/>
-                      <span class="input-group-btn">
-                        <button
-                          type="button"
-                          class="btn btn-default fa fa-calendar"
-                          ng-click="$ctrl.uiOptions.date.expiry.show = true"></button>
+              </crm-loading>
+              <div class="row" ng-show="$ctrl.isLeaveType('toil')">
+                <div class="col-xs-12 form-horizontal">
+                  <hr>
+                  <div class="form-group">
+                    <label class="col-xs-4 control-label">Expiry Date</label>
+                    <div class="col-xs-4">
+                      <span
+                        class="chr_leave-request-modal__span-expiry"
+                        ng-if="!$ctrl.isRole('manager')">
+                        {{$ctrl.request.toil_expiry_date | date: $ctrl.uiOptions.userDateFormat}}
                       </span>
+                      <div ng-if="$ctrl.isRole('manager')" class="input-group">
+                        <input
+                          type="text"
+                          class="form-control"
+                          uib-datepicker-popup
+                          ng-readonly="true"
+                          datepicker-options="$ctrl.uiOptions.date.expiry.options"
+                          show-button-bar="false"
+                          ng-model="$ctrl.uiOptions.expiryDate"
+                          ng-change="$ctrl.updateExpiryDate()"
+                          is-open="$ctrl.uiOptions.date.expiry.show"/>
+                        <span class="input-group-btn">
+                          <button
+                            type="button"
+                            class="btn btn-default fa fa-calendar"
+                            ng-click="$ctrl.uiOptions.date.expiry.show = true"></button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <ng-include
-              ng-show="$ctrl.isLeaveType('sickness')"
-              src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
-          </uib-tab>
-          <uib-tab heading="Comments">
-            <div
-              class="text-center chr_leave-request-modal__comments_empty"
-              ng-show="$ctrl.getActiveComments().length === 0">
-              No comments available. Comments can be added below.
-            </div>
-            <div
-              class="chr_leave-request-modal__comments"
-              ng-hide="$ctrl.getActiveComments().length === 0">
+              <ng-include
+                ng-show="$ctrl.isLeaveType('sickness')"
+                src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
+            </uib-tab>
+            <uib-tab heading="Comments">
               <div
-                class="chr_leave-request-comment"
-                ng-repeat="comment in $ctrl.getActiveComments() | orderBy: $ctrl.orderComment : true">
-                <div class="chr_leave-request-comment__meta">
-                  <span class="chr_leave-request-comment__author">{{$ctrl.getCommentorName(comment.contact_id)}}</span>
-                  <span>
+                class="text-center chr_leave-request-modal__comments_empty"
+                ng-show="$ctrl.getActiveComments().length === 0">
+                No comments available. Comments can be added below.
+              </div>
+              <div
+                class="chr_leave-request-modal__comments"
+                ng-hide="$ctrl.getActiveComments().length === 0">
+                <div
+                  class="chr_leave-request-comment"
+                  ng-repeat="comment in $ctrl.getActiveComments() | orderBy: $ctrl.orderComment : true">
+                  <div class="chr_leave-request-comment__meta">
+                    <span class="chr_leave-request-comment__author">{{$ctrl.getCommentorName(comment.contact_id)}}</span>
+                    <span>
                       -
                     </span>
-                  <span class="chr_leave-request-comment__date">{{$ctrl.formatDateTime(comment.created_at)}}</span>
-                  <button
-                    class="btn btn-link"
-                    ng-disabled="$ctrl.isMode('view')"
-                    ng-click="$ctrl.request.deleteComment(comment)"
-                    ng-show="$ctrl.removeCommentVisibility(comment)">Remove
-                  </button>
+                    <span class="chr_leave-request-comment__date">{{$ctrl.formatDateTime(comment.created_at)}}</span>
+                    <button
+                      class="btn btn-link"
+                      ng-disabled="$ctrl.isMode('view')"
+                      ng-click="$ctrl.request.deleteComment(comment)"
+                      ng-show="$ctrl.removeCommentVisibility(comment)">Remove
+                    </button>
+                  </div>
+                  <div class="chr_leave-request-comment__text" ng-bind-html="comment.text"></div>
                 </div>
-                <div class="chr_leave-request-comment__text" ng-bind-html="comment.text"></div>
               </div>
-            </div>
-            <div
-              class="chr_wysiwyg"
-              text-angular
-              prevent-animations
-              ng-disabled="$ctrl.isMode('view')"
-              ta-toolbar="[['bold','italics','underline']]"
-              ng-model="$ctrl.comment.text"></div>
-            <div class="chr_wysiwyg__action">
-              <hr/>
-              <button
-                class="btn btn-link"
-                ng-click="$ctrl.addComment()"
-                ng-disabled="$ctrl.comment.text.length === 0 || $ctrl.isMode('view')">
-                <i class="fa fa-comment-o" aria-hidden="true"></i>
-                Add comment
-              </button>
-            </div>
-          </uib-tab>
-          <uib-tab heading="Files">
-            <div>
-              <ul class="chr_leave-request-files_list container-fluid">
-                <li ng-repeat="file in $ctrl.request.files">
+              <div
+                class="chr_wysiwyg"
+                text-angular
+                prevent-animations
+                ng-disabled="$ctrl.isMode('view')"
+                ta-toolbar="[['bold','italics','underline']]"
+                ng-model="$ctrl.comment.text"></div>
+              <div class="chr_wysiwyg__action">
+                <hr/>
+                <button
+                  class="btn btn-link"
+                  ng-click="$ctrl.addComment()"
+                  ng-disabled="$ctrl.comment.text.length === 0 || $ctrl.isMode('view')">
+                  <i class="fa fa-comment-o" aria-hidden="true"></i>
+                  Add comment
+                </button>
+              </div>
+            </uib-tab>
+            <uib-tab heading="Files">
+              <div>
+                <ul class="chr_leave-request-files_list container-fluid">
+                  <li ng-repeat="file in $ctrl.request.files">
                     <span ng-if="!file.toBeDeleted">
                       <div class="chr_leave-request-files_meta">
                         <span class="chr_leave-request-files_author">{{$ctrl.getCommentorName(file.contact_id)}}</span>
@@ -223,8 +236,8 @@
                       </div>
                       <hr/>
                     </span>
-                </li>
-                <span ng-if="$ctrl.request.fileUploader" ng-disabled="$ctrl.isMode('view')">
+                  </li>
+                  <span ng-if="$ctrl.request.fileUploader" ng-disabled="$ctrl.isMode('view')">
                     <li ng-repeat="file in $ctrl.request.fileUploader.queue">
                       <div class="chr_leave-request-files_meta">
                         <span class="chr_leave-request-files_author">Me</span>
@@ -258,70 +271,71 @@
                       <hr/>
                     </li>
                   </span>
-              </ul>
-            </div>
-            <div
-              nv-file-drop
-              uploader="$ctrl.request.fileUploader"
-              class="chr_leave-request-files_upload"
-              ng-disabled="$ctrl.isMode('view')"
-              ng-if="$ctrl.request.fileUploader">
-              <div class="chr_leave-request-files_upload_action row text-center">
-                Drag and drop file here
+                </ul>
               </div>
-              <div class="chr_leave-request-files_upload_action row text-center">
-                or
+              <div
+                nv-file-drop
+                uploader="$ctrl.request.fileUploader"
+                class="chr_leave-request-files_upload"
+                ng-disabled="$ctrl.isMode('view')"
+                ng-if="$ctrl.request.fileUploader">
+                <div class="chr_leave-request-files_upload_action row text-center">
+                  Drag and drop file here
+                </div>
+                <div class="chr_leave-request-files_upload_action row text-center">
+                  or
+                </div>
+                <div class="chr_leave-request-files_upload_action row text-center">
+                  <label class="btn btn-primary btn-file">
+                    Browse
+                    <input
+                      type="file"
+                      nv-file-select
+                      ng-disabled="$ctrl.isMode('view')"
+                      uploader="$ctrl.request.fileUploader"
+                      style="display:none;">
+                  </label>
+                </div>
               </div>
-              <div class="chr_leave-request-files_upload_action row text-center">
-                <label class="btn btn-primary btn-file">
-                  Browse
-                  <input
-                    type="file"
-                    nv-file-select
-                    ng-disabled="$ctrl.isMode('view')"
-                    uploader="$ctrl.request.fileUploader"
-                    style="display:none;">
-                </label>
-              </div>
-            </div>
-          </uib-tab>
-        </uib-tabset>
+            </uib-tab>
+          </uib-tabset>
+        </div>
       </div>
-    </div>
-    <div
-      ng-show="$ctrl.isRole('manager') && $ctrl.statusBeforeEdit.value === '3'"
-      class="row chr_leave-request-modal__response">
-      <div class="col-xs-12 form-horizontal">
-        <div class="form-group">
-          <label class="col-xs-4 control-label">Set status to:<i class="fa fa-asterisk"></i>
-          </label>
-          <div class="col-xs-8">
-            <div class="chr_custom-select chr_custom-select--full">
-              <select
-                name="statusSelect"
-                ng-options="status.value as status.label for status in $ctrl.getStatuses() | filter:$ctrl.isStatusAvailableForManager"
-                ng-model="$ctrl.request.status_id">
-                <option value="">- select -</option>
-              </select>
+      <div
+        ng-show="($ctrl.isRole('manager') && $ctrl.statusBeforeEdit.value === '3') || $ctrl.directiveOptions.forStaff"
+        class="row chr_leave-request-modal__response">
+        <div class="col-xs-12 form-horizontal">
+          <div class="form-group">
+            <label class="col-xs-4 control-label">Set status to:<i class="fa fa-asterisk"></i>
+            </label>
+            <div class="col-xs-8">
+              <div class="chr_custom-select chr_custom-select--full">
+                <select
+                  name="statusSelect"
+                  ng-options="status.value as status.label for status in $ctrl.getStatuses() | filter:$ctrl.isStatusAvailableForManager(status)"
+                  ng-model="$ctrl.request.status_id">
+                  <option value="">- select -</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div ng-show="$ctrl.request.selectedResponse == 3">
-        <div class="col-xs-12">Please add a comment:</div>
-        <div class="col-xs-12">
-          <div
-            class="chr_wysiwyg"
-            text-angular
-            prevent-animations
-            ta-toolbar="[['bold','italics','underline']]"
-            ng-model="myleave.request.responseComment"></div>
-          <div class="chr_wysiwyg__action">
-            <hr/>
-            <button class="btn btn-link">
-              <i class="fa fa-comment-o" aria-hidden="true"></i>
-              Add comment
-            </button>
+        <div ng-show="$ctrl.request.selectedResponse == 3">
+          <div class="col-xs-12">Please add a comment:</div>
+          <div class="col-xs-12">
+            <div
+              class="chr_wysiwyg"
+              text-angular
+              prevent-animations
+              ta-toolbar="[['bold','italics','underline']]"
+              ng-model="myleave.request.responseComment"></div>
+            <div class="chr_wysiwyg__action">
+              <hr/>
+              <button class="btn btn-link">
+                <i class="fa fa-comment-o" aria-hidden="true"></i>
+                Add comment
+              </button>
+            </div>
           </div>
         </div>
       </div>

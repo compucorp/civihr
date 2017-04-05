@@ -10,7 +10,6 @@ define([
 
       var parentRequestCtrl = $controller('RequestCtrl'),
         vm = Object.create(parentRequestCtrl);
-
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
       vm.initParams = {
