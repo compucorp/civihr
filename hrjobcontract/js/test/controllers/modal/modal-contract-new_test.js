@@ -1,22 +1,23 @@
 define([
+  'mocks/data/insurance-plan-types',
   'job-contract/app'
-], function() {
+], function(InsurancePlanTypesMock) {
   'use strict';
 
-  describe('ModalContractNewCtrl', function () {
+  describe('ModalContractNewCtrl', function() {
     var ctrl, $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock, ContractHealthService;
 
     beforeEach(module('hrjc'));
 
-    beforeEach(module(function ($provide) {
-      $provide.factory('ContractHealthService', function () {
+    beforeEach(module(function($provide) {
+      $provide.factory('ContractHealthService', function() {
         return {
-          getOptions: function () {}
+          getOptions: function() {}
         }
       });
     }));
 
-    beforeEach(inject(function (_$controller_, _$rootScope_, _$httpBackend_, _$q_,
+    beforeEach(inject(function(_$controller_, _$rootScope_, _$httpBackend_, _$q_,
       _ContractDetailsService_, _ContractHealthService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
@@ -25,7 +26,7 @@ define([
       $q = _$q_;
     }));
 
-    beforeEach(function () {
+    beforeEach(function() {
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
       $httpBackend.whenGET(/action=get&entity=HRHoursLocation/).respond({});
       $httpBackend.whenGET(/action=get&entity=HRPayScale/).respond({});
@@ -39,7 +40,7 @@ define([
       $httpBackend.whenGET(/views.*/).respond({});
     });
 
-    beforeEach(function () {
+    beforeEach(function() {
       var health = {};
 
       $rootScope.$digest();
@@ -50,35 +51,33 @@ define([
       };
     });
 
-    beforeEach(function () {
+    beforeEach(function() {
       mockUIBModalInstance();
       contractHealthServiceSpy();
       makeController();
     });
 
-    describe("init()", function () {
-      describe("when ModalContractNewCtrl is initialized", function () {
-        beforeEach(function () {
-          $rootScope.$digest();
-        });
+    describe("init()", function() {
+      beforeEach(function() {
+        $rootScope.$digest();
+      });
 
-        var result = {
-          Family: "Family",
-          Individual: "Individual"
-        };
+      var result = {
+        Family: "Family",
+        Individual: "Individual"
+      };
 
-        it("calls getOptions() form ContractHealthService", function () {
-          expect(ContractHealthService.getOptions).toHaveBeenCalled();
-        });
+      it("calls getOptions() form ContractHealthService", function() {
+        expect(ContractHealthService.getOptions).toHaveBeenCalled();
+      });
 
-        it("fetches health insurance plan types", function () {
-          expect($rootScope.options.health.plan_type).toEqual(result)
-        });
+      it("fetches health insurance plan types", function() {
+        expect($rootScope.options.health.plan_type).toEqual(result)
+      });
 
-        it("fetches life insurance plan types", function () {
-          expect($rootScope.options.health.plan_type_life_insurance).toEqual(result)
-        });
-      })
+      it("fetches life insurance plan types", function() {
+        expect($rootScope.options.health.plan_type_life_insurance).toEqual(result)
+      });
     });
 
     function makeController() {
@@ -103,18 +102,9 @@ define([
     }
 
     function contractHealthServiceSpy() {
-      spyOn(ContractHealthService, "getOptions").and.callFake(function () {
-        return $q.resolve([
-          {
-            "key": "Family",
-            "value": "Family"
-          },
-          {
-            "key": "Individual",
-            "value": "Individual"
-          }
-        ]);
-      })
+      spyOn(ContractHealthService, "getOptions").and.callFake(function() {
+        return $q.resolve(InsurancePlanTypesMock.values);
+      });
     }
   });
 });

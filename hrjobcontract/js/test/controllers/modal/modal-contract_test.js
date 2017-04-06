@@ -1,26 +1,27 @@
 define([
   'mocks/data/contract',
+  'mocks/data/insurance-plan-types',
   'job-contract/app'
-], function(MockContract) {
+], function(MockContract, InsurancePlanTypesMock) {
   'use strict';
 
-  describe('ModalContractCtrl', function () {
+  describe('ModalContractCtrl', function() {
     var ctrl, $rootScope, $controller, $scope, $q, $uibModal, $httpBackend, $uibModalInstanceMock,
       $uibModalMock, ContractDetailsService, ContractHealthService;
 
     beforeEach(module('hrjc'));
 
-    beforeEach(module(function ($provide) {
-      $provide.factory('ContractHealthService', function () {
+    beforeEach(module(function($provide) {
+      $provide.factory('ContractHealthService', function() {
         return {
-          getOptions: function () {},
+          getOptions: function() {},
           getFields: jasmine.createSpy(),
           save: jasmine.createSpy()
         }
       });
     }));
 
-    beforeEach(inject(function (_$controller_, _$rootScope_, _$httpBackend_, _$q_,
+    beforeEach(inject(function(_$controller_, _$rootScope_, _$httpBackend_, _$q_,
       _ContractDetailsService_, _ContractHealthService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
@@ -30,8 +31,10 @@ define([
       $q = _$q_;
     }));
 
-    beforeEach(function () {
-      $httpBackend.whenGET(/action=validatedates&entity=HRJobDetails/).respond({ success: true });
+    beforeEach(function() {
+      $httpBackend.whenGET(/action=validatedates&entity=HRJobDetails/).respond({
+        success: true
+      });
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
       $httpBackend.whenPOST(/action=create&entity/).respond({});
       $httpBackend.whenPOST(/action=replace&entity/).respond({});
@@ -47,7 +50,7 @@ define([
       $httpBackend.whenGET(/views.*/).respond({});
     });
 
-    beforeEach(function () {
+    beforeEach(function() {
       var health = {};
 
       $rootScope.$digest();
@@ -58,7 +61,7 @@ define([
       };
     });
 
-    beforeEach(function () {
+    beforeEach(function() {
       mockUIBModalInstance();
       mockUIBModal('edit');
       contractHealthServiceSpy();
@@ -67,75 +70,71 @@ define([
       createUIBModalSpy();
     });
 
-    describe("init()", function () {
-      describe("when ModalContractCtrl is initialized", function () {
+    describe("init()", function() {
+      beforeEach(function() {
+        $rootScope.$digest();
+      });
 
-        beforeEach(function () {
-          $rootScope.$digest();
-        });
+      var result = {
+        Family: "Family",
+        Individual: "Individual"
+      };
 
-        var result = {
-          Family: "Family",
-          Individual: "Individual"
-        };
+      it("calls getOptions() form ContractHealthService", function() {
+        expect(ContractHealthService.getOptions).toHaveBeenCalled();
+      });
 
-        it("calls getOptions() form ContractHealthService", function () {
-          expect(ContractHealthService.getOptions).toHaveBeenCalled();
-        });
+      it("fetches health insurance plan types", function() {
+        expect($rootScope.options.health.plan_type).toEqual(result)
+      });
 
-        it("fetches health insurance plan types", function () {
-          expect($rootScope.options.health.plan_type).toEqual(result)
-        });
-
-        it("fetches life insurance plan types", function () {
-          expect($rootScope.options.health.plan_type_life_insurance).toEqual(result)
-        });
-      })
+      it("fetches life insurance plan types", function() {
+        expect($rootScope.options.health.plan_type_life_insurance).toEqual(result)
+      });
     });
 
-    describe("save()", function () {
-
-      describe("makes call to appropriate service and function", function () {
-        beforeEach(function () {
+    describe("save()", function() {
+      describe("makes call to appropriate service and function", function() {
+        beforeEach(function() {
           $scope.save();
           $rootScope.$digest();
         });
 
-        it("calls to validate the dates form ContractDetailsService", function () {
+        it("calls to validate the dates form ContractDetailsService", function() {
           expect(ContractDetailsService.validateDates).toHaveBeenCalled();
         });
 
-        it("gets confirmation fron user to save contract data", function () {
+        it("gets confirmation fron user to save contract data", function() {
           expect($uibModalMock.open).toHaveBeenCalled();
 
-          $uibModalMock.open().result.then(function (data) {
+          $uibModalMock.open().result.then(function(data) {
             expect(data).toBe('edit');
           });
         });
       });
 
-      describe("When period_end_date is null", function () {
-        beforeEach(function () {
+      describe("When period_end_date is null", function() {
+        beforeEach(function() {
           $scope.entity.details.period_end_date = null;
           $scope.save();
           $rootScope.$digest();
         });
 
-        it("sets contract period_end_date to '' ", function () {
+        it("sets contract period_end_date to '' ", function() {
           expect($scope.entity.details.period_end_date).toBe('');
         });
       });
 
-      describe("When period_end_date is not falsy", function () {
+      describe("When period_end_date is not falsy", function() {
         var mockDate = '02-03-2017';
 
-        beforeEach(function () {
+        beforeEach(function() {
           $scope.entity.details.period_end_date = mockDate;
           $scope.save();
           $rootScope.$digest();
         });
 
-        it("sets contract period_end_date to '' ", function () {
+        it("sets contract period_end_date to '' ", function() {
           expect($scope.entity.details.period_end_date).toBe(mockDate);
         });
       });
@@ -171,10 +170,10 @@ define([
 
     function mockUIBModal(mode) {
       $uibModalMock = {
-        open: function () {
+        open: function() {
           return {
             result: {
-              then: function (callback) {
+              then: function(callback) {
                 callback(mode);
               }
             }
@@ -184,7 +183,7 @@ define([
     }
 
     function createContractDetailsServiceSpy(status) {
-      spyOn(ContractDetailsService, "validateDates").and.callFake(function () {
+      spyOn(ContractDetailsService, "validateDates").and.callFake(function() {
         var deferred = $q.defer();
         deferred.resolve({
           success: status
@@ -199,17 +198,8 @@ define([
     }
 
     function contractHealthServiceSpy() {
-      spyOn(ContractHealthService, "getOptions").and.callFake(function () {
-        return $q.resolve([
-          {
-            "key": "Family",
-            "value": "Family"
-          },
-          {
-            "key": "Individual",
-            "value": "Individual"
-          }
-        ]);
+      spyOn(ContractHealthService, "getOptions").and.callFake(function() {
+        return $q.resolve(InsurancePlanTypesMock.values);
       })
     }
   });
