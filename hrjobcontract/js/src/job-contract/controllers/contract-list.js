@@ -129,21 +129,6 @@ define([
           return null;
         }
 
-        // Fetch updated Health and Life Insurance Plan Types
-        ContractHealthService.getOptions("hrjobcontract_health_health_plan_type", true)
-          .then(function (healthPlanTypes) {
-            $rootScope.options.health.plan_type = _.transform(healthPlanTypes, function(insurancePlanTypes, type) {
-              insurancePlanTypes[type.key] = type.value;
-            }, {});
-          });
-
-        ContractHealthService.getOptions("hrjobcontract_health_life_insurance_plan_type", true)
-          .then(function (lifePlanTypes) {
-            $rootScope.options.health.plan_type_life_insurance = _.transform(lifePlanTypes, function(insurancePlanTypes, type) {
-              insurancePlanTypes[type.key] = type.value;
-            }, {});
-          });
-
         var modalInstance,
           options = {
             appendTo: $rootElement.find('div').eq(0),

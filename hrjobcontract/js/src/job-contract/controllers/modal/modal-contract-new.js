@@ -15,11 +15,11 @@ define([
 ], function(moment, angular, controllers) {
   'use strict';
 
-  controllers.controller('ModalContractNewCtrl', ['$scope', '$uibModalInstance', '$q', '$uibModal', '$rootElement', '$sce',
+  controllers.controller('ModalContractNewCtrl', ['$rootScope', '$scope', '$uibModalInstance', '$q', '$uibModal', '$rootElement', '$sce',
     'Contract', 'ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
     'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'model', 'UtilsService', 'utils',
     'settings', '$log', 'pubSub',
-    function($scope, $modalInstance, $q, $modal, $rootElement, $sce, Contract, ContractService, ContractDetailsService,
+    function($rootScope, $scope, $modalInstance, $q, $modal, $rootElement, $sce, Contract, ContractService, ContractDetailsService,
       ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
       ContractFilesService, model, UtilsService, utils, settings, $log, pubSub) {
       $log.debug('Controller: ModalContractNewCtrl');
@@ -81,7 +81,31 @@ define([
           'headcount for the organisation would be 20 while the FTE' +
           'headcount would be 15.' +
           '</div>')
-      }
+      };
+
+      // Init
+      (function init() {
+        // Fetch updated Health and Life Insurance Plan Types
+        $q.all([
+          { name: "hrjobcontract_health_health_plan_type", key: 'plan_type' },
+          { name: "hrjobcontract_health_life_insurance_plan_type", key: 'plan_type_life_insurance' }
+        ].map(function (planTypeData) {
+          ContractHealthService.getOptions(planTypeData.name, true)
+          .then(function (planTypes) {
+            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function(acc, type) {
+              acc[type.key] = type.value;
+            }, {});
+          });
+        }));
+
+        angular.forEach($scope.uploader, function(entity){
+          angular.forEach(entity, function(field){
+            field.onAfterAddingAll = function(){
+              $scope.filesValidate();
+            }
+          });
+        });
+      }());
 
       $scope.filesValidate = function() {
         var entityName,
@@ -111,14 +135,6 @@ define([
         $scope.contractForm.$setValidity('maxFileSize', isValid);
 
       };
-
-      angular.forEach($scope.uploader, function(entity) {
-        angular.forEach(entity, function(field) {
-          field.onAfterAddingAll = function() {
-            $scope.filesValidate();
-          }
-        });
-      });
 
       $scope.cancel = function() {
         $modalInstance.dismiss('cancel');

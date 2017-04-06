@@ -76,7 +76,18 @@ define([
           });
         });
 
-        fetchHealthPlanTypes();
+        // Fetch updated Health and Life Insurance Plan Types
+        $q.all([
+          { name: "hrjobcontract_health_health_plan_type", key: 'plan_type' },
+          { name: "hrjobcontract_health_life_insurance_plan_type", key: 'plan_type_life_insurance' }
+        ].map(function (planTypeData) {
+          ContractHealthService.getOptions(planTypeData.name, true)
+            .then(function (planTypes) {
+              $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function(acc, type) {
+                acc[type.key] = type.value;
+              }, {});
+            });
+        }));
       }());
 
       $scope.cancel = function() {
@@ -557,25 +568,6 @@ define([
           $scope.$broadcast('hrjc-loader-hide');
           $modalInstance.close();
         }
-      }
-
-      /**
-       * Fetches and assigns the updated  Health and Life Insurance Plan Types
-       */
-      function fetchHealthPlanTypes() {
-        ContractHealthService.getOptions("hrjobcontract_health_health_plan_type", true)
-          .then(function (healthPlanTypes) {
-            $rootScope.options.health.plan_type = _.transform(healthPlanTypes, function(insurancePlanTypes, type) {
-              insurancePlanTypes[type.key] = type.value;
-            }, {});
-          });
-
-        ContractHealthService.getOptions("hrjobcontract_health_life_insurance_plan_type", true)
-          .then(function (lifePlanTypes) {
-            $rootScope.options.health.plan_type_life_insurance = _.transform(lifePlanTypes, function(insurancePlanTypes, type) {
-              insurancePlanTypes[type.key] = type.value;
-            }, {});
-          });
       }
     }
   ]);
