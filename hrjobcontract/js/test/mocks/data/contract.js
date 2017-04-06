@@ -179,6 +179,36 @@ define(function() {
           "editor_name": "admin@example.com"
         }
       ]
+    },
+    contractEntity: {
+      contract: {
+        id: '1',
+        contact_id: "04",
+        deleted: "0",
+        is_current: "1",
+        is_primary: "1"
+      },
+      details: {
+        id: "60",
+        position: "Test-added",
+        title: "Test-added",
+        funding_notes: null,
+        contract_type: "Apprentice",
+        period_start_date: "2017-03-28",
+        period_end_date: null,
+        end_reason: "1",
+        notice_amount: null,
+        notice_unit: null,
+        notice_amount_employee: null,
+        notice_unit_employee: null,
+        location: "Headquarters",
+        jobcontract_revision_id: "60"
+      },
+      hour: {},
+      pay: {},
+      leave: [],
+      health: {},
+      pension: {}
     }
   }
 });
