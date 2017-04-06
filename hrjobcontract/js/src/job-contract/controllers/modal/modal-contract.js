@@ -55,17 +55,32 @@ define([
 
       angular.copy(entity, $scope.entity);
       angular.copy(files, $scope.files);
-
       $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
       $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
 
-      angular.forEach($scope.files, function(entityFiles, entityName) {
-        $scope.filesTrash[entityName] = [];
-      });
+      // Init
+      (function init() {
+        angular.forEach($scope.files, function(entityFiles, entityName) {
+          $scope.filesTrash[entityName] = [];
+        });
 
-      $modalInstance.opened.then(function() {
-        $rootScope.$broadcast('hrjc-loader-hide');
-      });
+        $modalInstance.opened.then(function() {
+          $rootScope.$broadcast('hrjc-loader-hide');
+        });
+
+        angular.forEach($scope.uploader, function(entity) {
+          angular.forEach(entity, function(field) {
+            field.onAfterAddingAll = function() {
+              $scope.filesValidate();
+            }
+          });
+        });
+
+        $rootScope.$broadcast('hrjc-loader-show');
+        fetchInsurancePlanTypes().then(function () {
+          $rootScope.$broadcast('hrjc-loader-hide');
+        });
+      }());
 
       $scope.cancel = function() {
 
@@ -150,14 +165,6 @@ define([
 
         $scope.contractForm.$setValidity('maxFileSize', isValid);
       };
-
-      angular.forEach($scope.uploader, function(entity) {
-        angular.forEach(entity, function(field) {
-          field.onAfterAddingAll = function() {
-            $scope.filesValidate();
-          }
-        });
-      });
 
       if ($scope.allowSave) {
         $scope.save = function() {
@@ -553,6 +560,23 @@ define([
           $scope.$broadcast('hrjc-loader-hide');
           $modalInstance.close();
         }
+      }
+
+      /*
+       * Fetch updated Health and Life Insurance Plan Types
+       */
+      function fetchInsurancePlanTypes() {
+        return $q.all([
+          { name: "hrjobcontract_health_health_plan_type", key: 'plan_type' },
+          { name: "hrjobcontract_health_life_insurance_plan_type", key: 'plan_type_life_insurance' }
+        ].map(function (planTypeData) {
+          ContractHealthService.getOptions(planTypeData.name, true)
+          .then(function (planTypes) {
+            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function(acc, type) {
+              acc[type.key] = type.value;
+            }, {});
+          });
+        }));
       }
     }
   ]);
