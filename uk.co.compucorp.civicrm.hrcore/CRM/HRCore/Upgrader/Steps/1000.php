@@ -25,7 +25,7 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
    * @return boolean|null
    */
   private function up1000_downloadUKEnglish() {
-    $localizationURL = "https://download.civicrm.org/civicrm-l10n-core/mo/en_GB/civicrm.mo";
+    $localizationURL = 'https://download.civicrm.org/civicrm-l10n-core/mo/en_GB/civicrm.mo';
 
     global $civicrm_root;
     $downloadPath = "{$civicrm_root}/l10n/en_GB/LC_MESSAGES/";

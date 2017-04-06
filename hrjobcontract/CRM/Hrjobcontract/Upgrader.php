@@ -4,8 +4,7 @@
  * Collection of upgrade steps
  */
 class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
-  private $_enities;
-  
+
   public function install() {
     // $this->executeCustomDataFile('xml/customdata.xml');
     $this->executeSqlFile('sql/install.sql');
@@ -1303,12 +1302,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $reasons = $this->getEntityRecords('OptionValue', ['option_group_id' => 'hrjc_revision_change_reason']);
 
     foreach ($reasons as $currentReason) {
-      $q = "
+      $query = "
         SELECT id
         FROM civicrm_hrjobcontract_revision
         WHERE change_reason = '{$currentReason['value']}'
       ";
-      $reasonInContracts = CRM_Core_DAO::executeQuery($q);
+      $reasonInContracts = CRM_Core_DAO::executeQuery($query);
 
       if (!$reasonInContracts->fetch()) {
         $deleteableReasons[] = $currentReason['id'];
@@ -1327,8 +1326,11 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'option_group_id' => 'hrjc_contract_type',
       'value' => 'Employee - Permanent',
     ]);
-
+    
+    // We only delete if we find two ore more "Employee - Permanent" values
     if ($result['count'] > 1) {
+      
+      // Starts at $i = 1 to skip first value
       for ($i = 1; $i < $result['count']; $i++) {
         civicrm_api3('OptionValue', 'delete', [
           'id' => $result['values'][$i]['id'],
@@ -1345,12 +1347,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $payScales = $this->getTableRecords('civicrm_hrpay_scale');
 
     foreach ($payScales as $currentScale) {
-      $q = "
+      $query = "
         SELECT id
         FROM civicrm_hrjobcontract_pay
         WHERE pay_scale = {$currentScale->id}
       ";
-      $payScaleInContract = CRM_Core_DAO::executeQuery($q);
+      $payScaleInContract = CRM_Core_DAO::executeQuery($query);
 
       if (!$payScaleInContract->fetch() && $currentScale->pay_scale != 'Not Applicable') {
         $deleteableScales[] = $currentScale->id;
@@ -1368,12 +1370,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $locations = $this->getTableRecords('civicrm_hrhours_location');
 
     foreach ($locations as $currentLocation) {
-      $q = "
+      $query = "
         SELECT id
         FROM civicrm_hrjobcontract_hour
         WHERE location_standard_hours = {$currentLocation->id}
       ";
-      $locationInContracts = CRM_Core_DAO::executeQuery($q);
+      $locationInContracts = CRM_Core_DAO::executeQuery($query);
 
       if (!$locationInContracts->fetch() && $currentLocation->location != 'Head office') {
         $deleteableLocations[] = $currentLocation->id;

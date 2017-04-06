@@ -91,7 +91,6 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
     return $ethnicityGroup['values']['name'];
   }
 
-
   /**
    * A list of sample CiviCRM contact types which need to be removed.
    *
@@ -175,15 +174,15 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
       $deleteLocation = true;
 
       foreach ($references as $currentReference) {
-        if (!is_a($currentReference, 'CRM_Core_Reference_Dynamic')) {
-          $refTable = $currentReference->getReferenceTable();
-          $refKey = $currentReference->getReferenceKey();
+        if (!($currentReference instanceof CRM_Core_Reference_Dynamic)) {
+          $referredTableName = $currentReference->getReferenceTable();
+          $referenceKey = $currentReference->getReferenceKey();
 
           $q = "
             SELECT *
-            FROM $refTable, $tableName
-            WHERE $refTable.$refKey = $tableName.id
-            AND $tableName.name = '$currentLocation'
+            FROM {$referredTableName}, {$tableName}
+            WHERE {$referredTableName}.{$referenceKey} = {$tableName}.id
+            AND {$tableName}.name = '{$currentLocation}'
           ";
           $locationInReference = CRM_Core_DAO::executeQuery($q);
 
