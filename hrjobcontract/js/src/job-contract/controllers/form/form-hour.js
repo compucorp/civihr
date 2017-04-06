@@ -22,7 +22,8 @@ define([
         $scope.hrsAmountDefined = !!entityHour.hours_amount;
         entityHour.hours_unit = locStandHrs.periodicity;
 
-        if ($scope.hrsTypeDefined && !$scope.hrsAmountDefined) {
+        // reset if hours are not defined or if new choice is "full time"
+        if ($scope.hrsTypeDefined && (!$scope.hrsAmountDefined || +hrsTypeId === 8)) {
           switch(+hrsTypeId) {
             case 8:
               entityHour.hours_amount = locStandHrs.standard_hours;
