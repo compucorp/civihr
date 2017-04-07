@@ -20,9 +20,9 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
   public function installActivityTypes() {
     $activityTypesResult = civicrm_api3('activity_type', 'get', array());
-    $weight = count($activityTypesResult["values"]);
+    $weight = count($activityTypesResult['values']);
 
-    if (!in_array("Public Holiday", $activityTypesResult["values"])) {
+    if (!in_array('Public Holiday', $activityTypesResult['values'])) {
       $weight = $weight + 1;
       $params = array(
         'weight' => $weight,
@@ -36,7 +36,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       $resultCreatePublicHoliday = civicrm_api3('activity_type', 'create', $params);
     }
 
-    if (!in_array("Absence", $activityTypesResult["values"])) {
+    if (!in_array('Absence', $activityTypesResult['values'])) {
       $weight = $weight + 1;
       $params = array(
         'weight' => $weight,
@@ -55,12 +55,12 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     if (CRM_HRAbsence_BAO_HRAbsencePeriod::getRecordCount($params = array()) == 0) {
       $years = [date('Y'), date('Y', strtotime('+1 year'))];
       foreach ($years as $year) {
-        $params = array(
+        $params = [
           'name' => $year,
           'title' => $year.' (Jan 1 to Dec 31)',
           'start_date' => $year.'0101000000',
           'end_date' => $year.'1231235959',
-        );
+        ];
         CRM_HRAbsence_BAO_HRAbsencePeriod::create($params);
       }
     }
@@ -207,10 +207,10 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
   public function installRelatioshipTypes() {
     civicrm_api3('RelationshipType', 'create', [
       'sequential' => 1,
-      'name_a_b' => "has Leave Approved by",
-      'name_b_a' => "is Leave Approver of",
-      'contact_type_a' => "individual",
-      'contact_type_b' => "individual",
+      'name_a_b' => 'has Leave Approved by',
+      'name_b_a' => 'is Leave Approver of',
+      'contact_type_a' => 'individual',
+      'contact_type_b' => 'individual',
     ]);
   }
 
@@ -613,7 +613,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     if (!empty($optionValue['id'])) {
       civicrm_api3('OptionValue', 'create', [
         'id' => $optionValue['id'],
-        'option_group_id' => "activity_type",
+        'option_group_id' => 'activity_type',
         'name' => 'Annual Leave',
         'title' => 'Annual Leave',
       ]);

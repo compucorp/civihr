@@ -55,8 +55,7 @@ trait CRM_HRUI_Upgrader_Steps_4701 {
   }
 
   /**
-   * Moves Skype option value to the top
-   * of IM list
+   * Moves Skype option value to the top of IM list
    */
   private function up4701_moveSkypeTop() {
     civicrm_api3('OptionValue', 'create', [
@@ -72,7 +71,7 @@ trait CRM_HRUI_Upgrader_Steps_4701 {
    */
   private function up4701_websiteToSocialAccountReplacement() {
     civicrm_api3('OptionGroup', 'get', [
-      'name' => "website_type",
+      'name' => 'website_type',
       'api.OptionGroup.create' => ['id' => '$value.id', 'title' => 'Social Account Type'],
     ]);
 

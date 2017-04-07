@@ -15,8 +15,8 @@ trait CRM_Hremergency_Upgrader_Steps_1000 {
     // fetch 'Relationship with employee' option group name
     $groupName= civicrm_api3('CustomField', 'get', [
       'sequential' => 1,
-      'return' => array("column_name"),
-      'name' => "Relationship_with_Employee",
+      'return' => ['column_name'],
+      'name' => 'Relationship_with_Employee',
       'options' => ['limit' => 1]
     ]);
 
