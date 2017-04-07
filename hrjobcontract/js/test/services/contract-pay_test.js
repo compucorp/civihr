@@ -1,11 +1,11 @@
 define([
-  'common/angularMocks',
+  'mocks/data/contract',
   'job-contract/app'
-], function(Mock) {
+], function(MockContract) {
   'use strict';
 
   describe('ContractPayService', function () {
-    var $httpBackend, responseData, $rootScope, ContractPayService;
+    var $httpBackend, $rootScope, ContractPayService;
 
     beforeEach(module('hrjc'));
     beforeEach(inject(function (_ContractPayService_, _$httpBackend_, _$rootScope_) {
@@ -13,44 +13,7 @@ define([
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
 
-      responseData = {
-        "is_error": 0,
-        "undefined_fields": [
-          "jobcontract_revision_id"
-        ],
-        "version": 3,
-        "count": 1,
-        "id": 54,
-        "values": [
-          {
-            "id": "54",
-            "pay_scale": "4",
-            "is_paid": "1",
-            "pay_amount": "22000.00",
-            "pay_unit": "Year",
-            "pay_currency": "GBP",
-            "pay_annualized_est": "22000.00",
-            "pay_is_auto_est": "0",
-            "annual_benefits": [
-
-            ],
-            "annual_deductions": [
-
-            ],
-            "pay_cycle": "2",
-            "pay_per_cycle_gross": "1833.33",
-            "pay_per_cycle_net": "1833.33",
-            "jobcontract_revision_id": "100"
-          }
-        ],
-        "xdebug": {
-          "peakMemory": 57663456,
-          "memory": 57485784,
-          "timeIndex": 1.65426301956
-        }
-      };
-
-      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(responseData);
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(MockContract.contractPayment);
       $httpBackend.whenGET(/action=get&entity=HRJobPay/).respond({});
       $httpBackend.whenGET(/views.*/).respond({});
     }));
@@ -71,7 +34,7 @@ define([
 
       it('calls getOne functions and returns expected values', function () {
         ContractPayService.getOne({jobcontract_revision_id: 68}).then(function (result) {
-          expect(result.pay_amount).toEqual(responseData.values[0].pay_amount);
+          expect(result.pay_amount).toEqual(MockContract.contractPayment.values[0].pay_amount);
         });
       });
     });

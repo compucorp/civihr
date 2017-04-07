@@ -199,12 +199,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateHourAutoFields($contactID, $expected);
   }
 
-  /**
-   * This test verifies FTE for Contracts imported with hours type = "Casual" or
-   * with empty hours amount, should be 0/0 FTE.
-   */
-  public function testFTECalculationOnCasualTypeAndEmptyAmount() {
-    // Casual Contract Type
+  public function testFTEFieldsAreSetToZeroWhenImportingCasualHoursType() {
     $contact1 = ContactFabricator::fabricate();
     $casualContract = $this->buildContractInfo([
       'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
@@ -215,7 +210,11 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $importCasualResponse = $this->runImport($casualContract);
     $this->assertEquals(CRM_Import_Parser::VALID, $importCasualResponse);
 
-    // Empty Hours Amount Contract
+    $expected = ['fte_num' => 0, 'fte_denom' => 0, 'hours_fte' => 0];
+    $this->validateHourAutoFields($contact1['id'], $expected);
+  }
+
+  public function testFTEFieldsAreSetToZeroWhenImportingEmptyHoursAmount() {
     $contact2 = ContactFabricator::fabricate();
     $emptyHoursContract = $this->buildContractInfo([
       'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
@@ -224,12 +223,25 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobHour-hours_amount' => ''
     ]);
     $importEmptyContractResponse = $this->runImport($emptyHoursContract);
-    $this->assertEquals(CRM_Import_Parser::VALID, $importEmptyContractResponse);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importEmptyContractResponse);    
 
-    // Assert FTE's
     $expected = ['fte_num' => 0, 'fte_denom' => 0, 'hours_fte' => 0];
-    $this->validateHourAutoFields($contact1['id'], $expected);
     $this->validateHourAutoFields($contact2['id'], $expected);
+  }
+
+  public function testFTEFieldsAreSetToZeroWhenImportingOnlyMandatoryFields() {
+    $contact3 = ContactFabricator::fabricate();
+    $importResponse = $this->runImport([
+      'HRJobContract-contact_id' => $contact3['id'],
+      'HRJobDetails-contract_type' => $this->_contractTypeID,      
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-period_start_date' => '2016-01-01'
+    ]);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
+    $expected = ['fte_num' => 0, 'fte_denom' => 0, 'hours_fte' => 0];
+    $this->validateHourAutoFields($contact3['id'], $expected);
   }
 
   /**
@@ -477,20 +489,20 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   }
 
   function testMandatoryFieldsImportOnlyWillCreateRevisionForAllOtherEntities() {
-    $contact2Params = array(
+    $contact2Params = [
       'first_name' => 'John_3',
       'last_name' => 'Snow_3',
       'email' => 'a3@b3.com',
       'contact_type' => 'Individual',
-    );
+    ];
     $contactID = $this->createTestContact($contact2Params);
-    $params = array(
+    $params = [
       'HRJobContract-email' => $contact2Params['email'],
       'HRJobDetails-title' => 'Test Contract Title',
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
-    );
+    ];
 
     $importResponse = $this->runImport($params);
     $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);

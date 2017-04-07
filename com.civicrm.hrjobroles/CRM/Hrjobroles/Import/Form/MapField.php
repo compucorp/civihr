@@ -166,7 +166,7 @@ class CRM_Hrjobroles_Import_Form_MapField extends CRM_Import_Form_MapField {
 
             $js .= "{$formName}['mapper[$i][3]'].style.display = 'none';\n";
             $defaults["mapper[$i]"] = array(
-              $mappingHeader[0],
+              isset($mappingHeader[0]) ? $mappingHeader[0] : "",
               (isset($locationId)) ? $locationId : "",
               (isset($phoneType)) ? $phoneType : "",
             );

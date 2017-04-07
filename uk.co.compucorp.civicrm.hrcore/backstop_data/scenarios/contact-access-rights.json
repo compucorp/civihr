@@ -1,0 +1,16 @@
+{
+  "scenarios": [
+    {
+      "label": "Contact Access Rights",
+      "delay": 2000,
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-access-rights/show"
+    },
+    {
+      "label": "Contact Access Rights / Open ui select",
+      "delay": 2000,
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact-access-rights/open-ui-select"
+    }
+  ]
+}

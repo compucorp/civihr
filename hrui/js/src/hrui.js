@@ -2,27 +2,35 @@
 (function ($, _) {
 
   /**
-   * Adds the Government ID field on the Personal Details page andon the Edit form
+   * Adds the Government ID field on the Personal Details page and on the Edit 
+   * Contact form.
    */
-  function addGovernmentIdField(target) {
-    var govfield = "<div class='container crm-summary-row' id='government'><div class='crm-label'>Government ID</div><div id='govValID' class='crm-content'></div></div>";
-
+  function addGovernmentIdField() {
+    // Updates Personal Details Page
     if (CRM.cid && CRM.hideGId) {
-      $('#row-custom_'+CRM.hideGId, target).hide();
+      var inlineDataBlock = $('.Inline_Custom_Data');
 
-      if ($('div#government').length < 1) {
-        $(govfield).appendTo($('.crm-contact_type_label').parent('div'));
-      }
+      inlineDataBlock.appendTo($('#contactinfo-block').parent('div').parent('div'));
+      inlineDataBlock.removeClass('crm-collapsible');
+      inlineDataBlock.removeClass('collapsed');
+      inlineDataBlock.addClass('crm-summary-block');
 
-      fetchGovernmentId().done(function (text) {
-        if (text['govTypeNumber']) {
-          $('#govValID').html(text['govType']+" - "+text['govTypeNumber']);
-        }
-      });
+      $('.Inline_Custom_Data div.collapsible-title').css({display: 'none'});
+      $('.Inline_Custom_Data div.crm-summary-block').css({display: 'block'});
     }
 
-    $('#govID').insertAfter($('#nick_name').parent('td')).show();
-    $("#govID").wrap( "<td id='govtfield' colspan='3'></td>");
+    // Updates Edit Contact Form
+    if ($('#customFields').length < 1) {
+      $('#Inline_Custom_Data label').each(function() {
+        $('#nick_name').parent().after('<td id="customFields"></td>');
+        var nodeID = $(this).attr('for');
+        var customField = $('#' + nodeID).detach();
+        $('#customFields').append($(this));
+        $('#customFields').append(customField);
+      });
+
+      $('#Inline_Custom_Data').remove();
+    }
   }
 
   /**

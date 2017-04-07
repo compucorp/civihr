@@ -1,29 +1,42 @@
 <?php
-// This file declares a managed database record of type "CaseType" and "OptionValue".
-// The record will be automatically inserted, updated, or deleted from the
-// database as appropriate. For more details, see "hook_civicrm_managed" at:
-// http://wiki.civicrm.org/confluence/display/CRMDOC/Hook+Reference
-
+/**
+ * This file declares a managed database record of type "CaseType" and "OptionValue".
+ * The record will be automatically inserted, updated, or deleted from the
+ * database as appropriate. For more details, see "hook_civicrm_managed" at:
+ * http://wiki.civicrm.org/confluence/display/CRMDOC/Hook+Reference
+ */
 class CRM_HRCase_DefaultCaseAndActivityTypes {
 
   private static $defaultActivityTypes = [
-    'Schedule Exit Interview',
-    'Get "No Dues" certification',
-    'Conduct Exit Interview',
-    'Revoke Access to Database',
-    'Block work email ID',
-    'Background Check',
-    'References Check',
-    'Schedule joining date',
-    'Issue appointment letter',
-    'Fill Employee Details Form',
-    'Submission of ID/Residence proofs and photos',
-    'Program and work induction by program supervisor',
-    'Enter employee data in CiviHR',
-    'Group Orientation to organization, values, policies',
-    'Probation appraisal (start probation workflow)',
-    'Confirm End of Probation Date',
-    'Start Probation workflow'
+    'CiviTask' => [
+      'Schedule Exit Interview',
+      'Get "No Dues" certification',
+      'Conduct Exit Interview',
+      'Revoke Access to Database',
+      'Block work email ID',
+      'Background Check',
+      'References Check',
+      'Schedule joining date',
+      'Issue appointment letter',
+      'Fill Employee Details Form',
+      'Submission of ID/Residence proofs and photos',
+      'Program and work induction by program supervisor',
+      'Enter employee data in CiviHR',
+      'Group Orientation to organization, values, policies',
+      'Probation appraisal (start probation workflow)',
+      'Confirm End of Probation Date',
+      'Start Probation workflow',
+      'Other Task',
+    ],
+    'CiviDocument' => [
+      'Government Photo ID',
+      'Driving licence',
+      'Identity card',
+      'Certificate of sponsorship (COS)',
+      'P45',
+      'Passport',
+      'VISA',
+    ]
   ];
 
   private static $defaultCaseTypes = [
@@ -46,7 +59,7 @@ class CRM_HRCase_DefaultCaseAndActivityTypes {
 
           'activitySets' => [
             [
-              'name'   => 'standard_timeline',
+              'name' => 'standard_timeline',
               'label' => 'Standard Timeline',
               'timeline' => 1,
               'activityTypes' => [
@@ -54,30 +67,35 @@ class CRM_HRCase_DefaultCaseAndActivityTypes {
                   'name' => 'Schedule Exit Interview',
                   'reference_offset' => -10,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Get "No Dues" certification',
                   'reference_offset' => -7,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Conduct Exit Interview',
                   'reference_offset' => -3,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Revoke Access to Database',
                   'reference_offset' => 0,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Block work email ID',
                   'reference_offset' => 0,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ]
               ]
@@ -114,7 +132,7 @@ class CRM_HRCase_DefaultCaseAndActivityTypes {
 
           'activitySets' => [
             [
-              'name'   => 'standard_timeline',
+              'name' => 'standard_timeline',
               'label' => 'Standard Timeline',
               'timeline' => 1,
               'activityTypes' => [
@@ -122,56 +140,171 @@ class CRM_HRCase_DefaultCaseAndActivityTypes {
                   'name' => 'Schedule joining date',
                   'reference_offset' => -10,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Issue appointment letter',
                   'reference_offset' => -10,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Fill Employee Details Form',
                   'reference_offset' => -10,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Submission of ID/Residence proofs and photos',
                   'reference_offset' => -10,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Enter employee data in CiviHR',
                   'reference_offset' => -7,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Program and work induction by program supervisor',
                   'reference_offset' => -10,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Group Orientation to organization, values, policies',
                   'reference_offset' => 7,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Confirm End of Probation Date',
                   'reference_offset' => 30,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
                 ],
                 [
                   'name' => 'Start Probation workflow',
                   'reference_offset' => 30,
                   'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
                   'reference_select' => 'newest'
-                ]
+                ],
+                [
+                  'name' => 'P45',
+                  'reference_offset' => -10,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'Passport',
+                  'reference_offset' => -10,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+              ]
+            ],
+
+            [
+              'name' => 'non_eea_timeline',
+              'label' => 'Non EEA Staff Member Timeline',
+              'timeline' => 2,
+              'activityTypes' => [
+                [
+                  'name' => 'Schedule joining date',
+                  'reference_offset' => -10,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'Issue appointment letter',
+                  'reference_offset' => -10,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'Fill Employee Details Form',
+                  'reference_offset' => -10,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'Submission of ID/Residence proofs and photos',
+                  'reference_offset' => -10,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'Enter employee data in CiviHR',
+                  'reference_offset' => -7,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'Program and work induction by program supervisor',
+                  'reference_offset' => -10,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'Group Orientation to organization, values, policies',
+                  'reference_offset' => 7,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'Confirm End of Probation Date',
+                  'reference_offset' => 30,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'Start Probation workflow',
+                  'reference_offset' => 30,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'P45',
+                  'reference_offset' => -10,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'Passport',
+                  'reference_offset' => -10,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
+                [
+                  'name' => 'VISA',
+                  'reference_offset' => -10,
+                  'reference_activity' => 'Open Case',
+                  'status' => 'Scheduled',
+                  'reference_select' => 'newest'
+                ],
               ]
             ]
           ],

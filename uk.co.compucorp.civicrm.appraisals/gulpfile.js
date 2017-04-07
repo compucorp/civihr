@@ -8,12 +8,20 @@ var karma = require('karma');
 var exec = require('child_process').exec;
 var path = require('path');
 var fs = require('fs');
+var civicrmScssRoot = require('civicrm-scssroot')();
 
-gulp.task('sass', function () {
+gulp.task('sass', ['sass-sync'], function () {
   gulp.src('scss/*.scss')
     .pipe(bulk())
-    .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
+    .pipe(sass({
+        outputStyle: 'compressed',
+        includePaths: civicrmScssRoot.getPath()
+    }).on('error', sass.logError))
     .pipe(gulp.dest('css/'));
+});
+
+gulp.task('sass-sync', function(){
+  civicrmScssRoot.updateSync();
 });
 
 gulp.task('requirejs-bundle', function (done) {
