@@ -130,11 +130,17 @@
       vertical-align: middle !important;
       border: none !important;
       padding: 10px !important;
-      line-height: 1.1em;
+      line-height: 1.9em;
 
       div {
         padding: 0;
       }
+    }
+
+    tr {
+      border-top-left-radius: $border-radius-small;
+      border-top-right-radius: $border-radius-small;
+      background: transparent !important;
     }
   }
 
@@ -157,7 +163,7 @@
         border: none !important;
         color: $gray-dark;
         padding: 10px;
-        line-height: 1.1em;
+        line-height: 1.9em;
         vertical-align: middle;
       }
 
