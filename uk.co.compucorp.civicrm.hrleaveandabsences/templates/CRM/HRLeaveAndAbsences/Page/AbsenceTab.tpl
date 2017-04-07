@@ -35,4 +35,11 @@
     </ul>
   </div>
 </section>
-<!-- END for code to move to views folder in PCHR-2003 -->
+{literal}
+  <script type="text/javascript">
+    document.addEventListener('absenceTabReady', function () {
+      console.log('absenceTabReady');
+      angular.bootstrap(document.querySelector('[data-leave-absences-absence-tab]'), ['absence-tab']);
+    });
+  </script>
+{/literal}
