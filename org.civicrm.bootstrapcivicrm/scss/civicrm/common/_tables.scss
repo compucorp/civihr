@@ -138,8 +138,8 @@
     }
 
     tr {
-      border-top-left-radius: 2px;
-      border-top-right-radius: 2px;
+      border-top-left-radius: $border-radius-small;
+      border-top-right-radius: $border-radius-small;
       background: transparent !important;
     }
   }
