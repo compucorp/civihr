@@ -12,6 +12,14 @@ define([
         Pension_Provider: []
       };
 
+      (function init() {
+        if ($scope.entity.pension.pension_type) {
+          ContactService.getOne($scope.entity.pension.pension_type).then(function (provider) {
+            $scope.contacts.Pension_Provider.push(provider);
+          });
+        }
+      }());
+
       $scope.refreshContacts = function(input, contactSubType){
         if (!input) {
           return;
@@ -24,11 +32,5 @@ define([
           $scope.contacts[contactSubType] = contactSubTypes;
         });
       };
-
-      if ($scope.entity.pension.pension_type) {
-        ContactService.getOne($scope.entity.pension.pension_type).then(function (provider) {
-          $scope.contacts.Pension_Provider.push(provider);
-        });
-      }
     }]);
 });
