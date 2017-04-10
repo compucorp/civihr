@@ -1024,9 +1024,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Creates Option Group and Option Values for Health an Life Insurance Plan 
+   * Creates Option Group and Option Values for Health an Life Insurance Plan
    * Types.
-   * 
+   *
    * @return boolean TRUE
    */
   public function upgrade_1025() {
@@ -1037,7 +1037,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   /**
    * Alters civicrm_hrjobcontract_hour table to make default values for fte_num
    * and fte_denom equal to 0.
-   * 
+   *
    * @return boolean
    *   True on success
    */
@@ -1049,6 +1049,29 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     ";
     CRM_Core_DAO::executeQuery($query);
     return true;
+  }
+
+  /**
+   * Add options to choose bi-monthly or bi-weekly for pay cycle
+   *
+   * @return bool
+   */
+  public function upgrade_1027() {
+    $optionsValue = [
+      3 => 'Bi-Weekly',
+      4 => 'Bi-Monthly',
+    ];
+    foreach ($optionsValue as $value => $name) {
+      $opValueParams = [
+        'option_group_id' => 'hrjc_pay_cycle',
+        'name' => $name,
+        'label' => $name,
+        'value' => $value
+      ];
+      civicrm_api3('OptionValue', 'create', $opValueParams);
+    }
+
+    return TRUE;
   }
 
   /**
