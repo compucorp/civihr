@@ -38,6 +38,51 @@
     }
   }
 
+  .CRM_Contribute_Form_Task_Delete {
+    background: $crm-white;
+    border-radius: $border-radius-small;
+    box-shadow: $crm-contribute-form-shadow;
+    margin-top: 15px;
+
+    + p {
+      margin: 0;
+    }
+
+    .form-item {
+      background: $crm-white;
+      border-radius: 0;
+      border-top: 1px solid $gray-lighter;
+      margin: 20px 20px 0;
+      min-height: 43px;
+      padding: 20px 0 10px;
+    }
+
+    .crm-form-submit {
+      background: $brand-primary;
+      border-color: $brand-primary;
+      color: $crm-white;
+      float: left;
+      min-width: 60px;
+      padding: 8px 12px;
+      text-shadow: none;
+
+      &:hover {
+        background: $crm-blue-light;
+      }
+
+      &.cancel {
+        background: $crm-white;
+        border: 1px solid $crm-copy;
+        color: $crm-cancel-color;
+
+        &:hover {
+          background: $crm-copy;
+          color: $crm-white;
+        }
+      }
+    }    
+  }
+
   form {
     &[class*="CRM_Contribute_Form_"] {
       h3 {
@@ -53,6 +98,10 @@
       .status {
         margin-bottom: 0;
         margin-top: 0;
+
+        p {
+          margin-top: 0;
+        }
       }
 
       .label-left {
