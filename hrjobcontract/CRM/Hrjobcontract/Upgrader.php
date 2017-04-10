@@ -1037,7 +1037,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   /**
    * Alters civicrm_hrjobcontract_hour table to make default values for fte_num
    * and fte_denom equal to 0.
-   * 
+   *
    * @return boolean
    *   True on success
    */
@@ -1056,7 +1056,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    *
    * @return bool
    */
-  public function upgrade_1026() {
+  public function upgrade_1027() {
     $optionsValue = [
       3 => 'Bi-Weekly',
       4 => 'Bi-Monthly',
