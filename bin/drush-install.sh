@@ -53,22 +53,3 @@ if [ "$WITH_HR_SAMPLE" == "1" ]; then
   drush "$@" cvapi extension.install keys=uk.co.compucorp.civicrm.hrsampledata
   set +ex
 fi
-
-# Install 'masquerade' module
-drush en -y masquerade
-
-# Scheduled Jobs Enabled by Default
-for currentJob in "${ENABLED_JOBS[@]}"
-do
-  JOB_ID=`drush cvapi Job.getvalue return=id name="$currentJob"`
-  echo "Enabling '$currentJob' Job (ID: $JOB_ID)"
-  drush cvapi Job.create id=$JOB_ID is_active=1
-done
-
-# Scheduled Jobs Disabled by Deffault
-for currentJob in "${DISABLED_JOBS[@]}"
-do
-  JOB_ID=`drush cvapi Job.getvalue return=id name="$currentJob"`
-  echo "Disabling '$currentJob' Job (ID: $JOB_ID)"
-  drush cvapi Job.create id=$JOB_ID is_active=0
-done

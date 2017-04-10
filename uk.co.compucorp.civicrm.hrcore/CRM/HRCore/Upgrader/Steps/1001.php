@@ -12,7 +12,6 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
     $this->up1001_listDelete('ContactType', 'name', $this->up1001_civicrmContactTypesList());
     $this->up1001_listDelete('CaseType', 'name', $this->up1001_civicrmCaseTypesList());
     $this->up1001_listDelete('RelationshipType', 'name_b_a', $this->up1001_civicrmRelationshipTypesList());
-    $this->up1001_listDelete('LocationType', 'name', $this->up1001_civicrmLocationTypesList());
 
     $this->up1001_listDelete(
       'OptionValue', 
