@@ -366,7 +366,6 @@ define([
         }, function(reason) {
           $scope.$broadcast('hrjc-loader-hide');
           CRM.alert(reason, 'Error', 'error');
-          $modalInstance.dismiss();
         });
       }
 
