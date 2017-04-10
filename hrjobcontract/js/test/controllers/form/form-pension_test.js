@@ -24,49 +24,44 @@ define([
       });
     });
 
-    beforeEach(function() {
-      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
-      $httpBackend.whenGET(/views.*/).respond({});
-    });
-
     describe('On initialization', function() {
-      describe('Case I: when $scope.entity.pension.pension_type is truthy', function() {
+      describe('when pension_type is valid', function() {
         beforeEach(function() {
           initController(1);
           $scope.$digest();
         });
 
-        it('defines contact object', function() {
+        it('defines contacts collection', function() {
           expect($scope.contacts).toBeDefined();
         });
 
-        it("calls getOne()", function() {
+        it("calls contact's service api to get one contact", function() {
           expect(ContactService.getOne).toHaveBeenCalled();
         });
 
-        it("sets value for $scope.contacts.Pension_Provider", function() {
+        it("sets the values for contact's pension provider", function() {
           expect($scope.contacts.Pension_Provider.length).toBe(1);
           expect($scope.contacts.Pension_Provider[0].contact_id).toBe(ContactMock.contact.values[0].contact_id);
           expect($scope.contacts.Pension_Provider[0].contact_type).toBe(ContactMock.contact.values[0].contact_type);
         });
       });
 
-      describe('Case II: when $scope.entity.pension.pension_type is falsy', function() {
+      describe('when pension_type is not valid', function() {
         beforeEach(function() {
-          initController(null);
+          initController();
           $scope.$digest();
         });
 
-        it('defines contact object', function() {
+        it('defines contacts collection and pension_type', function() {
           expect($scope.contacts).toBeDefined();
           expect($scope.entity.pension.pension_type).toBe(null);
         });
 
-        it("calls getOne() $scope.entity.pension.pension_type is falsy", function() {
+        it("does not call contact's service api to get one contact", function() {
           expect(ContactService.getOne).not.toHaveBeenCalled();
         });
 
-        it("does not set value for $scope.contacts.Pension_Provider", function() {
+        it("does not set the values for contact's pension provider", function() {
           expect($scope.contacts.Pension_Provider.length).toBe(0);
         });
       });
@@ -74,15 +69,15 @@ define([
 
     describe('refreshContacts()', function() {
       beforeEach(function() {
-        initController(1);
+        initController(1); // pension_type = 1
       });
 
-      describe('when input is falsy', function() {
+      describe('when contact search text is not available', function() {
         beforeEach(function() {
           response = $scope.refreshContacts('', {});
         });
 
-        it('returns resoponse to be falsy', function() {
+        it('returns response to be empty', function() {
           expect(response).toBeFalsy();
         });
 
@@ -91,17 +86,17 @@ define([
         });
       });
 
-      describe('when input is truthy', function() {
+      describe('when contact search text is available', function() {
         beforeEach(function () {
-          $scope.refreshContacts('searchText', 'Life_Insurance_Provider');
+          $scope.refreshContacts('john', 'Life_Insurance_Provider');
           $scope.$digest();
         });
 
-        it('calls search()', function() {
+        it('calls contacts service api to search for contacts', function() {
           expect(ContactService.search).toHaveBeenCalled();
         });
 
-        it('sets contact_sub_types data in $scope.contacts', function() {
+        it('sets contact sub types data in contacts collection', function() {
           expect(ContactService.search).toHaveBeenCalled();
           expect($scope.contacts[params.contact_sub_type].length).toBe(1);
           expect($scope.contacts[params.contact_sub_type]).toEqual(ContactMock.contactSearchData.values);
@@ -109,10 +104,15 @@ define([
       });
     });
 
+    /**
+     * Creates FormPensionCtrl Controller
+     * @param  integer pension_type
+     * Note: Pension Type is set to null if no value is passed
+     */
     function initController(pension_type) {
       var pension = {};
 
-      pension.pension_type = pension_type;
+      pension.pension_type = pension_type || null;
       $scope = $rootScope.$new();
       $scope.entity = {};
       $scope.entity.pension = pension;
