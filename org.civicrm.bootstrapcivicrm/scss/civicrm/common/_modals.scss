@@ -109,7 +109,7 @@
   .ui-dialog-buttonpane {
     @extend .modal-footer, %open-sans-font-family;
     background: $gray-lighter;
-    box-shadow: $crm-modal-footer-shadow;
+    box-shadow: none;
     margin-top: 0;
     display: block;
 
