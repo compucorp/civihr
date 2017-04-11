@@ -17,22 +17,29 @@ var Promise = require('es6-promise').Promise;
     "credentials": { "name": "%{user-name}", "pass": "%{user-password}" }
   };
 
-  gulp.task('backstop:reference', function () {
+  gulp.task('backstopjs:reference', function (done) {
     runBackstopJS('reference').then(function () {
       done();
     });
   });
 
-  gulp.task('backstop:test', function (done) {
+  gulp.task('backstopjs:test', function (done) {
     runBackstopJS('test').then(function () {
       done();
     });
   });
 
-  gulp.task('backstop:report', function () {
-    backstopjs('openReport', { configPath: backstopDir + files.tpl });
+  gulp.task('backstopjs:report', function (done) {
+    runBackstopJS('openReport').then(function () {
+      done();
+    });
   });
 
+  gulp.task('backstopjs:approve', function (done) {
+    runBackstopJS('approve').then(function () {
+      done();
+    });
+  });
 
   /**
    * Checks if the site config file is in the backstopjs folder
@@ -46,7 +53,7 @@ var Promise = require('es6-promise').Promise;
     try {
       fs.readFileSync(backstopDir + files.config);
     } catch (err) {
-      require('fs').writeFileSync(backstopDir + files.config, JSON.stringify(configTpl, null, 2));
+      fs.writeFileSync(backstopDir + files.config, JSON.stringify(configTpl, null, 2));
       check = false;
     }
 

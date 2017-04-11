@@ -4,8 +4,9 @@ module.exports = (function () {
   return modal.extend({
 
     /**
-     * [pickDate description]
-     * @return {[type]} [description]
+     * Opens a date picker
+     *
+     * @return {object}
      */
     pickDate: function () {
       var casper = this.casper;
@@ -19,9 +20,10 @@ module.exports = (function () {
     },
 
     /**
-     * [showField description]
-     * @param  {[type]} fieldName [description]
-     * @return {[type]}           [description]
+     * Shows a given field
+     *
+     * @param  {string} fieldName
+     * @return {object}
      */
     showField: function (fieldName) {
       var casper = this.casper;
@@ -34,8 +36,9 @@ module.exports = (function () {
     },
 
     /**
-     * [selectAssignee description]
-     * @return {[type]} [description]
+     * Selects the task's assignee
+     *
+     * @return {object}
      */
     selectAssignee: function () {
       var casper = this.casper;
@@ -49,8 +52,9 @@ module.exports = (function () {
     },
 
     /**
-     * [selectType description]
-     * @return {[type]} [description]
+     * Select the task type
+     *
+     * @return {object}
      */
     selectType: function () {
       var casper = this.casper;
