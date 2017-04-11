@@ -4,8 +4,9 @@ module.exports = (function () {
   return modal.extend({
 
     /**
-     * [openDropdown description]
-     * @return {[type]} [description]
+     * Opens a ui-select dropdown
+     *
+     * @return {object}
      */
     openDropdown: function (name) {
       casper.then(function () {

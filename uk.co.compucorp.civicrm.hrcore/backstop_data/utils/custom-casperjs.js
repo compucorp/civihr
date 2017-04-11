@@ -5,8 +5,8 @@ var casper;
 var overrides = {
 
   /**
-   * [click description]
-   * @return {[type]} [description]
+   * Customized version of the default casperjs' click handler
+   * If the given selector doesn't exist, it exits with an error
    */
   click: function () {
     var selector = arguments[0];

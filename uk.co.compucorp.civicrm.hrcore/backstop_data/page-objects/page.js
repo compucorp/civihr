@@ -3,8 +3,9 @@ var Promise = require('es6-promise').Promise;
 var customCasperJS = require('../utils/custom-casperjs');
 
 /**
- * [closeAnyModal description]
- * @return {[type]} [description]
+ * Closes any modal currently open
+ *
+ * @return {object}
  */
 function closeAnyModal() {
   var casper = this.casper;
@@ -21,8 +22,9 @@ function closeAnyModal() {
 }
 
 /**
- * [closeNotifications description]
- * @return {[type]} [description]
+ * Closes any notification currently open
+ *
+ * @return {object}
  */
 function closeNotifications() {
   var casper = this.casper;
@@ -42,10 +44,14 @@ function closeNotifications() {
 module.exports = {
 
   /**
-   * [init description]
-   * @param  {[type]} casper       [description]
-   * @param  {[type]} clearDialogs [description]
-   * @return {[type]}              [description]
+   * Initializes the page
+   *
+   * Stores a customized version of CasperJS and then wait for a
+   * until a certain "ready" condition is met, if the page is set up to do so
+   *
+   * @param  {object} casper
+   * @param  {boolean} clearDialogs if true it will close modals and notifications
+   * @return {object}
    */
   init: function (casper, clearDialogs) {
     clearDialogs = typeof clearDialogs !== 'undefined' ? !!clearDialogs : true;
@@ -65,17 +71,22 @@ module.exports = {
   },
 
   /**
-   * [extent description]
-   * @param  {[type]} page [description]
-   * @return {[type]}      [description]
+   * Used to extend the main page
+   *
+   * @param  {object} page
+   *   a collection of methods and properties that will extend the main page
+   * @return {object}
    */
   extend: function (page) {
     return _.assign(Object.create(this), page);
   },
 
   /**
-   * [waitForModal description]
-   * @return {[type]} [description]
+   * Makes CasperJS wait until the modal is visible, then it returns the
+   * specified modal object (if any)
+   *
+   * @param {string} name of the modal object
+   * @return {object} the modal object
    */
   waitForModal: function (modalModule) {
     var casper = this.casper;
