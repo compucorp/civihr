@@ -385,6 +385,20 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact2['id'], $date->format('Ymd')));
   }
 
+  public function testCreateForContactDoesNotCreatePublicHolidayLeaveRequestsWhenNoAbsenceTypeWithMustTakePublicHolidayAsLeaveRequestExist() {
+    //We need to delete any absence type already created
+    $tableName = AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 0]);
+    $contactID = 2;
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = CRM_Utils_Date::processDate('first monday of this year');
+
+    $this->creationLogic->createForContact($contactID, $publicHoliday);
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday));
+  }
+
   private function countNumberOfPublicHolidayBalanceChanges() {
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
 
