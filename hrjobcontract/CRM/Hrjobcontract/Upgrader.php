@@ -543,6 +543,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1025();
     $this->upgrade_1026();
     $this->upgrade_1027();
+    $this->upgrade_1028();
   }
 
   function upgrade_1001() {
@@ -1075,15 +1076,15 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
   /**
    * Changes Pension Provider to be a contact, instead of an option_value.  All
-   * required changes are wrapped in a transaction and rolled-back if any 
+   * required changes are wrapped in a transaction and rolled-back if any
    * problems arise.
-   * 
+   *
    * @return boolean
    *   true on success
-   * 
+   *
    * @throws Exception
    */
-  function upgrade_1027() {
+  function upgrade_1028() {
     $pensionsTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
 
     $tx = new CRM_Core_Transaction();
@@ -1104,10 +1105,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   /**
    * Alters pension_type column to be an unsigned integer and adds a foreign
    * key referencing civicrm_contact.
-   * 
+   *
    * @param type $pensionsTableName
    *   Name of pension data table
-   * 
+   *
    * @throws Exception
    */
   private function alterPensionsTable($pensionsTableName) {
@@ -1132,7 +1133,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         AND REFERENCED_TABLE_NAME = 'civicrm_contact'
         AND CONSTRAINT_NAME = 'pension_type_contact_id_fk'
       ");
-      
+
       if ($fkCheck->N == 0) {
         throw new Exception("Error updating $pensionsTableName table: " . $e->getMessage());
       }
@@ -1148,7 +1149,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
   /**
    * Deletes hrjc_pension_type option group.
-   * 
+   *
    * @throws Exception
    */
   private function removePensionTypeOptionGroup() {
@@ -1172,10 +1173,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Fetch pension provider option values and create a contact for each pension 
-   * provider type.  Also replaces option_values for contact id's in existing 
+   * Fetch pension provider option values and create a contact for each pension
+   * provider type.  Also replaces option_values for contact id's in existing
    * contracts.
-   * 
+   *
    * @throws Exception
    */
   private function replacePensionProviders($pensionsTableName) {
@@ -1223,7 +1224,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
   /**
    * Creates 'Pension Provider' as a Contact Type
-   * 
+   *
    * @throws Exception
    *   If Pension_Provider contact type is not created.
    */
