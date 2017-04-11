@@ -109,6 +109,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    */
   public function createForContact($contactID, PublicHoliday $publicHoliday) {
     $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+
+    if (!$absenceType) {
+      return;
+    }
+
     $this->create($contactID, $absenceType, $publicHoliday);
   }
 
