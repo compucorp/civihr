@@ -769,20 +769,38 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="pension-provider" class="col-sm-4 control-label">Provider</label>
 
-                                <div class="col-sm-4">
-                                    <div class="chr_custom-select chr_custom-select--full">
-                                        <select id="pension-provider" class="form-control"
-                                                ng-model="entity.pension.pension_type"
-                                                ng-options="key as value for (key, value) in options.pension.pension_type"
-                                                ng-disabled="isDisabled">
-                                            <option value="">- select -</option>
-                                        </select>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Pension Provider
+                                    <a tooltip-placement="right"
+                                       uib-tooltip="The name of the pension provider.">
+                                        <i class="fa fa-question-circle"></i>
+                                    </a></label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <ui-select
+                                                allow-clear
+                                                ng-disabled="isDisabled"
+                                                ng-model="entity.pension.pension_type">
+                                            <ui-select-match
+                                                    placeholder="Start typing a name or email...">{{$select.selected.label}}</ui-select-match>
+                                            <ui-select-choices  repeat="contact.id as contact in contacts.Pension_Provider | filter: $select.search"
+                                                                refresh="refreshContacts($select.search, 'Pension_Provider')"
+                                                                refresh-delay="0">
+                                                <div ng-bind="contact.label"></div>
+                                                <small ng-bind="contact.description[0]"></small>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                        <span class="input-group-btn">
+                                          <a ng-disabled="isDisabled"
+                                             ng-click="entity.pension.pension_type = ''" class="btn btn-default">
+                                              <span class="fa fa-remove"></span>
+                                          </a>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
+
                             <div class="form-group">
                                 <label for="pension-contrib-emplr" class="col-sm-4 control-label">
                                     Employer Contribution (%)
