@@ -20,6 +20,24 @@ function closeAnyModal() {
   return this;
 }
 
+/**
+ * [closeNotifications description]
+ * @return {[type]} [description]
+ */
+function closeNotifications() {
+  var casper = this.casper;
+  var notificationSelector = 'a.ui-notify-cross.ui-notify-close';
+
+  casper.then(function () {
+    if (casper.exists(notificationSelector)) {
+      casper.click(notificationSelector);
+      casper.wait(500);
+    }
+  });
+
+  return this;
+}
+
 
 module.exports = {
 
@@ -40,6 +58,7 @@ module.exports = {
 
     if (clearDialogs) {
       closeAnyModal.call(this);
+      closeNotifications.call(this);
     }
 
     return this;
