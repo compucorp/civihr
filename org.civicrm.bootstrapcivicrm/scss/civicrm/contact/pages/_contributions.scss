@@ -83,6 +83,121 @@
     }    
   }
 
+  .CRM_Contribute_Form_Task_Batch {
+    .help {
+      background: $crm-white;
+      margin: 0;
+    }
+
+    .crm-submit-buttons {
+      background: $crm-white;
+      margin: 0;
+      padding: 15px 10px 23px;
+    }
+
+    .columnheader {
+      border-bottom: 1px solid $crm-dark-grayblue;
+      border-left: none !important;
+      border-right: none !important;    
+
+      th,td {
+        background: $gray-lighter;
+        border: none;
+        color: $gray-darker;
+        padding: 10px 20px;
+        vertical-align: middle;
+      }
+
+      .sticky-header {
+        display: none !important;
+      }
+    }
+
+    tbody {
+      tr {
+        background: $crm-white;
+        border-bottom: 1px solid $crm-background;
+        border-right: none;
+        line-height: 30px;
+      }
+
+      td {
+        border: none;
+        color: $crm-copy;
+        padding: 10px 20px;
+      }
+    }
+
+    input[type="text"],.select2-choice {          
+      background: $crm-white;
+      border: 1px solid $crm-darker-grayblue;
+      border-radius: $border-radius-small;
+      box-shadow: $crm-input-shadow;
+      color: $gray-darker;
+      display: block;
+      font-size: $font-size-base !important;
+      font-weight: normal !important;
+      height: 30px;
+      line-height: 30px;
+      padding: 0px 10px;
+      @include transition(border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s);
+      vertical-align: middle;
+      width: 100%;
+
+      &:focus {
+        border-color: $brand-primary;
+      }       
+    }
+    
+    .select2-container {
+      .select2-choice {
+        width: 78%;
+      }
+
+      .select2-chosen {
+        color: $gray-darker;
+        font-size: $font-size-base;
+        margin-right: 0;            
+      }
+
+      abbr {
+        background: none;
+      }
+
+      .select2-arrow{
+        background: none;
+        padding: 0 4px;        
+
+        &:before {
+          color: $crm-copy;
+          content: $fa-var-caret-down;
+          display: block;
+          font-family: $font-family-fontawesome;
+          font-size: $font-size-base;
+          font-style: normal;
+          text-align: center;
+          text-rendering: auto;
+        }
+      }
+
+      &.select2-dropdown-open {
+        .select2-choices {
+          border-color: $brand-primary;
+        }
+
+        .select2-arrow {   
+          background: none;        
+          border-left: none;
+          filter: none;
+
+          &:before {
+            content: $fa-var-caret-up;
+          }
+        }        
+      }
+    }    
+  }
+
   form {
     &[class*="CRM_Contribute_Form_"] {
       h3 {
@@ -131,6 +246,30 @@
         .helpIcon {
           margin-bottom: 20px;
           margin-right: 0;
+        }
+      }
+
+      .crm-form-submit {
+        background: $brand-primary;
+        border-color: $brand-primary;
+        border-radius: 3px;
+        margin-right: 0;
+        padding: 7px 12px;
+        text-shadow: none;
+        
+        &:hover {
+          background: $crm-blue-light;
+        }
+        
+        &.cancel {
+          background: $crm-white;
+          border: 1px solid $crm-copy;
+          color: $gray-darker;
+        
+          &:hover {
+          background: $crm-copy;
+          color: $crm-white;
+          }
         }
       }
     }
