@@ -226,8 +226,15 @@ define([
               },
               function (reason) {
                 CRM.alert(reason, 'Error', 'error');
-                ContractService.delete(contractId);
-                $scope.$broadcast('hrjc-loader-hide');
+                ContractService.delete(contractId).then(function(result){
+                  $scope.$broadcast('hrjc-loader-hide');
+                  if (result.is_error) {
+                    CRM.alert((result.error_message || 'Unknown error'), 'Error', 'error');
+                  }
+                }, function(error){
+                  $scope.$broadcast('hrjc-loader-hide');
+                  CRM.alert((error || 'Unknown error'), 'Error', 'error');
+                });
               });
             }, function(reason) {
               $scope.$broadcast('hrjc-loader-hide');
