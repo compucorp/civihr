@@ -152,16 +152,22 @@ define([
 
       },
       errorHandler: function(data, msg, deffered) {
+        var errorMsg;
+
         if (data.is_error) {
-          $log.error(data.error_code + '\n' + data.error_message);
+          errorMsg = data.error_message.split('_').join(' ');
+          errorMsg = errorMsg.charAt(0).toUpperCase() + errorMsg.slice(1);
+
+          $log.error('Unable to save. ' + '\n' + errorMsg);
 
           if (deffered) {
-            deffered.reject(data.error_code + '\n' + data.error_message);
+            deffered.reject('Unable to save. ' + '\n' + errorMsg);
           }
 
           if (data.trace) {
             $log.error(data.trace);
           }
+
           return true;
         }
 
