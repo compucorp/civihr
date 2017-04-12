@@ -155,51 +155,6 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
   }
 
   /**
-   * A list of sample CiviCRM Location types which need to be removed.
-   *
-   * @return array
-   */
-  private function up1001_civicrmLocationTypesList() {
-    $locationsToDelete = [
-      'Main',
-      'Other'
-    ];
-    $deleteableLocations = [];
-
-    $tableName = CRM_Core_BAO_LocationType::getTableName();
-    $references = CRM_Core_DAO::getReferencesToTable($tableName);
-
-    foreach ($locationsToDelete as $currentLocation) {
-      $deleteLocation = true;
-
-      foreach ($references as $currentReference) {
-        if (!($currentReference instanceof CRM_Core_Reference_Dynamic)) {
-          $referredTableName = $currentReference->getReferenceTable();
-          $referenceKey = $currentReference->getReferenceKey();
-
-          $q = "
-            SELECT *
-            FROM {$referredTableName}, {$tableName}
-            WHERE {$referredTableName}.{$referenceKey} = {$tableName}.id
-            AND {$tableName}.name = '{$currentLocation}'
-          ";
-          $locationInReference = CRM_Core_DAO::executeQuery($q);
-
-          if ($locationInReference->fetch()) {
-            $deleteLocation = false;
-          }
-        }
-      }
-      
-      if ($deleteLocation) {
-        $deleteableLocations[] = $currentLocation;
-      }
-    }
-    
-    return $deleteableLocations;
-  }
-
-  /**
    * A list of sample CiviCRM mobile providers which need to be removed.
    *
    * @return array
