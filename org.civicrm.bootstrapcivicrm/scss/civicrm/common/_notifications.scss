@@ -51,6 +51,25 @@
         ul {
           margin: 0 15px;
         }
+
+        .ui-state-default {
+          background: $brand-primary;
+          border-color: $brand-primary;
+          color: $crm-white;          
+          text-decoration: none;
+
+          .ui-button-text {
+            color: $crm-white;
+          }
+
+          .ui-icon {
+            margin-top: -6px;
+          }
+
+          &:hover {
+            background: $crm-blue-light;
+          }
+        }
       }
     }
 

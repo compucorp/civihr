@@ -10,9 +10,10 @@
   }
 
   .crm-summary-block {
+    background: $crm-white;
+    border-radius: $border-radius-small;
+    box-shadow: $box-shadow;    
     margin-bottom: 14px;
-    background: #FFF;
-    box-shadow: $box-shadow;
   }
 
   div.crm-clear {
@@ -183,7 +184,20 @@
     max-height: 70px;
 
     .crm-summary-display_name {
-      padding: 22px 0; // centering name vertically
+      float: left;
+      padding: 22px 10px !important; // centering name vertically
+    }
+
+    .crm-edit-help {
+      left: auto;
+      position: relative;
+      top: 20px;
+    }
+
+    &:hover {
+      .crm-edit-help {
+        display: inline-block;
+      }
     }
   }
 
@@ -280,6 +294,21 @@
   .crm-inline-edit-form {
     background-color: transparent !important;
     padding: 10px;
+
+      [id*='Email_Block'],
+      .crm-phone-is_primary {
+        input[type="checkbox"], 
+        input[type="radio"] {
+          display: block;
+          margin-top: 14px;
+        }
+      }
+
+      .crm-form-text.email + .select2-container,
+      [id$="_location_type_id"] {
+        margin-top: 8px;
+      }
+      
   }
 
   .crm-inline-edit {
@@ -305,6 +334,7 @@
     &.form {
       font-family: 'Open Sans';
       border: 1px solid $brand-primary !important;
+      border-radius: $border-radius-small;
 
       .crm-button {
         border: 0;
@@ -315,12 +345,32 @@
 
         input {
           padding-left: 12px;
+          padding-right: 12px;
+
+          &.cancel {
+            border: 1px solid $gray-darker;
+            color: $gray-darker !important;
+
+            &:hover {              
+              background-color: $gray-dark;
+              border-color: $gray-darker;
+              color: $crm-white !important;
+            }
+          }
 
           &.default {
             padding-left: 0;
             padding-right: 0;
           }
         }
+      }
+
+      .select2-arrow b {
+        background-position: -41px -27px;
+        height: 15px;
+        margin-left: 1px;
+        margin-top: 7px;
+        width: 16px;
       }
 
       .delete-button {
@@ -337,23 +387,6 @@
 
         .icon {
           display: none;
-        }
-      }
-
-      .crm-button-type-cancel,
-      .crm-button_qf_Address_1_cancel,
-      .crm-button_qf_Address_2_cancel {
-        input {
-          color: $gray-darker !important;
-          border: 1px solid $gray-darker !important;
-        }
-
-        &:hover {
-          input {
-            color: #fff !important;
-            background-color: $gray-dark;
-            border-color: $gray-darker;
-          }
         }
       }
 
@@ -383,6 +416,7 @@
     margin-bottom: 10px !important;
     padding-bottom: 10px;
     border-bottom: 1px solid #ccc;
+    white-space: normal;
   }
 
   div.contact_panel td {
@@ -391,7 +425,8 @@
 }
 
 #Address_1,
-#Address_2 {
+#Address_2,
+#Address_3 {
   padding: 10px;
 
   .form {
@@ -472,6 +507,46 @@
     .crm-clear {
       padding-left: 0 !important;
       padding-right: 0 !important;
+    }
+
+    &#ContactInfo {
+      .crm-label,
+      .label {
+        display: block;
+      }
+
+      .select2-container,
+      .crm-form-text {
+        margin-right: 10px;
+      }
+    }
+
+    &#Demographics {
+      input.dateplugin {
+        border-color: $crm-darker-grayblue;
+        margin-top: 0;
+      }      
+    } 
+
+    &#CustomData input[type=radio] {
+      &:checked + label[for]:after {
+        top: 7px;
+      }
+    }   
+  }
+}
+
+.contactCardRight #CustomData {
+  .label {
+    display: block;
+    padding-top: 10px;
+  }    
+
+  .crm-form-date-wrapper {
+    margin-top: 0 !important;
+
+    input {
+      margin-top: 0;
     }
   }
 }
