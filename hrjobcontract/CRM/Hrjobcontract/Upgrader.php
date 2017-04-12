@@ -11,28 +11,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgradeBundle();
   }
 
-  public function enable() {
-    $this->toggleScheduledJobs(1);
-  }
-
-  public function disable() {
-    $this->toggleScheduledJobs(0);
-  }
-
-  /**
-   * Enables / disables relted scheduled jobs by setting is_active column to given value.
-   *
-   * @param int $isActive
-   *   Value to set for the is_active parameter
-   */
-  private function toggleScheduledJobs($isActive) {
-    civicrm_api3('Job', 'get', [
-      'sequential' => 1,
-      'name' => 'Length of service updater',
-      'api.Job.create' => ['id' => "\$value.id", 'is_active' => $isActive]
-    ]);
-  }
-
   protected function checkTableExists(array $tables)
   {
       $result = array();
