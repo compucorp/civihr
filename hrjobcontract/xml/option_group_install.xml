@@ -130,6 +130,17 @@
       <option_group_name>hrjc_contract_type</option_group_name>
     </OptionValue>
     <OptionValue>
+      <label>Fixed Term</label>
+      <value>Fixed Term</value>
+      <name>Fixed_Term</name>
+      <is_default>0</is_default>
+      <weight>8</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjc_contract_type</option_group_name>
+    </OptionValue>
+    <OptionValue>
       <label>Senior Manager</label>
       <value>Senior Manager</value>
       <name>Senior_Manager</name>
