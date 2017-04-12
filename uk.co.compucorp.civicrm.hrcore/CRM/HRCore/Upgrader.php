@@ -14,26 +14,26 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    * @var array
    *   List of jobs in CiviCRM and their intended default status in the form [job_name => is_active]
    */
-  private $scheduledJobsDefaultStatus = [
-    // Enabled Jobs
-    'CiviCRM Update Check' => 1,
-    'Clean-up Temporary Data and Files' => 1,
-    'Disable expired relationships' => 1,
-    'Mail Reports' => 1,
-    'Process Inbound Emails' => 1,
-    'Send Scheduled Mailings' => 1,
-    'Send Scheduled Reminders' => 1,
+  private $scheduledJobsToBeEnabled = [
+    'CiviCRM Update Check',
+    'Clean-up Temporary Data and Files',
+    'Disable expired relationships',
+    'Mail Reports',
+    'Process Inbound Emails',
+    'Send Scheduled Mailings',
+    'Send Scheduled Reminders'
+  ];
 
-    // Disabled Jobs
-    'Fetch Bounces' => 0,
-    'Geocode and Parse Addresses' => 0,
-    'Process Pledges' => 0,
-    'Process Survey Respondents' => 0,
-    'Rebuild Smart Group Cache' => 0,
-    'Send Scheduled SMS' => 0,
-    'Update Membership Statuses' => 0,
-    'Update Participant Statuses' => 0,
-    'Validate Email Address from Mailings.' => 0
+  private $scheduledJobsToBeDisabled = [
+    'Fetch Bounces',
+    'Geocode and Parse Addresses',
+    'Process Pledges',
+    'Process Survey Respondents',
+    'Rebuild Smart Group Cache',
+    'Send Scheduled SMS',
+    'Update Membership Statuses',
+    'Update Participant Statuses',
+    'Validate Email Address from Mailings.'
   ];
 
   public function install() {
@@ -46,13 +46,29 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    * Sets default status for scheduled jobs in CiviCRM Core.
    */
   private function setScheduledJobsDefaultStatus() {
-    foreach ($this->scheduledJobsDefaultStatus as $job => $isEnabled) {
-      civicrm_api3('Job', 'get', [
-        'sequential' => 1,
-        'name' => $job,
-        'api.Job.create' => ['id' => "\$value.id", 'is_active' => $isEnabled]
-      ]);
+    foreach ($this->scheduledJobsToBeEnabled as $job) {
+      $this->setJobStatus($job, 1);
     }
+
+    foreach ($this->scheduledJobsToBeDisabled as $job) {
+      $this->setJobStatus($job, 0);
+    }
+  }
+
+  /**
+   * Sets given status to provided job.
+   *
+   * @param string $jobName
+   *   Name of job for which status needs to be set.
+   * @param int $isActive
+   *   Status to be set, 1 if active, 0 otherwise.
+   */
+  private function setJobStatus($jobName, $isActive) {
+    civicrm_api3('Job', 'get', [
+      'sequential' => 1,
+      'name' => $jobName,
+      'api.Job.create' => ['id' => "\$value.id", 'is_active' => $isActive]
+    ]);
   }
 
   private function deleteLocationTypes() {
