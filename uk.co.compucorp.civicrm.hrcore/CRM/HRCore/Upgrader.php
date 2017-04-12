@@ -12,7 +12,6 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
 
   /**
    * @var array
-   *   List of jobs in CiviCRM and their intended default status in the form [job_name => is_active]
    */
   private $scheduledJobsToBeEnabled = [
     'CiviCRM Update Check',
@@ -24,6 +23,9 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     'Send Scheduled Reminders'
   ];
 
+  /**
+   * @var array
+   */
   private $scheduledJobsToBeDisabled = [
     'Fetch Bounces',
     'Geocode and Parse Addresses',
