@@ -32,8 +32,9 @@ define([
       this.absencePeriods = [];
       this.absenceTypes = [];
       this.calendar = {};
-      this.contact = {};
+      this.contactName = null;
       this.error = null;
+      this.managedContacts = [];
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
       this.period = {};
@@ -402,17 +403,14 @@ define([
        * @return {Object} attributes
        */
       this._initRequestAttributes = function () {
-        var attributes;
+        var attributes = {};
 
         //if set indicates self leaverequest is either being managed or edited
         if (this.directiveOptions.leaveRequest) {
-          //get a clone so self it is not the same reference as passed from callee
           //_.deepClone or angular.copy were not uploading files correctly
           attributes = this.directiveOptions.leaveRequest.attributes();
-        } else {
-          attributes = {
-            contact_id: this.directiveOptions.contactId
-          };
+        } else if (!this.directiveOptions.forStaff) {
+          attributes = { contact_id: this.directiveOptions.contactId };
         }
 
         return attributes;
@@ -472,11 +470,17 @@ define([
       /**
        * Flattens statuses from object to array of objects. This is used to
        * populate the dropdown with array of statuses.
+       * Also it checks if given status is available to manager. If manager applies leave
+       * on behalf of staff then cancelled is also removed from her list of available statuses.
        *
        * @return {Array}
        */
       this.getStatuses = function () {
-        return Object.values(this.requestStatuses);
+        return _.reject(this.requestStatuses, function (status) {
+          var canRemoveStatus = (status.name === 'admin_approved' || status.name === 'waiting_approval');
+
+          return this.directiveOptions.forStaff ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
+        }.bind(this));
       }
 
       /**
@@ -492,16 +496,6 @@ define([
             self.calendar = usersCalendar;
           });
       };
-
-      /**
-       * Checks if given status is available to manager
-       *
-       * @param {String} status
-       * @return {Boolean}
-       */
-      this.isStatusAvailableForManager = function (status) {
-        return !(status.name === 'admin_approved' || status.name === 'waiting_approval');
-      }
 
       /**
        * Initializes values for absence types and entitlements when the
@@ -591,21 +585,44 @@ define([
 
         return loadStatuses.call(self)
           .then(function () {
-            initUserRole.call(self);
+            return initUserRole.call(self);
+          })
+          .then(function () {
             initOpenMode.call(self);
+
+            return self.directiveOptions.forStaff && loadManagees.call(self);
+          })
+          .then(function () {
             return loadAbsencePeriods.call(self);
           })
           .then(function () {
             initAbsencePeriod.call(self);
-            self._setMinMaxDate.call(self);
+            self._setMinMaxDate();
 
             return $q.all([
-              self._loadAbsenceTypes.call(self),
               loadCommentsAndContactNames.call(self),
-              self.request.loadAttachments(),
-              self._loadCalendar.call(self)
+              self.request.loadAttachments()
             ]);
           })
+          .then(function () {
+            if (self.request.contact_id) {
+              return self.initAfterContactSelection();
+            }
+          });
+      };
+
+      /**
+       * Initializes after contact is selected either directly or by manager
+       *
+       * @return {Promise}
+       */
+      this.initAfterContactSelection = function () {
+        var self = this;
+
+        return $q.all([
+            self._loadAbsenceTypes(),
+            self._loadCalendar()
+          ])
           .then(function () {
             return loadDayTypes.call(self);
           })
@@ -617,7 +634,7 @@ define([
             initStatus.call(self);
             initContact.call(self);
 
-            if (self.isMode.call(self, 'edit')) {
+            if (self.isMode('edit')) {
               initialLeaveRequestAttributes = self.request.attributes();
 
               if (self.request.from_date === self.request.to_date) {
@@ -665,13 +682,13 @@ define([
       }
 
       /**
-       * Filters absence type and formats data to be compatible with angular select directives
+       * Maps absence types to be more compatible for UI selection
        *
        * @param {Array} absenceTypes
        * @param {Object} entitlements
        * @return {Array} of filtered absence types for given entitlements
        */
-      function filterAbsenceTypes(absenceTypes, entitlements) {
+      function mapAbsenceTypesWithBalance(absenceTypes, entitlements) {
         return entitlements.map(function (entitlementItem) {
           var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
             return absenceTypeItem.id === entitlementItem.type_id;
@@ -828,7 +845,6 @@ define([
         if (this.request.id) {
           mode = 'edit';
 
-          //approved, admin_approved, rejected, cancelled
           var viewModes = [this.requestStatuses['approved'].value, this.requestStatuses['admin_approved'].value,
             this.requestStatuses['rejected'].value, this.requestStatuses['cancelled'].value
           ];
@@ -836,23 +852,21 @@ define([
           if (this.isRole('owner') && viewModes.indexOf(this.request.status_id) > -1) {
             mode = 'view';
           }
-
         } else {
           mode = 'create';
         }
       }
 
       /**
-       * Initialize user's role
+       * Initialize user's role to either owner, manager or admin
+       *
+       * @return {Promise}
        */
       function initUserRole() {
-        if (this.directiveOptions.leaveRequest &&
-          this.directiveOptions.leaveRequest.contact_id != this.directiveOptions.contactId) {
-          //check if manager is responding to leave request
-          return setManagerRole.call(this, this.directiveOptions.contactId);
-        }
-        //owner is editing or viewing popup, no api call - direct set
-        role = 'owner';
+        return this.request.roleOf({ id: this.directiveOptions.contactId })
+          .then(function (roleParam) {
+            role = roleParam;
+          }.bind(this));
       }
 
       /**
@@ -926,7 +940,9 @@ define([
             this.request.status_id = this.requestStatuses['waiting_approval'].value;
           }
         } else if (this.isMode('create')) {
-          this.request.status_id = this.requestStatuses['waiting_approval'].value;
+          this.request.status_id = this.directiveOptions.forStaff ?
+            this.requestStatuses['approved'].value :
+            this.requestStatuses['waiting_approval'].value;
         }
       }
 
@@ -936,16 +952,29 @@ define([
        * {Promise}
        */
       function initContact() {
-        var self = this;
-
-        if (self.isRole('manager')) {
-          return Contact.find(self.request.contact_id)
+        if (this.isRole('manager')) {
+          return Contact.find(this.request.contact_id)
             .then(function (contact) {
-              self.contact = contact;
-            });
+              this.contactName = contact.display_name;
+            }.bind(this));
         }
 
         return $q.resolve();
+      }
+
+      /**
+       * Loads the managees of currently logged in user
+       *
+       * @return {Promise}
+       */
+      function loadManagees() {
+        return Contact.find(this.directiveOptions.contactId)
+          .then(function (contact) {
+            return contact.leaveManagees()
+          })
+          .then(function (contacts) {
+            this.managedContacts = contacts;
+          }.bind(this));
       }
 
       /**
@@ -1064,7 +1093,7 @@ define([
           }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
             // create a list of absence types with a `balance` property
-            self.absenceTypes = filterAbsenceTypes(absenceTypesAndIds.types, entitlements);
+            self.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
           });
       }
 
@@ -1084,23 +1113,6 @@ define([
         if (!canViewOrEdit.call(this)) {
           this.request[dayType + '_date_type'] = this[keyForDayTypeCollection][0].value;
         }
-      }
-
-      /**
-       * Checks if leaverequest is managed by given manager id and if yes then set the role
-       *
-       * @param {String} managerContactId
-       * @return {Promise}
-       */
-      function setManagerRole(managerContactId) {
-        return this.request.roleOf({
-            id: managerContactId
-          })
-          .then(function (roleParam) {
-            if (roleParam === 'manager') {
-              role = 'manager';
-            }
-          });
       }
 
       /**
