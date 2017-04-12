@@ -528,29 +528,25 @@
       }      
     } 
 
-    &#CustomData {
-      input[type=radio] {
-        &:checked + label[for]:after {
-          top: 7px;
-        } 
+    &#CustomData input[type=radio] {
+      &:checked + label[for]:after {
+        top: 7px;
       }
     }   
   }
 }
 
-.contactCardRight {
-  #CustomData {
-    .label {
-      display: block;
-      padding-top: 10px;
-    }    
+.contactCardRight #CustomData {
+  .label {
+    display: block;
+    padding-top: 10px;
+  }    
 
-    .crm-form-date-wrapper {
-      margin-top: 0 !important;
+  .crm-form-date-wrapper {
+    margin-top: 0 !important;
 
-      input {
-        margin-top: 0;
-      }
+    input {
+      margin-top: 0;
     }
   }
 }
