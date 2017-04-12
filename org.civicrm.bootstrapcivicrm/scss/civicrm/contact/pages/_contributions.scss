@@ -100,7 +100,8 @@
       border-left: none !important;
       border-right: none !important;    
 
-      th,td {
+      th,
+      td {
         background: $gray-lighter;
         border: none;
         color: $gray-darker;
@@ -128,7 +129,8 @@
       }
     }
 
-    input[type="text"],.select2-choice {          
+    input[type="text"],
+    .select2-choice {          
       background: $crm-white;
       border: 1px solid $crm-darker-grayblue;
       border-radius: $border-radius-small;
