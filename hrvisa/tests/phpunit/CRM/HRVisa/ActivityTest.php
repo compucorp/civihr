@@ -153,18 +153,15 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
       'activity_type_id' => $activityTypeId,
       'sequential' => 1,
     );
-    // note : using filter 'activity_type_id' in combination with 'contact_id' filter doesn't work
     $activities = civicrm_api3('activity', 'get', $activityGetParams);
 
     $activityId = NULL;
     $count = 0;
     foreach($activities['values'] as $val) {
-      if ($val['activity_type_id'] != $activityTypeId || !array_key_exists('targets', $val)) {
-        continue;
-      }
       $activityId = $val['id'];
       $count++;
     }
+
     return array($count, $activityId);
   }
 
