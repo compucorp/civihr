@@ -318,14 +318,22 @@
     .select2-choice {
       background: none;
       background: $crm-white;
-      border-radius: 2px;
-      line-height: 30px;
       border: 1px solid $crm-darker-grayblue;
+      border-radius: 2px;
       box-shadow: $crm-select2-box-shadow-inset;
+      display: block !important;
+      line-height: 30px;
 
       .select2-chosen {
         color: $crm-dark-blue;
         font-family: $font-family-base;
+      }
+    }
+
+    &.select2-dropdown-open {
+      .select2-choice {
+        border-color: $brand-primary;
+        box-shadow: none;
       }
     }
 
@@ -360,14 +368,34 @@
     }
   }
 
+  .action-link {
+    line-height: 27px;
+    margin-bottom: 20px !important;
+    margin-top: 0;
+    min-height: 30px;
+  }
 
   #mainTabContainer {
     .crm-activity-selector-activity {
       .dataTables_wrapper {
-        margin: 25px 0;
+        margin: 20px 0;
+
+        .crm-datatable-pager-top {
+          margin-bottom: 10px;
+        }
 
         .dataTables_paginate {
           width: 50% !important;
+        }
+
+        .dataTables_info {
+          font-size: $font-size-base;
+          width: 49%;
+        }
+
+        @media (max-width: $crm-page-main-max-width) {
+          overflow-x: auto;
+          width: 100%;
         }
       }
 
@@ -377,7 +405,9 @@
         font-family: $font-family-base;
 
         thead tr {
+          background: none !important;
           border-bottom: 1px solid $crm-dark-grayblue;
+          border-radius: $border-radius-base $border-radius-base 0 0;
 
           th {
             border-bottom: none;
@@ -386,7 +416,15 @@
             vertical-align: middle;
             border: none;
             padding: 10px 20px;
-            line-height: 1.5em;
+            line-height: 30px;
+
+            &:first-child {
+              border-top-left-radius: $border-radius-base;
+            }
+
+            &:last-child {
+              border-top-right-radius: $border-radius-base;
+            }
 
             div {
               padding: 0;
@@ -401,13 +439,41 @@
 
           td {
             background: $crm-white;
-            color: $gray-dark;
             border: none;
+            color: $gray-dark;
+            line-height: 18px;
             padding: 10px 20px;
 
             a {
               color: $brand-primary !important;
             }
+          }
+
+          &:last-child {
+            border-bottom-left-radius: $border-radius-base;
+            border-bottom-right-radius: $border-radius-base;
+
+            td {
+              &:first-child {
+                border-bottom-left-radius: $border-radius-base;
+              }
+
+              &:last-child {
+                border-bottom-right-radius: $border-radius-base;
+              }
+            }
+          }
+        }
+
+        @media (min-width: $crm-min-lg-width) { 
+          width: 100% !important;
+        }
+
+        @media screen and (min-width: $crm-min-width ) and (max-width: $crm-max-width) {
+          width: auto !important;
+
+          tbody tr td {
+            word-break: break-all;
           }
         }
       }
@@ -415,6 +481,22 @@
       .accordion,
       .crm-search_filters-accordion {
         box-shadow: $box-shadow;
+      }
+
+      .crm-search_filters-accordion { 
+        border-radius: $border-radius-base;
+        box-shadow: $box-shadow;
+        overflow: hidden;
+
+        .crm-accordion-header {
+          background: $crm-white !important;
+          border-bottom: 1px solid $crm-dark-grayblue;
+        }
+      }
+
+      .dataTables_length,
+      .dataTables_paginate {
+        font-size: $font-size-base;
       }
 
       div[id*="s2id_autogen"] {
