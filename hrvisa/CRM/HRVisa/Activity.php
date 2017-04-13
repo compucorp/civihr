@@ -105,4 +105,3 @@ class CRM_HRVisa_Activity {
     } // end of if for immgration info check
   }
 }
-?>

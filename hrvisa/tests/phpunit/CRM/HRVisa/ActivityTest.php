@@ -20,7 +20,7 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
       ->apply();
   }
 
-  function setUp() {
+  public function setUp() {
     // call after parent invocation as fields populated in parent
     $customFields = array(
       'Extended_Demographics:Is_Visa_Required' => 'Is_Visa_Required',
@@ -37,15 +37,10 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
     $this->createLoggedInUser();
   }
 
-  function tearDown()
-  {
-
-  }
-
   protected static function _populateDB($perClass = FALSE, &$object = NULL) {
     self::phpunitPopulateDB();
 
-    //also create 'Visa Expiration' actvity type
+    //also create 'Visa Expiration' activity type
     $params = array(
       'weight' => 1,
       'label' => 'Visa Expiration',
@@ -53,14 +48,16 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
       'is_active' => 1,
       'is_default' => 0,
     );
-    $result = civicrm_api3('activity_type', 'create', $params);
+    civicrm_api3('activity_type', 'create', $params);
     return TRUE;
   }
 
-  // CASE 1 : is_visa_required = TRUE, and 2 migration records,
-  // activity of type 'Visa Expiration' created with target contact as
-  // the one whose record is being edited.
-  function testSyncScenario1() {
+  /**
+   * CASE 1 : is_visa_required = TRUE, and 2 migration records,
+   * activity of type 'Visa Expiration' created with target contact as
+   * the one whose record is being edited.
+   */
+  public function testSyncScenario1() {
     // create a test individual
     $cid = $this->individualCreate();
     // is visa required = 1
@@ -83,7 +80,7 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
     // sync activity with contact of above details
     CRM_HRVisa_Activity::sync($cid);
 
-    // calling a common function for getting acivity a particular target contact and acitvity type
+    // calling a common function for getting activity a particular target contact and activity type
     // this will return activity id and number of activities found
     list($count, $activityId) = self::_getTargetContactActivity($cid);
     $caseOneActivityGetParams = array('id' => $activityId);
@@ -96,10 +93,12 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
 
   }
 
-  // CASE 2 : is_visa_required = TRUE, one migration record.
-  // later is_visa_required = FALSE,
-  // activity status set to 'Cancelled' from 'Scheduled'
-  function testSyncSncenario2() {
+  /**
+   * CASE 2 : is_visa_required = TRUE, one migration record.
+   * later is_visa_required = FALSE,
+   * activity status set to 'Cancelled' from 'Scheduled'
+   */
+  public function testSyncScenario2() {
     // create a test individual
     $cid = $this->individualCreate();
     $startDate = date('YmdHis');
@@ -116,7 +115,7 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
     // sync activity with contact of above details
     CRM_HRVisa_Activity::sync($cid);
 
-    // calling a common function for getting acivity a particular target contact and acitvity type
+    // calling a common function for getting activity a particular target contact and activity type
     // this will return activity id and number of activities found
     list($count, $activityId) = self::_getTargetContactActivity($cid);
     $activityGetParams = array('id' => $activityId);
@@ -145,7 +144,7 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
     $this->assertEquals(CRM_Core_OptionGroup::getValue('activity_status', 'Cancelled', 'name'), $activity['values'][$activity['id']]['status_id'], 'in line ' . __LINE__ . ' Status of \'Visa Expiration\' activity should be \'Cancelled\' but wrongly is ' . $activity['values'][$activity['id']]['status_id']);
   }
 
-  function _getTargetContactActivity($contactId) {
+  private function _getTargetContactActivity($contactId) {
     $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Visa Expiration', 'name');
     // to check if visa expiration activity exists for the input target_contact_id
     $activityGetParams = array(
