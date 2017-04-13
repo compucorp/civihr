@@ -164,15 +164,7 @@
 
       input[type="radio"]:checked + label[for]:after {
         top: 15px;
-      }
-
-      .select2-container .select2-choice .select2-arrow b {
-        background: url("select2.png") no-repeat 0 1px !important;
-      }
-
-      .select2-dropdown-open .select2-choice .select2-arrow b {
-        background-position: -18px 1px !important;
-      }
+      }      
     }
   }
 
