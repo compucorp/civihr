@@ -69,6 +69,33 @@
       -moz-box-sizing: border-box;
       -webkit-box-sizing: border-box;
     }
+
+    .crm-button i {
+      top: 0.7em;
+    }
+
+    .crm-button-type-cancel {
+      i {
+        color: $gray-darker;
+      }
+
+      &:hover {
+        i {
+          color: $crm-white;
+        }
+      }
+    }
+
+    .crm-form-submit {
+      &.cancel {
+        color: $gray-darker !important;
+       
+        &:hover {
+          background: $gray-darker;
+          color: $crm-white  !important;
+        }
+      }
+    }
   }
 
   .action-link {
