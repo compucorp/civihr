@@ -525,7 +525,13 @@
       input.dateplugin {
         border-color: $crm-darker-grayblue;
         margin-top: 0;
-      }      
+      }
+
+      input[type=radio] {
+        &:checked + label[for]:after {
+          top: 7px;
+        }
+      }  
     } 
 
     &#CustomData input[type=radio] {
