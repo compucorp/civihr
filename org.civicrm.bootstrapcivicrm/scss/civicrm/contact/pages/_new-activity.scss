@@ -148,12 +148,30 @@
     }
   }
 
+  .crm-core-form-recurringentity-block-ends {
+    input[type="radio"]:checked + label[for]:after {
+      top: 15px;
+    }
+  }
+
   .crm-core-form-recurringentity-block-absolute_date {
     position: relative;
 
     td {
       &.label {
         visibility: hidden;
+      }
+
+      input[type="radio"]:checked + label[for]:after {
+        top: 15px;
+      }
+
+      .select2-container .select2-choice .select2-arrow b {
+        background: url("select2.png") no-repeat 0 1px !important;
+      }
+
+      .select2-dropdown-open .select2-choice .select2-arrow b {
+        background-position: -18px 1px !important;
       }
     }
   }
