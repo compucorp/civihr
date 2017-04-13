@@ -148,6 +148,12 @@
     }
   }
 
+  .crm-core-form-recurringentity-block-ends {
+    input[type="radio"]:checked + label[for]:after {
+      top: 15px;
+    }
+  }
+
   .crm-core-form-recurringentity-block-absolute_date {
     position: relative;
 
@@ -155,6 +161,10 @@
       &.label {
         visibility: hidden;
       }
+
+      input[type="radio"]:checked + label[for]:after {
+        top: 15px;
+      }      
     }
   }
 
