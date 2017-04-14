@@ -75,7 +75,7 @@
           padding: 10px 20px;
 
           &.bold {
-            font-weight: 600;
+            font-weight: $crm-font-weight-h4;
           }
 
           &.status-removed {
@@ -87,6 +87,7 @@
 
             &.action-item {
               padding: 3px 15px;
+              text-transform: none;
             }            
           }          
         }
@@ -173,6 +174,13 @@
         font-family: $font-family-base;
         border: 1px solid $crm-darker-grayblue;
         box-shadow: $crm-select2-box-shadow-inset;
+      }
+
+      &.select2-dropdown-open {
+        .select2-choice {
+          border-color: $brand-primary;
+          box-shadow: none;
+        }
       }
 
       .select2-arrow {
