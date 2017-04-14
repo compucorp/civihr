@@ -4,6 +4,7 @@
   .crm-tooltip {
     @extend %block-with-shadow;
     background: $crm-dark-blue !important;
+    border-radius: $border-radius-base;
 
     .content,
     .crm-table-group-summary tr td,
