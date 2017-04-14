@@ -130,6 +130,9 @@ function styleguide_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
  */
 function styleguide_civicrm_navigationMenu(&$menu) {
+  foreach ($menu as $key => $menu_item) {
+    if(empty($menu_item['child'])) $menu[$key]['child'] = array();
+  }
   _styleguide_civix_insert_navigation_menu($menu, 'Support/Developer', array(
     'label' => ts('Style Guide', array('domain' => 'org.civicrm.styleguide')),
     'name' => 'developer_styleguide',
