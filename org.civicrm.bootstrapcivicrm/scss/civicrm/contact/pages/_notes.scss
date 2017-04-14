@@ -1,4 +1,8 @@
 .page-civicrm-contact {
+  .ui-widget-content .action-link .button {
+    box-shadow: $box-shadow;
+  }
+
   #notes {
     .dataTables_wrapper {
       .ui-widget-header {
@@ -32,11 +36,14 @@
       table {
         background: transparent;
         border: none;
-        font-family: $font-family-base;
+        border-radius: $border-radius-base;
         box-shadow: $box-shadow;
+        font-family: $font-family-base;
 
         thead tr {
           border-bottom: 1px solid $crm-dark-grayblue;
+          border-top-left-radius: $border-radius-base;
+          border-top-right-radius: $border-radius-base;
 
           th {
             border-bottom: none;
@@ -44,7 +51,15 @@
             color: $gray-darker;
             vertical-align: middle;
             border: none;
-            padding: 10px 20px;
+            padding: 16px 20px;
+
+            &:first-child {
+              border-top-left-radius: $border-radius-base;
+            }
+
+            &:last-child {
+              border-top-right-radius: $border-radius-base;
+            }
 
             div {
               padding: 0;
@@ -61,12 +76,56 @@
             background: $crm-white;
             color: $gray-dark;
             border: none;
-            padding: 10px 20px;
+            padding: 15px 20px;
             vertical-align: middle;
+
+            &:last-child {
+              text-align: right;
+            }
 
             a {
               color: $brand-primary !important;
+
+              &.action-item {
+                text-transform: none;
+              }
             }
+
+            .btn-slide {
+              color: $brand-primary;
+              text-transform: none;
+            }
+          }
+
+          &:last-child {
+            border-bottom-left-radius: $border-radius-base;
+            border-bottom-right-radius: $border-radius-base;
+
+            td {
+              &:first-child {
+                border-bottom-left-radius: $border-radius-base;
+              }
+
+              &:last-child {
+                border-bottom-right-radius: $border-radius-base;
+              }
+            }
+          }
+        }
+
+        &#options {
+          thead tr th {
+            &:first-child {
+              display: none;
+            }
+
+            &:nth-child(6) {
+              text-transform: none !important;
+            }
+          }
+
+          tbody tr td:first-child {
+            display: none;
           }
         }
       }
