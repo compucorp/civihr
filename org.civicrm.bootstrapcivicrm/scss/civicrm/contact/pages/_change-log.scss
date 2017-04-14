@@ -21,18 +21,16 @@
   }
 
   table {
+    @include mx-expandable-table();
     border-radius: $border-radius-base;
     box-shadow: none !important;
-    @include mx-expandable-table();
 
-    .columnheader {
-      th {
-        padding: 10px 20px !important;
-        text-transform: capitalize;
+    .columnheader th {
+      padding: 10px 20px !important;
+      text-transform: capitalize;
 
-        &:first-child {
-          width: $crm-sm-th-width;
-        }
+      &:first-child {
+        width: $crm-sm-th-width;
       }
     }
 
