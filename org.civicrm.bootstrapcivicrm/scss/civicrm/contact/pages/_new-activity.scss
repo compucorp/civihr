@@ -319,7 +319,7 @@
       background: none;
       background: $crm-white;
       border: 1px solid $crm-darker-grayblue;
-      border-radius: 2px;
+      border-radius: $border-radius-base;
       box-shadow: $crm-select2-box-shadow-inset;
       display: block !important;
       line-height: 30px;
@@ -415,8 +415,8 @@
             color: $gray-darker;
             vertical-align: middle;
             border: none;
-            padding: 10px 20px;
-            line-height: 30px;
+            padding: 15px 20px;
+            line-height: 1.5em;
 
             &:first-child {
               border-top-left-radius: $border-radius-base;
