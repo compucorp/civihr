@@ -324,6 +324,8 @@
         }
 
         th {
+          background-color: $gray-lighter !important;
+
           &:first-child {
             .sticky-header {
               padding-left: 20px !important;
@@ -571,8 +573,6 @@
       }
     }
 
-
-
     legend {
       padding: 15px 20px !important;
       margin: 0;
@@ -592,13 +592,13 @@
 
     thead {
       th {
-        border-bottom: none;
-        background: $crm-background !important;
-        color: $gray-darker !important;
-        vertical-align: middle;
+        background: $gray-lighter !important;
         border: none;
+        border-bottom: none;
+        color: $gray-darker !important;
+        line-height: 1.5em !important;
         padding: 10px !important;
-        line-height: 1.1em;
+        vertical-align: middle;
 
         div {
           padding: 0;
@@ -606,17 +606,16 @@
       }
     }
 
-
     tbody {
       tr {
         background: $crm-white;
 
         td {
           background: $crm-white;
-          color: $gray-dark;
           border: none;
+          color: $gray-dark;
+          line-height: 1.5em !important;
           padding: 10px 30px;
-          line-height: 1.1em;
         }
 
         th {
@@ -650,6 +649,12 @@
     &.description {
       padding: 20px 5px !important;
       display: block;
+    }
+  }
+
+  table.crm-softcredit-selector {
+    thead th {
+      background-color: $gray-lighter !important;
     }
   }
 }
@@ -1149,6 +1154,7 @@
 .CRM_Contribute_Form_Task_Email {
   .crm-contactEmail-form-block {
     .form-layout-compressed {
+      background: $crm-white;
       width: 100%;
 
       .crm-contactEmail-form-block-recipient {
