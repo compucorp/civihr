@@ -3,8 +3,8 @@
   $border-color: $table-border-color;
   border: 0;
 
-  tr, th {
-    background: #ffffff !important;
+  tr {
+    background: $crm-customselect-background !important;
   }
 
   &.row-highlight tr:hover {

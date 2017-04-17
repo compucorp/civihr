@@ -75,7 +75,20 @@
       line-height: normal;
     }
 
+    .select2-choice {
+      border-color: $crm-darker-grayblue;
+      border-radius: $border-radius-base;
+      box-shadow: $crm-select2-box-shadow-inset;
+    }
+
+    .select2-dropdown-open .select2-choice {
+      border-color: $brand-primary;
+      box-shadow: none;
+    }
+
     .form-layout-compressed {
+      background: $crm-white;
+      border-radius: $border-radius-base;
       box-shadow: $box-shadow;
 
       tr {
@@ -83,6 +96,8 @@
         line-height: 50px;
 
         &:first-child {
+          border-top-left-radius: $border-radius-base;
+          border-top-right-radius: $border-radius-base;
           height: 40px;
           line-height: normal;
 
@@ -98,23 +113,69 @@
           border: none !important;
 
           &:first-child {
-            padding-left: 20px;
+            border-top-left-radius: $border-radius-base;
+            padding-left: 20px !important;
+          }
+
+          &:last-child {
+            border-top-right-radius: $border-radius-base;
           }
         }
 
         &:last-child {
+          border-bottom-left-radius: $border-radius-base;
+          border-bottom-right-radius: $border-radius-base;
           border-top: 1px solid $crm-dark-grayblue;
+
+          td {
+            &:first-child {
+              border-bottom-left-radius: $border-radius-base;
+            }
+
+            &:last-child {
+              border-bottom-right-radius: $border-radius-base;
+            }
+          }
         }
       }
     }
 
     .selector {
+      border-radius: $border-radius-base;
+
       .sticky {
         tr:first-child {
           border-bottom: 1px solid $crm-dark-grayblue;
+          border-top-left-radius: $border-radius-base;
+          border-top-right-radius: $border-radius-base;
 
           th {
-            padding-left: 30px;
+            padding: 10px 20px !important;
+
+            &:first-child {
+              border-top-left-radius: $border-radius-base;
+            }
+
+            &:last-child {
+              border-top-right-radius: $border-radius-base;
+            }
+          }
+        }
+      }
+
+      tbody tr {
+        &:last-child {
+          border-bottom-left-radius: $border-radius-base;
+          border-bottom-right-radius: $border-radius-base;
+
+          td {
+            &:first-child {
+              border-bottom-left-radius: $border-radius-base;
+            }
+
+            &:last-child {
+              border-bottom-right-radius: $border-radius-base;
+            }
           }
         }
       }
@@ -144,7 +205,12 @@
         &,
         td {
           padding: 0;
-        }
+
+          .crm-ajax-container {
+            border: none !important;
+            border-bottom: 1px solid $crm-background !important;
+          }
+        }                                                        
 
         #info {
           th {
@@ -153,12 +219,7 @@
 
           td,
           th {
-            padding-left: 30px;
-          }
-
-          td {
-            padding-top: 10px;
-            padding-bottom: 10px;
+            padding: 10px 20px !important;
           }
         }
       }
@@ -166,6 +227,12 @@
 
     .crm-expand-row {
       line-height: 16px;
+    }
+
+    table.crm-softcredit-selector {
+      thead th {
+        background-color: $gray-lighter !important;
+      }
     }
   }
 }
