@@ -1,15 +1,17 @@
 <section data-leave-absences-absence-tab>
-  <div class="chr_absence-tab-page">
-    <div class="button-container">
+  <!-- START for code to move to views folder in PCHR-2003 -->
+  <div id="bootstrap-theme">
+    <div class="absence-tab-page">
       <div class="btn-group">
-        <button type="button" class="btn btn-primary">Create New</button>
+        <button type="button" class="btn btn-info">CREATE NEW</button>
         <button
           type="button"
-          class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+          class="btn btn-info dropdown-toggle"
           data-toggle="dropdown">
           <span class="caret"></span>
+          <span class="sr-only">Toggle Dropdown</span>
         </button>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu" role="menu">
           <li>
             <a href="#">Record staff sickness</a>
           </li>
@@ -18,36 +20,24 @@
           </li>
         </ul>
       </div>
-    </div>
 
-    <div class="tabs-container">
-      <ul class="nav nav-tabs nav-tabs-header">
-        <li>
-          <a class="chr_absence-tab-page--active_bottom">Report</a>
+      <ul class="nav nav-pills nav-pills-horizontal nav-pills-horizontal-default">
+        <li class="active">
+          <a href="#">Report</a>
         </li>
         <li>
-          <a>Calendar</a>
+          <a href="#">Calendar</a>
         </li>
         <li>
-          <a>
-            Entitlements
-          </a>
+          <a href="#">Entitlements</a>
         </li>
         <li>
-          <a>Work Patterns</a>
+          <a href="#">Work Patterns</a>
         </li>
       </ul>
-      <div class="tab-content">
-        <ui-view></ui-view>
-      </div>
+
     </div>
   </div>
-
+  <!-- END for code to move to views folder in PCHR-2003 -->
+  <ui-view></ui-view>
 </section>
-{literal}
-<script type="text/javascript">
-  document.addEventListener('absenceTabReady', function () {
-    angular.bootstrap(document.querySelector('[data-leave-absences-absence-tab]'), ['absence-tab']);
-  });
-</script>
-{/literal}
