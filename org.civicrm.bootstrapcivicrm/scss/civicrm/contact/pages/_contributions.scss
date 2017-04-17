@@ -647,8 +647,9 @@
     margin: 0;
 
     &.description {
-      padding: 20px 5px !important;
       display: block;
+      font-family: $font-family-base;
+      padding: 20px 5px !important;
     }
   }
 
@@ -1129,13 +1130,10 @@
 
 #ContributionView {
   [id*="Donor_Information_"] {
-    .crm-accordion-wrapper {
-      margin-left: -40px;
-      margin-right: -40px;
+    padding: 0;
 
-      .crm-accordion-body {
-        padding: 20px 43px !important;
-      }
+    .crm-accordion-wrapper .crm-accordion-body {
+      padding: 20px 43px !important;
     }
 
     td {

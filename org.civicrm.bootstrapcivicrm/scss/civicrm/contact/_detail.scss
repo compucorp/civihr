@@ -207,19 +207,20 @@
           padding: 0;
 
           .crm-ajax-container {
-            border: none !important;
-            border-bottom: 1px solid $crm-background !important;
+            margin-top: -1px;  
           }
         }                                                        
 
         #info {
           th {
+            border-bottom: 1px solid $crm-dark-grayblue !important;  
             text-transform: capitalize;
           }
 
           td,
           th {
-            padding: 10px 20px !important;
+            line-height: 1.5em !important;
+            padding: 15px 20px !important;
           }
         }
       }
