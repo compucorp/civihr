@@ -2,15 +2,16 @@
   #memberships,
   #inactive-memberships {
     box-shadow: $box-shadow;
+    margin-bottom: 20px;
 
     h3 {
-      padding: 20px;
-      margin: 0;
       background: $gray-lighter;
-      color: $gray-darker;
-      font-size: $font-size-h2;
-      font-family: $font-family-base;
       border-bottom: 1px solid $crm-background;
+      border-radius: $border-radius-base $border-radius-base 0 0;
+      color: $gray-darker;
+      font: $headings-font-weight $font-size-h2 $font-family-base;
+      margin: 0;
+      padding: 20px;
     }
 
     table {
@@ -19,17 +20,16 @@
       font-family: $font-family-base;
 
       thead {
-
-        tr{
+        tr {
           border-bottom: 1px solid $crm-dark-grayblue;
 
           th {
-            border-bottom: none;
             background: $gray-lighter;
-            color: $gray-darker;
-            vertical-align: middle;
             border: none;
-            padding: 10px 20px;
+            color: $gray-darker;
+            line-height: 1.5em;
+            padding: 15px 20px;            
+            vertical-align: middle;
 
             div {
               padding: 0;
@@ -46,13 +46,34 @@
 
           td {
             background: $crm-white;
-            color: $gray-dark;
             border: none;
-            padding: 10px 20px;
+            color: $gray-dark;
+            line-height: 1.5em;
+            padding: 15px 20px;
+
+            &:last-child {
+              text-align: right;
+            }
 
             a,
             span.btn-slide {
               color: $brand-primary !important;
+              text-transform: none;
+            }
+          }
+
+          &:last-child {
+            border-bottom-left-radius: $border-radius-base;
+            border-bottom-right-radius: $border-radius-base;
+            
+            td {
+              &:first-child {
+                border-bottom-left-radius: $border-radius-base;
+              }
+
+              &:last-child {
+                border-bottom-right-radius: $border-radius-base;
+              }
             }
           }
         }
@@ -62,6 +83,13 @@
 }
 
 .page-civicrm-contact-view {
+  .help {
+    background: $crm-light-green-color;
+    border: 1px solid $crm-green-color;
+    border-radius: $border-radius-child;
+    margin-bottom: 20px;
+  }
+
   .ui-widget-content {
     &.ui-tabs-panel {
       padding-right: 15px !important;
