@@ -1,6 +1,6 @@
 <?php
 
-use Civi\API\SelectQuery;
+use Civi\API\Api3SelectQuery;
 use CRM_Contact_BAO_Relationship as Relationship;
 use CRM_Contact_BAO_RelationshipType as RelationshipType;
 use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
@@ -11,9 +11,9 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 /**
- * This class is basically a wrapper around Civi\API\SelectQuery.
+ * This class is basically a wrapper around Civi\API\Api3SelectQuery.
  *
- * It's supposed to work just like SelectQuery, but it will automatically join
+ * It's supposed to work just like Api3SelectQuery, but it will automatically join
  * the LeaveRequest with its LeaveRequestDates and LeaveBalanceChange, allowing
  * us to filter the results based on balance change details, like returning only
  * Public Holiday Leave Requests.
@@ -29,7 +29,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
   private $params;
 
   /**
-   * @var \Civi\API\SelectQuery
+   * @var \Civi\API\Api3SelectQuery
    *  The SelectQuery instance wrapped by this class
    */
   private $query;
@@ -58,7 +58,9 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     $this->addWhere($customQuery);
     $this->addGroupBy($customQuery);
 
-    $this->query = new SelectQuery(LeaveRequest::class, $this->params, false);
+    $checkPermissions = !empty($this->params['check_permissions']);
+    $this->query = new Api3SelectQuery('LeaveRequest', $checkPermissions);
+    $this->query->where = $this->params;
     $this->query->merge($customQuery);
   }
 
@@ -202,12 +204,12 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
 
   /**
    * Adds the balance_change and dates to the Leave Requests array returned by
-   * the SelectQuery.
+   * the Api3SelectQuery.
    *
    * This is not the best code in terms of performance, since it will trigger
    * two SQL queries for each returned Leave Request (one to get the balance, and
    * another one to get the dates). But, since we want the query to work just
-   * like LeaveRequest.get (including all the params and options) and the SelectQuery
+   * like LeaveRequest.get (including all the params and options) and the Api3SelectQuery
    * class is not much flexible regarding returning calculated fields (the balance
    * change is the sum of the amount of all balance changes) and related records,
    * this is how it will work for now.

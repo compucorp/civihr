@@ -1,13 +1,13 @@
 <?php
 
-use Civi\API\SelectQuery;
+use Civi\API\Api3SelectQuery;
 use CRM_Contact_BAO_Relationship as Relationship;
 use CRM_Contact_BAO_RelationshipType as RelationshipType;
 use CRM_Contact_BAO_Contact as Contact;
 use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 
 /**
- * This class is basically a wrapper around Civi\API\SelectQuery.
+ * This class is basically a wrapper around Civi\API\Api3SelectQuery.
  */
 class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
 
@@ -25,7 +25,7 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
   private $leaveManagerService;
 
   /**
-   * @var \Civi\API\SelectQuery
+   * @var \Civi\API\Api3SelectQuery
    *  The SelectQuery instance wrapped by this class
    */
   private $query;
@@ -52,7 +52,9 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
     $this->addWhere($customQuery);
     $this->filterReturnFields();
 
-    $this->query = new SelectQuery(Contact::class, $this->params, false);
+    $checkPermissions = !empty($this->params['check_permissions']);
+    $this->query = new Api3SelectQuery('Contact', $checkPermissions);
+    $this->query->where = $this->params;
     $this->query->merge($customQuery);
   }
 

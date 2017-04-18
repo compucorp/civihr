@@ -1,10 +1,10 @@
 <?php
 
-use Civi\API\SelectQuery;
+use Civi\API\Api3SelectQuery;
 use CRM_HRComments_BAO_Comment as Comment;
 
 /**
- * This class is basically a wrapper around Civi\API\SelectQuery.
+ * This class is basically a wrapper around Civi\API\Api3SelectQuery.
  */
 class CRM_HRComments_API_Query_CommentSelect {
 
@@ -15,7 +15,7 @@ class CRM_HRComments_API_Query_CommentSelect {
   private $params;
 
   /**
-   * @var \Civi\API\SelectQuery
+   * @var \Civi\API\Api3SelectQuery
    *  The SelectQuery instance wrapped by this class
    */
   private $query;
@@ -33,7 +33,10 @@ class CRM_HRComments_API_Query_CommentSelect {
 
     $this->addWhere($customQuery);
     $this->filterReturnFields();
-    $this->query = new SelectQuery(Comment::class, $this->params, false);
+
+    $checkPermissions = !empty($this->params['check_permissions']);
+    $this->query = new Api3SelectQuery('Comment', $checkPermissions);
+    $this->query->where = $this->params;
     $this->query->merge($customQuery);
   }
 
