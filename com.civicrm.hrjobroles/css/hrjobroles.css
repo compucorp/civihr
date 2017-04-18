@@ -2809,7 +2809,6 @@
   text-decoration: none;
 }
 #hrjobroles a:focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -4197,7 +4196,6 @@
 #hrjobroles input[type="file"]:focus,
 #hrjobroles input[type="radio"]:focus,
 #hrjobroles input[type="checkbox"]:focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -4743,7 +4741,6 @@ fieldset[disabled]
   user-select: none;
 }
 #hrjobroles .btn:focus, #hrjobroles .btn.focus, #hrjobroles .btn:active:focus, #hrjobroles .btn:active.focus, #hrjobroles .btn.active:focus, #hrjobroles .btn.active.focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
