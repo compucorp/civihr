@@ -16,7 +16,35 @@
   }
 
   .crm-form-block {
-    border-radius: 2px !important;
+    border-radius: $border-radius-base !important;
+  }
+
+  .btn-slide-active {
+    .panel {
+      background: $crm-white;
+      border-radius: $border-radius-base;
+      box-shadow: $crm-form-layout-shadow;
+      padding: 0;
+      top: 22px;
+
+      li {
+        background: $crm-white;
+
+        .crm-hover-button {
+          color: $crm-copy !important;
+          padding: 5px 15px;
+          text-align: left;
+
+          &:not(:hover) {
+            color: $crm-copy !important;
+          }
+        }
+
+        &:hover {
+          background: $crm-background;
+        }
+      }
+    }
   }
 }
 

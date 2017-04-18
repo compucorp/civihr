@@ -1,6 +1,33 @@
 #Search.CRM_Pledge_Form_Search {
   table.selector {
     @include mx-expandable-table();
+
+    td {
+      .crm-hover-button:hover {
+        color: $brand-primary !important;
+
+        a {
+          color: $crm-copy !important;
+        }
+      }
+    }
+    
+    .crm-expand-row {
+      padding-left: 0;
+    }
+
+    .crm-ajax-container {
+      border-width: 1px !important;
+      margin-top: -1px;
+      
+      tr td {
+        text-align: left;
+      }
+
+      th:first-child {
+        padding-left: 20px !important; 
+      }
+    }
   }
 
   p.description {
