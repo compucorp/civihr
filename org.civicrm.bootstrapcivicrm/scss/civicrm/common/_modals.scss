@@ -108,10 +108,10 @@
 
   .ui-dialog-buttonpane {
     @extend .modal-footer, %open-sans-font-family;
-    background: $gray-lighter;
+    background: $crm-white;
     box-shadow: none;
-    margin-top: 0;
     display: block;
+    margin-top: 0;
 
     .ui-dialog-buttonset {
       width: 100%;
