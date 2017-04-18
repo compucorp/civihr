@@ -34,9 +34,7 @@ class CRM_HRComments_API_Query_CommentSelect {
     $this->addWhere($customQuery);
     $this->filterReturnFields();
 
-    $checkPermissions = !empty($this->params['check_permissions']);
-    $this->query = new Api3SelectQuery('Comment', $checkPermissions);
-    $this->query->where = $this->params;
+    $this->buildSelectQuery();
     $this->query->merge($customQuery);
   }
 
@@ -133,5 +131,26 @@ class CRM_HRComments_API_Query_CommentSelect {
     );
 
     return $conditions;
+  }
+
+  /**
+   * Build the internal Api3SelectQuery object based on the instance's params.
+   */
+  private function buildSelectQuery() {
+    $checkPermissions = !empty($this->params['check_permissions']);
+    $this->query = new Api3SelectQuery('Comment', $checkPermissions);
+    $options = _civicrm_api3_get_options_from_params($this->params);
+
+    if ($options['is_count']) {
+      $this->query->select = ['count_rows'];
+    }
+    else {
+      $this->query->select = array_keys(array_filter($options['return']));
+      $this->query->orderBy = $options['sort'];
+    }
+
+    $this->query->limit = $options['limit'];
+    $this->query->offset = $options['offset'];
+    $this->query->where = $this->params;
   }
 }

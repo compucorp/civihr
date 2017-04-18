@@ -1,22 +1,27 @@
 <?php
 
-use Civi\API\Api3SelectQuery;
 use CRM_Contact_BAO_Relationship as Relationship;
 use CRM_Contact_BAO_RelationshipType as RelationshipType;
 use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
 use CRM_Hrjobcontract_BAO_HRJobDetails as HRJobDetails;
 use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
+use CRM_HRLeaveAndAbsences_API_Query_Select as SelectQuery;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 /**
- * This class is basically a wrapper around Civi\API\Api3SelectQuery.
+ * This class uses CRM_HRLeaveAndAbsences_API_Query_Select to customize
+ * LeaveRequest select queries by automatically joining the LeaveRequest with
+ * its LeaveRequestDates and LeaveBalanceChange, allowing us to filter the
+ * results based on balance change details, like returning only Public Holiday
+ * Leave Requests.
  *
- * It's supposed to work just like Api3SelectQuery, but it will automatically join
- * the LeaveRequest with its LeaveRequestDates and LeaveBalanceChange, allowing
- * us to filter the results based on balance change details, like returning only
- * Public Holiday Leave Requests.
+ * It also make sure only valid LeaveRequests (i.e. only those within both an
+ * absence period and contract dates) are returned.
+ *
+ * Finally, it also deals with the security aspect and ensures the current
+ * logged in user will see the Leave Requests they have the right to.
  */
 class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
 
@@ -29,7 +34,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
   private $params;
 
   /**
-   * @var \Civi\API\Api3SelectQuery
+   * @var \CRM_HRLeaveAndAbsences_API_Query_Select
    *  The SelectQuery instance wrapped by this class
    */
   private $query;
@@ -58,9 +63,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     $this->addWhere($customQuery);
     $this->addGroupBy($customQuery);
 
-    $checkPermissions = !empty($this->params['check_permissions']);
-    $this->query = new Api3SelectQuery('LeaveRequest', $checkPermissions);
-    $this->query->where = $this->params;
+    $this->query = new SelectQuery('LeaveRequest', $this->params);
     $this->query->merge($customQuery);
   }
 
@@ -204,13 +207,13 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
 
   /**
    * Adds the balance_change and dates to the Leave Requests array returned by
-   * the Api3SelectQuery.
+   * query object.
    *
    * This is not the best code in terms of performance, since it will trigger
    * two SQL queries for each returned Leave Request (one to get the balance, and
    * another one to get the dates). But, since we want the query to work just
-   * like LeaveRequest.get (including all the params and options) and the Api3SelectQuery
-   * class is not much flexible regarding returning calculated fields (the balance
+   * like LeaveRequest.get (including all the params and options) and the query
+   * object is not much flexible regarding returning calculated fields (the balance
    * change is the sum of the amount of all balance changes) and related records,
    * this is how it will work for now.
    *
