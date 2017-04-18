@@ -59,6 +59,18 @@
             span.btn-slide {
               color: $brand-primary !important;
               text-transform: none;
+
+              &:hover {
+                background: none;
+              }
+
+              a {
+                color: $crm-copy !important;
+
+                &:hover {
+                  background: none;
+                }
+              }
             }
           }
 
