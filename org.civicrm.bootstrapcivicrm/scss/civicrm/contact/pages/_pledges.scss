@@ -2,13 +2,11 @@
   table.selector {
     @include mx-expandable-table();
 
-    td {
-      .crm-hover-button:hover {
-        color: $brand-primary !important;
+    td .crm-hover-button:hover {
+      color: $brand-primary !important;
 
-        a {
-          color: $crm-copy !important;
-        }
+      a {
+        color: $crm-copy !important;
       }
     }
     
