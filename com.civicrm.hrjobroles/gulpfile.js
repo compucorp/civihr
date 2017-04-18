@@ -1,3 +1,6 @@
+var exec = require('child_process').exec;
+var civicrmScssRoot = require('civicrm-scssroot')();
+var fs = require('fs');
 var gulp = require('gulp');
 var clean = require('gulp-clean');
 var rename = require('gulp-rename');
@@ -5,17 +8,21 @@ var replace = require('gulp-replace');
 var bulk = require('gulp-sass-bulk-import');
 var sass = require('gulp-sass');
 var karma = require('karma');
-var exec = require('child_process').exec;
 var path = require('path');
-var fs = require('fs');
 
-gulp.task('sass', function (done) {
-  // The app style relies on compass's gems, so we need to rely on it
-  // for the time being
-  exec('compass compile', function (_, stdout, stderr) {
-    console.log(stdout);
-    done();
-  });
+gulp.task('sass', ['sass:sync'], function () {
+  return gulp.src('scss/*.scss')
+    .pipe(bulk())
+    .pipe(sass({
+      outputStyle: 'compressed',
+      includePaths: civicrmScssRoot.getPath(),
+      precision: 10
+    }).on('error', sass.logError))
+    .pipe(gulp.dest('css/'));
+});
+
+gulp.task('sass:sync', function(){
+  civicrmScssRoot.updateSync();
 });
 
 gulp.task('requirejs-bundle', function (done) {
