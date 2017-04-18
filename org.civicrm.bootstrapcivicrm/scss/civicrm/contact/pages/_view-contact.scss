@@ -1,6 +1,8 @@
 .page-civicrm-contact-view {
   #crm-container {
     .ui-widget-content {
+      font-family: $font-family-base;
+      
       a.button {
         background: $brand-primary;
         margin-left: 0 !important;

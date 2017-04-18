@@ -2,6 +2,7 @@
   @extend %open-sans-font-family;
   $border-color: $table-border-color;
   border: 0;
+  border-radius: $border-radius-base;
 
   tr {
     background: $crm-customselect-background !important;
@@ -32,8 +33,8 @@
   }
 
   td .crm-hover-button {
+    background: none !important;
     border: 0;
-    background-image: none !important;
 
     &,
     * {
@@ -44,6 +45,10 @@
       &,
       * {
         color: $brand-primary !important;
+      }
+
+      a {
+        color: $crm-copy !important;
       }
     }
 
@@ -83,27 +88,23 @@
   }
 
   tr {
-    &:first-child {
-      th {
-        &:first-child {
-          border-top-left-radius: 2px;
-        }
+    &:first-child th {
+      &:first-child {
+        border-top-left-radius: $border-radius-base;
+      }
 
-        &:last-child {
-          border-top-right-radius: 2px;
-        }
+      &:last-child {
+        border-top-right-radius: $border-radius-base;
       }
     }
 
-    &:last-child {
-      td {
-        &:first-child {
-          border-bottom-left-radius: 2px;
-        }
+    &:last-child td {
+      &:first-child {
+        border-bottom-left-radius: $border-radius-base;
+      }
 
-        &:last-child {
-          border-bottom-right-radius: 2px;
-        }
+      &:last-child {
+        border-bottom-right-radius: $border-radius-base;
       }
     }
 
@@ -124,13 +125,13 @@
   .columnheader {
     th,
     td {
-      border-bottom: none;
       background-color: $gray-lighter !important;
-      color: $gray-darker !important;
-      vertical-align: middle !important;
       border: none !important;
-      padding: 10px !important;
-      line-height: 30px;
+      color: $gray-darker !important;
+      line-height: 1.5em;
+      padding: 15px 10px !important;
+      text-transform: capitalize;
+      vertical-align: middle !important;
 
       div {
         padding: 0;
@@ -162,19 +163,18 @@
         background: $crm-white !important;
         border: none !important;
         color: $gray-dark;
-        padding: 10px;
-        line-height: 30px;
+        padding: 15px 10px;
+        line-height: 1.5em;
         vertical-align: middle;
       }
 
       th {
-        border-bottom: none;
         background: $crm-background !important;
-        color: $gray-darker !important;
-        vertical-align: middle;
         border: none;
-        padding: 10px;
-        line-height: 1.1em;
+        color: $gray-darker !important;
+        padding: 15px 10px;
+        line-height: 1.5em;
+        vertical-align: middle;
 
         div {
           padding: 0;
@@ -216,15 +216,13 @@
     }
 
     tr {
-      &:not(.crm-child-row) {
-        > td {
-          padding: 10px 20px;
-          word-break: break-word;
-          min-width: 10px;
+      &:not(.crm-child-row) > td {
+        min-width: 10px;
+        padding: 15px 20px;
+        word-break: break-word;
 
-          &:first-child {
-            align-items: center;
-          }
+        &:first-child {
+          align-items: center;
         }
       }
     }
