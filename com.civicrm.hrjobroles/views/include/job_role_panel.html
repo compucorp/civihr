@@ -259,28 +259,28 @@
         </uib-tab>
         <uib-tab heading="Funding">
           <div ng-init="jobroles.initData(job_roles_data.id, 'funders', job_roles_data)">
-            <form editable-form name="tableform"
+            <form editable-form
+              name="tableform"
               onaftersave="jobroles.updateRole(job_roles_data.id, 'funders')"
               oncancel="jobroles.onCancel(job_roles_data.id, 'funders')">
               <button type="button"
-                class="btn btn-sm btn-tab-action pull-right"
+                class="btn btn-link pull-right"
                 ng-show="!tableform.$visible"
                 ng-click="tableform.$show()">
-                <span class="glyphicon glyphicon-pencil"></span> Edit
+                <span class="btn-icon"><i class="fa fa-pencil"></i></span>Edit
               </button>
-              <div class="btn-group btn-group-sm btn-group-tab-action pull-right"
-                ng-show="tableform.$visible">
+              <div class="btn-group pull-right" ng-show="tableform.$visible">
                 <button type="submit" ng-disabled="tableform.$waiting"
-                  class="btn btn-sm btn-tab-action">
-                <span class="glyphicon glyphicon-ok"></span> save
+                  class="btn btn-link">
+                  <span class="btn-icon"><i class="fa fa-check"></i></span>Save
                 </button>
                 <button type="button" ng-disabled="tableform.$waiting"
                   ng-click="tableform.$cancel()"
-                  class="btn btn-sm btn-tab-action">
-                  <span class="glyphicon glyphicon-remove"></span> cancel
+                  class="btn btn-link">
+                  <span class="btn-icon"><i class="fa fa-times"></i></span>Cancel
                 </button>
               </div>
-              <table class="table table-striped {{prefix}}table-sort">
+              <table class="table table-striped">
                 <thead>
                   <tr>
                     <th style="width:40%">Funder</th>
@@ -293,28 +293,25 @@
                 <tbody>
                   <tr ng-repeat="(key, funder) in jobroles.edit_data[job_roles_data.id]['funders']">
                     <td>
-                      <!--show ui-select for funder in edit mode-->
+                      <span ng-show="!tableform.$visible">
+                        {{funder.funder_id.sort_name}}
+                      </span>
                       <span ng-show="tableform.$visible">
                         <ui-select class="funder-select"
                           prevent-animations
                           theme="civihr-ui-select"
                           ng-model="funder.funder_id">
-                        <ui-select-match prevent-animations allow-clear class="ui-select-match">
-                          {{$select.selected.sort_name}}
-                        </ui-select-match>
-                        <ui-select-choices
-                          prevent-animations
-                          class="ui-select-choices"
-                          repeat="contact in jobroles.contactList | filter: $select.search"
-                          refresh="jobroles.getContactList($select.search)"
-                          refresh-delay="500">
-                          <div ng-bind-html="contact.sort_name | highlight: $select.search"></div>
-                        </ui-select-choices>
-                      </ui-select>
-                      </span>
-                      <!--show funder in non-edit mode-->
-                      <span ng-show="!tableform.$visible">
-                        {{funder.funder_id.sort_name}}
+                          <ui-select-match prevent-animations allow-clear placeholder="Select a funder">
+                            {{$select.selected.sort_name}}
+                          </ui-select-match>
+                          <ui-select-choices
+                            prevent-animations
+                            repeat="contact in jobroles.contactList | filter: $select.search"
+                            refresh="jobroles.getContactList($select.search)"
+                            refresh-delay="500">
+                            <div ng-bind-html="contact.sort_name | highlight: $select.search"></div>
+                          </ui-select-choices>
+                        </ui-select>
                       </span>
                     </td>
                     <td>
@@ -351,20 +348,19 @@
                     <td ng-show="tableform.$visible">
                       <button type="button"
                         ng-click="jobroles.deleteAdditionalRow(job_roles_data.id, 'funder', key)"
-                        class="btn btn-danger pull-left">
-                        <span class="fa fa-remove" aria-hidden="true"></span>
+                        class="btn btn-sm btn-danger">
+                        <i class="fa fa-remove"></i>
                       </button>
                     </td>
                   </tr>
                   <tr>
                     <td colspan="{{!tableform.$visible ? 4 : 5}}">
-                      <a href ng-show="tableform.$visible"
+                      <button type="button" ng-show="tableform.$visible"
                         ng-disabled="tableform.$waiting"
                         ng-click="jobroles.addAdditionalRow(job_roles_data.id, 'funder')"
-                        class=" btn btn-link">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                        Add New Funder
-                      </a>
+                        class="btn btn-link">
+                        <span class="btn-icon"><i class="fa fa-plus"></i></span>Add New Funder
+                      </button>
                     </td>
                   </tr>
                 </tbody>
