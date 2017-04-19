@@ -1,6 +1,6 @@
 define([
   'leave-absences/absence-tab/modules/components',
-], function (_, moment, components) {
+], function (components) {
 
   components.component('absenceTabCalendar', {
     bindings: {

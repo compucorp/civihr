@@ -38,7 +38,6 @@
 {literal}
   <script type="text/javascript">
     document.addEventListener('absenceTabReady', function () {
-      console.log('absenceTabReady');
       angular.bootstrap(document.querySelector('[data-leave-absences-absence-tab]'), ['absence-tab']);
     });
   </script>

@@ -1,22 +1,16 @@
 <div class="tabs-container">
-  <div class="container">
-    <ul class="nav nav-tabs nav-justified nav-tabs-header">
-      <li ui-sref-active="active">
-        <a ui-sref="absence-tab.report">Report</a>
-      </li>
-      <li ui-sref-active="active">
-        <a ui-sref="absence-tab.calendar">Calendar</a>
-      </li>
-      <!--<li ui-sref-active="active">-->
-        <!--<a ui-sref="absence-tab.entitlements">Entitlements</a>-->
-      <!--</li>-->
-      <!--<li ui-sref-active="active">-->
-        <!--<a ui-sref="absence-tab.workpatterns">Work Patterns</a>-->
-      <!--</li>-->
-    </ul>
-    <div class="tab-content">
-      <div ui-view></div>
-    </div>
-  </div>
+  <uib-tabset>
+    <uib-tab heading="Report">
+      <absence-tab-report></absence-tab-report>
+    </uib-tab>
+    <uib-tab heading="Calendar">
+      <absence-tab-calendar></absence-tab-calendar>
+    </uib-tab>
+    <uib-tab heading="Entitlements">
+      <absence-tab-entitlements></absence-tab-entitlements>
+    </uib-tab>
+    <uib-tab heading="Work Patterns">
+      <absence-tab-work-patterns></absence-tab-work-patterns>
+    </uib-tab>
+  </uib-tabset>
 </div>
-

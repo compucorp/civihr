@@ -2,19 +2,19 @@ define([
   'leave-absences/absence-tab/modules/components',
 ], function (components) {
 
-  components.component('absenceTabReport', {
+  components.component('absenceTabEntitlements', {
     bindings: {
       contactId: '<'
     },
     templateUrl: ['settings', function (settings) {
-      return settings.pathTpl + 'components/absence-tab-report.html';
+      return settings.pathTpl + 'components/absence-tab-entitlements.html';
     }],
-    controllerAs: 'report',
+    controllerAs: 'entitlements',
     controller: ['$log', controller]
   });
 
   function controller($log) {
-    $log.debug('Component: absence-tab-report');
+    $log.debug('Component: absence-tab-entitlements');
 
     var vm = {};
 

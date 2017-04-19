@@ -24,6 +24,4 @@
           return e;
         })());
     });
-
-
 })(CRM, require);
