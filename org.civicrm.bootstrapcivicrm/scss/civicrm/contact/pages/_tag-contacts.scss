@@ -7,7 +7,10 @@
   }
 
   .help {
-    padding: 15px 5px;
+    background: $crm-light-green-color;
+    border: 1px solid $crm-green-color;
+    margin-bottom: 20px;
+    padding: 15px 20px;
   }
 
   .tabs-secondary {

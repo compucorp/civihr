@@ -234,6 +234,10 @@ $button-border-radius: 2px;
     a {
       display: inline-block !important;
       float: none !important;
+
+      &.button {
+        box-shadow: $crm-form-layout-shadow;
+      }
     }
 
     .crm-i {
