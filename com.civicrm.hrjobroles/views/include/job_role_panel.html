@@ -1,34 +1,27 @@
-<div class="panel panel-default">
-  <div class="panel-heading {{prefix}}panel-action">
-    <div class="row form-horizontal">
-      <div class="col-xs-12 col-sm-6">
-        <div class="form-group">
-          <label class="control-label control-label-lg">Role / Project Name:</label>
-          <span class="form-control-static form-control-static-md">{{jobroles.edit_data[job_roles_data.id]['title']}}</span>
-        </div>
-      </div>
-      <div class="col-xs-12 col-sm-6">
-        <div class="form-group">
-          <label class="control-label control-label-lg">Dates:</label>
-          <span class="form-control-static form-control-static-md">{{job_roles_data['start_date'] | formatDate}} - {{job_roles_data['end_date'] || "Unspecified" | formatDate }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="panel-body">
+<section class="panel panel-default">
+  <header class="panel-heading">
     <div class="row">
-      <div class="col-xs-12">
-        <a class="btn btn-collapse" ng-click="jobroles.collapseRow(job_roles_data.id)">
-          <i ng-class="{
-            'fa': true,
-            'fa-chevron-down': !jobroles.collapsedRows[job_roles_data.id],
-            'fa-chevron-right': jobroles.collapsedRows[job_roles_data.id]
-          }"></i>
-          Details
-        </a>
+      <div class="col-sm-6">
+        <dl class="dl-inline">
+          <dt>Role / Project Name:</dt>
+          <dd>{{jobroles.edit_data[job_roles_data.id]['title']}}</dd>
+        </dl>
+      </div>
+      <div class="col-sm-6">
+        <dl class="dl-inline">
+          <dt>Dates:</dt>
+          <dd>{{job_roles_data['start_date'] | formatDate}} - {{job_roles_data['end_date'] || "Unspecified" | formatDate }}</dd>
+        </dl>
       </div>
     </div>
-    <div uib-collapse="jobroles.isRowCollapsed(job_roles_data.id)">
+  </header>
+  <div class="panel-body panel-body-abstract">
+    <span role="button" data-toggle="collapse" href="#show-more-{{job_roles_data.id}}">
+      Details
+    </span>
+  </div>
+  <div id="show-more-{{job_roles_data.id}}" class="collapse in">
+    <div class="panel-body panel-body-extra">
       <div class="{{prefix}}role-details">
         <div class="row">
           <div class="col-xs-12">
@@ -495,4 +488,4 @@
       </div>
     </div>
   </div>
-</div>
+</section>
