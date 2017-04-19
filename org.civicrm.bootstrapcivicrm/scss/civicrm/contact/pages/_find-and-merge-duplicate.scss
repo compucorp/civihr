@@ -5,8 +5,7 @@
   }
 
   .help {
-    padding-top: 0;
-    padding-bottom: 0;
+    margin-bottom: 20px;
 
     + .crm-submit-buttons {
       display: none;
@@ -14,9 +13,9 @@
   }
 
   .action-link {
-    line-height: normal;
     height: auto;
-    margin: 20px 15px;
+    line-height: normal;
+    margin: 20px 15px 20px 0;
 
     .button {
       border: 0 !important;
@@ -46,26 +45,38 @@
     }
   }
 
-  div[id*="browseValues_"] {
-    padding: 15px;
-
+  #crm-main-content-wrapper div[id*="browseValues_"] {
     table {
       @include mx-expandable-table();
+
+      thead th {
+        padding: 15px 20px !important;
+      }
+
+      tbody td {
+        padding: 15px 20px !important;
+
+        &:last-child {
+          text-align: right;
+        }
+      }
     }
 
     a.button {
       box-shadow: $box-shadow;
-      background: $brand-primary;
+      background: $brand-primary !important;
+      border-color: $brand-primary !important;
+      color: $crm-white !important;
+
+      &:hover {
+        color: $gray-darker !important;
+      }
     }
   }
 
   table {
     &.mergecontact {
       @extend %civihr-table;
-
-      .DataTables_sort_icon {
-        display: inline-block !important;
-      }
     }
   }
 

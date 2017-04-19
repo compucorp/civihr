@@ -11,6 +11,34 @@
 
   #dedupeExceptions {
     @extend %civihr-table;
+  } 
+
+  .dataTables_length {
+    float: left;
+  }
+
+  .dataTables_filter input[type="search"] {
+    background-color: $crm-white;
+    border: 1px solid $crm-darker-grayblue;
+    border-radius: $border-radius-base;
+    box-shadow: $crm-search-input-shadow;
+    color: $gray-darker;     
+    font-size: $font-size-base;
+    height: 30px;
+    line-height: 1.5;
+    padding: 4px 10px;
+    @include transition(border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s);     
+  }
+
+  table {
+    th {
+      background: $gray-lighter !important;
+      padding: 7px 20px !important;
+    }
+
+    td {
+      padding: 7px 20px !important;
+    }
   }
 
   .ui-toolbar {
