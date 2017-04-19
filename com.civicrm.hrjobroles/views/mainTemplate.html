@@ -1,26 +1,30 @@
 <div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">{{jobroles.message}}</div>
 
-<h3 ng-show="jobroles.loading || jobroles.present_job_roles.length" class="header-bar header-bar-primary">Current Roles and Projects:</h3>
-<div id="bootstrap-theme">
+<section>
+  <div class="page-header" ng-show="jobroles.loading || jobroles.present_job_roles.length">
+    <h1>Current Roles and Projects:</h1>
+  </div>
   <crm-loading ng-show="jobroles.loading"></crm-loading>
-</div>
-<div class="" ng-show="!loading">
-  <ul class="{{prefix}}list-role">
+  <ul class="list-unstyled {{prefix}}list-role" ng-show="!jobroles.loading">
     <li class="{{prefix}}list-role-item"
       ng-repeat="job_roles_data in jobroles.present_job_roles"
       ng-include
       src="jobroles.job_role_panel_url">
     </li>
   </ul>
-  <h3 ng-show="jobroles.past_job_roles.length > 0" class="header-bar header-bar-danger">Past Roles and Projects:</h3>
-  <ul class="{{prefix}}list-role">
+</section>
+<section ng-show="jobroles.past_job_roles.length">
+  <div class="page-header">
+    <h1>Past Roles and Projects:</h1>
+  </div>
+  <ul class="list-unstyled {{prefix}}list-role">
     <li class="{{prefix}}list-role-item"
       ng-repeat="job_roles_data in jobroles.past_job_roles"
       ng-include
       src="jobroles.job_role_panel_url">
     </li>
   </ul>
-</div>
+</section>
 
 <div class="{{prefix}}list-role-item" ng-show="!!jobroles.add_new">
   <div ng-include src="jobroles.add_new_role_url"></div>
