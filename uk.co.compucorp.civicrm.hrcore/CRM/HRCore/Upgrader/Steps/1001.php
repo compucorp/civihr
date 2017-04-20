@@ -83,11 +83,11 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
     $ethnicityGroup = civicrm_api3('CustomField', 'get', [
       'sequential' => 1,
       'return' => ['option_group_id'],
-      'name' => 'ethnicity',
+      'name' => 'Ethnicity',
       'options' => ['limit' => 1]
     ]);
 
-    return $ethnicityGroup['values']['name'];
+    return $ethnicityGroup['values'][0]['option_group_id'];
   }
 
   /**

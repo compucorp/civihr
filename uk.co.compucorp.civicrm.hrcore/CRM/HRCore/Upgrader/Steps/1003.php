@@ -11,6 +11,7 @@ trait CRM_HRCore_Upgrader_Steps_1003 {
   public function upgrade_1003() {
     // hiding Tags and Groups from contact related screens.
     $this->up1003_disableSettingOptions('contact_view_options', ['tag', 'group']);
+    $this->up1003_disableSettingOptions('contact_edit_options', ['TagsAndGroups']);
 
     // hiding Postal Code Suffix, County, Latitude and Longitude from address.
     $this->up1003_disableSettingOptions('address_options', ['postal_code_suffix', 'county', 'geo_code_1', 'geo_code_2']);
