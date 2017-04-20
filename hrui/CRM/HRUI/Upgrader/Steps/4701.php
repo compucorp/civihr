@@ -1,92 +1,78 @@
 <?php
 
 trait CRM_HRUI_Upgrader_Steps_4701 {
-
   /**
-   * Upgrader to :
-   * 1) Set CiviHR theme by updating the custom CSS URL
-   * 2) Sort Individual Prefixes alphabetically
-   * 3) Rename website to 'Social account'
-   *
-   * @return bool
+   * Adds Custom Inline Data group for fields to be shown within contact details
+   * and a NI / SSN field alphanumeric field for that group.
    */
   public function upgrade_4701() {
-    $this->up4701_setCustomCSSURL();
-    $this->up4701_sortIndividualPrefixes();
-    $this->up4701_moveSkypeTop();
-    $this->up4701_websiteToSocialAccountReplacement();
-
-    return TRUE;
-  }
-
-  private function up4701_setCustomCSSURL() {
-    $customCSSPath = CRM_Core_Resources::singleton()->getPath('org.civicrm.shoreditch', 'css/custom-civicrm.css');
-
-    if (!empty($customCSSPath)) {
-      civicrm_api3('Setting', 'create', [
-        'customCSSURL' => $customCSSPath,
-      ]);
-    }
-  }
-
-  /**
-   * Sorts Individual Prefixes alphabetically
-   */
-  private function up4701_sortIndividualPrefixes() {
-    // fetch all prefixes sorted alphabetically ( by their labels )
-    // hence ('sort' => 'label asc').
-    $prefixes = civicrm_api3('OptionValue', 'get', [
+    // Add Inline Custom Group
+    $customGroupResult = civicrm_api3('CustomGroup', 'get', [
       'sequential' => 1,
-      'return' => ['id'],
-      'option_group_id' => 'individual_prefix',
-      'options' => ['limit' => 0, 'sort' => 'label asc']
+      'name' => 'Inline_Custom_Data'
     ]);
 
-    // update prefix weights
-    $weight = 1;
-    if (!empty($prefixes['values'])) {
-      foreach($prefixes['values'] as $prefix) {
-        civicrm_api3('OptionValue', 'create', [
-          'id' => $prefix['id'],
-          'weight' => $weight++
-        ]);
-      }
+    if ($customGroupResult['count'] < 1) {
+      $groupData = [
+        'sequential' => 1,
+        'title' => 'Inline Custom Data',
+        'name' => 'Inline_Custom_Data',
+        'extends' => ['0' => 'Individual'],
+        'weight' => 21,
+        'collapse_display' => 1,
+        'style' => 'Inline',
+        'is_active' => 1
+      ];
+      $customGroupResult = civicrm_api3('CustomGroup', 'create', $groupData);
     }
-  }
+    $inlineCustomGroup = array_shift($customGroupResult['values']);
 
-  /**
-   * Moves Skype option value to the top of IM list
-   */
-  private function up4701_moveSkypeTop() {
-    civicrm_api3('OptionValue', 'create', [
-      'option_group_id' => 'instant_messenger_service',
-      'name' => 'Skype',
-      'weight' => 0,
-    ]);
-  }
-
-  /**
-   * Replaces 'Website Type' option group label by 'Social Account Type'
-   * and adds word replacement for 'Website', 'Website Type' and 'Add another website'
-   */
-  private function up4701_websiteToSocialAccountReplacement() {
-    civicrm_api3('OptionGroup', 'get', [
-      'name' => 'website_type',
-      'api.OptionGroup.create' => ['id' => '$value.id', 'title' => 'Social Account Type'],
-    ]);
-
-    $wordsToReplace = [
-      ['Website', 'Social Account'],
-      ['Website Type', 'Social Account Type'],
-      ['Add another website', 'Add another social account'],
+    // Add NI/SSN Field
+    $fieldData = [
+      'sequential' => 1,
+      'custom_group_id' => $inlineCustomGroup['id'],
+      'name' => 'NI_SSN',
+      'label' => 'NI / SSN',
+      'html_type' => 'Text',
+      'data_type' => 'String',
+      'weight' => 1,
+      'is_required' => 0,
+      'is_searchable' => 1,
+      'is_active' => 1
     ];
+    $createResult = civicrm_api3('CustomField', 'create', $fieldData);
+    $niSSNField = array_shift($createResult['values']);
 
-    foreach ($wordsToReplace as $word) {
-      civicrm_api3('WordReplacement', 'create', [
-        'find_word' => $word[0],
-        'replace_word' => $word[1],
-      ]);
-    }
+    $identTableName = $this->up4701_getIdentTableName();
+    $identFieldName = $this->up4701_getIdentFieldName();
+
+    $query = "
+      UPDATE {$inlineCustomGroup['table_name']}, $identTableName
+         SET {$niSSNField['column_name']} = $identFieldName
+       WHERE {$inlineCustomGroup['table_name']}.entity_id = $identTableName.entity_id
+         AND is_government = 1
+    ";
+    CRM_Core_DAO::executeQuery($query);
+
+    return true;
+  }
+
+  private function up4701_getIdentTableName() {
+    $customGroupResult = civicrm_api3('CustomGroup', 'get', [
+      'sequential' => 1,
+      'name' => 'Identify'
+    ]);
+
+    return $customGroupResult['values'][0]['table_name'];
+  }
+
+  private function up4701_getIdentFieldName() {
+    $customFieldResult = civicrm_api3('CustomField', 'get', [
+      'sequential' => 1,
+      'name' => 'Number'
+    ]);
+
+    return $customFieldResult['values'][0]['column_name'];
   }
 
 }
