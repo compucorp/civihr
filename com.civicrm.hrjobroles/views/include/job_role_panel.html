@@ -374,24 +374,24 @@
               onaftersave="jobroles.updateRole(job_roles_data.id, 'cost_centers')"
               oncancel="jobroles.onCancel(job_roles_data.id, 'cost_centers')">
               <button type="button"
-                class="btn btn-sm btn-tab-action pull-right"
+                class="btn btn-link pull-right"
                 ng-show="!tableformcc.$visible"
                 ng-click="tableformcc.$show()">
-                <span class="glyphicon glyphicon-pencil"></span> Edit
+                <span class="btn-icon"><i class="fa fa-pencil"></i></span>Edit
               </button>
-              <div class="btn-group btn-group-sm btn-group-tab-action pull-right"
+              <div class="btn-group pull-right"
                 ng-show="tableformcc.$visible">
                 <button type="submit" ng-disabled="tableformcc.$waiting"
-                  class="btn btn-sm btn-tab-action">
-                  <span class="glyphicon glyphicon-ok"></span> save
+                  class="btn btn-link">
+                  <span class="btn-icon"><i class="fa fa-check"></i></span>Save
                 </button>
                 <button type="button" ng-disabled="tableformcc.$waiting"
                   ng-click="tableformcc.$cancel()"
-                  class="btn btn-sm btn-tab-action">
-                  <span class="glyphicon glyphicon-remove"></span> cancel
+                  class="btn btn-link">
+                  <span class="btn-icon"><i class="fa fa-times"></i></span>Cancel
                 </button>
               </div>
-              <table class="table table-striped {{prefix}}table-sort">
+              <table class="table table-striped">
                 <thead>
                   <tr>
                     <th style="width:40%">Cost Centres</th>
@@ -419,7 +419,7 @@
                         e-name="cost-centre-type"
                         e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"
                         e-ng-change="jobroles.updateAdditionalRowType(job_roles_data.id, 'cost_centre', key, $data)">
-                        {{ jobroles.showRowType(cost_centre) }}
+                        {{jobroles.showRowType(cost_centre)}}
                       </span>
                     </td>
                     <td>
@@ -429,7 +429,7 @@
                           e-form="tableformcc"
                           e-name="cost-centre-percent"
                           onbeforesave="checkName($data, user.id)">
-                          {{ cost_centre.percentage || 'empty' }}
+                          {{cost_centre.percentage || 'empty'}}
                         </span>
                       </span>
                     </td>
@@ -440,27 +440,26 @@
                           e-form="tableformcc"
                           e-name="cost-centre-amount"
                           onbeforesave="checkName($data, user.id)">
-                          {{ cost_centre.amount || 'empty' }}
+                          {{cost_centre.amount || 'empty'}}
                         </span>
                       </span>
                     </td>
                     <td ng-show="tableformcc.$visible">
                       <button type="button"
                         ng-click="jobroles.deleteAdditionalRow(job_roles_data.id, 'cost_centre', key)"
-                        class="btn btn-danger pull-left">
-                        <span class="fa fa-remove" aria-hidden="true"></span>
+                        class="btn btn-sm btn-danger pull-left">
+                        <i class="fa fa-remove"></i>
                       </button>
                     </td>
                   </tr>
                   <tr>
                     <td colspan="{{!tableformcc.$visible ? 4 : 5}}">
-                      <a href
+                      <button type="button"
                         ng-show="tableformcc.$visible"
                         ng-disabled="tableformcc.$waiting"
                         ng-click="jobroles.addAdditionalRow(job_roles_data.id, 'cost_centre')"
                         class="btn btn-link">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                        Add New Cost Centre
+                        <span class="btn-icon"><i class="fa fa-plus"></i></span>Add New Cost Centre
                       </a>
                     </td>
                   </tr>
