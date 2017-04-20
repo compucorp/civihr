@@ -1018,7 +1018,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    *
    * @return bool
    */
-  public function upgrade_1029() {
+  public function upgrade_1027() {
     $optionsValue = [
       3 => 'Bi-Weekly',
       4 => 'Bi-Monthly',
@@ -1253,8 +1253,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    *
    * @return TRUE
    */
-  public function upgrade_1027() {
-    $this->up1027_removeDuplicateContractType();
+  public function upgrade_1029() {
+    $this->up1029_removeDuplicateContractType();
 
     $optionValues = [
       'hrjc_contract_type' => ['Fixed Term'],
@@ -1266,7 +1266,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       $this->addOptionValues($optionGroup, $values);
     }
 
-    $this->up1027_sortContractTypes();
+    $this->up1029_sortContractTypes();
 
     return true;
   }
@@ -1274,7 +1274,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   /**
    * Removes duplicates for 'Employee - Permanent' contract type.
    */
-  private function up1027_removeDuplicateContractType() {
+  private function up1029_removeDuplicateContractType() {
     $result = civicrm_api3('OptionValue', 'get', [
       'sequential' => 1,
       'option_group_id' => 'hrjc_contract_type',
@@ -1296,7 +1296,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   /**
    * Sorts contract types alphabetically
    */
-   private function up1027_sortContractTypes() {
+   private function up1029_sortContractTypes() {
     // fetch all contract types sorted alphabetically ( by their labels )
     // hence ['sort' => 'label asc']
     $prefixes = civicrm_api3('OptionValue', 'get', [
