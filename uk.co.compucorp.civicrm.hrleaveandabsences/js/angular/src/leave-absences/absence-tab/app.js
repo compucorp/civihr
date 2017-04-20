@@ -16,6 +16,7 @@ define([
     'ui.router',
     'ui.bootstrap',
     'common.angularDate',
+    'common.directives',
     'absence-tab.settings',
     'absence-tab.components'
   ])
