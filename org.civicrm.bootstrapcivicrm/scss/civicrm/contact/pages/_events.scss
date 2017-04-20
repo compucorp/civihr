@@ -431,8 +431,19 @@
       tr {
         background: $crm-white;
         border: 1px solid $crm-background;
-        border-right: 0;
         border-left: 0;
+        border-right: 0;
+
+        &.crm-event-participantview-form-block-displayName td {
+          strong {
+            display: inline-block;
+            padding-top: 3px;
+          }
+          
+          div {
+            float: right;
+          }
+        }
 
         &.crm-child-row {
           & > td {
