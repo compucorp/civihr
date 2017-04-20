@@ -113,8 +113,11 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
    * Sets Available Provinces to 'all provinces'
    */
   private function up1000_setAvailableProvinces() {
-    $countries = civicrm_api3('Country', 'get', ['sequential' => 1]);
-    $countryIDs = [];    
+    $countries = civicrm_api3('Country', 'get', [
+      'sequential' => 1,
+      'options' => ['limit' => 0]
+    ]);
+    $countryIDs = [];
 
     foreach ($countries['values'] as $currentCountry) {
       $countryIDs[] = $currentCountry['id'];
