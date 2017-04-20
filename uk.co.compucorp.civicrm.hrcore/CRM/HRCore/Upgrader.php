@@ -41,7 +41,25 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   public function install() {
     $this->setScheduledJobsDefaultStatus();
     $this->deleteLocationTypes();
+    $this->deleteUnneededCustomGroups();
     $this->runAllUpgraders();
+  }
+
+  /**
+   * Deletes custom fields for given custom groups and then deletes the custom
+   * groups.
+   */
+  private function deleteUnneededCustomGroups() {
+    $customGroups = ['Food_Preference', 'Donor_Information', 'constituent_information'];
+    civicrm_api3('CustomField', 'get', [
+      'custom_group_id' => ['IN' => $customGroups],
+      'api.CustomField.delete' => ['id' => '$value.id']
+    ]);
+
+    civicrm_api3('CustomGroup', 'get', [
+      'name' => ['IN' => $customGroups],
+      'api.CustomGroup.delete' => ['id' => '$value.id']
+    ]);
   }
 
   /**
