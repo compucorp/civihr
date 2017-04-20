@@ -312,6 +312,7 @@ $control-height: 30px;
           .select2-choice,
           .select2-choices {
             border-color: $brand-primary;
+            box-shadow: none;
           }
 
           span {
@@ -547,12 +548,16 @@ $control-height: 30px;
 
   &.select2-drop,
   &.select2-drop.select2-drop-above {
-    background: #ffffff !important;
-    border-radius: 0;
+    background: $crm-white !important;
     border-color: $brand-primary;
+    border-radius: $border-radius-base $border-radius-base 0 0;
     box-shadow: none;
     margin-left: 0;
     margin-top: -4px;
+
+    .select2-choice {
+      border-radius: 0 0 $border-radius-base $border-radius-base;
+    }
 
     .select2-input {
       border-color: $brand-primary !important;
@@ -635,6 +640,14 @@ $control-height: 30px;
         background: $crm-white;
         border: 1px solid $crm-darker-grayblue;
       }
+    }
+  }
+
+  &.select2-drop {
+    border-radius: 0 0 $border-radius-base $border-radius-base;
+
+    .select2-choice {
+      border-radius: $border-radius-base $border-radius-base 0 0;
     }
   }
 

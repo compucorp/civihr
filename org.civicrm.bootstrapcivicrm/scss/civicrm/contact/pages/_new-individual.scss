@@ -1,56 +1,64 @@
 .page-civicrm-contact-add {
+  .crm-search-form-block {
+    border-radius: $border-radius-child !important;
+  }
+
+  .crm-edit-address-form > tbody > tr:first-child td:last-child a:link {
+    color: $brand-danger;
+  }  
+
   @media (min-device-width: $screen-sm-min) {
-    .crm-container {
-      .crm-contactDetails-accordion {
-        .contact_basic_information-section {
-          tr {
-            &:first-child {
-              td {
-                &:last-child {
-                  min-width: 150px;
-                }
+    .crm-container .crm-contactDetails-accordion {
+      border-radius: $border-radius-child $border-radius-child 0 0 !important;
 
-                &:first-child {
-                  min-width: 170px;
-                }
-              }
-            }
+      .crm-accordion-header {
+        border-radius: $border-radius-child $border-radius-child 0 0 !important;
+      }        
 
-            td {
-              > input[type="text"] {
-                width: 100% !important;
-                min-width: 100% !important;
-              }
+      .contact_basic_information-section tr {
+        &:first-child td {
+          &:last-child {
+            min-width: 150px;
+          }
 
-              &:last-child {
-                > .select2-container {
-                  width: auto !important;
-                  min-width: auto !important;
-                }
-
-                #s2id_suffix_id {
-                  width: 80px !important;
-                  min-width: 80px !important;
-                }
-              }
-            }
+          &:first-child {
+            min-width: 170px;
           }
         }
 
-        .select2-container,
-        .crm-form-select {
-            width: 120px !important;
-            min-width: 120px !important;
+        td {
+          > input[type="text"] {
+            min-width: 100% !important;
+            width: 100% !important;
+          }
 
-            + .crm-option-edit-link {
-              position: relative;
-              left: -15px;
+          &:last-child {
+            > .select2-container {
+              min-width: auto !important;
+              width: auto !important;
             }
-        }
 
-        input[type='text'] {
-          width: auto !important;
+            #s2id_suffix_id {
+              min-width: 80px !important;
+              width: 80px !important;
+            }
+          }
         }
+      }
+
+      .select2-container,
+      .crm-form-select {
+        min-width: 120px !important;
+        width: 120px !important;
+
+        + .crm-option-edit-link {
+          left: -15px;
+          position: relative;
+        }
+      }
+
+      input[type='text'] {
+        width: auto !important;
       }
     }
   }
