@@ -225,6 +225,17 @@ define([
         },
 
         /**
+         * Delete a leave request
+         *
+         * @return {Promise} Resolved with {Object} Deleted Leave request
+         */
+        delete: function () {
+          this.is_deleted = true;
+
+          return LeaveRequestAPI.update(this.toAPI());
+        },
+
+        /**
          * Validate leave request instance attributes.
          *
          * @return {Promise} empty array if no error found otherwise an object
