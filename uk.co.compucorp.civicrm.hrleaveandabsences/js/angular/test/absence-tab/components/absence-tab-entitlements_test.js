@@ -2,12 +2,11 @@
   define([
     'common/angular',
     'common/angularMocks',
-    'leave-absences/shared/config',
     'leave-absences/absence-tab/app'
   ], function (angular) {
     'use strict';
 
-    describe('absenceTab', function () {
+    describe('absenceTabEntitlements', function () {
       var $compile, $log, $rootScope, component, controller;
 
       beforeEach(module('leave-absences.templates', 'absence-tab'));
@@ -27,12 +26,13 @@
 
       function compileComponent() {
         var $scope = $rootScope.$new();
+        var contactId = CRM.vars.leaveAndAbsences.contactId;
 
-        component = angular.element('<absence-tab></absence-tab>');
+        component = angular.element('<absence-tab-entitlements contact-id="' + contactId + '"></absence-tab-entitlements>');
         $compile(component)($scope);
         $scope.$digest();
 
-        controller = component.controller('absenceTab');
+        controller = component.controller('absenceTabEntitlements');
       }
     });
   });

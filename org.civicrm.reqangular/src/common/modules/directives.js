@@ -7,13 +7,12 @@ define([
   'common/ui-select',
   'common/modules/templates',
   'common/modules/controllers',
-  'common/modules/services',
-  'common/modules/apis'
+  'common/modules/uib-tabset',
 ], function (angular, uiSelectChoicesCustomScrollBars, datepickerAddon, uibTabset) {
   'use strict';
 
-  return angular.module('common.directives', ['common.templates', 'common.controllers',
-    'common.apis', 'ui.select', 'ngSanitize', 'ui.bootstrap'])
+  return angular.module('common.directives', ['common.templates', 'common.controllers', 'common.uibTabset',
+    'ui.select', 'ui.bootstrap'])
     .config(['$provide', function ($provide) {
       $provide.decorator('uiSelectChoicesDirective', uiSelectChoicesCustomScrollBars);
       $provide.decorator('uibDatepickerPopupDirective', datepickerAddon);

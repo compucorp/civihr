@@ -9,14 +9,15 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceTab extends  CRM_Core_Page {
 
     CRM_Core_Resources::singleton()
       ->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css')
-      ->addScriptFile('org.civicrm.reqangular', 'dist/reqangular.min.js', 1010)
       ->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences',
         CRM_Core_Config::singleton()->debug ? 'js/angular/src/absence-tab.js' : 'js/angular/dist/absence-tab.min.js', 1010)
       ->addSettingsFactory(function () {
         return array(
-          'absenceTabApp' => array(
-            'contactId' => CRM_Utils_Request::retrieve('cid', 'Integer'),
-            'path' => CRM_Core_Resources::singleton()->getUrl('uk.co.compucorp.civicrm.hrleaveandabsences'),
+          'vars' => array(
+            'leaveAndAbsences' => array(
+              'baseURL' => CRM_Core_Resources::singleton()->getUrl('uk.co.compucorp.civicrm.hrleaveandabsences'),
+              'contactId' => CRM_Utils_Request::retrieve('cid', 'Integer')
+            )
           )
         );
       });
