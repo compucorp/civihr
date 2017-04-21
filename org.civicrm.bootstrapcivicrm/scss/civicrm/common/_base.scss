@@ -67,6 +67,7 @@
     &.select2-dropdown-open {
       .select2-choice {
         border-color: $brand-primary;
+        box-shadonw: none;
       }
 
       &.select2-drop-above .select2-choice {
