@@ -2,15 +2,14 @@
 @import '../bootstrap/overrides/style/modals';
 
 .crm-container.ui-dialog {
-  border-radius: 0;
   background: $gray-lighter;
-  max-height: 90%;
-  overflow-y: auto;
-  padding: 0;
+  border-radius: 0;
   box-shadow: none;
+  max-height: 90%;
+  padding: 0;
 
   .help {
-    border-radius: 2px;
+    border-radius: $border-radius-base;
   }
 
   table {
@@ -18,12 +17,12 @@
 
     td {
       color: $crm-copy;
-      font-weight: 400;
+      font-weight: $badge-font-weight;
+    }
 
-      &:first-child {
-        font-weight: 600 !important;
-        color: $gray-darker;
-      }
+    td:first-child {
+      color: $gray-darker;
+      font-weight: $crm-font-weight-h3 !important;
     }
   }
 
@@ -68,12 +67,13 @@
 
   .ui-dialog-content {
     @extend .modal-body, %open-sans-font-family;
-    padding: 20px 20px 0 20px;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-bottom: 20px;
-    height: auto !important;
     background: $crm-white;
+    height: auto !important;    
+    margin-bottom: 0;
+    margin-top: 0;
+    padding: 20px;
+    @include calc(max-height, '100vh - 280px',!important);
+    
 
     a.button:not(.hr-job-info-close) {
       @extend .btn-primary;
@@ -85,7 +85,7 @@
 
     .crm-block {
       box-shadow: none;
-      padding: 0;
+      padding: 0 0 20px;
     }
 
     .crm-submit-buttons {
@@ -107,8 +107,7 @@
   }
 
   .ui-dialog-buttonpane {
-    @extend .modal-footer, %open-sans-font-family;
-    background: $crm-white;
+    @extend .modal-footer, %open-sans-font-family;    
     box-shadow: none;
     display: block;
     margin-top: 0;
