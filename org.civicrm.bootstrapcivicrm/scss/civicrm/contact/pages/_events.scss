@@ -199,17 +199,17 @@
     }
 
     .label {
-      padding: 15px;
-      min-width: 210px;
       box-sizing: border-box;
-      line-height: 1.5em;
       font-size: $font-size-base;
+      line-height: 1.5em;
+      min-width: 210px;
+      padding: 15px 0;
       text-align: left;
     }
 
     .auto-renew-text {
-      padding: 10px 30px;
       display: block;
+      padding: 10px 30px;
     }
 
     .crm-membership-form-block-record_contribution {
