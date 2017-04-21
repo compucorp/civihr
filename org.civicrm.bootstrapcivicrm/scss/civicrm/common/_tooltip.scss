@@ -39,13 +39,19 @@
     }
 
     .crm-section {
-      height: 30px !important;
-      margin-bottom: 0;
       clear: both;
+      margin-bottom: 0;
+      min-height: 30px !important;
     }
 
-    .crm-table-group-summary > tbody > tr:nth-child(1) > td {
-      font-size: 1.5em;
+    .crm-table-group-summary > tbody > tr {
+      &:nth-child(1) > td {
+        font-size: 1.5em;
+      }
+
+      > td {
+        vertical-align: top !important;
+      }
     }
 
     td,
