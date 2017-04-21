@@ -85,4 +85,17 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
 
     return $result;
   }
+
+  protected function getSicknessRequiredDocuments() {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'hrleaveandabsences_leave_request_required_document',
+    ]);
+
+    $options = [];
+    foreach ($result['values'] as $requiredDocument) {
+      $options[$requiredDocument['value']] = $requiredDocument['label'];
+    }
+
+    return $options;
+  }
 }

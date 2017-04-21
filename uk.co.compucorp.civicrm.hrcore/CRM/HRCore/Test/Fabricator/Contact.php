@@ -21,4 +21,14 @@ class CRM_HRCore_Test_Fabricator_Contact {
 
     return array_shift($result['values']);
   }
+
+  public static function fabricateWithEmail($params, $email) {
+    $contact = self::fabricate($params);
+
+     civicrm_api3('Email', 'create', [
+      'email' => $email, 'contact_id' => $contact['id'], 'is_primary' => 1
+    ]);
+
+    return $contact;
+  }
 }
