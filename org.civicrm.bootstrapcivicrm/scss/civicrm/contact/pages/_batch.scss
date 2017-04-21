@@ -180,14 +180,14 @@
           border: none;
           padding: 10px;
           vertical-align: middle;
+        }
 
-          &:first-child {
-            border-top-left-radius: $border-radius-base;
-          }
+        .crm-grid-cell:first-child {
+          border-top-left-radius: $border-radius-base;
+        }
 
-          &:last-child {
-            border-top-right-radius: $border-radius-base;
-          }
+        .crm-grid-cell:last-child {
+          border-top-right-radius: $border-radius-base;
         }
       }
 
@@ -200,7 +200,7 @@
           background: $crm-white;
         }
 
-        &:last-child {
+        &:last-child .crm-grid-cell {
           &:first-child {
             border-bottom-left-radius: $border-radius-base;
           }
