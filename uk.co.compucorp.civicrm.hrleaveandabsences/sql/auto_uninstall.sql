@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS `civicrm_hrleaveandabsences_work_week`;
 DROP TABLE IF EXISTS `civicrm_hrleaveandabsences_work_pattern`;
 DROP TABLE IF EXISTS `civicrm_hrleaveandabsences_absence_period`;
 DROP TABLE IF EXISTS `civicrm_hrleaveandabsences_public_holiday`;
+DELETE FROM `civicrm_msg_template` WHERE msg_title IN('CiviHR Leave Request Notification','CiviHR Sickness Record Notification', 'CiviHR TOIL Request Notification');
 
 -- Deletes sample data for contracts (for l&a, the drop tables already take care of the job)
 SET foreign_key_checks = 0;
