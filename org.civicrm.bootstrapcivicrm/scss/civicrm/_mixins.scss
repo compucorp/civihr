@@ -1,4 +1,7 @@
-// Mixins SCSS
+/*
+ * It use for calculate height and width the element
+ */
+
 // =======================
 
 @mixin calc($property, $expression, $content:null) {
