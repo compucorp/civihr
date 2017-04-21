@@ -7,30 +7,54 @@
     'use strict';
 
     describe('CheckPermissions', function () {
-      var checkPermissions;
+      var $q, $rootScope, checkPermissions;
 
       beforeEach(module('common.services'));
 
-      beforeEach(inject(function (_CheckPermissions_) {
+      beforeEach(inject(function (_$rootScope_, _$q_, _CheckPermissions_) {
+        $rootScope = _$rootScope_;
+        $q = _$q_;
         checkPermissions = _CheckPermissions_;
       }));
 
       describe('canAdmin', function () {
-        var isAdmin;
+        var promise, adminPermission;
 
         beforeEach(function () {
-          spyOn(CRM, 'checkPerm').and.returnValue(true);
-          isAdmin = checkPermissions.canAdmin();
+          adminPermission = 'CiviHRLeaveAndAbsences: Administer Leave and Absences';
+          spyOn(CRM, 'checkPerm').and.callFake(returnTrueIfPermissionIs(adminPermission));
+
+          promise = checkPermissions.canAdmin();
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
         });
 
         it('calls CRM api with expected parameter', function () {
-          expect(CRM.checkPerm).toHaveBeenCalledWith('CiviHRLeaveAndAbsences: Administer Leave and Absences');
+          promise.then(function () {
+            expect(CRM.checkPerm).toHaveBeenCalledWith(adminPermission);
+          });
         });
 
         it('returns true', function () {
-          expect(isAdmin).toBeTruthy();
+          promise.then(function (result) {
+            expect(result).toBeTruthy();
+          });
         });
       });
+
+      /**
+       * Helper to return true for given permission
+       *
+       * @param {String} permission to check
+       * @return {Function} a fake implementation for checking for permission
+       */
+      function returnTrueIfPermissionIs(permissionToCheck) {
+        return function(permission) {
+          return (permission === permissionToCheck);
+        };
+      }
     });
   });
 })(CRM);

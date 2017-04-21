@@ -4,16 +4,18 @@ define([
   'use strict';
 
   (function (CRM) {
-    services.factory('CheckPermissions', function () {
+    services.factory('CheckPermissions', ['$q', function ($q) {
 
-      /**
-       * Checks if currently logged in user has admin access
-       */
       return {
+        /**
+         * Checks if currently logged in user has admin access
+         *
+         * @return {Promise}
+         */
         canAdmin: function () {
-          return CRM.checkPerm('CiviHRLeaveAndAbsences: Administer Leave and Absences');
+          return $q.resolve(CRM.checkPerm('CiviHRLeaveAndAbsences: Administer Leave and Absences'));
         }
-      }
-    })
+      };
+    }]);
   }(CRM));
 });
