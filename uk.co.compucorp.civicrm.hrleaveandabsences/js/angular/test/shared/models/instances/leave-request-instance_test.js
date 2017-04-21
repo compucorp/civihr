@@ -741,8 +741,8 @@ define([
     });
 
     describe('attachments', function () {
-      var promise, test_id = '63',
-        attachments, numberOfFiles;
+      var attachments, numberOfFiles, promise,
+        test_id = '63';
 
       beforeEach(function () {
         LeaveRequestInstance.id = '12';
