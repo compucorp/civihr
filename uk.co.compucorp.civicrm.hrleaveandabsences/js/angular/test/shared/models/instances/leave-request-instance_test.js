@@ -741,7 +741,8 @@ define([
     });
 
     describe('attachments', function () {
-      var promise, test_id = '63', attachments, numberOfFiles;
+      var promise, test_id = '63',
+        attachments, numberOfFiles;
 
       beforeEach(function () {
         LeaveRequestInstance.id = '12';
@@ -851,6 +852,20 @@ define([
         it('marks the comment for deletion', function () {
           expect(commentObject.toBeDeleted).toBe(true);
         });
+      });
+    });
+
+    describe('delete', function () {
+      beforeEach(function () {
+        LeaveRequestInstance.delete();
+      });
+
+      it('sets the flag to delete on request', function () {
+        expect(LeaveRequestInstance.is_deleted).toBeTruthy();
+      });
+
+      it('calls update API', function () {
+        expect(LeaveRequestAPI.update).toHaveBeenCalledWith(jasmine.objectContaining({ is_deleted: true }));
       });
     });
   });
