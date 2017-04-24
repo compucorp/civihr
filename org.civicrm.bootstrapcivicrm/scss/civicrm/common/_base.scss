@@ -78,9 +78,8 @@
   }
 
   .btn-slide:after {
+    @include fa-icon($font-size-base, $fa-var-ellipsis-v, $brand-primary);
     background: none;
-    content: $fa-var-ellipsis-v;
-    font-family: $font-family-fontawesome;
     right: -5px;
   }
 }
