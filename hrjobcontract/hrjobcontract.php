@@ -79,6 +79,9 @@ function hrjobcontract_civicrm_install() {
     ));
   }
 
+  // Adding 'add_public_holidays' field to 'civicrm_hrjobcontract_leave' table
+  CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_leave` ADD `add_public_holidays` TINYINT NOT NULL DEFAULT 0");
+
   return _hrjobcontract_civix_civicrm_install();
 }
 
