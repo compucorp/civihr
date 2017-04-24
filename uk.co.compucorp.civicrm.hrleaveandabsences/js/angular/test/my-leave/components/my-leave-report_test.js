@@ -119,10 +119,10 @@
               });
 
               it('sorts absence periods by title', function () {
-                expect(controller.absencePeriods.map(function (period) {
-                  delete period.current;
-                  return period;
-                })).toEqual(_.sortBy(absencePeriodData.all().values, 'title'));
+                var extractTitles = function (period) {
+                  return period.title;
+                };
+                expect(controller.absencePeriods.map(extractTitles)).toEqual(_.sortBy(absencePeriodData.all().values, 'title').map(extractTitles));
               });
             });
 
