@@ -8,10 +8,10 @@ define([
 ], function (controllers, _, moment) {
   'use strict';
 
-  controllers.controller('CalendarCtrl', ['$q', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
+  controllers.controller('CalendarCtrl', ['$q', '$rootScope', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
     'LeaveRequest', 'PublicHoliday', 'OptionGroup', controller]);
 
-  function controller($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup) {
+  function controller($q, $rootScope, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup) {
     var dayTypes = [],
       leaveRequestStatuses = [],
       publicHolidays = [];
@@ -186,6 +186,10 @@ define([
       }.bind(this))
       .finally(function () {
         this.loading.page = false;
+      }.bind(this));
+
+      $rootScope.$on('LeaveRequest::updatedByManager', function () {
+        this.refresh();
       }.bind(this));
     };
 
