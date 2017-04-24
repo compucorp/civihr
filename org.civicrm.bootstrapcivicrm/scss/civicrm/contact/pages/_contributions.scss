@@ -590,57 +590,67 @@
     border: none;
     font-family: $font-family-base;
 
-    thead {
-      th {
-        background: $gray-lighter !important;
+    thead th {
+      background: $gray-lighter !important;
+      border: none;
+      color: $gray-darker !important;
+      line-height: 1.5em !important;
+      padding: 15px !important;
+      vertical-align: middle;
+
+      div {
+        padding: 0;
+      }
+    }
+
+    tbody tr {
+      background: $crm-white;
+
+      td {
+        background: $crm-white;
         border: none;
-        border-bottom: none;
-        color: $gray-darker !important;
+        color: $gray-dark;
         line-height: 1.5em !important;
-        padding: 10px !important;
+        padding: 15px 30px;
+      }
+
+      th {
+        background: $crm-white !important;
+        border: none !important;
+        color: $gray-darker !important;
+        line-height: 1.5em;
+        padding: 15px 10px !important;
         vertical-align: middle;
+
+        &.contriTotalLeft {
+          padding-left: 0;
+        }
 
         div {
           padding: 0;
         }
       }
     }
+  }
 
-    tbody {
-      tr {
-        background: $crm-white;
+  .solid-border-top .label {
+    color: $gray-darker;    
+  }
 
-        td {
-          background: $crm-white;
-          border: none;
-          color: $gray-dark;
-          line-height: 1.5em !important;
-          padding: 10px 30px;
-        }
-
-        th {
-          border: none !important;
-          background: $crm-white !important;
-          color: $gray-darker !important;
-          vertical-align: middle;
-          border: none;
-          padding: 10px !important;
-          line-height: 1.1em;
-
-          &.contriTotalLeft {
-            padding-left: 0;
-          }
-
-          div {
-            padding: 0;
-          }
-        }
-      }
-    }
+  .dataTables_length label,
+  .dataTables_info,
+  .dataTables_paginate .ui-button {
+    font-size: $font-size-base; 
   }
 
   .selector {
     @include mx-expandable-table();
+    display: block;
+    overflow-x: auto;
+
+    td {
+      white-space: nowrap;
+    }
   }
 
   p {
@@ -654,8 +664,31 @@
   }
 
   table.crm-softcredit-selector {
+    border-radius: $border-radius-base;
+    box-shadow: $box-shadow;
+    display: block;
+    overflow-x: auto;
+    width: 100% !important;
+
     thead th {
       background-color: $gray-lighter !important;
+      font-weight: bold;
+      padding: 15px 20px !important;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 15px 30px 15px 20px !important;
+      white-space: nowrap;
+
+      .crm-hover-button {
+        color: $brand-primary !important;
+        text-transform: capitalize;
+      }
+
+      .crm-hover-button:hover {
+        color: $crm-copy !important;
+      }
     }
   }
 }
