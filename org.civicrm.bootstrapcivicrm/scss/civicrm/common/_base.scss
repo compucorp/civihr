@@ -76,6 +76,12 @@
       }
     }
   }
+
+  .btn-slide:after {
+    @include fa-icon($font-size-base, $fa-var-ellipsis-v, $brand-primary);
+    background: none;
+    right: -5px;
+  }
 }
 
 .page-civicrm {
