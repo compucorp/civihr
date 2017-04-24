@@ -76,6 +76,13 @@
       }
     }
   }
+
+  .btn-slide:after {
+    background: none;
+    content: $fa-var-ellipsis-v;
+    font-family: $font-family-fontawesome;
+    right: -5px;
+  }
 }
 
 .page-civicrm {
