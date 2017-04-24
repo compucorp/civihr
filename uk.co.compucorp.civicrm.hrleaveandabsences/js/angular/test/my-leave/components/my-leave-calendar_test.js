@@ -4,6 +4,7 @@
     'common/moment',
     'common/lodash',
     'mocks/data/absence-period-data',
+    'mocks/data/absence-type-data',
     'mocks/data/option-group-mock-data',
     'mocks/data/public-holiday-data',
     'mocks/data/work-pattern-data',
@@ -16,7 +17,7 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/my-leave/app'
-  ], function (angular, moment, _, absencePeriodData, optionGroupMock, publicHolidayData, workPatternData, leaveRequestData) {
+  ], function (angular, moment, _, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData, workPatternData, leaveRequestData) {
     'use strict';
 
     describe('myLeaveCalendar', function () {
@@ -93,6 +94,22 @@
         it('each month data has loaded', function () {
           _.each(controller.months, function (month) {
             expect(Object.keys(month.data.length)).not.toBe(0);
+          });
+        });
+      });
+
+      describe('does not show disabled absence types', function () {
+        var disabledAbsenceTypes;
+
+        beforeEach(function() {
+          disabledAbsenceTypes = absenceTypeData.getDisabledAbsenceTypes();
+        });
+
+        it('disabled absence types are filtered', function () {
+          _.each(controller.absenceTypes, function (absenceType) {
+            expect(disabledAbsenceTypes.filter(function (disabledAbsenceType) {
+              return disabledAbsenceType.id == absenceType.id;
+            }).length).toBe(0);
           });
         });
       });

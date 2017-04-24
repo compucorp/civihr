@@ -248,7 +248,9 @@ define([
     this._loadAbsenceTypes = function () {
       return AbsenceType.all()
         .then(function (absenceTypes) {
-          this.absenceTypes = absenceTypes;
+          this.absenceTypes = absenceTypes.filter(function (absenceType) {
+            return absenceType.is_active === "1";
+          });
         }.bind(this));
     };
 
