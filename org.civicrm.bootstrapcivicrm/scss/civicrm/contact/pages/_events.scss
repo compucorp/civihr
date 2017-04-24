@@ -1,6 +1,9 @@
 .CRM_Event_Form_Search {
   .help {
-    padding: 0;
+    background: $crm-light-green-color;
+    border: none;
+    border-radius: $border-radius-base;
+    padding: 10px;
   }
 
   .action-link {
@@ -15,19 +18,28 @@
   table {
     background: transparent;
     border: none;
+    border-radius: $border-radius-child;
+    display: block;
     font-family: $font-family-base;
+    overflow-x: auto;
 
     thead {
+      background: transparent !important;
       border-bottom: 1px solid $crm-dark-grayblue;
+      border-radius: $border-radius-base $border-radius-base 0 0;
+
+      tr {
+        background: transparent !important;
+        border-radius: $border-radius-base $border-radius-base 0 0;
+      }
 
       th {
-        border-bottom: none;
         background: $gray-lighter !important;
-        color: $gray-darker !important;
-        vertical-align: middle;
         border: none;
-        padding: 10px;
-        line-height: 1.1em;
+        color: $gray-darker !important;
+        line-height: 1.5em;
+        padding: 15px 10px;
+        vertical-align: middle;
 
         div {
           padding: 0;
@@ -42,10 +54,15 @@
 
         td {
           background: $crm-white;
-          color: $gray-dark;
           border: none;
-          padding: 10px 30px;
-          line-height: 1.1em;
+          color: $gray-dark;
+          line-height: 1.5em;
+          padding: 10px 20px;
+          white-space: nowrap;
+        }
+
+        &:last-child {
+          border-radius: 0 0 $border-radius-base $border-radius-base;
         }
       }
     }
@@ -349,7 +366,7 @@
 
   #billing-payment-block {
     legend {
-      padding: 10px 15px;
+      padding: 10px 15px 10px 0;
     }
 
     .label {
