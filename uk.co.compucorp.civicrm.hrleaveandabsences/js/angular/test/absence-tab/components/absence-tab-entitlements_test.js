@@ -2,19 +2,19 @@
   define([
     'common/angular',
     'common/angularMocks',
-    'leave-absences/shared/config',
-    'leave-absences/manager-leave/app'
+    'leave-absences/absence-tab/app'
   ], function (angular) {
     'use strict';
 
-    describe('managerLeave', function () {
+    describe('absenceTabEntitlements', function () {
       var $compile, $log, $rootScope, component, controller;
 
-      beforeEach(module('leave-absences.templates', 'manager-leave'));
+      beforeEach(module('leave-absences.templates', 'absence-tab'));
       beforeEach(inject(function (_$compile_, _$log_, _$rootScope_) {
         $compile = _$compile_;
         $log = _$log_;
         $rootScope = _$rootScope_;
+
         spyOn($log, 'debug');
 
         compileComponent();
@@ -24,20 +24,16 @@
         expect($log.debug).toHaveBeenCalled();
       });
 
-      it('is contains the expected markup', function () {
-        expect(component.find('div.manager-leave-page').length).toBe(1);
-      });
-
       function compileComponent() {
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;
 
-        component = angular.element('<manager-leave contact-id="' + contactId + '"></manager-leave>');
+        component = angular.element('<absence-tab-entitlements contact-id="' + contactId + '"></absence-tab-entitlements>');
         $compile(component)($scope);
         $scope.$digest();
 
-        controller = component.controller('managerLeave');
+        controller = component.controller('absenceTabEntitlements');
       }
     });
-  })
+  });
 })(CRM);
