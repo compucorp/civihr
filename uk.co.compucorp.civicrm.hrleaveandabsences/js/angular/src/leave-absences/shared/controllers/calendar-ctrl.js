@@ -231,7 +231,7 @@ define([
     this._loadAbsencePeriods = function () {
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
-          this.absencePeriods = absencePeriods;
+          this.absencePeriods = _.sortBy(absencePeriods, 'title');
           this.selectedPeriod = _.find(this.absencePeriods, function (period) {
             return !!period.current;
           });

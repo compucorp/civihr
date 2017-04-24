@@ -15,6 +15,12 @@ define(function () {
       "start_date": "2017-01-01",
       "end_date": "2017-12-31",
       "weight": "2"
+    }, {
+      "id": "3",
+      "title": "2012",
+      "start_date": "2012-01-01",
+      "end_date": "2012-12-31",
+      "weight": "2"
     }]
   };
 

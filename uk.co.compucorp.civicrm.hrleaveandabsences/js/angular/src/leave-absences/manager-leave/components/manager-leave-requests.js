@@ -249,7 +249,7 @@ define([
     function loadAbsencePeriods() {
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
-          vm.absencePeriods = absencePeriods;
+          vm.absencePeriods = _.sortBy(absencePeriods, 'title');;
           vm.filters.leaveRequest.selectedPeriod = _.find(vm.absencePeriods, function (period) {
             return !!period.current;
           });

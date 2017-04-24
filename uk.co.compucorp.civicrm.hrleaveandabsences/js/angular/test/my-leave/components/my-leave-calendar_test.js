@@ -83,8 +83,14 @@
           expect(controller.loading.page).toBe(false);
         });
 
-        it('absence periods have loaded', function () {
-          expect(controller.absencePeriods.length).not.toBe(0);
+        describe('absence periods', function() {
+          it('absence periods have loaded', function () {
+            expect(controller.absencePeriods.length).not.toBe(0);
+          });
+
+          it('sorts absence periods by title', function () {
+            expect(controller.absencePeriods).toEqual(_.sortBy(absencePeriodData.all().values, 'title'));
+          });
         });
 
         it('absence types have loaded', function () {

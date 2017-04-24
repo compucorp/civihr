@@ -1,7 +1,9 @@
 (function (CRM) {
   define([
     'common/angular',
+    'common/lodash',
     'mocks/data/option-group-mock-data',
+    'mocks/data/absence-period-data',
     'mocks/data/absence-type-data',
     'mocks/data/leave-request-data',
     'common/mocks/services/api/contact-mock',
@@ -11,7 +13,7 @@
     'mocks/apis/option-group-api-mock',
     'leave-absences/shared/config',
     'leave-absences/manager-leave/app',
-  ], function (angular, optionGroupMock, absenceTypeData, leaveRequestData) {
+  ], function (angular, _, optionGroupMock, absencePeriodData, absenceTypeData, leaveRequestData) {
     'use strict';
 
     describe('managerLeaveReport', function () {
@@ -147,8 +149,17 @@
             expect(controller.levelTypes).toEqual(optionGroupMock.getCollection('hrjc_level_type'));
           });
 
-          it('absence periods have loaded', function () {
-            expect(controller.absencePeriods.length).not.toBe(0);
+          describe('absence periods', function() {
+            it('absence periods have loaded', function () {
+              expect(controller.absencePeriods.length).not.toBe(0);
+            });
+
+            it('sorts absence periods by title', function () {
+              expect(controller.absencePeriods.map(function (period) {
+                delete period.current;
+                return period;
+              })).toEqual(_.sortBy(absencePeriodData.all().values, 'title'));
+            });
           });
 
           it('absence types have loaded', function () {
