@@ -223,20 +223,21 @@
     }
   }
 
-  .crm-event-eventfees-form-block-price_set_amount div[class*="-section"]{
+  .crm-event-eventfees-form-block-price_set_amount div[class*="-section"] {
     .label {
-      position: relative;
-      right: 210px;
-      width: 210px;
       box-sizing: border-box;
+      position: relative;
+      right: 225px;
+      width: 210px;
     }
 
     div[class*="-content"] {
-      position: relative;
       bottom: 45px;
+      position: relative;
     }
 
     #pricesetTotal {
+      margin-bottom: 0;
       margin-top: -95px;
 
       #pricelabel {
@@ -247,20 +248,19 @@
   }
 
   textarea {
-    width: 100% !important;
     height: 80px;
+    width: 100% !important;
   }
 
   #send_confirmation_receipt {
     legend {
-      margin: 15px 0;
       float: left;
+      margin: 15px 0;
+      padding: 10px 15px 10px 0;
       width: 100%;
-      padding: 10px 15px;
     }
 
     #notice {
-
       br {
         display: none;
       }
@@ -273,18 +273,18 @@
     }
   }
 
-  .crm-participant-form-block-note {
-    td {
-      &:nth-child(2) {
-        width: 100%;
-      }
-    }
+  .crm-participant-form-block-note td:nth-child(2) {
+    width: 100%;
   }
 
   .crm-event-eventfees-form-block-price_set_amount {
     .view-value {
-      padding: 10px 15px;
+      padding: 10px 15px 0;
       width: 100%;
+    }
+
+    .price_set-section {
+      margin-bottom: 0;
     }
   }
 
@@ -306,12 +306,8 @@
       margin: 0;
     }
 
-    .price-set-option-content {
-      label {
-        &:after {
-          top: 15px;
-        }
-      }
+    .price-set-option-content label:after {
+      top: 6px;
     }
   }
 
@@ -320,7 +316,7 @@
       padding: 0;
 
       legend {
-        padding: 10px 15px;
+        padding: 10px 15px 10px 0;
       }
     }
 
