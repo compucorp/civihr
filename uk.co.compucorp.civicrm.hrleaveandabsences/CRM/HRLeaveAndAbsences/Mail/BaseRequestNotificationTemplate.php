@@ -23,7 +23,7 @@ abstract class CRM_HRLeaveAndAbsences_Mail_BaseRequestNotificationTemplate {
   private $leaveRequestDayTypes;
 
   /**
-   * CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotification constructor.
+   * CRM_HRLeaveAndAbsences_Mail_BaseRequestNotificationTemplate constructor.
    *
    * @param \CRM_HRLeaveAndAbsences_Service_LeaveRequestComment $leaveRequestComment
    */
@@ -32,10 +32,10 @@ abstract class CRM_HRLeaveAndAbsences_Mail_BaseRequestNotificationTemplate {
   }
 
   /**
-   * Gets the message template this Template Type.
+   * Gets the message template for this Template Type.
    *
    * @return array
-   *  An array containg the message template attributes/values
+   *  An array containing the message template attributes/values
    */
   abstract public function getTemplate();
 

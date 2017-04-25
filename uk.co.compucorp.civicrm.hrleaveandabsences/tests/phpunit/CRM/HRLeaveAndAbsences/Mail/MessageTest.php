@@ -24,7 +24,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
   private $leaveContact;
 
   public function setUp() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
     $this->leaveRequestTemplateFactory = new RequestNotificationTemplateFactory();
 
     $this->leaveContact = ContactFabricator::fabricateWithEmail([
@@ -39,7 +39,6 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $manager1 = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
     );
-
     $manager2 = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Manager2', 'last_name' => 'Manager2'], 'manager2@dummysite.com'
     );
@@ -68,7 +67,6 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
     $recipientEmails = $message->getRecipientEmails($leaveRequest);
-//    var_dump($recipientEmails); exit;
 
     $this->assertCount(3, $recipientEmails);
 

@@ -6,11 +6,7 @@ use CRM_HRLeaveAndAbsences_Mail_SicknessRequestNotificationTemplate as SicknessR
 use CRM_HRLeaveAndAbsences_Mail_TOILRequestNotificationTemplate as TOILRequestNotificationTemplate;
 use CRM_HRLeaveAndAbsences_Mail_LeaveRequestNotificationTemplate as LeaveRequestNotificationTemplate;
 
-/**
- * A factory for the LeaveRequestMailNotification service, which can be used
- * to get instances of this service without having to manually create all of
- * its dependencies
- */
+
 class CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate {
 
   /**

@@ -19,7 +19,7 @@ class CRM_HRLeaveAndAbsences_Mail_TOILRequestNotificationTemplateTest extends Ba
   private $toilRequestNotificationTemplate;
 
   public function setUp() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
     $leaveRequestCommentService = new LeaveRequestCommentService();
     $this->toilRequestNotificationTemplate = new TOILRequestNotificationTemplate($leaveRequestCommentService);
 

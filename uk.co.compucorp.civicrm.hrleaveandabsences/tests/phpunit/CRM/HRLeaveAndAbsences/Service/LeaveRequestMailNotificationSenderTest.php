@@ -22,7 +22,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
   private $leaveContact;
 
   public function setUp() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
 
     $this->leaveContact = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Staff1', 'last_name' => 'Staff1'], 'staffmember@dummysite.com'
