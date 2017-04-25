@@ -402,7 +402,9 @@
       div[id*="DataTables_Table_"] table {
         background: transparent;
         border: none;
+        display: block;
         font-family: $font-family-base;
+        overflow-x: auto;
 
         thead tr {
           background: none !important;
@@ -442,11 +444,19 @@
             border: none;
             color: $gray-dark;
             line-height: 18px;
+            overflow: hidden;
             padding: 10px 20px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
 
             a {
               color: $brand-primary !important;
             }
+          }
+
+          td:nth-child(2) .crm-editable-enabled {              
+            white-space: normal;             
+            width: 235px !important;
           }
 
           &:last-child {
@@ -470,11 +480,7 @@
         }
 
         @media screen and (min-width: $crm-min-width ) and (max-width: $crm-max-width) {
-          width: auto !important;
-
-          tbody tr td {
-            word-break: break-all;
-          }
+          width: auto !important;          
         }
       }
 
