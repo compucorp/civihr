@@ -15,7 +15,8 @@ class CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate {
 
   /**
    * Returns a new instance of a template class extending from the parent
-   * BaseRequestNotificationTemplate class.
+   * BaseRequestNotificationTemplate class based on the Request Type of the given
+   * Leave Request.
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *

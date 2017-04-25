@@ -135,7 +135,7 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
   }
 
   /**
-   * Gets the contactID's of Leave approvers for the current leave request
+   * Gets the Contact ID's of the currently active Leave Approvers of the given Leave Request
    *
    * @return array
    *   An array of contact IDs of leave approvers for the current leave request
