@@ -187,10 +187,6 @@ define([
       .finally(function () {
         this.loading.page = false;
       }.bind(this));
-
-      $rootScope.$on('LeaveRequest::updatedByManager', function () {
-        this.refresh();
-      }.bind(this));
     };
 
     /**
@@ -329,6 +325,15 @@ define([
         .then(function (statuses) {
           leaveRequestStatuses = _.indexBy(statuses, 'value');
         });
+    };
+
+    /**
+     * Reset the months data for before refresh
+     */
+    this._resetMonths = function () {
+      _.each(this.months, function (month) {
+        month.data = [];
+      });
     };
 
     /**

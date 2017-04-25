@@ -13,10 +13,10 @@ define([
       return settings.pathTpl + 'components/my-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$controller', '$log', 'Calendar', controller]
+    controller: ['$controller', '$log', '$rootScope', 'Calendar', controller]
   });
 
-  function controller($controller, $log, Calendar) {
+  function controller($controller, $log, $rootScope, Calendar) {
     $log.debug('Component: my-leave-calendar');
 
     var parentCtrl = $controller('CalendarCtrl'),
@@ -45,6 +45,7 @@ define([
      */
     vm.refresh = function () {
       vm.loading.calendar = true;
+      vm._resetMonths();
       vm._loadLeaveRequestsAndCalendar();
     };
 
@@ -68,6 +69,8 @@ define([
      * @param  {Array} leaveRequests - leave requests array from API
      */
     vm._indexLeaveRequests = function (leaveRequests) {
+      vm.leaveRequests = {};
+
       _.each(leaveRequests, function (leaveRequest) {
         _.each(leaveRequest.dates, function (leaveRequestDate) {
           vm.leaveRequests[leaveRequestDate.date] = leaveRequest;
@@ -93,7 +96,7 @@ define([
      * @return {Promise}
      */
     vm._loadLeaveRequestsAndCalendar = function () {
-      return parentCtrl._loadLeaveRequestsAndCalendar.call(vm, 'contact_id', true);
+      return parentCtrl._loadLeaveRequestsAndCalendar.call(vm, 'contact_id', false);
     };
 
     /**
@@ -132,6 +135,9 @@ define([
 
     (function init() {
       vm._init();
+
+      $rootScope.$on('LeaveRequest::new', vm.refresh);
+      $rootScope.$on('LeaveRequest::edit', vm.refresh);
     })();
 
     return vm;
