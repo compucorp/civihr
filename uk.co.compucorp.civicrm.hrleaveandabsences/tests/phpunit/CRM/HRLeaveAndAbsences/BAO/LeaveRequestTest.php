@@ -25,6 +25,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
   use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_MessageHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -2075,9 +2076,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $manager1 = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
     );
-    $manager2 = ContactFabricator::fabricateWithEmail([
-      'first_name' => 'Manager2', 'last_name' => 'Manager2'], 'manager2@dummysite.com'
-    );
 
     $leaveContact = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Staff1', 'last_name' => 'Staff1'], 'staffmember@dummysite.com'
@@ -2085,9 +2083,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->setLeaveApproverRelationshipTypes(['has Leaves Approved By']);
 
-    // Set manager1 and manager2 only to be leave aprovers for the leave contact
     $this->setContactAsLeaveApproverOf($manager1, $leaveContact, null, null, true, 'has Leaves Approved By');
-    $this->setContactAsLeaveApproverOf($manager2, $leaveContact, null, null, true, 'has Leaves Approved By');
 
     LeaveRequest::create([
       'type_id' => 1,
@@ -2103,14 +2099,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ], false);
 
     //emails redirected to the database are stored in the message spool table
-    $messageSpoolTable = CRM_Mailing_BAO_Spool::getTableName();
-    $query = "SELECT * FROM {$messageSpoolTable} WHERE recipient_email 
-              IN('staffmember@dummysite.com', 'manager1@dummysite.com', 'manager2@dummysite.com')";
-
-    $result = CRM_Core_DAO::executeQuery($query);
+    $result = $this->getEmailNotificationsFromDatabase(['staffmember@dummysite.com', 'manager1@dummysite.com']);
 
     //To make sure that duplicate emails were not sent but one mail per recipient
-    $this->assertEquals(3, $result->N);
+    $this->assertEquals(2, $result->N);
 
     $emails = [];
     while($result->fetch()) {
@@ -2119,7 +2111,63 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     foreach($emails as $email) {
       $this->assertContains($email['email'], [
-        'staffmember@dummysite.com', 'manager1@dummysite.com', 'manager2@dummysite.com'
+        'staffmember@dummysite.com', 'manager1@dummysite.com'
+      ]);
+      $this->assertNotEmpty($email['body']);
+      $this->assertNotEmpty($email['headers']);
+    }
+  }
+
+  public function testEmailGetsSentWhenLeaveRequestIsUpdated() {
+    $manager1 = ContactFabricator::fabricateWithEmail([
+      'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
+    );
+
+    $leaveContact = ContactFabricator::fabricateWithEmail([
+      'first_name' => 'Staff1', 'last_name' => 'Staff1'], 'staffmember@dummysite.com'
+    );
+
+    $this->setLeaveApproverRelationshipTypes(['has Leaves Approved By']);
+
+    $this->setContactAsLeaveApproverOf($manager1, $leaveContact, null, null, true, 'has Leaves Approved By');
+
+    $params = [
+      'type_id' => 1,
+      'contact_id' => $leaveContact['id'],
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date_type' => 1,
+      'toil_to_accrue' => 2,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ];
+    $leaveRequest = LeaveRequest::create($params, false);
+
+    //delete emails sent when leave request is created
+    $this->deleteEmailNotificationsInDatabase();
+    $result = $this->getEmailNotificationsFromDatabase(['staffmember@dummysite.com', 'manager1@dummysite.com']);
+    $this->assertEquals(0, $result->N);
+
+    //update Leave Request
+    $params['id'] = $leaveRequest->id;
+    $params['from_date_type'] = 2;
+    LeaveRequest::create($params,false);
+
+    $result = $this->getEmailNotificationsFromDatabase(['staffmember@dummysite.com', 'manager1@dummysite.com']);
+
+    //To make sure that duplicate emails were not sent but one mail per recipient
+    $this->assertEquals(2, $result->N);
+
+    $emails = [];
+    while($result->fetch()) {
+      $emails[] = ['email' => $result->recipient_email, 'body' => $result->body, 'headers' => $result->headers];
+    }
+
+    foreach($emails as $email) {
+      $this->assertContains($email['email'], [
+        'staffmember@dummysite.com', 'manager1@dummysite.com'
       ]);
       $this->assertNotEmpty($email['body']);
       $this->assertNotEmpty($email['headers']);

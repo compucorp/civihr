@@ -29,4 +29,18 @@ trait CRM_HRLeaveAndAbsences_MessageHelpersTrait {
 
     return $leaveTemplate;
   }
+
+  public function getEmailNotificationsFromDatabase($emails) {
+    $emails = "'" . implode("','", $emails) . "'";
+    $messageSpoolTable = CRM_Mailing_BAO_Spool::getTableName();
+    $query = "SELECT * FROM {$messageSpoolTable} WHERE recipient_email 
+              IN($emails)";
+
+    return CRM_Core_DAO::executeQuery($query);
+  }
+
+  public function deleteEmailNotificationsInDatabase() {
+    $messageSpoolTable = CRM_Mailing_BAO_Spool::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$messageSpoolTable}");
+  }
 }
