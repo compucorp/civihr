@@ -21,7 +21,7 @@ class CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate {
    *
    * @return \CRM_HRLeaveAndAbsences_Mail_BaseRequestNotificationTemplate
    */
-  public static function create(LeaveRequest $leaveRequest) {
+  public function create(LeaveRequest $leaveRequest) {
     $leaveRequestCommentService = new LeaveRequestCommentService();
 
     switch ($leaveRequest->request_type) {

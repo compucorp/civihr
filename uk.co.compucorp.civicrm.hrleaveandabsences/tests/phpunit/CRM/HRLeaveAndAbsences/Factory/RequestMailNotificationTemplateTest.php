@@ -10,6 +10,12 @@ use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotific
  */
 class CRM_HRLeaveAndAbsences_Factory_RequestMailNotificationServiceTest extends BaseHeadlessTest  {
 
+  private $leaveRequestTemplateFactory;
+
+  public function setUp() {
+    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    $this->leaveRequestTemplateFactory = new RequestNotificationTemplateFactory();
+  }
 
   /**
    * @dataProvider requestTemplateFactoryDataProvider
@@ -17,7 +23,7 @@ class CRM_HRLeaveAndAbsences_Factory_RequestMailNotificationServiceTest extends 
   public function testCreate($requestType, $expectedClass) {
     $leaveRequest = new LeaveRequest();
     $leaveRequest->request_type = $requestType;
-    $template = RequestNotificationTemplateFactory::create($leaveRequest);
+    $template = $this->leaveRequestTemplateFactory->create($leaveRequest);
 
     $this->assertInstanceOf($expectedClass, $template);
   }
