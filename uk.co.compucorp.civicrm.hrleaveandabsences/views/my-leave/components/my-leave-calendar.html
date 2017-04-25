@@ -3,9 +3,8 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
-          <div class="col-sm-5">
+          <div class="col-sm-8">
             <ui-select multiple
-                       limit="4"
                        ng-model="calendar.selectedMonths">
               <ui-select-match placeholder="Select Months">
                 <span ng-bind="$item"></span>
@@ -15,7 +14,7 @@
               </ui-select-choices>
             </ui-select>
           </div>
-          <div class="col-sm-offset-4 col-sm-3">
+          <div class="col-sm-offset-1 col-sm-3">
             <div class="chr_custom-select chr_custom-select--full">
               <select
                 ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"

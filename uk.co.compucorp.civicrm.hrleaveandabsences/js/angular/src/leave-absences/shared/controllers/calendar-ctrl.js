@@ -25,8 +25,8 @@ define([
       calendar: false,
       page: false
     };
-    this.monthLabels = ['January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'];
+    this.monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     /**
      * Fetches months from newly selected period and refresh data
