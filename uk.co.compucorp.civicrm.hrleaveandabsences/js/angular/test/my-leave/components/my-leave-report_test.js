@@ -3,6 +3,7 @@
     'common/angular',
     'common/lodash',
     'mocks/helpers/helper',
+    'mocks/data/absence-period-data',
     'mocks/data/entitlement-data',
     'mocks/data/leave-request-data',
     'mocks/data/option-group-mock-data',
@@ -13,7 +14,7 @@
     'mocks/apis/entitlement-api-mock',
     'mocks/apis/leave-request-api-mock',
     'leave-absences/my-leave/app'
-  ], function (angular, _, helper, entitlementMock, leaveRequestMock, optionGroupMock) {
+  ], function (angular, _, helper, absencePeriodData, entitlementMock, leaveRequestMock, optionGroupMock) {
     'use strict';
 
     describe('myLeaveReport', function () {
@@ -111,9 +112,20 @@
               expect(controller.absenceTypes.length).not.toBe(0);
             });
 
-            it('has fetched the absence periods', function () {
-              expect(AbsencePeriod.all).toHaveBeenCalled();
-              expect(controller.absencePeriods.length).not.toBe(0);
+            describe('absence periods', function() {
+              it('has fetched the absence periods', function () {
+                expect(AbsencePeriod.all).toHaveBeenCalled();
+                expect(controller.absencePeriods.length).not.toBe(0);
+              });
+
+              it('sorts absence periods by start_date', function () {
+                var extractStartDate = function (period) {
+                  return period.start_date;
+                };
+                var absencePeriodSortedByDate = _.sortBy(absencePeriodData.all().values, 'start_date').map(extractStartDate);
+
+                expect(controller.absencePeriods.map(extractStartDate)).toEqual(absencePeriodSortedByDate);
+              });
             });
 
             it('has automatically selected the period, choosing the current one', function () {
