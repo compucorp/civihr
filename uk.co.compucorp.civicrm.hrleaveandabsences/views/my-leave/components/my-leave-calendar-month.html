@@ -3,7 +3,7 @@
 </header>
 <crm-loading show="!calendar.months[$index].loading">
 </crm-loading>
-<div ng-if="!calendar.months[$index].loading">
+<div class="chr_leave-calendar__month-body" ng-if="!calendar.months[$index].loading">
   <div class="table-responsive">
     <table class="table table-bordered chr_leave-calendar">
       <thead>
@@ -34,7 +34,7 @@
                contact-id="calendar.contactId"
                leave-request-popup
                leave-request="day.leaveRequest"
-               title="Click to open Leave Request">
+               title="Click to open this leave request">
             </a>
           </div>
         </td>

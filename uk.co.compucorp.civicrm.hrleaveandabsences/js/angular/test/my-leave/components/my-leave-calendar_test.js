@@ -22,7 +22,7 @@
 
     describe('myLeaveCalendar', function () {
       var $compile, $log, $q, $rootScope, component, controller, sharedSettings, $provide,
-        AbsencePeriod, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
+        AbsencePeriod, AbsenceType, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -37,15 +37,16 @@
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
 
-      beforeEach(inject(['$compile', '$log', '$q', '$rootScope', 'AbsencePeriod', 'OptionGroup', 'OptionGroupAPIMock',
+      beforeEach(inject(['$compile', '$log', '$q', '$rootScope', 'AbsencePeriod', 'AbsenceType', 'OptionGroup', 'OptionGroupAPIMock',
         'Calendar', 'CalendarInstance', 'LeaveRequest', 'shared-settings',
-        function (_$compile_, _$log_, _$q_, _$rootScope_, _AbsencePeriod_, _OptionGroup_, _OptionGroupAPIMock_,
+        function (_$compile_, _$log_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_, _OptionGroup_, _OptionGroupAPIMock_,
                   _Calendar_, _CalendarInstance_, _LeaveRequest_, _sharedSettings_) {
         $compile = _$compile_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         AbsencePeriod = _AbsencePeriod_;
+        AbsenceType = _AbsenceType_;
         LeaveRequest = _LeaveRequest_;
         Calendar = _Calendar_;
         CalendarInstance = _CalendarInstance_;
@@ -67,6 +68,7 @@
 
           return $q.resolve(data);
         });
+        spyOn(AbsenceType, 'all').and.callThrough();
         compileComponent();
       }]));
 
@@ -88,8 +90,8 @@
             expect(controller.absencePeriods.length).not.toBe(0);
           });
 
-          it('sorts absence periods by title', function () {
-            expect(controller.absencePeriods).toEqual(_.sortBy(absencePeriodData.all().values, 'title'));
+          it('sorts absence periods by start_date', function () {
+            expect(controller.absencePeriods).toEqual(_.sortBy(absencePeriodData.all().values, 'start_date'));
           });
         });
 
@@ -104,19 +106,9 @@
         });
       });
 
-      describe('does not show disabled absence types', function () {
-        var disabledAbsenceTypes;
-
-        beforeEach(function() {
-          disabledAbsenceTypes = absenceTypeData.getDisabledAbsenceTypes();
-        });
-
-        it('disabled absence types are filtered', function () {
-          _.each(controller.absenceTypes, function (absenceType) {
-            expect(disabledAbsenceTypes.filter(function (disabledAbsenceType) {
-              return disabledAbsenceType.id == absenceType.id;
-            }).length).toBe(0);
-          });
+      it('disabled absence types are filtered', function () {
+        expect(AbsenceType.all).toHaveBeenCalledWith({
+          is_active: true
         });
       });
 

@@ -22,8 +22,6 @@ define([
     var parentCtrl = $controller('CalendarCtrl'),
       vm = Object.create(parentCtrl);
 
-    vm.leaveRequests = {};
-
     /**
      * Returns the calendar information for a specific month
      *

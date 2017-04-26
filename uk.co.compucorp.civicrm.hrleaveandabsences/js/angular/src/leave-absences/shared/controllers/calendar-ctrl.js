@@ -8,25 +8,25 @@ define([
 ], function (controllers, _, moment) {
   'use strict';
 
-  controllers.controller('CalendarCtrl', ['$q', '$rootScope', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
+  controllers.controller('CalendarCtrl', ['$q', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
     'LeaveRequest', 'PublicHoliday', 'OptionGroup', controller]);
 
-  function controller($q, $rootScope, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup) {
+  function controller($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup) {
     var dayTypes = [],
       leaveRequestStatuses = [],
       publicHolidays = [];
 
     this.absencePeriods = [];
     this.absenceTypes = [];
+    this.leaveRequests = {};
     this.months = [];
+    this.monthLabels = moment.monthsShort();
     this.selectedMonths = [];
     this.selectedPeriod = null;
     this.loading = {
       calendar: false,
       page: false
     };
-    this.monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     /**
      * Fetches months from newly selected period and refresh data
@@ -231,7 +231,7 @@ define([
     this._loadAbsencePeriods = function () {
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
-          this.absencePeriods = _.sortBy(absencePeriods, 'title');
+          this.absencePeriods = _.sortBy(absencePeriods, 'start_date');
           this.selectedPeriod = _.find(this.absencePeriods, function (period) {
             return !!period.current;
           });
@@ -241,17 +241,16 @@ define([
     };
 
     /**
-     * Loads the absence types
+     * Loads the active absence types
      *
      * @return {Promise}
      */
     this._loadAbsenceTypes = function () {
-      return AbsenceType.all()
-        .then(function (absenceTypes) {
-          this.absenceTypes = absenceTypes.filter(function (absenceType) {
-            return absenceType.is_active === "1";
-          });
-        }.bind(this));
+      return AbsenceType.all({
+        is_active: true
+      }).then(function (absenceTypes) {
+        this.absenceTypes = absenceTypes;
+      }.bind(this));
     };
 
     /**

@@ -14,10 +14,10 @@ define([
       return settings.pathTpl + 'components/manager-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$controller', '$log', '$rootScope', '$q', 'Calendar', 'Contact', 'OptionGroup', controller]
+    controller: ['$controller', '$log', '$q', '$rootScope', 'Calendar', 'Contact', 'OptionGroup', controller]
   });
 
-  function controller($controller, $log, $rootScope, $q, Calendar, Contact, OptionGroup) {
+  function controller($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup) {
     $log.debug('Component: manager-leave-calendar');
 
     var parentCtrl = $controller('CalendarCtrl'),
@@ -31,7 +31,6 @@ define([
     var tempContactData = [];
 
     vm.filteredContacts = [];
-    vm.leaveRequests = [];
     vm.managedContacts = [];
     vm.filters = {
       contact: null,

@@ -118,11 +118,13 @@
                 expect(controller.absencePeriods.length).not.toBe(0);
               });
 
-              it('sorts absence periods by title', function () {
-                var extractTitles = function (period) {
-                  return period.title;
+              it('sorts absence periods by start_date', function () {
+                var extractStartDate = function (period) {
+                  return period.start_date;
                 };
-                expect(controller.absencePeriods.map(extractTitles)).toEqual(_.sortBy(absencePeriodData.all().values, 'title').map(extractTitles));
+                var absencePeriodSortedByDate = _.sortBy(absencePeriodData.all().values, 'start_date').map(extractStartDate);
+
+                expect(controller.absencePeriods.map(extractStartDate)).toEqual(absencePeriodSortedByDate);
               });
             });
 
