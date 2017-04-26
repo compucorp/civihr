@@ -27,7 +27,8 @@ define([
       var absenceTypesAndIds,
         initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
         mode = '', //can be edit, create, view
-        role = ''; //could be manager, owner or admin
+        role = '', //could be manager, owner or admin
+        originalCommentsLength = 0; //number of comments when the request model is loaded
 
       this.absencePeriods = [];
       this.absenceTypes = [];
@@ -192,6 +193,8 @@ define([
         //check if user has changed any attribute
         if (this.isMode('edit')) {
           canSubmit = canSubmit && !_.isEqual(initialLeaveRequestAttributes, this.request.attributes());
+          //user has added a comment
+          canSubmit = canSubmit || this.request.comments.length != originalCommentsLength;
         }
 
         //check if manager has changed status
@@ -640,6 +643,8 @@ define([
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
               }
+
+              originalCommentsLength = self.request.comments.length;
             }
           });
       };

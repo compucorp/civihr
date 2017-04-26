@@ -971,6 +971,20 @@
               expect($ctrl.request.status_id).toEqual(expectedStatusValue);
             });
           });
+
+          describe('user adds comments', function() {
+            beforeEach(function() {
+              $ctrl.request.comments = [];
+              $ctrl.directiveOptions.contactId = '101';
+              $ctrl.comment.text = 'some text';
+              $ctrl.request.id = '102';
+              $ctrl.addComment();
+            });
+
+            it('allows user to submit', function () {
+              expect($ctrl.canSubmit()).toBeTruthy();
+            });
+          });
         });
 
         describe('in view mode', function () {
