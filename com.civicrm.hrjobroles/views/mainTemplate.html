@@ -1,8 +1,8 @@
 <div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">{{jobroles.message}}</div>
 
 <section>
-  <div class="page-header" ng-show="jobroles.loading || jobroles.present_job_roles.length">
-    <h1>Current Roles and Projects:</h1>
+  <div class="page-header page-header-primary" ng-show="jobroles.loading || jobroles.present_job_roles.length">
+    <h2>Current Roles and Projects:</h2>
   </div>
   <crm-loading ng-show="jobroles.loading"></crm-loading>
   <ul class="list-unstyled {{prefix}}list-role" ng-show="!jobroles.loading">
@@ -14,8 +14,8 @@
   </ul>
 </section>
 <section ng-show="jobroles.past_job_roles.length">
-  <div class="page-header">
-    <h1>Past Roles and Projects:</h1>
+  <div class="page-header page-header-danger">
+    <h2>Past Roles and Projects:</h2>
   </div>
   <ul class="list-unstyled {{prefix}}list-role">
     <li class="{{prefix}}list-role-item"
