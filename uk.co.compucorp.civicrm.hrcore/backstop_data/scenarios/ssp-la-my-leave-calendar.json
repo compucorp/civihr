@@ -1,0 +1,14 @@
+{
+  "scenarios": [
+    {
+      "label": "Current Month: My Leave Calendar",
+      "url": "my-leave#/my-leave/calendar",
+      "delay": 10000
+    },
+    {
+      "label": "All Months: My Leave Calendar",
+      "url": "my-leave#/my-leave/calendar",
+      "onReadyScript": "leave-absences/staff/my-leave-calendar"
+    }
+  ]
+}
