@@ -66,20 +66,14 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     ], false);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
-    $recipientEmails = $message->getRecipientEmails($leaveRequest);
+
+    $recipientEmails = array_column($message->getRecipientEmails($leaveRequest), 'email');
+    sort($recipientEmails);
 
     $this->assertCount(3, $recipientEmails);
-
     //The contact and the leave approvers are eligible recipients for this email notification.
-    foreach($recipientEmails as $value) {
-      $this->assertContains($value['email'], [
-        'staffmember@dummysite.com', 'manager1@dummysite.com', 'manager2@dummysite.com'
-      ]);
-
-      $this->assertContains($value['api.Contact.get']['values'][0]['display_name'], [
-        'Manager1 Manager1', 'Staff1 Staff1', 'Manager2 Manager2'
-      ]);
-    }
+    $expectedEmails = ['manager1@dummysite.com', 'manager2@dummysite.com', 'staffmember@dummysite.com'];
+    $this->assertEquals($expectedEmails, $recipientEmails);
   }
 
   public function testGetRecipientEmailsReturnsCorrectlyWhenLeaveContactHasNoLeaveApproverButThereAreDefaultLeaveApproversForTheAbsenceType() {
@@ -108,20 +102,14 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     ], false);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
-    $recipientEmails = $message->getRecipientEmails($leaveRequest);
+
+    $recipientEmails = array_column($message->getRecipientEmails($leaveRequest), 'email');
+    sort($recipientEmails);
 
     $this->assertCount(3, $recipientEmails);
-
     //The contact and default leave approvers for the absence type are eligible recipients for this email notification.
-    foreach($recipientEmails as $value) {
-      $this->assertContains($value['email'], [
-        'staffmember@dummysite.com', 'approver1@dummysite.com', 'approver2@dummysite.com'
-      ]);
-
-      $this->assertContains($value['api.Contact.get']['values'][0]['display_name'], [
-        'Approver1 Approver1', 'Staff1 Staff1', 'Approver2 Approver2'
-      ]);
-    }
+    $expectedEmails = ['approver1@dummysite.com', 'approver2@dummysite.com', 'staffmember@dummysite.com'];
+    $this->assertEquals($expectedEmails, $recipientEmails);
   }
 
   public function testGetRecipientEmailsReturnsEmailsForContactAndLeaveApproverOnlyWhenLeaveContactHasLeaveApproverAndThereIsDefaultLeaveApproverForTheAbsenceType() {
@@ -156,21 +144,14 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     ], false);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
-    $recipientEmails = $message->getRecipientEmails($leaveRequest);
+    $recipientEmails = array_column($message->getRecipientEmails($leaveRequest), 'email');
+    sort($recipientEmails);
 
     $this->assertCount(2, $recipientEmails);
-
     //since there are leave approvers for the leave contact, no mails will be sent to the default approvers
     //for the absence type
-    foreach($recipientEmails as $value) {
-      $this->assertContains($value['email'], [
-        'staffmember@dummysite.com', 'manager1@dummysite.com'
-      ]);
-
-      $this->assertContains($value['api.Contact.get']['values'][0]['display_name'], [
-        'Manager1 Manager1', 'Staff1 Staff1'
-      ]);
-    }
+    $expectedEmails = ['manager1@dummysite.com', 'staffmember@dummysite.com'];
+    $this->assertEquals($expectedEmails, $recipientEmails);
   }
 
   public function testGetLeaveContact() {
