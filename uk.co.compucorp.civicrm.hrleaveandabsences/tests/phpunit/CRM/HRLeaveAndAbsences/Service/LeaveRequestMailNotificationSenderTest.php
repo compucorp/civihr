@@ -1,6 +1,6 @@
 <?php
 
-use  CRM_HRLeaveAndAbsences_Mail_Message as Message;
+use CRM_HRLeaveAndAbsences_Mail_Message as Message;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSender as LeaveRequestMailNotificationSenderService;
 use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotificationTemplateFactory;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
@@ -17,6 +17,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_MailHelpersTrait;
 
 
   private $leaveContact;
@@ -46,20 +47,38 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
     ], false);
 
+    //delete emails sent when leave request is created
+    $this->deleteEmailNotificationsInDatabase();
+    $result = $this->getEmailNotificationsFromDatabase(['staffmember@dummysite.com', 'manager1@dummysite.com']);
+    $this->assertEquals(0, $result->N);
+
     $leaveRequestTemplateFactory = new RequestNotificationTemplateFactory();
     $message = new Message($leaveRequest, $leaveRequestTemplateFactory);
 
     $leaveMailSenderService = new LeaveRequestMailNotificationSenderService();
+    $leaveMailSenderService->send($message);
 
-    $mailStatus = $leaveMailSenderService->send($message);
+    //Check the message spool table for the emails
+    $result = $this->getEmailNotificationsFromDatabase(['staffmember@dummysite.com', 'manager1@dummysite.com']);
 
-    //The email was sent to the leave contact and leave approver
-    $this->assertCount(2, $mailStatus);
+    //To make sure that duplicate emails were not sent but one mail per recipient
+    $this->assertEquals(2, $result->N);
 
-    //since the emails are redirected to the database, the status is expected to be true for each email address
-    foreach($mailStatus as $email => $status) {
-      $this->assertContains($email, ['staffmember@dummysite.com', 'manager1@dummysite.com']);
-      $this->assertTrue($status);
+    $emails = [];
+    while($result->fetch()) {
+      $emails[] = ['email' => $result->recipient_email, 'body' => $result->body, 'headers' => $result->headers];
+    }
+
+    $recipientEmails = array_column($emails, 'email');
+    sort($recipientEmails);
+
+    $expectedEmails = ['manager1@dummysite.com', 'staffmember@dummysite.com'];
+    $this->assertEquals($recipientEmails, $expectedEmails);
+
+    //check that the headers and body are not empty for the emails
+    foreach($emails as $email) {
+      $this->assertNotEmpty($email['body']);
+      $this->assertNotEmpty($email['headers']);
     }
   }
 }
