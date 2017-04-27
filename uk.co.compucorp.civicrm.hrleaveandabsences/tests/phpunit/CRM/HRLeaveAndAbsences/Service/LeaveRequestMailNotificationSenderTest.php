@@ -6,7 +6,6 @@ use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotific
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
-
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest
  *
@@ -18,7 +17,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
   use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
   use CRM_HRLeaveAndAbsences_MailHelpersTrait;
-
 
   private $leaveContact;
 

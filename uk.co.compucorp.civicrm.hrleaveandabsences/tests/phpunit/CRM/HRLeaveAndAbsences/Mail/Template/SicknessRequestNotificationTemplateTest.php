@@ -5,7 +5,6 @@ use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentSer
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
-
 /**
  * Class RM_HRLeaveAndAbsences_Mail_SicknessRequestNotificationTemplateTest
  *
@@ -16,7 +15,6 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
   use CRM_HRLeaveAndAbsences_MailHelpersTrait;
-
 
   private $sicknessRequestNotificationTemplate;
 

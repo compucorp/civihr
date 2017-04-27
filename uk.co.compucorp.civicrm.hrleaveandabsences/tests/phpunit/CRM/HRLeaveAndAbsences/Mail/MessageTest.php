@@ -1,12 +1,11 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_NotificationReceiver as NotificationReceiver;
-use  CRM_HRLeaveAndAbsences_Mail_Message as Message;
+use CRM_HRLeaveAndAbsences_Mail_Message as Message;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotificationTemplateFactory;
-
 
 /**
  * Class CRM_HRLeaveAndAbsences_Mail_MessageTest
@@ -18,7 +17,6 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
   use CRM_HRLeaveAndAbsences_MailHelpersTrait;
-
 
   private $leaveRequestTemplateFactory;
 

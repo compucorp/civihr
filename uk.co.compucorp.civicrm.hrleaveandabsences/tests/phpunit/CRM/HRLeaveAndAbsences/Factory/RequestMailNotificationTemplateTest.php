@@ -13,7 +13,6 @@ class CRM_HRLeaveAndAbsences_Factory_RequestMailNotificationServiceTest extends 
   private $leaveRequestTemplateFactory;
 
   public function setUp() {
-    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
     $this->leaveRequestTemplateFactory = new RequestNotificationTemplateFactory();
   }
 
