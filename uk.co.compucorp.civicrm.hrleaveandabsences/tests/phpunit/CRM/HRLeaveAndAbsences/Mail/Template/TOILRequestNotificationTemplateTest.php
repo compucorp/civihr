@@ -3,6 +3,7 @@
 use CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplate as TOILRequestNotificationTemplate;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
 
 /**
@@ -35,14 +36,11 @@ class CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplateTest e
   }
 
   public function testGetTemplateParametersReturnsTheExpectedParametersForTheTemplate() {
-    $leaveRequest = LeaveRequest::create([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
-      'contact_id' => 2,
-      'status_id' => 1,
+      'contact_id' =>2,
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'toil_to_accrue' => 2,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], false);

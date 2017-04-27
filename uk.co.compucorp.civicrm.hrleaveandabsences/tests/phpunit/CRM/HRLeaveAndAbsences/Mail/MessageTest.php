@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_BAO_NotificationReceiver as NotificationReceiver;
 use  CRM_HRLeaveAndAbsences_Mail_Message as Message;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotificationTemplateFactory;
 
 
@@ -52,17 +53,11 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact, null, null, true, 'has Leaves Approved By');
     $this->setContactAsLeaveApproverOf($manager2, $this->leaveContact, null, null, true, 'has Leaves Approved By');
 
-    $leaveRequest = LeaveRequest::create([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
       'contact_id' => $this->leaveContact['id'],
-      'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'to_date_type' => 1,
-      'toil_to_accrue' => 2,
-      'toil_duration' => 120,
-      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], false);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
@@ -88,17 +83,11 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     //add two default leave approvers for the absence type
     NotificationReceiver::addReceiversToAbsenceType($absenceType, [$defaultApprover1['id'], $defaultApprover2['id']]);
 
-    $leaveRequest = LeaveRequest::create([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
       'contact_id' => $this->leaveContact['id'],
-      'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'to_date_type' => 1,
-      'toil_to_accrue' => 2,
-      'toil_duration' => 120,
-      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], false);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
@@ -130,17 +119,11 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     //add a default leave approvers for the absence type
     NotificationReceiver::addReceiversToAbsenceType($absenceType, [$defaultApprover1['id']]);
 
-    $leaveRequest = LeaveRequest::create([
-      'type_id' => $absenceType,
-      'contact_id' => $this->leaveContact['id'],
-      'status_id' => 1,
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' =>$this->leaveContact['id'],
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'to_date_type' => 1,
-      'toil_to_accrue' => 2,
-      'toil_duration' => 120,
-      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], false);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);

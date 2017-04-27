@@ -1,10 +1,10 @@
 <?php
 
 use  CRM_HRLeaveAndAbsences_Mail_Message as Message;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSender as LeaveRequestMailNotificationSenderService;
 use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotificationTemplateFactory;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
 
 /**
@@ -39,17 +39,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
     // Set manager1 to be leave aprovers for the leave contact
     $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact, null, null, true, 'has Leaves Approved By');
 
-    $leaveRequest = LeaveRequest::create([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
-      'contact_id' => $this->leaveContact['id'],
-      'status_id' => 1,
+      'contact_id' =>$this->leaveContact['id'],
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'to_date_type' => 1,
-      'toil_to_accrue' => 2,
-      'toil_duration' => 120,
-      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], false);
 
     $leaveRequestTemplateFactory = new RequestNotificationTemplateFactory();
