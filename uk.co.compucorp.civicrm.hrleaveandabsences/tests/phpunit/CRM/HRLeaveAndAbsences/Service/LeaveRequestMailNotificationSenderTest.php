@@ -35,10 +35,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
       'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
     );
 
-    $this->setLeaveApproverRelationshipTypes(['has Leaves Approved By']);
-
     // Set manager1 to be leave aprovers for the leave contact
-    $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact, null, null, true, 'has Leaves Approved By');
+    $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact);
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,

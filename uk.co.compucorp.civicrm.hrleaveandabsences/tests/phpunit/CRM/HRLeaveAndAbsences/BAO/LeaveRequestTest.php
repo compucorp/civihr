@@ -2081,9 +2081,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'first_name' => 'Staff1', 'last_name' => 'Staff1'], 'staffmember@dummysite.com'
     );
 
-    $this->setLeaveApproverRelationshipTypes(['has Leaves Approved By']);
-
-    $this->setContactAsLeaveApproverOf($manager1, $leaveContact, null, null, true, 'has Leaves Approved By');
+    $this->setContactAsLeaveApproverOf($manager1, $leaveContact);
 
     $params = [
       'type_id' => 1,

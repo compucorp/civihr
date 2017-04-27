@@ -47,11 +47,9 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'first_name' => 'Manager3', 'last_name' => 'Manager3'], 'manager3@dummysite.com'
     );
 
-    $this->setLeaveApproverRelationshipTypes(['has Leaves Approved By']);
-
     // Set manager1 and manager2 only to be leave aprovers for the leave contact
-    $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact, null, null, true, 'has Leaves Approved By');
-    $this->setContactAsLeaveApproverOf($manager2, $this->leaveContact, null, null, true, 'has Leaves Approved By');
+    $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact);
+    $this->setContactAsLeaveApproverOf($manager2, $this->leaveContact);
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
@@ -106,10 +104,8 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
     );
 
-    $this->setLeaveApproverRelationshipTypes(['has Leaves Approved By']);
-
     // Set manager1 to be leave aprovers for the leave contact
-    $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact, null, null, true, 'has Leaves Approved By');
+    $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact);
 
     $defaultApprover1 = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Approver1', 'last_name' => 'Approver1'], 'approver1@dummysite.com'
