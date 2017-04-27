@@ -2,8 +2,7 @@
 
 trait CRM_HRLeaveAndAbsences_MailHelpersTrait {
 
-  public function createRequestNotificationTemplateFactoryMock() {
-    $leaveTemplateMock = $this->createLeaveTemplateMock();
+  public function createRequestNotificationTemplateFactoryMock($leaveTemplateMock) {
     $templateFactory = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate::class)
       ->setMethods(['create'])
       ->getMock();
@@ -15,17 +14,20 @@ trait CRM_HRLeaveAndAbsences_MailHelpersTrait {
     return $templateFactory;
   }
 
-  private function createLeaveTemplateMock() {
-    $leaveTemplate = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Mail_LeaveRequestNotificationTemplate::class)
-      ->setMethods(['getTemplateParameters', 'getTemplate'])
+  private function createLeaveTemplateMock($expectedTemplateParameters = [], $expectedTemplateID = null) {
+    $leaveTemplate = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplate::class)
+      ->setMethods(['getTemplateParameters', 'getTemplateID'])
       ->setConstructorArgs([new CRM_HRLeaveAndAbsences_Service_LeaveRequestComment()])
       ->getMock();
 
     $leaveTemplate->expects($this->any())
-      ->method('getTemplateParameters');
+      ->method('getTemplateParameters')
+      ->with($this->isInstanceOf(CRM_HRLeaveAndAbsences_BAO_LeaveRequest::class))
+      ->will($this->returnValue($expectedTemplateParameters));
 
     $leaveTemplate->expects($this->any())
-      ->method('getTemplate');
+      ->method('getTemplateID')
+      ->will($this->returnValue($expectedTemplateID));
 
     return $leaveTemplate;
   }

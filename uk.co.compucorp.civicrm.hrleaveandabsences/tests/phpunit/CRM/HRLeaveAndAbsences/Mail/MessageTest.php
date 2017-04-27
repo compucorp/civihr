@@ -181,19 +181,26 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
   }
 
   public function testGetTemplateParameters() {
-    $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock();
+    $expectedParameters = [
+      'status' => 'Mock Status',
+      'date' => 'Test Date'
+    ];
+    $leaveTemplate = $this->createLeaveTemplateMock($expectedParameters);
+    $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock($leaveTemplate);
 
     $leaveRequest = new LeaveRequest();
     $message = new Message($leaveRequest, $notificationTemplateFactory);
-    $message->getTemplateParameters();
+    $this->assertEquals($expectedParameters, $message->getTemplateParameters());
   }
 
   public function testGetTemplateID() {
-    $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock();
+    $expectedTemplateID = 5;
+    $leaveTemplate = $this->createLeaveTemplateMock([], $expectedTemplateID);
+    $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock($leaveTemplate);
 
     $leaveRequest = new LeaveRequest();
     $message = new Message($leaveRequest, $notificationTemplateFactory);
-    $message->getTemplateID();
+    $this->assertEquals($expectedTemplateID, $message->getTemplateID());
   }
 
   public function testGetFromEmail() {
