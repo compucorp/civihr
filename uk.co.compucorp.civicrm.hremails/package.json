@@ -1,0 +1,7 @@
+{
+  "name": "uk.co.compucorp.civicrm.hremails",
+  "description": "Stores and handles CiviHR's email templates",
+  "devDependencies": {
+    "foundation-cli": "^2.2.1"
+  }
+}

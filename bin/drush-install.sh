@@ -5,7 +5,8 @@
 ##################################
 ## List of CiviHR core extensions
 CORE_EXTS=\
-uk.co.compucorp.civicrm.hrcore
+uk.co.compucorp.civicrm.hrcore,\
+uk.co.compucorp.civicrm.hremails
 
 ## List of extensions defining basic entity types
 ENTITY_EXTS=\
