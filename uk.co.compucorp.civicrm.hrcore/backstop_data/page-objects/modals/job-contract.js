@@ -4,9 +4,9 @@ module.exports = (function () {
   return modal.extend({
 
     /**
-     * [selectTab description]
-     * @param  {[type]} tabTitle [description]
-     * @return {[type]}          [description]
+     * Selects the tab with the given title
+     *
+     * @param  {string} tabTitle
      */
     selectTab: function (tabTitle) {
       var casper = this.casper;

@@ -28,7 +28,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $session = CRM_Core_Session::singleton();
     $session->set('dateTypes', 1);
 
-    $this->_contractTypeID = $this->creatTestContractType();
+    $this->_contractTypeID = $this->createTestContractType();
     $this->createInsurancePlanTypes();
 
     $this->_defaultImportData = [
@@ -199,12 +199,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateHourAutoFields($contactID, $expected);
   }
 
-  /**
-   * This test verifies FTE for Contracts imported with hours type = "Casual" or
-   * with empty hours amount, should be 0/0 FTE.
-   */
-  public function testFTECalculationOnCasualTypeAndEmptyAmount() {
-    // Casual Contract Type
+  public function testFTEFieldsAreSetToZeroWhenImportingCasualHoursType() {
     $contact1 = ContactFabricator::fabricate();
     $casualContract = $this->buildContractInfo([
       'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
@@ -215,7 +210,11 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $importCasualResponse = $this->runImport($casualContract);
     $this->assertEquals(CRM_Import_Parser::VALID, $importCasualResponse);
 
-    // Empty Hours Amount Contract
+    $expected = ['fte_num' => 0, 'fte_denom' => 0, 'hours_fte' => 0];
+    $this->validateHourAutoFields($contact1['id'], $expected);
+  }
+
+  public function testFTEFieldsAreSetToZeroWhenImportingEmptyHoursAmount() {
     $contact2 = ContactFabricator::fabricate();
     $emptyHoursContract = $this->buildContractInfo([
       'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
@@ -224,12 +223,25 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobHour-hours_amount' => ''
     ]);
     $importEmptyContractResponse = $this->runImport($emptyHoursContract);
-    $this->assertEquals(CRM_Import_Parser::VALID, $importEmptyContractResponse);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importEmptyContractResponse);    
 
-    // Assert FTE's
     $expected = ['fte_num' => 0, 'fte_denom' => 0, 'hours_fte' => 0];
-    $this->validateHourAutoFields($contact1['id'], $expected);
     $this->validateHourAutoFields($contact2['id'], $expected);
+  }
+
+  public function testFTEFieldsAreSetToZeroWhenImportingOnlyMandatoryFields() {
+    $contact3 = ContactFabricator::fabricate();
+    $importResponse = $this->runImport([
+      'HRJobContract-contact_id' => $contact3['id'],
+      'HRJobDetails-contract_type' => $this->_contractTypeID,      
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-period_start_date' => '2016-01-01'
+    ]);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
+    $expected = ['fte_num' => 0, 'fte_denom' => 0, 'hours_fte' => 0];
+    $this->validateHourAutoFields($contact3['id'], $expected);
   }
 
   /**
@@ -313,16 +325,17 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     );
 
     $contactID = $this->createTestContact($contact2Params);
-    // TODO : create and add health and life insurance providers to params
     $params = array(
       'HRJobContract-contact_id' => $contactID,
       'HRJobDetails-title' => 'Test Contract Title',
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobHealth-provider' => $this->createProvider('Health Provider', 'Health_Insurance_Provider'),
       'HRJobHealth-dependents' => 'HI Description',
       'HRJobHealth-description' => 'HI dependents',
       'HRJobHealth-plan_type' => $this->_insurancePlanTypes[0]['label'],
+      'HRJobHealth-provider_life_insurance' => $this->createProvider('Life Provider', 'Life_Insurance_Provider'),
       'HRJobHealth-dependents_life_insurance' => 'LI dependents',
       'HRJobHealth-description_life_insurance' => 'LI description',
       'HRJobHealth-plan_type_life_insurance' => $this->_insurancePlanTypes[1]['label'],
@@ -343,7 +356,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     );
 
     $contactID = $this->createTestContact($contact2Params);
-    $params = array(
+    $params = [
       'HRJobContract-contact_id' => $contactID,
       'HRJobDetails-title' => 'Test Contract Title',
       'HRJobDetails-position' => 'Test Contract Position',
@@ -355,7 +368,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobHealth-dependents_life_insurance' => 'LI dependents',
       'HRJobHealth-description_life_insurance' => 'LI description',
       'HRJobHealth-plan_type_life_insurance' => $this->_insurancePlanTypes[1]['label'],
-    );
+    ];
 
     $importResponse = $this->runImport($params);
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
@@ -380,13 +393,27 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobPension-ee_contrib_pct' => '12',
       'HRJobPension-ee_contrib_abs' => '4000',
       'HRJobPension-ee_evidence_note' => 'sample',
-      'HRJobPension-pension_type' => 'employer pension',
+      'HRJobPension-pension_type' => $this->createProvider('Pension Provider Contact', 'Pension_Provider'),
     );
 
     $importResponse = $this->runImport($params);
     $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
 
     $this->validateResult($contactID, 'HRJobPension');
+
+    $params['HRJobPension-pension_type'] = 'Wrong Pension Provider';
+    $failedImportResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $failedImportResponse);
+  }
+
+  private function createProvider($providerName, $type) {
+    $provider = ContactFabricator::fabricateOrganization([
+      'contact_type' => 'Organization',
+      'contact_sub_type' => $type,
+      'organization_name' => $providerName,
+    ]);
+
+    return $provider['id'];
   }
 
   function testImportingContractWithEndDateWithoutEndReason() {
@@ -477,20 +504,20 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   }
 
   function testMandatoryFieldsImportOnlyWillCreateRevisionForAllOtherEntities() {
-    $contact2Params = array(
+    $contact2Params = [
       'first_name' => 'John_3',
       'last_name' => 'Snow_3',
       'email' => 'a3@b3.com',
       'contact_type' => 'Individual',
-    );
+    ];
     $contactID = $this->createTestContact($contact2Params);
-    $params = array(
+    $params = [
       'HRJobContract-email' => $contact2Params['email'],
       'HRJobDetails-title' => 'Test Contract Title',
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
-    );
+    ];
 
     $importResponse = $this->runImport($params);
     $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
@@ -557,7 +584,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     return $contactID;
   }
 
-  private function creatTestContractType()  {
+  private function createTestContractType() {
     $contractTypeGroup = $this->callAPISuccess('OptionGroup', 'get', array(
       'sequential' => 1,
       'name' => "hrjc_contract_type",

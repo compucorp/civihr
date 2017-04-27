@@ -48,7 +48,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_
 
     $pensionDetails = HRJobPensionFabricator::fabricate([
       'jobcontract_id' => $contract['id'],
-      'pension_type' => mt_rand(1000, 9000)
+      'pension_type' => 'Pension Provider ' . mt_rand(1000, 9000)
     ]);
 
     $currentRevision = $this->getContractCurrentRevision($contract['id']);
@@ -58,28 +58,9 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_
       $this->assertArrayHasKey($entitiy, $fullDetails);
     }
 
-    $this->assertEquals($this->getPensionTypeLabel($pensionDetails['pension_type']), $fullDetails['pension']['pension_type_label']);
+    $this->assertEquals($pensionDetails['pension_type'], $fullDetails['pension']['pension_type']);
 
     $this->assertInternalType("array", $fullDetails['leave']);
-  }
-
-  /**
-   * Obtains label for given pension type.
-   * 
-   * @param string $pensionType
-   *   Value of pension type
-   * 
-   * @return string
-   *   Label for given pension type value
-   */
-  private function getPensionTypeLabel($pensionType) {
-    $pensionTypeResult = civicrm_api3('OptionValue', 'getsingle', [
-      'sequential' => 1,
-      'option_group_id' => 'hrjc_pension_type',
-      'value' => $pensionType
-    ]);
-
-    return $pensionTypeResult['label'];
   }
 
   /**

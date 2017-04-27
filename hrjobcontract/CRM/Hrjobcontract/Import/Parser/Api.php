@@ -583,7 +583,6 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       case 'HRJobPay-pay_scale':
       case 'HRJobPay-pay_currency':
       case 'HRJobContractRevision-change_reason':
-      case 'HRJobPension-pension_type':
       case 'HRJobDetails-contract_type':
       case 'HRJobHour-hours_type':
       case 'HRJobPay-pay_cycle':
@@ -595,7 +594,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         if ($optionID !== FALSE) {
           $convertedValue = $optionID;
         } else {
-          $errorMessage = "{$this->_fields[$key]->_title} is not valid";
+          $errorMessage = "Value '$value' for {$this->_fields[$key]->_title} is not valid";
         }
         break;
       case 'HRJobPay-pay_unit':
@@ -623,19 +622,22 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
           $errorMessage = "{$this->_fields[$key]->_title} is not a valid date";
         }
         break;
+      case 'HRJobPension-pension_type':
       case 'HRJobHealth-provider':
       case 'HRJobHealth-provider_life_insurance':
-        $providerType = 'Health_Insurance_Provider';
-        if ($key == 'HRJobHealth-provider_life_insurance')  {
-          $providerType = 'Life_Insurance_Provider';
-        }
+        $contactTypeMapping = [
+          'HRJobPension-pension_type' => 'Pension_Provider',
+          'HRJobHealth-provider' => 'Health_Insurance_Provider',
+          'HRJobHealth-provider_life_insurance' => 'Life_Insurance_Provider'
+        ];
+
         $convertedValue = NULL;
-        $result = CRM_Hrjobcontract_BAO_HRJobHealth::checkProvider($value, $providerType);
+        $result = CRM_Hrjobcontract_BAO_HRJobHealth::checkProvider($value, $contactTypeMapping[$key]);
         if ($result != 0)  {
           $convertedValue = $result;
         }
         else  {
-          $errorMessage = "{$this->_fields[$key]->_title} is not an existing provider";
+          $errorMessage = "{$this->_fields[$key]->_title} with ID [$value] is not an existing provider";
         }
         break;
       case 'HRJobLeave-leave_amount':
@@ -818,13 +820,16 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   }
 
   /**
-   * calculate and set hour tab auto populated fields
+   * Calculate and set hour tab auto populated fields
    *
    * @access private
    */
   private function setHourAutoPopulatedFields()  {
-    $params = $this->_params;
+    $this->_params['HRJobHour-fte_num'] = 0;
+    $this->_params['HRJobHour-fte_denom'] = 0;
+    $this->_params['HRJobHour-hours_fte'] = 0;
 
+    $params = $this->_params;
     if (isset($params['HRJobHour-location_standard_hours'])
       && $params['HRJobHour-location_standard_hours'] != ''
       && isset($params['HRJobHour-hours_type'])
@@ -856,11 +861,6 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
           $this->_params['HRJobHour-fte_denom'] = $denom;
           $this->_params['HRJobHour-hours_fte'] = $fte;
         } 
-        else {
-          $this->_params['HRJobHour-fte_num'] = 0;
-          $this->_params['HRJobHour-fte_denom'] = 0;
-          $this->_params['HRJobHour-hours_fte'] = 0;
-        }
       }
     }
   }

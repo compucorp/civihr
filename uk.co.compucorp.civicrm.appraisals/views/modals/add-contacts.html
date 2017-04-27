@@ -109,13 +109,15 @@
                     </label>
                     <div class="col-sm-7">
                         <ui-select
+                            prevent-animations
                             allow-clear
                             ng-required="true"
                             ng-model="modal.criteria.contact_id">
-                            <ui-select-match placeholder="Contact">
+                            <ui-select-match prevent-animations placeholder="Contact">
                                 {{$select.selected.display_name}}
                             </ui-select-match>
                             <ui-select-choices
+                                prevent-animations
                                 repeat="contact.id as contact in modal.contacts.lookedUp.list | filter: $select.search"
                                 refresh="modal.lookupContact($select.search)"
                                 refresh-delay="0">

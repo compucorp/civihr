@@ -1,8 +1,8 @@
-@import "../../org.civicrm.bootstrapcivihr/scss/overrides/variables";
-@import "../../org.civicrm.bootstrapcivicrm/scss/bootstrap/overrides/variables";
-@import "../../org.civicrm.bootstrap/scss/overrides/variables";
-@import "../../org.civicrm.bootstrap/scss/vendor/bootstrap/variables";
-@import "../../org.civicrm.bootstrapcivicrm/scss/bootstrap/mixins/*";
+@import "SCSSROOT/org.civicrm.bootstrapcivihr/scss/overrides/variables";
+@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/overrides/variables";
+@import "SCSSROOT/org.civicrm.shoreditch/base/scss/overrides/variables";
+@import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/variables";
+@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/mixins/ALL";
 
 .page-civicrm-appraisals-dashboard {
 
@@ -15,7 +15,8 @@
     padding: 0;
   }
 
-  #{$bootstrap-namespace} {
+  // TODO: left as a reminder, clean up once work on the extension resumes
+  //#{$bootstrap-namespace} {
     .chr_steps--appraisals-status__count {
       display: block;
     }
@@ -63,10 +64,11 @@
         line-height: 126px;
       }
     }
-  }
+  //}
 }
 
-#{$bootstrap-namespace} {
+// TODO: left as a reminder, clean up once work on the extension resumes
+//#{$bootstrap-namespace} {
 
   .modal--send-notification-reminder__view-recipient {
     display: inline-block;
@@ -115,4 +117,4 @@
       text-decoration: none !important;
     }
   }
-}
+//}

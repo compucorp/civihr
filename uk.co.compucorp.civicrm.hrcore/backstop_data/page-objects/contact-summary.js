@@ -6,22 +6,27 @@ module.exports = (function () {
   return page.extend({
 
     /**
-     * [openManageRightsModal description]
-     * @return {[type]} [description]
+     * Opens the "contact access rights" modal
+     *
+     * @return {Promise} resolves with the modal page object
      */
     openManageRightsModal: function () {
       var casper = this.casper;
 
-      casper.then(function () {
-        casper.click('#manage-roles-and-teams');
-        casper.waitWhileVisible('.crm_spinner');
-      });
+      return new Promise(function (resolve) {
+        casper.then(function () {
+          casper.click('#manage-roles-and-teams');
+          casper.waitWhileVisible('.crm_spinner');
+          resolve(this.waitForModal('contact-access-rights'));
+        }.bind(this));
+      }.bind(this));
     },
 
     /**
-     * [openTab description]
-     * @param  {[type]}   tabId [description]
-     * @return {[type]}         [description]
+     * Opens one of the contact summary tabs
+     *
+     * @param  {string} tabId
+     * @return {object} resolves with the tab page object
      */
     openTab: function (tabId) {
       var casper = this.casper;
@@ -39,8 +44,7 @@ module.exports = (function () {
     },
 
     /**
-     * [showActions description]
-     * @return {[type]} [description]
+     * Shows the dropdown of the "Actions" button in the contact summary page
      */
     showActions: function () {
       var casper = this.casper;

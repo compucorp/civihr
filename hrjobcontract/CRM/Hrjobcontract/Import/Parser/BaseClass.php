@@ -88,7 +88,6 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
     // Fetch select list options from the database and cache them
     $this->_optionsList['HRJobHour-hours_type'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_hours_type');
     $this->_optionsList['HRJobHour-location_standard_hours'] = CRM_Hrjobcontract_SelectValues::buildHourLocations();
-    $this->_optionsList['HRJobPension-pension_type'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_pension_type');
     $this->_optionsList['HRJobPay-pay_cycle'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_pay_cycle');
     $this->_optionsList['HRJobPay-pay_scale'] = CRM_Hrjobcontract_SelectValues::buildPayScales();
     $this->_optionsList['HRJobPay-pay_currency'] = CRM_Hrjobcontract_SelectValues::buildCurrency();

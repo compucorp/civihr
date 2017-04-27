@@ -1,11 +1,11 @@
 define([
-  'common/angularMocks',
+  'mocks/data/contract',
   'job-contract/app'
-], function(Mock) {
+], function(MockContract) {
   'use strict';
 
   describe('ContractLeaveService', function() {
-    var $httpBackend, responseData, $rootScope, ContractLeaveService;
+    var $httpBackend, $rootScope, ContractLeaveService;
 
     beforeEach(module('hrjc'));
 
@@ -14,79 +14,7 @@ define([
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
 
-      responseData = {
-        "is_error": 0,
-        "undefined_fields": [
-          "jobcontract_revision_id"
-        ],
-        "version": 3,
-        "count": 8,
-        "values": [
-          {
-            "id": "375",
-            "leave_type": "1",
-            "leave_amount": "0",
-            "add_public_holidays": "0",
-            "jobcontract_revision_id": "99"
-          },
-          {
-            "id": "376",
-            "leave_type": "2",
-            "leave_amount": "0",
-            "add_public_holidays": "0",
-            "jobcontract_revision_id": "99"
-          },
-          {
-            "id": "377",
-            "leave_type": "3",
-            "leave_amount": "0",
-            "add_public_holidays": "0",
-            "jobcontract_revision_id": "99"
-          },
-          {
-            "id": "378",
-            "leave_type": "4",
-            "leave_amount": "0",
-            "add_public_holidays": "0",
-            "jobcontract_revision_id": "99"
-          },
-          {
-            "id": "379",
-            "leave_type": "5",
-            "leave_amount": "0",
-            "add_public_holidays": "0",
-            "jobcontract_revision_id": "99"
-          },
-          {
-            "id": "380",
-            "leave_type": "6",
-            "leave_amount": "0",
-            "add_public_holidays": "0",
-            "jobcontract_revision_id": "99"
-          },
-          {
-            "id": "381",
-            "leave_type": "7",
-            "leave_amount": "0",
-            "add_public_holidays": "0",
-            "jobcontract_revision_id": "99"
-          },
-          {
-            "id": "382",
-            "leave_type": "8",
-            "leave_amount": "0",
-            "add_public_holidays": "0",
-            "jobcontract_revision_id": "99"
-          }
-        ],
-        "xdebug": {
-          "peakMemory": 57659904,
-          "memory": 57490280,
-          "timeIndex": 1.50788617134
-        }
-      };
-
-      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(responseData);
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(MockContract.contractLeaves);
       $httpBackend.whenGET(/action=get&entity=HRJobLeave/).respond({});
       $httpBackend.whenGET(/views.*/).respond({});
     }));

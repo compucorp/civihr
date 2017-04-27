@@ -14,7 +14,7 @@
         'common/angularResource': 'common/vendor/angular/angular-resource.min',
         'common/angularRoute': 'common/vendor/angular/angular-route.min',
         'common/angularUiRouter': 'common/vendor/angular/angular-ui-router.min',
-        'common/angularXeditable': 'common/vendor/angular/xeditable.min',
+        'common/angularXeditable': 'common/vendor/angular/xeditable',
         'common/rangy-core': 'common/vendor/angular/rangy-core',
         'common/rangy-selectionsaverestore': 'common/vendor/angular/rangy-selectionsaverestore',
         'common/text-angular-sanitize': 'common/vendor/angular/textAngular-sanitize.min',

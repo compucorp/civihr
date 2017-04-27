@@ -29,3 +29,19 @@
 <div class="crm-submit-buttons">
   {include file="CRM/common/formButtons.tpl"}
 </div>
+{*
+ | Finds file labels that have file input fields and  adds
+ | a data-file="true" attribute. Which is used to style the pseudo elements
+ | for drag and drop box for file upload in the form.
+*}
+{literal}
+<script type="text/javascript">
+  CRM.$(function ($) {
+    $("input[type='file']")
+    .closest("div")
+    .parent()
+    .find('label')
+    .attr('data-file','true');
+  });
+</script>
+{/literal}

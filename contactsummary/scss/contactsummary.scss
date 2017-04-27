@@ -1,0 +1,34 @@
+@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/overrides/variables";
+@import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/variables";
+
+#contactsummary {
+  padding: 20px;
+
+  .panel--key-dates {
+
+    > .panel-body {
+      padding-bottom: 0;
+      padding-top: 0;
+    }
+  }
+
+  .panel--key-details {
+    margin-bottom: 0 !important;
+  }
+
+  .panel--leave {
+
+    .list-unstyled {
+      margin-bottom: 0;
+    }
+  }
+
+  .panel--sickness {
+
+    @media(min-width: $screen-lg-min) {
+      .col--sickness-days {
+        text-align: right;
+      }
+    }
+  }
+}

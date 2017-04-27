@@ -49,6 +49,7 @@ define([
         },
         getOptions: function(fieldName, callAPI) {
           var deffered = $q.defer(),
+            params = {},
             data;
 
           if (!callAPI) {
@@ -60,7 +61,25 @@ define([
 
             deffered.resolve(data || {});
           } else {
-            //TODO call2API
+            params.sequential = 1;
+
+            if (fieldName && typeof fieldName === 'string') {
+              params.field = fieldName;
+            }
+
+            ContractHealth.get({
+              action: 'getoptions',
+              json: params
+            },
+            function(data) {
+              if (!data.values) {
+                deffered.reject('Unable to fetch contract insurance options');
+              }
+              deffered.resolve(data.values);
+            },
+            function() {
+              deffered.reject('Unable to fetch contract insurance options');
+            });
           }
 
           return deffered.promise;
