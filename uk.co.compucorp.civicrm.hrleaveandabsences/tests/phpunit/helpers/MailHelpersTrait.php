@@ -1,6 +1,6 @@
 <?php
 
-trait CRM_HRLeaveAndAbsences_MessageHelpersTrait {
+trait CRM_HRLeaveAndAbsences_MailHelpersTrait {
 
   public function createRequestNotificationTemplateFactoryMock() {
     $leaveTemplateMock = $this->createLeaveTemplateMock();

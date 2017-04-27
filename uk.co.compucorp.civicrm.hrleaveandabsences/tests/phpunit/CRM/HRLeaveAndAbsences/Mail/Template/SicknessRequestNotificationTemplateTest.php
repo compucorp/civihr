@@ -14,7 +14,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
-  use CRM_HRLeaveAndAbsences_MessageHelpersTrait;
+  use CRM_HRLeaveAndAbsences_MailHelpersTrait;
 
 
   private $sicknessRequestNotificationTemplate;

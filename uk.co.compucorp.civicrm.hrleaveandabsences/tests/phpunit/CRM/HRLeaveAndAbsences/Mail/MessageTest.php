@@ -16,7 +16,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
-  use CRM_HRLeaveAndAbsences_MessageHelpersTrait;
+  use CRM_HRLeaveAndAbsences_MailHelpersTrait;
 
 
   private $leaveRequestTemplateFactory;

@@ -25,7 +25,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
   use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
-  use CRM_HRLeaveAndAbsences_MessageHelpersTrait;
+  use CRM_HRLeaveAndAbsences_MailHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
