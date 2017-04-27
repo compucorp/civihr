@@ -7,7 +7,9 @@ module.exports = (function () {
   return page.extend({
 
     /**
-     * [addDocument description]
+     * Opens the modal to add a documents
+     *
+     * @return {Promise} resolves with the document modal page object
      */
     addDocument: function () {
       var casper = this.casper;
@@ -21,8 +23,9 @@ module.exports = (function () {
     },
 
     /**
-     * [advancedFilters description]
-     * @return {[type]} [description]
+     * Shows the advanced filters
+     *
+     * @return {object}
      */
     advancedFilters: function () {
       var casper = this.casper;
@@ -36,8 +39,9 @@ module.exports = (function () {
     },
 
     /**
-     * [documentActions description]
-     * @return {[type]} [description]
+     * Shows the dropdown of the actions available on any given document
+     *
+     * @return {object}
      */
     documentActions: function () {
       var casper = this.casper;
@@ -50,8 +54,9 @@ module.exports = (function () {
     },
 
     /**
-     * [openDocument description]
-     * @return {[type]} [description]
+     * Opens a document
+     *
+     * @return {Promise} resolves with the document modal page object
      */
     openDocument: function () {
       var casper = this.casper;
@@ -69,8 +74,7 @@ module.exports = (function () {
     },
 
     /**
-     * [selectDates description]
-     * @return {[type]} [description]
+     * Shows the "select dates" filter
      */
     selectDates: function () {
       var casper = this.casper;
@@ -82,8 +86,7 @@ module.exports = (function () {
     },
 
     /**
-     * [waitForReady description]
-     * @return {[type]} [description]
+     * Waits until the specified select is visible on the page
      */
     waitForReady: function () {
       var casper = this.casper;

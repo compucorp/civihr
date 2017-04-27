@@ -5,7 +5,8 @@
 ##################################
 ## List of CiviHR core extensions
 CORE_EXTS=\
-uk.co.compucorp.civicrm.hrcore
+uk.co.compucorp.civicrm.hrcore,\
+uk.co.compucorp.civicrm.hremails
 
 ## List of extensions defining basic entity types
 ENTITY_EXTS=\
@@ -33,8 +34,9 @@ org.civicrm.hrim,\
 org.civicrm.hrrecruitment,\
 org.civicrm.reqangular,\
 org.civicrm.contactsummary,\
-org.civicrm.bootstrapcivicrm,\
-org.civicrm.bootstrapcivihr
+org.civicrm.shoreditch,\
+org.civicrm.bootstrapcivihr,\
+org.civicrm.styleguide
 
 ##
 # Set Default localisation settings
@@ -63,7 +65,7 @@ function set_default_localisation_settings() {
 function set_resource_urls() {
   # Set Custom CSS URL
   drush cvapi Setting.create \
-  customCSSURL="[civicrm.root]/tools/extensions/civihr/org.civicrm.bootstrapcivicrm/css/custom-civicrm.css"
+  customCSSURL="[civicrm.root]/tools/extensions/org.civicrm.shoreditch/css/custom-civicrm.css"
 }
 
 ##################################

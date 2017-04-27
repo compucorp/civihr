@@ -24,9 +24,9 @@
             Regions:
           </label>
           <div class="col-xs-12 col-sm-8">
-            <ui-select multiple on-select="modalCtrl.selection($item, $model)" ng-required="true" theme="civihr-ui-select" ng-model="modalCtrl.selectedData.regions">
-              <ui-select-match placeholder="- select -">{{$item.label}}</ui-select-match>
-              <ui-select-choices repeat="region.id as region in modalCtrl.availableData.regions | filter: $select.search">
+            <ui-select prevent-animations multiple on-select="modalCtrl.selection($item, $model)" ng-required="true" theme="civihr-ui-select" ng-model="modalCtrl.selectedData.regions">
+              <ui-select-match prevent-animations placeholder="- select -">{{$item.label}}</ui-select-match>
+              <ui-select-choices prevent-animations repeat="region.id as region in modalCtrl.availableData.regions | filter: $select.search">
                 <div ng-bind-html="region.label | highlight: $select.search"></div>
               </ui-select-choices>
             </ui-select>
@@ -37,9 +37,9 @@
             Locations:
           </label>
           <div class="col-xs-12 col-sm-8">
-            <ui-select multiple on-select="modalCtrl.selection($item, $model)" ng-required="true" theme="civihr-ui-select" ng-model="modalCtrl.selectedData.locations">
-              <ui-select-match placeholder="- select -">{{$item.label}}</ui-select-match>
-              <ui-select-choices repeat="location.id as location in modalCtrl.availableData.locations | filter: $select.search">
+            <ui-select prevent-animations multiple on-select="modalCtrl.selection($item, $model)" ng-required="true" theme="civihr-ui-select" ng-model="modalCtrl.selectedData.locations">
+              <ui-select-match prevent-animations placeholder="- select -">{{$item.label}}</ui-select-match>
+              <ui-select-choices prevent-animations repeat="location.id as location in modalCtrl.availableData.locations | filter: $select.search">
                 <div ng-bind-html="location.label | highlight: $select.search"></div>
               </ui-select-choices>
             </ui-select>

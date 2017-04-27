@@ -1,9 +1,0 @@
-// Converts pixs into ems
-@mixin panel-color($name, $color) {
-
-  .panel-color-#{$name} {
-    > .panel-body {
-      background-color: $color;
-    }
-  }
-}

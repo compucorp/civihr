@@ -1,0 +1,94 @@
+// This is all temporary until the Bootstrap consolidation happens!
+
+// Override variables so they match the values of the old theme
+$brand-danger:           #E6807F;
+$brand-primary:          #42AFCB;
+$dropdown-border:        #727E8A;
+$gray-dark:              #727E8A;
+$gray-lighter:           #F3F6F7;
+$input-border-radius:    0;
+
+// Include the original ui-select css + the civihr-ui-select dropdown theme
+@import "../../../civihr/org.civicrm.shoreditch/scss/bootstrap/vendor/ui-select/ui-select";
+@import "../../../civihr/org.civicrm.shoreditch/scss/bootstrap/components/civihr-ui-select/civihr-ui-select";
+
+// Customizations specific for Job Roles
+.ui-select-bootstrap {
+  .ui-select-choices-row:not(.active) {
+    > a {
+      small {
+        color: $gray;
+      }
+    }
+  }
+
+  input {
+    font-weight: normal;
+  }
+
+  .ui-select-toggle {
+    padding-right: 30px;
+  }
+
+  &.ui-select-multiple {
+    min-height: $input-height-base;
+    padding: 2px 2px 0 2px;
+
+    input.ui-select-search {
+      height: 1.9em;
+      text-indent: 10px;
+    }
+
+    .ui-select-match .close {
+      line-height: 0.8;
+    }
+
+    .ui-select-match-item {
+      border-color: $brand-primary;
+      margin: 0 2px 2px 1px;
+      padding: 2px 8px;
+      text-transform: none;
+    }
+  }
+}
+
+.ui-select-container:not(.ui-select-multiple) {
+  height: 30px;
+
+  > a {
+    border: 1px solid #42AFCB !important;
+  }
+}
+
+.civihr-ui-select.funder-select {
+  width: 250px !important;
+
+  .select2-chosen > span {
+    text-overflow: ellipsis;
+    width: 175px;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}
+
+.ui-select-placeholder,
+.ui-select-match-text {
+  font-weight: normal;
+  text-transform: none;
+}
+
+.ui-select-match-text {
+  color: $input-color;
+}
+
+.ui-select-toggle[disabled] {
+  background-color: $input-bg-disabled;
+  opacity: 1;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: $input-bg-disabled;
+  }
+}
