@@ -121,8 +121,8 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
       $leaveApprovers = $this->getNotificationReceivers();
     }
 
-    $contactEmail = [$this->leaveRequest->contact_id];
-    $allRecipients = array_merge($leaveApprovers, $contactEmail);
+    $leaveContact = [$this->leaveRequest->contact_id];
+    $allRecipients = array_merge($leaveApprovers, $leaveContact);
 
     $result = civicrm_api3('Email', 'get', [
       'contact_id' => ['IN' => $allRecipients],
