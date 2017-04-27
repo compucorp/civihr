@@ -1,344 +1,335 @@
 <div class="panel panel-default">
-  <div class="panel-heading {{prefix}}panel-action">
-    <div class="row form-horizontal">
-      <div class="col-xs-12 col-sm-5">
-        <div class="form-group">
-          <label class="col-xs-12 col-sm-5 control-label-lg">Role / Project Name:</label>
-          <div class="col-xs-12  col-sm-7">
-            <p class="form-control-static">{{jobroles.edit_data['new_role_id']['title']}}</p>
-          </div>
-        </div>
+  <header class="panel-heading">
+    <div class="row">
+      <div class="col-sm-12">
+        <dl class="dl-inline">
+          <dt>Role / Project Name:</dt>
+          <dd>{{jobroles.edit_data['new_role_id']['title']}}</dd>
+        </dl>
       </div>
     </div>
-  </div>
+  </header>
   <div class="panel-body">
-    <div class="{{prefix}}role-details">
-      <div class="row">
-        <div class="col-xs-12">
-          <uib-tabset>
-            <uib-tab heading="Basic Details">
-              <form name="form" class="form-horizontal" role="form">
-                <div class="{{prefix}}basic-details">
-                  <div class="row">
-                    <div class="col-xs-12 col-sm-6">
-                      <div class="form-group">
-                        <label for="inputTitle" class="col-xs-4 control-label">Title:
-                          <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="form.title.$error.required"></i>
-                        </label>
-                        <div class="col-xs-6">
-                          <input type="text" name="title" class="form-control" id="inputTitle" placeholder="Enter role title" ng-model="jobroles.edit_data['new_role_id']['title']" ng-change="jobroles.showSave('new_role_id')" required />
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="newContractId" class="col-xs-4 control-label">Contract:
-                          <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="form.contract.$error.required"></i>
-                        </label>
-                        <div class="col-xs-6">
-                          <ui-select id="newContractId"
-                            prevent-animations
-                            ng-model="jobroles.edit_data['new_role_id']['job_contract_id']"
-                            theme="civihr-ui-select"
-                            title="Choose a contract"
-                            name="contract"
-                            ng-required="true"
-                            on-select="jobroles.onContractSelected($event)">
-                            <ui-select-match prevent-animations placeholder="Select a contract">
-                              {{$select.selected.value.label}}
-                            </ui-select-match>
-                            <ui-select-choices prevent-animations repeat="contract.value.id as (key,contract) in jobroles.contractsData | filter: { value: { label: $select.search }}">
-                              <div ng-bind-html="contract.value.label | highlight: $select.search"></div>
-                            </ui-select-choices>
-                          </ui-select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="{{prefix}}newStartDate" class="col-xs-4 control-label">Start Date:
-                          <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="!jobroles.edit_data['new_role_id']['newStartDate']"></i>
-                        </label>
-                        <div class="col-xs-6">
-                          <p class="input-group input-group-unstyled">
-                            <input type="text" class="form-control" id="{{prefix}}newStartDate"
-                              placeholder="{{jobroles.format}}"
-                              is-open="jobroles.CalendarShow.newStartDate"
-                              uib-datepicker-popup
-                              ng-model="jobroles.edit_data['new_role_id']['newStartDate']"
-                              ng-change="jobroles.select('newStartDate')"
-                              ng-disabled="isDisabled"
-                              close-text="Close"
-                              ng-click="jobroles.open('newStartDate')"
-                              required>
-                            <span class="input-group-addon fa fa-calendar"></span>
-                            <div ng-show="jobroles.errors.newStartDate" style="display: block; color:maroon" role="alert">
-                              <div>{{jobroles.errors.newStartDate[0]}}</div>
-                            </div>
-                          </p>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="{{prefix}}newEndDate" class="col-xs-4 control-label">End Date: </label>
-                        <div class="col-xs-6">
-                          <p class="input-group input-group-unstyled">
-                            <input type="text" class="form-control" id="{{prefix}}newEndDate"
-                              placeholder="{{jobroles.format}}"
-                              uib-datepicker-popup
-                              is-open="jobroles.CalendarShow.newEndDate"
-                              ng-model="jobroles.edit_data['new_role_id']['newEndDate']"
-                              ng-change="jobroles.select('newEndDate')"
-                              ng-disabled="isDisabled"
-                              ng-click="jobroles.open('newEndDate')"
-                              close-text="Close">
-                            <span class="input-group-addon fa fa-calendar"></span>
-                            <div ng-show="jobroles.errors.newEndDate" style="display: block; color:maroon" role="alert">
-                              <div>{{jobroles.errors.newEndDate[0]}}</div>
-                            </div>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6">
-                      <div class="form-group">
-                        <label for="newLocation" class="col-xs-4 control-label">Location:</label>
-                        <div class="col-xs-6">
-                          <ui-select
-                            prevent-animations
-                            ng-model="jobroles.edit_data['new_role_id']['location']"
-                            theme="civihr-ui-select"
-                            title="Choose a location"
-                            name="newLocation">
-                            <ui-select-match prevent-animations allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
-                            <ui-select-choices prevent-animations repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
-                              <div ng-bind-html="location.value.title | highlight: $select.search"></div>
-                            </ui-select-choices>
-                          </ui-select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="newRegion" class="col-xs-4 control-label">Region:</label>
-                        <div class="col-xs-6">
-                          <ui-select
-                            prevent-animations
-                            ng-model="jobroles.edit_data['new_role_id']['region']"
-                            theme="civihr-ui-select"
-                            title="Choose a Region"
-                            name="newRegion">
-                            <ui-select-match prevent-animations allow-clear placeholder="Select a region">{{$select.selected.value.title}}</ui-select-match>
-                            <ui-select-choices prevent-animations repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
-                              <div ng-bind-html="region.value.title | highlight: $select.search"></div>
-                            </ui-select-choices>
-                          </ui-select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="newDepartment" class="col-xs-4 control-label">Department:</label>
-                        <div class="col-xs-6">
-                          <ui-select
-                            prevent-animations
-                            ng-model="jobroles.edit_data['new_role_id']['department']"
-                            theme="civihr-ui-select"
-                            title="Choose a Department">
-                            <ui-select-match prevent-animations allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
-                            <ui-select-choices prevent-animations repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
-                              <div ng-bind-html="department.value.title | highlight: $select.search"></div>
-                            </ui-select-choices>
-                          </ui-select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="newLevel" class="col-xs-4 control-label">Level:</label>
-                        <div class="col-xs-6">
-                          <ui-select
-                            prevent-animations
-                            ng-model="jobroles.edit_data['new_role_id']['level']"
-                            theme="civihr-ui-select"
-                            title="Choose a Level">
-                            <ui-select-match prevent-animations allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
-                            <ui-select-choices prevent-animations repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
-                              <div ng-bind-html="level.value.title | highlight: $select.search"></div>
-                            </ui-select-choices>
-                          </ui-select>
-                        </div>
-                      </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <uib-tabset>
+          <uib-tab heading="Basic Details">
+            <form name="form" class="form-horizontal" role="form">
+              <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                  <div class="form-group">
+                    <label for="inputTitle" class="col-xs-4 control-label required-mark">Title:</label>
+                    <div class="col-xs-6">
+                      <input type="text" name="title" class="form-control" id="inputTitle" placeholder="Enter role title" ng-model="jobroles.edit_data['new_role_id']['title']" ng-change="jobroles.showSave('new_role_id')" required />
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xs-12">
-                      <div class="form-group">
-                        <!-- job role description textarea -->
-                        <label for="description" class="col-xs-2 control-label">Description:</label>
-                        <div class="col-xs-10 control-label">
-                          <textarea ng-model="jobroles.edit_data['new_role_id']['description']" class="form-control" rows="5" id="description"></textarea>
+                  <div class="form-group">
+                    <label for="newContractId" class="col-xs-4 control-label required-mark">Contract:</label>
+                    <div class="col-xs-6">
+                      <ui-select id="newContractId"
+                        prevent-animations
+                        ng-model="jobroles.edit_data['new_role_id']['job_contract_id']"
+                        theme="civihr-ui-select"
+                        title="Choose a contract"
+                        name="contract"
+                        ng-required="true"
+                        on-select="jobroles.onContractSelected($event)">
+                        <ui-select-match prevent-animations placeholder="Select a contract">
+                          {{$select.selected.value.label}}
+                        </ui-select-match>
+                        <ui-select-choices prevent-animations repeat="contract.value.id as (key,contract) in jobroles.contractsData | filter: { value: { label: $select.search }}">
+                          <div ng-bind-html="contract.value.label | highlight: $select.search"></div>
+                        </ui-select-choices>
+                      </ui-select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="{{prefix}}newStartDate" class="col-xs-4 control-label required-mark">Start Date:</label>
+                    <div class="col-xs-6">
+                      <p class="input-group">
+                        <input type="text" class="form-control" id="{{prefix}}newStartDate"
+                          placeholder="{{jobroles.format}}"
+                          is-open="jobroles.CalendarShow.newStartDate"
+                          uib-datepicker-popup
+                          ng-model="jobroles.edit_data['new_role_id']['newStartDate']"
+                          ng-change="jobroles.select('newStartDate')"
+                          ng-disabled="isDisabled"
+                          close-text="Close"
+                          ng-click="jobroles.open('newStartDate')"
+                          required>
+                        <span class="input-group-addon">
+                          <i class="fa fa-calendar"></i>
+                        </span>
+                        <div ng-show="jobroles.errors.newStartDate" class="form-error-message">
+                          <span class="label label-danger">{{jobroles.errors.newStartDate[0]}}</span>
                         </div>
-                      </div>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="{{prefix}}newEndDate" class="col-xs-4 control-label">End Date: </label>
+                    <div class="col-xs-6">
+                      <p class="input-group">
+                        <input type="text" class="form-control" id="{{prefix}}newEndDate"
+                          placeholder="{{jobroles.format}}"
+                          uib-datepicker-popup
+                          is-open="jobroles.CalendarShow.newEndDate"
+                          ng-model="jobroles.edit_data['new_role_id']['newEndDate']"
+                          ng-change="jobroles.select('newEndDate')"
+                          ng-disabled="isDisabled"
+                          ng-click="jobroles.open('newEndDate')"
+                          close-text="Close">
+                        <span class="input-group-addon">
+                          <i class="fa fa-calendar"></i>
+                        </span>
+                        <div ng-show="jobroles.errors.newEndDate" class="form-error-message">
+                          <span class="label label-danger">{{jobroles.errors.newEndDate[0]}}</span>
+                        </div>
+                      </p>
                     </div>
                   </div>
                 </div>
-              </form>
-            </uib-tab>
-            <uib-tab heading="Funding">
-              <form editable-form name="tableform" onaftersave="jobroles.onAfterSave('new_role_id', 'funders')" oncancel="jobroles.onCancel('new_role_id', 'funders')">
-                <!-- buttons -->
-                <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableform.$visible" ng-click="tableform.$show()">
-                  <span class="glyphicon glyphicon-pencil"></span> Edit
-                </button>
-                <div class="btn-group btn-group-sm btn-group-tab-action pull-right" ng-show="tableform.$visible">
-                  <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-sm btn-tab-action">
-                    <span class="glyphicon glyphicon-ok"></span> save
-                  </button>
-                  <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-sm btn-tab-action">
-                    <span class="glyphicon glyphicon-remove"></span> cancel
-                  </button>
+                <div class="col-xs-12 col-sm-6">
+                  <div class="form-group">
+                    <label for="newLocation" class="col-xs-4 control-label">Location:</label>
+                    <div class="col-xs-6">
+                      <ui-select
+                        prevent-animations
+                        ng-model="jobroles.edit_data['new_role_id']['location']"
+                        theme="civihr-ui-select"
+                        title="Choose a location"
+                        name="newLocation">
+                        <ui-select-match prevent-animations allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
+                        <ui-select-choices prevent-animations repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
+                          <div ng-bind-html="location.value.title | highlight: $select.search"></div>
+                        </ui-select-choices>
+                      </ui-select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="newRegion" class="col-xs-4 control-label">Region:</label>
+                    <div class="col-xs-6">
+                      <ui-select
+                        prevent-animations
+                        ng-model="jobroles.edit_data['new_role_id']['region']"
+                        theme="civihr-ui-select"
+                        title="Choose a Region"
+                        name="newRegion">
+                        <ui-select-match prevent-animations allow-clear placeholder="Select a region">{{$select.selected.value.title}}</ui-select-match>
+                        <ui-select-choices prevent-animations repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
+                          <div ng-bind-html="region.value.title | highlight: $select.search"></div>
+                        </ui-select-choices>
+                      </ui-select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="newDepartment" class="col-xs-4 control-label">Department:</label>
+                    <div class="col-xs-6">
+                      <ui-select
+                        prevent-animations
+                        ng-model="jobroles.edit_data['new_role_id']['department']"
+                        theme="civihr-ui-select"
+                        title="Choose a Department">
+                        <ui-select-match prevent-animations allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
+                        <ui-select-choices prevent-animations repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
+                          <div ng-bind-html="department.value.title | highlight: $select.search"></div>
+                        </ui-select-choices>
+                      </ui-select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="newLevel" class="col-xs-4 control-label">Level:</label>
+                    <div class="col-xs-6">
+                      <ui-select
+                        prevent-animations
+                        ng-model="jobroles.edit_data['new_role_id']['level']"
+                        theme="civihr-ui-select"
+                        title="Choose a Level">
+                        <ui-select-match prevent-animations allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
+                        <ui-select-choices prevent-animations repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
+                          <div ng-bind-html="level.value.title | highlight: $select.search"></div>
+                        </ui-select-choices>
+                      </ui-select>
+                    </div>
+                  </div>
                 </div>
-                <!-- table -->
-                <table class="table table-striped {{prefix}}table-sort">
-                  <thead>
-                    <tr>
-                      <th style="width:40%">Funder</th>
-                      <th style="width:15%">Type</th>
-                      <th style="width:15%">% Amount</th>
-                      <th style="width:15%">Absolute Amount</th>
-                      <th style="width:15%" ng-show="tableform.$visible">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr ng-repeat="(key, funder) in jobroles.edit_data['new_role_id']['funders']">
-                      <td>
-                        <!--show ui-select for funder in edit mode-->
-                        <span ng-show="tableform.$visible">
-                          <ui-select class="funder-select"
+              </div>
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <!-- job role description textarea -->
+                    <label for="description" class="col-xs-2 control-label">Description:</label>
+                    <div class="col-xs-10 control-label">
+                      <textarea ng-model="jobroles.edit_data['new_role_id']['description']" class="form-control" rows="5" id="description"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </uib-tab>
+          <uib-tab heading="Funding">
+            <form editable-form name="tableform" onaftersave="jobroles.onAfterSave('new_role_id', 'funders')" oncancel="jobroles.onCancel('new_role_id', 'funders')">
+              <button type="button" class="btn btn-link pull-right" ng-show="!tableform.$visible" ng-click="tableform.$show()">
+                <span class="btn-icon"><i class="fa fa-pencil"></i></span>Edit
+              </button>
+              <div class="btn-group pull-right" ng-show="tableform.$visible">
+                <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-link">
+                  <span class="btn-icon"><i class="fa fa-check"></i></span>Save
+                </button>
+                <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-link">
+                  <span class="btn-icon"><i class="fa fa-times"></i></span>Cancel
+                </button>
+              </div>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th style="width:40%">Funder</th>
+                    <th style="width:15%">Type</th>
+                    <th style="width:15%">% Amount</th>
+                    <th style="width:15%">Absolute Amount</th>
+                    <th style="width:15%" ng-show="tableform.$visible">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="(key, funder) in jobroles.edit_data['new_role_id']['funders']">
+                    <td>
+                      <!--show funder in non-edit mode-->
+                      <span ng-show="!tableform.$visible">{{funder.funder_id.sort_name}}</span>
+                      <!--show ui-select for funder in edit mode-->
+                      <span ng-show="tableform.$visible">
+                        <ui-select class="funder-select"
+                          prevent-animations
+                          theme="civihr-ui-select"
+                          ng-model="funder.funder_id">
+                          <ui-select-match prevent-animations allow-clear placeholder="Select a funder">
+                            {{$select.selected.sort_name}}
+                          </ui-select-match>
+                          <ui-select-choices
                             prevent-animations
-                            theme="civihr-ui-select"
-                            ng-model="funder.funder_id">
-                            <ui-select-match prevent-animations allow-clear class="ui-select-match">
-                              {{$select.selected.sort_name}}
-                            </ui-select-match>
-                            <ui-select-choices
-                              prevent-animations
-                              class="ui-select-choices"
-                              repeat="contact in jobroles.contactList | filter: $select.search"
-                              refresh="jobroles.getContactList($select.search)"
-                              refresh-delay="500">
-                              <div ng-bind-html="contact.sort_name | highlight: $select.search"></div>
-                            </ui-select-choices>
-                          </ui-select>
+                            repeat="contact in jobroles.contactList | filter: $select.search"
+                            refresh="jobroles.getContactList($select.search)"
+                            refresh-delay="500">
+                            <div ng-bind-html="contact.sort_name | highlight: $select.search"></div>
+                          </ui-select-choices>
+                        </ui-select>
+                      </span>
+                    </td>
+                    <td>
+                      <!-- editable funder type (will restrict the fields to amount or percentage -->
+                      <span editable-select="funder.type" e-form="tableform" e-name="funder-type" e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'funder', key, $data)">
+                        {{ jobroles.showRowType(funder) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span ng-show="funder.type == 1">
+                        <!-- editable funder type - percentage (show only when percentage type selected, otherwise read only -->
+                        <span editable-text="funder.percentage" e-form="tableform" e-name="funder-percent" onbeforesave="checkName($data, user.id)">
+                          {{funder.percentage || 'empty'}}
                         </span>
-                        <!--show funder in non-edit mode-->
-                        <span ng-show="!tableform.$visible">{{funder.funder_id.sort_name}}</span>
-                      </td>
-                      <td>
-                        <!-- editable funder type (will restrict the fields to amount or percentage -->
-                        <span editable-select="funder.type" e-form="tableform" e-name="funder-type" e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'funder', key, $data)">
-                          {{ jobroles.showRowType(funder) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span ng-show="funder.type == 0">
+                        <!-- editable funder type - amount (show only when amount type selected, otherwise read only -->
+                        <span editable-text="funder.amount" e-form="tableform" e-name="funder-amount" onbeforesave="checkName($data, user.id)">
+                          {{funder.amount || 'empty'}}
                         </span>
-                      </td>
-                      <td>
-                        <span ng-show="funder.type == 1">
-                          <!-- editable funder type - percentage (show only when percentage type selected, otherwise read only -->
-                          <span editable-text="funder.percentage" e-form="tableform" e-name="funder-percent" onbeforesave="checkName($data, user.id)">
-                            {{funder.percentage || 'empty'}}
-                          </span>
-                        </span>
-                      </td>
-                      <td>
-                        <span ng-show="funder.type == 0">
-                          <!-- editable funder type - amount (show only when amount type selected, otherwise read only -->
-                          <span editable-text="funder.amount" e-form="tableform" e-name="funder-amount" onbeforesave="checkName($data, user.id)">
-                            {{funder.amount || 'empty'}}
-                          </span>
-                        </span>
-                      </td>
-                      <td ng-show="tableform.$visible">
-                        <button type="button" ng-click="jobroles.deleteAdditionalRow('new_role_id', 'funder', key)" class="btn btn-danger pull-left"><span class="fa fa-remove" aria-hidden="true"></span></button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colspan="{{!tableform.$visible ? 4 : 5}}">
-                        <a href ng-show="tableform.$visible" ng-disabled="tableform.$waiting" ng-click="jobroles.addAdditionalRow('new_role_id', 'funder')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Funder</a>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </form>
-            </uib-tab>
-            <uib-tab heading="Cost Centres">
-              <form editable-form name="tableformcc" onaftersave="jobroles.onAfterSave('new_role_id', 'cost_centers')" oncancel="jobroles.onCancel('new_role_id', 'cost_centers')">
-                <!-- buttons -->
-                <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
-                  <span class="glyphicon glyphicon-pencil"></span> Edit
+                      </span>
+                    </td>
+                    <td ng-show="tableform.$visible">
+                      <button type="button" ng-click="jobroles.deleteAdditionalRow('new_role_id', 'funder', key)" class="btn btn-sm btn-danger pull-left">
+                        <i class="fa fa-times"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="{{!tableform.$visible ? 4 : 5}}">
+                      <a href ng-show="tableform.$visible" ng-disabled="tableform.$waiting" ng-click="jobroles.addAdditionalRow('new_role_id', 'funder')" class="btn btn-link">
+                        <span class="btn-icon"><i class="fa fa-plus"></i></span>Add New Funder
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </uib-tab>
+          <uib-tab heading="Cost Centres">
+            <form editable-form name="tableformcc" onaftersave="jobroles.onAfterSave('new_role_id', 'cost_centers')" oncancel="jobroles.onCancel('new_role_id', 'cost_centers')">
+              <button type="button" class="btn btn-link pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
+                <span class="btn-icon"><i class="fa fa-pencil"></i></span>Edit
+              </button>
+              <div class="btn-group pull-right" ng-show="tableformcc.$visible">
+                <button type="submit" ng-disabled="tableformcc.$waiting" class="btn btn-link">
+                  <span class="btn-icon"><i class="fa fa-check"></i></span>Save
                 </button>
-                <div class="btn-group btn-group-sm btn-group-tab-action pull-right" ng-show="tableformcc.$visible">
-                  <button type="submit" ng-disabled="tableformcc.$waiting" class="btn btn-sm btn-tab-action">
-                    <span class="glyphicon glyphicon-ok"></span> save
-                  </button>
-                  <button type="button" ng-disabled="tableformcc.$waiting" ng-click="tableformcc.$cancel()" class="btn btn-sm btn-tab-action">
-                    <span class="glyphicon glyphicon-remove"></span> cancel
-                  </button>
-                </div>
-                <!-- table -->
-                <table class="table table-striped {{prefix}}table-sort">
-                  <thead>
-                    <tr>
-                      <th style="width:40%">Cost Centres</th>
-                      <th style="width:15%">Type</th>
-                      <th style="width:15%">% Amount</th>
-                      <th style="width:15%">Absolute Amount</th>
-                      <th style="width:15%" ng-show="tableformcc.$visible">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr ng-repeat="(key, cost_centre) in jobroles.edit_data['new_role_id']['cost_centers']">
-                      <td>
-                        <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                        <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="value.id as value.title for value in jobroles.CostCentreList | orderBy: 'weight'">
-                          {{jobroles.getCostLabel(cost_centre.cost_centre_id) || 'empty'}}
+                <button type="button" ng-disabled="tableformcc.$waiting" ng-click="tableformcc.$cancel()" class="btn btn-link">
+                  <span class="btn-icon"><i class="fa fa-times"></i></span>Cancel
+                </button>
+              </div>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th style="width:40%">Cost Centres</th>
+                    <th style="width:15%">Type</th>
+                    <th style="width:15%">% Amount</th>
+                    <th style="width:15%">Absolute Amount</th>
+                    <th style="width:15%" ng-show="tableformcc.$visible">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="(key, cost_centre) in jobroles.edit_data['new_role_id']['cost_centers']">
+                    <td>
+                      <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
+                      <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="value.id as value.title for value in jobroles.CostCentreList | orderBy: 'weight'">
+                        {{jobroles.getCostLabel(cost_centre.cost_centre_id) || 'empty'}}
+                      </span>
+                    </td>
+                    <td>
+                      <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
+                      <span editable-select="cost_centre.type" e-form="tableformcc" e-name="cost-centre-type" e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'cost_centre', key, $data)">
+                        {{ jobroles.showRowType(cost_centre) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span ng-show="cost_centre.type == 1">
+                        <!-- editable cost_centre type - percentage (show only when percentage type selected, otherwise read only -->
+                        <span editable-text="cost_centre.percentage" e-form="tableformcc" e-name="cost-centre-percent" onbeforesave="checkName($data, user.id)">
+                          {{cost_centre.percentage || 'empty'}}
                         </span>
-                      </td>
-                      <td>
-                        <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                        <span editable-select="cost_centre.type" e-form="tableformcc" e-name="cost-centre-type" e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'cost_centre', key, $data)">
-                          {{ jobroles.showRowType(cost_centre) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span ng-show="cost_centre.type == 0">
+                        <!-- editable cost_centre type - amount (show only when amount type selected, otherwise read only -->
+                        <span editable-text="cost_centre.amount" e-form="tableformcc" e-name="cost-centre-amount"  onbeforesave="checkName($data, user.id)">
+                          {{ cost_centre.amount || 'empty' }}
                         </span>
-                      </td>
-                      <td>
-                        <span ng-show="cost_centre.type == 1">
-                          <!-- editable cost_centre type - percentage (show only when percentage type selected, otherwise read only -->
-                          <span editable-text="cost_centre.percentage" e-form="tableformcc" e-name="cost-centre-percent" onbeforesave="checkName($data, user.id)">
-                            {{cost_centre.percentage || 'empty'}}
-                          </span>
-                        </span>
-                      </td>
-                      <td>
-                        <span ng-show="cost_centre.type == 0">
-                          <!-- editable cost_centre type - amount (show only when amount type selected, otherwise read only -->
-                          <span editable-text="cost_centre.amount" e-form="tableformcc" e-name="cost-centre-amount"  onbeforesave="checkName($data, user.id)">
-                            {{ cost_centre.amount || 'empty' }}
-                          </span>
-                        </span>
-                      </td>
-                      <td ng-show="tableformcc.$visible">
-                        <button type="button" ng-click="jobroles.deleteAdditionalRow('new_role_id', 'cost_centre', key)" class="btn btn-danger pull-left"><span class="fa fa-remove" aria-hidden="true"></span></button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colspan="{{!tableformcc.$visible ? 4 : 5}}">
-                        <a href ng-show="tableformcc.$visible" ng-disabled="tableformcc.$waiting" ng-click="jobroles.addAdditionalRow('new_role_id', 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Centre</a>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </form>
-            </uib-tab>
-          </uib-tabset>
-        </div>
+                      </span>
+                    </td>
+                    <td ng-show="tableformcc.$visible">
+                      <button type="button" ng-click="jobroles.deleteAdditionalRow('new_role_id', 'cost_centre', key)" class="btn btn-sm btn-danger pull-left"><span class="fa fa-times" aria-hidden="true"></span></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="{{!tableformcc.$visible ? 4 : 5}}">
+                      <a href ng-show="tableformcc.$visible" ng-disabled="tableformcc.$waiting" ng-click="jobroles.addAdditionalRow('new_role_id', 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Centre</a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </uib-tab>
+        </uib-tabset>
       </div>
-      <div class="row">
-        <div class="col-xs-12">
-          <button type="submit" class="btn btn-success" ng-click="jobroles.saveNewRole()" ng-disabled="jobroles.checkNewRole()">
-            <span class="fa fa-save" aria-hidden="true"></span> Save New Role
-          </button>
-          <button class="btn btn-danger pull-right" ng-click="jobroles.cancelNewRole()">
-            <span class="fa fa-remove" aria-hidden="true"></span> Cancel
-          </button>
-        </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <button type="submit" class="btn btn-success" ng-click="jobroles.saveNewRole()" ng-disabled="jobroles.checkNewRole()">
+          <span class="btn-icon"><i class="fa fa-save"></i></span>Save New Role
+        </button>
+        <button class="btn btn-danger pull-right" ng-click="jobroles.cancelNewRole()">
+          <span class="btn-icon"><i class="fa fa-times"></i></span>Cancel
+        </button>
       </div>
     </div>
   </div>
