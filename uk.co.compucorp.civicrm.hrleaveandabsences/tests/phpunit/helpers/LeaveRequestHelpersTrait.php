@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 
 trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
 
@@ -97,5 +98,13 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
     }
 
     return $options;
+  }
+
+  public function createCommentForLeaveRequest($params) {
+    $defaultParams = ['text' => 'Sample Text',];
+    $payload = array_merge($defaultParams, $params);
+
+    $leaveRequestCommentService = new LeaveRequestCommentService();
+    return $leaveRequestCommentService->add($payload);
   }
 }

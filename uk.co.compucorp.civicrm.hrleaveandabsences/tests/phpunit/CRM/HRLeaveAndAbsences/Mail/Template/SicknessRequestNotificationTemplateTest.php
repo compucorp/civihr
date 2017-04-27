@@ -65,9 +65,8 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
       'sequential' => 1
     ];
 
-    $leaveRequestCommentService = new LeaveRequestCommentService();
-    $leaveRequestCommentService->add($params);
-    $leaveRequestCommentService->add(array_merge($params, ['text' => 'Sample text']));
+    $this->createCommentForLeaveRequest($params);
+    $this->createCommentForLeaveRequest(array_merge($params, ['text' => 'Sample text']));
 
     $tplParams = $this->sicknessRequestNotificationTemplate->getTemplateParameters($leaveRequest);
 
@@ -88,18 +87,17 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
 
     //There are two attachments for the Sickness request
     $this->assertCount(2, $tplParams['leaveFiles']);
-    foreach($tplParams['leaveFiles'] as $file) {
-      $this->assertContains($file['name'], [
-        'LeaveRequestSampleFile1.txt', 'LeaveRequestSampleFile2.txt'
-      ]);
-    }
+    $leaveFileNames = array_column($tplParams['leaveFiles'], 'name');
+    sort($leaveFileNames);
 
-    //there are two comment for the Sickness request
+    $this->assertEquals($leaveFileNames, ['LeaveRequestSampleFile1.txt', 'LeaveRequestSampleFile2.txt']);
+
+    //there are two comments for the Sickness request
     $this->assertCount(2, $tplParams['leaveComments']);
-    foreach($tplParams['leaveComments'] as $comment) {
-      $this->assertContains($comment['text'], ['Random Commenter', 'Sample text']);
-      $this->assertEquals($comment['leave_request_id'], $leaveRequest->id);
-    }
+    $leaveCommentText = array_column($tplParams['leaveComments'], 'text');
+    sort($leaveCommentText);
+
+    $this->assertEquals($leaveCommentText, ['Random Commenter', 'Sample text']);
 
     $this->assertEquals($tplParams['sicknessReasons'], $sicknessReasons);
     $this->assertEquals($tplParams['sicknessRequiredDocuments'], $this->getSicknessRequiredDocuments());
