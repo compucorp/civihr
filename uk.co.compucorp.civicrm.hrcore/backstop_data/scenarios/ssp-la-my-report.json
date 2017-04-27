@@ -1,7 +1,7 @@
 {
   "scenarios": [{
-    "label": "Leave and Absences: My report: Edit comment in leave request",
+    "label": "Leave and Absences: My report: Show comments in leave request",
     "url": "my-leave#/my-leave/report",
-    "onReadyScript": "ssp-leave-absences/staff/my-report-add-comment"
+    "onReadyScript": "ssp-leave-absences/staff/my-report-pending-show-comments"
   }]
 }

@@ -4,38 +4,31 @@ var page = require('./page');
 module.exports = (function () {
 
   return page.extend({
-
     /**
-     * [openMyReport description]
-     * @return {[Page]} [description]
+     * Wait for the page to be ready
      */
-    openMyReport: function () {
+    waitForReady: function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.waitUntilVisible('td[ng-click="report.toggleSection(\'pending\')"]', function () {
-          casper.wait(700);
-        });
+        casper.waitUntilVisible('td[ng-click="report.toggleSection(\'pending\')"]');
       });
-
-      return this;
     },
-
     /**
-     * [openMyReportSection description]
+     * Opens the given section of my report pageName
+     * @param {String} section
      */
-    openMyReportSection: function (section) {
+    openSection: function (section) {
       var casper = this.casper;
 
       casper.then(function () {
         casper.click('td[ng-click="report.toggleSection(' + section + ')"]');
       });
     },
-
     /**
-     * [openActionsMyReport description]
+     * Opens the dropdown for staff actions like edit/respond, cancel.
      */
-    openActionsMyReport: function () {
+    openActions: function () {
       var casper = this.casper;
 
       casper.then(function () {
@@ -46,17 +39,17 @@ module.exports = (function () {
     },
 
     /**
-     * [editRequestForMyReport description]
-     * @return {[Promise]} [description]
+     * User clicks on the edit/respond action
+     * @return {Promise}
      */
-    editRequestForMyReport: function () {
+    editRequest: function () {
       var casper = this.casper;
 
       return new Promise(function (resolve) {
         casper.then(function () {
           casper.click('body > ul.dropdown-menu:nth-of-type(1) li[ng-repeat]:first-child a');
-          casper.wait(4000);
-          resolve(this.waitForModal('leave-request'));
+          //as there are multiple spinners it takes more time to load up
+          resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
         }.bind(this));
       }.bind(this));
     },

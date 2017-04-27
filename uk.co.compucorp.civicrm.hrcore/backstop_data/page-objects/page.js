@@ -88,12 +88,12 @@ module.exports = {
    * @param {string} name of the modal object
    * @return {object} the modal object
    */
-  waitForModal: function (modalModule) {
+  waitForModal: function (modalModule, waitSelector) {
     var casper = this.casper;
 
     return new Promise(function (resolve) {
       casper.then(function () {
-        casper.waitUntilVisible('.modal', function () {
+        casper.waitUntilVisible(waitSelector || '.modal', function () {
           casper.wait(300);
 
           if (modalModule) {
