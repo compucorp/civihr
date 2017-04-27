@@ -36,46 +36,46 @@
       table {
         background: transparent;
         border: none;
-        border-radius: $border-radius-base;
+        border-radius: $border-radius-child;
         box-shadow: $box-shadow;
         font-family: $font-family-base;
 
         thead tr {
           border-bottom: 1px solid $crm-dark-grayblue;
-          border-top-left-radius: $border-radius-base;
-          border-top-right-radius: $border-radius-base;
+          border-top-left-radius: $border-radius-child;
+          border-top-right-radius: $border-radius-child;
 
           th {
-            border-bottom: none;
             background: $gray-lighter;
-            color: $gray-darker;
-            vertical-align: middle;
             border: none;
+            color: $gray-darker;
             padding: 16px 20px;
+            vertical-align: middle;
+          }
 
-            &:first-child {
-              border-top-left-radius: $border-radius-base;
-            }
+          th:nth-child(2) {
+            border-top-left-radius: $border-radius-child;
+          }
 
-            &:last-child {
-              border-top-right-radius: $border-radius-base;
-            }
+          th:last-child {
+            border-top-right-radius: $border-radius-child;
+          }
 
-            div {
-              padding: 0;
-            }
+          th div {
+            padding: 0;
           }
         }
 
         tbody tr {
           background: $crm-white;
           border-bottom: 1px solid $crm-background;
+          border-left: none;
           border-right: none;
 
           td {
             background: $crm-white;
-            color: $gray-dark;
             border: none;
+            color: $gray-dark;
             padding: 15px 20px;
             vertical-align: middle;
 
@@ -86,6 +86,10 @@
             a {
               color: $brand-primary !important;
 
+              &:hover {
+                color: $crm-copy !important;
+              }
+
               &.action-item {
                 text-transform: none;
               }
@@ -94,21 +98,33 @@
             .btn-slide {
               color: $brand-primary;
               text-transform: none;
+
+              &:hover {
+                background: none;
+                color: $crm-copy !important;
+              }
+
+              a {                
+                color: $crm-copy !important;
+                
+                &:hover {
+                  background: none;
+                }
+              }
             }
           }
 
           &:last-child {
-            border-bottom-left-radius: $border-radius-base;
-            border-bottom-right-radius: $border-radius-base;
+            background: transparent;
+            border-bottom-left-radius: $border-radius-child;
+            border-bottom-right-radius: $border-radius-child;
 
-            td {
-              &:first-child {
-                border-bottom-left-radius: $border-radius-base;
-              }
+            td:nth-child(2) {
+              border-bottom-left-radius: $border-radius-child;
+            }
 
-              &:last-child {
-                border-bottom-right-radius: $border-radius-base;
-              }
+            td:last-child {
+              border-bottom-right-radius: $border-radius-child;
             }
           }
         }
