@@ -32,12 +32,11 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotificationTempl
   }
 
   /**
-   * Gets the message template for this Template Type.
+   * Gets the message template ID for this Template Type.
    *
-   * @return array
-   *  An array containing the message template attributes/values
+   * @return int
    */
-  abstract public function getTemplate();
+  abstract public function getTemplateID();
 
   /**
    * Return parameters to be used in the Email smarty template

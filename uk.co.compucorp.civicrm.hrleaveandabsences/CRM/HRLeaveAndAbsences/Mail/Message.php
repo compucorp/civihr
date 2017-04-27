@@ -97,7 +97,7 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
    * @return int
    */
   public function getTemplateID() {
-    return $this->getTemplate()->getTemplate()['id'];
+    return $this->getTemplate()->getTemplateID();
   }
 
   /**

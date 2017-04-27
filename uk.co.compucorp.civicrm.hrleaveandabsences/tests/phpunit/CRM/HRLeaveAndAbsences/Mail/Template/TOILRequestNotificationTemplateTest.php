@@ -14,6 +14,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplateTest e
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_MessageHelpersTrait;
 
 
   private $toilRequestNotificationTemplate;
@@ -27,9 +28,10 @@ class CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplateTest e
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
-  public function testGetTemplateReturnsTheCorrectTemplate() {
-    $template = $this->toilRequestNotificationTemplate->getTemplate();
-    $this->assertEquals($template['msg_title'], 'CiviHR TOIL Request Notification');
+  public function testGetTemplateIDReturnsTheCorrectID() {
+    $templateDetails = $this->getTemplateDetails(['msg_title' => 'CiviHR TOIL Request Notification']);
+    $templateID = $this->toilRequestNotificationTemplate->getTemplateID();
+    $this->assertEquals($templateID, $templateDetails['id']);
   }
 
   public function testGetTemplateParametersReturnsTheExpectedParametersForTheTemplate() {

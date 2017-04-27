@@ -20,14 +20,13 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplate e
   /**
    * {@inheritdoc}
    */
-  public function getTemplate() {
+  public function getTemplateID() {
     $result = civicrm_api3('MessageTemplate', 'get', [
       'msg_title' => 'CiviHR Sickness Record Notification',
-      'is_default' => 1,
-      'sequential' => 1
+      'is_default' => 1
     ]);
 
-    return isset($result['values'][0]) ? $result['values'][0] : '';
+    return isset($result['id']) ? $result['id'] : '';
   }
 
   /**

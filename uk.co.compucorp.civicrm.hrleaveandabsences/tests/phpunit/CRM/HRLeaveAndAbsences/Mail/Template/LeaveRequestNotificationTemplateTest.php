@@ -14,6 +14,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplateTest 
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_MessageHelpersTrait;
 
 
   private $leaveRequestNotificationTemplate;
@@ -27,9 +28,10 @@ class CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplateTest 
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
-  public function testGetTemplateReturnsTheCorrectTemplate() {
-    $template = $this->leaveRequestNotificationTemplate->getTemplate();
-    $this->assertEquals($template['msg_title'], 'CiviHR Leave Request Notification');
+  public function testGetTemplateIDReturnsTheCorrectID() {
+    $templateDetails = $this->getTemplateDetails(['msg_title' => 'CiviHR Leave Request Notification']);
+    $templateID = $this->leaveRequestNotificationTemplate->getTemplateID();
+    $this->assertEquals($templateID, $templateDetails['id']);
   }
 
   public function testGetTemplateParametersReturnsTheExpectedParametersForTheTemplate() {

@@ -14,6 +14,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_MessageHelpersTrait;
 
 
   private $sicknessRequestNotificationTemplate;
@@ -27,9 +28,10 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
-  public function testGetTemplateReturnsTheCorrectTemplate() {
-    $template = $this->sicknessRequestNotificationTemplate->getTemplate();
-    $this->assertEquals($template['msg_title'], 'CiviHR Sickness Record Notification');
+  public function testGetTemplateIDReturnsTheCorrectID() {
+    $templateDetails = $this->getTemplateDetails(['msg_title' => 'CiviHR Sickness Record Notification']);
+    $templateID = $this->sicknessRequestNotificationTemplate->getTemplateID();
+    $this->assertEquals($templateID, $templateDetails['id']);
   }
 
   public function testGetTemplateParametersReturnsTheExpectedParametersForTheTemplate() {

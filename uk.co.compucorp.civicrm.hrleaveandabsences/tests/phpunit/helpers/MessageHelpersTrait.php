@@ -43,4 +43,12 @@ trait CRM_HRLeaveAndAbsences_MessageHelpersTrait {
     $messageSpoolTable = CRM_Mailing_BAO_Spool::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$messageSpoolTable}");
   }
+
+  public function getTemplateDetails($params) {
+    $defaultParams = ['is_default' => 1, 'sequential' => 1];
+    $params = array_merge($defaultParams, $params);
+    $result = civicrm_api3('MessageTemplate', 'get', $params);
+
+    return isset($result['values'][0]) ? $result['values'][0] : '';
+  }
 }
