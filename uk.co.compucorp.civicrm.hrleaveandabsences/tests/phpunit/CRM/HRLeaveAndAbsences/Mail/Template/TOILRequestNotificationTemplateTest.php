@@ -1,6 +1,6 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_Mail_TOILRequestNotificationTemplate as TOILRequestNotificationTemplate;
+use CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplate as TOILRequestNotificationTemplate;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
@@ -10,7 +10,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_Mail_TOILRequestNotificationTemplateTest extends BaseHeadlessTest {
+class CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplateTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;

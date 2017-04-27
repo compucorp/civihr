@@ -2,8 +2,8 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
-class CRM_HRLeaveAndAbsences_Mail_SicknessRequestNotificationTemplate extends
-  CRM_HRLeaveAndAbsences_Mail_BaseRequestNotificationTemplate  {
+class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplate extends
+  CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotificationTemplate  {
 
   /**
    * @var array|null

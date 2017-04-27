@@ -3,7 +3,7 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 
-abstract class CRM_HRLeaveAndAbsences_Mail_BaseRequestNotificationTemplate {
+abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotificationTemplate {
 
   /**
    * @var \CRM_HRLeaveAndAbsences_Service_LeaveRequestComment

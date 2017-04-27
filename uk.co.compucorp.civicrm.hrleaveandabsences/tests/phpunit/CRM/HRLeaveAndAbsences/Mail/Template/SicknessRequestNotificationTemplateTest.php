@@ -1,35 +1,35 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_Mail_LeaveRequestNotificationTemplate as LeaveRequestNotificationTemplate;
+use CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplate as SicknessRequestNotificationTemplate;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
 
 /**
- * Class CRM_HRLeaveAndAbsences_Mail_LeaveRequestNotificationTemplateTest
+ * Class RM_HRLeaveAndAbsences_Mail_SicknessRequestNotificationTemplateTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_Mail_LeaveRequestNotificationTemplateTest extends BaseHeadlessTest {
+class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
 
 
-  private $leaveRequestNotificationTemplate;
+  private $sicknessRequestNotificationTemplate;
 
   public function setUp() {
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
     $leaveRequestCommentService = new LeaveRequestCommentService();
-    $this->leaveRequestNotificationTemplate = new LeaveRequestNotificationTemplate($leaveRequestCommentService);
+    $this->sicknessRequestNotificationTemplate = new SicknessRequestNotificationTemplate($leaveRequestCommentService);
 
     $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
   public function testGetTemplateReturnsTheCorrectTemplate() {
-    $template = $this->leaveRequestNotificationTemplate->getTemplate();
-    $this->assertEquals($template['msg_title'], 'CiviHR Leave Request Notification');
+    $template = $this->sicknessRequestNotificationTemplate->getTemplate();
+    $this->assertEquals($template['msg_title'], 'CiviHR Sickness Record Notification');
   }
 
   public function testGetTemplateParametersReturnsTheExpectedParametersForTheTemplate() {
@@ -41,10 +41,12 @@ class CRM_HRLeaveAndAbsences_Mail_LeaveRequestNotificationTemplateTest extends B
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+      'sickness_reason' => 1,
+      'sickness_required_documents' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ], false);
 
-    //create 2 attachments for leaveRequest
+    //create 2 attachments for Sickness Request
     $attachment1 = $this->createAttachmentForLeaveRequest([
       'entity_id' => $leaveRequest->id,
       'name' => 'LeaveRequestSampleFile1.txt'
@@ -55,7 +57,7 @@ class CRM_HRLeaveAndAbsences_Mail_LeaveRequestNotificationTemplateTest extends B
       'name' => 'LeaveRequestSampleFile2.txt'
     ]);
 
-    //add two comments for the leave request
+    //add one comment for the Sickness request
     $params = [
       'leave_request_id' => $leaveRequest->id,
       'text' => 'Random Commenter',
@@ -67,10 +69,11 @@ class CRM_HRLeaveAndAbsences_Mail_LeaveRequestNotificationTemplateTest extends B
     $leaveRequestCommentService->add($params);
     $leaveRequestCommentService->add(array_merge($params, ['text' => 'Sample text']));
 
-    $tplParams = $this->leaveRequestNotificationTemplate->getTemplateParameters($leaveRequest);
+    $tplParams = $this->sicknessRequestNotificationTemplate->getTemplateParameters($leaveRequest);
 
     $leaveRequestDayTypes = LeaveRequest::buildOptions('from_date_type');
     $leaveRequestStatuses = LeaveRequest::buildOptions('status_id');
+    $sicknessReasons = LeaveRequest::buildOptions('sickness_reason');
     $fromDate = new DateTime($leaveRequest->from_date);
     $toDate = new DateTime($leaveRequest->to_date);
 
@@ -83,7 +86,7 @@ class CRM_HRLeaveAndAbsences_Mail_LeaveRequestNotificationTemplateTest extends B
     $this->assertEquals($tplParams['leaveStatus'], $leaveRequestStatuses[$leaveRequest->status_id]);
     $this->assertEquals($tplParams['leaveRequestLink'], CRM_Utils_System::url('my-leave', [], true));
 
-    //There are two attachments for the leave request
+    //There are two attachments for the Sickness request
     $this->assertCount(2, $tplParams['leaveFiles']);
     foreach($tplParams['leaveFiles'] as $file) {
       $this->assertContains($file['name'], [
@@ -91,11 +94,15 @@ class CRM_HRLeaveAndAbsences_Mail_LeaveRequestNotificationTemplateTest extends B
       ]);
     }
 
-    //there are two comments for the leave request
+    //there are two comment for the Sickness request
     $this->assertCount(2, $tplParams['leaveComments']);
     foreach($tplParams['leaveComments'] as $comment) {
       $this->assertContains($comment['text'], ['Random Commenter', 'Sample text']);
       $this->assertEquals($comment['leave_request_id'], $leaveRequest->id);
     }
+
+    $this->assertEquals($tplParams['sicknessReasons'], $sicknessReasons);
+    $this->assertEquals($tplParams['sicknessRequiredDocuments'], $this->getSicknessRequiredDocuments());
+    $this->assertEquals($tplParams['leaveRequiredDocuments'], explode(',', $leaveRequest->sickness_required_documents));
   }
 }

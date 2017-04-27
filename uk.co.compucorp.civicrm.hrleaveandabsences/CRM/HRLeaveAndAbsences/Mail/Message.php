@@ -14,7 +14,7 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
   private $leaveRequest;
 
   /**
-   * @var \CRM_HRLeaveAndAbsences_Mail_BaseRequestNotificationTemplate
+   * @var \CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotificationTemplate
    */
   private $requestTemplate;
 
@@ -72,7 +72,7 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
   /**
    * Gets the Request Template for the Leave Request type
    *
-   * @return \CRM_HRLeaveAndAbsences_Mail_BaseRequestNotificationTemplate
+   * @return \CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotificationTemplate
    */
   private function getTemplate() {
     if (is_null($this->requestTemplate)) {
