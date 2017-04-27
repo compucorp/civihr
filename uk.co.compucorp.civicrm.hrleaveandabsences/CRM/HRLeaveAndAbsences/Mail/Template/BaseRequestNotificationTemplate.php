@@ -49,8 +49,8 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotificationTempl
     $templateParameters =  [
       'leaveComments' => $this->getLeaveComments($leaveRequest),
       'leaveFiles' => $this->getAttachments($leaveRequest),
-      'fromDate' => $this->formatLeaveRequestDate($leaveRequest->from_date),
-      'toDate' => $this->formatLeaveRequestDate($leaveRequest->to_date),
+      'fromDate' => $leaveRequest->from_date,
+      'toDate' => $leaveRequest->to_date,
       'fromDateType' => $this->getLeaveRequestDayTypeLabel($leaveRequest->from_date_type),
       'toDateType' => $this->getLeaveRequestDayTypeLabel($leaveRequest->to_date_type),
       'leaveStatus' => $this->getLeaveRequestStatusLabel($leaveRequest->status_id),
@@ -135,17 +135,5 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotificationTempl
    */
   private function getLeaveRequestURL() {
     return CRM_Utils_System::url('my-leave', [], true);
-  }
-
-  /**
-   * Format Leave Request date in 'Y-m-d' format
-   *
-   * @param string $date
-   *
-   * @return string
-   */
-  private function formatLeaveRequestDate($date) {
-    $leaveDate = new DateTime($date);
-    return $leaveDate->format('Y-m-d');
   }
 }

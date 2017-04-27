@@ -67,12 +67,10 @@ class CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplateTest 
 
     $leaveRequestDayTypes = LeaveRequest::buildOptions('from_date_type');
     $leaveRequestStatuses = LeaveRequest::buildOptions('status_id');
-    $fromDate = new DateTime($leaveRequest->from_date);
-    $toDate = new DateTime($leaveRequest->to_date);
 
     //validate template parameters
-    $this->assertEquals($tplParams['toDate'], $toDate->format('Y-m-d'));
-    $this->assertEquals($tplParams['fromDate'], $fromDate->format('Y-m-d'));
+    $this->assertEquals($tplParams['toDate'], $leaveRequest->to_date);
+    $this->assertEquals($tplParams['fromDate'], $leaveRequest->from_date);
     $this->assertEquals($tplParams['leaveRequest'], $leaveRequest);
     $this->assertEquals($tplParams['fromDateType'], $leaveRequestDayTypes[$leaveRequest->from_date_type]);
     $this->assertEquals($tplParams['toDateType'], $leaveRequestDayTypes[$leaveRequest->to_date_type]);
