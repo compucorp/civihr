@@ -81,19 +81,20 @@
     @include fa-icon($font-size-base, $fa-var-ellipsis-v, $brand-primary);
     background: none;
     right: -5px;
+    top: 4px;
   }
 }
 
 .page-civicrm {
   #branding {
-    padding: 20px 0 0 0 !important;
+    padding: 20px 0 0 !important;
 
     .breadcrumb {
       padding: 0 40px;
+    }
 
-      a {
-        padding: 0 !important;
-      }
+    .breadcrumb a {
+      padding: 0 !important;
     }
 
     .add-shortcut {
