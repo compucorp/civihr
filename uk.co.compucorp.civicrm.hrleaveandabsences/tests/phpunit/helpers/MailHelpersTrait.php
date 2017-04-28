@@ -15,7 +15,7 @@ trait CRM_HRLeaveAndAbsences_MailHelpersTrait {
   }
 
   private function createLeaveTemplateMock($expectedTemplateParameters = [], $expectedTemplateID = null) {
-    $leaveTemplate = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplate::class)
+    $leaveTemplate = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotification::class)
       ->setMethods(['getTemplateParameters', 'getTemplateID'])
       ->setConstructorArgs([new CRM_HRLeaveAndAbsences_Service_LeaveRequestComment()])
       ->getMock();

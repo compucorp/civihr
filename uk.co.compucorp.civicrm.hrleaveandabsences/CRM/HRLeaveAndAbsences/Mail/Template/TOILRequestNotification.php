@@ -1,7 +1,7 @@
 <?php
 
-class CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplate
-  extends CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotificationTemplate {
+class CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotification
+  extends CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification {
 
   /**
    * {@inheritdoc}

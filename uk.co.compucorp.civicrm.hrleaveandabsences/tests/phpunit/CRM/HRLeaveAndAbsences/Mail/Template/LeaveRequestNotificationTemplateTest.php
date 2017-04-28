@@ -1,6 +1,6 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplate as LeaveRequestNotificationTemplate;
+use CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotification as LeaveRequestNotificationTemplate;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;

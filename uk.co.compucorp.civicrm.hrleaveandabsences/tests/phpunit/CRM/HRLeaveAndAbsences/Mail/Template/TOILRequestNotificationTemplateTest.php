@@ -1,6 +1,6 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplate as TOILRequestNotificationTemplate;
+use CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotification as TOILRequestNotificationTemplate;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;

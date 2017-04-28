@@ -2,9 +2,9 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
-use CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplate as SicknessRequestNotificationTemplate;
-use CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplate as TOILRequestNotificationTemplate;
-use CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplate as LeaveRequestNotificationTemplate;
+use CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotification as SicknessRequestNotificationTemplate;
+use CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotification as TOILRequestNotificationTemplate;
+use CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotification as LeaveRequestNotificationTemplate;
 
 
 class CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate {
@@ -16,7 +16,7 @@ class CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate {
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *
-   * @return \CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotificationTemplate
+   * @return \CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification
    */
   public function create(LeaveRequest $leaveRequest) {
     $leaveRequestCommentService = new LeaveRequestCommentService();

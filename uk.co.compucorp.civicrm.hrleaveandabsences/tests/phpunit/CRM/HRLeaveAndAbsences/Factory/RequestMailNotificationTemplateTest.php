@@ -29,9 +29,9 @@ class CRM_HRLeaveAndAbsences_Factory_RequestMailNotificationServiceTest extends 
 
   public function requestTemplateFactoryDataProvider() {
     return [
-      [LeaveRequest::REQUEST_TYPE_LEAVE, 'CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplate'],
-      [LeaveRequest::REQUEST_TYPE_SICKNESS, 'CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplate'],
-      [LeaveRequest::REQUEST_TYPE_TOIL, 'CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplate'],
+      [LeaveRequest::REQUEST_TYPE_LEAVE, 'CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotification'],
+      [LeaveRequest::REQUEST_TYPE_SICKNESS, 'CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotification'],
+      [LeaveRequest::REQUEST_TYPE_TOIL, 'CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotification'],
     ];
   }
 }
