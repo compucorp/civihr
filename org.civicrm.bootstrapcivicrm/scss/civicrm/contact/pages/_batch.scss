@@ -15,16 +15,21 @@
     }
   }
 
+  .crm-batch-search-form-block {
+    border-radius: $panel-border-radius !important;
+  }
+
   .crm-batch-search-form-block,
   .CRM_Batch_Form_Batch {
     h3 {
       background: $gray-lighter !important;
       border-bottom: 1px solid $crm-dark-grayblue;
+      border-radius: $border-radius-child $border-radius-child 0 0;
       color: $crm-h3-color;
-      padding: 17px 25px;
       margin: 0;
+      padding: 17px 25px;
       font-size: $font-size-h2;
-      font-weight: 600;
+      font-weight: $crm-font-weight-h3;
     }
 
     table tr td {
@@ -48,22 +53,28 @@
   }
 
   .dataTables_wrapper {
+    border-radius: $panel-border-radius;
     box-shadow: $box-shadow;
 
     .crm-datatable-pager-top {
-      border: 1px solid $crm-background !important;
+      border-radius: $panel-border-radius $panel-border-radius 0 0;
+
 
       div[id*="s2id_autogen"] {
         .select2-choice {
           background: none;
-          border-radius: 2px;
           border: 1px solid $crm-darker-grayblue;
+          border-radius: $border-radius-base;
           box-shadow: $crm-select2-box-shadow-inset;
         }
 
         .select2-arrow {
           background: none;
           padding: 0 5px;
+
+          b {
+            margin-top: 0;
+          }
         }
       }
     }
@@ -71,26 +82,34 @@
     .crm-datatable-pager-bottom,
     .crm-datatable-pager-top {
       background: $crm-white;
-      padding: 10px 15px;
       display: flex;
+      padding: 10px 15px;      
 
       &.crm-datatable-pager-top {
         background: $crm-accordion-header-color;
       }
 
       .dataTables_paginate {
-        width: 50% !important;
         float: right;
+        width: 50% !important;        
       }
 
       .dataTables_length,
       .dataTables_info {
-        width: 49%;
         float: left;
+        line-height: 25px;
         padding: 0;
         position: relative;
         top: 3px;
-        line-height: 25px;
+        width: 49%;
+      }
+    }
+
+    .crm-datatable-pager-bottom {
+      border-radius: 0 0 $panel-border-radius $panel-border-radius;
+
+      .dataTables_info {
+        color: $gray-darker;
       }
     }
 
@@ -128,8 +147,8 @@
       }
 
       textarea {
-        vertical-align: middle;
         line-height: 1.5em;
+        vertical-align: middle;        
       }
     }
   }
@@ -138,14 +157,35 @@
 .page-civicrm-batch-entry {
   #crm-main-content-wrapper {
     background: $crm-white;
-    padding: 15px;
+    border-radius: $panel-border-radius;
+
+    .CRM_Batch_Form_Entry {
+      border-radius: $panel-border-radius;
+      box-shadow: $crm-form-layout-shadow;
+      padding: 15px 0;
+    }
+
+    .help {
+      background: $crm-light-green-color;
+      border: none;
+      color: $gray-darker;
+      margin: 0 15px;
+    }
+
+    .crm-button_qf_Entry_upload_force-save {
+      margin: 0 15px;
+    }
+
+    .status {
+      margin: 5px 15px;
+    }
 
     #crm-batch-entry-table {
       border-color: $crm-background;
+      display: block;
       margin: 0 !important;
       overflow-x: auto;
-      width: 100%;
-      display: block;
+      width: 100%;      
     }
 
     table {
@@ -153,10 +193,11 @@
     }
 
     .form-layout-compressed {
-      margin-bottom: 20px;
+      margin: 0 15px 20px;
 
-      .label {   
+      .label {
         color:  $crm-copy;
+        font-size: $font-size-base;        
       }
 
       td.right {
@@ -168,7 +209,6 @@
     .crm-grid-table {
       border: none !important;
       border-radius: $border-radius-base;
-      box-shadow: $crm-form-layout-shadow;
 
       .crm-grid-header {
         border-bottom: 1px solid  $crm-dark-grayblue;
@@ -178,7 +218,8 @@
         .crm-grid-cell {
           background: $gray-lighter;
           border: none;
-          padding: 10px;
+          font: $crm-font-weight-h1 $font-size-base $font-family-base;
+          padding: 15px 10px;
           vertical-align: middle;
         }
 
@@ -227,6 +268,7 @@
 
         input.crm-form-text,
         input.dateplugin {
+          @include transition(border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s);
           background-color: $crm-white;
           background-image: none;
           border: 1px solid $crm-darker-grayblue;
@@ -235,8 +277,7 @@
           color: $gray-darker;
           font-size: $font-size-base;
           height: 20px;
-          padding: 4px 10px;
-          @include transition(border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s);
+          padding: 4px 10px;          
         }
 
         input.dateplugin  {
@@ -275,12 +316,14 @@
     }
 
     .crm-submit-buttons {
+      margin: 20px 0;
+      padding: 0 15px;
+
       .crm-form-submit {
         background: $brand-primary;
         border-color: $brand-primary;
         border-radius: $border-radius-base;
-        margin-right: 0;
-        padding: 7px;
+        padding: 8px 15px;
         text-shadow: none;
         text-transform: uppercase;
       }
