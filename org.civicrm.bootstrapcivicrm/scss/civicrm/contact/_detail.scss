@@ -330,23 +330,45 @@
 
         label {
           color: $crm-white;
+          font: $crm-font-weight-h1 $font-size-base $font-family-base;
         }
 
         #household_name {
+          background: $crm-page-topbar-bg-light;
+          border-color: $crm-copy;
+          color: $crm-white;
           height: 33px !important;
           margin-top: 2px;
-          background: $crm-page-topbar-bg-light;
           padding: 1px 10px;
-          color: $crm-white;
-          border-color: $crm-copy;
         }
       }
 
+      .select2-container.eight {
+        width: 120px !important;
+      }
+
       .crm-inline-button {
-        padding: 27px 5px;
-        margin: 0 !important;
         border: 0;
+        margin: 0 !important;
+        padding: 27px 5px;
         order: 2;
+
+        .crm-button {
+          border: none;
+
+          i {
+            display: none;
+          }
+
+          .crm-form-submit {
+            margin-top: 0;
+            padding: 0.4em 0.9em !important;
+
+            &.cancel {
+              color: $crm-white !important;
+            }
+          }
+        }
       }
 
       .crm-button_qf_ContactName_upload {
@@ -379,12 +401,33 @@
     }
   }
 
+  table.crm-inline-edit-form:not(.form-layout),
+  .CRM_Contact_Form_Inline_CommunicationPreferences {
+    .select2-container .select2-choice abbr {
+      right: 27px;
+      top: 8px;
+    }
+  }
+
   .crm-inline-edit-form {
     background-color: transparent !important;
     padding: 10px;
 
     td {
       color: $gray-darker;
+    }
+
+    .crm-button-type-upload {
+      border: 0;
+    }
+
+    input[type=checkbox]:checked + label[for]:after {
+      height: 17px;
+      line-height: 17px;
+      left: 2px;
+      margin-top: 2px !important;
+      top: 0 !important;
+      width: 17px;
     }
 
     [id*='Email_Block'],
@@ -429,7 +472,9 @@
         background: $crm-white;
         border-color: $crm-darker-grayblue;
         border-radius: $border-radius-base;
-        box-shadow: $crm-input-shadow;         
+        box-shadow: $crm-input-shadow; 
+        color: $crm-copy;  
+        font-family: $font-family-base;
         margin-top: 0;       
         padding: 1px 10px;
 
@@ -438,8 +483,21 @@
         }
       }
 
-      label {
-        font: $headings-font-weight $font-size-base $font-family-base !important;
+      .crm-label > label,
+      .location_type_id-address-element > label {
+        font: $crm-font-weight-h1 $font-size-base $font-family-base !important;
+      }
+
+      .crm-hover-button.add-more-inline {
+        background: $brand-primary;
+        color: $crm-white;
+        padding: 3px 7px;
+
+        &:before {
+          @include fa-icon($font-size-base, $fa-var-plus-circle);
+          color: $crm-white;
+          padding-right: 6px;
+        }
       }
 
       .select2-container {
@@ -632,15 +690,23 @@
       .big.crm-form-text {
         max-width: 155px;
       }
+
+      .select2-container {
+        width: 8.6em !important;
+      }
     }
 
     &.CRM_Contact_Form_Inline_Phone {
       .crm_phone {
-        max-width: 125px;
+        max-width: 95px;
+      }
+      
+      .four.crm-form-text {
+        max-width: 39px;
       }
 
       .select2-container {
-        width: 8em !important;
+        width: 9em !important;
         max-width: 16em;
       }
     }
