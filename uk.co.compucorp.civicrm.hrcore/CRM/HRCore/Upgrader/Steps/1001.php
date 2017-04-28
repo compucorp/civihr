@@ -35,6 +35,13 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
       'NOT IN'
     );
 
+    $this->up1001_listDelete(
+      'OptionValue',
+      'name',
+      ['Main'],
+      ['option_group_id' => 'website_type']
+    );
+
     CRM_Core_BAO_Navigation::resetNavigation();
 
     return true;
