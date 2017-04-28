@@ -217,23 +217,23 @@
   }
 
   .crm-group-search-form-block {
-    padding: 20px !important;
     margin-bottom: 30px !important;
+    padding: 20px !important;
     overflow: hidden;
 
     h3 {
       @extend .collapsible-title;
       background: $gray-lighter;
-      color: $gray-darker;
-      font-size: $font-size-h2;
-      font-family: $font-family-base;
-      vertical-align: middle;
       border: none;
-      padding: 17px 20px;
       border-bottom: 1px solid $crm-dark-grayblue;
-      margin-top: -20px;
+      color: $gray-darker;
+      font-family: $font-family-base;
+      font-size: $font-size-h2;
       margin-bottom: 20px;
       margin-left: -2% !important;
+      margin-top: -20px;
+      padding: 17px 20px;
+      vertical-align: middle;
       width: 104%;
     }
 
@@ -242,32 +242,43 @@
     }
 
     table {
-      tr {
-        td:nth-child(5) {
-          label[for*="group_status"] {
-            margin-top: 7px;
-          }
+      tr td:nth-child(5) label[for*="group_status"] {
+        margin-top: 7px;
+      }
+
+      tr td {
+        .font-italic {
+          font-style: normal;
         }
 
-        td {
-          .font-italic {
-            font-style: normal;
-          }
+        input[type="checkbox"]:checked + label[for]:after {
+          top: 8px;
         }
       }
     }
   }
 
-  .crm-block {
-     > .css_right {
-       .crm-hover-button {
-         color: $brand-primary !important;
-       }
-     }
-  }
+  .crm-block > .css_right .crm-hover-button {
+     color: $brand-primary !important;
+   }
 
   #DataTables_Table_0 {
     @include mx-expandable-table();
+
+    .crm-group-group_links {
+      text-align: right;
+
+      .btn-slide.crm-hover-button {
+        display: inline-block;
+        text-indent: -999999px;
+        width: 5px;
+
+        &:after,
+        .panel {
+          text-indent: 0;
+        }
+      }
+    }
 
     .crm-no-children {
       padding-left: 0;
@@ -279,134 +290,120 @@
     }
   }
 
-  #crm-main-content-wrapper {
-    div[id*="DataTables_Table_"] {
-      div[id*="s2id_autogen"] {
-        background: $crm-white;
+  #crm-main-content-wrapper div[id*="DataTables_Table_"] {
+    div[id*="s2id_autogen"] {
+      background: $crm-white;
 
-        .select2-choice {
-          background: none;
-          border-radius: 2px;
-          border: 1px solid $crm-darker-grayblue;
-          box-shadow: $crm-select2-box-shadow-inset;
-        }
-
-        .select2-arrow {
-          background: none;
-          padding: 0 5px;
-        }
+      .select2-choice {
+        background: none;
+        border: 1px solid $crm-darker-grayblue;
+        border-radius: $border-radius-base;
+        box-shadow: $crm-select2-box-shadow-inset;
       }
 
-      .dataTable {
-        thead {
-          tr {
-            border-bottom: 1px solid $crm-dark-grayblue;
+      .select2-arrow {
+        background: none;
+        padding: 0 5px;
+      }
+    }
 
-            th {
-              background: $gray-lighter !important;
-            }
-          }
-        }
+    .dataTables_length .select2-choice .select2-arrow b {
+      margin-top: 0;
+    }
+
+    .dataTable thead tr {
+      border-bottom: 1px solid $crm-dark-grayblue;
+
+      th {
+        background: $gray-lighter !important;
+      }
+    }
+
+    span .show-children {
+      background: none;
+
+      &.collapsed:after {
+        @include fa-icon($content: $fa-var-chevron-right);
+        margin-left: -15px;
       }
 
-      span {
-        &.show-children {
-          background: none;
-
-          &.collapsed {
-            &:after {
-              @include fa-icon($content: '\f054');
-              margin-left: -15px;
-            }
-          }
-
-          &.expanded {
-            &:after {
-              @include fa-icon($content: '\f078');
-              margin-left: -15px;
-            }
-          }
-        }
+      &.expanded:after {
+        @include fa-icon($content: $fa-var-chevron-down);
+        margin-left: -15px;
       }
     }
   }
 
-
   .ui-dialog {
     .help {
-      padding: 10px 0;
       border-radius: 0;
+      padding: 10px 0;      
     }
 
-    .CRM_Group_Form_Edit {
-      .crm-form-block {
-        padding: 0 13px;
+    .CRM_Group_Form_Edit .crm-form-block {
+      padding: 0 13px;
 
-        table {
-          tr {
-            border-bottom: 0 !important;
+      table tr {
+        border-bottom: 0 !important;
 
-            td {
-              border-bottom: 0 !important;
+        td {
+          border-bottom: 0 !important;
+        }
 
-              &.label,
-              &.report-label {
-                text-align: left;
-                padding: 0;
+        td.label,
+        td.report-label {
+          padding: 0;
+          text-align: left;                
 
-                label[for='parents'] {
-                  position: relative;
-                  left: -19px;
-                }
+          label[for='parents'] {
+            left: -19px;
+            position: relative;                  
+          }
 
-                label {
-                  padding: 8px 0;
-                  margin: 0 !important;
-                }
-              }
-            }
+          label {
+            margin: 0 !important;
+            padding: 8px 0;                  
           }
         }
+      }
 
-        .crm-submit-buttons {
-          margin: 20px 0 0 0 !important;
+      .crm-submit-buttons {
+        margin: 20px 0 0 0 !important;
+      }
+
+      .crm-form-textarea {
+        min-height: 70px;
+      }
+
+      #s2id_visibility {
+        &:after {
+          display: none;
         }
+      }
 
-        .crm-form-textarea {
-          min-height: 70px;
+      .crm-group-form-block-isReserved {
+        .report-label {            
+          padding-top: 8px;
+          vertical-align: top;
         }
+      }
 
-        #s2id_visibility {
-          &:after {
-            display: none;
-          }
-        }
-
-        .crm-group-form-block-isReserved {
-          .report-label {
-            vertical-align: top;
-            padding-top: 8px;
-          }
-        }
-
-        div,
-        span {
-          &.description {
-            display: block;
-            line-height: 1.5em;
-          }
-        }
-
-        textarea {
+      div,
+      span {
+        &.description {
+          display: block;
           line-height: 1.5em;
         }
+      }
+
+      textarea {
+        line-height: 1.5em;
       }
     }
   }
 
   .crm-basic-criteria-form-block {
-    padding: 0 !important;
-    margin-top: 20px;
+    padding: 0 !important;    
 
     .crm-accordion-body {
       padding: 20px !important;
