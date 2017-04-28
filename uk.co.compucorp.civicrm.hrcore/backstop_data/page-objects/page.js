@@ -82,11 +82,12 @@ module.exports = {
   },
 
   /**
-   * Makes CasperJS wait until the modal is visible, then it returns the
-   * specified modal object (if any)
-   *
-   * @param {string} name of the modal object
-   * @return {object} the modal object
+   * Waits for the modal dialog to load. By default it waits for the .modal class
+   * in dialog otherwise user can specify a custom waitSelector. Once model is
+   * visible it loads the respective modalModule (if any)
+   * @param {String} modalModule
+   * @param {String} waitSelector
+   * @return {Promise}
    */
   waitForModal: function (modalModule, waitSelector) {
     var casper = this.casper;

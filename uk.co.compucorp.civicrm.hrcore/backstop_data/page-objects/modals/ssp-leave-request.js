@@ -5,6 +5,7 @@ module.exports = (function () {
 
     /**
      * Selects tabs like comments or attachments
+     * @param {String} tabName like comments or attachments
      * @return {Object} this object
      */
     selectTab: function (tabName) {

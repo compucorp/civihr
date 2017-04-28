@@ -989,8 +989,9 @@ define([
        */
       function loadCommentsAndContactNames() {
         return this.request.loadComments()
-          .then(function (comments) {
-            comments && loadContactNames.call(this);
+          .then(function () {
+            //loadComments sets the comments on request object instead of returning it
+            this.request.comments.length && loadContactNames.call(this);
           }.bind(this));
       }
 
