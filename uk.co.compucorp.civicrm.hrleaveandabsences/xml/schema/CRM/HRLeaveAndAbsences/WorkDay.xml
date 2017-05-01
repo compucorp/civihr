@@ -70,10 +70,14 @@
 
   <field>
     <name>leave_days</name>
-    <type>int unsigned</type>
+    <type>varchar</type>
+    <length>512</length>
     <label>Leave days</label>
-    <comment>The proportion of a days leave that will be deducted if this day is taken as leave.</comment>
+    <comment>One of the values of the Leave Days Amount option group</comment>
     <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_days_amounts</optionGroupName>
+    </pseudoconstant>
   </field>
 
   <field>

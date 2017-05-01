@@ -202,7 +202,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_work_day` (
      `time_from` char(5)    COMMENT 'The start time of this work day. This field is a char because CiviCRM can\'t handle TIME fields.',
      `time_to` char(5)    COMMENT 'The end time of this work day. This field is a char because CiviCRM can\'t handle TIME fields.',
      `break` decimal(20,2)    COMMENT 'The amount of break time (in hours) allowed for this day. ',
-     `leave_days` int unsigned    COMMENT 'The proportion of a days leave that will be deducted if this day is taken as leave.',
+     `leave_days` varchar(512)    COMMENT 'One of the values of the Leave Days Amount option group',
      `number_of_hours` decimal(20,2)    COMMENT 'This is the number of hours between time_from and time_to minus break',
      `week_id` int unsigned NOT NULL   COMMENT 'The Work Week this Day belongs to',
     PRIMARY KEY ( `id` ),

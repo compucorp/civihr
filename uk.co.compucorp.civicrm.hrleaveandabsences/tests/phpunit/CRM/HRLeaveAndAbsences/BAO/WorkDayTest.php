@@ -183,6 +183,28 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
     $this->assertSame((string)$workDayTypes['weekend'], WorkDay::getWeekendTypeValue());
   }
 
+  public function testCreateWorkDayWithWithRandomDecimalValuesAsLeaveDays() {
+    $leaveDayAmounts = [0.5, 1.5, 2.5];
+    $this->createBasicWorkDay(['day_of_the_week' => 1, 'leave_days' => $leaveDayAmounts[0]]);
+    $this->createBasicWorkDay(['day_of_the_week' => 2, 'leave_days' => $leaveDayAmounts[1]]);
+    $this->createBasicWorkDay(['day_of_the_week' => 3, 'leave_days' => $leaveDayAmounts[2]]);
+
+    $workDays = new WorkDay();
+    $workDays->week_id = $this->workWeek->id;
+    $workDays->find();
+
+    //Three Work days were created
+    $this->assertEquals($workDays->N, 3);
+
+    while($workDays->fetch()) {
+      $leaveDays[] = $workDays->leave_days;
+    }
+
+    //compare that the leave day amount we created the work days with is the same as what is in the db
+    sort($leaveDays);
+    $this->assertEquals($leaveDays, $leaveDayAmounts);
+  }
+
   private function createBasicWorkDay($params = []) {
     $basicDefaultParams = [
       'day_of_the_week' => 1,

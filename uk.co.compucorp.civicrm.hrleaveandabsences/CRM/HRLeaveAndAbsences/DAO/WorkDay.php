@@ -117,9 +117,9 @@ class CRM_HRLeaveAndAbsences_DAO_WorkDay extends CRM_Core_DAO
    */
   public $break;
   /**
-   * The proportion of a days leave that will be deducted if this day is taken as leave.
+   * One of the values of the Leave Days Amount option group
    *
-   * @var int unsigned
+   * @var string
    */
   public $leave_days;
   /**
@@ -221,9 +221,15 @@ class CRM_HRLeaveAndAbsences_DAO_WorkDay extends CRM_Core_DAO
         ) ,
         'leave_days' => array(
           'name' => 'leave_days',
-          'type' => CRM_Utils_Type::T_INT,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Leave Days') ,
-          'description' => 'The proportion of a days leave that will be deducted if this day is taken as leave.',
+          'description' => 'One of the values of the Leave Days Amount option group',
+          'maxlength' => 512,
+          'size' => CRM_Utils_Type::HUGE,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrleaveandabsences_leave_days_amounts',
+            'optionEditPath' => 'civicrm/admin/options/hrleaveandabsences_leave_days_amounts',
+          )
         ) ,
         'number_of_hours' => array(
           'name' => 'number_of_hours',
