@@ -16,7 +16,7 @@ class CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate {
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *
-   * @return \CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification
+   * @return \CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification|null
    */
   public function create(LeaveRequest $leaveRequest) {
     $leaveRequestCommentService = new LeaveRequestCommentService();
@@ -31,6 +31,8 @@ class CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate {
       case LeaveRequest::REQUEST_TYPE_TOIL:
         return new TOILRequestNotificationTemplate($leaveRequestCommentService);
         break;
+      default:
+        return null;
     }
   }
 }

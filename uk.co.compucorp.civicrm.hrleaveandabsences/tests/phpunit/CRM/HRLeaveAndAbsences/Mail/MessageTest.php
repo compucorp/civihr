@@ -170,4 +170,30 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     //to fetch from L&A general settings
     $this->assertNotNull($recipientEmails);
   }
+
+  public function testGetTemplateParametersReturnsNullWhenThereIsNoTemplateForARequestType() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' =>$this->leaveContact['id'],
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'request_type' => 'test_request_type'
+    ], false);
+
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $this->assertNull($message->getTemplateParameters());
+  }
+
+  public function testGetTemplateIDReturnsNullWhenThereIsNoTemplateForARequestType() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' =>$this->leaveContact['id'],
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'request_type' => 'test_request_type'
+    ], false);
+
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $this->assertNull($message->getTemplateID());
+  }
 }
