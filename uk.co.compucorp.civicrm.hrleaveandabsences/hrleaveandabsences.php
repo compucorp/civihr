@@ -609,14 +609,14 @@ function _hrleaveandabsences_civicrm_post_absencetype($op, $objectId, &$objectRe
  * @param object $objectRef
  */
 function _hrleaveandabsences_civicrm_post_leaverequest($op, $objectId, &$objectRef) {
-  if ($objectRef->request_type == LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY) {
-    return;
-  }
-
   try {
     //get the message for the leave request
     $leaveRequestTemplateFactory = new RequestNotificationTemplateFactory();
     $message = new Message($objectRef, $leaveRequestTemplateFactory);
+
+    if (!$message->getTemplateID()) {
+      return;
+    }
 
     //send the email
     $leaveMailSenderService = new LeaveRequestMailNotificationSenderService();

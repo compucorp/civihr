@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_NotificationReceiver as NotificationReceiver;
+use CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification as BaseRequestNotificationTemplate;
 use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotificationTemplateFactory;
 
 class CRM_HRLeaveAndAbsences_Mail_Message {
@@ -85,18 +86,24 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
   /**
    * Gets the template parameters for the Leave Request template
    *
-   * @return array
+   * @return array|boolean
    */
   public function getTemplateParameters() {
+    if (!$this->isValidTemplate()) {
+      return false;
+    }
     return $this->getTemplate()->getTemplateParameters($this->leaveRequest);
   }
 
   /**
    * Gets the template ID for the Leave Request template
    *
-   * @return int
+   * @return int|boolean
    */
   public function getTemplateID() {
+    if (!$this->isValidTemplate()) {
+      return false;
+    }
     return $this->getTemplate()->getTemplateID();
   }
 
@@ -181,5 +188,15 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
    */
   private function getNotificationReceivers() {
     return NotificationReceiver::getReceiversIDsForAbsenceType($this->leaveRequest->type_id);
+  }
+
+  /**
+   * Checks whether the template is a valid template and extends the
+   * BaseRequestNotificationTemplate class.
+   *
+   * @return bool
+   */
+  private function isValidTemplate() {
+    return $this->getTemplate() instanceof BaseRequestNotificationTemplate;
   }
 }
