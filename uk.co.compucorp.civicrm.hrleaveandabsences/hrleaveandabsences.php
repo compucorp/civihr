@@ -15,6 +15,7 @@
 use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestService as PublicHolidayLeaveRequestServiceFactory;
 use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
 use CRM_HRLeaveAndAbsences_Mail_Message as Message;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSender as LeaveRequestMailNotificationSenderService;
 use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotificationTemplateFactory;
 
@@ -608,6 +609,9 @@ function _hrleaveandabsences_civicrm_post_absencetype($op, $objectId, &$objectRe
  * @param object $objectRef
  */
 function _hrleaveandabsences_civicrm_post_leaverequest($op, $objectId, &$objectRef) {
+  if ($objectRef->request_type == LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY) {
+    return;
+  }
 
   try {
     //get the message for the leave request
