@@ -171,7 +171,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $this->assertNotNull($recipientEmails);
   }
 
-  public function testGetTemplateParametersReturnsFalseWhenThereIsNoTemplateForARequestType() {
+  public function testGetTemplateParametersReturnsNullWhenThereIsNoTemplateForARequestType() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
       'contact_id' =>$this->leaveContact['id'],
@@ -181,10 +181,10 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     ], false);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
-    $this->assertFalse($message->getTemplateParameters());
+    $this->assertNull($message->getTemplateParameters());
   }
 
-  public function testGetTemplateIDReturnsFalseWhenThereIsNoTemplateForARequestType() {
+  public function testGetTemplateIDReturnsNullWhenThereIsNoTemplateForARequestType() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
       'contact_id' =>$this->leaveContact['id'],
@@ -194,6 +194,6 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     ], false);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
-    $this->assertFalse($message->getTemplateID());
+    $this->assertNull($message->getTemplateID());
   }
 }

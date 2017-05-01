@@ -79,31 +79,32 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
     if (is_null($this->requestTemplate)) {
       $this->requestTemplate = $this->requestTemplateFactory->create($this->leaveRequest);
     }
-
     return $this->requestTemplate;
   }
 
   /**
    * Gets the template parameters for the Leave Request template
    *
-   * @return array|boolean
+   * @return array|null
    */
   public function getTemplateParameters() {
     if (!$this->isValidTemplate()) {
-      return false;
+      return null;
     }
+
     return $this->getTemplate()->getTemplateParameters($this->leaveRequest);
   }
 
   /**
    * Gets the template ID for the Leave Request template
    *
-   * @return int|boolean
+   * @return int|null
    */
   public function getTemplateID() {
     if (!$this->isValidTemplate()) {
-      return false;
+      return null;
     }
+
     return $this->getTemplate()->getTemplateID();
   }
 
@@ -191,8 +192,7 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
   }
 
   /**
-   * Checks whether the template is a valid template and extends the
-   * BaseRequestNotificationTemplate class.
+   * Checks whether the template is a valid template or not.
    *
    * @return bool
    */

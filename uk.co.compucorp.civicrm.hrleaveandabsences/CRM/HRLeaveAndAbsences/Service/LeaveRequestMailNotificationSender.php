@@ -22,8 +22,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSender {
     $contactID = $message->getLeaveContactID();
     $fromEmail = $message->getFromEmail();
     $status = [];
-    foreach($recipientEmails as $recipient) {
 
+    foreach($recipientEmails as $recipient) {
       $mailSent =
         MessageTemplate::sendTemplate([
           'messageTemplateID' => $templateID,

@@ -27,12 +27,12 @@ class CRM_HRLeaveAndAbsences_Factory_RequestMailNotificationServiceTest extends 
     $this->assertInstanceOf($expectedClass, $template);
   }
 
-  public function testCreateReturnsFalseWhenThereIsNoTemplateForTheRequestType() {
+  public function testCreateReturnsNullWhenThereIsNoTemplateForTheRequestType() {
     $leaveRequest = new LeaveRequest();
     $leaveRequest->request_type = LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY;
     $template = $this->leaveRequestTemplateFactory->create($leaveRequest);
 
-    $this->assertFalse($template);
+    $this->assertNull($template);
   }
 
   public function requestTemplateFactoryDataProvider() {
