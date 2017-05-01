@@ -80,8 +80,9 @@
   .btn-slide:after {
     @include fa-icon($font-size-base, $fa-var-ellipsis-v, $brand-primary);
     background: none;
-    right: -5px;
+    right: -2px;
     top: 4px;
+    width: 5px;
   }
 
   .dataTables_info {
