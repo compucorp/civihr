@@ -1,13 +1,12 @@
 <div class="manager-leave-page">
   <div class="button-container">
-    <div class="btn-group">
+    <div class="btn-group" uib-dropdown>
       <button type="button" class="btn btn-primary" leave-request-popup leave-type="leave" for-staff="true"
         contact-id="managerLeave.contactId">Record New Absence</button>
-      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
-              data-toggle="dropdown">
+      <button type="button" class="btn btn-primary dropdown-toggle-split" uib-dropdown-toggle>
         <span class="caret"></span>
       </button>
-      <ul class="dropdown-menu">
+      <ul class="dropdown-menu" uib-dropdown-menu>
         <li><a leave-request-popup contact-id="managerLeave.contactId" leave-type="sickness" for-staff="true" href="#">
           Record Sickness</a></li>
         <li><a leave-request-popup contact-id="managerLeave.contactId" leave-type="toil" for-staff="true" href="#">
