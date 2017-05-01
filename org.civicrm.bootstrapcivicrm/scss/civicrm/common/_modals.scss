@@ -3,7 +3,6 @@
 
 .crm-container.ui-dialog {
   background: $gray-lighter;
-  border-radius: 0;
   box-shadow: none;
   max-height: 90%;
   padding: 0;
@@ -28,18 +27,20 @@
 
   .ui-dialog-titlebar {
     @extend .modal-header, %open-sans-font-family;
-    padding: 15px 20px;
-    background: none !important;
     border: none !important;
-    color: $gray-darker !important;
     border-bottom: 1px solid $crm-dark-grayblue !important;
+    box-shadow: $crm-contribute-form-shadow;
+    color: $gray-darker !important;
+    padding: 15px 20px;
+    position: relative;
+    z-index: 1;    
 
     .ui-dialog-title {
       @extend .modal-title, %open-sans-font-family;
-      font-size: 18px;
       background: none;
-      padding-left: 0;
-      font-weight: 600;
+      font-size: $font-size-h2;
+      font-weight: $crm-font-weight-h2;
+      padding-left: 0;      
     }
 
     > .ui-button {
@@ -107,20 +108,23 @@
   }
 
   .ui-dialog-buttonpane {
-    @extend .modal-footer, %open-sans-font-family;    
-    box-shadow: none;
+    @extend .modal-footer, %open-sans-font-family;
+    background: $gray-lighter;
+    border-top: 1px solid $crm-dark-grayblue !important;
+    box-shadow: $crm-contribute-form-shadow;
     display: block;
     margin-top: 0;
+    position: relative;
 
     .ui-dialog-buttonset {
-      width: 100%;
       margin: 0;
+      width: 100%;
 
       button {
-        float: right;
-        margin-right: 0;
-        margin-left: 10px;
         background: $brand-primary;
+        float: right;
+        margin-left: 10px;
+        margin-right: 0;
 
         &[data-identifier*="cancel"] {
           float: left;
@@ -134,7 +138,7 @@
 
         &,
         .ui-button-text {
-          font-size: 13px;
+          font-size: $font-size-base;
         }
       }
     }
