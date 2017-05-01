@@ -9,6 +9,11 @@ var karma = require('karma');
 var exec = require('child_process').exec;
 var path = require('path');
 var fs = require('fs');
+var postcss = require('gulp-postcss');
+var postcssPrefix = require('postcss-prefix-selector');
+var transformSelectors = require("gulp-transform-selectors");
+
+var bootstrapNamespace = '#bootstrap-theme';
 
 gulp.task('requirejs', function (cb) {
   gulpSequence('requirejs:optimizer', 'requirejs:rename', 'requirejs:clean')(cb);
@@ -41,6 +46,11 @@ gulp.task('sass', function () {
   return gulp.src('scss/*.scss')
     .pipe(bulk())
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
+    .pipe(postcss([postcssPrefix({
+      prefix: bootstrapNamespace + ' ',
+      exclude: [/^html/, /^body/, /\.ta-hidden-input/]
+    })]))
+    .pipe(transformSelectors(namespaceRootElements, { splitOnCommas: true }))
     .pipe(gulp.dest('css/'));
 });
 
@@ -61,6 +71,23 @@ gulp.task('test', function (done) {
 
 gulp.task('default', ['requirejs', 'sass', 'test', 'watch']);
 
+/**
+ * Apply the namespace on html and body elements
+ *
+ * @param  {string} selector the current selector to be transformed
+ * @return string
+ */
+function namespaceRootElements(selector) {
+  var regex = /^(body|html)/;
+
+  if (regex.test(selector)) {
+    selector = selector.replace(regex, function (match) {
+      return match + bootstrapNamespace;
+    }) + ",\n" + selector.replace(regex, bootstrapNamespace);
+  }
+
+  return selector;
+}
 
 var test = (function () {
 

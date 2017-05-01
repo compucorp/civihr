@@ -7,7 +7,7 @@
 
 /**
  * Returns entity name by given BAO / DAO class name.
- * 
+ *
  * @param String $baoName
  * @return String
  */
@@ -34,7 +34,7 @@ function _civicrm_get_table_name($className)
 /**
  * Sets $params array to point at valid revision of given $params['jobcontract_id']
  * Job Contract.
- * 
+ *
  * @param array $params
  * @param String $table
  */
@@ -56,7 +56,7 @@ function _civicrm_hrjobcontract_api3_set_current_revision(array &$params, $table
  * Creates new revision for given Job Contract Id.
  * If there is no previous revision the function creates new blank revision.
  * Otherwise the function creates new revision with previous entity values.
- * 
+ *
  * @param int $jobContractId
  */
 function _civicrm_hrjobcontract_api3_create_revision($jobContractId)
@@ -74,7 +74,7 @@ function _civicrm_hrjobcontract_api3_create_revision($jobContractId)
             'status' => 0,
         ));
     }*/
-    
+
     //$currentRevision = _civicrm_hrjobcontract_api3_get_latest_revision((int)$jobContractId);
     $currentRevision = _civicrm_hrjobcontract_api3_get_current_revision(array('jobcontract_id' => (int)$jobContractId));
     if (empty($currentRevision))
@@ -87,17 +87,17 @@ function _civicrm_hrjobcontract_api3_create_revision($jobContractId)
     }
     //$currentRevision['values']['status'] = 1; // TODO: status
     $result = civicrm_api3('HRJobContractRevision', 'create', $currentRevision['values']);
-    
+
     return $result;
 }
 
 /**
  * Returns current revision. If current revision is for a past contract, and its
  * terms are changed by future revisions, it will return the latest revision.
- * 
+ *
  * @param array $params
  *   Parameter array passed by API call
- * 
+ *
  * @return mixed
  *   Returns either:
  *   - Array with contents of revision if one is found
@@ -124,9 +124,15 @@ function _civicrm_hrjobcontract_api3_get_current_revision($params) {
       ],
     ]);
 
+    if ($revision['count'] > 0) {
+      $firstRevision = $revision['values'][0];
+      $contractEnd = CRM_Utils_Array::value('details_revision_id.period_end_date', $firstRevision);
+      $revisionEndDate = CRM_Utils_Array::value('effective_end_date', $firstRevision);
+    }
+
     if (
       empty($revision['values'])
-      || _civicrm_hrjobcontract_api3_is_a_revision_for_a_past_contract($revision['values'][0])
+      || (!empty($revisionEndDate) && !empty($contractEnd) && strtotime($contractEnd) <= time())
     ) {
       $revision = civicrm_api3('HRJobContractRevision', 'get', array(
         'sequential' => 1,
@@ -139,40 +145,11 @@ function _civicrm_hrjobcontract_api3_get_current_revision($params) {
     if (!empty($revision)) {
       $row = array_shift($revision['values']);
       if (!empty($row)) {
-        return civicrm_api3_create_success($row);
+          return civicrm_api3_create_success($row);
       }
     }
   }
   return null;
-}
-
-/**
- * Returns if the given $revision is a revision for a past contract. That is:
- *
- * - The revision has and end date (which means we have a newer revision for that
- * contract)
- * - The contract end date in that revision is in the past
- *
- * @param array $revision
- *
- * @return bool
- */
-function _civicrm_hrjobcontract_api3_is_a_revision_for_a_past_contract($revision) {
-  if(empty($revision)) {
-    return false;
-  }
-
-  $contractEnd = null;
-  if(!empty($revision['details_revision_id.period_end_date'])) {
-    $contractEnd = $revision['details_revision_id.period_end_date'];
-  }
-
-  $revisionEndDate = null;
-  if(!empty($revision['effective_end_date'])) {
-    $revisionEndDate = $revision['effective_end_date'];
-  }
-
-  return !empty($revisionEndDate) && !empty($contractEnd) && strtotime($contractEnd) <= time();
 }
 
 function _civicrm_hrjobcontract_api3_get_latest_revision($params)
@@ -224,7 +201,7 @@ function _civicrm_hrjobcontract_api3_custom_get($bao_name, &$params, $returnAsSu
 {
     $bao = new $bao_name();
     $callbacks = array();
-    
+
     $fields = $bao::fields();
     foreach ($fields as $field)
     {
@@ -379,7 +356,7 @@ function _civicrm_hrjobcontract_api3_deletecontract($params) {
     {
         throw new Exception("Cannot find Job Contract with given id (" . $params['id'] . ").");
     }
-    
+
     $revisions = civicrm_api('HRJobContractRevision', 'get', array('sequential' => 1, 'options' => array('limit' => 0), 'version' => 3, 'jobcontract_id' => $params['id']));
     foreach ($revisions['values'] as $revision)
     {
@@ -387,7 +364,7 @@ function _civicrm_hrjobcontract_api3_deletecontract($params) {
     }
     civicrm_api3('HRJobContract', 'create', array('version' => 3, 'id' => $contract['id'], 'deleted' => 1));
     CRM_Hrjobcontract_JobContractDates::removeDates($contract['id']);
-    
+
     return 1;
   }
   catch(PEAR_Exception $e) {

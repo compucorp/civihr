@@ -9,7 +9,7 @@
 .panel-default-inverted {
 
     > .panel-body {
-        background: $panel-default-heading-bg;
+        background: #ffffff;
     }
 
     > .panel-footer,
@@ -27,7 +27,7 @@
 
         // An <hr> can serve as a separator
         > hr {
-            margin: $crm-panel-heading-big-padding;
+            margin: 15px 20px;
             margin-bottom: 0;
             margin-left: 0;
             margin-right: 0;
@@ -39,7 +39,7 @@
 .panel-default-plain {
 
     > .panel-body {
-        background: $panel-default-heading-bg;
+        background: #ffffff;
     }
 
     > .panel-footer {

@@ -17,7 +17,7 @@
             .state('manager-leave', {
               abstract: true,
               url: '/manager-leave',
-              template: '<manager-leave contact-id="$resolve.contactId"></manager-leave>',
+              template: '<manager-leave-container contact-id="$resolve.contactId"></manager-leave-container>',
               resolve: {
                 contactId: function () {
                   return CRM.vars.leaveAndAbsences.contactId;

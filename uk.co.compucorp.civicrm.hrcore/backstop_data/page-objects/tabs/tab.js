@@ -4,8 +4,8 @@ module.exports = (function () {
   return page.extend({
 
     /**
-     * [open description]
-     * @return {[type]} [description]
+     * Defines that the tab is ready when the a specific selector is visible
+     * @return {boolean}
      */
     ready: function () {
       return this.casper.visible(this.readySelector);

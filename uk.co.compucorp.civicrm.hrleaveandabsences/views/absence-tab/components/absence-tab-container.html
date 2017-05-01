@@ -1,0 +1,37 @@
+<div class="absence-tab-page">
+  <div class="btn-group">
+    <button type="button" class="btn btn-info">create new</button>
+    <button
+      type="button"
+      class="btn btn-info dropdown-toggle"
+      data-toggle="dropdown">
+      <span class="caret"></span>
+      <span class="sr-only">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+      <li>
+        <a href="#">Record staff sickness</a>
+      </li>
+      <li>
+        <a href="#">Record staff overtime</a>
+      </li>
+    </ul>
+  </div>
+  <uib-tabset
+    active="active"
+    type="pills"
+    custom-header-class="nav-pills-horizontal nav-pills-horizontal-default">
+    <uib-tab heading="Report">
+      <absence-tab-report></absence-tab-report>
+    </uib-tab>
+    <uib-tab heading="Calendar">
+      <absence-tab-calendar></absence-tab-calendar>
+    </uib-tab>
+    <uib-tab heading="Entitlements">
+      <absence-tab-entitlements></absence-tab-entitlements>
+    </uib-tab>
+    <uib-tab heading="Work Patterns">
+      <absence-tab-work-patterns></absence-tab-work-patterns>
+    </uib-tab>
+  </uib-tabset>
+</div>

@@ -8,7 +8,7 @@ define([
   'common/services/angular-date/date-format',
   'leave-absences/shared/ui-router',
   'leave-absences/my-leave/modules/config',
-  'leave-absences/my-leave/components/my-leave',
+  'leave-absences/my-leave/components/my-leave-container',
   'leave-absences/my-leave/components/my-leave-calendar',
   'leave-absences/my-leave/components/my-leave-report',
   'leave-absences/shared/models/absence-period-model',

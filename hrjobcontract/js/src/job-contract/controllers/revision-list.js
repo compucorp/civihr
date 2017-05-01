@@ -5,9 +5,9 @@ define([
 ], function(_, controllers) {
   'use strict';
 
-  controllers.controller('RevisionListCtrl', ['$scope', '$filter', '$q', '$uibModal', '$rootElement', 'settings', 'ContractService',
+  controllers.controller('RevisionListCtrl', ['$rootScope', '$scope', '$filter', '$q', '$uibModal', '$rootElement', 'settings', 'ContractService',
     'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractFilesService', '$log', 'ContractRevisionService', 'ContractRevisionList',
-    function($scope, $filter, $q, $modal, $rootElement, settings, ContractService,
+    function($rootScope, $scope, $filter, $q, $modal, $rootElement, settings, ContractService,
       ContractDetailsService, ContractHourService, ContractPayService, ContractFilesService, $log, ContractRevisionService, ContractRevisionList) {
       $log.debug('Controller: RevisionListCtrl');
 
@@ -17,6 +17,7 @@ define([
       $scope.currentPage = 1;
       $scope.itemsPerPage = 5;
       $scope.maxSize = 5;
+      $scope.changeReasons = $rootScope.options.contract.change_reason;
       $scope.sortCol = 'revisionEntityIdObj.effective_date';
       $scope.sortReverse = true;
       $scope.display = {
@@ -26,7 +27,8 @@ define([
         totalSalary: true,
         hours: true,
         placeOfWork: true,
-        recordedBy: true
+        recordedBy: true,
+        changeReason: true
       };
 
       function init(){

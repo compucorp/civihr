@@ -55,9 +55,8 @@
       </div>
       <div class="panel-subheading">
         <div class="row">
-          <div class="col-sm-5">
+          <div class="col-sm-8">
             <ui-select multiple
-                       limit="4"
                        ng-model="calendar.selectedMonths">
               <ui-select-match placeholder="Select Months">
                 <span ng-bind="$item"></span>
@@ -67,7 +66,7 @@
               </ui-select-choices>
             </ui-select>
           </div>
-          <div class="col-sm-offset-4 col-sm-3">
+          <div class="col-sm-offset-1 col-sm-3">
             <div class="chr_custom-select chr_custom-select--full">
               <select
                 ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
@@ -183,14 +182,6 @@
               <div class="chr_leave-calendar__legend__entry">
                 <div class="chr_leave-calendar__item chr_leave-calendar__item--type--non-working"></div>
                 <span class="chr_leave-calendar__legend__label">Non Working Day</span>
-              </div>
-            </div>
-            <div class="col-sm-3">
-              <div class="chr_leave-calendar__legend__entry">
-                <div
-                  class="chr_leave-calendar__item chr_leave-calendar__item--type--late chr_leave-calendar__item--alt">
-                  <span>L</span></div>
-                <span class="chr_leave-calendar__legend__label">Late</span>
               </div>
             </div>
           </div>

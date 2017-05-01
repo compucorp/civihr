@@ -4,7 +4,9 @@ module.exports = (function () {
   return modal.extend({
 
     /**
-     * [addDocument description]
+     * Clicks the "add document" button
+     *
+     * @return {object}
      */
     addDocument: function () {
       var casper = this.casper;
@@ -17,7 +19,9 @@ module.exports = (function () {
     },
 
     /**
-     * [addTask description]
+     * Clicks the "add task" button
+     *
+     * @return {object}
      */
     addTask: function () {
       var casper = this.casper;
@@ -30,8 +34,9 @@ module.exports = (function () {
     },
 
     /**
-     * [pickDate description]
-     * @return {[type]} [description]
+     * Opens a date picker
+     *
+     * @return {object}
      */
     pickDate: function () {
       var casper = this.casper;
@@ -45,8 +50,9 @@ module.exports = (function () {
     },
 
     /**
-     * [selectType description]
-     * @return {[type]} [description]
+     * Selects an assignment type, so that the rest of the modal is shown
+     *
+     * @return {object}
      */
     selectType: function () {
       var casper = this.casper;

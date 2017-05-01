@@ -9,7 +9,7 @@ define([
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/manager-leave/modules/config',
-  'leave-absences/manager-leave/components/manager-leave',
+  'leave-absences/manager-leave/components/manager-leave-container',
   'leave-absences/manager-leave/components/manager-leave-calendar',
   'leave-absences/manager-leave/components/manager-leave-requests'
 ], function (angular) {

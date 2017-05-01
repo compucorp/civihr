@@ -1,0 +1,32 @@
+<div class="manager-leave-page">
+  <div class="button-container">
+    <div class="btn-group" uib-dropdown>
+      <button type="button" class="btn btn-primary" leave-request-popup leave-type="leave" for-staff="true"
+        contact-id="managerLeave.contactId">Record New Absence</button>
+      <button type="button" class="btn btn-primary dropdown-toggle-split" uib-dropdown-toggle>
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" uib-dropdown-menu>
+        <li><a leave-request-popup contact-id="managerLeave.contactId" leave-type="sickness" for-staff="true" href="#">
+          Record Sickness</a></li>
+        <li><a leave-request-popup contact-id="managerLeave.contactId" leave-type="toil" for-staff="true" href="#">
+          Record Overtime</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="tabs-container">
+    <div class="container">
+      <ul class="nav nav-tabs nav-justified nav-tabs-header">
+        <li ui-sref-active="active">
+          <a ui-sref="manager-leave.requests">Leave Requests</a>
+        </li>
+        <li ui-sref-active="active">
+          <a ui-sref="manager-leave.calendar">Calendar</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div ui-view></div>
+      </div>
+    </div>
+  </div>
+</div>

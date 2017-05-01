@@ -29,26 +29,6 @@
   background-color: #e8eef0;
   font-size: 10px;
   -webkit-tap-highlight-color: transparent;
-  /*!
-   * ui-select
-   * http://github.com/angular-ui/ui-select
-   * Version: 0.11.2 - 2015-03-17T04:08:46.478Z
-   * License: MIT
-   */
-  /* Style when highlighting a search. */
-  /* Select2 theme */
-  /* Mark invalid Select2 */
-  /* Selectize theme */
-  /* Helper class to show styles when focus */
-  /* Fix input width for Selectize theme */
-  /* Fix dropdown width for Selectize theme */
-  /* Mark invalid Selectize */
-  /* Bootstrap theme */
-  /* Helper class to show styles when focus */
-  /* Fix Bootstrap dropdown position when inside a input-group */
-  /* See Scrollable Menu with Bootstrap 3 http://stackoverflow.com/questions/19227496 */
-  /* fix hide/show angular animation */
-  /* Mark invalid Bootstrap */
   /*
   @license textAngular
   Author : Austin Anderson
@@ -132,6 +112,31 @@
     }
   }
   */
+  /*!
+   * ui-select
+   * http://github.com/angular-ui/ui-select
+   * Version: 0.19.5 - 2016-10-24T23:13:59.551Z
+   * License: MIT
+   */
+  /* Style when highlighting a search. */
+  /* Select2 theme */
+  /* Mark invalid Select2 */
+  /* Handle up direction Select2 */
+  /* Selectize theme */
+  /* Helper class to show styles when focus */
+  /* Fix input width for Selectize theme */
+  /* Fix line break when there's at least one item selected with the Selectize theme */
+  /* Fix dropdown width for Selectize theme */
+  /* Mark invalid Selectize */
+  /* Handle up direction Selectize */
+  /* Bootstrap theme */
+  /* Helper class to show styles when focus */
+  /* Fix Bootstrap dropdown position when inside a input-group */
+  /* See Scrollable Menu with Bootstrap 3 http://stackoverflow.com/questions/19227496 */
+  /* fix hide/show angular animation */
+  /* Mark invalid Bootstrap */
+  /* Handle up direction Bootstrap */
+  /* Spinner */
 }
 #hrjobroles html,
 #hrjobroles body,
@@ -2804,6 +2809,7 @@
   text-decoration: none;
 }
 #hrjobroles a:focus {
+  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -4191,6 +4197,7 @@
 #hrjobroles input[type="file"]:focus,
 #hrjobroles input[type="radio"]:focus,
 #hrjobroles input[type="checkbox"]:focus {
+  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -4736,6 +4743,7 @@ fieldset[disabled]
   user-select: none;
 }
 #hrjobroles .btn:focus, #hrjobroles .btn.focus, #hrjobroles .btn:active:focus, #hrjobroles .btn:active.focus, #hrjobroles .btn.active:focus, #hrjobroles .btn.active.focus {
+  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -8201,173 +8209,6 @@ fieldset[disabled]
   -webkit-box-shadow: 1px 4px 15px 0px rgba(0, 0, 0, 0.1);
   box-shadow: 1px 4px 15px 0px rgba(0, 0, 0, 0.1);
 }
-#hrjobroles .ui-select-highlight {
-  font-weight: 600;
-}
-#hrjobroles .ui-select-offscreen {
-  clip: rect(0 0 0 0) !important;
-  width: 1px !important;
-  height: 1px !important;
-  border: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  position: absolute !important;
-  outline: 0 !important;
-  left: 0px !important;
-  top: 0px !important;
-}
-#hrjobroles .ng-dirty.ng-invalid > a.select2-choice {
-  border-color: #D44950;
-}
-#hrjobroles .select2-result-single {
-  padding-left: 0;
-}
-#hrjobroles .select2-locked > .select2-search-choice-close {
-  display: none;
-}
-#hrjobroles .select-locked > .ui-select-match-close {
-  display: none;
-}
-#hrjobroles body > .select2-container.open {
-  z-index: 9999;
-  /* The z-index Select2 applies to the select2-drop */
-}
-#hrjobroles .selectize-input.selectize-focus {
-  border-color: #007FBB !important;
-}
-#hrjobroles .selectize-control > .selectize-input > input {
-  width: 100%;
-}
-#hrjobroles .selectize-control > .selectize-dropdown {
-  width: 100%;
-}
-#hrjobroles .ng-dirty.ng-invalid > div.selectize-input {
-  border-color: #D44950;
-}
-#hrjobroles .btn-default-focus {
-  color: #333;
-  background-color: #EBEBEB;
-  border-color: #ADADAD;
-  text-decoration: none;
-  outline: 5px auto -webkit-focus-ring-color;
-  outline-offset: -2px;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
-}
-#hrjobroles .ui-select-bootstrap .ui-select-toggle {
-  position: relative;
-}
-#hrjobroles .ui-select-bootstrap .ui-select-toggle > .caret {
-  position: absolute;
-  height: 10px;
-  top: 50%;
-  right: 10px;
-  margin-top: -2px;
-}
-#hrjobroles .input-group > .ui-select-bootstrap.dropdown {
-  /* Instead of relative */
-  position: static;
-}
-#hrjobroles .input-group > .ui-select-bootstrap > input.ui-select-search.form-control {
-  border-radius: 0;
-  /* FIXME hardcoded value :-/ */
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-#hrjobroles .ui-select-bootstrap > .ui-select-match > .btn {
-  /* Instead of center because of .btn */
-  text-align: left !important;
-}
-#hrjobroles .ui-select-bootstrap > .ui-select-match > .caret {
-  position: absolute;
-  top: 45%;
-  right: 15px;
-}
-#hrjobroles .ui-select-bootstrap > .ui-select-choices {
-  width: 100%;
-  height: auto;
-  max-height: 200px;
-  overflow-x: hidden;
-  margin-top: -1px;
-}
-#hrjobroles body > .ui-select-bootstrap.open {
-  z-index: 1000;
-  /* Standard Bootstrap dropdown z-index */
-}
-#hrjobroles .ui-select-multiple.ui-select-bootstrap {
-  height: auto;
-  padding: 3px 3px 0 3px;
-}
-#hrjobroles .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
-  background-color: transparent !important;
-  /* To prevent double background when disabled */
-  border: none;
-  outline: none;
-  height: 1.666666em;
-  margin-bottom: 3px;
-}
-#hrjobroles .ui-select-multiple.ui-select-bootstrap .ui-select-match .close {
-  font-size: 1.6em;
-  line-height: 0.75;
-}
-#hrjobroles .ui-select-multiple.ui-select-bootstrap .ui-select-match-item {
-  outline: 0;
-  margin: 0 3px 3px 0;
-}
-#hrjobroles .ui-select-multiple .ui-select-match-item {
-  position: relative;
-}
-#hrjobroles .ui-select-multiple .ui-select-match-item.dropping-before:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 100%;
-  height: 100%;
-  margin-right: 2px;
-  border-left: 1px solid #428bca;
-}
-#hrjobroles .ui-select-multiple .ui-select-match-item.dropping-after:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 100%;
-  height: 100%;
-  margin-left: 2px;
-  border-right: 1px solid #428bca;
-}
-#hrjobroles .ui-select-bootstrap .ui-select-choices-row > a {
-  display: block;
-  padding: 3px 20px;
-  clear: both;
-  font-weight: 400;
-  line-height: 1.42857143;
-  color: #333;
-  white-space: nowrap;
-}
-#hrjobroles .ui-select-bootstrap .ui-select-choices-row > a:hover, #hrjobroles .ui-select-bootstrap .ui-select-choices-row > a:focus {
-  text-decoration: none;
-  color: #262626;
-  background-color: #f5f5f5;
-}
-#hrjobroles .ui-select-bootstrap .ui-select-choices-row.active > a {
-  color: #fff;
-  text-decoration: none;
-  outline: 0;
-  background-color: #428bca;
-}
-#hrjobroles .ui-select-bootstrap .ui-select-choices-row.disabled > a,
-#hrjobroles .ui-select-bootstrap .ui-select-choices-row.active.disabled > a {
-  color: #777;
-  cursor: not-allowed;
-  background-color: #fff;
-}
-#hrjobroles .ui-select-match.ng-hide-add,
-#hrjobroles .ui-select-search.ng-hide-add {
-  display: none !important;
-}
-#hrjobroles .ui-select-bootstrap.ng-dirty.ng-invalid > button.btn.ui-select-match {
-  border-color: #D44950;
-}
 #hrjobroles .ta-hidden-input {
   width: 1px;
   height: 1px;
@@ -8977,21 +8818,6 @@ fieldset[disabled]
   border: 1px dashed #727e8a;
   color: #525966;
 }
-#hrjobroles .ui-select-placeholder,
-#hrjobroles .ui-select-match-text {
-  font-weight: normal;
-  text-transform: none;
-}
-#hrjobroles .ui-select-match-text {
-  color: #586277;
-}
-#hrjobroles .ui-select-toggle[disabled] {
-  background-color: #f4f7f8;
-  opacity: 1;
-}
-#hrjobroles .ui-select-toggle[disabled]:hover, #hrjobroles .ui-select-toggle[disabled]:focus, #hrjobroles .ui-select-toggle[disabled]:active {
-  background-color: #f4f7f8;
-}
 #hrjobroles .hrjobroles-iframe {
   opacity: 0;
 }
@@ -9104,38 +8930,6 @@ fieldset[disabled]
 #hrjobroles .panel-secondary .list-group,
 #hrjobroles .panel-secondary .list-group-item {
   background-color: #f4f7f8;
-}
-#hrjobroles .ui-select-bootstrap .ui-select-choices-row:not(.active) > a small {
-  color: #586277;
-}
-#hrjobroles .ui-select-bootstrap input {
-  font-weight: normal;
-}
-#hrjobroles .ui-select-bootstrap .ui-select-toggle {
-  padding-right: 30px;
-}
-#hrjobroles .ui-select-bootstrap.ui-select-multiple {
-  min-height: 32px;
-  padding: 2px 2px 0 2px;
-}
-#hrjobroles .ui-select-bootstrap.ui-select-multiple input.ui-select-search {
-  height: 1.9em;
-  text-indent: 10px;
-}
-#hrjobroles .ui-select-bootstrap.ui-select-multiple .ui-select-match .close {
-  line-height: 0.8;
-}
-#hrjobroles .ui-select-bootstrap.ui-select-multiple .ui-select-match-item {
-  border-color: #41afcb;
-  margin: 0 2px 2px 1px;
-  padding: 2px 8px;
-  text-transform: none;
-}
-#hrjobroles .ui-select-container:not(.ui-select-multiple) {
-  height: 30px;
-}
-#hrjobroles .ui-select-container:not(.ui-select-multiple) > a {
-  border: 1px solid #42AFCB !important;
 }
 #hrjobroles .table > tbody > tr > td .hrjobroles-context-menu-toggle,
 #hrjobroles .table > tfoot > tr > td .hrjobroles-context-menu-toggle {
@@ -9312,16 +9106,6 @@ fieldset[disabled]
 #hrjobroles .btn-link .glyphicon {
   font-size: 11px;
   top: 0;
-}
-#hrjobroles .civihr-ui-select.funder-select {
-  width: 250px !important;
-}
-#hrjobroles .civihr-ui-select.funder-select .select2-chosen > span {
-  text-overflow: ellipsis;
-  width: 175px;
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
 }
 #hrjobroles .hrjobroles-role-details {
   padding-bottom: 10px;
@@ -9603,4 +9387,699 @@ fieldset[disabled]
 #hrjobroles .hrjobroles-switch[disabled] + label, #hrjobroles .hrjobroles-switch[disabled] + .checkbox-label,
 #hrjobroles .hrjobroles-switch[disabled] + .radio-label {
   cursor: not-allowed;
+}
+#hrjobroles .ui-select-highlight {
+  font-weight: bold;
+}
+#hrjobroles .ui-select-offscreen {
+  clip: rect(0 0 0 0) !important;
+  width: 1px !important;
+  height: 1px !important;
+  border: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  outline: 0 !important;
+  left: 0px !important;
+  top: 0px !important;
+}
+#hrjobroles .ui-select-choices-row:hover {
+  background-color: #f5f5f5;
+}
+#hrjobroles .ng-dirty.ng-invalid > a.select2-choice {
+  border-color: #D44950;
+}
+#hrjobroles .select2-result-single {
+  padding-left: 0;
+}
+#hrjobroles .select2-locked > .select2-search-choice-close {
+  display: none;
+}
+#hrjobroles .select-locked > .ui-select-match-close {
+  display: none;
+}
+#hrjobroles body > .select2-container.open {
+  z-index: 9999;
+  /* The z-index Select2 applies to the select2-drop */
+}
+#hrjobroles .ui-select-container[theme="select2"].direction-up .ui-select-match,
+#hrjobroles .ui-select-container.select2.direction-up .ui-select-match {
+  border-radius: 4px;
+  /* FIXME hardcoded value :-/ */
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+#hrjobroles .ui-select-container[theme="select2"].direction-up .ui-select-dropdown,
+#hrjobroles .ui-select-container.select2.direction-up .ui-select-dropdown {
+  border-radius: 4px;
+  /* FIXME hardcoded value :-/ */
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-width: 1px;
+  /* FIXME hardcoded value :-/ */
+  border-top-style: solid;
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.25);
+  margin-top: -4px;
+  /* FIXME hardcoded value :-/ */
+}
+#hrjobroles .ui-select-container[theme="select2"].direction-up .ui-select-dropdown .select2-search,
+#hrjobroles .ui-select-container.select2.direction-up .ui-select-dropdown .select2-search {
+  margin-top: 4px;
+  /* FIXME hardcoded value :-/ */
+}
+#hrjobroles .ui-select-container[theme="select2"].direction-up.select2-dropdown-open .ui-select-match,
+#hrjobroles .ui-select-container.select2.direction-up.select2-dropdown-open .ui-select-match {
+  border-bottom-color: #5897fb;
+}
+#hrjobroles .ui-select-container[theme="select2"] .ui-select-dropdown .ui-select-search-hidden,
+#hrjobroles .ui-select-container[theme="select2"] .ui-select-dropdown .ui-select-search-hidden input {
+  opacity: 0;
+  height: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+#hrjobroles .selectize-input.selectize-focus {
+  border-color: #007FBB !important;
+}
+#hrjobroles .selectize-control.single > .selectize-input > input {
+  width: 100%;
+}
+#hrjobroles .selectize-control.multi > .selectize-input > input {
+  margin: 0 !important;
+}
+#hrjobroles .selectize-control > .selectize-dropdown {
+  width: 100%;
+}
+#hrjobroles .ng-dirty.ng-invalid > div.selectize-input {
+  border-color: #D44950;
+}
+#hrjobroles .ui-select-container[theme="selectize"].direction-up .ui-select-dropdown {
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.25);
+  margin-top: -2px;
+  /* FIXME hardcoded value :-/ */
+}
+#hrjobroles .ui-select-container[theme="selectize"] input.ui-select-search-hidden {
+  opacity: 0;
+  height: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  width: 0;
+}
+#hrjobroles .btn-default-focus {
+  color: #333;
+  background-color: #EBEBEB;
+  border-color: #ADADAD;
+  text-decoration: none;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+#hrjobroles .ui-select-bootstrap .ui-select-toggle {
+  position: relative;
+}
+#hrjobroles .ui-select-bootstrap .ui-select-toggle > .caret {
+  position: absolute;
+  height: 10px;
+  top: 50%;
+  right: 10px;
+  margin-top: -2px;
+}
+#hrjobroles .input-group > .ui-select-bootstrap.dropdown {
+  /* Instead of relative */
+  position: static;
+}
+#hrjobroles .input-group > .ui-select-bootstrap > input.ui-select-search.form-control {
+  border-radius: 4px;
+  /* FIXME hardcoded value :-/ */
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#hrjobroles .input-group > .ui-select-bootstrap > input.ui-select-search.form-control.direction-up {
+  border-radius: 4px !important;
+  /* FIXME hardcoded value :-/ */
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+#hrjobroles .ui-select-bootstrap .ui-select-search-hidden {
+  opacity: 0;
+  height: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+#hrjobroles .ui-select-bootstrap > .ui-select-match > .btn {
+  /* Instead of center because of .btn */
+  text-align: left !important;
+}
+#hrjobroles .ui-select-bootstrap > .ui-select-match > .caret {
+  position: absolute;
+  top: 45%;
+  right: 15px;
+}
+#hrjobroles .ui-select-bootstrap > .ui-select-choices, #hrjobroles .ui-select-bootstrap > .ui-select-no-choice {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  overflow-x: hidden;
+  margin-top: -1px;
+}
+#hrjobroles body > .ui-select-bootstrap.open {
+  z-index: 1000;
+  /* Standard Bootstrap dropdown z-index */
+}
+#hrjobroles .ui-select-multiple.ui-select-bootstrap {
+  height: auto;
+  padding: 3px 3px 0 3px;
+}
+#hrjobroles .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
+  background-color: transparent !important;
+  /* To prevent double background when disabled */
+  border: none;
+  outline: none;
+  height: 1.666666em;
+  margin-bottom: 3px;
+}
+#hrjobroles .ui-select-multiple.ui-select-bootstrap .ui-select-match .close {
+  font-size: 1.6em;
+  line-height: 0.75;
+}
+#hrjobroles .ui-select-multiple.ui-select-bootstrap .ui-select-match-item {
+  outline: 0;
+  margin: 0 3px 3px 0;
+}
+#hrjobroles .ui-select-multiple .ui-select-match-item {
+  position: relative;
+}
+#hrjobroles .ui-select-multiple .ui-select-match-item.dropping .ui-select-match-close {
+  pointer-events: none;
+}
+#hrjobroles .ui-select-multiple:hover .ui-select-match-item.dropping-before:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 100%;
+  height: 100%;
+  margin-right: 2px;
+  border-left: 1px solid #428bca;
+}
+#hrjobroles .ui-select-multiple:hover .ui-select-match-item.dropping-after:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 100%;
+  height: 100%;
+  margin-left: 2px;
+  border-right: 1px solid #428bca;
+}
+#hrjobroles .ui-select-bootstrap .ui-select-choices-row > span {
+  cursor: pointer;
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+}
+#hrjobroles .ui-select-bootstrap .ui-select-choices-row > span:hover, #hrjobroles .ui-select-bootstrap .ui-select-choices-row > span:focus {
+  text-decoration: none;
+  color: #262626;
+  background-color: #f5f5f5;
+}
+#hrjobroles .ui-select-bootstrap .ui-select-choices-row.active > span {
+  color: #fff;
+  text-decoration: none;
+  outline: 0;
+  background-color: #428bca;
+}
+#hrjobroles .ui-select-bootstrap .ui-select-choices-row.disabled > span,
+#hrjobroles .ui-select-bootstrap .ui-select-choices-row.active.disabled > span {
+  color: #777;
+  cursor: not-allowed;
+  background-color: #fff;
+}
+#hrjobroles .ui-select-match.ng-hide-add,
+#hrjobroles .ui-select-search.ng-hide-add {
+  display: none !important;
+}
+#hrjobroles .ui-select-bootstrap.ng-dirty.ng-invalid > button.btn.ui-select-match {
+  border-color: #D44950;
+}
+#hrjobroles .ui-select-container[theme="bootstrap"].direction-up .ui-select-dropdown {
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.25);
+}
+#hrjobroles .ui-select-bootstrap .ui-select-match-text {
+  width: 100%;
+  padding-right: 1em;
+}
+#hrjobroles .ui-select-bootstrap .ui-select-match-text span {
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+}
+#hrjobroles .ui-select-bootstrap .ui-select-toggle > a.btn {
+  position: absolute;
+  height: 10px;
+  right: 10px;
+  margin-top: -2px;
+}
+#hrjobroles .ui-select-refreshing {
+  position: absolute;
+  right: 0;
+  padding: 8px 27px;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+@-webkit-keyframes ui-select-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes ui-select-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+#hrjobroles .ui-select-spin {
+  -webkit-animation: ui-select-spin 2s infinite linear;
+  animation: ui-select-spin 2s infinite linear;
+}
+#hrjobroles .ui-select-refreshing.ng-animate {
+  -webkit-animation: none 0s;
+}
+#hrjobroles .civihr-ui-select.open, #hrjobroles .civihr-ui-select .select2-drop-active, #hrjobroles .civihr-ui-select.ui-select-multiple .select2-drop-active {
+  background: #fff !important;
+}
+#hrjobroles .civihr-ui-select .select2-search-choice-close, #hrjobroles .civihr-ui-select.open .select2-chosen, #hrjobroles .civihr-ui-select:not(.open) .select2-arrow, #hrjobroles .civihr-ui-select a.select2-choice, #hrjobroles .civihr-ui-select .ui-select-search, #hrjobroles .civihr-ui-select.ui-select-multiple .select2-choices::before {
+  background: none !important;
+}
+#hrjobroles .civihr-ui-select.open .select2-chosen, #hrjobroles .civihr-ui-select.open .ui-select-search, #hrjobroles .civihr-ui-select.ui-select-multiple, #hrjobroles .civihr-ui-select.ui-select-multiple .ui-select-match-item {
+  border-width: 1px !important;
+  border-style: solid !important;
+}
+#hrjobroles .civihr-ui-select .select2-search-choice-close::before, #hrjobroles .civihr-ui-select.open .select2-search::after, #hrjobroles .civihr-ui-select .select2-arrow::before, #hrjobroles .civihr-ui-select.ui-select-multiple .select2-choices::before {
+  font-family: 'FontAwesome';
+  font-style: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+}
+#hrjobroles .civihr-ui-select:not(.open) .select2-arrow, #hrjobroles .civihr-ui-select:not(.open) .select2-chosen, #hrjobroles .civihr-ui-select .select2-input, #hrjobroles .civihr-ui-select.ui-select-multiple .select2-choices::before {
+  line-height: 28px !important;
+}
+#hrjobroles .civihr-ui-select .select2-search-choice-close::before, #hrjobroles .civihr-ui-select .select2-chosen, #hrjobroles .civihr-ui-select.ui-select-multiple .select2-choices::before {
+  font-size: 13px !important;
+}
+#hrjobroles .civihr-ui-select.open .select2-arrow, #hrjobroles .civihr-ui-select:not(.open) .select2-arrow, #hrjobroles .civihr-ui-select .ui-select-choices, #hrjobroles .civihr-ui-select.ui-select-multiple.open .select2-search-field, #hrjobroles .civihr-ui-select:not(.open) .select2-choice {
+  padding: 0 !important;
+}
+#hrjobroles .civihr-ui-select {
+  color: #586277;
+  width: 100% !important;
+}
+#hrjobroles .civihr-ui-select:not(.open).form-control.select2-container-disabled {
+  color: #b8bec4 !important;
+  border-color: #b8bec4 !important;
+  background: #f4f7f8 !important;
+}
+#hrjobroles .civihr-ui-select:not(.open).form-control.select2-container-disabled .select2-chosen {
+  color: #b8bec4 !important;
+}
+#hrjobroles .civihr-ui-select:not(.open).form-control.select2-container-disabled .select2-arrow::before,
+#hrjobroles .civihr-ui-select:not(.open).form-control.select2-container-disabled .select2-choices::before {
+  border-color: #b8bec4 !important;
+  color: #b8bec4 !important;
+}
+#hrjobroles .civihr-ui-select, #hrjobroles .civihr-ui-select * {
+  border-color: #727E8A !important;
+}
+#hrjobroles .civihr-ui-select > *, #hrjobroles .civihr-ui-select {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+#hrjobroles .civihr-ui-select .select2-drop {
+  border-radius: 0 !important;
+}
+#hrjobroles .civihr-ui-select .select2-search-choice-close {
+  height: 15px;
+  left: unset !important;
+  right: 45px !important;
+  width: 15px !important;
+}
+#hrjobroles .civihr-ui-select .select2-search-choice-close {
+  background: none !important;
+  top: 2px !important;
+}
+#hrjobroles .civihr-ui-select .select2-search-choice-close::before {
+  content: '\f057';
+  line-height: inherit !important;
+  vertical-align: middle !important;
+  text-align: right;
+  display: block;
+}
+#hrjobroles .civihr-ui-select.open:not(.ng-invalid),
+#hrjobroles .civihr-ui-select.open:not(.ng-invalid) *, #hrjobroles .civihr-ui-select.open:not(.ng-invalid).form-control {
+  border-color: #42AFCB !important;
+}
+#hrjobroles .civihr-ui-select.open .select2-chosen {
+  color: #aab1b8 !important;
+}
+#hrjobroles .civihr-ui-select.open .select2-chosen {
+  border: 0 !important;
+}
+#hrjobroles .civihr-ui-select.open .select2-chosen > span:first-of-type {
+  max-width: calc(100% - 20px);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#hrjobroles .civihr-ui-select.open .select2-choice {
+  border-bottom: 0 !important;
+}
+#hrjobroles .civihr-ui-select.open .ui-select-search {
+  padding: 0 5px !important;
+  margin-top: 5px !important;
+}
+#hrjobroles .civihr-ui-select.open .select2-search-choice-close::before {
+  display: none;
+}
+#hrjobroles .civihr-ui-select.open .select2-search::after {
+  position: relative;
+  content: '\f002';
+  color: #586277 !important;
+  right: 30px;
+}
+#hrjobroles .civihr-ui-select:not(.open) {
+  border-color: #727E8A !important;
+  padding: 0 0 0 10px !important;
+}
+#hrjobroles .civihr-ui-select:not(.open) .select2-choice {
+  border: 0 !important;
+}
+#hrjobroles .civihr-ui-select:not(.open) .select2-arrow {
+  width: 31px !important;
+}
+#hrjobroles .civihr-ui-select:not(.open) .select2-arrow::before {
+  width: 100%;
+  display: block;
+  text-align: center;
+  line-height: 30px;
+  content: '\f0d7';
+}
+.contact-lookup#hrjobroles .civihr-ui-select:not(.open) .select2-arrow::before {
+  content: '\f002' !important;
+}
+#hrjobroles .civihr-ui-select:not(.open):not(.select2-container-disabled) .select2-arrow {
+  border-left: solid 1px #727E8A !important;
+}
+#hrjobroles .civihr-ui-select:not(.open).select2-container-disabled .select2-arrow {
+  border-left: solid 1px #b8bec4 !important;
+}
+#hrjobroles .civihr-ui-select:not(.open) .select2-chosen {
+  max-width: calc(100% - 30px) !important;
+}
+#hrjobroles .civihr-ui-select:not(.open) .select2-chosen:not(.empty) {
+  color: #42AFCB !important;
+}
+#hrjobroles .civihr-ui-select:not(.open) .ui-select-match[allow-clear] .select2-chosen {
+  max-width: calc(100% - 60px) !important;
+}
+#hrjobroles .civihr-ui-select .select2-input {
+  width: inherit;
+}
+#hrjobroles .civihr-ui-select .select2-arrow {
+  cursor: pointer !important;
+}
+#hrjobroles .civihr-ui-select .select2-arrow::before {
+  color: #727E8A;
+  content: '\f0d8';
+}
+#hrjobroles .civihr-ui-select .select2-chosen {
+  color: #727E8A !important;
+  padding-left: 5px !important;
+}
+#hrjobroles .civihr-ui-select .select2-drop-active {
+  border-top: 0 !important;
+  border-style: solid;
+  border-width: 1px !important;
+  opacity: 1 !important;
+}
+#hrjobroles .civihr-ui-select a.select2-choice:hover {
+  text-decoration: none !important;
+}
+#hrjobroles .civihr-ui-select .ui-select-match {
+  height: 100% !important;
+}
+#hrjobroles .civihr-ui-select .ui-select-choices {
+  margin: 5px 0 0 !important;
+}
+#hrjobroles .civihr-ui-select .select2-result-label {
+  padding: 5px 10px !important;
+  color: #727E8A;
+}
+#hrjobroles .civihr-ui-select .select2-highlighted {
+  background: #F3F6F7 !important;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple {
+  height: 100% !important;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple .ui-select-match-item {
+  box-sizing: border-box !important;
+  line-height: 17px !important;
+  margin: 5px 5px 5px 0 !important;
+  padding: 0 22px 0 5px !important;
+  border-radius: 0 !important;
+  background: none;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple .ui-select-match-item .select2-search-choice-close {
+  right: 5px !important;
+  top: 0 !important;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple .ui-select-match-item .select2-search-choice-close::before {
+  display: block;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple .select2-choices {
+  box-shadow: none !important;
+  -moz-padding-start: 0 !important;
+  -webkit-padding-start: 0 !important;
+  margin-bottom: 0 !important;
+  width: 100% !important;
+  border: 0;
+  background-image: none !important;
+  background: none !important;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple .select2-choices::before {
+  color: #727E8A;
+  padding-left: 13px !important;
+  width: 26px !important;
+  height: 30px;
+  top: 0 !important;
+  pointer-events: none;
+  position: absolute;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple:not(.open) {
+  border-color: #727E8A !important;
+  padding-left: 0 !important;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple:not(.open) .select2-choices::before {
+  content: '\f0d7';
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple:not(.open) .select2-input {
+  cursor: pointer;
+  padding: 0 0 0 5px !important;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple.open .select2-choices::before {
+  content: '\f002';
+  padding-right: 15px;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple.open .ui-select-search {
+  border: 0 !important;
+  margin: 0 !important;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple.open .select2-search-field {
+  margin: 0 !important;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple.open .select2-chosen {
+  min-height: 25px !important;
+  border: 0 !important;
+  line-height: 25px;
+}
+#hrjobroles .civihr-ui-select.ui-select-multiple .select2-drop-active {
+  left: -1px;
+  box-sizing: content-box !important;
+}
+#hrjobroles .ng-submitted .civihr-ui-select.ng-invalid,
+#hrjobroles .ng-submitted .civihr-ui-select.ng-invalid *, #hrjobroles .ng-submitted .civihr-ui-select.ng-invalid.form-control {
+  border-color: #E6807F !important;
+}
+#hrjobroles .ng-submitted .civihr-ui-select.ng-invalid:not(.open) .select2-arrow {
+  border-left: solid 1px #E6807F !important;
+}
+#hrjobroles .result-list__contact-item {
+  clear: left;
+}
+#hrjobroles .result-list__contact-item::before {
+  content: '\f007';
+  float: left;
+  height: 22px;
+  margin-right: 10px;
+  font-family: 'FontAwesome';
+  font-style: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+}
+#hrjobroles #civihr-ui-select-contact {
+  padding: 10px !important;
+  background: #F3F6F7 !important;
+  border: solid 1px !important;
+  margin: 5px !important;
+}
+#hrjobroles #civihr-ui-select-contact .refine-search__dropdown {
+  box-shadow: none !important;
+}
+#hrjobroles #civihr-ui-select-contact .refine-search__placeholder {
+  color: #586277;
+  padding-bottom: 10px;
+}
+#hrjobroles #civihr-ui-select-contact .button-list {
+  display: flex;
+  justify-content: space-between;
+}
+#hrjobroles #civihr-ui-select-contact .button-list__button {
+  cursor: pointer;
+}
+#hrjobroles #civihr-ui-select-contact .button-list__button:not(:last-of-type) {
+  padding-right: 5px;
+}
+#hrjobroles #civihr-ui-select-contact .button-list--with-upper-margin {
+  border-top: solid 2px;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+#hrjobroles #civihr-ui-select-contact .loading-indicator {
+  text-align: center;
+}
+#hrjobroles #civihr-ui-select-contact .loading-indicator:before {
+  content: '';
+  animation: spin 1s infinite linear;
+  background: url("../svgs/civicrm.svg") no-repeat center center !important;
+  display: inline-block;
+  height: 36px;
+  width: 36px;
+}
+#hrjobroles #civihr-ui-select-contact, #hrjobroles #civihr-ui-select-contact * {
+  border-color: #727e8a !important;
+}
+#hrjobroles .civihr-ui-select__content {
+  padding: 0 5px !important;
+}
+#hrjobroles .civihr-ui-select__content-multiple {
+  padding: 0 5px !important;
+}
+#hrjobroles .civihr-ui-select__custom-options {
+  background: #808b96 !important;
+  padding: 5px 10px !important;
+  margin: 5px 0 !important;
+  border: solid 1px #727E8A !important;
+  color: #586277;
+}
+#hrjobroles .civihr-ui-select__refine-search {
+  padding-top: 10px !important;
+}
+#hrjobroles .civihr-ui-select__button-group {
+  border-top: solid 1px #727E8A !important;
+  padding-top: 10px !important;
+  margin-top: 10px !important;
+}
+#hrjobroles .civihr-ui-select__button {
+  display: inline-block;
+  cursor: pointer;
+}
+#hrjobroles .civihr-ui-select__button:not(:last-child) {
+  padding-right: 5px !important;
+}
+#hrjobroles .ui-select-bootstrap .ui-select-choices-row:not(.active) > a small {
+  color: #586277;
+}
+#hrjobroles .ui-select-bootstrap input {
+  font-weight: normal;
+}
+#hrjobroles .ui-select-bootstrap .ui-select-toggle {
+  padding-right: 30px;
+}
+#hrjobroles .ui-select-bootstrap.ui-select-multiple {
+  min-height: 32px;
+  padding: 2px 2px 0 2px;
+}
+#hrjobroles .ui-select-bootstrap.ui-select-multiple input.ui-select-search {
+  height: 1.9em;
+  text-indent: 10px;
+}
+#hrjobroles .ui-select-bootstrap.ui-select-multiple .ui-select-match .close {
+  line-height: 0.8;
+}
+#hrjobroles .ui-select-bootstrap.ui-select-multiple .ui-select-match-item {
+  border-color: #42AFCB;
+  margin: 0 2px 2px 1px;
+  padding: 2px 8px;
+  text-transform: none;
+}
+#hrjobroles .ui-select-container:not(.ui-select-multiple) {
+  height: 30px;
+}
+#hrjobroles .ui-select-container:not(.ui-select-multiple) > a {
+  border: 1px solid #42AFCB !important;
+}
+#hrjobroles .civihr-ui-select.funder-select {
+  width: 250px !important;
+}
+#hrjobroles .civihr-ui-select.funder-select .select2-chosen > span {
+  text-overflow: ellipsis;
+  width: 175px;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#hrjobroles .ui-select-placeholder,
+#hrjobroles .ui-select-match-text {
+  font-weight: normal;
+  text-transform: none;
+}
+#hrjobroles .ui-select-match-text {
+  color: #586277;
+}
+#hrjobroles .ui-select-toggle[disabled] {
+  background-color: #f4f7f8;
+  opacity: 1;
+}
+#hrjobroles .ui-select-toggle[disabled]:hover, #hrjobroles .ui-select-toggle[disabled]:focus, #hrjobroles .ui-select-toggle[disabled]:active {
+  background-color: #f4f7f8;
 }

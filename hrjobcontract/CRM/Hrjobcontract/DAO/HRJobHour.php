@@ -251,7 +251,7 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                   'where' => 'civicrm_hrjobcontract_hour.fte_num',
                   'headerPattern' => '',
                   'dataPattern' => '',
-                  'default' => '1',
+                  'default' => '0',
                   'headerPattern' => '/^full\-time\s?numerator\s?equivalence/i',
                 ) ,
                 'hrjobcontract_hour_fte_denom' => array(
@@ -263,7 +263,7 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                   'where' => 'civicrm_hrjobcontract_hour.fte_denom',
                   'headerPattern' => '',
                   'dataPattern' => '',
-                  'default' => '1',
+                  'default' => '0',
                   'headerPattern' => '/^full\-time\s?denominator\s?equivalence/i',
                 ) ,
             )

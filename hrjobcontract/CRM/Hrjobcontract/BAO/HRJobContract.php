@@ -182,7 +182,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * ];
    *
    * @param array $contracts
-   * @param string $date Y-m-d format of a date for which we calculate the result 
+   * @param string $date Y-m-d format of a date for which we calculate the result
    *
    * @return array
    */
@@ -329,7 +329,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
 
   /**
    * Get Length of Service value in days for specific Contact ID.
-   * 
+   *
    * @param type $contactId
    * @return int
    */
@@ -349,7 +349,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   /**
    * Get an assotiative array of days, months and years counted for
    * specific Contact ID.
-   * 
+   *
    * @param int contactId
    * @return array
    */
@@ -369,10 +369,11 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * Check Job Contract if exist   .
    *
    * @param Integer $contractID
-   * @return array|0 ( return 0 if not exist or an array contain some contract details if exist )
+   * @return object|int
+   *  0 if not exist or an object containing contract details
    */
   public static function checkContract($contractID) {
-    if ( !CRM_Utils_Rule::positiveInteger($contractID))  {
+    if (!CRM_Utils_Rule::positiveInteger($contractID)) {
       return 0;
     }
     $queryParam = array(1 => array($contractID, 'Integer'));
@@ -380,6 +381,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
               left join civicrm_hrjobcontract_details chrjcd on chrjcr.id=chrjcd.jobcontract_revision_id
               where  chrjcr.jobcontract_id = %1 order by chrjcr.id desc limit 1";
     $result = CRM_Core_DAO::executeQuery($query, $queryParam);
+
     return $result->fetch() ? $result : 0;
   }
 
@@ -703,22 +705,21 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     return $contracts;
   }
 
-
   /**
-   * Returns the current revision for current contract for the contact, if it 
+   * Returns the current revision for current contract for the contact, if it
    * exists. The current contract is either:
-   * 
-   * - The one where current revision effective_date is on or before the current 
-   *   date and effective_end_date is either greater than the current date or 
+   *
+   * - The one where current revision effective_date is on or before the current
+   *   date and effective_end_date is either greater than the current date or
    *   null/empty.
    * - The one where effective_date for the revision is in the future.
    *
    * Also note:
    * 1) two contracts for the same contact can't overlap.
-   * 2) two revisions for the same contract can't have the same effective date 
+   * 2) two revisions for the same contract can't have the same effective date
    *
    * @param int $contactID
-   * 
+   *
    * @return array|null
    */
   public static function getCurrentContract($contactID)  {

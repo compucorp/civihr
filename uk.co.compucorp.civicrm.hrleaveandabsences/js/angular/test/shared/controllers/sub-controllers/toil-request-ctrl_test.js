@@ -54,7 +54,7 @@
       }]));
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _Contact_,
-        _AbsenceTypeAPI_, _TOILRequestInstance_) {
+        _AbsenceTypeAPI_, _TOILRequestInstance_, $q) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;

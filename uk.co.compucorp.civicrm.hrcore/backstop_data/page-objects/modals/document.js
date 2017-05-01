@@ -4,8 +4,9 @@ module.exports = (function () {
   return modal.extend({
 
     /**
-     * [pickDueDate description]
-     * @return {[type]} [description]
+     * Opens the "due date" datepicker
+     *
+     * @return {object}
      */
     pickDueDate: function () {
       var casper = this.casper;
@@ -19,9 +20,10 @@ module.exports = (function () {
     },
 
     /**
-     * [showField description]
-     * @param  {[type]} fieldName [description]
-     * @return {[type]}           [description]
+     * Shows the given field
+     *
+     * @param  {string} fieldName
+     * @return {object}
      */
     showField: function (fieldName) {
       var casper = this.casper;
@@ -34,8 +36,9 @@ module.exports = (function () {
     },
 
     /**
-     * [selectAssignee description]
-     * @return {[type]} [description]
+     * Selects an assignee for the document
+     *
+     * @return {object}
      */
     selectAssignee: function () {
       var casper = this.casper;
@@ -49,8 +52,9 @@ module.exports = (function () {
     },
 
     /**
-     * [selectType description]
-     * @return {[type]} [description]
+     * Selects the type of document
+     *
+     * @return {object}
      */
     selectType: function () {
       var casper = this.casper;
@@ -64,8 +68,9 @@ module.exports = (function () {
     },
 
     /**
-     * [showMore description]
-     * @return {[type]} [description]
+     * Expands fully the modal
+     *
+     * @return {object}
      */
     showMore: function () {
       var casper = this.casper;

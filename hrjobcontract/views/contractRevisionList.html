@@ -1,129 +1,195 @@
 <div ng-controller="RevisionListCtrl" class="{{prefix}}history">
-    <div class="btn-group btn-group-xs btn-group-action pull-right">
-        <a ng-href="{{urlCSV}}" class="btn btn-link btn-xs">
-            <span class="fa fa-download" aria-hidden="true"></span> Export to CSV
-        </a>
-        <div class="btn-group btn-group-xs" uib-dropdown>
-            <a href class="btn btn-link btn-xs dropdown-toggle" uib-dropdown-toggle
-                    ng-disabled="disabled">
-                Fields <span class="caret"></span>
+  <div class="btn-group btn-group-xs btn-group-action pull-right">
+    <a ng-href="{{urlCSV}}" class="btn btn-link btn-xs">
+      <span class="fa fa-download" aria-hidden="true"></span> Export to CSV
+    </a>
+    <div class="btn-group btn-group-xs" uib-dropdown>
+      <a href class="btn btn-link btn-xs dropdown-toggle" uib-dropdown-toggle ng-disabled="disabled">
+        Fields <span class="caret"></span>
+      </a>
+      <ul uib-dropdown-menu class="dropdown-menu dropdown-menu-right" ng-click="$event.stopPropagation()" role="menu">
+        <li>
+          <div class="checkbox">
+            <label><input type="checkbox"
+              ng-checked="display.effectiveDate"
+              ng-click="display.effectiveDate = !display.effectiveDate"> Effective Date</label>
+          </div>
+        </li>
+        <li>
+          <div class="checkbox">
+            <label><input type="checkbox"
+              ng-checked="display.position"
+              ng-click="display.position = !display.position"> Position</label>
+          </div>
+        </li>
+        <li>
+          <div class="checkbox">
+            <label><input type="checkbox"
+              ng-checked="display.payScale"
+              ng-click="display.payScale = !display.payScale"> Pay Scale</label>
+          </div>
+        </li>
+        <li>
+          <div class="checkbox">
+            <label><input type="checkbox"
+              ng-checked="display.totalSalary"
+              ng-click="display.totalSalary = !display.totalSalary"> Total Salary</label>
+          </div>
+        </li>
+        <li>
+          <div class="checkbox">
+            <label><input type="checkbox"
+              ng-checked="display.hours"
+              ng-click="display.hours = !display.hours"> Hours (FT/PT)</label>
+          </div>
+        </li>
+        <li>
+          <div class="checkbox">
+            <label><input type="checkbox"
+              ng-checked="display.placeOfWork"
+              ng-click="display.placeOfWork = !display.placeOfWork"> Normal Place of Work</label>
+          </div>
+        </li>
+        <li>
+          <div class="checkbox">
+            <label><input type="checkbox"
+              ng-checked="display.changeReason"
+              ng-click="display.changeReason = !display.changeReason"> Change Reason</label>
+          </div>
+        </li>
+        <li>
+          <div class="checkbox">
+            <label><input type="checkbox"
+              ng-checked="display.recordedBy"
+              ng-click="display.recordedBy = !display.recordedBy"> Change Recorded By</label>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <table class="table table-striped {{prefix}}table-sort {{prefix}}table-revision-list" hrjc-loader hrjc-loader-hide="true">
+    <thead>
+      <tr>
+        <th ng-hide="!display.effectiveDate">
+          <a href="" ng-click="sortBy('revisionEntityIdObj.effective_date');createPage();">
+            Effective Date
+            <i class="fa"
+              ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+              ng-show="sortCol == 'revisionEntityIdObj.effective_date'">
+            </i>
+          </a>
+        </th>
+        <th ng-hide="!display.position">
+          <a href="" ng-click="sortBy('details.position');createPage();">
+            Position
+            <i class="fa"
+              ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+              ng-show="sortCol == 'details.position'">
+            </i>
+          </a>
+        </th>
+        <th ng-hide="!display.payScale">
+          <a href="" ng-click="sortBy('pay.pay_scale');createPage();">
+            Pay Scale
+            <i class="fa"
+              ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+              ng-show="sortCol == 'pay.pay_scale'">
+            </i>
+          </a>
+        </th>
+        <th ng-hide="!display.totalSalary">
+          <a href="" ng-click="sortBy('pay.pay_annualized_est');createPage();">
+            Total Salary
+            <i class="fa"
+              ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+              ng-show="sortCol == 'pay.pay_annualized_est'">
+            </i>
+          </a>
+        </th>
+        <th ng-hide="!display.hours">
+          <a href="" ng-click="sortBy('hour.hours_type');createPage();">
+            Hours (FT/PT)
+            <i class="fa"
+              ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+              ng-show="sortCol == 'hour.hours_type'">
+            </i>
+          </a>
+        </th>
+        <th ng-hide="!display.placeOfWork">
+          <a href="" ng-click="sortBy('details.location');createPage();">
+            Normal Place of Work
+            <i class="fa"
+              ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+              ng-show="sortCol == 'details.location'">
+            </i>
+          </a>
+        </th>
+        <th ng-hide="!display.changeReason">
+          <a href="" ng-click="sortBy('revisionEntityIdObj.change_reason');createPage();">
+            Change Reason
+            <i class="fa"
+              ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+              ng-show="sortCol == 'revisionEntityIdObj.change_reason'">
+            </i>
+          </a>
+        </th>
+        <th ng-hide="!display.recordedBy">
+          <a href="" ng-click="sortBy('revisionEntityIdObj.editor_name');createPage();">
+            Change Recorded By
+            <i class="fa"
+              ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+              ng-show="sortCol == 'revisionEntityIdObj.editor_name'">
+            </i>
+          </a>
+        </th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="revision in revisionDataListPage">
+        <td ng-hide="!display.effectiveDate">{{(revision.revisionEntityIdObj.effective_date | date: 'yyyy/MM/dd') || '-'}}</td>
+        <td ng-hide="!display.position">{{revision.details.position || '-'}}</td>
+        <td ng-hide="!display.payScale">{{revision.pay.pay_scale ? (((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_scale') || '-') + ' ' + ((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_grade') || '' )) : '-'}}</td>
+        <td ng-hide="!display.totalSalary">{{revision.pay.pay_annualized_est || '-'}} {{options.pay.pay_currency[revision.pay.pay_currency]}}</td>
+        <td ng-hide="!display.hours">{{options.hour.hours_type[revision.hour.hours_type] || '-'}}</td>
+        <td ng-hide="!display.placeOfWork">{{options.details.location[revision.details.location] || '-'}}</td>
+        <td ng-hide="!display.changeReason">{{options.contract.change_reason[revision.revisionEntityIdObj.change_reason] || '-'}}</td>
+        <td ng-hide="!display.recordedBy">{{revision.revisionEntityIdObj.editor_name || '-'}}</td>
+        <td></td>
+        <td>
+          <div class="btn-group btn-group-xs btn-group-action" uib-dropdown>
+            <a href ng-click="modalContract('view',revision.revisionEntityIdObj)">
+              <span class="glyphicon glyphicon-search" aria-hidden="true"></span> View
             </a>
-            <ul uib-dropdown-menu class="dropdown-menu dropdown-menu-right" ng-click="$event.stopPropagation()" role="menu">
-                <li>
-                    <div class="checkbox">
-                        <label><input type="checkbox"
-                                      ng-checked="display.effectiveDate"
-                                      ng-click="display.effectiveDate = !display.effectiveDate"> Effective Date</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="checkbox">
-                        <label><input type="checkbox"
-                                      ng-checked="display.position"
-                                      ng-click="display.position = !display.position"> Position</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="checkbox">
-                        <label><input type="checkbox"
-                                      ng-checked="display.payScale"
-                                      ng-click="display.payScale = !display.payScale"> Pay Scale</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="checkbox">
-                        <label><input type="checkbox"
-                                      ng-checked="display.totalSalary"
-                                      ng-click="display.totalSalary = !display.totalSalary"> Total Salary</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="checkbox">
-                        <label><input type="checkbox"
-                                      ng-checked="display.hours"
-                                      ng-click="display.hours = !display.hours"> Hours (FT/PT)</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="checkbox">
-                        <label><input type="checkbox"
-                                      ng-checked="display.placeOfWork"
-                                      ng-click="display.placeOfWork = !display.placeOfWork"> Normal Place of Work</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="checkbox">
-                        <label><input type="checkbox"
-                                      ng-checked="display.recordedBy"
-                                      ng-click="display.recordedBy = !display.recordedBy"> Change Recorded By</label>
-                    </div>
-                </li>
+            <a href class="dropdown-toggle {{prefix}}context-menu-toggle" aria-expanded="false" uib-dropdown-toggle>
+              <span class="fa fa-ellipsis-v"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </a>
+            <ul uib-dropdown-menu class="dropdown-menu dropdown-menu-right" role="menu">
+              <li ng-show="!!revision.files.details.length"><a ng-href="/civicrm/hrjobcontract/file/zip?entityID={{revision.revisionEntityIdObj.id}}&entityTable=civicrm_hrjobcontract_details"><span class="fa fa-download" aria-hidden="true"></span> Download</a></li>
+              <li><a href ng-click="modalRevisionEdit(revision.revisionEntityIdObj)"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</a></li>
+              <li ng-class="{'disabled': (revisionList.length == 1) }"><a href ng-click="deleteRevision(revision.revisionEntityIdObj.id, $event)"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</a></li>
             </ul>
-        </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="row" ng-show="(revisionDataList.length > itemsPerPage)">
+    <div class="col-xs-12 text-center">
+      <uib-pagination boundary-links="true"
+        total-items="revisionDataList.length"
+        rotate="false"
+        items-per-page="itemsPerPage"
+        max-size="maxSize"
+        ng-model="currentPage"
+        class="pagination-sm"
+        previous-text="&lsaquo;"
+        next-text="&rsaquo;"
+        first-text="&laquo;"
+        last-text="&raquo;">
+      </uib-pagination>
     </div>
-    <table class="table table-striped {{prefix}}table-sort {{prefix}}table-revision-list" hrjc-loader hrjc-loader-hide="true">
-        <thead>
-            <tr>
-                <th ng-hide="!display.effectiveDate"><a href="" ng-click="sortBy('revisionEntityIdObj.effective_date');createPage();">Effective Date <i class="fa"
-                                                                                                                       ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
-                                                                                                                       ng-show="sortCol == 'revisionEntityIdObj.effective_date'"></i></a></th>
-                <th ng-hide="!display.position"><a href="" ng-click="sortBy('details.position');createPage();">Position <i class="fa"
-                                                                                               ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
-                                                                                               ng-show="sortCol == 'details.position'"></i></a></th>
-                <th ng-hide="!display.payScale"><a href="" ng-click="sortBy('pay.pay_scale');createPage();">Pay Scale <i class="fa"
-                                                                                             ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
-                                                                                             ng-show="sortCol == 'pay.pay_scale'"></i></a></th>
-                <th ng-hide="!display.totalSalary"><a href="" ng-click="sortBy('pay.pay_annualized_est');createPage();">Total Salary <i class="fa"
-                                                                                                         ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
-                                                                                                         ng-show="sortCol == 'pay.pay_annualized_est'"></i></a></th>
-                <th ng-hide="!display.hours"><a href="" ng-click="sortBy('hour.hours_type');createPage();">Hours (FT/PT) <i class="fa"
-                                                                                                                      ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
-                                                                                                                      ng-show="sortCol == 'hour.hours_type'"></i></a></th>
-                <th ng-hide="!display.placeOfWork"><a href="" ng-click="sortBy('details.location');createPage();">Normal Place of Work <i class="fa"
-                                                                                               ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
-                                                                                               ng-show="sortCol == 'details.location'"></i></a></th>
-                <th ng-hide="!display.recordedBy"><a href="" ng-click="sortBy('revisionEntityIdObj.editor_name');createPage();">Change Recorded By <i class="fa"
-                                                                                                                           ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
-                                                                                                                           ng-show="sortCol == 'revisionEntityIdObj.editor_name'"></i></a></th>
-                <th>&nbsp;</th>
-                <th>&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="revision in revisionDataListPage">
-                <td ng-hide="!display.effectiveDate">{{(revision.revisionEntityIdObj.effective_date | date: 'yyyy/MM/dd') || '-'}}</td>
-                <td ng-hide="!display.position">{{revision.details.position || '-'}}</td>
-                <td ng-hide="!display.payScale">{{revision.pay.pay_scale ? (((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_scale') || '-') + ' ' + ((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_grade') || '' )) : '-'}}</td>
-                <td ng-hide="!display.totalSalary">{{revision.pay.pay_annualized_est || '-'}} {{options.pay.pay_currency[revision.pay.pay_currency]}}</td>
-                <td ng-hide="!display.hours">{{options.hour.hours_type[revision.hour.hours_type] || '-'}}</td>
-                <td ng-hide="!display.placeOfWork">{{options.details.location[revision.details.location] || '-'}}</td>
-                <td ng-hide="!display.recordedBy">{{revision.revisionEntityIdObj.editor_name || '-'}}</td>
-                <td></td>
-                <td>
-                    <div class="btn-group btn-group-xs btn-group-action" uib-dropdown>
-                        <a href ng-click="modalContract('view',revision.revisionEntityIdObj)">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span> View
-                        </a>
-                        <a href class="dropdown-toggle {{prefix}}context-menu-toggle" aria-expanded="false" uib-dropdown-toggle>
-                            <span class="fa fa-ellipsis-v"></span>
-                            <span class="sr-only">Toggle Dropdown</span>
-                        </a>
-                        <ul uib-dropdown-menu class="dropdown-menu dropdown-menu-right" role="menu">
-                            <li ng-show="!!revision.files.details.length"><a ng-href="/civicrm/hrjobcontract/file/zip?entityID={{revision.revisionEntityIdObj.id}}&entityTable=civicrm_hrjobcontract_details"
-                                    ><span class="fa fa-download" aria-hidden="true"></span> Download</a></li>
-                            <li><a href
-                                   ng-click="modalRevisionEdit(revision.revisionEntityIdObj)"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</a></li>
-                            <li ng-class="{'disabled': (revisionList.length == 1) }"><a href
-                                   ng-click="deleteRevision(revision.revisionEntityIdObj.id, $event)"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</a></li>
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <div class="row" ng-show="(revisionDataList.length > itemsPerPage)">
-        <div class="col-xs-12 text-center">
-            <uib-pagination boundary-links="true" total-items="revisionDataList.length" rotate="false" items-per-page="itemsPerPage" max-size="maxSize" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
-        </div>
-    </div>
+  </div>
 </div>

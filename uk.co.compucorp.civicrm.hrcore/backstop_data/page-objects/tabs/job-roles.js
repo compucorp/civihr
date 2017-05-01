@@ -6,8 +6,7 @@ module.exports = (function () {
     tabTitle: 'Job Roles',
 
     /**
-     * [attemptDelete description]
-     * @return {[type]} [description]
+     * Clicks on the delete button
      */
     attemptDelete: function () {
       var casper = this.casper;
@@ -19,8 +18,9 @@ module.exports = (function () {
     },
 
     /**
-     * [edit description]
-     * @return {[type]} [description]
+     * Clicks on the edit button of a job role
+     *
+     * @return {object}
      */
     edit: function () {
       var casper = this.casper;
@@ -29,11 +29,29 @@ module.exports = (function () {
         casper.click('.tab-pane.active form > .btn-tab-action');
         casper.wait(100);
       });
+
+      return this;
     },
 
     /**
-     * [showAddNew description]
-     * @return {[type]} [description]
+     * Opens the ui-select with the given name
+     *
+     * @param  {string} name
+     * @return {object}
+     */
+    openDropdown: function (name) {
+      casper.then(function () {
+        var common = 'jobroles.edit_data[job_roles_data.id]';
+
+        casper.click('[ng-model="' + common + '[\'' + name + '\']"] > a');
+        casper.wait(100);
+      });
+
+      return this;
+    },
+
+    /**
+     * Show the form for adding a new job role
      */
     showAddNew: function () {
       var casper = this.casper;
@@ -44,9 +62,10 @@ module.exports = (function () {
     },
 
     /**
-     * [switchToTab description]
-     * @param  {[type]} tabName [description]
-     * @return {[type]}         [description]
+     * Changes active tab
+     *
+     * @param  {string} tabName
+     * @return {object}
      */
     switchToTab: function (tabName) {
       var casper = this.casper;

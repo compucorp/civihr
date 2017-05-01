@@ -13,7 +13,9 @@ module.exports = (function () {
   return page.extend({
 
     /**
-     * [addAssignment description]
+     * Shows the assignment modal
+     *
+     * @return {Promise} resolves with the assignment modal page object
      */
     addAssignment: function () {
       var casper = this.casper;
@@ -27,7 +29,9 @@ module.exports = (function () {
     },
 
     /**
-     * [addTask description]
+     * Shows the task modal
+     *
+     * @return {Promise} resolves with the task modal page object
      */
     addTask: function () {
       var casper = this.casper;
@@ -41,8 +45,9 @@ module.exports = (function () {
     },
 
     /**
-     * [advancedFilters description]
-     * @return {[type]} [description]
+     * Opens the advanced filters
+     *
+     * @return {object}
      */
     advancedFilters: function () {
       var casper = this.casper;
@@ -56,8 +61,10 @@ module.exports = (function () {
     },
 
     /**
-     * [inPlaceEdit description]
-     * @return {[type]} [description]
+     * Shows the given edit-in-place field
+     *
+     * @param {string} fieldName
+     * @return {object}
      */
     inPlaceEdit: function (fieldName) {
       var casper = this.casper;
@@ -71,8 +78,9 @@ module.exports = (function () {
     },
 
     /**
-     * [openTask description]
-     * @return {[type]} [description]
+     * Opens the first task of the list
+     *
+     * @return {Promise} resolves with the task modal page object
      */
     openTask: function () {
       var casper = this.casper;
@@ -86,8 +94,7 @@ module.exports = (function () {
     },
 
     /**
-     * [selectDates description]
-     * @return {[type]} [description]
+     * Shows the "select dates" filter
      */
     selectDates: function () {
       var casper = this.casper;
@@ -99,8 +106,9 @@ module.exports = (function () {
     },
 
     /**
-     * [showMore description]
-     * @return {[type]} [description]
+     * Expands the "show more" area of the first task of the list
+     *
+     * @return {object}
      */
     showMore: function () {
       var casper = this.casper;
@@ -116,8 +124,9 @@ module.exports = (function () {
     },
 
     /**
-     * [taskActions description]
-     * @return {[type]} [description]
+     * Shows the dropdown of the actions available on any given task
+     *
+     * @return {object}
      */
     taskActions: function () {
       var casper = this.casper;
@@ -130,8 +139,7 @@ module.exports = (function () {
     },
 
     /**
-     * [waitForReady description]
-     * @return {[type]} [description]
+     * Waits until the specified select is visible on the page
      */
     waitForReady: function () {
       var casper = this.casper;

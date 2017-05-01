@@ -14,10 +14,10 @@ define([
       return settings.pathTpl + 'components/manager-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$controller', '$log', '$q', '$rootScope', 'Calendar', 'Contact', 'OptionGroup', 'LeaveRequest', controller]
+    controller: ['$controller', '$log', '$q', '$rootScope', 'Calendar', 'Contact', 'OptionGroup', controller]
   });
 
-  function controller($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup, LeaveRequest) {
+  function controller($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup) {
     $log.debug('Component: manager-leave-calendar');
 
     var parentCtrl = $controller('CalendarCtrl'),
@@ -31,7 +31,6 @@ define([
     var tempContactData = [];
 
     vm.filteredContacts = [];
-    vm.leaveRequests = [];
     vm.managedContacts = [];
     vm.filters = {
       contact: null,
@@ -84,6 +83,7 @@ define([
      */
     vm.refresh = function () {
       vm.loading.calendar = true;
+      vm._resetMonths();
       vm._loadContacts()
         .then(function () {
           vm._loadLeaveRequestsAndCalendar();
@@ -110,6 +110,8 @@ define([
      * @param  {Array} leaveRequests - leave requests array from API
      */
     vm._indexLeaveRequests = function (leaveRequests) {
+      vm.leaveRequests = {};
+
       _.each(leaveRequests, function (leaveRequest) {
         vm.leaveRequests[leaveRequest.contact_id] = vm.leaveRequests[leaveRequest.contact_id] || {};
 
@@ -295,9 +297,8 @@ define([
           return vm._loadManagees();
         });
       });
-      $rootScope.$on('LeaveRequest::updatedByManager', function () {
-        vm.refresh();
-      });
+
+      $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
     })();
 
     return vm;

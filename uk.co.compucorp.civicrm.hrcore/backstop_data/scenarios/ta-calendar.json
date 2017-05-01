@@ -3,7 +3,6 @@
     {
       "label": "T&A / Calendar",
       "url": "civicrm/tasksassignments/dashboard#/calendar",
-      "delay": 5000,
       "onReadyScript": "close-any-modal"
     }
   ]
