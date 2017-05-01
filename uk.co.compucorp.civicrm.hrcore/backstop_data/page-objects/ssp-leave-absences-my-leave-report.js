@@ -6,6 +6,7 @@ module.exports = (function () {
   return page.extend({
     /**
      * Wait for the page to be ready
+     * @return {Object} this object
      */
     waitForReady: function () {
       var casper = this.casper;
@@ -13,24 +14,29 @@ module.exports = (function () {
       casper.then(function () {
         casper.waitUntilVisible('td[ng-click="report.toggleSection(\'pending\')"]');
       });
+
+      return this;
     },
     /**
      * Opens the given section of my report pageName
      * @param {String} section
+     * @return {Object} this object
      */
     openSection: function (section) {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click('td[ng-click="report.toggleSection(' + section + ')"]');
+        casper.click('td[ng-click="report.toggleSection(\'' + section + '\')"]');
       });
+
+      return this;
     },
     /**
      * Opens the dropdown for staff actions like edit/respond, cancel.
      * @param {Number} row number corresponding to leave request in the list
+     * @return {Object} this object
      */
-    openActions: function (row) {
-      console.log('openActions');
+    openActionsForRow: function (row) {
       var casper = this.casper;
       // || was not working in string so created another variable here
       var selectedRow = row || 1;
@@ -40,6 +46,8 @@ module.exports = (function () {
           casper.click('div:nth-child(2) > div > table > tbody > tr:nth-child('+ selectedRow +')  div[uib-dropdown] a:nth-child(1)');
         });
       });
+
+      return this;
     },
 
     /**

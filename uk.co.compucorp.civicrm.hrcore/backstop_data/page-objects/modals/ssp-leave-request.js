@@ -12,7 +12,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click('div.chr_leave-request-modal__tab li[heading=' + tabName + '] a');
+        casper.click('div.chr_leave-request-modal__tab li[heading=\'' + tabName + '\'] a');
       });
 
       return this;
