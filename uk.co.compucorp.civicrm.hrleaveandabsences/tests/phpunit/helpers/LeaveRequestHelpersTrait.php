@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 
 trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
 
@@ -84,5 +85,26 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
     $result =  civicrm_api3('Attachment', 'get', $payload);
 
     return $result;
+  }
+
+  protected function getSicknessRequiredDocuments() {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'hrleaveandabsences_leave_request_required_document',
+    ]);
+
+    $options = [];
+    foreach ($result['values'] as $requiredDocument) {
+      $options[$requiredDocument['value']] = $requiredDocument['label'];
+    }
+
+    return $options;
+  }
+
+  public function createCommentForLeaveRequest($params) {
+    $defaultParams = ['text' => 'Sample Text',];
+    $payload = array_merge($defaultParams, $params);
+
+    $leaveRequestCommentService = new LeaveRequestCommentService();
+    return $leaveRequestCommentService->add($payload);
   }
 }
