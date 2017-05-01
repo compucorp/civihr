@@ -1,7 +1,12 @@
 .page-civicrm-contact-deduperules {
   #crm-main-content-wrapper {
-    @include clearfix;
     margin-bottom: 30px;
+
+    &:after {
+      clear: both;
+      content: "";
+      display: table;
+    }
   }
 
   .help {
@@ -24,19 +29,15 @@
   }
 
   .crm-hover-button {
-    text-transform: lowercase;
     color: $brand-primary !important;
+    text-transform: lowercase;    
   }
 
   #browseValues_ {
-    &Household,
-    &Individual,
-    &Organization {
-      @include clearfix;
-
-      .button {
-        margin: 10px 0 0 0;
-      }
+    &Household .button,
+    &Individual .button,
+    &Organization .button {
+      margin: 10px 0 20px;
     }
 
     &Individual,
