@@ -7,7 +7,7 @@
     box-shadow: $box-shadow;
     color: $gray-darker;
     font: $headings-font-weight $font-size-h2 $font-family-base;
-    padding: 20px;
+    padding: 13px 20px;
   }
 
   > p {
@@ -17,6 +17,7 @@
   .form-item {
     border-radius: 0 0 $border-radius-child $border-radius-child;
     box-shadow: $crm-form-item-shadow;
+    margin-bottom: 20px;
     overflow: hidden;
     padding: 0;
   }
