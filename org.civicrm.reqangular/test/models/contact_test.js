@@ -81,6 +81,23 @@ define([
         });
       });
 
+      describe('contact api called with right parameters', function () {
+        var filter = {display_name: 'kri'},
+          pagination = 'page',
+          sort = 'display_name',
+          additionalParams = 'additionalParams';
+
+        afterEach(function() {
+          $rootScope.$digest();
+        });
+
+        it('passes the filters to the api', function () {
+          Contact.all(filter, pagination, sort, additionalParams).then(function () {
+            expect(contactAPI.all).toHaveBeenCalledWith(filter, pagination, sort, additionalParams);
+          });
+        });
+      });
+
       describe('filters', function () {
 
         describe('when called with filters', function () {

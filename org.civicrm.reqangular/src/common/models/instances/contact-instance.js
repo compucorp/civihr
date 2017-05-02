@@ -11,7 +11,7 @@ define([
 
         /**
          * Finds the contacts who are managed this contact
-         * @param {Object} params
+         * @param {Object} params - any additional parameters
          * @return {Promise}
          */
         leaveManagees: function (params) {
