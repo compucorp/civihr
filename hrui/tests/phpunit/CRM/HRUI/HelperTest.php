@@ -13,11 +13,6 @@ class CRM_HRUI_HelperTest extends \PHPUnit_Framework_TestCase implements Headles
 
   use HRUITrait;
 
-  protected $requiredExtensions = [
-    'uk.co.compucorp.civicrm.tasksassignments',
-    'org.civicrm.hrcase'
-  ];
-
   /**
    * @return CiviEnvBuilder
    */
@@ -27,7 +22,6 @@ class CRM_HRUI_HelperTest extends \PHPUnit_Framework_TestCase implements Headles
       ->install('org.civicrm.hrident')
       ->install('uk.co.compucorp.civicrm.tasksassignments')
       ->installMe(__DIR__)
-      ->install($this->requiredExtensions)
       ->apply();
   }
 
