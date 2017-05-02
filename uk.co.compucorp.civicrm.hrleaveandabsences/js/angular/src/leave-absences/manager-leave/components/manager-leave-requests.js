@@ -21,14 +21,14 @@ define([
     $log.debug('Component: manager-leave-requests');
 
     var vm = Object.create(this),
-    leaveRequestAPICache = true,
-    actionMatrix = {
-      'waiting_approval'          : ['respond', 'cancel'],
-      'more_information_requested': ['edit', 'cancel'],
-      'approved'                  : ['edit'],
-      'cancelled'                 : ['edit'],
-      'rejected'                  : ['edit']
-    };
+      leaveRequestAPICache = true,
+      actionMatrix = {
+        'waiting_approval': ['respond', 'cancel'],
+        'more_information_requested': ['edit', 'cancel'],
+        'approved': ['edit'],
+        'cancelled': ['edit'],
+        'rejected': ['edit']
+      };
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -106,9 +106,6 @@ define([
             return leaveRequest.cancel();
           }
         });
-        // .then(function (response) {
-        //   !!response && cancelRequest(leaveRequest);
-        // });
       }
     };
 
