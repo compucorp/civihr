@@ -11,11 +11,11 @@ define([
 
         /**
          * Finds the contacts who are managed this contact
-         *
+         * @param {Object} params
          * @return {Promise}
          */
-        leaveManagees: function () {
-          return ContactAPI.leaveManagees(this.id);
+        leaveManagees: function (params) {
+          return ContactAPI.leaveManagees(this.id, params);
         }
       });
     }]);
