@@ -51,15 +51,17 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    */
   private function deleteUnneededCustomGroups() {
     $customGroups = ['Food_Preference', 'Donor_Information', 'constituent_information'];
-    civicrm_api3('CustomField', 'get', [
-      'custom_group_id' => ['IN' => $customGroups],
-      'api.CustomField.delete' => ['id' => '$value.id']
-    ]);
+    try {
+      civicrm_api3('CustomField', 'get', [
+        'custom_group_id' => ['IN' => $customGroups],
+        'api.CustomField.delete' => ['id' => '$value.id']
+      ]);
 
-    civicrm_api3('CustomGroup', 'get', [
-      'name' => ['IN' => $customGroups],
-      'api.CustomGroup.delete' => ['id' => '$value.id']
-    ]);
+      civicrm_api3('CustomGroup', 'get', [
+        'name' => ['IN' => $customGroups],
+        'api.CustomGroup.delete' => ['id' => '$value.id']
+      ]);
+    } catch (Exception $e) {}
   }
 
   /**
