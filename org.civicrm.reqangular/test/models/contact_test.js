@@ -81,6 +81,23 @@ define([
         });
       });
 
+      describe('contact api called with right parameters', function () {
+        var filter = {display_name: 'kri'},
+          pagination = 'page',
+          sort = 'display_name',
+          additionalParams = 'additionalParams';
+
+        afterEach(function() {
+          $rootScope.$digest();
+        });
+
+        it('passes the filters to the api', function () {
+          Contact.all(filter, pagination, sort, additionalParams).then(function () {
+            expect(contactAPI.all).toHaveBeenCalledWith(filter, pagination, sort, additionalParams);
+          });
+        });
+      });
+
       describe('filters', function () {
 
         describe('when called with filters', function () {
@@ -88,7 +105,7 @@ define([
 
           it('passes the filters to the api', function (done) {
             Contact.all({display_name: partialName}).then(function (response) {
-              expect(contactAPI.all).toHaveBeenCalledWith({display_name: partialName}, undefined);
+              expect(contactAPI.all).toHaveBeenCalledWith({display_name: partialName}, undefined, undefined, undefined);
             })
               .finally(done) && $rootScope.$digest();
           });
@@ -137,7 +154,7 @@ define([
           it('passes to its api the ids of the contacts whose job roles match the filters', function () {
             expect(contactAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
               display_name: 'foo'
-            }), undefined);
+            }), undefined, undefined, undefined);
           });
         });
 
@@ -167,7 +184,7 @@ define([
             expect(contactAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
               display_name: 'foo',
               id: {'IN': jasmine.any(Array)}
-            }), undefined);
+            }), undefined, undefined, undefined);
           });
         });
 
@@ -207,7 +224,7 @@ define([
             expect(contactAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
               display_name: 'foo',
               id: {'IN': intersectionofContactIds()}
-            }), undefined);
+            }), undefined, undefined, undefined);
           });
 
           function intersectionofContactIds() {
@@ -223,7 +240,7 @@ define([
 
         it('can paginate the contacts list', function (done) {
           Contact.all(null, pagination).then(function (response) {
-            expect(contactAPI.all).toHaveBeenCalledWith(null, pagination);
+            expect(contactAPI.all).toHaveBeenCalledWith(null, pagination, undefined, undefined);
             expect(response.list.length).toEqual(2);
           })
             .finally(done) && $rootScope.$digest();

@@ -7,7 +7,7 @@ define([
   mocks.factory('api.contact.mock', ['$q', function ($q) {
 
     return {
-      all: function (filters, pagination, value) {
+      all: function (filters, pagination, sort, additionalParam, value) {
         var list, start, end;
 
         list = value || this.mockedContacts().list;

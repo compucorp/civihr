@@ -25,13 +25,15 @@ define([
         });
 
         describe('leaveManagees()', function() {
+          var params = { key: 'someval' };
+
           beforeEach(function () {
             ContactInstance.id = '101';
-            ContactInstance.leaveManagees();
+            ContactInstance.leaveManagees(params);
           });
 
           it('calls leaveManagees of Contact API', function () {
-            expect(ContactAPI.leaveManagees).toHaveBeenCalledWith('101');
+            expect(ContactAPI.leaveManagees).toHaveBeenCalledWith('101', params);
           });
         });
     });

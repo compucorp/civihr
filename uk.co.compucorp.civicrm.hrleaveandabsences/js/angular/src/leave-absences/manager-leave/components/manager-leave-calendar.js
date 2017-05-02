@@ -143,7 +143,7 @@ define([
      * @return {Promise}
      */
     vm._loadContacts = function () {
-      return Contact.all(vm._prepareContactFilters(), {page: 1, size: 0})
+      return Contact.all(vm._prepareContactFilters(), {page: 1, size: 0}, "display_name")
         .then(function (contacts) {
           vm.filteredContacts = contacts.list;
         })
@@ -168,7 +168,8 @@ define([
     vm._loadManagees = function () {
       return Contact.find(vm.contactId)
         .then(function (contact) {
-          contact.leaveManagees()
+          //{options: {limit:0}} - Load all contacts instead of 25
+          return contact.leaveManagees({options: {limit:0}})
             .then(function (contacts) {
               vm.managedContacts = contacts;
               return vm._loadContacts();
