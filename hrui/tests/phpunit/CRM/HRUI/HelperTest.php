@@ -63,10 +63,9 @@ class CRM_HRUI_HelperTest extends \PHPUnit_Framework_TestCase implements Headles
    */
   private function createContact($firstName, $lastName) {
     return ContactMaker::fabricate([
-        'first_name' => $firstName,
-        'last_name' => $lastName
-      ]
-    )['id'];
+      'first_name' => $firstName,
+      'last_name' => $lastName
+    ])['id'];
   }
 
 }
