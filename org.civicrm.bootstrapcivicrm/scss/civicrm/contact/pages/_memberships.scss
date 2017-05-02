@@ -1,13 +1,14 @@
   .page-civicrm-contact {
     #memberships,
     #inactive-memberships {
+      border-radius: $panel-border-radius;
       box-shadow: $box-shadow;
       margin-bottom: 20px;
 
       h3 {
         background: $gray-lighter;
         border-bottom: 1px solid $crm-background;
-        border-radius: $border-radius-base $border-radius-base 0 0;
+        border-radius: $panel-border-radius $panel-border-radius 0 0;
         color: $gray-darker;
         font: $headings-font-weight $font-size-h2 $font-family-base;
         margin: 0;
@@ -17,91 +18,89 @@
       table {
         background: transparent;
         border: none;
+        border-radius: 0 0 $panel-border-radius $panel-border-radius;
         font-family: $font-family-base;
 
-        thead {
-          tr {
-            border-bottom: 1px solid $crm-dark-grayblue;
+        thead tr {
+          border-bottom: 1px solid $crm-dark-grayblue;
 
-            th {
-              background: $gray-lighter;
-              border: none;
-              color: $gray-darker;
-              line-height: 1.5em;
-              padding: 15px 20px;            
-              vertical-align: middle;
+          th {
+            background: $gray-lighter;
+            border: none;
+            color: $gray-darker;
+            line-height: 1.5em;
+            padding: 15px 20px;            
+            vertical-align: middle;
 
-              div {
-                padding: 0;
-              }
+            div {
+              padding: 0;
             }
           }
         }
 
-        tbody {
-          tr {
+        tbody tr {
+          background: transparent;
+          border-left: none;
+          border-right: none;
+          border-top: 1px solid $crm-background;
+
+          td {
             background: $crm-white;
-            border-bottom: 1px solid $crm-background;
-            border-right: none;
+            border: none;
+            color: $gray-dark;
+            line-height: 1.5em;
+            padding: 15px 20px;
 
-            td {
-              background: $crm-white;
-              border: none;
-              color: $gray-dark;
-              line-height: 1.5em;
-              padding: 15px 20px;
+            &:last-child {
+              padding-left: 10px;
+              text-align: right;
+              width: 84px;
 
-              &:last-child {
-                padding-left: 10px;
-                text-align: right;
-                width: 84px;
+              span {
+                display: inline-block;
+              }
+            }
 
-                span {
-                  display: inline-block;
-                }
+            .btn-slide {
+              padding-right: 0 !important;
+              text-indent: -9999px;
+              width: 7px;
+
+              &:after, .panel {
+                text-indent: 0;
+              }
+            }  
+
+            a,
+            span.btn-slide {
+              color: $brand-primary !important;
+              text-transform: none;
+
+              &:hover {
+                background: none;
               }
 
-              .btn-slide {
-                padding-right: 0 !important;
-                text-indent: -9999px;
-                width: 7px;              
-
-                &:after, .panel {
-                  text-indent: 0;
-                }
-              }  
-
-              a,
-              span.btn-slide {
-                color: $brand-primary !important;
-                text-transform: none;
+              a {
+                color: $crm-copy !important;
 
                 &:hover {
                   background: none;
                 }
-
-                a {
-                  color: $crm-copy !important;
-
-                  &:hover {
-                    background: none;
-                  }
-                }
               }
             }
+          }
 
-            &:last-child {
-              border-bottom-left-radius: $border-radius-base;
-              border-bottom-right-radius: $border-radius-base;
-              
-              td {
-                &:first-child {
-                  border-bottom-left-radius: $border-radius-base;
-                }
+          &:last-child {
+            border-bottom-left-radius: $border-radius-base;
+            border-bottom-right-radius: $border-radius-base;
+            
+            td {
+              &:first-child {
+                border-bottom-left-radius: $border-radius-base;
+              }
 
-                &:last-child {
-                  border-bottom-right-radius: $border-radius-base;
-                }
+              &:last-child {
+                border-bottom-right-radius: $border-radius-base;
               }
             }
           }
