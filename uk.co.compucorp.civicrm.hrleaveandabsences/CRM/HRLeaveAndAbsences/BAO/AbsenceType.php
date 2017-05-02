@@ -73,7 +73,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       $params['weight'] = self::getMaxWeight() + 1;
     }
 
-    $params['color'] = strtoupper($params['color']);
+    if (!empty($params['color'])) {
+      $params['color'] = strtoupper($params['color']);
+    }
 
     unset($params['is_reserved']);
 
