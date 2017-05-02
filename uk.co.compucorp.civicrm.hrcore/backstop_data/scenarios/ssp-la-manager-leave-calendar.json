@@ -1,0 +1,14 @@
+{
+  "scenarios": [
+    {
+      "label": "Current Month: Manager Leave Calendar",
+      "url": "manager-leave#/manager-leave/calendar",
+      "onReadyScript": "ssp-leave-absences/manager/manager-leave-calendar_current-month-visible"
+    },
+    {
+      "label": "All Months: Manager Leave Calendar",
+      "url": "manager-leave#/manager-leave/calendar",
+      "onReadyScript": "ssp-leave-absences/manager/manager-leave-calendar_all-months-visible"
+    }
+  ]
+}
