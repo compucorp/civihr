@@ -1,0 +1,8 @@
+{
+  "scenarios": [{
+      "label": "Leave and Absences: Manager Leave Requests: Show actions",
+      "url": "manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/leave-requests-show-actions"
+    }
+  ]
+}
