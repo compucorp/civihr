@@ -77,6 +77,18 @@ function hrcore_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 /**
+ * Implements hook_civicrm_buildForm().
+ *
+ * @param string $formName
+ * @param CRM_Core_Form $form
+ */
+function hrcore_civicrm_buildForm($formName, &$form) {
+  if ($formName === 'CRM_Admin_Form_Options') {
+    $form->removeElement('value');
+  }
+}
+
+/**
  * Implements hook_civicrm_managed().
  *
  * Generate a list of entities to create/deactivate/delete when this module
@@ -114,7 +126,7 @@ function hrcore_civicrm_caseTypes(&$caseTypes) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
 function hrcore_civicrm_angularModules(&$angularModules) {
-_hrcore_civix_civicrm_angularModules($angularModules);
+  _hrcore_civix_civicrm_angularModules($angularModules);
 }
 
 /**
