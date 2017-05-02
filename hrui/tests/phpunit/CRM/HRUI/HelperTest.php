@@ -2,6 +2,7 @@
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
+use Civi\Test\CiviEnvBuilder;
 
 /**
  * Class CRM_HRUI_HelperTest
@@ -12,34 +13,45 @@ class CRM_HRUI_HelperTest extends \PHPUnit_Framework_TestCase implements Headles
 
   use HRUITrait;
 
+  protected $requiredExtensions = [
+    'uk.co.compucorp.civicrm.tasksassignments',
+    'org.civicrm.hrcase'
+  ];
+
+  /**
+   * @return CiviEnvBuilder
+   */
   public function setUpHeadless() {
-    // hrcase create ( Line Manager is ) relationship type which is need for the tests
     return \Civi\Test::headless()
       ->install('uk.co.compucorp.civicrm.hrcore')
       ->install('org.civicrm.hrident')
       ->install('uk.co.compucorp.civicrm.tasksassignments')
       ->installMe(__DIR__)
-      ->install('org.civicrm.hrcase')
+      ->install($this->requiredExtensions)
       ->apply();
   }
 
+  /**
+   * Checks that the CRM_HRUI_Helper returns all line managers
+   */
   public function testGetLineManagersList() {
-    $contactParamsA = array("first_name" => "chrollo", "last_name" => "lucilfer");
-    $contactParamsB = array("first_name" => "hisoka", "last_name" => "morou");
-    $contactA = $this->createContact($contactParamsA);
-    $contactB = $this->createContact($contactParamsB)
-    ;
-    $this->createRelationship($contactA, $contactB, 'Line Manager is');
+    $relationshipType = 'Line Manager is';
+    $relationshipTypeInverse = 'Line Manager';
+    $this->createRelationshipType($relationshipType, $relationshipTypeInverse);
+
+    $contactA = $this->createContact('chrollo', 'lucilfer');
+    $contactB = $this->createContact('hisoka', 'morou');
+
+    $this->createRelationship($contactA, $contactB, $relationshipType);
 
     $managers = CRM_HRUI_Helper::getLineManagersList($contactA);
     $this->assertContains('hisoka morou', $managers);
     $this->assertEquals(1, count($managers));
 
     // add another line manager
-    $contactParamsC = array("first_name" => "illumi", "last_name" => "zoldyck");
-    $contactC = $this->createContact($contactParamsC);
+    $contactC = $this->createContact('illumi', 'zoldyck');
 
-    $this->createRelationship($contactA, $contactC, 'Line Manager is');
+    $this->createRelationship($contactA, $contactC, $relationshipType);
 
     $managers = CRM_HRUI_Helper::getLineManagersList($contactA);
     $this->assertContains('illumi zoldyck', $managers);

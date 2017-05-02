@@ -8,17 +8,19 @@ trait HrUITrait {
   /**
    * Creates a single (Individuals) contact from the provided data.
    *
-   * @param array $params should contain first_name and last_name
-   * @return int return the contact ID
-   * @throws \CiviCRM_API3_Exception
+   * @param $firstName
+   * @param $lastName
+   *
+   * @return mixed
    */
-  protected function createContact($params) {
+  protected function createContact($firstName, $lastName) {
     $result = civicrm_api3('Contact', 'create', array(
       'contact_type' => "Individual",
-      'first_name' => $params['first_name'],
-      'last_name' => $params['last_name'],
-      'display_name' => $params['first_name'] . ' ' . $params['last_name'],
+      'first_name' => $firstName,
+      'last_name' => $lastName,
+      'display_name' => $firstName . ' ' . $lastName,
     ));
+
     return $result['id'];
   }
 
@@ -35,11 +37,27 @@ trait HrUITrait {
       'return' => array("id"),
       'name_a_b' => $relationship_type,
     ));
+
     civicrm_api3('Relationship', 'create', array(
       'contact_id_a' => $contactA,
       'contact_id_b' => $contactB,
       'relationship_type_id' => $relationshipType['id'],
     ));
+  }
+
+  /**
+   * @param $labelAtoB
+   * @param $labelBtoA
+   *
+   * @return array
+   */
+  protected function createRelationshipType($labelAtoB, $labelBtoA) {
+    return civicrm_api3('RelationshipType', 'create', [
+      'name_a_b' => $labelAtoB,
+      'name_b_a' => $labelBtoA,
+      'contact_type_a' => 'Individual',
+      'contact_type_b' => 'Individual',
+    ]);
   }
 
 }
