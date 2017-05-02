@@ -1,34 +1,24 @@
 .page-civicrm-contact {
   #GroupContact {
-
     h3 {
-      padding-right: 20px;
-      padding-left: 20px;
-      margin: 0;
       background: $brand-primary;
-      color: $crm-white;
-      font-size: $font-size-h2;
-      font-family: $font-family-base;
-      font-weight: 500;
       border-bottom: 1px solid $brand-primary;
       border-radius: $border-radius-small;
-      line-height: 50px;
+      color: $crm-white;
+      font: $crm-font-weight-h4 $font-size-h2 $font-family-base;
+      line-height: 48px;
+      margin: 0;
+      padding: 0 20px;
 
       &.status-removed {
         background: $brand-danger;
-        color: $crm-white !important;
         border-color: $brand-danger;
+        color: $crm-white !important;
       }
     }
 
-    .dataTables_wrapper {
-      table {
-        tbody tr {
-          td:last-child {
-            text-align: right;          
-          }
-        }
-      }
+    .dataTables_wrapper table tbody tr td:last-child {
+      text-align: right;
     }
 
     table {
@@ -41,37 +31,37 @@
         line-height: 30px;
 
         th {
-          border-bottom: none;
           background: $gray-lighter;
-          color: $gray-darker;
-          vertical-align: middle;
           border: none;
+          color: $gray-darker;
           padding: 10px 20px;
+          vertical-align: middle;
+        }
 
-          &:first-child {
-            border-radius: $border-radius-small 0 0 0;
-          }
+        th:first-child {
+          border-radius: $border-radius-small 0 0 0;
+        }
 
-          &:last-child {
-            border-radius: $border-radius-small 0 0 0;
-          }
+        th:last-child {
+          border-radius: $border-radius-small 0 0 0;
+        }
 
-          div {
-            padding: 0;
-          }
+        th div {
+          padding: 0;
         }
       }
 
       tbody tr {
         background: $crm-white;
-        border-bottom: 1px solid $crm-background;
+        border-left: none;
         border-right: none;
+        border-top: 1px solid $crm-background;
         line-height: 30px;
 
         td {
           background: $crm-white;
-          color: $gray-dark;
           border: none;
+          color: $gray-dark;
           padding: 10px 20px;
 
           &.bold {
@@ -93,25 +83,29 @@
         }
 
         &:last-child {
-          td{
-            &:first-child {
-              border-radius: 0 0 0 $border-radius-child;
-            }
+          border-radius: 0 0 $border-radius-child $border-radius-child;
 
-            &:last-child {
-              border-radius: 0 0 $border-radius-child 0;
-            }
+          td:first-child {
+            border-bottom-right-radius: $border-radius-child;
+          }
+
+          td:last-child {
+            border-bottom-left-radius: $border-radius-child;
           }
         }
       }
     }
 
+    #option12_wrapper {
+      margin-bottom: 20px;
+    }
+
     h3,
     .accordion,
     .dataTables_wrapper {
+      border-radius: $border-radius-small;
       box-shadow: $box-shadow;
-       border-radius: $border-radius-small;
-       overflow: hidden;
+      overflow: hidden;
     }   
 
     .accordion {
@@ -132,7 +126,7 @@
       }
 
       .crm-accordion-body {
-        padding: 15px 0 !important;
+        padding: 15px 0 0 !important;
 
         .section-shown {
           padding: 0;
@@ -140,28 +134,26 @@
       }
     }
 
-    .crm-action-menu .select2-default {      
-      span.select2-chosen {
-        color: $crm-copy;
+    .crm-action-menu .select2-default span.select2-chosen {
+      color: $crm-copy;
 
-        .crm-i {
-          display: none;
-        }
+      .crm-i {
+        display: none;
       }
     } 
 
     .description {
-      margin: 15px;
       font-family: $font-family-base;
+      margin: 15px;      
     }
 
     #_qf_GroupContact_next {
-      border: none;
-      line-height: 27px;
-      height: 27px;
       background: $brand-primary url(../../../../../i/plus-icon.png) 8px 11px no-repeat;
-      text-shadow: unset;
+      border: none;
+      height: 27px;
+      line-height: 27px;
       padding: 1px 10px 3px 20px;
+      text-shadow: unset;
     }
 
     .select2-container {
@@ -169,18 +161,16 @@
 
       .select2-choice {
         background: none;
-        border-radius: 2px;
-        line-height: 28px;
-        font-family: $font-family-base;
         border: 1px solid $crm-darker-grayblue;
+        border-radius: $border-radius-base;
         box-shadow: $crm-select2-box-shadow-inset;
+        font-family: $font-family-base;
+        line-height: 28px;  
       }
 
-      &.select2-dropdown-open {
-        .select2-choice {
-          border-color: $brand-primary;
-          box-shadow: none;
-        }
+      &.select2-dropdown-open .select2-choice {         
+        border-color: $brand-primary;
+        box-shadow: none;        
       }
 
       .select2-arrow {
