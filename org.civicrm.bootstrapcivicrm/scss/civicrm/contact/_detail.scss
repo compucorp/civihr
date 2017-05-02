@@ -92,60 +92,65 @@
 
     .form-layout-compressed {
       background: $crm-white;
-      border-radius: $border-radius-base;
+      border-radius: $panel-border-radius;
       box-shadow: $box-shadow;
 
       tr {
         height: 50px;
         line-height: 50px;
+      }
 
-        &:first-child {
-          border-top-left-radius: $border-radius-base;
-          border-top-right-radius: $border-radius-base;
-          height: 40px;
-          line-height: normal;
-
-          th {
-            padding-bottom: 0;
-            padding-top: 15px;
-          }
-        }
+      tr:first-child {
+        background: transparent;
+        border-top-left-radius: $border-radius-base;
+        border-top-right-radius: $border-radius-base;
+        height: 40px;
+        line-height: normal;
 
         th {
-          color: $gray-darker;
-          text-transform: capitalize;
-          border: none !important;
+          padding-bottom: 0;
+          padding-top: 15px;
 
           &:first-child {
-            border-top-left-radius: $border-radius-base;
-            padding-left: 20px !important;
+            border-top-left-radius: $border-radius-base;              
           }
 
           &:last-child {
             border-top-right-radius: $border-radius-base;
           }
         }
+      }
 
-        &:last-child {
-          border-bottom-left-radius: $border-radius-base;
-          border-bottom-right-radius: $border-radius-base;
-          border-top: 1px solid $crm-dark-grayblue;
+      tr th {
+        border: none !important;
+        color: $gray-darker;
+        text-transform: capitalize;
 
-          td {
-            &:first-child {
-              border-bottom-left-radius: $border-radius-base;
-            }
+        &:first-child {
+          padding-left: 20px !important;
+        }
+      }
 
-            &:last-child {
-              border-bottom-right-radius: $border-radius-base;
-            }
+      tr:last-child {
+        background: transparent;
+        border-bottom-left-radius: $panel-border-radius;
+        border-bottom-right-radius: $panel-border-radius;
+        border-top: 1px solid $crm-dark-grayblue;
+
+        td, th {
+          &:first-child {
+            border-bottom-left-radius: $panel-border-radius;
+          }
+
+          &:last-child {
+            border-bottom-right-radius: $panel-border-radius;
           }
         }
       }
     }
 
     .selector {
-      border-radius: $border-radius-base;
+      border-radius: $panel-border-radius;
 
       .sticky {
         tr:first-child {
