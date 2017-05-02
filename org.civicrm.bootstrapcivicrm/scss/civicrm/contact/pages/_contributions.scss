@@ -633,8 +633,43 @@
     }
   }
 
-  .solid-border-top .label {
-    color: $gray-darker;    
+  .solid-border-top {
+    background: $crm-white;
+    border-radius: $border-radius-child $border-radius-child 0 0;
+    box-shadow: $box-shadow;
+    padding: 0 20px 10px;
+
+    .label {
+      color: $gray-darker;    
+    }
+
+    + .form-layout-compressed {
+      border-bottom: 1px solid $crm-background;
+      border-radius: 0;
+      box-shadow: $crm-form-item-shadow;
+      margin: 0;
+    }
+  }
+
+  #DataTables_Table_0_wrapper {
+    background: $crm-white;
+    border-radius: 0 0 $border-radius-child $border-radius-child;
+    box-shadow: $crm-form-item-shadow; 
+    margin-bottom: 20px;
+
+    .dataTables_length,
+    .dataTables_info {
+      padding-left: 20px;
+    }
+
+    .crm-datatable-pager-top {
+      padding-bottom: 40px;
+      padding-top: 10px;
+    }
+
+    table {
+      box-shadow: none !important;
+    }
   }
 
   .dataTables_length label,
@@ -664,8 +699,6 @@
   }
 
   table.crm-softcredit-selector {
-    border-radius: $border-radius-base;
-    box-shadow: $box-shadow;
     display: block;
     overflow-x: auto;
     width: 100% !important;
