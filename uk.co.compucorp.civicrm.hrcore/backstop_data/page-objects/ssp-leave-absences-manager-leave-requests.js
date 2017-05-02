@@ -5,31 +5,15 @@ module.exports = (function () {
 
   return page.extend({
     /**
-     * Wait for the page to be ready
+     * Wait for the page to be ready as it waits for the actions of the first
+     * row of leave requests to be visible
      * @return {Object} this object
      */
     waitForReady: function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.waitUntilVisible('tbody  tr:nth-child(1) a');
-      });
-
-      return this;
-    },
-    /**
-     * Opens the given menu item from side menu
-     * @param {String} menuIndex
-     * @return {Object} this object
-     */
-    openSideMenu: function (menuIndex) {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.waitUntilVisible('ul.chr_vertical_tabs li:nth-child(1) a', function () {
-          casper.click('ul.chr_vertical_tabs li:nth-child(' + menuIndex + ') a');
-          casper.waitUntilVisible('ul.chr_vertical_tabs li:nth-child(1) a');
-        });
+        casper.waitUntilVisible('tbody tr:nth-child(1) a');
       });
 
       return this;
@@ -41,27 +25,23 @@ module.exports = (function () {
      */
     openActionsForRow: function (row) {
       var casper = this.casper;
-      // || was not working in string so created another variable here
-      var selectedRow = row || 1;
 
       casper.then(function () {
-        casper.waitUntilVisible('tr:nth-child(1) > td > div > a', function () {
-          casper.click('tr:nth-child('+ selectedRow +') > td > div > a');
-        });
+        casper.click('.chr_manager_dashboard__panel_body tr:nth-child('+ (row || 1) +') .dropdown-toggle');
       });
 
       return this;
     },
     /**
-     * Takes screenshot with given name
-     * @param {String} name of the screenshot
+     * Expands filters on screen
      * @return {Object} this object
      */
-    takeScreenShot: function (name) {
+    expandFilter: function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.capture(name);
+        casper.click('.chr_manager_dashboard__filter');
+        casper.waitUntilVisible('.chr_manager_dashboard__sub-header div:nth-child(1)');
       });
 
       return this;

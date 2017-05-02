@@ -3,6 +3,16 @@
       "label": "Leave and Absences: Manager Leave Requests: Show actions",
       "url": "manager-leave#/manager-leave/requests",
       "onReadyScript": "ssp-leave-absences/manager/leave-requests-show-actions"
+    },
+    {
+      "label": "Leave and Absences: Manager Leave Requests: Show Without Filters",
+      "url": "manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/leave-requests-without-filters"
+    },
+    {
+      "label": "Leave and Absences: Manager Leave Requests: Show With Filters",
+      "url": "manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/leave-requests-with-filters"
     }
   ]
 }
