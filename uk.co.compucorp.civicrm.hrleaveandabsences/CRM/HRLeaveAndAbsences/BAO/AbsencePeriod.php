@@ -111,10 +111,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @param array $params
    *
-   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException
+   * @throws InvalidAbsencePeriodException
    */
   private static function validateAbsencePeriodTitle($params) {
-    $title = !empty($params['title']) ? $params['title'] : '';
+    $title = CRM_Utils_Array::value('title', $params);
     $absencePeriod = new self();
     $absencePeriod->title = $title;
     $absencePeriod->find(true);
@@ -123,10 +123,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
       return;
     }
 
-    $throwExceptionOnCreate = empty($params['id']);
-    $throwExceptionOnUpdate = !empty($params['id']) && $absencePeriod->id != $params['id'];
+    $isCreate = empty($params['id']);
+    $isSeparateUpdate = !empty($params['id']) && $absencePeriod->id != $params['id'];
 
-    if ($throwExceptionOnCreate || $throwExceptionOnUpdate) {
+    if ($isCreate || $isSeparateUpdate) {
       throw new InvalidAbsencePeriodException(
         'Absence Period with same title already exists!'
       );
