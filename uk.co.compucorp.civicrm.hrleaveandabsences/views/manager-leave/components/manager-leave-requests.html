@@ -118,12 +118,16 @@
                     <i class="fa fa-ellipsis-v"></i>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-                    <li>
-                      <a
-                        href='#'
-                        leave-request-popup
-                        leave-request='request'
-                        contact-id="ctrl.contactId">Respond</a>
+                    <li ng-repeat="action in ctrl.actionsFor(request)">
+                      <a ng-if="action === 'cancel'" href
+                        ng-click="ctrl.action(request, action)">
+                        {{action}}
+                      </a>
+                      <a ng-if="action !== 'cancel'" href
+                        leave-request-popup leave-request="request"
+                        contact-id="ctrl.contactId">
+                        {{action}}
+                      </a>
                     </li>
                   </ul>
                 </div>
