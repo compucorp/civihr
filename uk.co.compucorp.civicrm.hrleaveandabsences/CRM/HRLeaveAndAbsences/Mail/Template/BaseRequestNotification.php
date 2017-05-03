@@ -56,6 +56,7 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification {
       'leaveStatus' => $this->getLeaveRequestStatusLabel($leaveRequest->status_id),
       'leaveRequestLink' => $this->getLeaveRequestURL(),
       'leaveRequest' => $leaveRequest,
+      'currentDateTime' => new DateTime()
     ];
 
     return $templateParameters;
