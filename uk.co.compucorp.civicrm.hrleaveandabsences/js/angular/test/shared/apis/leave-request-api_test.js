@@ -124,31 +124,6 @@ define([
           $httpBackend.flush();
         });
       });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendGET').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.balanceChangeByAbsenceType(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
-          });
-        });
-      });
     });
 
     describe('calculateBalanceChange()', function () {
@@ -219,31 +194,6 @@ define([
             promise.catch(function (result) {
               expect(result).toBe(errorMessage);
             });
-          });
-        });
-      });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendGET').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.calculateBalanceChange(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
           });
         });
       });
@@ -329,31 +279,6 @@ define([
           });
         });
       });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.create(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
-          });
-        });
-      });
     });
 
     describe('isValid()', function () {
@@ -399,31 +324,6 @@ define([
             promise.catch(function (result) {
               expect(result.count).toEqual(1);
             });
-          });
-        });
-      });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.isValid(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
           });
         });
       });
@@ -476,31 +376,6 @@ define([
             promise.catch(function (result) {
               expect(result).toBe(errorMessage);
             });
-          });
-        });
-      });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = mockData.all().values[0];
-          promise = LeaveRequestAPI.update(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
           });
         });
       });
