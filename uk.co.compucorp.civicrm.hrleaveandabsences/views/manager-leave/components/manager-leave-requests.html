@@ -140,7 +140,7 @@
                       <i class="fa fa-angle-double-left" aria-hidden="true"></i> First
                     </a>
                   </li>
-                  <li ng-click="ctrl.refresh($index)"
+                  <li ng-click="ctrl.refresh(ctrl.pagination.page - 1)"
                       class="active">
                     <a class="pointer">
                       <i class="fa fa-angle-left" aria-hidden="true"></i> Previous
@@ -151,7 +151,7 @@
                       ng-repeat="a in ctrl.getArrayOfSize(ctrl.totalNoOfPages()) track by $index">
                     <a>{{$index + 1}}</a>
                   </li>
-                  <li ng-click="ctrl.refresh($index + 2)"
+                  <li ng-click="ctrl.refresh(ctrl.pagination.page + 1)"
                       class="active">
                     <a class="pointer">
                       Next <i class="fa fa-angle-right" aria-hidden="true"></i>
