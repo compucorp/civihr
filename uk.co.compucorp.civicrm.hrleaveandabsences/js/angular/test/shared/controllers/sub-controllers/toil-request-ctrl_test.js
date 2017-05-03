@@ -237,11 +237,11 @@
 
         describe('respond', function () {
           describe('by manager', function () {
-            var expiryDate;
+            var expiryDate, originalToilToAccrue, toilRequest;
 
             beforeEach(function () {
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
-              var toilRequest = TOILRequestInstance.init(mockData.findBy('status_id', status));
+              toilRequest = TOILRequestInstance.init(mockData.findBy('status_id', status));
               toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: 203, //manager's contact id
@@ -249,7 +249,10 @@
               };
 
               initTestController(directiveOptions);
+
               expiryDate = $ctrl._convertDateFormatFromServer($ctrl.request.toil_expiry_date);
+              originalToilToAccrue = optionGroupMock.specificObject('hrleaveandabsences_toil_amounts', 'name', 'quarter_day');
+              $ctrl.request.toil_to_accrue = originalToilToAccrue.value;
             });
 
             it('sets role to manager', function () {
@@ -276,6 +279,25 @@
 
               it('sets new expiry date', function () {
                 expect($ctrl.request.toil_expiry_date).toEqual(newExpiryDate);
+              });
+
+              describe('and staff edits', function() {
+                beforeEach(function () {
+                  var directiveOptions = {
+                    contactId: toilRequest.contact_id, //owner's contact id
+                    leaveRequest: $ctrl.request
+                  };
+
+                  initTestController(directiveOptions);
+                });
+
+                it('has expired date set by manager', function() {
+                  expect($ctrl.request.toil_expiry_date).toEqual(newExpiryDate);
+                });
+
+                it('has managers set toil amount', function() {
+                  expect($ctrl.request.toil_to_accrue).toEqual(originalToilToAccrue.value);
+                });
               });
             });
 

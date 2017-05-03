@@ -40,6 +40,7 @@ define([
 
       /**
        * Calculates toil expiry date.
+       * If manager has already altered then it will directly show that date.
        * TODO It will be based on from date for both single and multiple days for now.
        *
        * @return {Promise}
@@ -48,6 +49,10 @@ define([
         if (!vm.request.from_date) {
           vm.error = 'Please select from date to find expiry date';
           return $q.reject(vm.error);
+        }
+
+        if (vm.request.toil_expiry_date) {
+          return $q.resolve(vm.request.toil_expiry_date);
         }
 
         return AbsenceType.calculateToilExpiryDate(vm.request.type_id, vm.request.from_date)
