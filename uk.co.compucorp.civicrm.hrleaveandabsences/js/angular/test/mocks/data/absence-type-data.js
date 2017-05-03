@@ -75,6 +75,21 @@ define([
       "allow_accruals_request": "0",
       "allow_accrue_in_the_past": "0",
       "allow_carry_forward": "0"
+    }, {
+      "id": "5",
+      "title": "Custom",
+      "weight": "5",
+      "color": "null",
+      "is_default": "0",
+      "is_reserved": "0",
+      "allow_request_cancelation": "3",
+      "must_take_public_holiday_as_leave": "0",
+      "default_entitlement": "10",
+      "add_public_holiday_to_entitlement": "0",
+      "is_active": "0",
+      "allow_accruals_request": "0",
+      "allow_carry_forward": "0",
+      "is_sick": "0"
     }]
   };
 
@@ -104,6 +119,11 @@ define([
     },
     calculateToilExpiryDate: function () {
       return calculateToilExpiryDate;
+    },
+    getDisabledAbsenceTypes: function () {
+      return all_data.values.filter(function (absenceType) {
+        return absenceType.is_active === "0";
+      });
     }
   }
 });

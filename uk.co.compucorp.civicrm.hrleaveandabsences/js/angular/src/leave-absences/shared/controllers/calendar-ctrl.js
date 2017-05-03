@@ -18,15 +18,15 @@ define([
 
     this.absencePeriods = [];
     this.absenceTypes = [];
+    this.leaveRequests = {};
     this.months = [];
+    this.monthLabels = moment.monthsShort();
     this.selectedMonths = [];
     this.selectedPeriod = null;
     this.loading = {
       calendar: false,
       page: false
     };
-    this.monthLabels = ['January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'];
 
     /**
      * Fetches months from newly selected period and refresh data
@@ -231,7 +231,7 @@ define([
     this._loadAbsencePeriods = function () {
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
-          this.absencePeriods = absencePeriods;
+          this.absencePeriods = _.sortBy(absencePeriods, 'start_date');
           this.selectedPeriod = _.find(this.absencePeriods, function (period) {
             return !!period.current;
           });
@@ -241,15 +241,16 @@ define([
     };
 
     /**
-     * Loads the absence types
+     * Loads the active absence types
      *
      * @return {Promise}
      */
     this._loadAbsenceTypes = function () {
-      return AbsenceType.all()
-        .then(function (absenceTypes) {
-          this.absenceTypes = absenceTypes;
-        }.bind(this));
+      return AbsenceType.all({
+        is_active: true
+      }).then(function (absenceTypes) {
+        this.absenceTypes = absenceTypes;
+      }.bind(this));
     };
 
     /**
@@ -323,6 +324,15 @@ define([
         .then(function (statuses) {
           leaveRequestStatuses = _.indexBy(statuses, 'value');
         });
+    };
+
+    /**
+     * Reset the months data for before refresh
+     */
+    this._resetMonths = function () {
+      _.each(this.months, function (month) {
+        month.data = [];
+      });
     };
 
     /**

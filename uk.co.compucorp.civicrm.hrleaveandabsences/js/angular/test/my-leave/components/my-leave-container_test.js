@@ -7,7 +7,7 @@
   ], function (angular) {
     'use strict';
 
-    describe('myLeave', function () {
+    describe('myLeaveContainer', function () {
       var $compile, $log, $rootScope, component, controller, $uibModal;
 
       beforeEach(module('leave-absences.templates', 'my-leave'));
@@ -60,11 +60,11 @@
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;
 
-        component = angular.element('<my-leave contact-id="' + contactId + '"></my-leave>');
+        component = angular.element('<my-leave-container contact-id="' + contactId + '"></my-leave-container>');
         $compile(component)($scope);
         $scope.$digest();
 
-        controller = component.controller('myLeave');
+        controller = component.controller('myLeaveContainer');
       }
     });
   })

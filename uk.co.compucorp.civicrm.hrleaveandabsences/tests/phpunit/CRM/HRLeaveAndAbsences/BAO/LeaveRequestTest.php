@@ -10,6 +10,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 /**
@@ -23,6 +24,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
   use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
+  use CRM_HRLeaveAndAbsences_MailHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -39,6 +42,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     // created during the extension installation
     $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+
+    $messageSpoolTable = CRM_Mailing_BAO_Spool::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$messageSpoolTable}");
 
     // This is needed for the tests regarding public holiday leave requests
     $this->absenceType = AbsenceTypeFabricator::fabricate([
@@ -2064,5 +2070,85 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestRecord = LeaveRequest::findById($leaveRequest->id);
     $this->assertEquals(0, $leaveRequestRecord->is_deleted);
+  }
+
+  public function testEmailGetsSentWhenLeaveRequestIsCreatedAndUpdated() {
+    $manager1 = ContactFabricator::fabricateWithEmail([
+      'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
+    );
+
+    $leaveContact = ContactFabricator::fabricateWithEmail([
+      'first_name' => 'Staff1', 'last_name' => 'Staff1'], 'staffmember@dummysite.com'
+    );
+
+    $this->setContactAsLeaveApproverOf($manager1, $leaveContact);
+
+    $params = [
+      'type_id' => 1,
+      'contact_id' => $leaveContact['id'],
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date_type' => 1,
+      'toil_to_accrue' => 2,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ];
+
+    $leaveRequest = LeaveRequest::create($params, false);
+
+    //emails redirected to the database are stored in the message spool table
+    $result = $this->getEmailNotificationsFromDatabase(['staffmember@dummysite.com', 'manager1@dummysite.com']);
+
+    //To make sure that duplicate emails were not sent but one mail per recipient
+    $this->assertEquals(2, $result->N);
+
+    $emails = [];
+    while($result->fetch()) {
+      $emails[] = ['email' => $result->recipient_email, 'body' => $result->body, 'headers' => $result->headers];
+    }
+
+    $recipientEmails = array_column($emails, 'email');
+    sort($recipientEmails);
+
+    $expectedEmails = ['manager1@dummysite.com', 'staffmember@dummysite.com'];
+    $this->assertEquals($recipientEmails, $expectedEmails);
+
+    foreach($emails as $email) {
+      $this->assertNotEmpty($email['body']);
+      $this->assertNotEmpty($email['headers']);
+    }
+
+    //delete emails sent when leave request is created
+    $this->deleteEmailNotificationsInDatabase();
+    $result = $this->getEmailNotificationsFromDatabase(['staffmember@dummysite.com', 'manager1@dummysite.com']);
+    $this->assertEquals(0, $result->N);
+
+    //update Leave Request
+    $params['id'] = $leaveRequest->id;
+    $params['from_date_type'] = 2;
+    LeaveRequest::create($params,false);
+
+    $result = $this->getEmailNotificationsFromDatabase(['staffmember@dummysite.com', 'manager1@dummysite.com']);
+
+    //To make sure that duplicate emails were not sent but one mail per recipient
+    $this->assertEquals(2, $result->N);
+
+    $emails = [];
+    while($result->fetch()) {
+      $emails[] = ['email' => $result->recipient_email, 'body' => $result->body, 'headers' => $result->headers];
+    }
+
+    $recipientEmails = array_column($emails, 'email');
+    sort($recipientEmails);
+
+    $expectedEmails = ['manager1@dummysite.com', 'staffmember@dummysite.com'];
+    $this->assertEquals($recipientEmails, $expectedEmails);
+
+    foreach($emails as $email) {
+      $this->assertNotEmpty($email['body']);
+      $this->assertNotEmpty($email['headers']);
+    }
   }
 }

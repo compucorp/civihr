@@ -1,0 +1,14 @@
+{
+  "scenarios": [
+    {
+      "label": "Current Month: My Leave Calendar",
+      "url": "my-leave#/my-leave/calendar",
+      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar_current-month-visible"
+    },
+    {
+      "label": "All Months: My Leave Calendar",
+      "url": "my-leave#/my-leave/calendar",
+      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar_all-months-visible"
+    }
+  ]
+}

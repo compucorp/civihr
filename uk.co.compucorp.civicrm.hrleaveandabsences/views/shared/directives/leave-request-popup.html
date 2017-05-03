@@ -193,7 +193,7 @@
                 class="chr_wysiwyg"
                 text-angular
                 prevent-animations
-                ng-disabled="$ctrl.isMode('view')"
+                ta-disabled="$ctrl.isMode('view')"
                 ta-toolbar="[['bold','italics','underline']]"
                 ng-model="$ctrl.comment.text"></div>
               <div class="chr_wysiwyg__action">
@@ -309,7 +309,7 @@
         </div>
       </div>
       <div
-        ng-show="($ctrl.isRole('manager') && $ctrl.statusBeforeEdit.value === '3') || $ctrl.directiveOptions.forStaff"
+        ng-show="$ctrl.isRole('manager') || $ctrl.directiveOptions.forStaff"
         class="row chr_leave-request-modal__response">
         <div class="col-xs-12 form-horizontal">
           <div class="form-group">

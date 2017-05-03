@@ -842,100 +842,10 @@
         });
 
         describe('when user edits leave request', function () {
-          beforeEach(function () {
-            var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
-            var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
-            leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            var directiveOptions = {
-              contactId: leaveRequest.contact_id, //owner's contact id
-              leaveRequest: leaveRequest
-            };
-
-            initTestController(directiveOptions);
-          });
-
-          describe('on initialization', function () {
-            var waitingApprovalStatus;
-
-            beforeEach(function () {
-              waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
-            });
-
-            it('sets role to owner', function () {
-              expect($ctrl.isRole('owner')).toBeTruthy();
-            });
-
-            it('sets mode to edit', function () {
-              expect($ctrl.isMode('edit')).toBeTruthy();
-            });
-
-            it('sets all leaverequest values', function () {
-              expect($ctrl.request.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
-              expect($ctrl.request.type_id).toEqual('1');
-              expect($ctrl.request.status_id).toEqual(waitingApprovalStatus.value);
-              expect($ctrl.request.from_date).toEqual('2016-11-23');
-              expect($ctrl.request.from_date_type).toEqual('1');
-              expect($ctrl.request.to_date).toEqual('2016-11-28');
-              expect($ctrl.request.to_date_type).toEqual('1');
-            });
-
-            it('does not allow user to submit', function () {
-              expect($ctrl.canSubmit()).toBeFalsy();
-            });
-
-            it('does show balance', function () {
-              expect($ctrl.uiOptions.showBalance).toBeTruthy();
-            });
-
-            it('loads day types', function () {
-              expect($ctrl.requestFromDayTypes).toBeDefined();
-              expect($ctrl.requestToDayTypes).toBeDefined();
-            });
-          });
-
-          describe('and submits', function () {
-            beforeEach(function () {
-              spyOn($rootScope, '$emit');
-              spyOn($ctrl.request, 'update').and.callThrough();
-              //change date to enable submit button
-              setTestDates(date2016);
-
-              //entitlements are randomly generated so resetting them to positive here
-              if ($ctrl.balance.closing < 0) {
-                $ctrl.balance.closing = 5;
-              }
-
-              $ctrl.submit();
-              $scope.$apply();
-            });
-
-            it('allows user to submit', function () {
-              expect($ctrl.canSubmit()).toBeTruthy();
-            });
-
-            it('calls appropriate API endpoint', function () {
-              expect($ctrl.request.update).toHaveBeenCalled();
-            });
-
-            it('sends edit event', function () {
-              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::edit', $ctrl.request);
-            });
-
-            it('has no error', function () {
-              expect($ctrl.error).toBeNull();
-            });
-
-            it('closes model popup', function () {
-              expect(modalInstanceSpy.close).toHaveBeenCalled();
-            });
-          });
-
-          describe('user selects same from and to date', function () {
+          describe('without comments', function () {
             beforeEach(function () {
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
               var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
-
-              leaveRequest.from_date = leaveRequest.to_date = dateServer2017;
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: leaveRequest.contact_id, //owner's contact id
@@ -945,18 +855,142 @@
               initTestController(directiveOptions);
             });
 
-            it('selects single day', function () {
-              expect($ctrl.uiOptions.multipleDays).toBeFalsy();
+            describe('on initialization', function () {
+              var waitingApprovalStatus;
+
+              beforeEach(function () {
+                waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
+              });
+
+              it('sets role to owner', function () {
+                expect($ctrl.isRole('owner')).toBeTruthy();
+              });
+
+              it('sets mode to edit', function () {
+                expect($ctrl.isMode('edit')).toBeTruthy();
+              });
+
+              it('sets all leaverequest values', function () {
+                expect($ctrl.request.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
+                expect($ctrl.request.type_id).toEqual('1');
+                expect($ctrl.request.status_id).toEqual(waitingApprovalStatus.value);
+                expect($ctrl.request.from_date).toEqual('2016-11-23');
+                expect($ctrl.request.from_date_type).toEqual('1');
+                expect($ctrl.request.to_date).toEqual('2016-11-28');
+                expect($ctrl.request.to_date_type).toEqual('1');
+              });
+
+              it('does not allow user to submit', function () {
+                expect($ctrl.canSubmit()).toBeFalsy();
+              });
+
+              it('does show balance', function () {
+                expect($ctrl.uiOptions.showBalance).toBeTruthy();
+              });
+
+              it('loads day types', function () {
+                expect($ctrl.requestFromDayTypes).toBeDefined();
+                expect($ctrl.requestToDayTypes).toBeDefined();
+              });
+            });
+
+            describe('and submits', function () {
+              beforeEach(function () {
+                spyOn($rootScope, '$emit');
+                spyOn($ctrl.request, 'update').and.callThrough();
+                //change date to enable submit button
+                setTestDates(date2016);
+
+                //entitlements are randomly generated so resetting them to positive here
+                if ($ctrl.balance.closing < 0) {
+                  $ctrl.balance.closing = 5;
+                }
+
+                $ctrl.submit();
+                $scope.$apply();
+              });
+
+              it('allows user to submit', function () {
+                expect($ctrl.canSubmit()).toBeTruthy();
+              });
+
+              it('calls appropriate API endpoint', function () {
+                expect($ctrl.request.update).toHaveBeenCalled();
+              });
+
+              it('sends edit event', function () {
+                expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::edit', $ctrl.request);
+              });
+
+              it('has no error', function () {
+                expect($ctrl.error).toBeNull();
+              });
+
+              it('closes model popup', function () {
+                expect(modalInstanceSpy.close).toHaveBeenCalled();
+              });
+            });
+
+            describe('user selects same from and to date', function () {
+              beforeEach(function () {
+                var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+                var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+                leaveRequest.from_date = leaveRequest.to_date = dateServer2017;
+                leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+                var directiveOptions = {
+                  contactId: leaveRequest.contact_id, //owner's contact id
+                  leaveRequest: leaveRequest
+                };
+
+                initTestController(directiveOptions);
+              });
+
+              it('selects single day', function () {
+                expect($ctrl.uiOptions.multipleDays).toBeFalsy();
+              });
+            });
+
+            describe('manager asks for more information', function () {
+              var expectedStatusValue;
+
+              beforeEach(function () {
+                var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '4');
+                var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+                leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+                var directiveOptions = {
+                  contactId: leaveRequest.contact_id, //owner's contact id
+                  leaveRequest: leaveRequest
+                };
+
+                initTestController(directiveOptions);
+                expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+              });
+
+              it('status changes to waiting approval', function () {
+                expect($ctrl.request.status_id).toEqual(expectedStatusValue);
+              });
+            });
+
+            describe('user adds comments', function () {
+              beforeEach(function () {
+                $ctrl.request.comments = [];
+                $ctrl.directiveOptions.contactId = '101';
+                $ctrl.comment.text = 'some text';
+                $ctrl.request.id = '102';
+                $ctrl.addComment();
+              });
+
+              it('allows user to submit', function () {
+                expect($ctrl.canSubmit()).toBeTruthy();
+              });
             });
           });
 
-          describe('manager asks for more information', function () {
-            var expectedStatusValue;
-
+          describe('with comments', function () {
             beforeEach(function () {
-              var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '4');
-              var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
-
+              var leaveRequest = LeaveRequestInstance.init(mockData.findBy('id', 17));
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: leaveRequest.contact_id, //owner's contact id
@@ -964,11 +998,14 @@
               };
 
               initTestController(directiveOptions);
-              expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
             });
 
-            it('status changes to waiting approval', function () {
-              expect($ctrl.request.status_id).toEqual(expectedStatusValue);
+            it('loads comments', function () {
+              expect($ctrl.request.comments.length).toBeGreaterThan(0);
+            });
+
+            it('gets commentor contact detail', function () {
+              expect(Contact.all).toHaveBeenCalled();
             });
           });
         });

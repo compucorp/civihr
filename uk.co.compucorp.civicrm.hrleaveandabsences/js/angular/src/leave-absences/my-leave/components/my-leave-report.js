@@ -241,7 +241,7 @@ define([
     function loadAbsencePeriods() {
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
-          vm.absencePeriods = absencePeriods;
+          vm.absencePeriods = _.sortBy(absencePeriods, 'start_date');
           vm.selectedPeriod = _.find(vm.absencePeriods, function (period) {
             return period.current === true;
           });

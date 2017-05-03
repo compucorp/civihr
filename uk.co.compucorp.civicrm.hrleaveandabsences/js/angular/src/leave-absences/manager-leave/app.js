@@ -4,12 +4,13 @@ define([
   'common/text-angular',
   'common/directives/loading',
   'common/services/angular-date/date-format',
+  'common/modules/dialog',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/directives/leave-request-popup',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/manager-leave/modules/config',
-  'leave-absences/manager-leave/components/manager-leave',
+  'leave-absences/manager-leave/components/manager-leave-container',
   'leave-absences/manager-leave/components/manager-leave-calendar',
   'leave-absences/manager-leave/components/manager-leave-requests'
 ], function (angular) {
@@ -24,6 +25,7 @@ define([
     'common.models',
     'common.mocks',
     'common.directives',
+    'common.dialog',
     'leave-absences.models',
     'manager-leave.config',
     'manager-leave.components',

@@ -13,15 +13,22 @@ define([
     }],
     controllerAs: 'ctrl',
     controller: ['$log', '$q', '$rootScope', 'Contact', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
-      'OptionGroup', controller]
+      'OptionGroup', 'dialog', controller]
   });
 
-  function controller($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup) {
+  function controller($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup, dialog) {
     "use strict";
     $log.debug('Component: manager-leave-requests');
 
-    var vm = Object.create(this);
-    var leaveRequestAPICache = true;
+    var vm = Object.create(this),
+      leaveRequestAPICache = true,
+      actionMatrix = {
+        'waiting_approval': ['respond', 'cancel'],
+        'more_information_requested': ['edit', 'cancel'],
+        'approved': ['edit'],
+        'cancelled': ['edit'],
+        'rejected': ['edit']
+      };
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -63,6 +70,43 @@ define([
     vm.pagination = {
       page: 1,
       size: 7
+    };
+
+    /**
+     * Returns the available actions, based on the current status
+     * of the given leave request
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {Array}
+     */
+    vm.actionsFor = function (leaveRequest) {
+      var statusKey = _.find(vm.leaveRequestStatuses, function (status) {
+        return status.value ? status.value === leaveRequest.status_id : false;
+      }).name;
+
+      return statusKey ? actionMatrix[statusKey] : [];
+    };
+
+    /**
+     * Performs an action on a given leave request
+     * TODO: refactor when adding more actions
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     * @param {string} action
+     */
+    vm.action = function (leaveRequest, action) {
+      if (action === 'cancel') {
+        dialog.open({
+          title: 'Confirm Cancellation?',
+          copyCancel: 'Cancel',
+          copyConfirm: 'Confirm',
+          classConfirm: 'btn-danger',
+          msg: 'This cannot be undone',
+          onConfirm: function () {
+            return leaveRequest.cancel();
+          }
+        });
+      }
     };
 
     /**
@@ -249,7 +293,7 @@ define([
     function loadAbsencePeriods() {
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
-          vm.absencePeriods = absencePeriods;
+          vm.absencePeriods = _.sortBy(absencePeriods, 'start_date');
           vm.filters.leaveRequest.selectedPeriod = _.find(vm.absencePeriods, function (period) {
             return !!period.current;
           });

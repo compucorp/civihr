@@ -113,16 +113,22 @@
               <td style="width: 25%;">{{request.from_date}} - {{request.to_date}}</td>
               <td style="width: 20%;">{{ctrl.getLeaveStatusByValue(request.status_id)}}</td>
               <td style="width: 10%;" class="text-center">
-                <div class="btn-group">
-                  <button type="button"
-                          class="btn btn-default dropdown-toggle btn-inline"
-                          data-toggle="dropdown"
-                          aria-haspopup="true"
-                          aria-expanded="false">
-                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a href='#' leave-request-popup leave-request='request' contact-id="ctrl.contactId">Respond</a></li>
+                <div uib-dropdown dropdown-append-to-body>
+                  <a href class="btn btn-default btn-inline" uib-dropdown-toggle>
+                    <i class="fa fa-ellipsis-v"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                    <li ng-repeat="action in ctrl.actionsFor(request)">
+                      <a ng-if="action === 'cancel'" href
+                        ng-click="ctrl.action(request, action)">
+                        {{action}}
+                      </a>
+                      <a ng-if="action !== 'cancel'" href
+                        leave-request-popup leave-request="request"
+                        contact-id="ctrl.contactId">
+                        {{action}}
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </td>
@@ -138,7 +144,7 @@
                       <i class="fa fa-angle-double-left" aria-hidden="true"></i> First
                     </a>
                   </li>
-                  <li ng-click="ctrl.refresh($index)"
+                  <li ng-click="ctrl.refresh(ctrl.pagination.page - 1)"
                       class="active">
                     <a class="pointer">
                       <i class="fa fa-angle-left" aria-hidden="true"></i> Previous
@@ -149,7 +155,7 @@
                       ng-repeat="a in ctrl.getArrayOfSize(ctrl.totalNoOfPages()) track by $index">
                     <a>{{$index + 1}}</a>
                   </li>
-                  <li ng-click="ctrl.refresh($index + 2)"
+                  <li ng-click="ctrl.refresh(ctrl.pagination.page + 1)"
                       class="active">
                     <a class="pointer">
                       Next <i class="fa fa-angle-right" aria-hidden="true"></i>

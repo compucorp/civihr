@@ -1,7 +1,9 @@
 (function (CRM) {
   define([
     'common/angular',
+    'common/lodash',
     'mocks/data/option-group-mock-data',
+    'mocks/data/absence-period-data',
     'mocks/data/absence-type-data',
     'mocks/data/leave-request-data',
     'common/mocks/services/api/contact-mock',
@@ -11,7 +13,7 @@
     'mocks/apis/option-group-api-mock',
     'leave-absences/shared/config',
     'leave-absences/manager-leave/app',
-  ], function (angular, optionGroupMock, absenceTypeData, leaveRequestData) {
+  ], function (angular, _, optionGroupMock, absencePeriodData, absenceTypeData, leaveRequestData) {
     'use strict';
 
     describe('managerLeaveReport', function () {
@@ -26,6 +28,7 @@
         AbsenceType,
         AbsencePeriod,
         LeaveRequest,
+        LeaveRequestInstance,
         Contact,
         ContactAPIMock,
         OptionGroupAPIMock;
@@ -48,7 +51,7 @@
 
       beforeEach(inject(function (
         _$compile_, _$log_, _$rootScope_, _$q_, _OptionGroup_, _OptionGroupAPIMock_,
-        _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_) {
+        _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_, _LeaveRequestInstance_) {
 
         $compile = _$compile_;
         $log = _$log_;
@@ -60,6 +63,7 @@
         AbsencePeriod = _AbsencePeriod_;
         LeaveRequest = _LeaveRequest_;
         Contact = _Contact_;
+        LeaveRequestInstance = _LeaveRequestInstance_;
       }));
 
       beforeEach(function () {
@@ -147,8 +151,19 @@
             expect(controller.levelTypes).toEqual(optionGroupMock.getCollection('hrjc_level_type'));
           });
 
-          it('absence periods have loaded', function () {
-            expect(controller.absencePeriods.length).not.toBe(0);
+          describe('absence periods', function() {
+            it('loads the absence periods', function () {
+              expect(controller.absencePeriods.length).toBe(absencePeriodData.all().values.length);
+            });
+
+            it('sorts absence periods by start_date', function () {
+              var extractStartDate = function (period) {
+                return period.start_date;
+              };
+              var absencePeriodSortedByDate = _.sortBy(absencePeriodData.all().values, 'start_date').map(extractStartDate);
+
+              expect(controller.absencePeriods.map(extractStartDate)).toEqual(absencePeriodSortedByDate);
+            });
           });
 
           it('absence types have loaded', function () {
@@ -799,6 +814,72 @@
         });
       });
 
+      describe('action matrix for a leave request', function () {
+        var actionMatrix;
+
+        describe('status: awaiting approval', function () {
+          beforeEach(function () {
+            actionMatrix = getActionMatrixForStatus('waiting_approval');
+          });
+
+          it('shows the "respond" and "cancel" actions', function () {
+            expect(actionMatrix).toEqual(['respond', 'cancel']);
+          });
+        });
+
+        describe('status: more information required', function () {
+          beforeEach(function () {
+            actionMatrix = getActionMatrixForStatus('more_information_requested');
+          });
+
+          it('shows the "edit" and "cancel" actions', function () {
+            expect(actionMatrix).toEqual(['edit', 'cancel']);
+          });
+        });
+
+        describe('status: approved', function () {
+          beforeEach(function () {
+            actionMatrix = getActionMatrixForStatus('approved');
+          });
+
+          it('shows the "edit" action', function () {
+            expect(actionMatrix).toEqual(['edit']);
+          });
+        });
+
+        describe('status: cancelled', function () {
+          beforeEach(function () {
+            actionMatrix = getActionMatrixForStatus('cancelled');
+          });
+
+          it('shows the "edit" action', function () {
+            expect(actionMatrix).toEqual(['edit']);
+          });
+        });
+
+        describe('status: rejected', function () {
+          beforeEach(function () {
+            actionMatrix = getActionMatrixForStatus('rejected');
+          });
+
+          it('shows the "edit" action', function () {
+            expect(actionMatrix).toEqual(['edit']);
+          });
+        });
+
+        /**
+         * Calls the controller method that returns the action matrix for
+         * a given Leave Request in a particular status
+         *
+         * @param  {string} statusName
+         * @return {Array}
+         */
+        function getActionMatrixForStatus(statusName) {
+          return controller.actionsFor(LeaveRequestInstance.init({
+            status_id: optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', statusName).value
+          }));
+        }
+      });
       function compileComponent() {
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;

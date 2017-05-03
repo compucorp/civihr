@@ -1,16 +1,16 @@
 define([
   'leave-absences/my-leave/modules/components'
 ], function (components) {
-  components.component('myLeave', {
+  components.component('myLeaveContainer', {
     bindings: {
       contactId: '<'
     },
     templateUrl: ['settings', function (settings) {
-      return settings.pathTpl + 'components/my-leave.html';
+      return settings.pathTpl + 'components/my-leave-container.html';
     }],
     controllerAs: 'myleave',
     controller: ['$log', '$scope', '$uibModal', 'settings', function ($log, $scope, $modal, settings) {
-      $log.debug('Component: my-leave');
+      $log.debug('Component: my-leave-container');
 
       var vm = {};
       vm.leaveRequest = {

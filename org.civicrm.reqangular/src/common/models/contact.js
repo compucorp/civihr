@@ -115,9 +115,11 @@ define([
          * @param {object} filters - Values the full list should be filtered by
          * @param {object} pagination
          *   `page` for the current page, `size` for number of items per page
+         * @param {string} sort
+         * @param {object} additionalParams
          * @return {Promise}
          */
-        all: function (filters, pagination) {
+        all: function (filters, pagination, sort, additionalParams) {
           return processContactFilters.call(this, filters)
             .then(function (filters) {
               var defer = $q.defer();
@@ -128,7 +130,7 @@ define([
                   list: []
                 });
               } else {
-                contactAPI.all(filters, pagination)
+                contactAPI.all(filters, pagination, sort, additionalParams)
                   .then(function (data) {
                     defer.resolve(data);
                   });
