@@ -295,7 +295,7 @@
                   expect($ctrl.request.toil_expiry_date).toEqual(newExpiryDate);
                 });
 
-                it('has managers set toil amount', function() {
+                it('has toil amount set by manager', function() {
                   expect($ctrl.request.toil_to_accrue).toEqual(originalToilToAccrue.value);
                 });
               });
