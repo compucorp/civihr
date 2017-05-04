@@ -80,8 +80,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params);
     self::validateAbsencePeriod($params);
     self::validateNoOverlappingLeaveRequests($params);
-    self::validateBalanceChange($params);
     self::validateWorkingDay($params);
+    self::validateBalanceChange($params);
     self::validateLeaveDatesDoesNotOverlapContracts($params);
   }
 
@@ -267,7 +267,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    */
   private static function validateTOILToAccruedAmountIsValid($params) {
     $absenceType = AbsenceType::findById($params['type_id']);
-    $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual != 0;
+    $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual !== 0;
 
     $periodContainingToilDates = AbsencePeriod::getPeriodContainingDates(
       new DateTime($params['from_date']),
@@ -416,6 +416,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateBalanceChange($params) {
+    //TOIL accrual is independent of Current Balance.
+    if($params['request_type'] == self::REQUEST_TYPE_TOIL) {
+      return;
+    }
+
     $toDate = new DateTime($params['to_date']);
     $fromDate = new DateTime($params['from_date']);
     $absenceType = AbsenceType::findById($params['type_id']);
@@ -471,6 +476,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateWorkingDay($params) {
+    //TOIL accrual is independent of Working days.
+    if($params['request_type'] == self::REQUEST_TYPE_TOIL) {
+      return;
+    }
+
     $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
     if ($leaveRequestBalance == 0) {
       throw new InvalidLeaveRequestException(
