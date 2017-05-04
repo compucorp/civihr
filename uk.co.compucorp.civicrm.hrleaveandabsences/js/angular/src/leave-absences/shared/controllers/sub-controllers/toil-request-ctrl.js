@@ -50,6 +50,11 @@ define([
           return $q.reject(vm.error);
         }
 
+        //If manager has already altered then it will directly show that date.
+        if (vm.request.toil_expiry_date) {
+          return $q.resolve(vm.request.toil_expiry_date);
+        }
+
         return AbsenceType.calculateToilExpiryDate(vm.request.type_id, vm.request.from_date)
           .then(function (expiryDate) {
             vm.request.toil_expiry_date = expiryDate;

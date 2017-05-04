@@ -53,7 +53,7 @@
         <div class="chr_custom-select chr_custom-select--full">
           <select
             name="toilAmount"
-            ng-disabled="$ctrl.isMode('view') || $ctrl.isRole('manager')"
+            ng-disabled="$ctrl.isMode('view')"
             ng-options="amount.value as amount.label for amount in $ctrl.toilAmounts"
             ng-model="$ctrl.request.toil_to_accrue"
             ng-change="$ctrl.calculateBalanceChange()">

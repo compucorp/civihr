@@ -1,0 +1,69 @@
+---
+layout: leave-absences
+subject: CiviHR Leave Request
+request-type: Leave
+---
+
+<div class="request">
+  <row class="collapse">
+    <columns>
+      {{> callout-header title="Leave Request Type"}}
+      <callout class="request-data">
+        <dl>
+          <dt>{ts}Status:{/ts}</dt>
+          <dd>{$leaveStatus}</dd>
+          <dt>{ts}Staff Member:{/ts}</dt>
+          <dd>{contact.display_name}</dd>
+          {if $leaveRequest->from_date eq $leaveRequest->to_date}
+            <dt>Date:</dt>
+            <dd>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</dd>
+          {else}
+            <dt>{ts}From Date:{/ts}</dt>
+            <dd>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</dd>
+            <dt>{ts}To Date:{/ts}</dt>
+            <dd>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</dd>
+          {/if}
+        </dl>
+      </callout>
+      <button href="{$leaveRequestLink}" class="expanded alert">View This Request</button>
+      {if $leaveComments}
+        <hr>
+        {{> callout-header title="Request comments"}}
+        <callout class="callout-no-padding">
+          <div class="request-comments">
+            {foreach from=$leaveComments item=value key=label}
+              <div class="request-comment">
+                <div class="request-comment-header">
+                  <span class="request-comment-author">{$value.commenter}:</span>
+                  <span class="request-comment-datetime">{$value.created_at|crmDate}</span>
+                </div>
+                <div class="request-comment-body">
+                  {$value.text}
+                </div>
+              </div>
+            {/foreach}
+          </div>
+        </callout>
+      {/if}
+      {if $leaveFiles}
+        <hr>
+        {{> callout-header title="Other files recorded in this request"}}
+        <callout>
+          <div class="request-attachments">
+            {foreach from=$leaveFiles item=value key=label}
+              <div class="request-attachment">
+                <span class="request-attachment-name">{$value.name}</span>: Added on {$value.upload_date|crmDate}
+              </div>
+            {/foreach}
+          </div>
+        </callout>
+      {/if}
+    </columns>
+  </row>
+  <row class="collapse">
+    <columns>
+      <spacer></spacer>
+      <img class="text-center email-logo" src="https://civihr.org/sites/default/files/email-logo.png">
+    </columns>
+  </row>
+</div>

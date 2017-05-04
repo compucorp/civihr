@@ -1,0 +1,63 @@
+.request-attachment {
+
+  &-name {
+    color: $gray-darker;
+    font-weight: 600;
+  }
+}
+
+.request-attachments {
+
+  > .request-attachment {
+    @include margin(10px, bottom);
+  }
+}
+
+
+.request-comment {
+  padding: $callout-padding;
+
+  &-header {
+    @include margin(10px, bottom);
+    color: $gray-darker;
+    font-weight: 600;
+  }
+}
+
+.request-comments {
+
+  > .request-comment {
+    border-bottom: 1px solid $gray-light;
+  }
+}
+
+
+.request-data {
+
+  dl {
+    @include margin(0);
+  }
+
+  dt {
+    color: $gray-darker;
+    float: left;
+    font-weight: 600;
+    width: 150px;
+  }
+
+  dd {
+    @include margin(0, left);
+
+    &:not(:last-child) {
+      @include margin(10px, bottom);
+    }
+  }
+
+  @media only screen and (max-width: #{$global-breakpoint}) {
+
+    dt {
+      float: none !important;
+      width: auto !important;
+    }
+  }
+}
