@@ -15,8 +15,7 @@
 }
 
 .callout-title {
+  @include margin(0, bottom);
   color: $panel-default-text;
   font-size: $font-size-h3;
-  margin-bottom: 0;
-  Margin-bottom: 0;
 }
