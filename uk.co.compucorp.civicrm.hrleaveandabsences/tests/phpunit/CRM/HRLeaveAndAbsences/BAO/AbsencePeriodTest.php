@@ -72,8 +72,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
   }
 
   /**
-   * @expectedException PEAR_Exception
-   * @expectedExceptionMessage DB Error: already exists
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException
+   * @expectedExceptionMessage Absence Period with same title already exists!
    */
   public function testPeriodsTitlesShouldBeUnique() {
     AbsencePeriodFabricator::fabricate([
@@ -86,6 +86,25 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
+  }
+
+  public function testNoExceptionIsThrownWhenUpdatingAnAbsencePeriodWithSameTitle() {
+    $params = [
+      'title'      => 'Period 1',
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-12-31'),
+    ];
+    $absencePeriod = AbsencePeriodFabricator::fabricate($params);
+
+    //update the absence period
+    $params['id'] = $absencePeriod->id;
+    $params['start_date'] = CRM_Utils_Date::processDate('2015-02-05');
+    try{
+      $absencePeriod = AbsencePeriod::create($params);
+      $this->assertEquals($absencePeriod->start_date, $params['start_date']);
+    }catch(CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException $e) {
+      $this->fail($e->getMessage());
+    }
   }
 
   /**

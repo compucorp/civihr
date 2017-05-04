@@ -67,6 +67,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
         'This Absence Period overlaps with another existing Period'
       );
     }
+
+    self::validateAbsencePeriodTitle($params);
   }
 
   /**
@@ -99,6 +101,34 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     if($startDate >= $endDate) {
       throw new InvalidAbsencePeriodException(
         'Start Date should be less than End Date'
+      );
+    }
+  }
+
+  /**
+   * Checks if another absence period exists with same title as
+   * the absence period being created/updated and throws an exception if found.
+   *
+   * @param array $params
+   *
+   * @throws InvalidAbsencePeriodException
+   */
+  private static function validateAbsencePeriodTitle($params) {
+    $title = CRM_Utils_Array::value('title', $params);
+    $absencePeriod = new self();
+    $absencePeriod->title = $title;
+    $absencePeriod->find(true);
+
+    if (!$absencePeriod->id) {
+      return;
+    }
+
+    $isCreate = empty($params['id']);
+    $isSeparateUpdate = !empty($params['id']) && $absencePeriod->id != $params['id'];
+
+    if ($isCreate || $isSeparateUpdate) {
+      throw new InvalidAbsencePeriodException(
+        'Absence Period with same title already exists!'
       );
     }
   }
