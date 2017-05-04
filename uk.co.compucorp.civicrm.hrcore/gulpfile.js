@@ -14,7 +14,11 @@ var Promise = require('es6-promise').Promise;
   var files = { config: 'site-config.json', tpl: 'backstop.tpl.json' };
   var configTpl = {
     "url": "http://%{site-host}",
-    "credentials": { "name": "%{user-name}", "pass": "%{user-password}" }
+    "credentials": {
+      "default": {"name": "%{user-name}", "pass": "%{user-password}"},
+      "manager": {"name": "admin", "pass": "admin"},
+      "staff": {"name": "civihr_staff", "pass": "civihr_staff"}
+    }
   };
 
   gulp.task('backstopjs:reference', function (done) {
