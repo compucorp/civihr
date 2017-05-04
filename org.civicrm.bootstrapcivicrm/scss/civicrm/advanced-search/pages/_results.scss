@@ -76,6 +76,11 @@
         vertical-align: middle;
       }
 
+      > td:last-child {
+        padding-right: 15px;
+        text-align: right;
+      }
+
       > td:not(:last-child),
       > th:not(:last-child) {
         line-height: 20px;
