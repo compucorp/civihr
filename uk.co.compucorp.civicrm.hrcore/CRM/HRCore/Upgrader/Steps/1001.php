@@ -11,7 +11,6 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
   public function upgrade_1001() {
     $this->up1001_listDelete('ContactType', 'name', $this->up1001_civicrmContactTypesList());
     $this->up1001_listDelete('CaseType', 'name', $this->up1001_civicrmCaseTypesList());
-    $this->up1001_listDelete('RelationshipType', 'name_b_a', $this->up1001_civicrmRelationshipTypesList());
 
     $this->up1001_listDelete(
       'OptionValue', 
@@ -121,27 +120,6 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
     return [
       'adult_day_care_referral',
       'housing_support'
-    ];
-  }
-
-  /**
-   * A list of sample CiviCRM relationship types  which need to be removed.
-   *
-   * @return array
-   */
-  private function up1001_civicrmRelationshipTypesList() {
-    return [
-      'Benefits Specialist',
-      'Case Coordinator',
-      'Parent of',
-      'Health Services Coordinator',
-      'Homeless Services Coordinator',
-      'Senior Services Coordinator',
-      'Sibling of',
-      'Supervisor',
-      'Volunteer is',
-      'Spouse of',
-      'Partner of',
     ];
   }
 
