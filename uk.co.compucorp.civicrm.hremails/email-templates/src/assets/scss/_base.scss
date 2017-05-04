@@ -1,0 +1,6 @@
+hr {
+  @include margin($hr-margin);
+  border: 0;
+  border-top: 1px solid $crm-dark-grayblue;
+  height: 0;
+}
