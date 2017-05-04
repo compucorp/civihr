@@ -33,6 +33,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     'Process Survey Respondents',
     'Rebuild Smart Group Cache',
     'Send Scheduled SMS',
+		'Update Greetings and Addressees',
     'Update Membership Statuses',
     'Update Participant Statuses',
     'Validate Email Address from Mailings.'
