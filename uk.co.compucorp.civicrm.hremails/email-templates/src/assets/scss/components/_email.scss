@@ -1,7 +1,7 @@
 $email-heading-line-height: 40px;
 
 .email {
-  @include margin(40px);
+  @include margin(40px 0);
 }
 
 .email-date {

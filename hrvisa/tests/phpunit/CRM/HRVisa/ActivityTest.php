@@ -2,25 +2,27 @@
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 
 /**
  * Class CRM_HRVisa_ActivityTest
  *
  * @group headless
  */
-class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterface , TransactionalInterface {
+class CRM_HRVisa_ActivityTest extends PHPUnit_Framework_TestCase implements HeadlessInterface , TransactionalInterface {
 
   protected $customFields;
 
   public function setUpHeadless() {
-    // check phpunitPopulateDB() to know why org.civicrm.hrdemog is installed here
     return \Civi\Test::headless()
       ->installMe(__DIR__)
+      // hrdemog is necessary because it creates the Immigration fields used by the tests
       ->install('org.civicrm.hrdemog')
+      ->install('uk.co.compucorp.civicrm.hrcore')
       ->apply();
   }
 
-  function setUp() {
+  public function setUp() {
     // call after parent invocation as fields populated in parent
     $customFields = array(
       'Extended_Demographics:Is_Visa_Required' => 'Is_Visa_Required',
@@ -37,32 +39,14 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
     $this->createLoggedInUser();
   }
 
-  function tearDown()
-  {
-
-  }
-
-  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
-    self::phpunitPopulateDB();
-
-    //also create 'Visa Expiration' actvity type
-    $params = array(
-      'weight' => 1,
-      'label' => 'Visa Expiration',
-      'filter' => 0,
-      'is_active' => 1,
-      'is_default' => 0,
-    );
-    $result = civicrm_api3('activity_type', 'create', $params);
-    return TRUE;
-  }
-
-  // CASE 1 : is_visa_required = TRUE, and 2 migration records,
-  // activity of type 'Visa Expiration' created with target contact as
-  // the one whose record is being edited.
-  function testSyncScenario1() {
+  /**
+   * CASE 1 : is_visa_required = TRUE, and 2 migration records,
+   * activity of type 'Visa Expiration' created with target contact as
+   * the one whose record is being edited.
+   */
+  public function testSyncScenario1() {
     // create a test individual
-    $cid = $this->individualCreate();
+    $cid = ContactFabricator::fabricate()['id'];
     // is visa required = 1
     $caseOneStartDate = date('YmdHis');
     $caseOneEndDate = date('YmdHis', strtotime('+1 year'));
@@ -79,13 +63,13 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
       "{$this->customFields['Immigration:End_Date']}:-2" => $caseOneEndDate2,
       "{$this->customFields['Immigration:Visa_Number']}:-2" => '4111111111111111'
     );
-    $this->callAPISuccess('custom_value', 'create', $caseOneParams);
+    civicrm_api3('custom_value', 'create', $caseOneParams);
     // sync activity with contact of above details
     CRM_HRVisa_Activity::sync($cid);
 
-    // calling a common function for getting acivity a particular target contact and acitvity type
+    // calling a common function for getting activity a particular target contact and activity type
     // this will return activity id and number of activities found
-    list($count, $activityId) = self::_getTargetContactActivity($cid);
+    list($count, $activityId) = self::getTargetContactActivity($cid);
     $caseOneActivityGetParams = array('id' => $activityId);
     $caseOneActivity = civicrm_api3('activity', 'get', $caseOneActivityGetParams);
 
@@ -96,12 +80,14 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
 
   }
 
-  // CASE 2 : is_visa_required = TRUE, one migration record.
-  // later is_visa_required = FALSE,
-  // activity status set to 'Cancelled' from 'Scheduled'
-  function testSyncSncenario2() {
+  /**
+   * CASE 2 : is_visa_required = TRUE, one migration record.
+   * later is_visa_required = FALSE,
+   * activity status set to 'Cancelled' from 'Scheduled'
+   */
+  public function testSyncScenario2() {
     // create a test individual
-    $cid = $this->individualCreate();
+    $cid = ContactFabricator::fabricate()['id'];
     $startDate = date('YmdHis');
     $endDate = date('YmdHis', strtotime('+1 year'));
     $params = array(
@@ -112,13 +98,13 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
       "{$this->customFields['Immigration:End_Date']}:-1" => $endDate,
       "{$this->customFields['Immigration:Visa_Number']}:-1" => '4111111111111111',
     );
-    $this->callAPISuccess('custom_value', 'create', $params);
+    civicrm_api3('custom_value', 'create', $params);
     // sync activity with contact of above details
     CRM_HRVisa_Activity::sync($cid);
 
-    // calling a common function for getting acivity a particular target contact and acitvity type
+    // calling a common function for getting activity a particular target contact and activity type
     // this will return activity id and number of activities found
-    list($count, $activityId) = self::_getTargetContactActivity($cid);
+    list($count, $activityId) = self::getTargetContactActivity($cid);
     $activityGetParams = array('id' => $activityId);
     $activity = civicrm_api3('activity', 'get', $activityGetParams);
 
@@ -134,7 +120,7 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
       'entity_id' => $cid,
       $this->customFields['Extended_Demographics:Is_Visa_Required']  => 0,
     );
-    $this->callAPISuccess('custom_value', 'create', $params);
+    civicrm_api3('custom_value', 'create', $params);
 
     // sync activity with contact of above details
     CRM_HRVisa_Activity::sync($cid);
@@ -145,7 +131,7 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
     $this->assertEquals(CRM_Core_OptionGroup::getValue('activity_status', 'Cancelled', 'name'), $activity['values'][$activity['id']]['status_id'], 'in line ' . __LINE__ . ' Status of \'Visa Expiration\' activity should be \'Cancelled\' but wrongly is ' . $activity['values'][$activity['id']]['status_id']);
   }
 
-  function _getTargetContactActivity($contactId) {
+  private function getTargetContactActivity($contactId) {
     $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Visa Expiration', 'name');
     // to check if visa expiration activity exists for the input target_contact_id
     $activityGetParams = array(
@@ -153,34 +139,32 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
       'activity_type_id' => $activityTypeId,
       'sequential' => 1,
     );
-    // note : using filter 'activity_type_id' in combination with 'contact_id' filter doesn't work
     $activities = civicrm_api3('activity', 'get', $activityGetParams);
 
     $activityId = NULL;
     $count = 0;
     foreach($activities['values'] as $val) {
-      if ($val['activity_type_id'] != $activityTypeId || !array_key_exists('targets', $val)) {
-        continue;
-      }
       $activityId = $val['id'];
       $count++;
     }
+
     return array($count, $activityId);
   }
 
-  /**
-   * Helper function to load data into DB between iterations of the unit-test
-   */
-  private static function phpunitPopulateDB() {
-    $import = new CRM_Utils_Migrate_Import();
-    $import->run(
-      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrvisa')
-      . '/xml/auto_install.xml'
-    );
-    // this had to be done as demographics consists of is_visa_required field (used in unit test)
-    $import->run(
-      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrdemog')
-      . '/xml/auto_install.xml'
-    );
+  private function createLoggedInUser() {
+    $params = [
+      'first_name' => 'Logged In',
+      'last_name' => 'User ' . rand(),
+      'contact_type' => 'Individual',
+    ];
+    $contact = ContactFabricator::fabricate($params);
+    civicrm_api3('UFMatch', 'create', [
+      'contact_id' => $contact['id'],
+      'uf_name' => 'superman',
+      'uf_id' => 6,
+    ]);
+
+    $session = CRM_Core_Session::singleton();
+    $session->set('userID', $contact['id']);
   }
 }
