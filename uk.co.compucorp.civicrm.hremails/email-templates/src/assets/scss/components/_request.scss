@@ -9,8 +9,7 @@
 .request-attachments {
 
   > .request-attachment {
-    margin-bottom: 10px;
-    Margin-bottom: 10px;
+    @include margin(10px, bottom);
   }
 }
 
@@ -19,10 +18,9 @@
   padding: $callout-padding;
 
   &-header {
+    @include margin(10px, bottom);
     color: $gray-darker;
     font-weight: 600;
-    margin-bottom: 10px;
-    Margin-bottom: 10px;
   }
 }
 
@@ -37,8 +35,7 @@
 .request-data {
 
   dl {
-    margin: 0;
-    Margin: 0;
+    @include margin(0);
   }
 
   dt {
@@ -49,12 +46,10 @@
   }
 
   dd {
-    margin-left: 0;
-    Margin-left: 0;
+    @include margin(0, left);
 
     &:not(:last-child) {
-      margin-bottom: 10px;
-      Margin-bottom: 10px;
+      @include margin(10px, bottom);
     }
   }
 
