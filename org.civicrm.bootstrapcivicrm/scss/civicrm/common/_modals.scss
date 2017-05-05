@@ -15,11 +15,13 @@
     @extend %crm-table;
 
     td {
+      background: $crm-white;
       color: $crm-copy;
       font-weight: $badge-font-weight;
     }
 
     td:first-child {
+      background: $crm-white;
       color: $gray-darker;
       font-weight: $crm-font-weight-h3 !important;
     }
