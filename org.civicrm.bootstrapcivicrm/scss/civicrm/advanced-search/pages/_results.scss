@@ -107,57 +107,57 @@
       margin-top: 10px !important;
 
       li {
-        background: #ffffff !important;
+        background: $crm-white !important;
         padding: 0 !important;
+      }
 
-        a.crm-hover-button.action-item {
-          border: 0 !important;
-          border-radius: 0 !important;
-          line-height: 30px !important;
+      li a.crm-hover-button.action-item {
+        border: 0 !important;
+        border-radius: 0 !important;
+        color: $crm-copy !important;
+        font-weight: initial;
+
+        &:hover {
+          background-color: $crm-background !important;
           color: $crm-copy !important;
-          font-weight: initial;
-
-          &:hover {
-            background-color: $crm-background !important;
-          }
         }
       }
     }
 
     .crm-icon {
       background: none !important;
+      position: relative;
       text-indent: 0 !important;
       top: -3px;
-      position: relative;
 
       &::before {
         text-indent: 0 !important;
       }
 
       &.Individual-icon::before {
-        @include fa-icon(13px, '\f007');
+        @include fa-icon($font-size-base, $fa-var-user);
       }
 
       &.Household-icon::before {
-        @include fa-icon(13px, '\f015');
+        @include fa-icon(13px, $fa-var-home);
       }
 
       &.Organization-icon::before {
-        @include fa-icon(13px, '\f1ad');
+        @include fa-icon(13px, $fa-var-building);
       }
     }
   }
 
   .font-size12pt {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: $font-size-h2;
+    font-weight: $crm-font-weight-h2;
     color: $gray-darker;
     padding-bottom: 10px;
   }
 
   .font-size11pt {
-    font-size: 13px;
-    font-weight: 600;
+    font-size: $font-size-base;
+    font-weight: $crm-font-weight-h2;
     color: $gray-darker;
   }
 }
