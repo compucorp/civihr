@@ -80,11 +80,11 @@
   span.btn-slide {
     display: inline-block;
     padding-right: 0 !important;
-    text-indent: -100em;
-    width: 10px;
+    text-indent: -500em;
+    width: 5px;
 
     &:after {
-      @include fa-icon($font-size-base, $fa-var-ellipsis-v, $brand-primary);
+      @include fa-icon($font-size-base, $fa-var-ellipsis-v, $gray-darker);
       background: none;
       right: -2px;
       text-indent: 0;
@@ -93,7 +93,7 @@
     }
 
     &:hover:after {
-      color: $gray-darker;
+      color: $brand-primary;
     }
 
     .panel {
