@@ -2196,7 +2196,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
-    $this->assertInstanceOf(LeaveRequest::class, $leaveRequest);
+    $this->assertNotNull($leaveRequest->id);
   }
 
   public function testToilCanBeAccruedWhenTheToilRequestHasNoWorkingDay() {
@@ -2244,6 +2244,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
-    $this->assertInstanceOf(LeaveRequest::class, $toilRequest);
+    $this->assertNotNull($toilRequest->id);
   }
 }
