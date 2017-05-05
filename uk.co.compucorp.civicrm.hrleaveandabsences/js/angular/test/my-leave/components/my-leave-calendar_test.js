@@ -69,6 +69,7 @@
           return $q.resolve(data);
         });
         spyOn(AbsenceType, 'all').and.callThrough();
+        spyOn(LeaveRequest, 'all').and.callThrough();
         compileComponent();
       }]));
 
@@ -104,6 +105,19 @@
             expect(Object.keys(month.data.length)).not.toBe(0);
           });
         });
+
+        it('Leave request API is called with proper parameters', function () {
+          expect(LeaveRequest.all).toHaveBeenCalledWith({
+            from_date: {from: controller.selectedPeriod.start_date},
+            to_date: {to: controller.selectedPeriod.end_date},
+            status_id: {"IN": [
+              optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'approved').value,
+              optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'admin_approved').value,
+              optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'waiting_approval').value
+            ]},
+            contact_id: CRM.vars.leaveAndAbsences.contactId
+          }, {}, null, null, false);
+        })
       });
 
       it('disabled absence types are filtered', function () {
@@ -327,7 +341,7 @@
               return $q.resolve(CalendarInstance.init(workPattern.values));
             });
 
-            spyOn(LeaveRequest, 'all').and.callFake(function () {
+            LeaveRequest.all.and.callFake(function () {
               return $q.resolve({
                 list: [leaveRequest]
               });

@@ -129,15 +129,8 @@ define([
      * @return {object}
      */
     this._getStyles = function (leaveRequest, dateObj) {
-      var absenceType,
-        status = leaveRequestStatuses[leaveRequest.status_id];
+      var absenceType;
 
-      if (!_.includes(['waiting_approval', 'approved', 'admin_approved'], status.name)) {
-        return {};
-      }
-
-      //Attach leave request to the date object only if the leave status is not one of
-      //['waiting_approval', 'approved', 'admin_approved'].
       dateObj.leaveRequest = leaveRequest;
 
       absenceType = _.find(this.absenceTypes, function (absenceType) {
@@ -266,7 +259,7 @@ define([
     };
 
     /**
-     * Loads all the leave requests and calls calendar load function
+     * Loads the approved and waiting approval leave requests and calls calendar load function
      *
      * @param {string} contactParamName - contact parameter key name
      * @param {boolean} cache
@@ -277,12 +270,13 @@ define([
       cache = cache === undefined ? true : cache;
 
       var params = {
-        from_date: {
-          from: this.selectedPeriod.start_date
-        },
-        to_date: {
-          to: this.selectedPeriod.end_date
-        }
+        from_date: {from: this.selectedPeriod.start_date},
+        to_date: {to: this.selectedPeriod.end_date},
+        status_id: {"IN": [
+          getLeaveStatusValuefromName("approved"),
+          getLeaveStatusValuefromName("admin_approved"),
+          getLeaveStatusValuefromName("waiting_approval")
+        ]}
       };
       params[contactParamName] = this.contactId;
 
@@ -308,7 +302,7 @@ define([
       return PublicHoliday.all()
         .then(function (publicHolidaysData) {
           // convert to an object with time stamp as key
-          publicHolidays = _.transform(publicHolidaysData, function(result, publicHoliday) {
+          publicHolidays = _.transform(publicHolidaysData, function (result, publicHoliday) {
             result[this._getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
           }.bind(this), {});
         }.bind(this));
@@ -357,6 +351,19 @@ define([
         }
       }.bind(this));
     };
+
+    /**
+     * Returns leave status value from name
+     * @param {String} name - name of the leave status
+     * @returns {int/boolean}
+     */
+    function getLeaveStatusValuefromName(name) {
+      var leaveStatus = _.find(leaveRequestStatuses, function (status) {
+        return status.name === name;
+      });
+
+      return leaveStatus ? leaveStatus.value : false;
+    }
 
     return this;
   }
