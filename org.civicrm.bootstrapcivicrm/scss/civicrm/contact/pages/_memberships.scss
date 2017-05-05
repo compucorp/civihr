@@ -787,3 +787,44 @@
       border-radius: $border-radius-base;
     }
   }
+
+  .CRM_Member_Form_Task_Print {
+    table {
+      margin-bottom: 10px;
+    }
+
+    .crm-button {
+      border: none;
+
+      i {
+        left: 0.7em;
+        line-height: 38px;
+        top: 0;
+      }
+
+      .default {
+        padding: 8px 12px 8px 25px !important;
+      }
+
+      &.crm-button-type-back {
+        i {
+          color: $gray-darker !important;
+        }
+
+        &:hover i {
+          color: $crm-white !important;
+        }
+      }
+
+      .cancel {
+        border: 1px solid $gray-darker;
+        color: $gray-darker !important;
+        padding: 7px 12px 7px 20px !important;
+
+        &:hover {
+          background: $gray-darker;
+          color: $crm-white !important;
+        }
+      }
+    }
+  }

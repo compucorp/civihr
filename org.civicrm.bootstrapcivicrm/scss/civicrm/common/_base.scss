@@ -19,30 +19,38 @@
     border-radius: $border-radius-base !important;
   }
 
-  .btn-slide-active {
-    .panel {
+  table td .btn-slide-active ul.panel {
+    background: $crm-white;
+    border-radius: $border-radius-base;
+    box-shadow: $crm-form-layout-shadow;
+    padding: 0;
+    top: 22px;
+
+    li {
       background: $crm-white;
-      border-radius: $border-radius-base;
-      box-shadow: $crm-form-layout-shadow;
       padding: 0;
-      top: 22px;
+    }
 
-      li {
-        background: $crm-white;
+    li .crm-hover-button.action-item {
+      background: transparent !important;
+      color: $crm-copy !important;          
+      line-height: 20px !important;
+      padding: 10px 20px;
+      text-align: left;
+      text-transform: capitalize;
 
-        .crm-hover-button {
-          color: $crm-copy !important;
-          padding: 5px 15px;
-          text-align: left;
+      &:hover {
+        background: $crm-background !important;
+        color: $crm-copy !important;
+      }
+    }
 
-          &:not(:hover) {
-            color: $crm-copy !important;
-          }
-        }
+    li:hover {
+      background: $crm-background !important;
 
-        &:hover {
-          background: $crm-background;
-        }
+      .crm-hover-button.action-item {
+        background: $crm-background !important;
+        color: $crm-copy !important; 
       }
     }
   }
@@ -78,6 +86,7 @@
   }
 
   span.btn-slide {
+    background: none;
     display: inline-block;
     padding-right: 0 !important;
     text-indent: -500em;
@@ -92,8 +101,12 @@
       width: 5px;
     }
 
-    &:hover:after {
-      color: $brand-primary;
+    &:hover {
+      background: none;
+
+      &:after {
+        color: $brand-primary;
+      }
     }
 
     .panel {
