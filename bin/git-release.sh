@@ -28,6 +28,7 @@ hrjobcontract \
 org.civicrm.reqangular \
 uk.co.compucorp.civicrm.appraisals \
 uk.co.compucorp.civicrm.hrcore \
+uk.co.compucorp.civicrm.hremails \
 uk.co.compucorp.civicrm.hrleaveandabsences
 )
 

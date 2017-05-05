@@ -746,9 +746,13 @@ class CRM_Hrjobcontract_Report_Form_Summary extends CRM_Report_Form {
                 break;
 
               case $tableName == 'civicrm_hrjobcontract_health' && $fieldName == 'health_provider_life_insurance':
-                  $select[] = "CONCAT({$this->_aliases['civicrm_contact']}_health2.sort_name, ' (InternalID: ', hrjobcontract_health_civireport.provider_life_insurance , ', Email: ', COALESCE({$this->_aliases['civicrm_email']}_health2.email, '-'), ', ExternalID: ', COALESCE({$this->_aliases['civicrm_contact']}_health2.external_identifier, '-'), ')') AS {$tableName}_{$fieldName}";
+                $select[] = "CONCAT({$this->_aliases['civicrm_contact']}_health2.sort_name, ' (InternalID: ', hrjobcontract_health_civireport.provider_life_insurance , ', Email: ', COALESCE({$this->_aliases['civicrm_email']}_health2.email, '-'), ', ExternalID: ', COALESCE({$this->_aliases['civicrm_contact']}_health2.external_identifier, '-'), ')') AS {$tableName}_{$fieldName}";
                 break;
-
+              
+              case $tableName == 'civicrm_hrjobcontract_pension' && $fieldName == 'pension_type':
+                $select[] = "CONCAT({$this->_aliases['civicrm_contact']}_pension.sort_name, ' (InternalID: ', hrjobcontract_pension_civireport.pension_type , ', Email: ', COALESCE({$this->_aliases['civicrm_email']}_pension.email, '-'), ', ExternalID: ', COALESCE({$this->_aliases['civicrm_contact']}_pension.external_identifier, '-'), ')') AS {$tableName}_{$fieldName}";
+                break;
+              
               default:
                 $alias = "{$tableName}_{$fieldName}";
                 $select[] = "{$field['dbAlias']} as {$alias}";
@@ -796,7 +800,11 @@ class CRM_Hrjobcontract_Report_Form_Summary extends CRM_Report_Form {
       LEFT JOIN civicrm_hrjobcontract_hour AS {$this->_aliases['civicrm_hrjobcontract_hour']} ON {$this->_aliases['civicrm_hrjobcontract_revision']}.hour_revision_id = {$this->_aliases['civicrm_hrjobcontract_hour']}.jobcontract_revision_id
       LEFT JOIN civicrm_hrjobcontract_leave AS {$this->_aliases['civicrm_hrjobcontract_leave']} ON {$this->_aliases['civicrm_hrjobcontract_revision']}.leave_revision_id = {$this->_aliases['civicrm_hrjobcontract_leave']}.jobcontract_revision_id
       LEFT JOIN civicrm_hrjobcontract_pay AS {$this->_aliases['civicrm_hrjobcontract_pay']} ON {$this->_aliases['civicrm_hrjobcontract_revision']}.pay_revision_id = {$this->_aliases['civicrm_hrjobcontract_pay']}.jobcontract_revision_id
+
       LEFT JOIN civicrm_hrjobcontract_pension AS {$this->_aliases['civicrm_hrjobcontract_pension']} ON {$this->_aliases['civicrm_hrjobcontract_revision']}.pension_revision_id = {$this->_aliases['civicrm_hrjobcontract_pension']}.jobcontract_revision_id
+      LEFT JOIN civicrm_contact AS {$this->_aliases['civicrm_contact']}_pension ON {$this->_aliases['civicrm_hrjobcontract_pension']}.pension_type = {$this->_aliases['civicrm_contact']}_pension.id
+      LEFT JOIN civicrm_email AS {$this->_aliases['civicrm_email']}_pension ON {$this->_aliases['civicrm_contact']}_pension.id = {$this->_aliases['civicrm_email']}_pension.contact_id AND {$this->_aliases['civicrm_email']}_pension.is_primary = 1
+        
       LEFT JOIN civicrm_hrjobcontract_role AS {$this->_aliases['civicrm_hrjobcontract_role']} ON {$this->_aliases['civicrm_hrjobcontract_revision']}.role_revision_id = {$this->_aliases['civicrm_hrjobcontract_role']}.jobcontract_revision_id
     ";
   }

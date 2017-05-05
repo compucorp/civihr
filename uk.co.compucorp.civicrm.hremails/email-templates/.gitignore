@@ -1,0 +1,9 @@
+.DS_Store
+node_modules
+npm-debug.log
+bower_components
+.sass-cache
+.awspublish*
+config.json
+dist/*
+!dist/*.html

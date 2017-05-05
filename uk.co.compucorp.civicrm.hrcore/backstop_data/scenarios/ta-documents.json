@@ -6,11 +6,6 @@
       "onReadyScript": "close-any-modal"
     },
     {
-      "label": "T&A / Documents / Select Dates",
-      "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/select-dates"
-    },
-    {
       "label": "T&A / Documents / Advanced Filters",
       "url": "civicrm/tasksassignments/dashboard#/documents",
       "onReadyScript": "documents/advanced-filters"
@@ -19,16 +14,6 @@
       "label": "T&A / Documents / Document / Add",
       "url": "civicrm/tasksassignments/dashboard#/documents",
       "onReadyScript": "documents/document/add"
-    },
-    {
-      "label": "T&A / Documents / Document / Actions",
-      "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/actions"
-    },
-    {
-      "label": "T&A / Documents / Document / Open",
-      "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/open"
     },
     {
       "label": "T&A / Documents / Document / Show All Fields",

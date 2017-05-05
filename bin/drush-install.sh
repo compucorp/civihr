@@ -5,7 +5,8 @@
 ##################################
 ## List of CiviHR core extensions
 CORE_EXTS=\
-uk.co.compucorp.civicrm.hrcore
+uk.co.compucorp.civicrm.hrcore,\
+uk.co.compucorp.civicrm.hremails
 
 ## List of extensions defining basic entity types
 ENTITY_EXTS=\
@@ -41,10 +42,12 @@ org.civicrm.styleguide
 # It expect one parameter ($1) which points to civicrm absolute path
 function set_default_localisation_settings() {
   LOC_FILE="en_US"
-  if wget -q "https://download.civicrm.org/civicrm-l10n-core/mo/en_GB/civicrm.mo" > /dev/null; then
+  if wget -q -t 3 --timeout=30 "https://download.civicrm.org/civicrm-l10n-core/mo/en_GB/civicrm.mo" > /dev/null; then
     mkdir -p $1/l10n/en_GB/LC_MESSAGES/
     mv civicrm.mo $1/l10n/en_GB/LC_MESSAGES/civicrm.mo
     LOC_FILE="en_GB"
+  else
+    echo "Could not download en_GB translation file";
   fi
 
   UKID=$(drush cvapi Country.getsingle return="id" iso_code="GB" | grep -oh '[0-9]*')

@@ -1,0 +1,26 @@
+$email-heading-line-height: 40px;
+
+.email {
+  @include margin(40px 0);
+}
+
+.email-date {
+  @include margin(0, bottom);
+  line-height: $email-heading-line-height;
+
+  @media only screen and (max-width: #{$global-breakpoint}) {
+    line-height: normal !important;
+  }
+}
+
+.email-logo {
+  width: 100px;
+}
+
+.email-title {
+  @include margin(0, bottom);
+  border-left: 5px solid $brand-primary;
+  font-size: $font-size-h2;
+  line-height: $email-heading-line-height;
+  padding-left: 15px;
+}

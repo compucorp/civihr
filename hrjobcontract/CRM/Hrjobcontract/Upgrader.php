@@ -518,14 +518,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       );
     }
 
-
     foreach ($jobContractOptionsMenuTree as $key => $menuItems) {
       $menuItems['is_active'] = 1;
       CRM_Core_BAO_Navigation::add($menuItems);
     }
 
     CRM_Core_BAO_Navigation::resetNavigation();
-
 
     $this->upgrade_1001();
     $this->upgrade_1002();
@@ -544,6 +542,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1020();
     $this->upgrade_1025();
     $this->upgrade_1026();
+    $this->upgrade_1027();
+    $this->upgrade_1028();
   }
 
   function upgrade_1001() {
@@ -1024,9 +1024,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Creates Option Group and Option Values for Health an Life Insurance Plan 
+   * Creates Option Group and Option Values for Health an Life Insurance Plan
    * Types.
-   * 
+   *
    * @return boolean TRUE
    */
   public function upgrade_1025() {
@@ -1037,7 +1037,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   /**
    * Alters civicrm_hrjobcontract_hour table to make default values for fte_num
    * and fte_denom equal to 0.
-   * 
+   *
    * @return boolean
    *   True on success
    */
@@ -1049,6 +1049,203 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     ";
     CRM_Core_DAO::executeQuery($query);
     return true;
+  }
+
+  /**
+   * Add options to choose bi-monthly or bi-weekly for pay cycle
+   *
+   * @return bool
+   */
+  public function upgrade_1027() {
+    $optionsValue = [
+      3 => 'Bi-Weekly',
+      4 => 'Bi-Monthly',
+    ];
+    foreach ($optionsValue as $value => $name) {
+      $opValueParams = [
+        'option_group_id' => 'hrjc_pay_cycle',
+        'name' => $name,
+        'label' => $name,
+        'value' => $value
+      ];
+      civicrm_api3('OptionValue', 'create', $opValueParams);
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Changes Pension Provider to be a contact, instead of an option_value.  All
+   * required changes are wrapped in a transaction and rolled-back if any
+   * problems arise.
+   *
+   * @return boolean
+   *   true on success
+   *
+   * @throws Exception
+   */
+  function upgrade_1028() {
+    $pensionsTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
+
+    $tx = new CRM_Core_Transaction();
+    try {
+      $this->createPensionProviderType();
+      $this->replacePensionProviders($pensionsTableName);
+      $this->removePensionTypeOptionGroup();
+    } catch (Exception $ex) {
+      $tx->rollback();
+      throw new Exception('Cannot do upgrade - ' . $ex->getMessage());
+    }
+
+    $this->alterPensionsTable($pensionsTableName);
+
+    return true;
+  }
+
+  /**
+   * Alters pension_type column to be an unsigned integer and adds a foreign
+   * key referencing civicrm_contact.
+   *
+   * @param type $pensionsTableName
+   *   Name of pension data table
+   *
+   * @throws Exception
+   */
+  private function alterPensionsTable($pensionsTableName) {
+    try {
+      CRM_Core_DAO::executeQuery("
+        ALTER TABLE $pensionsTableName
+        MODIFY pension_type INT(10) unsigned,
+        ADD CONSTRAINT pension_type_contact_id_fk
+        FOREIGN KEY(pension_type)
+        REFERENCES civicrm_contact(id)
+        ON DELETE SET NULL ON UPDATE CASCADE;
+      ");
+    } catch (Exception $e) {
+      $civiDBSettings = parse_url(CIVICRM_DSN);
+      $civiDBName = trim($civiDBSettings['path'], '/');
+
+      $fkCheck = CRM_Core_DAO::executeQuery($q = "
+        SELECT *
+        FROM information_schema.REFERENTIAL_CONSTRAINTS
+        WHERE CONSTRAINT_SCHEMA = '$civiDBName'
+        AND TABLE_NAME = '$pensionsTableName'
+        AND REFERENCED_TABLE_NAME = 'civicrm_contact'
+        AND CONSTRAINT_NAME = 'pension_type_contact_id_fk'
+      ");
+
+      if ($fkCheck->N == 0) {
+        throw new Exception("Error updating $pensionsTableName table: " . $e->getMessage());
+      }
+
+      $pensionTypeColumnCheck = CRM_Core_DAO::executeQuery("DESC $pensionsTableName");
+      while ($pensionTypeColumnCheck->fetch()) {
+        if ($pensionTypeColumnCheck->Field == 'pension_type' && $pensionTypeColumnCheck->Type != 'int(10) unsigned') {
+          throw new Exception("Error updating $pensionsTableName table: " . $e->getMessage());
+        }
+      }
+    }
+  }
+
+  /**
+   * Deletes hrjc_pension_type option group.
+   *
+   * @throws Exception
+   */
+  private function removePensionTypeOptionGroup() {
+    // Remove pension type option group
+    try {
+      civicrm_api3('OptionGroup', 'get', [
+        'sequential' => 1,
+        'name' => 'hrjc_pension_type',
+        'api.OptionGroup.delete' => ['id' => '$value.id'],
+      ]);
+    } catch (Exception $e) {
+      $pensionOptionGroup = civicrm_api3('OptionGroup', 'get', [
+        'sequential' => 1,
+        'name' => 'hrjc_pension_type',
+      ]);
+
+      if ($pensionOptionGroup['count'] > 0) {
+        throw new Exception('Error deleting hrjc_pension_type option group: ' . $e->getMessage());
+      }
+    }
+  }
+
+  /**
+   * Fetch pension provider option values and create a contact for each pension
+   * provider type.  Also replaces option_values for contact id's in existing
+   * contracts.
+   *
+   * @throws Exception
+   */
+  private function replacePensionProviders($pensionsTableName) {
+    try {
+      $pensionTypeOptions = civicrm_api3('OptionValue', 'get', [
+        'sequential' => 1,
+        'return' => ['name', 'label', 'value'],
+        'option_group_id' => 'hrjc_pension_type',
+      ]);
+    } catch (Exception $e) {
+      $pensionTypeOptionGroup = civicrm_api3('OptionGroup', 'get', array(
+        'name' => 'hrjc_pension_type',
+      ));
+      if ($pensionTypeOptionGroup['count'] > 0) {
+        throw new Exception('Error obtaining option values for "hrjc_pension_type" option group: ' . $e->getMessage());
+      }
+    }
+
+    $pensionTypesMapping = [];
+    foreach($pensionTypeOptions['values'] as $pensionType) {
+      $contact = civicrm_api3('Contact', 'create', [
+        'organization_name' => $pensionType['label'],
+        'first_name' => $pensionType['label'],
+        'display_name' => $pensionType['label'],
+        'source' => $pensionType['name'] . ',' .$pensionType['value'],
+        'contact_type' => 'Organization',
+        'contact_sub_type' => 'Pension_Provider',
+      ]);
+
+      $pensionTypesMapping[$pensionType['value']] = $contact['id'];
+    }
+
+    // Replace pension_type value to the corresponding contact ID
+    if (!empty($pensionTypesMapping)) {
+
+      foreach ($pensionTypesMapping as $optionValue => $contactID) {
+        CRM_Core_DAO::executeQuery("
+          UPDATE {$pensionsTableName}
+          SET pension_type = {$contactID}
+          WHERE pension_type = '{$optionValue}'
+        ");
+      }
+    }
+  }
+
+  /**
+   * Creates 'Pension Provider' as a Contact Type
+   *
+   * @throws Exception
+   *   If Pension_Provider contact type is not created.
+   */
+  private function createPensionProviderType() {
+    try {
+      civicrm_api3('ContactType', 'create', [
+        'name' => 'Pension_Provider',
+        'label' => 'Pension Provider',
+        'parent_id' => 'Organization',
+        'is_active' => 1,
+        'is_reserved' => 1,
+      ]);
+    } catch (Exception $e) {
+      $pensionProviderType = civicrm_api3('ContactType', 'get', array(
+        'name' => 'Pension_Provider',
+      ));
+
+      if ($pensionProviderType['count'] < 1) {
+        throw new Exception('Error creating Pension_Provider contact type: ' . $e->getMessage());
+      }
+    }
   }
 
   /**

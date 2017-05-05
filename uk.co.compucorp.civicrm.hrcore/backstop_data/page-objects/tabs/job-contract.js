@@ -7,8 +7,9 @@ module.exports = (function () {
     tabTitle: 'Job Contract',
 
     /**
-     * [delete description]
-     * @return {[type]} [description]
+     * Clicks on the delete button
+     *
+     * @return {object}
      */
     attemptDelete: function () {
       var casper = this.casper;
@@ -20,9 +21,10 @@ module.exports = (function () {
     },
 
     /**
-     * [openContractModal description]
-     * @param  {[type]} mode [description]
-     * @return {[type]}      [description]
+     * Opens the modal of an already existing contract
+     *
+     * @param  {string} mode "correct" or "revision"
+     * @return {Promise} resolves with the job contract modal object
      */
     openContractModal: function (mode) {
       var param, casper = this.casper;
@@ -38,8 +40,9 @@ module.exports = (function () {
     },
 
     /**
-     * [openNewContractModal description]
-     * @return {[type]}      [description]
+     * Opens the modal for creating a new contract
+     *
+     * @return {Promise} resolves with the job contract modal object
      */
     openNewContractModal: function () {
       var casper = this.casper;
@@ -53,8 +56,9 @@ module.exports = (function () {
     },
 
     /**
-     * [showFullHistory description]
-     * @return {[type]} [description]
+     * Shows the full history of a contract
+     *
+     * @return {object}
      */
     showFullHistory: function () {
       var casper = this.casper;

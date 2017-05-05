@@ -127,6 +127,7 @@ function civicrm_api3_activity_getabsences($params) {
   $entity = _civicrm_api3_get_BAO(__FUNCTION__);
   $bao = CRM_Core_DAO::executeQuery($select->toSQL(), array(), TRUE, 'CRM_Activity_BAO_Activity');
   $activities = _civicrm_api3_dao_to_array($bao, $params, FALSE, $entity, FALSE);
-  $activities = _civicrm_api3_activity_get_formatResult($params, $activities);
+  $options = _civicrm_api3_get_options_from_params($params, FALSE, 'Activity', 'get');
+  $activities = _civicrm_api3_activity_get_formatResult($params, $activities, $options);
   return civicrm_api3_create_success($activities, $params, $entity, 'getAbsences');
 }
