@@ -2151,4 +2151,99 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       $this->assertNotEmpty($email['headers']);
     }
   }
+
+  public function testToilCanBeAccruedWhenTheCurrentBalanceForPeriodEntitlementIsZero() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $periodEntitlement->contact_id,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $this->assertEquals(0, $periodEntitlement->getBalance());
+
+    $leaveRequest = LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('today'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date_type' => 1,
+      'toil_to_accrue' => 3,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $this->assertNotNull($leaveRequest->id);
+  }
+
+  public function testToilCanBeAccruedWhenTheToilRequestHasNoWorkingDay() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $periodEntitlement->contact_id,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $this->assertEquals(0, $periodEntitlement->getBalance());
+
+    $toilRequest = LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('saturday'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('sunday'),
+      'to_date_type' => 1,
+      'toil_to_accrue' => 2,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $this->assertNotNull($toilRequest->id);
+  }
 }
