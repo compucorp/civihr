@@ -61,3 +61,22 @@
     }
   }
 }
+
+.request-data-large {
+
+  dt {
+    width: 200px;
+  }
+}
+
+
+.request-data-toil {
+  line-height: 2.5;
+
+  span {
+    border: 1px solid $medium-gray;
+    display: inline-block;
+    text-align: center;
+    width: 100px;
+  }
+}
