@@ -241,7 +241,7 @@ define([
       };
 
       /**
-       * Checks if popup is opened in given leave type like `leave` or `sick` or 'toil'
+       * Checks if popup is opened in given leave type like `leave` or `sickness` or 'toil'
        *
        * @param {String} leaveTypeParam to check the leave type of current request
        * @return {Boolean}
