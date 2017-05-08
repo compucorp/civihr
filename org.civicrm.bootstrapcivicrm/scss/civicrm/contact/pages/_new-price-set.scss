@@ -14,40 +14,37 @@
       }
     }
 
-    .ui-button {
-      .ui-icon {
-        top: 17px;
-      }
+    .ui-button .ui-icon {
+      top: 17px;      
     }
   }
 
   .crm-container #crm-main-content-wrapper {
-    .CRM_Price_Form_Set,
-    .CRM_Price_Form_Field {
-      .crm-form-block {
-        .crm-submit-buttons {
-          box-shadow: none;
-          background-color: $crm-white !important;
-          border-bottom: 1px solid $gray-lighter;
+    .CRM_Price_Form_Set .crm-form-block,
+    .CRM_Price_Form_Field .crm-form-block {
+      .crm-submit-buttons {
+        background-color: $crm-white !important;
+        border-bottom: 1px solid $gray-lighter;
+        border-radius: $panel-border-radius;
+        box-shadow: none;
+      }
+
+      .form-layout {
+        margin: 20px 0;
+
+        td.label {
+          display: table-cell;
+          padding-left: 20px;            
+          text-align: left;
+          vertical-align: middle;
+          width: 175px;
         }
 
-        .form-layout {
-          margin: 20px 0;
-
-          td.label {
-            padding-left: 20px;
-            display: table-cell;
-            text-align: left;
-            width: 175px;
-            vertical-align: middle;
-          }
-
-          tr {
-            &:nth-child(6),
-            &:nth-child(8) {
-              td.label {
-                vertical-align: top;
-              }
+        tr {
+          &:nth-child(6),
+          &:nth-child(8) {
+            td.label {
+              vertical-align: top;
             }
           }
         }
