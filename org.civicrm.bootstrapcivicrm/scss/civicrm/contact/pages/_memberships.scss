@@ -736,6 +736,98 @@
       }
     }
 
+    [class*=CRM_Member_Form_Task_] {
+      .crm-form-block > .crm-submit-buttons > .crm-button:first-of-type {
+        margin-left: 0;
+      }
+
+      .form-layout-compressed td {
+        color: $crm-copy;
+        padding: 10px 20px;
+        vertical-align: top;
+
+        label {
+          line-height: 30px;
+        }
+
+        .select2-container, input.crm-form-text {
+          margin: 0 15px 0 0 !important;
+        }
+      }
+
+      tr.columnheader {
+        border-left: none !important;
+        border-right: none !important;
+
+        th, td {
+          background: $gray-lighter !important;
+          border: none;
+          color: $gray-darker;
+          padding: 10px 20px;
+          vertical-align: middle;
+        }
+      }
+
+      tbody tr {
+        background: $crm-white;        
+        border-right: none;
+
+        td {
+          border-right: none;
+          color: $crm-copy;
+          line-height: 1.5;
+          padding: 15px 20px;
+        }
+
+        td .dateplugin {
+          display: inline-block;
+          max-width: 150px;
+        }        
+      }
+
+      input[type="checkbox"]:checked + label[for]:after {
+        margin-top: -4px;
+      }
+    }
+
+    .CRM_Member_Form_Task_Batch .crm-form-block {
+      .help {
+        border-radius: $border-radius-base $border-radius-base 0 0;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+
+        tbody tr {
+          border-bottom: 1px solid $crm-background;
+        }
+
+        tbody tr td {
+          white-space: nowrap;
+
+          &:nth-child(3),
+          &:nth-child(5) {
+            width: 172px;
+
+            .addon + .crm-clear-link {
+              padding: 4px 0;              
+            }
+          }
+
+          .select2-container {
+            margin-top: 0 !important;  
+          }
+        }
+      }
+
+
+      table + .crm-submit-buttons {
+        border-top: none !important;
+        padding: 0 0 15px !important;
+      }
+    }
+
     .CRM_Member_Form_Task_PDFLetter .crm-block {
       h3 {
         background: $brand-primary;
