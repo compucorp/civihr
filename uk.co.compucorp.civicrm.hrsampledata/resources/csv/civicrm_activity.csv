@@ -1,9 +1,9 @@
 id,source_record_id,activity_type_id,subject,activity_date_time,duration,details,status_id,priority_id,source_contact_id,assignee_id,target_id
 39,,Sick,,2016-09-02 10:56:24,,,Scheduled,Normal,288,324,288
 41,,TOIL (Credit),,2016-09-02 10:58:46,,,Scheduled,Normal,288,324,288
-86,,Vacation,,2016-09-02 11:42:57,,,Scheduled,Normal,288,324,288
+86,,Annual Leave,,2016-09-02 11:42:57,,,Scheduled,Normal,288,324,288
 90,,Sick,,2016-09-02 11:45:56,,,Scheduled,Normal,324,306,324
-92,,Vacation,,2016-09-02 11:48:22,,,Scheduled,Normal,306,269,306
+92,,Annual Leave,,2016-09-02 11:48:22,,,Scheduled,Normal,306,269,306
 95,,Sick,,2016-09-02 11:49:41,,,Scheduled,Normal,306,269,306
 97,,Schedule Exit Interview,,2016-11-07 00:00:00,,"
                     ",Scheduled,Normal,306,324,257
@@ -20,16 +20,16 @@ id,source_record_id,activity_type_id,subject,activity_date_time,duration,details
                     ",Scheduled,Normal,306,306,306
 122,,VISA,,2016-09-17 00:00:00,,"
                     ",Scheduled,Normal,306,324,324
-125,,Vacation,,2016-09-07 21:24:43,,,Scheduled,Normal,324,306,324
+125,,Annual Leave,,2016-09-07 21:24:43,,,Scheduled,Normal,324,306,324
 127,,Probation appraisal (start probation workflow),test,2016-09-07 00:00:00,,<p>test</p>,Completed,Normal,306,288,288
-128,,Vacation,,2016-09-07 22:08:25,,,Completed,Normal,306,269,306
+128,,Annual Leave,,2016-09-07 22:08:25,,,Completed,Normal,306,269,306
 142,,Program and work induction by program supervisor,,2016-09-06 00:00:00,,"
                     ",Scheduled,Normal,306,324,235
 143,,Block work email ID,,2016-11-15 00:00:00,,"
                     ",Scheduled,Normal,306,306,257
 144,,"Get ""No Dues"" certification",,2016-11-10 00:00:00,,"
                     ",Completed,Normal,306,288,257
-145,,Vacation,,2016-09-29 14:05:13,,Leave request. ,Scheduled,Normal,288,324,288
+145,,Annual Leave,,2016-09-29 14:05:13,,Leave request. ,Scheduled,Normal,288,324,288
 40,39,Absence,,2016-09-02 00:00:00,240,,Scheduled,Normal,288,,
 42,41,Absence,,2016-09-09 00:00:00,240,,Scheduled,Normal,288,,
 87,86,Absence,,2016-11-01 00:00:00,480,,Scheduled,Normal,288,,

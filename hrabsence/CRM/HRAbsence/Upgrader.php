@@ -20,9 +20,9 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
   public function installActivityTypes() {
     $activityTypesResult = civicrm_api3('activity_type', 'get', array());
-    $weight = count($activityTypesResult["values"]);
+    $weight = count($activityTypesResult['values']);
 
-    if (!in_array("Public Holiday", $activityTypesResult["values"])) {
+    if (!in_array('Public Holiday', $activityTypesResult['values'])) {
       $weight = $weight + 1;
       $params = array(
         'weight' => $weight,
@@ -36,7 +36,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       $resultCreatePublicHoliday = civicrm_api3('activity_type', 'create', $params);
     }
 
-    if (!in_array("Absence", $activityTypesResult["values"])) {
+    if (!in_array('Absence', $activityTypesResult['values'])) {
       $weight = $weight + 1;
       $params = array(
         'weight' => $weight,
@@ -53,14 +53,16 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
   public function addDefaultPeriod() {
     if (CRM_HRAbsence_BAO_HRAbsencePeriod::getRecordCount($params = array()) == 0) {
-      $currentYear = date('Y');
-      $params = array(
-        'name' => $currentYear,
-        'title' => $currentYear.' (Jan 1 to Dec 31)',
-        'start_date' => $currentYear.'0101000000',
-        'end_date' => $currentYear.'1231235959',
-      );
-      CRM_HRAbsence_BAO_HRAbsencePeriod::create($params);
+      $years = [date('Y'), date('Y', strtotime('+1 year'))];
+      foreach ($years as $year) {
+        $params = [
+          'name' => $year,
+          'title' => $year.' (Jan 1 to Dec 31)',
+          'start_date' => $year.'0101000000',
+          'end_date' => $year.'1231235959',
+        ];
+        CRM_HRAbsence_BAO_HRAbsencePeriod::create($params);
+      }
     }
   }
 
@@ -73,7 +75,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       $leaves = FALSE;
       $options = array(
         'Sick' => 'Sick',
-        'Vacation' => 'Vacation',
+        'Annual Leave' => 'Annual Leave',
         'Maternity' => 'Maternity',
         'Paternity' => 'Paternity',
         'TOIL' => 'TOIL',
@@ -205,10 +207,10 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
   public function installRelatioshipTypes() {
     civicrm_api3('RelationshipType', 'create', [
       'sequential' => 1,
-      'name_a_b' => "has Leave Approved by",
-      'name_b_a' => "is Leave Approver of",
-      'contact_type_a' => "individual",
-      'contact_type_b' => "individual",
+      'name_a_b' => 'has Leave Approved by',
+      'name_b_a' => 'is Leave Approver of',
+      'contact_type_a' => 'individual',
+      'contact_type_b' => 'individual',
     ]);
   }
 
@@ -578,5 +580,45 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     ]);
 
     return true;
+  }
+
+  /**
+   * Upgrader to rename 'Vacation' absence type
+   * and its related activity type  to 'Annual Leave'
+   *
+   * @return bool
+   */
+  public function upgrade_1403() {
+    // Find 'Vacation' absence type ID
+    $absenceType = new CRM_HRAbsence_BAO_HRAbsenceType();
+    $absenceType->name = 'Vacation';
+    $absenceType->find(TRUE);
+
+    if (!empty($absenceType->id)) {
+      // rename absence type name and title
+      $absenceType->name = 'Annual Leave';
+      $absenceType->title = 'Annual Leave';
+      $absenceType->save();
+    }
+
+    // Find 'Vacation' activity type ID
+    $optionValue = civicrm_api3('OptionValue', 'get', [
+      'sequential' => 1,
+      'option_group_id' => 'activity_type',
+      'name' => 'Vacation',
+      'options' => ['limit' => 1]
+    ]);
+
+    // update activity type name and title
+    if (!empty($optionValue['id'])) {
+      civicrm_api3('OptionValue', 'create', [
+        'id' => $optionValue['id'],
+        'option_group_id' => 'activity_type',
+        'name' => 'Annual Leave',
+        'title' => 'Annual Leave',
+      ]);
+    }
+
+    return TRUE;
   }
 }
