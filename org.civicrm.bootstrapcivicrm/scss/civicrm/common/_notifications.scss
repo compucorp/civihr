@@ -1,6 +1,6 @@
 #crm-notification-container div {
   &.ui-notify-message {
-    border-radius: 0;
+    border-radius: $border-radius-base;
 
     div.icon {
       display: none;
@@ -44,6 +44,15 @@
     a.ui-notify-cross,
     h1 {
       color: $gray-darker;
+    }
+
+    a {
+      color: $brand-primary;
+      opacity: 0.8;
+
+      &:hover {
+        opacity: 1;
+      }
     }
 
     .notify-content {

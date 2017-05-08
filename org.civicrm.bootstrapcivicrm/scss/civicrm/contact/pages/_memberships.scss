@@ -606,38 +606,43 @@
           }
         }
 
-        tr {
-
-          td {
-
-            &.label {
-              padding: 10px 30px !important;
-              background: none !important;
-            }
-          }
+        tr td.label {
+          background: none !important;
+          padding: 10px 30px !important;
         }
       }
     }
 
     #related-contacts-memberships {
-      margin-right: -20px;
       margin-left: -20px;
+      margin-right: -20px;
     }
   }
 
   .CRM_Member_Form_Search {
     h3 {
+      background: $crm-white;
+      border-radius: $border-radius-base;
+      box-shadow: $box-shadow;
+      color: $datepicker-gray-darker;
+      font: $crm-font-weight-h2 $font-size-h2 $font-family-base;
       height: 50px;
       line-height: 50px;
-      background: $crm-white;
-      box-shadow: $box-shadow;
-      font-size: $font-size-h2;
-      font-family: $font-family-base;
-      font-weight: 600;
-      border-radius: 2px;
-      padding-left: 20px;
-      margin: 20px 0;
-      color: $datepicker-gray-darker;
+      margin: 20px 0;       
+      padding-left: 20px; 
+    }
+
+    .crm-accordion-wrapper {
+      border-radius: $panel-border-radius !important;
+    }
+
+    .crm-accordion-header {
+      border-radius: $panel-border-radius $panel-border-radius 0 0 !important;
+    }
+
+    .crm-accordion-body,
+    .crm-search-tasks {
+      border-radius: 0 0 $panel-border-radius $panel-border-radius !important;
     }
 
     .selector,
@@ -653,8 +658,8 @@
 
         th,
         td {
-          font-size: $font-size-base !important;
           font-family: $font-family-base;
+          font-size: $font-size-base !important;          
         }
 
         td {
@@ -670,11 +675,9 @@
     .selector {
       background-color: $crm-white;
 
-      tr:last-child {
-        td {
-          display: table-cell !important;
-          padding: 18px 20px 17px 20px !important;
-        }
+      tr:last-child td {       
+        display: table-cell !important;
+        padding: 18px 20px 17px 20px !important;        
       }
     }
   }
@@ -692,12 +695,8 @@
       .crm-accordion-body {
         padding: 20px !important;
 
-        tr {
-          &:first-child {
-            td {
-              padding-top: 0;
-            }
-          }
+        tr:first-child td {
+          padding-top: 0;
         }
 
         td {
@@ -737,7 +736,7 @@
       }
     }
 
-    .CRM_Member_Form_Task_PDFLetter {
+    .CRM_Member_Form_Task_PDFLetter .crm-block {
       h3 {
         background: $brand-primary;
         border-bottom: 1px solid $brand-primary;
@@ -781,10 +780,16 @@
           margin-top: -3px;
         }
       }
-    }
 
-    #crm-notification-container div.ui-notify-message-style {
-      border-radius: $border-radius-base;
+      #saveDetails {
+        padding: 15px 5px !important;
+
+        .label {
+          float: left;
+          min-width: 136px;
+          padding-top: 5px;
+        }
+      }
     }
   }
 
