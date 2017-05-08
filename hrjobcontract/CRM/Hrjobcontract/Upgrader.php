@@ -1066,6 +1066,24 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
+   * Concats data in pay_grade field to pay_scale fieldand removes pay_grade
+   * field from datbase.
+   */
+  public function upgrade_1029() {
+    $query = "
+      UPDATE civicrm_hrpay_scale
+      SET pay_scale = CONCAT(pay_scale, ' - ', pay_grade)
+      WHERE pay_scale NOT LIKE 'Not Applicable'
+    ";
+    CRM_Core_DAO::executeQuery($query);
+
+    $dropQuery = 'ALTER TABLE `civicrm_hrpay_scale` DROP `pay_grade`';
+    CRM_Core_DAO::executeQuery($dropQuery);
+
+    return true;
+  }
+
+  /**
    * Alters pension_type column to be an unsigned integer and adds a foreign
    * key referencing civicrm_contact.
    *
@@ -1239,23 +1257,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       // OptionGroup already exists
       // Skip this
     }
-  }
-  /**
-   * Concats data in pay_grade field to pay_scale fieldand removes pay_grade
-   * field from datbase.
-   */
-  public function upgrade_1026() {
-    $query = "
-      UPDATE civicrm_hrpay_scale
-      SET pay_scale = CONCAT(pay_scale, ' - ', pay_grade)
-      WHERE pay_scale NOT LIKE 'Not Applicable'
-    ";
-    CRM_Core_DAO::executeQuery($query);
-
-    $dropQuery = 'ALTER TABLE `civicrm_hrpay_scale` DROP `pay_grade`';
-    CRM_Core_DAO::executeQuery($dropQuery);
-
-    return true;
   }
 
   /**
