@@ -510,6 +510,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1028();
     $this->upgrade_1029();
     $this->upgrade_1030();
+    $this->upgrade_1031();
   }
 
   function upgrade_1001() {
@@ -1065,10 +1066,41 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
+   * Upgrader to :
+   *
+   * - Remove unused pay scales except 'Not Applicable'
+   * - Remove unused Hour Locations except 'Head Office'
+   * - Remove Duplicated 'Employee - Permanent' Contract Type
+   * - Add 'Fixed Term' Contract Type
+   * - Sort contract types alphabetically
+   * - Add 'Retirement' contract end reason
+   * - Add new contract change reason options
+   *
+   * @return TRUE
+   */
+  public function upgrade_1029() {
+    $this->up1029_removeDuplicateContractType();
+
+    $optionValues = [
+      'hrjc_contract_type' => ['Fixed Term'],
+      'hrjc_contract_end_reason' => ['Retirement'],
+      'hrjc_revision_change_reason' => ['Promotion', 'Increment', 'Disciplinary'],
+    ];
+
+    foreach ($optionValues as $optionGroup => $values) {
+      $this->addOptionValues($optionGroup, $values);
+    }
+
+    $this->up1029_sortContractTypes();
+
+    return true;
+  }
+
+  /**
    * Concats data in pay_grade field to pay_scale fieldand removes pay_grade
    * field from datbase.
    */
-  public function upgrade_1029() {
+  public function upgrade_1030() {
     $query = "
       UPDATE civicrm_hrpay_scale
       SET pay_scale = CONCAT(pay_scale, ' - ', pay_grade)
@@ -1087,9 +1119,19 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    *
    * @return bool
    */
-  public function upgrade_1030() {
+  public function upgrade_1031() {
     $query = "ALTER TABLE civicrm_hrpay_scale CHANGE periodicity pay_frequency VARCHAR(63)";
     CRM_Core_DAO::executeQuery($query);
+
+    return TRUE;
+  }
+
+  /**
+   * Makes Hour Location id field autonumeric and adds id as a primary key.
+   */
+  public function upgrade_1032() {
+    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` ADD PRIMARY KEY (`id`)');
+    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT');
 
     return TRUE;
   }
