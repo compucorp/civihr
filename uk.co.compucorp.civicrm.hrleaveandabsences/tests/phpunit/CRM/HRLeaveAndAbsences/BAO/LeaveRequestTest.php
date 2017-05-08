@@ -2300,7 +2300,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('sunday'),
       'to_date_type' => 1,
-      'toil_to_accrue' => 2,
+      'toil_to_accrue' => 2.5,
       'toil_duration' => 120,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);

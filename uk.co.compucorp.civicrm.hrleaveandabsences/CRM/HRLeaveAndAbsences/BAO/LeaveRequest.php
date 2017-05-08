@@ -221,8 +221,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateTOILToAccrueIsAValidOptionValue($params) {
-    $toilAmountOptions = self::buildOptions('toil_to_accrue', 'validate');
-    if(!array_key_exists($params['toil_to_accrue'], $toilAmountOptions) || !is_numeric($params['toil_to_accrue'])) {
+    $toilAmountOptions = array_flip(self::buildOptions('toil_to_accrue', 'validate'));
+    if(!in_array($params['toil_to_accrue'], $toilAmountOptions) || !is_numeric($params['toil_to_accrue'])) {
       throw new InvalidLeaveRequestException(
         'The TOIL to accrue amount is not valid',
         'leave_request_toil_to_accrue_is_invalid',
