@@ -212,8 +212,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Validates if the value passed to the TOIL To Accrued field is one of the
-   * options available on the hrleaveandabsences_toil_amounts option group
+   * Validates if the value passed to the TOIL To Accrue field is one of the
+   * options available on the hrleaveandabsences_toil_amounts option group and
+   * is also a numeric value.
    *
    * @param array $params
    *
@@ -221,7 +222,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    */
   private static function validateTOILToAccrueIsAValidOptionValue($params) {
     $toilAmountOptions = self::buildOptions('toil_to_accrue', 'validate');
-    if(!array_key_exists($params['toil_to_accrue'], $toilAmountOptions)) {
+    if(!array_key_exists($params['toil_to_accrue'], $toilAmountOptions) || !is_numeric($params['toil_to_accrue'])) {
       throw new InvalidLeaveRequestException(
         'The TOIL to accrue amount is not valid',
         'leave_request_toil_to_accrue_is_invalid',
