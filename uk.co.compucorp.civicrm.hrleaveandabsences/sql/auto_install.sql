@@ -335,7 +335,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_request` (
      `sickness_reason` varchar(512)    COMMENT 'One of the values of the Sickness Reason option group',
      `sickness_required_documents` varchar(10)    COMMENT 'A list of values from the LeaveRequestRequiredDocument option group',
      `toil_duration` int unsigned    COMMENT 'The duration of the overtime work in minutes',
-     `toil_to_accrue` int unsigned    COMMENT 'The amount of days accrued for this toil request',
+     `toil_to_accrue` varchar(512)    COMMENT 'The amount of days accrued for this toil request',
      `toil_expiry_date` date    COMMENT 'The expiry date of this TOIL Request. When null, it means it never expires.',
      `request_type` varchar(20) NOT NULL   COMMENT 'The type of this request (leave, toil, sickness etc)',
      `is_deleted` tinyint   DEFAULT 0 COMMENT 'Whether this leave request has been deleted or not',
