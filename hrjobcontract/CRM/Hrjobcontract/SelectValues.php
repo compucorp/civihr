@@ -39,13 +39,13 @@ class CRM_Hrjobcontract_SelectValues {
 
   /**
    * Array of insurance plan types.
-   * @var array 
+   * @var array
    */
   private static $_insurancePlanTypes = NULL;
-  
+
   /**
    * Obtains the different types of insurance plans configured in option values.
-   * 
+   *
    * @return array
    *   Array of insurance plan types found, of the form [type.value => type.label]
    */
@@ -69,9 +69,9 @@ class CRM_Hrjobcontract_SelectValues {
   }
 
   /**
-   * Obtains the different types of life insurance plans configured in option 
+   * Obtains the different types of life insurance plans configured in option
    * values.
-   * 
+   *
    * @return array
    *   Array of insurance plan types found, of the form [type.value => type.label]
    */
@@ -180,22 +180,22 @@ class CRM_Hrjobcontract_SelectValues {
    * @return array
    */
   public static function buildPayScales() {
-    $query = "SELECT id,pay_scale,currency,amount,periodicity from civicrm_hrpay_scale ".
+    $query = "SELECT id,pay_scale,currency,amount,pay_frequency FROM civicrm_hrpay_scale " .
              " WHERE is_active=1";
     $options = array();
-    
+
     $result = CRM_Core_DAO::executeQuery($query);
     while ($result->fetch()) {
       $label = $result->pay_scale;
       if (!empty($result->currency)) {
-        $label .= ' - ' . 
-          $result->currency . ' ' . 
-          $result->amount . ' per ' . 
-          $result->periodicity;
-      }      
+        $label .= ' - ' .
+          $result->currency . ' ' .
+          $result->amount . ' per ' .
+          $result->pay_frequency;
+      }
       $options[] =  array( 'id'=>$result->id, 'label'=> $label);
     }
-    
+
     return $options;
   }
 

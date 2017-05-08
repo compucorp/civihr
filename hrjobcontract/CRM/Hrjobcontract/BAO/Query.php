@@ -497,7 +497,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
               $payScaleOptions[$payScale->id] .= ' - ' .
                 $payScale->currency . ' ' .
                 $payScale->amount . ' per ' .
-                $payScale->periodicity;
+                $payScale->pay_frequency;
           }
       }
       $form->add('select', 'hrjobcontract_pay_pay_scale', ts('Pay Scale'), $payScaleOptions, FALSE,

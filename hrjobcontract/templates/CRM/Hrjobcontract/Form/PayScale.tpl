@@ -38,8 +38,8 @@
         <td class="html-adjust">{$form.currency.html} {$form.amount.html}</td>
       </tr>
       <tr>
-        <td class="label">{$form.periodicity.label}</td>
-        <td class="html-adjust">{$form.periodicity.html}</td>
+        <td class="label">{$form.pay_frequency.label}</td>
+        <td class="html-adjust">{$form.pay_frequency.html}</td>
       </tr>
       <tr>
         <td class="label">{$form.is_active.label}</td>

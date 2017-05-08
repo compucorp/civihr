@@ -10,7 +10,7 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
    * @static
    */
   static $_links = null;
-  
+
   /**
    * Get BAO Name
    *
@@ -19,7 +19,7 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
   function getBAOName() {
     return 'CRM_Hrjobcontract_BAO_PayScale';
   }
-  
+
   /**
    * Get action Links
    *
@@ -70,7 +70,7 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
     CRM_Utils_System::setTitle(ts('Pay Scale'));
     // get the requested action
     $action = CRM_Utils_Request::retrieve('action', 'String', $this, false, 'browse'); // default to 'browse'
-    
+
     // assign vars to templates
     $this->assign('action', $action);
     $id = CRM_Utils_Request::retrieve('id', 'Positive', $this, false, 0);
@@ -83,7 +83,7 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
     // parent run
     return parent::run();
   }
-  
+
   /**
    * Browse all pay scales types
    *
@@ -104,7 +104,7 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
       $payScale[$dao->id]['pay_scale'] = $dao->pay_scale;
       $payScale[$dao->id]['currency'] = $dao->currency;
       $payScale[$dao->id]['amount'] = $dao->amount;
-      $payScale[$dao->id]['periodicity'] = $dao->periodicity;
+      $payScale[$dao->id]['pay_frequency'] = $dao->pay_frequency;
       $payScale[$dao->id]['is_active'] = $dao->is_active;
 
       $payScale[$dao->id]['action'] = $this->generateActionLinks(
@@ -117,14 +117,14 @@ class CRM_Hrjobcontract_Page_PayScale extends CRM_Core_Page_Basic {
 
   /**
    * Generates action links for given pay scale ID.
-   * 
+   *
    * @param int $payScaleID
    *   ID of pay scale for which action links need to be generated
    * @param string $payScaleName
    *   Name of pay scale
    * @param boolean $isActive
    *   If pay scale is active or not
-   * 
+   *
    * @return string
    *   HTML code for the actions of given pay scale
    */

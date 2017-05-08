@@ -93,14 +93,14 @@ class CRM_Hrjobcontract_Form_PayScale extends CRM_Core_Form {
     if ($this->_action & CRM_Core_Action::DELETE) {
       return;
     }
-    
+
     $currencyFormatsKeys = array_keys(CRM_Hrjobcontract_Page_JobContractTab::getCurrencyFormats());
     $currencies = array_combine($currencyFormatsKeys, $currencyFormatsKeys);
-    
+
     $this->add('text', 'pay_scale', ts('Label'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_PayScale', 'pay_scale'), TRUE);
     $this->add('select', 'currency', ts('Currency'), array('' => ts('- select -')) + $currencies, TRUE);
     $this->add('text', 'amount', ts('Default Amount'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_PayScale', 'amount'), TRUE);
-    $this->add('select', 'periodicity', ts('Periodicity'), array('' => ts('- select -')) + CRM_Hrjobcontract_SelectValues::commonUnit(), TRUE);
+    $this->add('select', 'pay_frequency', ts('Pay Frequency'), array('' => ts('- select -')) + CRM_Hrjobcontract_SelectValues::commonUnit(), TRUE);
 
     $this->add('checkbox', 'is_active', ts('Enabled?'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_PayScale', 'is_active'));
 
@@ -118,8 +118,8 @@ class CRM_Hrjobcontract_Form_PayScale extends CRM_Core_Form {
     if (!array_key_exists('amount', $fields)) {
       $errors['amount'] = ts("Please enter Amount value");
     }
-    if (!array_key_exists('periodicity', $fields)) {
-      $errors['periodicity'] = ts("Please enter Periodicity value");
+    if (!array_key_exists('pay_frequency', $fields)) {
+      $errors['pay_frequency'] = ts("Please enter a value fro pay frequency");
     }
     return $errors;
   }
@@ -140,8 +140,8 @@ class CRM_Hrjobcontract_Form_PayScale extends CRM_Core_Form {
       // store the submitted values in an array
       $params = $this->exportValues();
 
-      foreach (array('pay_scale', 'currency', 'amount', 'periodicity') as $key => $index) {
-        if(!array_key_exists($index, $params)) {
+      foreach (array('pay_scale', 'currency', 'amount', 'pay_frequency') as $key => $index) {
+        if (!array_key_exists($index, $params)) {
           $params[$index] = 0;
         }
       }

@@ -24,7 +24,7 @@ class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseCSVP
 
     $payScale = $this->apiGet('HRPayScale', ['pay_scale' => 'E2']);
 
-    foreach($this->rows[0] as $index => $fieldName) {
+    foreach ($this->rows[0] as $index => $fieldName) {
       $this->assertEquals($this->rows[1][$index], $payScale[$fieldName]);
     }
   }
@@ -34,7 +34,7 @@ class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseCSVP
       'pay_scale',
       'currency',
       'amount',
-      'periodicity',
+      'pay_frequency',
     ];
   }
 

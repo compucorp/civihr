@@ -37,7 +37,7 @@ class CRM_HRSampleData_Cleaner_HRPayScaleTest extends CRM_HRSampleData_BaseCSVPr
       'pay_scale',
       'currency',
       'amount',
-      'periodicity',
+      'pay_frequency',
     ];
   }
 

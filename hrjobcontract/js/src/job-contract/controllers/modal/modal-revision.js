@@ -139,7 +139,7 @@ define([
                                 revisionData.pay_scale = payScaleGrade.pay_scale +
                                 (payScaleGrade.currency ? ' - ' + $rootScope.options.pay.pay_currency[payScaleGrade.currency] : '') +
                                 (payScaleGrade.amount ? ' ' + payScaleGrade.amount : '') +
-                                (payScaleGrade.periodicity ? ' per ' + payScaleGrade.periodicity : '');
+                                (payScaleGrade.pay_frequency ? ' per ' + payScaleGrade.pay_frequency : '');
                             }
                         });
                     })();

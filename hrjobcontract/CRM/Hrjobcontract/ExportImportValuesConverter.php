@@ -347,25 +347,25 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         if (isset($value)) {
             $result = $this->_payScaleOptions[$value]['pay_scale'];
             if (!empty($this->_payScaleOptions[$value]['currency'])) {
-                $result .= ' - ' . 
+                $result .= ' - ' .
                 $this->_payScaleOptions[$value]['currency'] . ' ' .
                 $this->_payScaleOptions[$value]['amount'] . ' per ' .
-                $this->_payScaleOptions[$value]['periodicity'];
+                $this->_payScaleOptions[$value]['pay_frequency'];
             }
         }
         return $result;
     }
-    
+
     /**
      * Obtains id for given pay scale. If given payscale does not exist in DB,
      * it will attempt to create it. If given payscale follows the format
-     * "%s - %s %d per %s", the information will be used to populate currency, 
-     * amount and periodicity fields for the pay scale.  Otherwise it will just 
+     * "%s - %s %d per %s", the information will be used to populate currency,
+     * amount and pay_frequency fields for the pay scale.  Otherwise it will just
      * add it with the given label and leave all other values empty.
-     * 
+     *
      * @param string $value
      *   String for pay scale / grade that needs to be imported
-     * 
+     *
      * @return int
      *   ID of given pay scale / grade
      */
@@ -383,7 +383,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
           'pay_scale' => $payScale,
           'currency' => $parts[0],
           'amount' => $parts[1],
-          'periodicity' => $parts[3]
+          'pay_frequency' => $parts[3]
         ];
       } else {
         $payScaleParams = [
@@ -396,15 +396,15 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         $payScaleParams
       ));
 
-      return ($result['count'] > 0) ? array_shift($result['values'])['id'] : $this->createPayScale($payScaleParams);      
+      return ($result['count'] > 0) ? array_shift($result['values'])['id'] : $this->createPayScale($payScaleParams);
     }
 
     /**
      * Creates pay scale using given parameters.
-     * 
+     *
      * @param array $params
      *   Fields that are to be set for new pay scale.
-     * 
+     *
      * @return int
      *   ID of created pay scale / grade
      */

@@ -74,7 +74,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     else
     {
-        //$insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1, pay_grade = %2, currency = %3, amount = %4, periodicity = %5';
         $insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1';
         CRM_Core_DAO::executeQuery($insertPayScaleQuery, $selectPayScaleParams, false);
 
@@ -1080,7 +1079,19 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $dropQuery = 'ALTER TABLE `civicrm_hrpay_scale` DROP `pay_grade`';
     CRM_Core_DAO::executeQuery($dropQuery);
 
-    return true;
+    return TRUE;
+  }
+
+  /**
+   * Rename the 'periodicity' column
+   *
+   * @return bool
+   */
+  public function upgrade_1030() {
+    $query = "ALTER TABLE civicrm_hrpay_scale CHANGE periodicity pay_frequency VARCHAR(63)";
+    CRM_Core_DAO::executeQuery($query);
+
+    return TRUE;
   }
 
   /**

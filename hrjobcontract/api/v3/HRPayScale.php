@@ -37,7 +37,7 @@ function _civicrm_api3_h_r_pay_scale_create_spec(&$spec) {
   $spec['pay_scale']['api.default'] = '';
   $spec['currency']['api.default'] = '';
   $spec['amount']['api.default'] = 0;
-  $spec['periodicity']['api.default'] = '';
+  $spec['pay_frequency']['api.default'] = '';
 }
 
 /**
@@ -72,5 +72,3 @@ function civicrm_api3_h_r_pay_scale_delete($params) {
 function civicrm_api3_h_r_pay_scale_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
-
-
