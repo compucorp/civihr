@@ -2246,4 +2246,32 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertNotNull($toilRequest->id);
   }
+
+  public function testToilToAccrueAmountIsSavedCorrectlyWhenAmountToAccrueIsAFloatingNumber() {
+    $toilToAccrueAmounts = [1.5, 1.8, 2.5];
+    foreach ($toilToAccrueAmounts as $toilToAccrueAmount) {
+      LeaveRequestFabricator::fabricateWithoutValidation([
+        'contact_id' => 1,
+        'type_id' => 1,
+        'toil_to_accrue'=> $toilToAccrueAmount,
+        'from_date' => CRM_Utils_Date::processDate('yesterday'),
+        'to_date' => CRM_Utils_Date::processDate('today'),
+        'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+      ]);
+    }
+
+    $toilAccrued = new LeaveRequest();
+    $toilAccrued->request_type = LeaveRequest::REQUEST_TYPE_TOIL;
+    $toilAccrued->find();
+    $this->assertEquals(3, $toilAccrued->N);
+
+    $toilAmounts = [];
+    while($toilAccrued->fetch()){
+      $toilAmounts[] = $toilAccrued->toil_to_accrue;
+    }
+
+    //check that the toil accrued amount was saved in the db correctly
+    sort($toilAmounts);
+    $this->assertEquals($toilAmounts, $toilToAccrueAmounts);
+  }
 }
