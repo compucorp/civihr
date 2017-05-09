@@ -14,6 +14,23 @@ function hrcore_civicrm_config(&$config) {
 }
 
 /**
+ * Implements hook_civicrm_searchTasks().
+ *
+ * @param $objectName
+ * @param $tasks
+ */
+function hrcore_civicrm_searchTasks($objectName, &$tasks) {
+  // todo according to Mike this should be "Create new users"
+  if ($objectName !== 'contact' || !CRM_Core_Permission::check('administer CiviCRM')) {
+    return;
+  }
+
+  $tasks[] = [
+    'title'  => ts('Create User Record'),
+    'class'  => 'CRM_HRCore_Form_CreateUserRecordTaskForm',
+  ];
+}
+/**
  * Implements hook_civicrm_xmlMenu().
  *
  * @param array $files
