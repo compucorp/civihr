@@ -27,9 +27,15 @@
   tr,
   tr td {
     border: initial;
+    border-bottom: solid 1px $table-border-color;
     line-height: 35px;
     padding-left: 15px;
-    border-bottom: solid 1px $table-border-color;
+  }
+
+  tr:last-child {
+    background: transparent !important;
+    border: none;
+    border-radius: 0 0 $border-radius-base $border-radius-base;
   }
 
   td .crm-hover-button {
@@ -38,25 +44,8 @@
 
     &,
     * {
+      color: $brand-primary !important;
       text-transform: capitalize !important;
-    }
-
-    &:not(:hover) {
-      &,
-      * {
-        color: $brand-primary !important;
-      }
-
-      a {
-        color: $crm-copy !important;
-      }
-    }
-
-    &:hover {
-      &,
-      * {
-        color: $gray-dark !important;
-      }
     }
   }
 }
@@ -69,7 +58,7 @@
   }
 
   td {
-    background: #fff !important;
+    background: $crm-white !important;
 
     &.label {
       vertical-align: middle !important;
@@ -99,6 +88,10 @@
     }
 
     &:last-child td {
+      .crm-hover-button:hover {
+        color: $brand-primary !important;
+      }
+
       &:first-child {
         border-bottom-left-radius: $border-radius-base;
       }
