@@ -158,11 +158,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS civicrm_hrhours_location");
     CRM_Core_DAO::executeQuery("
         CREATE TABLE IF NOT EXISTS `civicrm_hrhours_location` (
-        `id` int(10) unsigned NOT NULL,
+          `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
           `location` varchar(63) DEFAULT NULL,
           `standard_hours` int(4) DEFAULT NULL,
           `periodicity` varchar(63) DEFAULT NULL,
-          `is_active` tinyint(4) DEFAULT '1'
+          `is_active` tinyint(4) DEFAULT '1',
+          PRIMARY KEY(id)
         ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
       ");
       CRM_Core_DAO::executeQuery("
