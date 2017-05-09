@@ -304,63 +304,100 @@
   .CRM_Contribute_Form_Search {
     .crm-search-tasks {
       background-color: $crm-white;
+      border-radius: 0 0 $panel-border-radius $panel-border-radius;
+    }
 
-      td {
-        padding: 10px 20px;
-      }
+    .crm-search-tasks input[type="radio"]:checked + label[for]:after {
+      top: 7px;
+    }
+
+    .crm-search-tasks td {
+      padding: 10px 20px;
     }
 
     .selector {
       @include mx-expandable-table();
 
-      tr {
-        &:not(.crm-child-row) {
-          > td {
-            word-break: normal !important;
+      thead.sticky {
+        background: transparent;
+      }
+
+      th:not(:last-child) {
+        padding-right: 10px !important;
+      }
+
+      tr:not(.crm-child-row) {
+        > td {          
+          max-width: 80px;
+          min-width: auto;
+          vertical-align: middle;
+          word-break: normal !important;
+
+          &:not(:last-child) {
+            padding-right: 10px !important;
+          }
+
+          &:not(:first-child) {
+            min-width: 50px;
+          }
+
+          &:first-child {
+            display: table-cell !important;
             min-width: auto;
-            vertical-align: middle;
+          }
 
-            &:not(:first-child) {
-              min-width: 50px;
-            }
+          &:nth-child(2) {
+            align-items: center;
+            display: flex;
+            padding: 17px 20px !important;
 
-            &:first-child {
-              display: table-cell !important;
-              min-width: auto;
+            a:nth-child(2) {
+              display: inline-block;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              width: 100px;
             }
+          }
 
-            &:nth-child(2) {
-              display: flex;
-              align-items: center;
-              padding: 17px 20px !important;
-            }
+          &:nth-child(4), &:nth-child(5),
+          &:nth-child(7), &:nth-child(9) {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
 
-            &.crm-contribution-amount {
-              .crm-expand-row {
-                &:after {
-                  top: 2px;
-                }
-              }
-            }
+          &:nth-child(6) {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          &:last-child {
+            max-width: 140px;
+            width: 140px;
+          }
+
+          &.crm-contribution-amount .crm-expand-row:after {
+            top: 2px;
           }
         }
 
         th {
           background-color: $gray-lighter !important;
 
-          &:first-child {
-            .sticky-header {
-              padding-left: 20px !important;
-            }
+          &:first-child .sticky-header {
+            padding-left: 20px !important;
           }
         }
 
         .sticky-header {
-          border-bottom: 1px solid $crm-dark-grayblue;
           background-color: $gray-lighter;
-          z-index: 20;
-          padding-top: 20px !important;
+          border-bottom: 1px solid $crm-dark-grayblue;
           padding-bottom: 15px !important;
+          padding-top: 20px !important;
+          z-index: 20;
 
           .crm-form-checkbox {
             margin-top: 0;
@@ -369,97 +406,100 @@
       }
     }
 
-    .crm-accordion-body {
-      #_qf_Search_refresh {
-        color: $crm-white;
-        background: $brand-primary;
-        border-color: $brand-primary;
-        text-shadow: none;
-        font-size: $font-size-base;
-        font-family: $font-family-base;
-        text-transform: uppercase;
-        padding: 8px 12px;
-        border-radius: 2px;
+    #contributionSearch {
+      .description {
+        background: $crm-light-green-color;
+        border-radius: $border-radius-base;
+        box-shadow: $box-shadow;
+        color: $gray-darker;
+        margin: 15px 0;
+        padding: 10px 20px !important;
       }
 
-      > .form-layout {
-        > tbody {
-          > tr {
-            &:nth-child(2) {
-              > td {
-                width: 30%;
+      .crm-ajax-container {
+        border-width: 1px 2px 2px;
+      }
+    }
 
-                label {
-                  display: block;
-                }
-              }
-            }
+    .crm-pager {
+      border-radius: $border-radius-base;
+      margin: 0;
+    }
 
-            &:nth-child(5) {
-              > td:first-child {
-                .crm-form-text {
-                  min-width: 100px !important;
-                  width: 100px !important;
-                }
-              }
-            }
+    table + .crm-pager {
+      border-radius: 0 0 $border-radius-base $border-radius-base;
+      box-shadow: $crm-form-item-shadow;
+    }
 
-            &:nth-child(14) {
-              > td {
-                width: 100%;
-              }
-            }
+    .crm-accordion-header {
+      border-radius: $panel-border-radius $panel-border-radius 0 0 !important;
+    }
 
-            &:nth-child(11) {
-              > td:last-child {
-                > label:first-child {
-                  padding-right: 10px;
-                }
-              }
-            }
+    .crm-accordion-body {
+      border-radius: 0 0 $panel-border-radius $panel-border-radius !important;
 
-            .select2-container-multi {
-              max-width: 230px;
-            }
+      #_qf_Search_refresh {
+        background: $brand-primary;
+        border-color: $brand-primary;
+        border-radius: $border-radius-base;
+        color: $crm-white;
+        font-size: $font-size-base;
+        font-family: $font-family-base;
+        padding: 8px 12px;
+        text-shadow: none;        
+        text-transform: uppercase; 
+      }
 
-            .crm-hover-button.crm-clear-link {
-              position: relative;
-              top: -2px;
-            }
+      > .form-layout > tody > tr {
+        &:nth-child(2) > td {
+          width: 30%;
 
-            &:nth-child(8) {
-              table {
-                tr td:first-child {
-                  vertical-align: middle;
-                  padding-right: 10px !important;
-                }
-              }
-            }
-
-            &:nth-child(14) {
-              td {
-                padding: 0;
-
-                .crm-accordion-body {
-                  padding: 15px 30px !important;
-                }
-              }
-            }
-
-            &:last-child {
-              td {
-                border-top: 1px solid $crm-background;
-              }
-            }
-
-            td {
-              table {
-                td {
-                  padding: 0 !important;
-                }
-              }
-            }
+          label {
+            display: block;
           }
+        }
+
+        &:nth-child(5) > td:first-child .crm-form-text {
+          min-width: 100px !important;
+          width: 100px !important;
+        }
+
+        &:nth-child(14) > td {
+          width: 100%;
+        }
+
+        &:nth-child(11) > td:last-child > label:first-child {
+          padding-right: 10px;
+        }
+
+        .select2-container-multi {
+          max-width: 230px;
+        }
+
+        .crm-hover-button.crm-clear-link {
+          position: relative;
+          top: -2px;
+        }
+
+        &:nth-child(8) table tr td:first-child {
+          padding-right: 10px !important;
+          vertical-align: middle;             
+        }
+
+        &:nth-child(14) td {
+          padding: 0;
+
+          .crm-accordion-body {
+            padding: 15px 30px !important;
+          }
+        }
+
+        &:last-child td {
+            border-top: 1px solid $crm-background;
+        }
+
+        td table td {          
+          padding: 0 !important;          
         }
       }
     }
@@ -704,11 +744,21 @@
 
   .selector {
     @include mx-expandable-table();
-    display: block;
-    overflow-x: auto;
+    
+    tbody tr td {
+      &:nth-child(3) {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
 
-    td {
-      white-space: nowrap;
+      &:nth-child(4) {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
   }
 
@@ -752,12 +802,16 @@
 
 .CRM_Contribute_Form_Contribution {
   .crm-accordion-header {
-    font-weight: 600 !important;
     font-family: $font-family-base;
+    font-weight: $crm-font-weight-h1 !important;
   }
 
   &#Contribution .crm-accordion-body {
     padding: 15px 20px !important;
+  }
+
+  .custom-group-Donor_Information input[type="radio"]:checked + label[for]:after {
+    top: 15px;
   }
 
   #customData,

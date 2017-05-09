@@ -118,6 +118,7 @@
   @extend %civihr-table;
   background: transparent;
   border: none;
+  border-radius: $panel-border-radius;
   font-family: $font-family-base;
   width: 100% !important;
 
