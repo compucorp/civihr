@@ -263,10 +263,7 @@ define([
         loadAllRequests();
       });
 
-      $rootScope.$on('LeaveRequest::updatedByManager', function () {
-        leaveRequestAPICache = false;
-        vm.refresh();
-      });
+      registerEvents();
     })();
 
     /**
@@ -488,6 +485,21 @@ define([
           "IN": statusFilter
         }
       }
+    }
+
+    /**
+     * Register events which will be called by other modules
+     */
+    function registerEvents() {
+      $rootScope.$on('LeaveRequest::updatedByManager', function () {
+        leaveRequestAPICache = false;
+        vm.refresh();
+      });
+
+      $rootScope.$on('LeaveRequest::new', function () {
+        leaveRequestAPICache = false;
+        vm.refresh();
+      });
     }
 
     return vm;
