@@ -187,6 +187,31 @@
         display: none;
       }
     }
+
+    .CRM_Member_Form_MembershipRenewal {
+      .crm-button {
+        border: none;
+      }
+
+      .crm-button .crm-form-submit.cancel {
+        border: 1px solid $gray-darker;
+        color: $gray-darker !important;
+
+        &:hover {
+          background-color: $crm-copy;
+          border-color: $gray-darker;
+          color: $crm-white !important;
+        }
+      }
+
+      .crm-button .crm-i {
+        left: 0.7em;
+      }
+
+      #help {
+        margin-bottom: 15px;
+      }
+    }
   }
 
   .CRM_Member_Form_Membership {
