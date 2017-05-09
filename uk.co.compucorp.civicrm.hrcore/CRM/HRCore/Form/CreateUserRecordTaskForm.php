@@ -1,6 +1,7 @@
 <?php
 
 use CRM_Utils_Array as ArrayHelper;
+use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 
 class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
 
@@ -26,8 +27,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
     $method = 'post',
     $name = NULL
   ) {
-    // todo change to container get()
-    $this->drupalUserService = new DrupalUserService();
+    $this->drupalUserService = Civi::container()->get('drupal_user_service');
     parent::__construct($state, $action, $method, $name);
   }
 
@@ -52,7 +52,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
    * Process the form after the input has been submitted and validated.
    */
   public function postProcess() {
-    foreach ($this->getValidContactForCreation() as $contact) {
+    foreach ($this->getValidContactsForCreation() as $contact) {
       $this->createAccount($contact['work_email']);
     }
   }
@@ -62,12 +62,11 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
    *
    * @return array
    */
-  private function getValidContactForCreation() {
-    return array_diff(
-      $this->contactDetails,
-      $this->getContactsWithout('work_email'),
-      $this->getContactsWithout('uf_id')
-    );
+  private function getValidContactsForCreation() {
+    $missingEmail = $this->getContactsWithout('work_email');
+    $haveNoAccount = $this->getContactsWithout('uf_id');
+
+    return array_diff_key($haveNoAccount, $missingEmail);
   }
 
   /**
