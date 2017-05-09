@@ -23,6 +23,21 @@
       "label": "Leave and Absences: Manager Leave Requests: Show staff edit sickness request",
       "url": "manager-leave#/manager-leave/requests",
       "onReadyScript": "ssp-leave-absences/manager/leave-requests-of-staff-edit-sickness"
+    },
+    {
+      "label": "Leave and Absences: Manager Leave Requests: Apply leave on behalf of staff",
+      "url": "manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/leave-requests-on-behalf-of-staff"
+    },
+    {
+      "label": "Leave and Absences: Manager Leave Requests: Apply sickness on behalf of staff",
+      "url": "manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/sick-requests-on-behalf-of-staff"
+    },
+    {
+      "label": "Leave and Absences: Manager Leave Requests: Apply toil on behalf of staff",
+      "url": "manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/toil-requests-on-behalf-of-staff"
     }
   ]
 }

@@ -80,5 +80,38 @@ module.exports = (function () {
         }.bind(this));
       }.bind(this));
     },
+    /**
+     * Apply leave on behalf of staff
+     * @param {String} row number corresponding to leave request in the list like leave, sickness or toil
+     * @return {Promise}
+     */
+    applyLeaveForStaff: function (leaveType) {
+      var casper = this.casper;
+
+      return new Promise(function (resolve) {
+        casper.then(function () {
+          if (leaveType === 'leave') {
+            casper.click('.button-container button:first-child');
+          }
+          else {
+            casper.click('.button-container button:nth-child(2)');
+          }
+        });
+
+        casper.then(function () {
+          if (leaveType === 'sickness') {
+            casper.click('.button-container li:nth-child(1) a');
+          }
+          else if (leaveType === 'toil') {
+            casper.click('.button-container li:nth-child(2) a');
+          }
+        });
+
+        casper.then(function () {
+          //as there are multiple spinners it takes more time to load up
+          resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
+        }.bind(this));
+      }.bind(this));
+    }
   });
 })();

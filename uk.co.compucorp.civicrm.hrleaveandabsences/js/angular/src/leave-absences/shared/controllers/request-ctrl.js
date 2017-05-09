@@ -975,7 +975,8 @@ define([
       function loadManagees() {
         return Contact.find(this.directiveOptions.contactId)
           .then(function (contact) {
-            return contact.leaveManagees()
+            //{options: {limit:0}} - Load all contacts instead of 25
+            return contact.leaveManagees({ options: { limit: 0 } });
           })
           .then(function (contacts) {
             this.managedContacts = contacts;
