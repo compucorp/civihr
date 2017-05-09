@@ -1,14 +1,18 @@
 <?php
 
-class DrupalUserService {
+use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
+
+class CRM_HRCore_Service_DrupalUserService {
   /**
    * @var DrupalRoleService
    */
   protected $roleService;
 
-  public function __construct() {
-    // todo move to container get()
-    $this->roleService = new DrupalRoleService();
+  /**
+   * @param DrupalRoleService $roleService
+   */
+  public function __construct(DrupalRoleService $roleService) {
+    $this->roleService = $roleService;
   }
 
   /**
