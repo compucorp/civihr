@@ -1755,7 +1755,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage The TOIL to accrue amount is not valid
    */
-  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilButToilToAccruedItNotAValidAmount() {
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilToAccrueIsNotAValidAmount() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
@@ -1772,6 +1772,67 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'toil_duration' => 1000,
       'toil_to_accrue' => 10,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The TOIL to accrue amount is not valid
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilToAccrueIsNotNumeric() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
+    ]);
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_accruals_request' => true]);
+
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_duration' => 1000,
+      'toil_to_accrue' => "4 days",
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The TOIL to accrue amount is not valid
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilToAccrueIsAValidAmountButNotNumeric() {
+   //create an option value that is non numeric for toil amount option group
+    $toilAmount = '10 Days';
+    $result = civicrm_api3('OptionValue', 'create',[
+      'option_group_id' => 'hrleaveandabsences_toil_amounts',
+      'value' => $toilAmount,
+      'label' => 'Ten Days',
+    ]);
+
+    //check that option value was successfully created
+    $this->assertNotNull($result['id']);
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
+    ]);
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_accruals_request' => true]);
+
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
+      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
+      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'toil_duration' => 1000,
+      'toil_to_accrue' => $toilAmount,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
   }
@@ -2239,11 +2300,39 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('sunday'),
       'to_date_type' => 1,
-      'toil_to_accrue' => 2,
+      'toil_to_accrue' => 2.5,
       'toil_duration' => 120,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
     $this->assertNotNull($toilRequest->id);
+  }
+
+  public function testToilToAccrueAmountIsSavedCorrectlyWhenAmountToAccrueIsAFloatingNumber() {
+    $toilToAccrueAmounts = [1.5, 1.8, 2.5];
+    foreach ($toilToAccrueAmounts as $toilToAccrueAmount) {
+      LeaveRequestFabricator::fabricateWithoutValidation([
+        'contact_id' => 1,
+        'type_id' => 1,
+        'toil_to_accrue'=> $toilToAccrueAmount,
+        'from_date' => CRM_Utils_Date::processDate('yesterday'),
+        'to_date' => CRM_Utils_Date::processDate('today'),
+        'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+      ]);
+    }
+
+    $toilAccrued = new LeaveRequest();
+    $toilAccrued->request_type = LeaveRequest::REQUEST_TYPE_TOIL;
+    $toilAccrued->find();
+    $this->assertEquals(3, $toilAccrued->N);
+
+    $toilAmounts = [];
+    while($toilAccrued->fetch()){
+      $toilAmounts[] = $toilAccrued->toil_to_accrue;
+    }
+
+    //check that the toil accrued amount was saved in the db correctly
+    sort($toilAmounts);
+    $this->assertEquals($toilAmounts, $toilToAccrueAmounts);
   }
 }
