@@ -2,6 +2,12 @@
 
 require_once 'hrcore.civix.php';
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference as Reference;
+use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
+use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
+
 /**
  * Implements hook_civicrm_config().
  *
@@ -30,6 +36,20 @@ function hrcore_civicrm_searchTasks($objectName, &$tasks) {
     'class'  => 'CRM_HRCore_Form_CreateUserRecordTaskForm',
   ];
 }
+
+/**
+ * Implements hook_civicrm_container().
+ *
+ * @param ContainerBuilder $container
+ */
+function hrcore_civicrm_container($container) {
+  $container->register('drupal_role_service', DrupalRoleService::class);
+  $container->setDefinition(
+    'drupal_user_service',
+    new Definition(DrupalUserService::class, [new Reference('drupal_role_service')])
+  );
+}
+
 /**
  * Implements hook_civicrm_xmlMenu().
  *

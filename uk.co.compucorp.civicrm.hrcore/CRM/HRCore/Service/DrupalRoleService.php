@@ -1,6 +1,7 @@
 <?php
 
-class DrupalRoleService {
+class CRM_HRCore_Service_DrupalRoleService {
+
   /**
    * @var array
    */
