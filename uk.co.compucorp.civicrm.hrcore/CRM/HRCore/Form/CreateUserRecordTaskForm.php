@@ -77,9 +77,9 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
    * @return object
    */
   private function createAccount($email) {
-    $user = $this->drupalUserService->createNew($email);
-    $user->status = 1; // unblock user (will send invitation mail)
-    $this->drupalUserService->addRoles($user, ['civihr_staff']);
+    $defaultRoles = ['civihr_staff'];
+    $user = $this->drupalUserService->createNew($email, TRUE, $defaultRoles);
+    $this->drupalUserService->sendActivationMail($user);
 
     return $user;
   }
