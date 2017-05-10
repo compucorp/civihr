@@ -90,12 +90,9 @@ module.exports = (function () {
 
       return new Promise(function (resolve) {
         casper.then(function () {
-          if (leaveType === 'leave') {
-            casper.click('.button-container button:first-child');
-          }
-          else {
-            casper.click('.button-container button:nth-child(2)');
-          }
+          var selector = '.button-container button:nth-child('+ (leaveType === 'leave' ? 1 : 2) +')';
+
+          casper.click(selector);
         });
 
         casper.then(function () {
