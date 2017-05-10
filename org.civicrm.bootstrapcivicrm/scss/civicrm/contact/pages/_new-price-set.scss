@@ -68,7 +68,15 @@
 
     .action-link {
       background: $crm-white !important;
-      padding: 20px !important; 
+      padding: 20px !important;
+
+      &:first-child {
+        background: $gray-lighter !important;
+      }
+
+      &:last-child {
+        border-top: 1px solid $crm-background;
+      }
     }
 
     .dataTables_wrapper {
