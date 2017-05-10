@@ -241,7 +241,7 @@ define([
      */
     vm.refreshWithFilter = function (status) {
       vm.filters.leaveRequest.leaveStatus = status;
-      refreshFromServer();
+      refreshWithoutCache();
     };
 
     /**
@@ -497,14 +497,14 @@ define([
      * Register events which will be called by other modules
      */
     function registerEvents() {
-      $rootScope.$on('LeaveRequest::updatedByManager', refreshFromServer);
-      $rootScope.$on('LeaveRequest::new', refreshFromServer);
+      $rootScope.$on('LeaveRequest::updatedByManager', refreshWithoutCache);
+      $rootScope.$on('LeaveRequest::new', refreshWithoutCache);
     }
 
     /**
      * Refresh leave requests from server
      */
-    function refreshFromServer() {
+    function refreshWithoutCache() {
       leaveRequestAPICache = false;
 
       vm.refresh()
