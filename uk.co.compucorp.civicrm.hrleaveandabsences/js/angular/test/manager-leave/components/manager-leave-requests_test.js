@@ -369,7 +369,7 @@
         var mockStatus;
 
         beforeEach(function () {
-          spyOn(controller, 'refresh');
+          spyOn(controller, 'refresh').and.callThrough();
           mockStatus = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
           controller.refreshWithFilter(mockStatus);
         });
@@ -880,6 +880,18 @@
           }));
         }
       });
+
+      describe('when new leave request is created', function() {
+        beforeEach(function() {
+          spyOn(controller,'refresh').and.callThrough();
+          $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+        });
+
+        it('refreshes the report', function() {
+          expect(controller.refresh).toHaveBeenCalled();
+        });
+      });
+
       function compileComponent() {
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;
