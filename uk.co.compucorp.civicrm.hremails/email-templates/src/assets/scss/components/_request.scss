@@ -41,6 +41,7 @@
 
   &-key {
 
+    div,
     span {
       color: $gray-darker;
       font-weight: 600;
@@ -71,21 +72,24 @@
   }
 }
 
-.request-data-large {
-
-  dt {
-    width: 200px;
-  }
-}
-
-
 .request-data-toil {
-  line-height: 2.5;
 
+  div,
   span {
-    border: 1px solid $medium-gray;
-    display: inline-block;
-    text-align: center;
-    width: 100px;
+    padding: 10px 0;
+
+    // trick necessary for Outlook, otherwise the div doesn't get
+    // rendered with the padding
+    border: 1px solid $callout-background;
+  }
+
+  .request-data-value {
+
+    span {
+      border-color: $medium-gray;
+      display: inline-block;
+      text-align: center;
+      width: 100px;
+    }
   }
 }

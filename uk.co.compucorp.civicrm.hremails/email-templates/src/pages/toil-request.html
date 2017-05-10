@@ -8,27 +8,59 @@ request-type: TOIL
   <row class="collapse">
     <columns>
       {{> callout-header title="Leave Request Type"}}
-      <callout class="request-data request-data-large">
-        <dl>
-          <dt>{ts}Status:{/ts}</dt>
-          <dd>{$leaveStatus}</dd>
-          <dt>{ts}Staff Member:{/ts}</dt>
-          <dd>{contact.display_name}</dd>
-          {if $leaveRequest->from_date eq $leaveRequest->to_date}
-            <dt>Date:</dt>
-            <dd>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</dd>
-          {else}
-            <dt>{ts}From Date:{/ts}</dt>
-            <dd>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</dd>
-            <dt>{ts}To Date:{/ts}</dt>
-            <dd>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</dd>
-          {/if}
-          <div class="request-data-toil">
-            <dt>{ts}No. TOIL Days Requested:{/ts}</dt>
-            <dd><span>{$leaveRequest->toil_to_accrue}{if $leaveRequest->toil_to_accrue > 1}days{else}day{/if}</span></dd>
-          </div>
-        </dl>
+      <callout class="request-data">
+        <row>
+          <columns class="request-data-key" large="3">
+            <span>{ts}Status:{/ts}</span>
+          </columns>
+          <columns class="request-data-value">
+            <span>{$leaveStatus}</span>
+          </columns>
+        </row>
+        <row>
+          <columns class="request-data-key" large="3">
+            <span>{ts}Staff Member:{/ts}</span>
+          </columns>
+          <columns class="request-data-value">
+            <span>{contact.display_name}</span>
+          </columns>
+        </row>
+        {if $leaveRequest->from_date eq $leaveRequest->to_date}
+          <row>
+            <columns class="request-data-key" large="3">
+              <span>Date:</span>
+            </columns>
+            <columns class="request-data-value">
+              <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+            </columns>
+          </row>
+        {else}
+          <row>
+            <columns class="request-data-key" large="3">
+              <span>{ts}From Date:{/ts}</span>
+            </columns>
+            <columns class="request-data-value">
+              <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+            </columns>
+            <columns class="request-data-key" large="3">
+              <span>{ts}To Date:{/ts}</span>
+            </columns>
+            <columns class="request-data-value">
+              <span>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</span>
+            </columns>
+          </row>
+        {/if}
+        <row class="request-data-toil">
+          <columns class="request-data-key" large="4">
+            <!-- div is necessary because of Outlook's rendering problems -->
+            <div>{ts}No. TOIL Days Requested:{/ts}</div>
+          </columns>
+          <columns class="request-data-value">
+            <span>{$leaveRequest->toil_to_accrue}{if $leaveRequest->toil_to_accrue > 1}days{else}day{/if}</span>
+          </columns>
+        </row>
       </callout>
+      <spacer></spacer>
       <button href="{$leaveRequestLink}" class="expanded alert">View This Request</button>
       {if $leaveComments}
         <hr>
@@ -36,15 +68,21 @@ request-type: TOIL
         <callout class="callout-no-padding">
           <div class="request-comments">
             {foreach from=$leaveComments item=value key=label}
-              <div class="request-comment">
-                <div class="request-comment-header">
-                  <span class="request-comment-author">{$value.commenter}:</span>
-                  <span class="request-comment-datetime">{$value.created_at|crmDate}</span>
-                </div>
-                <div class="request-comment-body">
-                  {$value.text}
-                </div>
-              </div>
+              <table class="request-comment">
+                <tbody>
+                  <tr>
+                    <td class="request-comment-header">
+                      <span class="request-comment-author">{$value.commenter}:</span>
+                      <span class="request-comment-datetime">{$value.created_at|crmDate}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="request-comment-body">
+                      {$value.text}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             {/foreach}
           </div>
         </callout>
