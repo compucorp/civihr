@@ -406,13 +406,19 @@
       }
     }
 
-    #contributionSearch .description {
-      background: $crm-light-green-color;
-      border-radius: $border-radius-base;
-      box-shadow: $box-shadow;
-      color: $gray-darker;
-      margin: 15px 0;
-      padding: 10px 20px !important;
+    #contributionSearch {
+      .description {
+        background: $crm-light-green-color;
+        border-radius: $border-radius-base;
+        box-shadow: $box-shadow;
+        color: $gray-darker;
+        margin: 15px 0;
+        padding: 10px 20px !important;
+      }
+
+      .crm-ajax-container {
+        border-width: 1px 2px 2px;
+      }
     }
 
     .crm-pager {
@@ -558,76 +564,93 @@
   }
 
   #page {
-    padding: 20px 0 40px 0;
     margin-right: 40px;
     margin-left: 40px;
+    padding: 20px 0 40px 0;
   }
 
   .help {
+    border-radius: $border-radius-base $border-radius-base 0 0;
     padding: 15px 20px !important;
   }
 
   #Contribution {
 
-    td.label,
+    > .crm-form-block > .form-layout-compressed td.label {
+      padding: 10px 20px !important;
+    }
+
     div.label {
       padding: 0 20px !important;
       width: 190px;
     }
 
+    td {
+      color: $crm-copy;
+
+      &.label {
+        width: 190px;
+      }
+    }
+
     .crm-accordion-body {
       padding: 15px 0 !important;
 
-      tr {
-        td {
-          padding: 0;
+      tr td {
+        color: $crm-copy;
+        padding: 0;
+      }
 
-          &:first-child {
-            padding: 0 20px !important;
+      tr td:first-child label {
+        padding: 0 !important;
+      }
 
-            label {
-              padding: 0 !important;
-            }
-          }
+      tr td:not(.label) {
+        width: 100%;
+      }
 
-          &:not(.label) {
-            width: 100%;
-          }
+      tr td .label {
+        padding: 10px 0 !important;
+      }
+
+      tr [id*="soft-credit-row"] td {
+        &:first-child {
+          padding-left: 0 !important;
+          padding-right: 10px !important;
         }
 
-        &[id*="soft-credit-row"] {
-          td {
-            &:first-child {
-              padding: 0 !important;
-            }
-
-            label {
-              min-width: 205px;
-            }
-          }
+        label {
+          margin-right: 10px;
+          min-width: 205px;
         }
       }
 
       table {
         &.crm-contribution-form-table-credit_to_pcp,
         &.crm-soft-credit-block {
-          tr {
-            td {
-              padding: 0 !important;
-            }
-          }
+          tr td {
+            min-height: 40px;
+            padding: 0 10px 10px 0 !important;
+            vertical-align: middle !important;
+          }  
+
+          .select2-container, input {
+            margin: 0 !important;
+          }      
         }
       }
 
-      #id-premium {
-        td {
-          display: table-cell;
+      .crm-contribution-form-block-pcp_details {
+        left: -189px;
+      }
 
-          &:first-child {
-            width: 190px;
-            min-width: 190px;
-            padding: 15px 20px !important;
-          }
+      #id-premium td {
+        display: table-cell;
+
+        &:first-child {
+          min-width: 190px;
+          padding: 15px 20px 15px 0 !important;
+          width: 190px;
         }
       }
     }
@@ -795,6 +818,12 @@
   }
 }
 
+.ui-dialog-content .CRM_Contribute_Form_Contribution {
+  .custom-group-Donor_Information input[type="radio"]:checked + label[for]:after {
+    top: 15px;
+  }
+}
+
 .CRM_Contribute_Form_Contribution {
   .crm-accordion-header {
     font-family: $font-family-base;
@@ -803,10 +832,6 @@
 
   &#Contribution .crm-accordion-body {
     padding: 15px 20px !important;
-  }
-
-  .custom-group-Donor_Information input[type="radio"]:checked + label[for]:after {
-    top: 15px;
   }
 
   #customData,
@@ -934,9 +959,19 @@
   }
 
   #recurringPaymentBlock {
+    strong {
+      color: $gray-darker;
+    }
+
+    input, .select2-container {
+      margin-bottom: 5px;
+      margin-top: 0;
+    }
+
     .description {
       display: block;
       line-height: 1.5em;
+      margin-top: 5px;
     }
   }
 
@@ -945,8 +980,8 @@
   }
 
   textarea {
+    padding: 0 5px;
     vertical-align: middle;
-    padding: 0px 5px;
   }
 
   .select2-container {
@@ -957,28 +992,22 @@
     padding-right: 30px !important;
   }
 
-  div {
-    &.description {
-      display: block;
-      line-height: 1.5em;
-      padding-bottom: 10px;
-    }
+  div.description {
+    display: block;
+    line-height: 1.5em;
+    padding-bottom: 10px;
   }
 
   .credit_card_info-section,
   .billing_name_address-section {
-    .label {
-      label {
-        display: inline-block;
-        width: 105px;
-        text-align: left;
-      }
+    .label label {
+      display: inline-block;
+      text-align: left;
+      width: 105px;
     }
 
-    .billing_middle_name-section {
-      label {
-        width: 120px;
-      }
+    .billing_middle_name-section label {
+      width: 120px;
     }
 
     .cvv2-section {
