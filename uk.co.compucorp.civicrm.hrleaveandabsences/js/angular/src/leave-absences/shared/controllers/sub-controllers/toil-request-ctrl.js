@@ -46,8 +46,8 @@ define([
        */
       vm.calculateToilExpiryDate = function () {
         if (!vm.request.from_date) {
-          vm.error = 'Please select from date to find expiry date';
-          return $q.reject(vm.error);
+          vm.errors = ['Please select from date to find expiry date'];
+          return $q.reject(vm.errors);
         }
 
         //If manager has already altered then it will directly show that date.
@@ -106,7 +106,7 @@ define([
             vm.updateBalance();
           })
           .catch(function (error) {
-            vm.error = error;
+            vm.errors = [error];
           });
       };
 

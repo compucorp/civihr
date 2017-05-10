@@ -331,10 +331,12 @@ define([
       "count": 1,
       "values": {
         "from_date": [
-          "overlaps_existing_leave_request"
+          "Error 1",
+          "Error 2"
         ],
         "to_date": [
-          "overlaps_existing_leave_request"
+          "Error 3",
+          "Error 4"
         ]
       }
     },

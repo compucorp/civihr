@@ -178,7 +178,7 @@
               });
 
               it('is successful', function () {
-                expect($ctrl.error).toBeNull();
+                expect($ctrl.errors.length).toBe(0);
                 expect($ctrl.request.id).toBeDefined();
               });
 
@@ -198,7 +198,7 @@
                 });
 
                 it('saves without errors', function () {
-                  expect($ctrl.error).toBeNull();
+                  expect($ctrl.errors.length).toBe(0);
                 });
               });
             });

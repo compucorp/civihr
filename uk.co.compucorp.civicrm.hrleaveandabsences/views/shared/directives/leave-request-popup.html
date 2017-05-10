@@ -349,12 +349,12 @@
     </div>
   </div>
   <div
-    ng-if="$ctrl.error"
+    ng-if="$ctrl.errors.length"
     uib-alert
     type="danger"
     close="$ctrl.closeAlert()"
-    ng-bind-html="$ctrl.error"
     dismiss-on-timeout="5000">
+    <div ng-repeat="errMsg in $ctrl.errors track by $index">{{errMsg}}</div>
   </div>
   <div class="modal-footer">
     <button

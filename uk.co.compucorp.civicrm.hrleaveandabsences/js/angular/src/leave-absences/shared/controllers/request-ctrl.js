@@ -34,7 +34,7 @@ define([
       this.absenceTypes = [];
       this.calendar = {};
       this.contactName = null;
-      this.error = null;
+      this.errors = [];
       this.managedContacts = [];
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
@@ -150,7 +150,7 @@ define([
        * Closes the error alerts if any
        */
       this.closeAlert = function () {
-        this.error = null;
+        this.errors = [];
       };
 
       /**
@@ -167,7 +167,7 @@ define([
           return $q.resolve();
         }
 
-        self.error = null;
+        self.errors = [];
         self.loading.showBalanceChange = true;
         return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange.call(self))
           .then(function (balanceChange) {
@@ -323,11 +323,11 @@ define([
         // current absence type (this.request.type_id) doesn't allow self
         if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse == '0') {
           // show an error
-          this.error = 'You are not allowed to apply leave in negative';
+          this.errors = ['You are not allowed to apply leave in negative'];
           return;
         }
 
-        this.error = null;
+        this.errors = [];
 
         if (canViewOrEdit.call(this)) {
           updateRequest.call(this);
@@ -383,7 +383,7 @@ define([
             return self.updateBalance.call(self);
           })
           .catch(function (error) {
-            self.error = error;
+            self.errors = [error];
           });
       };
 
@@ -822,7 +822,7 @@ define([
        */
       function handleError(errors) {
         // show errors
-        this.error = errors;
+        this.errors = _.isArray(errors) ? errors : [errors];
 
         //reset loading Checks
         this.loading.showBalanceChange = false;
@@ -1057,7 +1057,7 @@ define([
        */
       function postSubmit(eventName) {
         $rootScope.$emit(eventName, this.request);
-        this.error = null;
+        this.errors = [];
         // close the modal
         this.ok.call(this);
       }

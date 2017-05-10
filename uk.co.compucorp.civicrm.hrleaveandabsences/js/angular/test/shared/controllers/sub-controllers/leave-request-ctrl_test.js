@@ -636,7 +636,7 @@
             });
 
             it('fails with error', function () {
-              expect($ctrl.error).toEqual(jasmine.any(String));
+              expect($ctrl.errors).toEqual(jasmine.any(Array));
             });
 
             it('does not allow user to submit', function () {
@@ -666,7 +666,7 @@
             });
 
             it('is successful', function () {
-              expect($ctrl.error).toBeNull();
+              expect($ctrl.errors.length).toBe(0);
               expect($ctrl.request.id).toBeDefined();
             });
 
@@ -726,7 +726,7 @@
               });
 
               it('checks if date is in any absence period without errors', function () {
-                expect($ctrl.error).toBeNull();
+                expect($ctrl.errors.length).toBe(0);
               });
 
               it('updates calendar', function () {
@@ -774,7 +774,7 @@
                 });
 
                 it('shows error', function () {
-                  expect($ctrl.error).toEqual(jasmine.any(String));
+                  expect($ctrl.errors).toEqual(jasmine.any(Array));
                 });
               });
 
@@ -784,7 +784,7 @@
                 });
 
                 it('selects date from selected absence period without errors', function () {
-                  expect($ctrl.error).toBeNull();
+                  expect($ctrl.errors.length).toBe(0);
                 });
 
                 it('updates balance', function () {
@@ -924,7 +924,7 @@
               });
 
               it('has no error', function () {
-                expect($ctrl.error).toBeNull();
+                expect($ctrl.errors.length).toBe(0);
               });
 
               it('closes model popup', function () {

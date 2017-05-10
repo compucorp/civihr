@@ -321,13 +321,11 @@ define([
             $rootScope.$apply();
           });
 
-          it('returns validation errors as string', function () {
-            var errorResponse = _.map(mockData.getNotIsValid().values, function (value) {
-              return _.isArray(value) ? value.join('</br>') : JSON.stringify(value);
-            }).join('</br>');
+          it('rejects promise with validation errors', function () {
+            var errors = _(mockData.getNotIsValid().values).map().flatten().value();
 
             promise.catch(function (result) {
-              expect(result).toEqual(errorResponse);
+              expect(result).toEqual(errors);
             });
           });
         });
