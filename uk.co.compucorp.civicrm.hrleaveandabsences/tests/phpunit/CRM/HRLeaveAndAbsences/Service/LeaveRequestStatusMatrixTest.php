@@ -130,45 +130,43 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
     $this->registerCurrentLoggedInContactInSession($manager['id']);
     $this->setContactAsLeaveApproverOf($manager, $leaveContact);
 
-    $managerExclusivePossibleStatusTransition = $this->getManagerExclusivePossibleStatusTransitions();
+    $managerExclusivePossibleStatusTransition = $this->getManagerExclusivePossibleStatusTransitionsDataProvider();
     foreach($managerExclusivePossibleStatusTransition as $transition) {
       $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $manager['id']));
     }
   }
 
-  public function testCanTransitionToReturnsTrueForAllPossibleStaffTransitionStatusesWhenAdminIsTheLeaveContact() {
+  /**
+   * @dataProvider allPossibleStatusTransitionForStaffDataProvider
+   */
+  public function testCanTransitionToReturnsTrueForAllPossibleStaffTransitionStatusesWhenAdminIsTheLeaveContact($fromStatus, $toStatus) {
     $adminID = 5;
     $this->registerCurrentLoggedInContactInSession($adminID);
     $this->setPermissions(['administer leave and absences']);
 
-    $possibleTransitions = $this->allPossibleStatusTransitionForStaffDataProvider();
-
-    foreach($possibleTransitions as $transition) {
-      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $adminID));
-    }
+    $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($fromStatus, $toStatus, $adminID));
   }
 
-  public function testCanTransitionToReturnsFalseForAllNonPossibleStaffTransitionStatusesWhenAdminIsTheLeaveContact() {
+  /**
+   * @dataProvider allNonPossibleStatusTransitionForStaffDataProvider
+   */
+  public function testCanTransitionToReturnsFalseForAllNonPossibleStaffTransitionStatusesWhenAdminIsTheLeaveContact($fromStatus, $toStatus) {
     $adminID = 5;
     $this->registerCurrentLoggedInContactInSession($adminID);
     $this->setPermissions(['administer leave and absences']);
 
-    $nonPossibleTransitions = $this->allNonPossibleStatusTransitionForStaffDataProvider();
-
-    foreach($nonPossibleTransitions as $transition) {
-      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $adminID));
-    }
+    $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($fromStatus, $toStatus, $adminID));
   }
 
-  public function testCanTransitionToReturnsFalseForPossibleManagerExclusiveStatusTransitionsWhenAdminIsTheLeaveContact() {
+  /**
+   * @dataProvider getManagerExclusivePossibleStatusTransitionsDataProvider
+   */
+  public function testCanTransitionToReturnsFalseForPossibleManagerExclusiveStatusTransitionsWhenAdminIsTheLeaveContact($fromStatus, $toStatus) {
     $adminID = 5;
     $this->registerCurrentLoggedInContactInSession($adminID);
     $this->setPermissions(['administer leave and absences']);
 
-    $managerExclusivePossibleStatusTransition = $this->getManagerExclusivePossibleStatusTransitions();
-    foreach($managerExclusivePossibleStatusTransition as $transition) {
-      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $adminID));
-    }
+    $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($fromStatus, $toStatus, $adminID));
   }
 
   public function allPossibleStatusTransitionForStaffDataProvider() {
@@ -264,12 +262,13 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
    *
    * @return array
    */
-  public function getManagerExclusivePossibleStatusTransitions() {
+  public function getManagerExclusivePossibleStatusTransitionsDataProvider() {
     $possibleStaffTransitions = $this->allPossibleStatusTransitionForStaffDataProvider();
     $possibleManagerTransitions = $this->allPossibleStatusTransitionForLeaveApprover();
 
     $results = array_diff(array_map('serialize', $possibleManagerTransitions), array_map('serialize', $possibleStaffTransitions));
     $managerExclusiveStatusTransition = array_map('unserialize', $results);
+
     return $managerExclusiveStatusTransition;
   }
 }
