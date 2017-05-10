@@ -2723,7 +2723,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => $endDate->format('Y-m-d'),
       'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'status_id' => 1,
+      'status_id' => 3,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
       'sequential' => 1,
     ]);

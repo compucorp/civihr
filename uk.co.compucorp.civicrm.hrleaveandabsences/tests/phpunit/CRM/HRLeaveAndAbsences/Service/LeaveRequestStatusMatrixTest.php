@@ -73,29 +73,100 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
   }
 
   public function testCanTransitionToForAdminForReturnsTrueAllPossibleTransitionStatuses() {
-    $manager = ContactFabricator::fabricate();
-    $leaveContact = ContactFabricator::fabricate();
-    $this->registerCurrentLoggedInContactInSession($manager['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+    $adminID = 5;
+    $leaveContact = 2;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
 
     $possibleTransitions = $this->allPossibleStatusTransitionForLeaveApprover();
 
     foreach($possibleTransitions as $transition) {
-      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact['id']));
+      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact));
     }
   }
 
   public function testCanTransitionToForAdminReturnsFalseForAllNonPossibleTransitionStatuses() {
-    $manager = ContactFabricator::fabricate();
-    $leaveContact = ContactFabricator::fabricate();
-    $this->registerCurrentLoggedInContactInSession($manager['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+    $adminID = 5;
+    $leaveContact = 2;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
 
     $nonPossibleTransitions = $this->allNonPossibleStatusTransitionForLeaveApprover();
 
     foreach($nonPossibleTransitions as $transition) {
-      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact['id']));
+      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact));
     }
+  }
+
+  public function testCanTransitionToReturnsTrueForAllPossibleStaffTransitionStatusesWhenLeaveApproverIsTheLeaveContact() {
+    $manager = ContactFabricator::fabricate();
+    $leaveContact = ContactFabricator::fabricate();
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $leaveContact);
+
+    $possibleTransitions = $this->allPossibleStatusTransitionForStaffDataProvider();
+
+    foreach($possibleTransitions as $transition) {
+      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $manager['id']));
+    }
+  }
+
+  public function testCanTransitionToReturnsFalseForAllNonPossibleStaffTransitionStatusesWhenLeaveApproverIsTheLeaveContact() {
+    $manager = ContactFabricator::fabricate();
+    $leaveContact = ContactFabricator::fabricate();
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $leaveContact);
+
+    $nonPossibleTransitions = $this->allNonPossibleStatusTransitionForStaffDataProvider();
+
+    foreach($nonPossibleTransitions as $transition) {
+      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $manager['id']));
+    }
+  }
+
+  public function testCanTransitionToReturnsFalseForPossibleManagerExclusiveStatusTransitionsWhenLeaveApproverIsTheLeaveContact() {
+    $manager = ContactFabricator::fabricate();
+    $leaveContact = ContactFabricator::fabricate();
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $leaveContact);
+
+    $managerExclusivePossibleStatusTransition = $this->getManagerExclusivePossibleStatusTransitionsDataProvider();
+    foreach($managerExclusivePossibleStatusTransition as $transition) {
+      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $manager['id']));
+    }
+  }
+
+  /**
+   * @dataProvider allPossibleStatusTransitionForStaffDataProvider
+   */
+  public function testCanTransitionToReturnsTrueForAllPossibleStaffTransitionStatusesWhenAdminIsTheLeaveContact($fromStatus, $toStatus) {
+    $adminID = 5;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
+
+    $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($fromStatus, $toStatus, $adminID));
+  }
+
+  /**
+   * @dataProvider allNonPossibleStatusTransitionForStaffDataProvider
+   */
+  public function testCanTransitionToReturnsFalseForAllNonPossibleStaffTransitionStatusesWhenAdminIsTheLeaveContact($fromStatus, $toStatus) {
+    $adminID = 5;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
+
+    $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($fromStatus, $toStatus, $adminID));
+  }
+
+  /**
+   * @dataProvider getManagerExclusivePossibleStatusTransitionsDataProvider
+   */
+  public function testCanTransitionToReturnsFalseForPossibleManagerExclusiveStatusTransitionsWhenAdminIsTheLeaveContact($fromStatus, $toStatus) {
+    $adminID = 5;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
+
+    $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($fromStatus, $toStatus, $adminID));
   }
 
   public function allPossibleStatusTransitionForStaffDataProvider() {
@@ -174,7 +245,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
 
   public function allNonPossibleStatusTransitionForLeaveApprover() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    
+
     return [
       [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['waiting_approval']],
       [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['waiting_approval']],
@@ -184,5 +255,20 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
       ['', $leaveRequestStatuses['rejected']],
       ['', $leaveRequestStatuses['cancelled']],
     ];
+  }
+
+  /**
+   * Return possible status transitions that is only exclusive to the Manager or Admin
+   *
+   * @return array
+   */
+  public function getManagerExclusivePossibleStatusTransitionsDataProvider() {
+    $possibleStaffTransitions = $this->allPossibleStatusTransitionForStaffDataProvider();
+    $possibleManagerTransitions = $this->allPossibleStatusTransitionForLeaveApprover();
+
+    $results = array_diff(array_map('serialize', $possibleManagerTransitions), array_map('serialize', $possibleStaffTransitions));
+    $managerExclusiveStatusTransition = array_map('unserialize', $results);
+
+    return $managerExclusiveStatusTransition;
   }
 }
