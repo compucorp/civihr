@@ -9,6 +9,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   use CRM_HRCore_Upgrader_Steps_1001;
   use CRM_HRCore_Upgrader_Steps_1002;
   use CRM_HRCore_Upgrader_Steps_1003;
+  use CRM_HRCore_Upgrader_Steps_1004;
 
   /**
    * @var array
@@ -33,7 +34,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     'Process Survey Respondents',
     'Rebuild Smart Group Cache',
     'Send Scheduled SMS',
-		'Update Greetings and Addressees',
+    'Update Greetings and Addressees',
     'Update Membership Statuses',
     'Update Participant Statuses',
     'Validate Email Address from Mailings.'
@@ -62,7 +63,8 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
         'name' => ['IN' => $customGroups],
         'api.CustomGroup.delete' => ['id' => '$value.id']
       ]);
-    } catch (Exception $e) {}
+    }
+    catch (Exception $e) {}
   }
 
   /**
