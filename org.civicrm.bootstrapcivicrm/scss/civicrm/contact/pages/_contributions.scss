@@ -406,19 +406,13 @@
       }
     }
 
-    #contributionSearch {
-      .description {
-        background: $crm-light-green-color;
-        border-radius: $border-radius-base;
-        box-shadow: $box-shadow;
-        color: $gray-darker;
-        margin: 15px 0;
-        padding: 10px 20px !important;
-      }
-
-      .crm-ajax-container {
-        border-width: 1px 2px 2px;
-      }
+    #contributionSearch .description {
+      background: $crm-light-green-color;
+      border-radius: $border-radius-base;
+      box-shadow: $box-shadow;
+      color: $gray-darker;
+      margin: 15px 0;
+      padding: 10px 20px !important;
     }
 
     .crm-pager {
@@ -428,6 +422,7 @@
 
     table + .crm-pager {
       border-radius: 0 0 $border-radius-base $border-radius-base;
+      border-top: 1px solid $crm-background;
       box-shadow: $crm-form-item-shadow;
     }
 
@@ -1358,77 +1353,139 @@
   }
 }
 
-.CRM_Contribute_Form_ContributionCharts {
+form.CRM_Contribute_Form_ContributionCharts {
   .ui-tabs-nav {
     background: $crm-white;
-    padding: 0 20px;
     border: 0;
+    padding: 0 20px;
+    position: relative;
+  }
 
-    .crm-tab-button {
-      background: none;
-      height: 50px;
-      line-height: 50px;
-      border: 0;
-      border-radius: 0;
+  .ui-tabs-nav .crm-tab-button {
+    background: none;
+    border: 0;
+    border-radius: 0;
+    height: 50px;
+    line-height: 50px;      
 
-      &:hover {
-        background-color: $gray-lighter;
-      }
-
-      a {
-        color: $gray-darker;
-      }
-
-      &.ui-tabs-selected {
-        border-bottom: 3px solid $gray-darker;
-
-        a {
-          color: $gray-darker;
-          background: none;
-        }
-      }
+    &:hover {
+      background-color: $gray-lighter;
     }
 
-    + #chartData > #chartData {
-      box-shadow: $box-shadow;
-      padding: 20px;
+    a {
+      color: $gray-darker;
+    }
 
-      table {
-        border: 0;
-        border-top: 1px solid $gray-lighter;
-        margin-top: 20px;
+    &.ui-tabs-selected {
+      border-bottom: 3px solid $gray-darker;
 
-        &.chart td {
-          border: 0;
-        }
+      a {
+        background: none;
+        color: $gray-darker;
       }
     }
   }
 
-  h3 {
-    height: 50px;
-    line-height: 50px;
-    background: $crm-white;
+  .ui-tabs-nav .crm-tab-button + #chartData > #chartData {
     box-shadow: $box-shadow;
-    font-size: 13px;
-    font-weight: normal;
-    border-radius: 2px;
-    padding-left: 20px;
-    margin: 20px 0;
+    padding: 20px;
+
+    table {
+      border: 0;
+      border-top: 1px solid $gray-lighter;
+      margin-top: 20px;
+
+      &.chart td {
+        border: 0;
+      }
+    }
+  }
+  
+  #chartData table {
+    box-shadow: none;
+  }
+
+  .ui-tabs {
+    border-radius: 0 0 $border-radius-base $border-radius-base;
+
+    &:before {
+      border-radius: 0 0 $border-radius-base $border-radius-base;      
+      box-shadow: $crm-tab-shadow;
+      content: "";
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+  }
+
+  > h3 {
+    background: $gray-lighter;
+    border-radius: $border-radius-base $border-radius-base 0 0;
+    box-shadow: $box-shadow;
     color: $datepicker-gray-darker;
+    height: 50px;
+    line-height: 50px;    
+    margin: 10px 0 0;
+    padding: 0 15px;    
+  }
+
+  .spacer + h3,
+  .crm-pager {
+    border-radius: $border-radius-base;
   }
 
   p.description {
-    padding: 0 5px 20px 5px !important;
+    background: $crm-light-green-color;
+    border-radius: $border-radius-base;
+    box-shadow: $box-shadow;
+    color: $gray-darker;
+    margin: 15px 0;
+    padding: 10px 20px !important; 
+  }
+
+  table.selector {
+    border-radius: $border-radius-base $border-radius-base 0 0;
+
+    thead th:not(:last-child) {
+      padding-right: 10px !important;
+    }
+
+    > tbody > tr > td {    
+      min-width: 70px !important;
+
+      &:not(:last-child) {
+        padding-right: 10px !important;
+      }
+
+      &:nth-child(4), &:nth-child(5) {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    } 
+
+    + .crm-pager {
+      border-radius: 0 0 $border-radius-base $border-radius-base;
+      border-top: 1px solid $crm-background;
+      box-shadow: $crm-form-item-shadow; 
+      margin-top: 0;
+    }
   }
 
   .selector,
   .report {
     @include mx-expandable-table();
+
+    thead.sticky {
+      background: transparent;
+    }
   }
 
   .report {
-    margin-top: 20px;
     border: solid 1px $crm-background;
+    margin-top: 20px;
   }
 }
