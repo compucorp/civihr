@@ -73,28 +73,28 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
   }
 
   public function testCanTransitionToForAdminForReturnsTrueAllPossibleTransitionStatuses() {
-    $manager = ContactFabricator::fabricate();
-    $leaveContact = ContactFabricator::fabricate();
-    $this->registerCurrentLoggedInContactInSession($manager['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+    $adminID = 5;
+    $leaveContact = 2;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
 
     $possibleTransitions = $this->allPossibleStatusTransitionForLeaveApprover();
 
     foreach($possibleTransitions as $transition) {
-      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact['id']));
+      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact));
     }
   }
 
   public function testCanTransitionToForAdminReturnsFalseForAllNonPossibleTransitionStatuses() {
-    $manager = ContactFabricator::fabricate();
-    $leaveContact = ContactFabricator::fabricate();
-    $this->registerCurrentLoggedInContactInSession($manager['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+    $adminID = 5;
+    $leaveContact = 2;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
 
     $nonPossibleTransitions = $this->allNonPossibleStatusTransitionForLeaveApprover();
 
     foreach($nonPossibleTransitions as $transition) {
-      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact['id']));
+      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact));
     }
   }
 
