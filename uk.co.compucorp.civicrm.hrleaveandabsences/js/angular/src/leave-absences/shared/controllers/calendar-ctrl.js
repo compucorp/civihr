@@ -259,7 +259,7 @@ define([
     };
 
     /**
-     * Loads the approved and waiting approval leave requests and calls calendar load function
+     * Loads the approved, admin_approved and waiting approval leave requests and calls calendar load function
      *
      * @param {string} contactParamName - contact parameter key name
      * @param {boolean} cache
