@@ -15,12 +15,17 @@
 
 
 .request-comment {
-  padding: $callout-padding;
+
+  &-body {
+    padding: $callout-padding;
+    padding-top: 0;
+  }
 
   &-header {
-    @include margin(10px, bottom);
     color: $gray-darker;
     font-weight: 600;
+    padding: $callout-padding;
+    padding-bottom: $callout-padding/2
   }
 }
 
