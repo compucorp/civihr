@@ -220,13 +220,18 @@ define([
      * Refreshes the leave request data
      *
      * @param {int} page - page number of the pagination element
+     * @return {Promise}
      */
     vm.refresh = function (page) {
       page = page ? page : 1;
+
       if(page <=  vm.totalNoOfPages()) {
         vm.pagination.page = page;
-        loadAllRequests();
+
+        return loadAllRequests();
       }
+
+      return $q.resolve();
     };
 
     /**
@@ -236,7 +241,7 @@ define([
      */
     vm.refreshWithFilter = function (status) {
       vm.filters.leaveRequest.leaveStatus = status;
-      vm.refresh();
+      refreshFromServer();
     };
 
     /**
@@ -316,20 +321,22 @@ define([
      */
     function loadAllRequests() {
       vm.loading.content = true;
-      Contact.all(contactFilters(), {
-        page: 1,
-        size: 0
-      })
-      .then(function (users) {
-        vm.filteredUsers = users.list;
-        $q.all([
-          loadLeaveRequest('table'),
-          loadLeaveRequest('filter')
-        ])
+
+      return Contact.all(contactFilters(), {
+          page: 1,
+          size: 0
+        })
+        .then(function (users) {
+          vm.filteredUsers = users.list;
+
+          return $q.all([
+            loadLeaveRequest('table'),
+            loadLeaveRequest('filter')
+          ]);
+        })
         .then(function () {
           vm.loading.content = false;
         });
-      });
     }
 
     /**
@@ -360,7 +367,6 @@ define([
       return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, returnFields, leaveRequestAPICache)
         .then(function (leaveRequests) {
           vm.leaveRequests[type] = leaveRequests;
-          leaveRequestAPICache = true;
         });
     }
 
@@ -491,15 +497,20 @@ define([
      * Register events which will be called by other modules
      */
     function registerEvents() {
-      $rootScope.$on('LeaveRequest::updatedByManager', function () {
-        leaveRequestAPICache = false;
-        vm.refresh();
-      });
+      $rootScope.$on('LeaveRequest::updatedByManager', refreshFromServer);
+      $rootScope.$on('LeaveRequest::new', refreshFromServer);
+    }
 
-      $rootScope.$on('LeaveRequest::new', function () {
-        leaveRequestAPICache = false;
-        vm.refresh();
-      });
+    /**
+     * Refresh leave requests from server
+     */
+    function refreshFromServer() {
+      leaveRequestAPICache = false;
+
+      vm.refresh()
+        .then(function () {
+          leaveRequestAPICache = true;
+        });
     }
 
     return vm;

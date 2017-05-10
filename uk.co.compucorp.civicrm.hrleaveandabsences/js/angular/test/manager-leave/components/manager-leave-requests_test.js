@@ -369,7 +369,7 @@
         var mockStatus;
 
         beforeEach(function () {
-          spyOn(controller, 'refresh');
+          spyOn(controller, 'refresh').and.callThrough();
           mockStatus = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
           controller.refreshWithFilter(mockStatus);
         });
