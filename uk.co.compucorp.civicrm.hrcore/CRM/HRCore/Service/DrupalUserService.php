@@ -39,16 +39,10 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
-   * @param $original
-   * @param array $roles
-   *
-   * @return object
+   * @param object $user
    */
-  public function addRoles($original, $roles = []) {
-    $roles = $this->roleService->getRoleIds($roles);
-    $roles = array_merge($roles, $original->roles);
-
-    return user_save($original, ['roles' => $roles]);
+  public function sendActivationMail($user) {
+    _user_mail_notify('status_activated', $user);
   }
 
 }
