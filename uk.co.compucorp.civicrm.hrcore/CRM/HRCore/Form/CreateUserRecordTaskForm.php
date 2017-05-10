@@ -45,16 +45,29 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   public function preProcess() {
     parent::preProcess();
     $this->initContactDetails();
-    // todo assign variables for form, num missing email etc..
+    $allContacts = $this->contactDetails;
+    $missingEmail = $this->getContactsWithout('email');
+    $haveNoAccount = $this->getContactsWithout('uf_id');
+    $haveAccount = array_diff_key($allContacts, $haveNoAccount);
+    $this->assign('contactsWithoutEmail', $missingEmail);
+    $this->assign('contactsWithAccount', $haveAccount);
+    $this->assign('contactsForCreation', $this->getValidContactsForCreation());
   }
 
   /**
    * Process the form after the input has been submitted and validated.
    */
   public function postProcess() {
-    foreach ($this->getValidContactsForCreation() as $contact) {
-      $this->createAccount($contact['work_email']);
+    $contactsToCreate = $this->getValidContactsForCreation();
+    foreach ($contactsToCreate as $contact) {
+      $this->createAccount($contact['email']);
     }
+
+    CRM_Core_Session::setStatus(
+      ts('%1 new accounts were created', [1 => count($contactsToCreate)]),
+      ts('Updates Saved'),
+      'success'
+    );
   }
 
   /**
@@ -63,7 +76,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
    * @return array
    */
   private function getValidContactsForCreation() {
-    $missingEmail = $this->getContactsWithout('work_email');
+    $missingEmail = $this->getContactsWithout('email');
     $haveNoAccount = $this->getContactsWithout('uf_id');
 
     return array_diff_key($haveNoAccount, $missingEmail);
@@ -117,7 +130,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
 
       $this->setContactDetail($contactID, 'display_name', $displayName);
       $this->setContactDetail($contactID, 'uf_id', $ufId);
-      $this->setContactDetail($contactID, 'work_email', $email);
+      $this->setContactDetail($contactID, 'email', $email);
     }
   }
 
