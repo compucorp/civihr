@@ -822,19 +822,7 @@ define([
        */
       function handleError(errors) {
         // show errors
-        if (errors.error_message)
-          this.error = errors.error_message;
-        else {
-          if (_.isObject(errors)) {
-            this.error = _.map(errors, function (value, key) {
-              var errorMessage = _.isArray(value) ? value.join(', ') : JSON.stringify(value);
-
-              return errorMessage + ' for key ' + key;
-            }).join(', ');
-          } else {
-            this.error = errors.toString();
-          }
-        }
+        this.error = errors;
 
         //reset loading Checks
         this.loading.showBalanceChange = false;

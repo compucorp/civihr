@@ -353,7 +353,8 @@
     uib-alert
     type="danger"
     close="$ctrl.closeAlert()"
-    dismiss-on-timeout="5000">{{$ctrl.error}}
+    ng-bind-html="$ctrl.error"
+    dismiss-on-timeout="5000">
   </div>
   <div class="modal-footer">
     <button

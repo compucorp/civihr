@@ -332,6 +332,9 @@ define([
       "values": {
         "from_date": [
           "overlaps_existing_leave_request"
+        ],
+        "to_date": [
+          "overlaps_existing_leave_request"
         ]
       }
     },

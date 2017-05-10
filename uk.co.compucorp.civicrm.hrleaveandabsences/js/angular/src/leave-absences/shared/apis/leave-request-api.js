@@ -157,7 +157,11 @@ define([
         this.sendPOST('LeaveRequest', 'isValid', params)
           .then(function (data) {
             if (data.count > 0) {
-              deferred.reject(data.values);
+              var errorMessage = _.map(data.values, function (value) {
+                return _.isArray(value) ? value.join('</br>') : JSON.stringify(value);
+              }).join('</br>');
+
+              deferred.reject(errorMessage);
             } else {
               deferred.resolve(data.values);
             }

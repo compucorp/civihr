@@ -1,15 +1,16 @@
 define([
+  'common/lodash',
+  'common/moment',
   'mocks/data/leave-request-data',
   'mocks/data/sickness-leave-request-data',
   'mocks/data/toil-leave-request-data',
   'mocks/data/comments-data',
-  'common/moment',
   'mocks/helpers/helper',
   'mocks/data/absence-type-data',
   'mocks/data/option-group-mock-data',
   'leave-absences/shared/apis/leave-request-api',
   'leave-absences/shared/modules/shared-settings',
-], function (mockData, sicknessMockData, toilMockData, commentsData, moment, helper, absenceTypeData, optionGroupMock) {
+], function (_, moment, mockData, sicknessMockData, toilMockData, commentsData, helper, absenceTypeData, optionGroupMock) {
   'use strict';
 
   describe('LeaveRequestAPI', function () {
@@ -310,8 +311,8 @@ define([
         describe('when called with invalid data', function () {
           beforeEach(function () {
             requestData = helper.createRandomSicknessRequest();
-            spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
-              return $q.reject(mockData.getNotIsValid());
+            spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function (params) {
+              return $q.resolve(mockData.getNotIsValid());
             });
             promise = LeaveRequestAPI.isValid(requestData);
           });
@@ -320,9 +321,13 @@ define([
             $rootScope.$apply();
           });
 
-          it('returns validation errors', function () {
+          it('returns validation errors as string', function () {
+            var errorResponse = _.map(mockData.getNotIsValid().values, function (value) {
+              return _.isArray(value) ? value.join('</br>') : JSON.stringify(value);
+            }).join('</br>');
+
             promise.catch(function (result) {
-              expect(result.count).toEqual(1);
+              expect(result).toEqual(errorResponse);
             });
           });
         });
