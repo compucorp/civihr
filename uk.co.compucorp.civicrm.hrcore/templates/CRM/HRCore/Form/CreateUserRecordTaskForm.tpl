@@ -20,6 +20,21 @@
   {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsWithAccount}
 {/if}
 
+<br/>
+
+<div class="crm-block crm-form-block" style="padding: 20px 10px">
+  <div class="checkbox">
+    {$form.sendEmail.label}
+    {$form.sendEmail.html}
+    <br/>
+    <h4 class = "description">
+        {ts}Invitation emails will be sent if this box is checked{/ts}
+      </h4>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
 <div class="crm-block crm-form-block">
   <div class="crm-inline-button crm-submit-buttons">
     {include file="CRM/common/formButtons.tpl"}

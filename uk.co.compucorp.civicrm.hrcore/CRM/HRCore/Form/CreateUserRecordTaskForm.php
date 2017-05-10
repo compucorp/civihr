@@ -11,6 +11,11 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   protected $contactDetails = [];
 
   /**
+   * @var bool
+   */
+  protected $sendEmail = FALSE;
+
+  /**
    * @var DrupalUserService
    */
   protected $drupalUserService;
@@ -37,6 +42,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   public function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Create User Records'));
     $this->addDefaultButtons(ts('Create Records'));
+    $this->add('advcheckbox', 'sendEmail', ts('Send Email'));
   }
 
   /**
@@ -45,11 +51,9 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   public function preProcess() {
     parent::preProcess();
     $this->initContactDetails();
-    $allContacts = $this->contactDetails;
-    $missingEmail = $this->getContactsWithout('email');
     $haveNoAccount = $this->getContactsWithout('uf_id');
-    $haveAccount = array_diff_key($allContacts, $haveNoAccount);
-    $this->assign('contactsWithoutEmail', $missingEmail);
+    $haveAccount = array_diff_key($this->contactDetails, $haveNoAccount);
+    $this->assign('contactsWithoutEmail', $this->getContactsWithout('email'));
     $this->assign('contactsWithAccount', $haveAccount);
     $this->assign('contactsForCreation', $this->getValidContactsForCreation());
   }
@@ -58,7 +62,9 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
    * Process the form after the input has been submitted and validated.
    */
   public function postProcess() {
+    $this->sendEmail = (bool) $this->getElementValue('sendEmail');
     $contactsToCreate = $this->getValidContactsForCreation();
+
     foreach ($contactsToCreate as $contact) {
       $this->createAccount($contact['email']);
     }
@@ -92,7 +98,10 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   private function createAccount($email) {
     $defaultRoles = ['civihr_staff'];
     $user = $this->drupalUserService->createNew($email, TRUE, $defaultRoles);
-    $this->drupalUserService->sendActivationMail($user);
+
+    if ($this->sendEmail) {
+      $this->drupalUserService->sendActivationMail($user);
+    }
 
     return $user;
   }
