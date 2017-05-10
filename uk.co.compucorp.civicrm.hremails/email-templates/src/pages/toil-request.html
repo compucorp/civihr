@@ -10,7 +10,7 @@ request-type: TOIL
       {{> callout-header title="Leave Request Type"}}
       <callout class="request-data">
         <row>
-          <columns class="request-data-key" large="3">
+          <columns class="request-data-key" large="4">
             <span>{ts}Status:{/ts}</span>
           </columns>
           <columns class="request-data-value">
@@ -18,7 +18,7 @@ request-type: TOIL
           </columns>
         </row>
         <row>
-          <columns class="request-data-key" large="3">
+          <columns class="request-data-key" large="4">
             <span>{ts}Staff Member:{/ts}</span>
           </columns>
           <columns class="request-data-value">
@@ -27,7 +27,7 @@ request-type: TOIL
         </row>
         {if $leaveRequest->from_date eq $leaveRequest->to_date}
           <row>
-            <columns class="request-data-key" large="3">
+            <columns class="request-data-key" large="4">
               <span>Date:</span>
             </columns>
             <columns class="request-data-value">
@@ -36,7 +36,7 @@ request-type: TOIL
           </row>
         {else}
           <row>
-            <columns class="request-data-key" large="3">
+            <columns class="request-data-key" large="4">
               <span>{ts}From Date:{/ts}</span>
             </columns>
             <columns class="request-data-value">
@@ -44,7 +44,7 @@ request-type: TOIL
             </columns>
           </row>
           <row>
-            <columns class="request-data-key" large="3">
+            <columns class="request-data-key" large="4">
               <span>{ts}To Date:{/ts}</span>
             </columns>
             <columns class="request-data-value">
