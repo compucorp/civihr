@@ -243,6 +243,8 @@
     }
 
     .crm-child-row {
+      border-bottom: none;
+
       &,
       > td {
         padding: 0;
@@ -253,6 +255,11 @@
 
         .crm-ajax-container {
           border: 2px solid $crm-background;
+          margin-top: -1px;
+
+          table {
+            border: none;
+          }
         }
       }
 
@@ -271,8 +278,8 @@
         }
 
         td {
-          padding-top: 10px;
-          padding-bottom: 10px;
+          padding-top: 15px;
+          padding-bottom: 15px;
         }
       }
     }
