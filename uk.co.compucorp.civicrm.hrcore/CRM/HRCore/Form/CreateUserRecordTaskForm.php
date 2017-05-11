@@ -187,6 +187,10 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
     $haveNoEmail = $this->getContactsWithout('email');
     $newContactsWithEmail = array_diff_key($newAccounts, $haveNoEmail);
 
+    if (empty($newContactsWithEmail)) {
+      return [];
+    }
+
     $newEmails = array_column($newContactsWithEmail, 'email');
     $params = ['uf_name' => ['IN' => $newEmails], 'options' => ['limit' => 0]];
     $existing = civicrm_api3('UFMatch', 'get', $params);
