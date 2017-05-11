@@ -27,21 +27,7 @@ request-type: Leave
         <callout class="callout-no-padding">
           <div class="request-comments">
             {foreach from=$leaveComments item=value key=label}
-              <table class="request-comment">
-                <tbody>
-                  <tr>
-                    <td class="request-comment-header">
-                      <span class="request-comment-author">{$value.commenter}:</span>
-                      <span class="request-comment-datetime">{$value.created_at|crmDate}</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="request-comment-body">
-                      {$value.text}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              {{> request-comment commenter="{$value.commenter}" createdAt="{$value.created_at|crmDate}" text="{$value.text}"}}
             {/foreach}
           </div>
         </callout>
@@ -52,9 +38,7 @@ request-type: Leave
         <callout>
           <div class="request-attachments">
             {foreach from=$leaveFiles item=value key=label}
-              <div class="request-attachment">
-                <span class="request-attachment-name">{$value.name}</span>: Added on {$value.upload_date|crmDate}
-              </div>
+              {{> request-attachment name="{$value.name}" uploadDate="{$value.created_at|crmDate}"}}
             {/foreach}
           </div>
         </callout>
