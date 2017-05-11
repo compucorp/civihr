@@ -1,8 +1,9 @@
 // Automatically adds a capitalized version of the `margin` property
 // to ensure outlook compatibility
-@mixin margin($value, $type: '') {
-  $suffix: if($type != '', -#{$type}, '');
+@mixin margin($value, $type: '', $important: false) {
+  $suffix   : if($type != '', -#{$type}, '');
+  $important: if($important, !important, null);
 
-  margin#{$suffix}: $value;
-  Margin#{$suffix}: $value;
+  margin#{$suffix}: $value $important;
+  Margin#{$suffix}: $value $important;
 }
