@@ -228,9 +228,6 @@ function hrui_civicrm_install() {
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
   }
 
-  //Disable Individual sub types
-  _hrui_toggleContactSubType(FALSE);
-
   // Disable Household contact type
   $contactTypeId = CRM_Core_DAO::getFieldValue(
     'CRM_Contact_DAO_ContactType',
@@ -324,9 +321,6 @@ function hrui_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrui_civicrm_uninstall() {
-  //Enable Individual sub types
-  _hrui_toggleContactSubType(TRUE);
-
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToSet = array($options['Activities'], $options['Tags']);
@@ -425,7 +419,6 @@ function hrui_civicrm_summary($contactId, &$content, &$contentPlacement) {
  */
 function hrui_civicrm_enable() {
   _hrui_setActiveFields(FALSE);
-  _hrui_toggleContactSubType(FALSE);
   _hrui_wordReplacement(FALSE);
   _hrui_menuSetActive(1);
 
@@ -437,7 +430,6 @@ function hrui_civicrm_enable() {
  */
 function hrui_civicrm_disable() {
   _hrui_setActiveFields(TRUE);
-  _hrui_toggleContactSubType(TRUE);
   _hrui_wordReplacement(TRUE);
   _hrui_menuSetActive(0);
 
@@ -456,37 +448,6 @@ function _hrui_wordReplacement($isActive) {
   }
 }
 
-/**
- * Enable/disable individual contact sub types
- */
-function _hrui_toggleContactSubType($isActive) {
-  $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
-  $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
-  foreach ($subContactId['values'] as $key) {
-    $paramsSubType = array(
-      'name' => $key['name'],
-      'id' => $key['id'],
-      'is_active' => $isActive,
-    );
-    civicrm_api3('ContactType', 'create', $paramsSubType);
-  }
-
-  $orgTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Organization"));
-  $subOrgId = civicrm_api3('ContactType', 'get', array('parent_id' => $orgTypeId['id']));
-  foreach ($subOrgId['values'] as $key) {
-   if ($key['name'] == 'Team' || $key['name'] == 'Sponsor') {
-    $paramsSubType = array(
-      'name' => $key['name'],
-      'id' => $key['id'],
-      'is_active' => $isActive,
-    );
-    civicrm_api3('ContactType', 'create', $paramsSubType);
-   }
-  }
-  // Reset Navigation
-  CRM_Core_BAO_Navigation::resetNavigation();
-}
-
 function _hrui_setActiveFields($setActive) {
   $setActive = $setActive ? 1 : 0;
   //disable/enable optionGroup and optionValue
@@ -498,7 +459,7 @@ function _hrui_setActiveFields($setActive) {
   $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'constituent_information'";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'constituent_information'");
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_relationship_type SET is_active = {$setActive} WHERE name_a_b IN ( 'Child of', 'Spouse of', 'Sibling of', 'Employee of', 'Volunteer for', 'Head of Household for', 'Household Member of', 'Supervised by' )");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_relationship_type SET is_active = {$setActive} WHERE name_a_b IN ( 'Employee of', 'Head of Household for', 'Household Member of' )");
 }
 /**
  * Implementation of hook_civicrm_upgrade

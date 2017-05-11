@@ -88,7 +88,7 @@ class CRM_HRSampleData_CSVProcessor_JobContractTest extends CRM_HRSampleData_Bas
       5,
       5,
       $this->optionValues['hrjc_pension_type']['name'],
-      'Sick:0,Vacation:28,Maternity:0,Paternity:0,TOIL:0,Other:0',
+      'Sick:0,Annual Leave:28,Maternity:0,Paternity:0,TOIL:0,Other:0',
     ];
 
     $mapping = [

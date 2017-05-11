@@ -46,7 +46,7 @@ define([
                 expectedAbsenceTypes = {
                     values: [
                         {debit_activity_type_id: '52', id: '1', is_active: '1', title: 'Sick'},
-                        {debit_activity_type_id: '53', id: '2', is_active: '1', title: 'Vacation'},
+                        {debit_activity_type_id: '53', id: '2', is_active: '1', title: 'Annual Leave'},
                         {debit_activity_type_id: '54', id: '3', is_active: '1', title: 'Maternity'},
                         {debit_activity_type_id: '55', id: '4', is_active: '1', title: 'Paternity'},
                         {credit_activity_type_id: '57', debit_activity_type_id: '56', id: '5', is_active: '1', title: 'TOIL'}

@@ -1,3 +1,7 @@
+.callout {
+  @include margin(0, bottom, true);
+}
+
 .callout-header {
   background: $panel-default-heading-bg;
   padding: $panel-heading-padding;

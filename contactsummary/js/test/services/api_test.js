@@ -27,7 +27,14 @@ define([
             var expectedResult = {data: true}, actualResult = {};
 
             // Set up response from HTTP backend
-            httpBackend.expectPOST('/civicrm/ajax/rest').respond(expectedResult);
+            httpBackend.expectGET('/civicrm/ajax/rest?action=get&entity=test&json=1&rowCount=0&sequential=1').respond(expectedResult);
+            httpBackend.whenGET(function (url) {
+              if (url !== '/civicrm/ajax/rest?action=get&entity=test&json=1&rowCount=0&sequential=1') {
+                return true;
+              }
+              
+              return false;
+            }).respond(expectedResult);
 
             // Make the call
             service.get('test').then(function (response) {

@@ -166,61 +166,6 @@
   </OptionGroups>
   <OptionValues>
     <OptionValue>
-      <label>American Indian or Alaskan Native</label>
-      <value>American Indian or Alaskan Native</value>
-      <name>American_Indian_or_Alaskan_Nati</name>
-      <is_default>0</is_default>
-      <weight>1</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>ethnicity_20130725123943</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Asian or Pacific Islander</label>
-      <value>Asian or Pacific Islander</value>
-      <name>Asian_or_Pacific_Islander</name>
-      <is_default>0</is_default>
-      <weight>2</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>ethnicity_20130725123943</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Black, not of Hispanic origin</label>
-      <value>Black, not of Hispanic origin</value>
-      <name>Black_not_of_Hispanic_origin</name>
-      <is_default>0</is_default>
-      <weight>3</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>ethnicity_20130725123943</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Hispanic</label>
-      <value>Hispanic</value>
-      <name>Hispanic</name>
-      <is_default>0</is_default>
-      <weight>4</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>ethnicity_20130725123943</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>White, not of Hispanic origin</label>
-      <value>White, not of Hispanic origin</value>
-      <name>White_not_of_Hispanic_origin</name>
-      <is_default>0</is_default>
-      <weight>5</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>ethnicity_20130725123943</option_group_name>
-    </OptionValue>
-    <OptionValue>
       <label>Prefer Not to Say</label>
       <value>Prefer Not to Say</value>
       <name>Prefer_Not_to_Say</name>
