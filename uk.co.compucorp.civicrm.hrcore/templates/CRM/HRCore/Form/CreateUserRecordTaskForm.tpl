@@ -1,60 +1,64 @@
-<h3>
-  {ts 1=$totalSelectedContacts 2=$contactsForCreation|@count}
-    From your selection of %1 contacts, %2 new user accounts are valid for creation.
-  {/ts}
-</h3>
+<div class = 'crm-container'>
 
-{if !empty($contactsWithoutEmail) }
-  <p>
-    {ts}A work e-mail is required to create the account.{/ts}
-  </p>
-  <p>
-    {ts 1=$contactsWithoutEmail|@count}%1 contact(s) do not have a work email set:{/ts}
-  </p>
-  {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsWithoutEmail}
-  <br/>
-{/if}
-
-{if !empty($contactsWithAccount) }
-  <p>
-    {ts 1=$contactsWithAccount|@count}%1 contact(s) already have an account:{/ts}
-  </p>
-  {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsWithAccount}
-  <br/>
-{/if}
-
-{if !empty($emailConflictContact) }
-  <p>
-    {ts}
-    Email conflicts can be caused by trying to create two new users with the
-    same email, or by trying to create a new user with an email that is already
-    in use.
+  <h3>
+    {ts 1=$totalSelectedContacts 2=$contactsForCreation|@count}
+      From your selection of %1 contacts, %2 new user accounts are valid for creation.
     {/ts}
-  </p>
-  <p>
-    {ts 1=$emailConflictContact|@count}%1 contact(s) have email conflicts:{/ts}
-  </p>
-  {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$emailConflictContact}
-  <br/>
-{/if}
+  </h3>
 
-<br/>
-
-<div class="crm-block crm-form-block" style="padding: 20px 10px">
-  <div class="checkbox">
-    {$form.sendEmail.label}
-    {$form.sendEmail.html}
+  {if !empty($contactsWithoutEmail) }
+    <p>
+      {ts}A work e-mail is required to create the account.{/ts}
+    </p>
+    <p>
+      {ts 1=$contactsWithoutEmail|@count}%1 contact(s) do not have a work email set:{/ts}
+    </p>
+    {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsWithoutEmail}
     <br/>
-    <h4 class = "description">
-        {ts}Invitation emails will be sent if this box is checked{/ts}
-      </h4>
-  </div>
-</div>
+  {/if}
 
-<div class="spacer"></div>
+  {if !empty($contactsWithAccount) }
+    <p>
+      {ts 1=$contactsWithAccount|@count}%1 contact(s) already have an account:{/ts}
+    </p>
+    {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsWithAccount}
+    <br/>
+  {/if}
 
-<div class="crm-block crm-form-block">
-  <div class="crm-inline-button crm-submit-buttons">
-    {include file="CRM/common/formButtons.tpl"}
+  {if !empty($emailConflictContact) }
+    <p>
+      {ts}
+      Email conflicts can be caused by trying to create two new users with the
+      same email, or by trying to create a new user with an email that is already
+      in use.
+      {/ts}
+    </p>
+    <p>
+      {ts 1=$emailConflictContact|@count}%1 contact(s) have email conflicts:{/ts}
+    </p>
+    {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$emailConflictContact}
+    <br/>
+  {/if}
+
+  <br/>
+
+  <div class="crm-block crm-form-block" style="padding: 20px 10px">
+    <div class="checkbox">
+      {$form.sendEmail.html}
+      {$form.sendEmail.label}
+      <br/>
+      <h4 class = "description">
+          {ts}Invitation emails will be sent if this box is checked{/ts}
+        </h4>
+    </div>
   </div>
+
+  <div class="spacer"></div>
+
+  <div class="crm-block crm-form-block">
+    <div class="crm-inline-button crm-submit-buttons">
+      {include file="CRM/common/formButtons.tpl"}
+    </div>
+  </div>
+
 </div>
