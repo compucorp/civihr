@@ -18,6 +18,22 @@
     {ts 1=$contactsWithAccount|@count}%1 contact(s) already have an account:{/ts}
   </p>
   {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsWithAccount}
+  <br/>
+{/if}
+
+{if !empty($emailConflictContact) }
+  <p>
+    {ts}
+    Email conflicts can be caused by trying to create two new users with the
+    same email, or by trying to create a new user with an email that is already
+    in use.
+    {/ts}
+  </p>
+  <p>
+    {ts 1=$emailConflictContact|@count}%1 contact(s) have email conflicts:{/ts}
+  </p>
+  {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$emailConflictContact}
+  <br/>
 {/if}
 
 <br/>
