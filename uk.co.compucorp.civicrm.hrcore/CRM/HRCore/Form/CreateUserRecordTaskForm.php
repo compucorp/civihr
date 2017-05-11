@@ -65,8 +65,8 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
     $this->sendEmail = (bool) $this->getElementValue('sendEmail');
     $contactsToCreate = $this->getValidContactsForCreation();
 
-    foreach ($contactsToCreate as $contact) {
-      $this->createAccount($contact['email']);
+    foreach ($contactsToCreate as $contactID => $contact) {
+      $this->createAccount($contact);
     }
 
     CRM_Core_Session::setStatus(
@@ -91,16 +91,19 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   /**
    * Create a Drupal account for a contact
    *
-   * @param $email
+   * @param array $contact
    *
    * @return object
    */
-  private function createAccount($email) {
-    $defaultRoles = ['civihr_staff'];
-    $user = $this->drupalUserService->createNew($email, TRUE, $defaultRoles);
+  private function createAccount($contact) {
+    $id = $contact['id'];
+    $email = $contact['email'];
+    $roles = ['civihr_staff'];
+
+    $user = $this->drupalUserService->createNew($id, $email, TRUE, $roles);
 
     if ($this->sendEmail) {
-      $this->drupalUserService->sendActivationMail($user);
+      $this->drupalUserService->sendActivationMail($id, $user);
     }
 
     return $user;
@@ -140,6 +143,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
       $this->setContactDetail($contactID, 'display_name', $displayName);
       $this->setContactDetail($contactID, 'uf_id', $ufId);
       $this->setContactDetail($contactID, 'email', $email);
+      $this->setContactDetail($contactID, 'id', $contactID);
     }
   }
 
