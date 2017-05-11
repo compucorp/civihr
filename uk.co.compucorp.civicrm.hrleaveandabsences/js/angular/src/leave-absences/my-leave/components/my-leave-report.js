@@ -1,7 +1,8 @@
 define([
+  'common/lodash',
+  'common/moment',
   'leave-absences/my-leave/modules/components',
-  'common/lodash'
-], function (components, _) {
+], function (_, moment, components) {
 
   components.component('myLeaveReport', {
     bindings: {
@@ -84,6 +85,25 @@ define([
           !!response && cancelRequest(leaveRequest);
         });
       }
+    };
+
+    /**
+     * Checks if user is allowed to cancel leave request. It is based on following constants
+     * const REQUEST_CANCELATION_NO = 1;
+     * const REQUEST_CANCELATION_ALWAYS = 2;
+     * const REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE = 3;
+     *
+     * @param  {Object} request
+     * @return {Boolean}
+     */
+    vm.canCancel = function (request) {
+      var allow_request_cancelation = vm.absenceTypes[request.type_id].allow_request_cancelation;
+
+      if (allow_request_cancelation == 3) {
+        return moment().isBefore(request.from_date);
+      }
+
+      return allow_request_cancelation == 2;
     };
 
     /**

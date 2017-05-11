@@ -31,7 +31,7 @@ define([
       "color": "#056780",
       "is_default": "0",
       "is_reserved": "1",
-      "allow_request_cancelation": "3",
+      "allow_request_cancelation": "2",
       "allow_overuse": "0",
       "must_take_public_holiday_as_leave": "0",
       "default_entitlement": "0",
@@ -123,6 +123,11 @@ define([
     getDisabledAbsenceTypes: function () {
       return all_data.values.filter(function (absenceType) {
         return absenceType.is_active === "0";
+      });
+    },
+    findByKeyValue: function (key, value) {
+      return _.find(all_data.values, function (absenceType) {
+        return absenceType[key] == value;
       });
     }
   }
