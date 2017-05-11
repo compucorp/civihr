@@ -1,0 +1,23 @@
+table.button {
+  // https://github.com/zurb/foundation-emails/issues/415
+  @include button-padding(default);
+
+  &.large {
+    @include button-padding(large);
+  }
+
+  &.small {
+    @include button-padding(small);
+  }
+
+  &.tiny {
+    @include button-padding(tiny);
+  }
+
+  // https://github.com/zurb/foundation-emails/issues/415
+  &.expanded {
+    td:not(.expander) {
+      width: 100%;
+    }
+  }
+}

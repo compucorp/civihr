@@ -1,0 +1,15 @@
+// https://github.com/zurb/foundation-emails/issues/416
+@mixin button-padding($type: default) {
+  table {
+
+    td {
+      padding: map-get($button-padding, $type);
+
+      @if ($type == default) {
+        a {
+          padding: 0;
+        }
+      }
+    }
+  }
+}
