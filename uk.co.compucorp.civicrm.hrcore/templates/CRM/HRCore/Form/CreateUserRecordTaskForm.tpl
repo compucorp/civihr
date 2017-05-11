@@ -1,12 +1,14 @@
-<p>
+<h3>
   {ts 1=$totalSelectedContacts 2=$contactsForCreation|@count}
     From your selection of %1 contacts, %2 new user accounts are valid for creation.
   {/ts}
-</p>
+</h3>
 
 {if !empty($contactsWithoutEmail) }
   <p>
     {ts}A work e-mail is required to create the account.{/ts}
+  </p>
+  <p>
     {ts 1=$contactsWithoutEmail|@count}%1 contact(s) do not have a work email set:{/ts}
   </p>
   {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsWithoutEmail}
