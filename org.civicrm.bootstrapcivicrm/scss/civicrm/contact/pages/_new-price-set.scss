@@ -14,8 +14,16 @@
       }
     }
 
+    .ui-dialog-titlebar .ui-button .ui-icon {
+      top: 12px;      
+    }
+
     .ui-button .ui-icon {
       top: 17px;      
+    }
+
+    .description {
+      display: block;
     }
   }
 
@@ -118,26 +126,31 @@
   }
 
   .CRM_Price_Form_Field {
-    .form-layout {
-      tr {
+    .form-layout tr {
+      td {
+        display: table-cell;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      td.description {
+        padding-left: 15px;
+      }
+
+      &.crm-price-field-form-block-is_display_amounts,
+      &.crm-price-field-form-block-weight,
+      &.crm-price-field-form-block-help_post,
+      &.crm-price-field-form-block-active_on,
+      &.crm-price-field-form-block-expire_on {
         td {
-          display: table-cell;
-          text-align: left;
-          vertical-align: middle;
-
-          &.description {
-            padding-left: 15px;
-          }
+          vertical-align: top;
         }
+      }
 
-        &.crm-price-field-form-block-is_display_amounts,
-        &.crm-price-field-form-block-weight,
-        &.crm-price-field-form-block-help_post,
-        &.crm-price-field-form-block-active_on,
-        &.crm-price-field-form-block-expire_on {
-          td {
-            vertical-align: top;
-          }
+      &.crm-price-field-form-block-active_on,
+      &.crm-price-field-form-block-expire_on {
+        input {
+          vertical-align: initial;
         }
       }
     }

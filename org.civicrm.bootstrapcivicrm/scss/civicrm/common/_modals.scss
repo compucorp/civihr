@@ -35,7 +35,7 @@
     color: $gray-darker !important;
     padding: 15px 20px;
     position: relative;
-    z-index: 1;    
+    z-index: 99999;    
 
     .ui-dialog-title {
       @extend .modal-title, %open-sans-font-family;
@@ -70,12 +70,14 @@
 
   .ui-dialog-content {
     @extend .modal-body, %open-sans-font-family;
+    @include calc(max-height, '100vh - 280px',!important);
     background: $crm-white;
     height: auto !important;    
     margin-bottom: 0;
     margin-top: 0;
     padding: 20px;
-    @include calc(max-height, '100vh - 280px',!important);
+    position: static;
+    z-index: 1;
     
 
     a.button:not(.hr-job-info-close) {
@@ -103,7 +105,7 @@
       }
     }
 
-    .crm-accordion-wrapper  {
+    .crm-accordion-wrapper {
       margin-left: -20px;
       margin-right: -20px;
     }
@@ -117,6 +119,7 @@
     display: block;
     margin-top: 0;
     position: relative;
+    z-index: 99999;
 
     .ui-dialog-buttonset {
       margin: 0;
