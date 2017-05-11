@@ -1,6 +1,41 @@
 #Search.CRM_Pledge_Form_Search {
   table.selector {
     @include mx-expandable-table();
+    margin-bottom: 20px;
+
+    thead.sticky {
+      background: transparent;
+    }
+
+    thead.sticky th {
+      &:not(:first-child),
+      &:not(:last-child) {
+        padding: 15px 10px !important;
+      }
+    }
+
+    tr:not(.crm-child-row) > td {
+      &:not(:last-child) {
+        padding: 15px 10px;
+        text-align: center;
+      }
+
+      &:first-child {
+        padding: 15px 5px 15px 20px;
+      }
+
+      &:last-child {
+        min-width: 82px;
+        padding-left: 5px;
+      }
+    }
+
+    tbody > tr > td {
+      &:nth-child(6),
+      &:nth-child(7) {
+        min-width: 130px;
+      }      
+    }
 
     td .crm-hover-button:hover {
       color: $brand-primary !important;
@@ -14,12 +49,18 @@
       padding-left: 0;
     }
 
-    .crm-ajax-container {
-      border-width: 1px !important;
-      margin-top: -1px;
-      
+    .crm-ajax-container table {
       tr td {
+        min-width: 55px !important;
         text-align: left;
+
+        &:nth-child(2) {
+          min-width: 130px !important;
+        }
+      }
+
+      th:not(:first-child) {
+          padding: 15px 10px !important;
       }
 
       th:first-child {
