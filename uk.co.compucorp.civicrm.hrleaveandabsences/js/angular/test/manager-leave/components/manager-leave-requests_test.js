@@ -892,6 +892,17 @@
         });
       });
 
+      describe('when new leave request is updated', function() {
+        beforeEach(function() {
+          spyOn(controller,'refresh').and.callThrough();
+          $rootScope.$emit('LeaveRequest::updatedByManager', jasmine.any(Object));
+        });
+
+        it('refreshes the report', function() {
+          expect(controller.refresh).toHaveBeenCalled();
+        });
+      });
+
       function compileComponent() {
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;

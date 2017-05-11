@@ -21,7 +21,6 @@ define([
     $log.debug('Component: manager-leave-requests');
 
     var vm = Object.create(this),
-      leaveRequestAPICache = true,
       actionMatrix = {
         'waiting_approval': ['respond', 'cancel'],
         'more_information_requested': ['edit', 'cancel'],
@@ -241,7 +240,7 @@ define([
      */
     vm.refreshWithFilter = function (status) {
       vm.filters.leaveRequest.leaveStatus = status;
-      refreshWithoutCache();
+      vm.refresh();
     };
 
     /**
@@ -359,12 +358,14 @@ define([
      */
     function loadLeaveRequest(type) {
       var filterByStatus = type !== 'filter',
-        pagination = type === 'filter' ? {} : vm.pagination,
+        pagination = type === 'filter' ? { size: 0 } : vm.pagination,
         returnFields = type === 'filter' ? {
             return: ['status_id']
           } : {};
 
-      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, returnFields, leaveRequestAPICache)
+      //cache is set to always false as changing selection either in status menu
+      // or pages or adding new requests was reverting bacl to older cache
+      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, returnFields, false)
         .then(function (leaveRequests) {
           vm.leaveRequests[type] = leaveRequests;
         });
@@ -497,20 +498,8 @@ define([
      * Register events which will be called by other modules
      */
     function registerEvents() {
-      $rootScope.$on('LeaveRequest::updatedByManager', refreshWithoutCache);
-      $rootScope.$on('LeaveRequest::new', refreshWithoutCache);
-    }
-
-    /**
-     * Refresh leave requests from server
-     */
-    function refreshWithoutCache() {
-      leaveRequestAPICache = false;
-
-      vm.refresh()
-        .then(function () {
-          leaveRequestAPICache = true;
-        });
+      $rootScope.$on('LeaveRequest::updatedByManager', function () { vm.refresh(); });
+      $rootScope.$on('LeaveRequest::new', function () { vm.refresh(); });
     }
 
     return vm;
