@@ -6,6 +6,14 @@
     {/ts}
   </h3>
 
+  {if !empty($contactsForCreation) }
+    <p>
+      {ts}Accounts for these contacts will be created:{/ts}
+    </p>
+    {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsForCreation}
+    <br/>
+  {/if}
+
   {if !empty($contactsWithoutEmail) }
     <p>
       {ts}A work e-mail is required to create the account.{/ts}
