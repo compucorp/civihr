@@ -1,0 +1,10 @@
+<row class="{{class}}">
+  <columns class="request-data-key" large="{{#if keySize}}{{keySize}}{{else}}3{{/if}}">
+    <{{#if keyTag}}{{keyTag}}{{else}}span{{/if}}>
+      {ts}{{key}}:{/ts}
+    </{{#if keyTag}}{{keyTag}}{{else}}span{{/if}}>
+  </columns>
+  <columns class="request-data-value">
+    <span>{{value}}</span>
+  </columns>
+</row>

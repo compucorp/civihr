@@ -9,48 +9,14 @@ request-type: Leave
     <columns>
       {{> callout-header title="Leave Request Type"}}
       <callout class="request-data">
-        <row>
-          <columns class="request-data-key" large="3">
-            <span>{ts}Status:{/ts}</span>
-          </columns>
-          <columns class="request-data-value">
-            <span>{$leaveStatus}</span>
-          </columns>
-        </row>
-        <row>
-          <columns class="request-data-key" large="3">
-            <span>{ts}Staff Member:{/ts}</span>
-          </columns>
-          <columns class="request-data-value">
-            <span>{contact.display_name}</span>
-          </columns>
-        </row>
+        {{> request-data key="Status" value="{$leaveStatus}"}}
+        {{> request-data key="Staff Member" value="{contact.display_name}"}}
+
         {if $leaveRequest->from_date eq $leaveRequest->to_date}
-          <row>
-            <columns class="request-data-key" large="3">
-              <span>Date:</span>
-            </columns>
-            <columns class="request-data-value">
-              <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
-            </columns>
-          </row>
+          {{> request-data key="Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}"}}
         {else}
-          <row>
-            <columns class="request-data-key" large="3">
-              <span>{ts}From Date:{/ts}</span>
-            </columns>
-            <columns class="request-data-value">
-              <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
-            </columns>
-          </row>
-          <row>
-            <columns class="request-data-key" large="3">
-              <span>{ts}To Date:{/ts}</span>
-            </columns>
-            <columns class="request-data-value">
-              <span>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</span>
-            </columns>
-          </row>
+          {{> request-data key="From Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}"}}
+          {{> request-data key="To Date" value="{$toDate|truncate:10:\'\'|crmDate} {$toDateType}"}}
         {/if}
       </callout>
       <spacer></spacer>
