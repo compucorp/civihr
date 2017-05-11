@@ -2,8 +2,10 @@
   define([
     'common/angular',
     'common/lodash',
+    'common/moment',
     'mocks/helpers/helper',
     'mocks/data/absence-period-data',
+    'mocks/data/absence-type-data',
     'mocks/data/entitlement-data',
     'mocks/data/leave-request-data',
     'mocks/data/option-group-mock-data',
@@ -14,7 +16,7 @@
     'mocks/apis/entitlement-api-mock',
     'mocks/apis/leave-request-api-mock',
     'leave-absences/my-leave/app'
-  ], function (angular, _, helper, absencePeriodData, entitlementMock, leaveRequestMock, optionGroupMock) {
+  ], function (angular, _, moment, helper, absencePeriodData, absenceTypeData, entitlementMock, leaveRequestMock, optionGroupMock) {
     'use strict';
 
     describe('myLeaveReport', function () {
@@ -842,6 +844,7 @@
             expect(LeaveRequest.all.calls.mostRecent().args[4]).toEqual(false);
           });
         });
+
         /**
          * Spyes on dialog.open() method and resolves it with the given value
          *
@@ -866,6 +869,64 @@
               });
           });;
         }
+      });
+
+      describe('canCancel', function() {
+        var leaveRequest1;
+
+        beforeEach(function() {
+          leaveRequest1 = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
+        });
+
+        describe('when absence type does not allow to cancel', function() {
+          beforeEach(function() {
+            leaveRequest1.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','1').id;
+          });
+
+          it('does not allow user to cancel request', function() {
+            expect(controller.canCancel(leaveRequest1)).toBe(false);
+          });
+        });
+
+        describe('when absence type does allow to cancel', function() {
+          beforeEach(function() {
+            leaveRequest1.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','2').id;
+          });
+
+          it('does allow user to cancel request', function() {
+            expect(controller.canCancel(leaveRequest1)).toBe(true);
+          });
+        });
+
+        describe('when absence type does allow cancellation in advance of start date', function() {
+          beforeEach(function() {
+            leaveRequest1.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','3').id;
+          });
+
+          describe('when from date is less than today', function() {
+            beforeEach(function() {
+              var baseDate = moment(leaveRequest1.from_date);
+              var baseMorethanFromDate = baseDate.add(10, 'days').toDate();
+              jasmine.clock().mockDate(baseMorethanFromDate);
+            });
+
+            it('does not allow user to cancel request', function() {
+              expect(controller.canCancel(leaveRequest1)).toBe(false);
+            });
+          });
+
+          describe('when from date is more than today', function() {
+            beforeEach(function() {
+              var baseDate = moment(leaveRequest1.from_date);
+              var baseMorethanFromDate = baseDate.subtract(10, 'days').toDate();
+              jasmine.clock().mockDate(baseMorethanFromDate);
+            });
+
+            it('does allow user to cancel request', function() {
+              expect(controller.canCancel(leaveRequest1)).toBe(true);
+            });
+          });
+        });
       });
 
       /**
