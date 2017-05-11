@@ -15,12 +15,17 @@
 
 
 .request-comment {
-  padding: $callout-padding;
+
+  &-body {
+    padding: $callout-padding;
+    padding-top: 0;
+  }
 
   &-header {
-    @include margin(10px, bottom);
     color: $gray-darker;
     font-weight: 600;
+    padding: $callout-padding;
+    padding-bottom: $callout-padding/2;
   }
 }
 
@@ -34,30 +39,58 @@
 
 .request-data {
 
-  dl {
-    @include margin(0);
-  }
+  &-key {
 
-  dt {
-    color: $gray-darker;
-    float: left;
-    font-weight: 600;
-    width: 150px;
-  }
+    div,
+    span {
+      color: $gray-darker;
+      font-weight: 600;
+    }
 
-  dd {
-    @include margin(0, left);
-
-    &:not(:last-child) {
-      @include margin(10px, bottom);
+    // Mobile only: remove vertical margin between the key and the value
+    @media only screen and (max-width: #{$global-breakpoint}) {
+      padding-bottom: 0 !important;
     }
   }
 
-  @media only screen and (max-width: #{$global-breakpoint}) {
+  .row {
 
-    dt {
-      float: none !important;
-      width: auto !important;
+    // Mobile / Desktop: Remove bottom margin on the last row
+    &:last-child {
+
+      .columns {
+        padding-bottom: 0 !important;
+      }
+    }
+
+    // Desktop only: reduce the vergical margin between rows
+    @media only screen and (min-width: #{$global-breakpoint + 1}) {
+
+      .columns {
+        padding-bottom: 10px !important;
+      }
+    }
+  }
+}
+
+.request-data-toil {
+
+  div,
+  span {
+    padding: 10px 0;
+
+    // trick necessary for Outlook, otherwise the div doesn't get
+    // rendered with the padding
+    border: 1px solid $callout-background;
+  }
+
+  .request-data-value {
+
+    span {
+      border-color: $medium-gray;
+      display: inline-block;
+      text-align: center;
+      width: 100px;
     }
   }
 }

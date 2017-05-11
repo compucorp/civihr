@@ -1,7 +1,7 @@
 ---
 layout: leave-absences
-subject: CiviHR Leave Request
-request-type: Leave
+subject: CiviHR TOIL Request
+request-type: TOIL
 ---
 
 <div class="request">
@@ -9,15 +9,23 @@ request-type: Leave
     <columns>
       {{> callout-header title="Leave Request Type"}}
       <callout class="request-data">
-        {{> request-data key="Status" value="{$leaveStatus}"}}
-        {{> request-data key="Staff Member" value="{contact.display_name}"}}
+        {{> request-data key="Status" value="{$leaveStatus}" keySize="4"}}
+        {{> request-data key="Staff Member" value="{contact.display_name}" keySize="4"}}
 
         {if $leaveRequest->from_date eq $leaveRequest->to_date}
-          {{> request-data key="Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}"}}
+          {{> request-data key="Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}" keySize="4"}}
         {else}
-          {{> request-data key="From Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}"}}
-          {{> request-data key="To Date" value="{$toDate|truncate:10:\'\'|crmDate} {$toDateType}"}}
+          {{> request-data key="From Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}" keySize="4"}}
+          {{> request-data key="To Date" value="{$toDate|truncate:10:\'\'|crmDate} {$toDateType}" keySize="4"}}
         {/if}
+
+        {{> request-data
+          key="No. TOIL Days Requested"
+          value="{$leaveRequest->toil_to_accrue} {if $leaveRequest->toil_to_accrue > 1}days{else}day{/if}"
+          class="request-data-toil"
+          keySize="4"
+          keyTag="div"
+        }}
       </callout>
       <spacer></spacer>
       <button href="{$leaveRequestLink}" class="expanded alert">View This Request</button>
