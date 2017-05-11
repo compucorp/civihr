@@ -56,6 +56,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
     $this->assign('contactsWithoutEmail', $this->getContactsWithout('email'));
     $this->assign('contactsWithAccount', $haveAccount);
     $this->assign('contactsForCreation', $this->getValidContactsForCreation());
+    $this->assign('emailConflictContact', $this->getEmailConflictContacts());
   }
 
   /**
@@ -65,7 +66,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
     $this->sendEmail = (bool) $this->getElementValue('sendEmail');
     $contactsToCreate = $this->getValidContactsForCreation();
 
-    foreach ($contactsToCreate as $contactID => $contact) {
+    foreach ($contactsToCreate as $contact) {
       $this->createAccount($contact);
     }
 
@@ -84,8 +85,9 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   private function getValidContactsForCreation() {
     $missingEmail = $this->getContactsWithout('email');
     $haveNoAccount = $this->getContactsWithout('uf_id');
+    $emailConflict = $this->getEmailConflictContacts();
 
-    return array_diff_key($haveNoAccount, $missingEmail);
+    return array_diff_key($haveNoAccount, $missingEmail, $emailConflict);
   }
 
   /**
@@ -172,6 +174,36 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
     };
 
     return array_filter($this->contactDetails, $checker);
+  }
+
+  /**
+   * Returns contacts with work emails that are already in use and pairs of new
+   * Contacts that have duplicate emails
+   *
+   * @return array
+   */
+  private function getEmailConflictContacts() {
+    $newAccounts = $this->getContactsWithout('uf_id');
+    $haveNoEmail = $this->getContactsWithout('email');
+    $newContactsWithEmail = array_diff_key($newAccounts, $haveNoEmail);
+
+    $newEmails = array_column($newContactsWithEmail, 'email');
+    $params = ['uf_name' => ['IN' => $newEmails], 'options' => ['limit' => 0]];
+    $existing = civicrm_api3('UFMatch', 'get', $params);
+    $existing = ArrayHelper::value('values', $existing, []);
+    $existingEmails = array_column($existing, 'uf_name');
+
+    $duplicateEmails = array_diff_assoc($newEmails, array_unique($newEmails));
+    $badEmails = array_merge($existingEmails, $duplicateEmails);
+
+    $badContacts = [];
+    foreach ($newContactsWithEmail as $contactID => $contact) {
+      if (in_array($contact['email'], $badEmails)) {
+        $badContacts[$contactID] = $contact;
+      }
+    }
+
+    return array_unique($badContacts);
   }
 
 }
