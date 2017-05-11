@@ -872,58 +872,58 @@
       });
 
       describe('canCancel', function() {
-        var leaveRequest1;
+        var leaveRequest;
 
         beforeEach(function() {
-          leaveRequest1 = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
+          leaveRequest = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
         });
 
         describe('when absence type does not allow to cancel', function() {
           beforeEach(function() {
-            leaveRequest1.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','1').id;
+            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','1').id;
           });
 
           it('does not allow user to cancel request', function() {
-            expect(controller.canCancel(leaveRequest1)).toBe(false);
+            expect(controller.canCancel(leaveRequest)).toBe(false);
           });
         });
 
         describe('when absence type does allow to cancel', function() {
           beforeEach(function() {
-            leaveRequest1.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','2').id;
+            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','2').id;
           });
 
           it('does allow user to cancel request', function() {
-            expect(controller.canCancel(leaveRequest1)).toBe(true);
+            expect(controller.canCancel(leaveRequest)).toBe(true);
           });
         });
 
         describe('when absence type does allow cancellation in advance of start date', function() {
           beforeEach(function() {
-            leaveRequest1.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','3').id;
+            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','3').id;
           });
 
           describe('when from date is less than today', function() {
             beforeEach(function() {
-              var baseDate = moment(leaveRequest1.from_date);
-              var baseMorethanFromDate = baseDate.add(10, 'days').toDate();
-              jasmine.clock().mockDate(baseMorethanFromDate);
+              var baseDate = moment(leaveRequest.from_date);
+              var dateAfterFromDate = baseDate.add(10, 'days').toDate();
+              jasmine.clock().mockDate(dateAfterFromDate);
             });
 
             it('does not allow user to cancel request', function() {
-              expect(controller.canCancel(leaveRequest1)).toBe(false);
+              expect(controller.canCancel(leaveRequest)).toBe(false);
             });
           });
 
           describe('when from date is more than today', function() {
             beforeEach(function() {
-              var baseDate = moment(leaveRequest1.from_date);
-              var baseMorethanFromDate = baseDate.subtract(10, 'days').toDate();
-              jasmine.clock().mockDate(baseMorethanFromDate);
+              var baseDate = moment(leaveRequest.from_date);
+              var dateBeforeFromDate = baseDate.subtract(10, 'days').toDate();
+              jasmine.clock().mockDate(dateBeforeFromDate);
             });
 
             it('does allow user to cancel request', function() {
-              expect(controller.canCancel(leaveRequest1)).toBe(true);
+              expect(controller.canCancel(leaveRequest)).toBe(true);
             });
           });
         });

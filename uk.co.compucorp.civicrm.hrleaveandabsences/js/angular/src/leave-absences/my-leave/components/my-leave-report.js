@@ -1,8 +1,8 @@
 define([
-  'leave-absences/my-leave/modules/components',
   'common/lodash',
   'common/moment',
-], function (components, _, moment) {
+  'leave-absences/my-leave/modules/components',
+], function (_, moment, components) {
 
   components.component('myLeaveReport', {
     bindings: {
@@ -97,14 +97,13 @@ define([
      * @return {Boolean}
      */
     vm.canCancel = function (request) {
-      if (vm.absenceTypes[request.type_id].allow_request_cancelation == 3) {
+      var allow_request_cancelation = vm.absenceTypes[request.type_id].allow_request_cancelation;
+
+      if (allow_request_cancelation == 3) {
         return moment().isBefore(request.from_date);
       }
-      else if (vm.absenceTypes[request.type_id].allow_request_cancelation == 2) {
-        return true;
-      }
 
-      return false;
+      return allow_request_cancelation == 2;
     };
 
     /**
