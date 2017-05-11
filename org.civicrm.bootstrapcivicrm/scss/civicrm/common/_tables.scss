@@ -34,8 +34,10 @@
 
   tr:last-child {
     background: transparent !important;
-    border: none;
+    border-bottom: none;
+    border-left: none;
     border-radius: 0 0 $border-radius-base $border-radius-base;
+    border-right: none;
   }
 
   td .crm-hover-button {
