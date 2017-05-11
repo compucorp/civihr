@@ -25,7 +25,7 @@
     color: $gray-darker;
     font-weight: 600;
     padding: $callout-padding;
-    padding-bottom: $callout-padding/2
+    padding-bottom: $callout-padding/2;
   }
 }
 
@@ -65,6 +65,7 @@
 
     // Desktop only: reduce the vergical margin between rows
     @media only screen and (min-width: #{$global-breakpoint + 1}) {
+
       .columns {
         padding-bottom: 10px !important;
       }
