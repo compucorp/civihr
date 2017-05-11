@@ -67,14 +67,13 @@
     }
   }
 
-  .modal-dialog {
-    td {
-      vertical-align: middle;
-    }
+  .modal-dialog td {
+    vertical-align: middle;
   }
 
   .help {
     font-family: $font-family-base;
+    padding: 10px;
   }
 
   .action-link a.button {
