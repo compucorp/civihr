@@ -89,7 +89,27 @@
           line-height: 18px;
           max-width: 92px;
           min-width: 76px;
-          padding: 10px 10px 10px 20px;
+          
+          &:not(:first-child) {
+            padding: 10px;
+          }
+
+          &:nth-child(1),
+          &:nth-child(5),
+          &:nth-child(6),
+          &:nth-child(7) {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          &:nth-child(2) a:last-child {
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+          }
 
           &:nth-child(3),
           &:nth-child(4) {
@@ -98,7 +118,7 @@
 
           &:last-child {
             max-width: 100px;
-            padding: 10px 20px 10px 10px;
+            padding: 10px 20px 10px 5px;
             text-align: right;
             width: 100px;
 
@@ -206,36 +226,51 @@
     }
 
     .crm-icon {
-      text-indent: 0 !important;
       text-align: center;
+      text-indent: 0 !important;
 
       &:before {
+        bottom: 2px;
         font-size: $font-size-base !important;
         position: relative;
-        bottom: 2px;
       }
 
       &.Individual-icon {
         background: none;
         &:before {
-          @include fa-icon($content: "\f007");
+          @include fa-icon($content: $fa-var-user);
         }
       }
 
       &.Organization-icon {
         background: none;
         &:before {
-          @include fa-icon($content: "\f0f7");
+          @include fa-icon($content: $fa-var-building-o);
         }
       }
 
       &.Household-icon {
         background: none;
         &:before {
-          @include fa-icon($content: "\f015");
+          @include fa-icon($content: $fa-var-home);
         }
       }
     }
+  }
+
+  .ui-dialog .crm-relationship-view-block table.crm-info-panel {
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-top: -20px;
+    width: 104%;
+    
+    tbody tr {
+      border-top: 1px solid $crm-background;
+    }  
+
+    tbody td {
+      padding: 7px 20px !important;
+    }    
   }
 }
 
