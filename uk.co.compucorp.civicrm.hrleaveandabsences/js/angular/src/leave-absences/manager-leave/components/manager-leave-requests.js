@@ -21,7 +21,6 @@ define([
     $log.debug('Component: manager-leave-requests');
 
     var vm = Object.create(this),
-      leaveRequestAPICache = true,
       actionMatrix = {
         'waiting_approval': ['respond', 'cancel'],
         'more_information_requested': ['edit', 'cancel'],
@@ -220,18 +219,18 @@ define([
      * Refreshes the leave request data
      *
      * @param {int} page - page number of the pagination element
-     * @return {Promise}
      */
     vm.refresh = function (page) {
-      page = page ? page : 1;
+      //vm.refresh is called from registerEvents and was sending events object in the function "arguments".
+      //Without the check parameter page was set to the passed event object from function "arguments" and
+      //hence the page was not getting refreshed as the below condition would always fail.
+      page = typeof(page) === 'number' ? page : 1;
 
       if(page <=  vm.totalNoOfPages()) {
         vm.pagination.page = page;
 
-        return loadAllRequests();
+        loadAllRequests();
       }
-
-      return $q.resolve();
     };
 
     /**
@@ -241,7 +240,7 @@ define([
      */
     vm.refreshWithFilter = function (status) {
       vm.filters.leaveRequest.leaveStatus = status;
-      refreshWithoutCache();
+      vm.refresh();
     };
 
     /**
@@ -322,7 +321,7 @@ define([
     function loadAllRequests() {
       vm.loading.content = true;
 
-      return Contact.all(contactFilters(), {
+      Contact.all(contactFilters(), {
           page: 1,
           size: 0
         })
@@ -359,12 +358,15 @@ define([
      */
     function loadLeaveRequest(type) {
       var filterByStatus = type !== 'filter',
-        pagination = type === 'filter' ? {} : vm.pagination,
+        //{pagination: {size:0}} - Load all requests instead of 25
+        pagination = type === 'filter' ? { size: 0 } : vm.pagination,
         returnFields = type === 'filter' ? {
             return: ['status_id']
           } : {};
 
-      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, returnFields, leaveRequestAPICache)
+      //cache is set to always false as changing selection either in status menu
+      //or pages or adding new requests was reverting back to older cache
+      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, returnFields, false)
         .then(function (leaveRequests) {
           vm.leaveRequests[type] = leaveRequests;
         });
@@ -497,20 +499,8 @@ define([
      * Register events which will be called by other modules
      */
     function registerEvents() {
-      $rootScope.$on('LeaveRequest::updatedByManager', refreshWithoutCache);
-      $rootScope.$on('LeaveRequest::new', refreshWithoutCache);
-    }
-
-    /**
-     * Refresh leave requests from server
-     */
-    function refreshWithoutCache() {
-      leaveRequestAPICache = false;
-
-      vm.refresh()
-        .then(function () {
-          leaveRequestAPICache = true;
-        });
+      $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
+      $rootScope.$on('LeaveRequest::new', vm.refresh);
     }
 
     return vm;
