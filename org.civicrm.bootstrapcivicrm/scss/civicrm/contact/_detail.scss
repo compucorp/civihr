@@ -372,16 +372,14 @@
         }
       }
 
-      .crm-button_qf_ContactName_upload {
-        i {
-          display: inline-block;
-        }
+      .crm-button_qf_ContactName_upload i {
+        display: inline-block;
       }
 
       .crm-form-submit {
-        padding: 7px 12px !important;
         margin-top: 5px;
         min-width: initial;
+        padding: 7px 12px !important;
 
         &:hover {
           background-color: $brand-primary !important;
@@ -390,9 +388,9 @@
 
         &.cancel {
           background-color: $brand-danger !important;
-          color: $crm-white !important;
-          border-radius: 2px;
           border: none !important;
+          border-radius: $border-radius-base;
+          color: $crm-white !important;
 
           &:hover {
             background-color: $brand-danger !important;
@@ -405,7 +403,7 @@
   table.crm-inline-edit-form:not(.form-layout),
   .CRM_Contact_Form_Inline_CommunicationPreferences {
     .select2-container .select2-choice abbr {
-      right: 27px;
+      right: 30px;
       top: 8px;
     }
   }
@@ -476,6 +474,7 @@
         box-shadow: $crm-input-shadow; 
         color: $crm-copy;  
         font-family: $font-family-base;
+        font-size: $font-size-base;
         margin-top: 0;       
         padding: 1px 10px;
 
@@ -490,14 +489,14 @@
       }
 
       .crm-hover-button.add-more-inline {
-        background: $brand-primary;
-        color: $crm-white;
-        padding: 3px 7px;
+        color: $brand-primary;
+        padding: 0 5px;
+        vertical-align: top;        
 
         &:before {
           @include fa-icon($font-size-base, $fa-var-plus-circle);
-          color: $crm-white;
-          padding-right: 6px;
+          color: $brand-primary;
+          padding-right: 5px;
         }
       }
 
@@ -505,6 +504,10 @@
         .select2-choice {
           box-shadow: $crm-input-shadow;
           min-width:100px !important;
+
+          .select2-arrow {
+            padding-top: 1px; 
+          }
         }
 
         &.select2-dropdown-open {
