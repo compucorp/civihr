@@ -219,18 +219,15 @@ define([
      * Refreshes the leave request data
      *
      * @param {int} page - page number of the pagination element
-     * @return {Promise}
      */
     vm.refresh = function (page) {
-      page = page ? page : 1;
+      page = typeof(page) === 'number' ? page : 1;
 
       if(page <=  vm.totalNoOfPages()) {
         vm.pagination.page = page;
 
-        return loadAllRequests();
+        loadAllRequests();
       }
-
-      return $q.resolve();
     };
 
     /**
@@ -321,7 +318,7 @@ define([
     function loadAllRequests() {
       vm.loading.content = true;
 
-      return Contact.all(contactFilters(), {
+      Contact.all(contactFilters(), {
           page: 1,
           size: 0
         })
@@ -364,7 +361,7 @@ define([
           } : {};
 
       //cache is set to always false as changing selection either in status menu
-      // or pages or adding new requests was reverting bacl to older cache
+      //or pages or adding new requests was reverting back to older cache
       return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, returnFields, false)
         .then(function (leaveRequests) {
           vm.leaveRequests[type] = leaveRequests;
@@ -498,8 +495,8 @@ define([
      * Register events which will be called by other modules
      */
     function registerEvents() {
-      $rootScope.$on('LeaveRequest::updatedByManager', function () { vm.refresh(); });
-      $rootScope.$on('LeaveRequest::new', function () { vm.refresh(); });
+      $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
+      $rootScope.$on('LeaveRequest::new', vm.refresh);
     }
 
     return vm;

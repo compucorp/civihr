@@ -883,23 +883,21 @@
 
       describe('when new leave request is created', function() {
         beforeEach(function() {
-          spyOn(controller,'refresh').and.callThrough();
           $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
         });
 
-        it('refreshes the report', function() {
-          expect(controller.refresh).toHaveBeenCalled();
+        it('calls related contact API to update', function() {
+          expect(Contact.all).toHaveBeenCalled();
         });
       });
 
       describe('when new leave request is updated', function() {
         beforeEach(function() {
-          spyOn(controller,'refresh').and.callThrough();
           $rootScope.$emit('LeaveRequest::updatedByManager', jasmine.any(Object));
         });
 
-        it('refreshes the report', function() {
-          expect(controller.refresh).toHaveBeenCalled();
+        it('calls related contact API to update', function() {
+          expect(Contact.all).toHaveBeenCalled();
         });
       });
 
