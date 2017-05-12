@@ -221,6 +221,9 @@ define([
      * @param {int} page - page number of the pagination element
      */
     vm.refresh = function (page) {
+      //vm.refresh is called from registerEvents and was sending events object in the function "arguments".
+      //Without the check parameter page was set to the passed event object from function "arguments" and
+      //hence the page was not getting refreshed as the below condition would always fail.
       page = typeof(page) === 'number' ? page : 1;
 
       if(page <=  vm.totalNoOfPages()) {
@@ -355,6 +358,7 @@ define([
      */
     function loadLeaveRequest(type) {
       var filterByStatus = type !== 'filter',
+        //{pagination: {size:0}} - Load all requests instead of 25
         pagination = type === 'filter' ? { size: 0 } : vm.pagination,
         returnFields = type === 'filter' ? {
             return: ['status_id']
