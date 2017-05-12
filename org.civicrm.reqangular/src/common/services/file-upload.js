@@ -65,8 +65,27 @@ define([
             formData: [{
               entity_table: customSettings.entityTable || error('entityTable'),
               crm_attachment_token: customSettings.crmAttachmentToken || error('crmAttachmentToken')
+            }],
+            filters: [{
+              name: 'fileFormatFilter',
+              fn: function (item /*{File|FileLikeObject}*/ , options) {
+                var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+
+                //checks for mime types and not file name extensions
+                //|txt|jpg|png|jpeg|bmp|gif|pdf|doc|docx|xls|xlsx|ppt|pptx|
+                return '|plain|png|jpeg|bmp|gif|pdf|msword|vnd.openxmlformats-officedocument.wordprocessingml.document|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet|vnd.ms-powerpoint|vnd.openxmlformats-officedocument.presentationml.presentation|'.indexOf(type) !== -1;
+              }
             }]
           });
+
+          //add filters to restrict file types
+          // uploader.filters.push({
+          //     name: 'fileFormatFilter',
+          //     fn: function(item /*{File|FileLikeObject}*/, options) {
+          //         var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+          //         return '|jpg|png|jpeg|bmp|gif|pdf|doc|docx|xls|xlsx|ppt|pptx|txt'.indexOf(type) !== -1;
+          //     }
+          // });
 
           /**
            * Uploads all files in queue updating with additional form data.
