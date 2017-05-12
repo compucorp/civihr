@@ -27,7 +27,7 @@ define([
       var absenceTypesAndIds,
         initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
         mode = '', //can be edit, create, view
-        role = '', //could be manager, owner or admin
+        role = $rootScope.isManager ? 'manager' : 'owner', //could be manager, owner or admin
         initialCommentsLength = 0; //number of comments when the request model is loaded
 
       this.absencePeriods = [];
@@ -412,7 +412,7 @@ define([
         if (this.directiveOptions.leaveRequest) {
           //_.deepClone or angular.copy were not uploading files correctly
           attributes = this.directiveOptions.leaveRequest.attributes();
-        } else if (!this.directiveOptions.forStaff) {
+        } else if (!this.isRole('manager')) {
           attributes = { contact_id: this.directiveOptions.contactId };
         }
 
@@ -482,7 +482,7 @@ define([
         return _.reject(this.requestStatuses, function (status) {
           var canRemoveStatus = (status.name === 'admin_approved' || status.name === 'waiting_approval');
 
-          return this.directiveOptions.forStaff ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
+          return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
         }.bind(this));
       }
 
@@ -588,12 +588,9 @@ define([
 
         return loadStatuses.call(self)
           .then(function () {
-            return initUserRole.call(self);
-          })
-          .then(function () {
             initOpenMode.call(self);
 
-            return self.directiveOptions.forStaff && loadManagees.call(self);
+            return self.isRole('manager') && loadManagees.call(self);
           })
           .then(function () {
             return loadAbsencePeriods.call(self);
@@ -647,6 +644,15 @@ define([
               initialCommentsLength = self.request.comments.length;
             }
           });
+      };
+
+      /**
+       * Checks if the Leave Requests is New or a old one
+       *
+       * @returns {Boolean}
+       */
+      this.isNewRequest = function () {
+        return !this.request.id;
       };
 
       /**
@@ -851,18 +857,6 @@ define([
       }
 
       /**
-       * Initialize user's role to either owner, manager or admin
-       *
-       * @return {Promise}
-       */
-      function initUserRole() {
-        return this.request.roleOf({ id: this.directiveOptions.contactId })
-          .then(function (roleParam) {
-            role = roleParam;
-          }.bind(this));
-      }
-
-      /**
        * Inits absence period for the current date
        */
       function initAbsencePeriod() {
@@ -933,7 +927,7 @@ define([
             this.request.status_id = this.requestStatuses['waiting_approval'].value;
           }
         } else if (this.isMode('create')) {
-          this.request.status_id = this.directiveOptions.forStaff ?
+          this.request.status_id = this.isRole('manager') ?
             this.requestStatuses['approved'].value :
             this.requestStatuses['waiting_approval'].value;
         }

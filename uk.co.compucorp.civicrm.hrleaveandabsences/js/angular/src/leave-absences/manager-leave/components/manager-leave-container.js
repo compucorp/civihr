@@ -9,11 +9,13 @@ define([
       return settings.pathTpl + 'components/manager-leave-container.html';
     }],
     controllerAs: 'managerLeave',
-    controller: ['$log', function ($log) {
+    controller: ['$log', '$rootScope', function ($log, $rootScope) {
       console.log('CRM id of the currently logged in user: ', this.contactId);
       $log.debug('Component: manager-leave-container');
 
       var vm = Object.create(this);
+
+      $rootScope.isManager = true;
 
       return vm;
     }]

@@ -33,8 +33,7 @@ define([
         scope: {
           contactId: '<',
           leaveRequest: '<',
-          leaveType: '@',
-          forStaff: '<'
+          leaveType: '@'
         },
         restrict: 'EA',
         link: function (scope, element) {
@@ -50,8 +49,7 @@ define([
                 directiveOptions: function () {
                   return {
                     contactId: scope.contactId,
-                    leaveRequest: scope.leaveRequest,
-                    forStaff: scope.forStaff
+                    leaveRequest: scope.leaveRequest
                   };
                 },
                 //to set HR_settings DateFormat

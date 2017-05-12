@@ -1049,6 +1049,7 @@
       });
       describe('manager opens leave request popup', function () {
         beforeEach(function () {
+          $rootScope.isManager = true;
           var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
           var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
@@ -1135,9 +1136,9 @@
 
       describe('manager raises absence request on behalf of staff', function () {
         beforeEach(function () {
+          $rootScope.isManager = true;
           var directiveOptions = {
             contactId: 203, //manager's contact id
-            forStaff: true
           };
 
           initTestController(directiveOptions);
