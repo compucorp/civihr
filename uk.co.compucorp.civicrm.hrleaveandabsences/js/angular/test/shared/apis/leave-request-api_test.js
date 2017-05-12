@@ -90,12 +90,12 @@ define([
           it('status and publicHoliday has default values if falsy values has been passed', function () {
             LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String));
 
-            expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', {
+            expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
               contact_id: jasmine.any(String),
               period_id: jasmine.any(String),
               statuses: null,
               public_holiday: false
-            }, false);
+            }), false);
           });
 
           it('sends as `public_holiday` the original value if truthy value had been passed', function () {
@@ -464,12 +464,12 @@ define([
       it('calls endpoint with leaveRequestID, text and contact_id', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
-            'addcomment', _.assign(params, {
+            'addcomment', jasmine.objectContaining(_.assign(params, {
               leave_request_id: leaveRequestID,
               text: commentObject.text,
               contact_id: commentObject.contact_id,
               created_at: commentObject.created_at
-            }));
+            })));
         });
       });
 
