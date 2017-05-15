@@ -92,7 +92,7 @@ abstract class CRM_HRCore_Form_AbstractDrupalInteractionTaskForm extends CRM_Con
    *
    * @return array
    */
-  protected function getContactsWithout($property) {
+  protected function getContactsWithoutAttribute($property) {
     $checker = function ($contactDetail) use ($property) {
       return empty($contactDetail[$property]);
     };
