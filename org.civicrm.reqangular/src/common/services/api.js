@@ -5,7 +5,7 @@ define([
 ], function (angular, _, apis) {
   'use strict';
 
-  apis.factory('api', ['$log', '$http', '$q', '$timeout', function ($log, $http, $q, $timeout) {
+  apis.factory('api', ['$log', '$http', '$httpParamSerializer', '$q', '$timeout', function ($log, $http, $httpParamSerializer, $q, $timeout) {
     $log.debug('api');
 
     var API_ENDPOINT = '/civicrm/ajax/rest';
@@ -70,7 +70,7 @@ define([
         return $q.all([
           (function () {
             var params = _.assign({}, filters, (additionalParams || {}), {
-              options: {sort: sort || 'id DESC'}
+              options: { sort: sort || 'id DESC' }
             });
 
             if (pagination) {
@@ -83,7 +83,7 @@ define([
             });
           }.bind(this))(),
           (function () {
-            var params = _.assign({}, filters, {'return': 'id'});
+            var params = _.assign({}, filters, { 'return': 'id' });
 
             return this.sendGET(entity, action, params, cache);
           }.bind(this))()
@@ -172,15 +172,7 @@ define([
             action: action
           },
           // AngularJS doesn't url encode the POST params automatically
-          transformRequest: function (obj) {
-            var str = [];
-
-            for (var p in obj) {
-              str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
-            }
-
-            return str.join("&");
-          },
+          transformRequest: $httpParamSerializer
         }).then(responseHandler);
       }
     };
