@@ -37,7 +37,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   }
 
   /**
-   * Build the form object.
+   * @inheritdoc
    */
   public function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Create User Records'));
@@ -51,16 +51,16 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   public function preProcess() {
     parent::preProcess();
     $this->initContactDetails();
-    $haveNoAccount = $this->getContactsWithout('uf_id');
+    $haveNoAccount = $this->getContactsWithoutAttribute('uf_id');
     $haveAccount = array_diff_key($this->contactDetails, $haveNoAccount);
-    $this->assign('contactsWithoutEmail', $this->getContactsWithout('email'));
+    $this->assign('contactsWithoutEmail', $this->getContactsWithoutAttribute('email'));
     $this->assign('contactsWithAccount', $haveAccount);
     $this->assign('contactsForCreation', $this->getValidContactsForCreation());
     $this->assign('emailConflictContact', $this->getEmailConflictContacts());
   }
 
   /**
-   * Process the form after the input has been submitted and validated.
+   * @inheritdoc
    */
   public function postProcess() {
     $this->sendEmail = (bool) $this->getElementValue('sendEmail');
@@ -83,8 +83,8 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
    * @return array
    */
   private function getValidContactsForCreation() {
-    $missingEmail = $this->getContactsWithout('email');
-    $haveNoAccount = $this->getContactsWithout('uf_id');
+    $missingEmail = $this->getContactsWithoutAttribute('email');
+    $haveNoAccount = $this->getContactsWithoutAttribute('uf_id');
     $emailConflict = $this->getEmailConflictContacts();
 
     return array_diff_key($haveNoAccount, $missingEmail, $emailConflict);
@@ -132,7 +132,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
       'api.UFMatch.getsingle' => $ufMatchParams,
     ];
     $contactDetails = civicrm_api3('Contact', 'get', $params);
-    $contactDetails = ArrayHelper::value('values', $contactDetails);
+    $contactDetails = ArrayHelper::value('values', $contactDetails, []);
 
     foreach ($contactDetails as $detail) {
       $contactID = (int) ArrayHelper::value('contact_id', $detail);
@@ -163,12 +163,12 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   }
 
   /**
-   * @param $property
+   * @param string $property
    *  The property to check if empty
    *
    * @return array
    */
-  protected function getContactsWithout($property) {
+  protected function getContactsWithoutAttribute($property) {
     $checker = function ($contactDetail) use ($property) {
       return empty($contactDetail[$property]);
     };
@@ -183,8 +183,8 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
    * @return array
    */
   private function getEmailConflictContacts() {
-    $newAccounts = $this->getContactsWithout('uf_id');
-    $haveNoEmail = $this->getContactsWithout('email');
+    $newAccounts = $this->getContactsWithoutAttribute('uf_id');
+    $haveNoEmail = $this->getContactsWithoutAttribute('email');
     $newContactsWithEmail = array_diff_key($newAccounts, $haveNoEmail);
 
     if (empty($newContactsWithEmail)) {
