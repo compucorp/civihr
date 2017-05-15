@@ -69,13 +69,9 @@ trait CRM_HRCore_Upgrader_Steps_1004 {
    * @return bool
    */
   private function isExtensionEnabled($key) {
-    $isEnabled = CRM_Core_DAO::getFieldValue(
-      'CRM_Core_DAO_Extension',
-      $key,
-      'is_active',
-      'full_name'
-    );
-    return !empty($isEnabled) ? TRUE : FALSE;
+    $status = CRM_Extension_System::singleton()->getManager()->getStatus($key);
+
+    return $status === CRM_Extension_Manager::STATUS_INSTALLED;
   }
 
 }
