@@ -78,7 +78,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   }
 
   /**
-   * Returns contacts that have a work email and no drupal account
+   * Returns contacts that have an email and no drupal account
    *
    * @return array
    */
@@ -118,7 +118,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
     $emailParams = [
       'contact_id' => '$value.id',
       'return' => ['email'],
-      'location_type_id' => 'work'
+      'is_primary' => 1,
     ];
     $ufMatchParams = [
       'contact_id' => '$value.id',
@@ -177,7 +177,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
   }
 
   /**
-   * Returns contacts with work emails that are already in use and pairs of new
+   * Returns contacts with emails that are already in use and pairs of new
    * Contacts that have duplicate emails
    *
    * @return array
