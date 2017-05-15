@@ -53,6 +53,8 @@ define([
             return error('custom settings');
           }
 
+          customSettings.allowedMimeTypes = customSettings.allowedMimeTypes || '|plain|png|jpeg|bmp|gif|pdf|';
+
           uploader = new FileUploader({
             url: customSettings.url || '/civicrm/ajax/attachment',
             queueLimit: +customSettings.queueLimit || 1,
@@ -68,24 +70,15 @@ define([
             }],
             filters: [{
               name: 'fileFormatFilter',
-              fn: function (item /*{File|FileLikeObject}*/ , options) {
-                var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-
-                //checks for mime types and not file name extensions
+              fn: function (item, options) {
+                //checks for mime types like plain for txt files and not file name extensions like
                 //|txt|jpg|png|jpeg|bmp|gif|pdf|doc|docx|xls|xlsx|ppt|pptx|
-                return '|plain|png|jpeg|bmp|gif|pdf|msword|vnd.openxmlformats-officedocument.wordprocessingml.document|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet|vnd.ms-powerpoint|vnd.openxmlformats-officedocument.presentationml.presentation|'.indexOf(type) !== -1;
+                var mimeType = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+
+                return customSettings.allowedMimeTypes.indexOf(mimeType) !== -1;
               }
             }]
           });
-
-          //add filters to restrict file types
-          // uploader.filters.push({
-          //     name: 'fileFormatFilter',
-          //     fn: function(item /*{File|FileLikeObject}*/, options) {
-          //         var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-          //         return '|jpg|png|jpeg|bmp|gif|pdf|doc|docx|xls|xlsx|ppt|pptx|txt'.indexOf(type) !== -1;
-          //     }
-          // });
 
           /**
            * Uploads all files in queue updating with additional form data.
