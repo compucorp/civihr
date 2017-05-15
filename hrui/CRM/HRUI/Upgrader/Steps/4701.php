@@ -63,7 +63,9 @@ trait CRM_HRUI_Upgrader_Steps_4701 {
       'name' => 'Identify'
     ]);
 
-    return $customGroupResult['values'][0]['table_name'];
+    if ($customGroupResult['count'] > 0) {
+      return $customGroupResult['values'][0]['table_name'];
+    }
   }
 
   private function up4701_getIdentFieldName() {
@@ -72,7 +74,9 @@ trait CRM_HRUI_Upgrader_Steps_4701 {
       'name' => 'Number'
     ]);
 
-    return $customFieldResult['values'][0]['column_name'];
+    if ($customFieldResult['count'] > 0) {
+      return $customFieldResult['values'][0]['column_name'];
+    }
   }
 
 }
