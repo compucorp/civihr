@@ -613,31 +613,34 @@
         line-height: 1.5em !important;
         padding: 15px 30px;
       }
+    }
 
-      th {
-        background: $crm-white !important;
-        border: none !important;
-        color: $gray-darker !important;
-        line-height: 1.5em;
-        padding: 15px 10px !important;
-        vertical-align: middle;
+    tbody tr th {
+      background: $crm-white !important;
+      border: none !important;
+      color: $gray-darker !important;
+      line-height: 1.5em;
+      padding: 15px 10px !important;
+      vertical-align: middle;
 
-        &.contriTotalLeft {
-          padding-left: 0;
-        }
+      &.contriTotalLeft {
+        padding-left: 0;
+      }
 
-        div {
-          padding: 0;
-        }
+      div {
+        padding: 0;
       }
     }
   }
 
   .solid-border-top {
-    background: $crm-white;
+    background: $gray-lighter;
     border-radius: $border-radius-child $border-radius-child 0 0;
     box-shadow: $box-shadow;
-    padding: 0 20px 10px;
+    color: $gray-darker;
+    font: $crm-font-weight-h2 $font-size-h2 $font-family-base;
+    line-height: 0;
+    padding: 15px 20px 11px;
 
     .label {
       color: $gray-darker;    
@@ -645,15 +648,15 @@
 
     + .form-layout-compressed {
       border-bottom: 1px solid $crm-background;
-      border-radius: 0;
+      border-radius: 0 0 $border-radius-child $border-radius-child;
       box-shadow: $crm-form-item-shadow;
-      margin: 0;
+      margin-bottom: 15px;
     }
   }
 
   #DataTables_Table_0_wrapper {
     background: $crm-white;
-    border-radius: 0 0 $border-radius-child $border-radius-child;
+    border-radius: $border-radius-child;
     box-shadow: $crm-form-item-shadow; 
     margin-bottom: 20px;
 
@@ -663,8 +666,28 @@
     }
 
     .crm-datatable-pager-top {
-      padding-bottom: 40px;
+      background: $gray-lighter;
+      border-bottom: 1px solid $crm-background;
+      border-radius: $border-radius-child $border-radius-child 0 0;     
+      padding-bottom: 39px;
       padding-top: 10px;
+
+      .dataTables_paginate {
+        padding-top: 0;
+      }
+    }
+
+    .crm-datatable-pager-bottom {
+      background: $gray-lighter;
+      border-radius: 0 0 $border-radius-child $border-radius-child;
+      line-height: 25px;
+      padding-bottom: 39px;
+      padding-top: 10px;
+
+      .dataTables_info,
+      .dataTables_paginate {
+        padding-top: 0;
+      }
     }
 
     table {
@@ -1016,39 +1039,46 @@
   }
 
   .crm-contribution-form-block-pcp_details {
-    position: relative;
     left: -185px;
+    position: relative;    
   }
 
-  .crm-accordion-body {
-    td {
-      vertical-align: middle;
+  .crm-accordion-body td {
+    vertical-align: middle;
 
-      &.label {
-        min-width: 185px;
-        box-sizing: border-box;
-
-        label {
-          padding-left: 10px;
-        }
-      }
+    &.label {
+      box-sizing: border-box;
+      min-width: 185px;      
     }
+
+    &.label label {
+      padding-left: 10px;
+    }        
   }
 }
 
-.page-civicrm-contact-view {
-  .ui-dialog {
-   .CRM_Contribute_Form_Contribution {
-     .crm-contribution-form-block {
-       margin-top: -65px;
-     }
+.page-civicrm-contact-view .ui-dialog .CRM_Contribute_Form_Contribution { 
+    .crm-link-credit-card-mode {
+      position: absolute;
+      right: 0;
+    }
 
-     .crm-link-credit-card-mode {
-       position: relative;
-       top: 65px;
-     }
-   }
- }
+    .help {
+      padding: 10px; 
+    }
+
+    #recurringPaymentBlock {
+      .crm-form-text,
+      .select2-container {
+        min-width: 100px !important;
+        margin-top: 0;
+        width: 150px !important;
+      }
+    }
+
+    .description {
+      margin-top: 10px;
+    }
 }
 
 .CRM_Contribute_Form_ContributionView {
@@ -1059,96 +1089,88 @@
   table {
     background: transparent;
     border: none;
+    box-shadow: none !important;
     font-family: $font-family-base;
     margin: 10px 0;
-    box-shadow: none !important;
 
     &.crm-info-panel {
-      width: 105%;
-      margin-top: -20px;
       margin-left: -20px;
       margin-right: -20px;
+      margin-top: -20px;
+      width: 105%;
     }
 
-    thead {
-      tr {
-        border: 1px solid $crm-background !important;
+    thead tr {      
+      border: 1px solid $crm-background !important;
 
-        th {
+      th {        
+        background: $gray-lighter !important;
+        border: none;
+        color: $gray-darker !important;
+        height: 42px;
+        line-height: 1.1em;
+        vertical-align: middle;        
+
+        div {
+          padding: 0;
+        }
+      }
+    }
+
+    tbody tr {
+      background: $crm-white;
+      border: 1px solid $crm-background;
+      border-left: 0;
+      border-right: 0;
+
+      &.crm-child-row {
+        & > td {
+          padding: 0;
+
+          .crm-ajax-container table {
+            margin: 0;
+
+            tbody {
+              border-top: 1px solid $crm-dark-grayblue !important
+            }
+          } 
+
+          .crm-ajax-container table th {
+            background: $gray-lighter !important;
+            border: none;
+            color: $gray-darker;
+            vertical-align: middle;
+          }
+        }
+      }
+
+      td {
+        background: $crm-white !important;
+        border: none;
+        line-height: 1.1em;
+        padding: 20px;
+
+        &.label {
           border-bottom: none;
-          background: $gray-lighter !important;
           color: $gray-darker !important;
           vertical-align: middle;
-          border: none;
-          line-height: 1.1em;
-          height: 42px;
 
           div {
             padding: 0;
           }
         }
+
+        &:not(.label) {
+          color: $gray-dark;
+        }
       }
-    }
 
-    tbody {
-      tr {
-        background: $crm-white;
-        border: 1px solid $crm-background;
-        border-right: 0;
-        border-left: 0;
+      &:last-child {
+        border-bottom: 0;
+      }
 
-        &.crm-child-row {
-          & > td {
-            padding: 0;
-
-            .crm-ajax-container {
-              table {
-                margin: 0;
-
-                tbody {
-                  border-top: 1px solid $crm-dark-grayblue !important
-                }
-
-                th {
-                  border-bottom: none;
-                  background: $gray-lighter !important;
-                  color: $gray-darker;
-                  vertical-align: middle;
-                  border: none;
-                }
-              }
-            }
-          }
-        }
-
-        td {
-          border: none;
-          padding: 20px;
-          line-height: 1.1em;
-          background: $crm-white !important;
-
-          &.label {
-            border-bottom: none;
-            color: $gray-darker !important;
-            vertical-align: middle;
-
-            div {
-              padding: 0;
-            }
-          }
-
-          &:not(.label) {
-            color: $gray-dark;
-          }
-        }
-
-        &:last-child {
-          border-bottom: 0;
-        }
-
-        &:first-child {
-          border-top: 0;
-        }
+      &:first-child {
+        border-top: 0;
       }
     }
   }
