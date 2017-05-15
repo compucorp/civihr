@@ -157,52 +157,50 @@
           border-bottom: 1px solid $crm-dark-grayblue;
           border-top-left-radius: $border-radius-base;
           border-top-right-radius: $border-radius-base;
+        }
+          
+        tr:first-child  th {
+          padding: 15px 20px !important;
+          white-space: nowrap;
 
-          th {
-            padding: 10px 20px !important;
+          &:first-child {
+            border-top-left-radius: $border-radius-base;
+          }
 
-            &:first-child {
-              border-top-left-radius: $border-radius-base;
-            }
-
-            &:last-child {
-              border-top-right-radius: $border-radius-base;
-            }
+          &:last-child {
+            border-top-right-radius: $border-radius-base;
           }
         }
       }
 
-      tbody tr {
-        &:last-child {
-          border-bottom-left-radius: $border-radius-base;
-          border-bottom-right-radius: $border-radius-base;
+      tbody tr:last-child {
+        border-bottom-left-radius: $border-radius-base;
+        border-bottom-right-radius: $border-radius-base;
 
-          td {
-            &:first-child {
-              border-bottom-left-radius: $border-radius-base;
-            }
+        td {
+          &:first-child {
+            border-bottom-left-radius: $border-radius-base;
+          }
 
-            &:last-child {
-              border-bottom-right-radius: $border-radius-base;
-            }
+          &:last-child {
+            border-bottom-right-radius: $border-radius-base;
           }
         }
       }
 
       .crm-expand-row {
-        position: relative;
         background: none;
+        position: relative;        
 
         &:after {
-          @include fa-icon(13px, '\f054');
-          position: absolute;
+          @include fa-icon($font-size-base, $fa-var-chevron-right);
           left: 0;
+          position: absolute;
+          
         }
 
-        &.expanded {
-          &:after {
-            @include fa-icon(13px, '\f078');
-          }
+        &.expanded:after {
+          @include fa-icon($font-size-base, $fa-var-chevron-down);
         }
       }
 
@@ -889,13 +887,28 @@ input[type="text"] {
       padding-left: 0;
     }
 
-    .crm-contribution-form-block-soft_credit_to:not(.hiddenElement) td {
-      width:auto;
+    .crm-contribution-form-block-soft_credit_to:not(.hiddenElement) {
+      display: flex !important;
+      flex-direction: column;
+
+      td {
+        flex: 1 auto;
+        vertical-align: top;
+
+        .select2-container {
+          margin-right: 0 !important;
+        }
+
+        .soft-credit-delete-link {
+          width: 10px;
+        }
+      }
     }
 
     label {
-      width: 205px;
-    }
+      display: inline-block;
+      width: 200px;
+    }    
   }
 
   #customData .label label {
@@ -910,13 +923,11 @@ input[type="text"] {
     }
   }
 
-  .Premium {
-    td {
-      display: table-cell;
+  .Premium td {
+    display: table-cell;
 
-      &:first-child {
-        width: 173px;
-      }
+    &:first-child {
+      width: 173px;
     }
   }
 
