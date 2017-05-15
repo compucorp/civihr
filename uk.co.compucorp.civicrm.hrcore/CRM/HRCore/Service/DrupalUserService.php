@@ -9,7 +9,7 @@ class CRM_HRCore_Service_DrupalUserService {
   protected $roleService;
 
   /**
-   * @var
+   * @var int
    */
   protected $loggedInUserID;
 
@@ -22,8 +22,8 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
-   * @param $id
-   * @param $email
+   * @param int $id
+   * @param string $email
    * @param bool $active
    * @param array $roles
    *
