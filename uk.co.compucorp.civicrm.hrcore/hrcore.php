@@ -34,6 +34,10 @@ function hrcore_civicrm_searchTasks($objectName, &$tasks) {
     'title'  => ts('Create User Record'),
     'class'  => CRM_HRCore_Form_CreateUserRecordTaskForm::class,
   ];
+  $tasks[] = [
+    'title'  => ts('Send Invitation Email'),
+    'class'  => CRM_HRCore_Form_SendInvitationEmailTaskForm::class,
+  ];
 }
 
 /**
