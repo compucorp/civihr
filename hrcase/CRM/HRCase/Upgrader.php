@@ -345,8 +345,10 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
       $entitiesToRemove[$caseType] = 'CaseType';
     }
 
-    foreach ($activityTypes as $activityType) {
-      $entitiesToRemove['civitask:act:' . $activityType] = 'OptionValue';
+    foreach ($activityTypes as $extension) {
+      foreach ($extension as $activityType) {
+        $entitiesToRemove['civitask:act:' . $activityType] = 'OptionValue';
+      }
     }
 
     foreach ($entitiesToRemove as $name => $entity) {
