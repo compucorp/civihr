@@ -24,8 +24,8 @@ class CRM_HRCore_Form_SendInvitationEmailTaskForm extends AbstractDrupalInteract
   public function preProcess() {
     parent::preProcess();
     $this->assign('contactsForSending', $this->getContactsToSendMailTo());
-    $this->assign('contactsWithoutEmail', $this->getContactsWithout('email'));
-    $this->assign('contactsWithoutAccount', $this->getContactsWithout('uf_id'));
+    $this->assign('contactsWithoutEmail', $this->getContactsWithoutAttribute('email'));
+    $this->assign('contactsWithoutAccount', $this->getContactsWithoutAttribute('uf_id'));
   }
 
   /**
@@ -54,8 +54,8 @@ class CRM_HRCore_Form_SendInvitationEmailTaskForm extends AbstractDrupalInteract
    * @return array
    */
   private function getContactsToSendMailTo() {
-    $haveNoEmail = $this->getContactsWithout('email');
-    $haveNoAccount = $this->getContactsWithout('uf_id');
+    $haveNoEmail = $this->getContactsWithoutAttribute('email');
+    $haveNoAccount = $this->getContactsWithoutAttribute('uf_id');
 
     return array_diff_key($this->contactDetails, $haveNoEmail, $haveNoAccount);
   }
