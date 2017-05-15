@@ -27,7 +27,7 @@ define([
       var absenceTypesAndIds,
         initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
         mode = '', //can be edit, create, view
-        role = $rootScope.isManager ? 'manager' : 'owner', //could be manager, owner or admin
+        role = initUserRole(),
         initialCommentsLength = 0; //number of comments when the request model is loaded
 
       this.absencePeriods = [];
@@ -947,6 +947,17 @@ define([
         }
 
         return $q.resolve();
+      }
+
+      /**
+       * Initialize user's role to either owner, manager or admin
+       *
+       * @return {String}
+       */
+      function initUserRole() {
+        //could be manager, owner or admin
+        //TODO admin check
+        return $rootScope.isManager ? 'manager' : 'owner';
       }
 
       /**
