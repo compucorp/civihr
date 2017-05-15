@@ -1,13 +1,30 @@
 define([
   'common/angular',
+  'common/lodash',
   'common/modules/apis'
-], function (angular, apis) {
+], function (angular, _, apis) {
   'use strict';
 
   apis.factory('api', ['$log', '$http', '$q', '$timeout', function ($log, $http, $q, $timeout) {
     $log.debug('api');
 
     var API_ENDPOINT = '/civicrm/ajax/rest';
+
+    /**
+     * Response Handler handler for API calls
+     *
+     * @param {object} response - response from backend
+     * @return {Promise/Any}
+     */
+    function responseHandler(response) {
+      if (!!response.data.is_error) {
+        $log.error(response.data);
+
+        return $q.reject(response.data.error_message);
+      }
+
+      return response.data;
+    }
 
     return {
 
@@ -33,12 +50,14 @@ define([
        *   `page` for the current page, `size` for number of items per page
        * @param {string} sort - The field and direction to order by
        * @param {object} additionalParams - Additional params to pass to the api
+       * @param {string} action - Action type to pass to the api
        * @return {Promise} resolves to an object with `list` and `total`
        */
-      getAll: function (entity, filters, pagination, sort, additionalParams) {
+      getAll: function (entity, filters, pagination, sort, additionalParams, action, cache) {
         $log.debug('api.all');
 
         filters = filters || {};
+        action = action || 'get';
 
         return $q.all([
           (function () {
@@ -51,14 +70,14 @@ define([
               params.options.limit = pagination.size;
             }
 
-            return this.sendGET(entity, 'get', params).then(function (data) {
+            return this.sendGET(entity, action, params, cache).then(function (data) {
               return data.values;
             });
           }.bind(this))(),
           (function () {
             var params = _.assign({}, filters, {'return': 'id'});
 
-            return this.sendGET(entity, 'get', params);
+            return this.sendGET(entity, action, params, cache);
           }.bind(this))()
         ]).then(function (results) {
           return {
@@ -105,8 +124,6 @@ define([
        * @return {Promise}
        */
       sendGET: function (entity, action, params, cache) {
-        $log.debug('api.sendGET');
-
         return $http({
           method: 'GET',
           url: API_ENDPOINT,
@@ -118,9 +135,7 @@ define([
             entity: entity,
             action: action
           }
-        }).then(function (response) {
-          return response.data;
-        });
+        }).then(responseHandler);
       },
 
       /**
@@ -158,9 +173,7 @@ define([
 
             return str.join("&");
           },
-        }).then(function (response) {
-          return response.data;
-        });
+        }).then(responseHandler);
       },
     };
   }]);
