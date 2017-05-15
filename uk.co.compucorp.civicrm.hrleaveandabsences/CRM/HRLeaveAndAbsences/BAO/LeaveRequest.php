@@ -10,6 +10,7 @@ use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException as InvalidLeaveRequestException;
+use \CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
@@ -269,7 +270,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function validateTOILToAccruedAmountIsValid($params) {
     $absenceType = AbsenceType::findById($params['type_id']);
     $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual !== 0;
+    $oldToilRequest = '';
 
+    if (!empty($params['id'])) {
+      $oldToilRequest = self::findById($params['id']);
+    }
     $periodContainingToilDates = AbsencePeriod::getPeriodContainingDates(
       new DateTime($params['from_date']),
       new DateTime($params['to_date'])
@@ -281,6 +286,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       $params['type_id']
     );
     $totalProjectedToilForPeriod = $totalApprovedToilForPeriod + $params['toil_to_accrue'];
+
+    if ($oldToilRequest && $oldToilRequest->id && self::isAlreadyApproved($oldToilRequest)) {
+      $periodContainingOldToilDates = self::getPeriodContainingDates($oldToilRequest);
+      $isSamePeriodWithOldToil = $periodContainingOldToilDates->id == $periodContainingToilDates->id;
+
+      if ($isSamePeriodWithOldToil) {
+        $totalProjectedToilForPeriod -= $oldToilRequest->toil_to_accrue;
+      }
+    }
 
     if ($totalProjectedToilForPeriod > $absenceType->max_leave_accrual && !$unlimitedAccrual) {
       throw new InvalidLeaveRequestException(
@@ -1039,5 +1053,46 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     CRM_Utils_Hook::selectWhereClause($this, $clauses);
     return $clauses;
+  }
+
+  /**
+   * Returns Statuses considered to be Approval statuses for a Leave Request
+   *
+   * @return array
+   */
+  private static function getApprovalStatuses() {
+    $leaveStatuses = array_flip(self::buildOptions('status_id', 'validate'));
+
+    return [$leaveStatuses['approved'], $leaveStatuses['admin_approved']];
+  }
+
+  /**
+   * Checks whether a leave request has been approved.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return bool
+   */
+  private static function isAlreadyApproved(LeaveRequest $leaveRequest) {
+    $oldStatus = $leaveRequest->status_id;
+
+    return in_array($oldStatus, self::getApprovalStatuses());
+  }
+
+  /**
+   * Returns the Absence Period containing the from_date and to_date
+   * of the Leave Request.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
+   */
+  private static function getPeriodContainingDates(LeaveRequest $leaveRequest) {
+    $periodContainingDates = AbsencePeriod::getPeriodContainingDates(
+      new DateTime($leaveRequest->from_date),
+      new DateTime($leaveRequest->to_date)
+    );
+
+    return $periodContainingDates;
   }
 }

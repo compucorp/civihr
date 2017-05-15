@@ -2335,4 +2335,292 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     sort($toilAmounts);
     $this->assertEquals($toilAmounts, $toilToAccrueAmounts);
   }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type
+   */
+  public function testUpdatingToilThrowsExceptionWhenUpdatingApprovedToilWithAToilAmountGreaterThanWhatWasInitiallyApprovedAndTotalToilToBeAccruedIsGreaterThanMaximumForTheAbsenceType() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+15 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 4
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'toil_to_accrue'=> 2,
+      'from_date' => CRM_Utils_Date::processDate('monday'),
+      'to_date' => CRM_Utils_Date::processDate('monday'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_duration' => 60
+    ];
+
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $params['from_date'] = CRM_Utils_Date::processDate('friday');
+    $params['to_date'] = CRM_Utils_Date::processDate('friday');
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4
+    $this->assertEquals(4, $periodEntitlement->getBalance());
+
+    //User tries to update the second TOIL with a toil_to_accrue value of 3. Initial value for this TOIL is 2
+    //max leave accrual for this absence type is 4.
+    //Total toil to be accrued if update goes through = 2(first TOIL) + 3 (Second TOIL) = 5
+    //since 5 > 4(max lave accrual), an exception is thrown.
+    $params['id'] = $toilRequest2->id;
+    $params['toil_to_accrue'] = 3;
+    LeaveRequestFabricator::fabricate($params);
+  }
+
+  public function testToilCanBeAccruedWhenUpdatingApprovedToilWithAToilAmountGreaterThanWhatWasInitiallyApprovedAndTotalToilToBeAccruedIsNotGreaterThanMaximumForTheAbsenceType() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+15 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 5
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'toil_to_accrue'=> 2,
+      'from_date' => CRM_Utils_Date::processDate('monday'),
+      'to_date' => CRM_Utils_Date::processDate('monday'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_duration' => 60
+    ];
+
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('friday');
+    $params['to_date'] = CRM_Utils_Date::processDate('friday');
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4
+    $this->assertEquals(4, $periodEntitlement->getBalance());
+
+    $params['id'] = $toilRequest2->id;
+    $params['toil_to_accrue'] = 3;
+    $toilRequest = LeaveRequestFabricator::fabricate($params, true);
+
+    //User tries to update the second TOIL with a toil_to_accrue value of 3. Initial value for this TOIL is 2
+    //max leave accrual for this absence type is 5.
+    //Total toil to be accrued if update goes through = 2(first TOIL) + 3 (Second TOIL) = 5
+    //Update goes through since total projected TOIl is not greater than max leave accrual.
+    $this->assertEquals(5, $periodEntitlement->getBalance());
+  }
+
+  public function testToilCanBeAccruedWhenUpdatingApprovedToilWithAToilAmountLesserThanWhatWasInitiallyApprovedAndTotalToilToBeAccruedIsNotGreaterThanMaximumForTheAbsenceType() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+15 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 5
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'toil_to_accrue'=> 2,
+      'from_date' => CRM_Utils_Date::processDate('monday'),
+      'to_date' => CRM_Utils_Date::processDate('monday'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_duration' => 60
+    ];
+
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('friday');
+    $params['to_date'] = CRM_Utils_Date::processDate('friday');
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4
+    $this->assertEquals(4, $periodEntitlement->getBalance());
+
+    $params['id'] = $toilRequest2->id;
+    $params['toil_to_accrue'] = 1;
+    $toilRequest = LeaveRequestFabricator::fabricate($params, true);
+
+    //User tries to update the second TOIL with a toil_to_accrue value of 1. Initial value for this TOIL is 2
+    //max leave accrual for this absence type is 5.
+    //Total toil to be accrued if update goes through = 2(first TOIL) + 1 (Second TOIL) = 3
+    //Update goes through since total projected TOIl is not greater than max leave accrual.
+    $this->assertEquals(3, $periodEntitlement->getBalance());
+  }
+
+  public function testToilCanBeAccruedWhenUpdatingApprovedToilWithAToilAmountSameAsWhatWasInitiallyApprovedAndTotalToilToBeAccruedIsNotGreaterThanMaximumForTheAbsenceType() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+15 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 5
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'toil_to_accrue'=> 2,
+      'from_date' => CRM_Utils_Date::processDate('monday'),
+      'to_date' => CRM_Utils_Date::processDate('monday'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_duration' => 60
+    ];
+
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('friday');
+    $params['to_date'] = CRM_Utils_Date::processDate('friday');
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4
+    $this->assertEquals(4, $periodEntitlement->getBalance());
+
+    $params['id'] = $toilRequest2->id;
+    $params['status_id'] = 3;
+    $toilRequest = LeaveRequestFabricator::fabricate($params, true);
+
+    //User tries to update the second TOIL without changing the toil_to_accrue value. Initial value for this TOIL is 2
+    //max leave accrual for this absence type is 5.
+    //Total toil to be accrued remains unchanged if update goes through = 2(first TOIL) + 1 (Second TOIL) = 4
+    //Update goes through since total projected TOIl is not greater than max leave accrual.
+    //getBalance is 2 because it is the sum of approved Balance changes for a period. Since the status of the Second TOIL
+    //has been changed to 3(Awaiting approval) it is no longer counted in getBalance.
+    $this->assertEquals(2, $periodEntitlement->getBalance());
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type
+   */
+  public function testUpdatingToilThrowsExceptionWhenUpdatingApprovedToilWithDatesNotInSamePeriodAsPreviouslyApprovedToilAndTotalToilAccruedIsGreaterThanMaximumForThePeriodContainingTheDates() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-01-30'),
+    ]);
+
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-02-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-02-28'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 5,
+      'allow_accrue_in_the_past' => 1
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period1->id
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period2->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'toil_to_accrue'=> 2,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-06'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-06'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_duration' => 60
+    ];
+
+    $toilRequest1Period1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-07');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-07');
+    $toilRequest2Period1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-02-11');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-02-11');
+    $toilRequest1Period2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-02-12');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-02-12');
+    $toilRequest2Period2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4 for PeriodEntitlement 1
+    $this->assertEquals(4, $periodEntitlement1->getBalance());
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4 for PeriodEntitlement 2
+    $this->assertEquals(4, $periodEntitlement2->getBalance());
+
+    //User tries to update the TOIL accrued in Period 2 with dates in Period 1.
+    //If there was a bug, since the TOIL is approved, its value is supposed to be deducted from the Total TOIl for
+    //period 1 during the validation and then most likely the TOIL would be accrued for Period 1.
+    //
+    //Exception is thrown because Max leave accrual is 5 and total TOIL already accrued for period 1 is 4
+    //So the code is seeing this TOIL as a new TOIL to be accrued for this period not as an Approved TOIL to be updated which is correct.
+    //4(already accrued) + 2(to be accrued)  = 6 and is greater than max leave accrual for Period 1.
+    $params['id'] = $toilRequest2Period2->id;
+    $params['toil_to_accrue'] = 2;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-06');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-06');
+    LeaveRequestFabricator::fabricate($params, true);
+  }
 }
