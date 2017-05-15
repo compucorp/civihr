@@ -14,6 +14,7 @@ $crm-form-item-shadow: 0 3px 6px 0 rgba(48, 40, 40, 0.25);
 $crm-form-layout-shadow: 0 3px 18px 0 rgba(48, 40, 40, 0.25);
 $crm-input-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2) inset;
 $crm-search-input-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+$crm-tab-shadow: 0 9px 9px 0 rgba(48, 40, 40, 0.25);
 
 $crm-black-olive-color: #3E3E3E;
 $crm-blue-light: #58b7d1;
@@ -29,3 +30,7 @@ $crm-min-width: 1005px;
 $crm-max-width: 1504px;
 $crm-min-lg-width: 1505px;
 $crm-sm-th-width: 200px;
+
+$fa-var-alert: '\f06a';
+$fa-var-info-msg: '\f05a';
+$fa-var-success: '\f00c';

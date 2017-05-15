@@ -16,33 +16,41 @@
   }
 
   .crm-form-block {
-    border-radius: $border-radius-base !important;
+    border-radius: $panel-border-radius !important;
   }
 
-  .btn-slide-active {
-    .panel {
+  table td .btn-slide-active ul.panel {
+    background: $crm-white;
+    border-radius: $border-radius-base;
+    box-shadow: $crm-form-layout-shadow;
+    padding: 0;
+    top: 22px;
+
+    li {
       background: $crm-white;
-      border-radius: $border-radius-base;
-      box-shadow: $crm-form-layout-shadow;
       padding: 0;
-      top: 22px;
+    }
 
-      li {
-        background: $crm-white;
+    li .crm-hover-button.action-item {
+      background: transparent !important;
+      color: $crm-copy !important;          
+      line-height: 20px !important;
+      padding: 10px 20px;
+      text-align: left;
+      text-transform: capitalize;
 
-        .crm-hover-button {
-          color: $crm-copy !important;
-          padding: 5px 15px;
-          text-align: left;
+      &:hover {
+        background: $crm-background !important;
+        color: $crm-copy !important;
+      }
+    }
 
-          &:not(:hover) {
-            color: $crm-copy !important;
-          }
-        }
+    li:hover {
+      background: $crm-background !important;
 
-        &:hover {
-          background: $crm-background;
-        }
+      .crm-hover-button.action-item {
+        background: $crm-background !important;
+        color: $crm-copy !important; 
       }
     }
   }
@@ -77,12 +85,33 @@
     }
   }
 
-  .btn-slide:after {
-    @include fa-icon($font-size-base, $fa-var-ellipsis-v, $brand-primary);
+  span.btn-slide {
     background: none;
-    right: -2px;
-    top: 4px;
+    display: inline-block;
+    padding-right: 0 !important;
+    text-indent: -500em;
     width: 5px;
+
+    &:after {
+      @include fa-icon($font-size-base, $fa-var-ellipsis-v, $gray-darker);
+      background: none;
+      right: -2px;
+      text-indent: 0;
+      top: 4px;
+      width: 5px;
+    }
+
+    &:hover {
+      background: none;
+
+      &:after {
+        color: $brand-primary;
+      }
+    }
+
+    .panel {
+      text-indent: 0;
+    }
   }
 
   .dataTables_info {

@@ -27,9 +27,17 @@
   tr,
   tr td {
     border: initial;
+    border-bottom: solid 1px $table-border-color;
     line-height: 35px;
     padding-left: 15px;
-    border-bottom: solid 1px $table-border-color;
+  }
+
+  tr:last-child {
+    background: transparent !important;
+    border-bottom: none;
+    border-left: none;
+    border-radius: 0 0 $border-radius-base $border-radius-base;
+    border-right: none;
   }
 
   td .crm-hover-button {
@@ -38,25 +46,8 @@
 
     &,
     * {
+      color: $brand-primary !important;
       text-transform: capitalize !important;
-    }
-
-    &:not(:hover) {
-      &,
-      * {
-        color: $brand-primary !important;
-      }
-
-      a {
-        color: $crm-copy !important;
-      }
-    }
-
-    &:hover {
-      &,
-      * {
-        color: $gray-dark !important;
-      }
     }
   }
 }
@@ -69,7 +60,7 @@
   }
 
   td {
-    background: #fff !important;
+    background: $crm-white !important;
 
     &.label {
       vertical-align: middle !important;
@@ -99,6 +90,10 @@
     }
 
     &:last-child td {
+      .crm-hover-button:hover {
+        color: $brand-primary !important;
+      }
+
       &:first-child {
         border-bottom-left-radius: $border-radius-base;
       }
@@ -118,6 +113,7 @@
   @extend %civihr-table;
   background: transparent;
   border: none;
+  border-radius: $panel-border-radius;
   font-family: $font-family-base;
   width: 100% !important;
 
@@ -249,6 +245,8 @@
     }
 
     .crm-child-row {
+      border-bottom: none;
+
       &,
       > td {
         padding: 0;
@@ -259,6 +257,11 @@
 
         .crm-ajax-container {
           border: 2px solid $crm-background;
+          margin-top: -1px;
+
+          table {
+            border: none;
+          }
         }
       }
 
@@ -277,8 +280,8 @@
         }
 
         td {
-          padding-top: 10px;
-          padding-bottom: 10px;
+          padding-top: 15px;
+          padding-bottom: 15px;
         }
       }
     }
