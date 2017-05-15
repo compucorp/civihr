@@ -26,6 +26,14 @@ define([
       return response.data;
     }
 
+    function prepareParams(params) {
+      var defaults = {
+        options: { limit: 0 }
+      };
+
+      return JSON.stringify(_.merge(defaults, params || {}));
+    }
+
     return {
 
       /**
@@ -131,7 +139,7 @@ define([
           responseType: 'json',
           params: {
             sequential: 1,
-            json: JSON.stringify(params || {}),
+            json: prepareParams(params),
             entity: entity,
             action: action
           }
@@ -158,7 +166,7 @@ define([
           },
           responseType: 'json',
           data: {
-            json: JSON.stringify(params || {}),
+            json: prepareParams(params),
             sequential: 1,
             entity: entity,
             action: action
@@ -174,7 +182,7 @@ define([
             return str.join("&");
           },
         }).then(responseHandler);
-      },
+      }
     };
   }]);
 });
