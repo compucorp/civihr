@@ -5,6 +5,7 @@ use Civi\Test\TransactionalInterface;
 use Civi\Test;
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 
 /**
  * @group headless
@@ -26,10 +27,9 @@ class DrupalUserServiceTest extends \PHPUnit_Framework_TestCase implements Headl
   }
 
   public function setUp() {
+    $this->registerCurrentLoggedInContactInSession(1);
     $this->cleanup();
-    $params = ['email' => $this->testEmail];
-    $this->testContact = CRM_HRCore_Test_Fabricator_Contact::fabricate($params);
-    $this->registerCurrentLoggedInContactInSession($this->testContact['id']);
+    $this->testContact = ContactFabricator::fabricate();
   }
 
   public function tearDown() {
@@ -74,7 +74,7 @@ class DrupalUserServiceTest extends \PHPUnit_Framework_TestCase implements Headl
   }
 
   /**
-   * @param $contactID
+   * @param int $contactID
    */
   private function registerCurrentLoggedInContactInSession($contactID) {
     $session = CRM_Core_Session::singleton();

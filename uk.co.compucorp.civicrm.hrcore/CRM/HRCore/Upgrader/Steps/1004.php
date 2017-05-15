@@ -30,7 +30,7 @@ trait CRM_HRCore_Upgrader_Steps_1004 {
   }
 
   /**
-   * @param $newActivityTypes
+   * @param array $newActivityTypes
    *
    * @return array
    */
@@ -45,7 +45,7 @@ trait CRM_HRCore_Upgrader_Steps_1004 {
   }
 
   /**
-   * @param $activityType
+   * @param string $activityType
    */
   protected function createActivityType($activityType) {
     $params = [

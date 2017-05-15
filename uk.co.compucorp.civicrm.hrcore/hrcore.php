@@ -22,8 +22,8 @@ function hrcore_civicrm_config(&$config) {
 /**
  * Implements hook_civicrm_searchTasks().
  *
- * @param $objectName
- * @param $tasks
+ * @param string $objectName
+ * @param array $tasks
  */
 function hrcore_civicrm_searchTasks($objectName, &$tasks) {
   if ($objectName !== 'contact' || !CRM_Core_Permission::check('Create new users')) {
