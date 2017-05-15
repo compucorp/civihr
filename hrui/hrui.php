@@ -100,7 +100,7 @@ function hrui_civicrm_buildForm($formName, &$form) {
     }
   }
 
-  if ($formName === 'CRM_Admin_Form_Options') {
+  if ($formName === 'CRM_Admin_Form_Options' && $form->elementExists('value')) {
     $form->removeElement('value');
   }
 }
