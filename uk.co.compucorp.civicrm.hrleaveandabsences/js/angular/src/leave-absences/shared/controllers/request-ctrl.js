@@ -27,7 +27,7 @@ define([
       var absenceTypesAndIds,
         initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
         mode = '', //can be edit, create, view
-        role = initUserRole(),
+        role = '',
         initialCommentsLength = 0; //number of comments when the request model is loaded
 
       this.absencePeriods = [];
@@ -406,6 +406,7 @@ define([
        * @return {Object} attributes
        */
       this._initRequestAttributes = function () {
+        initUserRole.call(this);
         var attributes = {};
 
         //if set indicates self leaverequest is either being managed or edited
@@ -644,15 +645,6 @@ define([
               initialCommentsLength = self.request.comments.length;
             }
           });
-      };
-
-      /**
-       * Checks if the Leave Requests is New or a old one
-       *
-       * @returns {Boolean}
-       */
-      this.isNewRequest = function () {
-        return !this.request.id;
       };
 
       /**
@@ -951,13 +943,9 @@ define([
 
       /**
        * Initialize user's role to either owner, manager or admin
-       *
-       * @return {String}
        */
-      function initUserRole() {
-        //could be manager, owner or admin
-        //TODO admin check
-        return $rootScope.isManager ? 'manager' : 'owner';
+      function initUserRole () {
+        role = this.directiveOptions.userRole;
       }
 
       /**

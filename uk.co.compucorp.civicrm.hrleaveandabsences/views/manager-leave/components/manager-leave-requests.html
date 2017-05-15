@@ -125,7 +125,7 @@
                       </a>
                       <a ng-if="action !== 'cancel'" href
                         leave-request-popup leave-request="request"
-                        contact-id="ctrl.contactId">
+                        contact-id="ctrl.contactId" user-role="{{$root.role}}">
                         {{action}}
                       </a>
                     </li>

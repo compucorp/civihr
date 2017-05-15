@@ -9,8 +9,10 @@ define([
       return settings.pathTpl + 'components/my-leave-container.html';
     }],
     controllerAs: 'myleave',
-    controller: ['$log', '$scope', '$uibModal', 'settings', function ($log, $scope, $modal, settings) {
+    controller: ['$log', '$rootScope', '$scope', '$uibModal', 'settings', function ($log, $rootScope, $scope, $modal, settings) {
       $log.debug('Component: my-leave-container');
+
+      $rootScope.role = 'owner';
 
       var vm = {};
       vm.leaveRequest = {

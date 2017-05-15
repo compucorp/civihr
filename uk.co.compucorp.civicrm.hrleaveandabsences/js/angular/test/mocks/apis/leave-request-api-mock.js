@@ -88,11 +88,6 @@ define([
             resolve(mockData.getisValid().values);
           });
         },
-        isManagedBy: function (params) {
-          return $q(function (resolve, reject) {
-            resolve(mockData.isManagedBy().values);
-          });
-        },
         saveComment: function (params) {
           return $q(function (resolve, reject) {
             resolve(commentsMock.getCommentsWithMixedIDs().values[0]);

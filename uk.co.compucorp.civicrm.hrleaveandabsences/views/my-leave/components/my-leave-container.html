@@ -1,13 +1,31 @@
 <div class="my-leave-page">
   <div class="button-container">
     <div class="btn-group" uib-dropdown>
-      <button type="button" class="btn btn-primary" leave-request-popup leave-type="leave" contact-id="myleave.contactId">Record New Absence</button>
+      <button type="button" class="btn btn-primary" leave-request-popup
+              leave-type="leave"
+              user-role="{{$root.role}}"
+              contact-id="myleave.contactId">Record New Absence
+      </button>
       <button type="button" class="btn btn-primary dropdown-toggle-split" uib-dropdown-toggle>
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" uib-dropdown-menu>
-        <li><a leave-request-popup contact-id="myleave.contactId" leave-type="sickness" href="#">Record Sickness</a></li>
-        <li><a leave-request-popup contact-id="myleave.contactId" leave-type="toil" href="#">Record Overtime</a></li>
+        <li>
+          <a leave-request-popup
+             user-role="{{$root.role}}"
+             contact-id="myleave.contactId"
+             leave-type="sickness"
+             href="#">Record Sickness
+          </a>
+        </li>
+        <li>
+          <a leave-request-popup
+             user-role="{{$root.role}}"
+             contact-id="myleave.contactId"
+             leave-type="toil"
+             href="#">Record Overtime
+          </a>
+        </li>
       </ul>
     </div>
   </div>

@@ -240,13 +240,13 @@
             var expiryDate, originalToilToAccrue, toilRequest;
 
             beforeEach(function () {
-              $rootScope.isManager = true;
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
               toilRequest = TOILRequestInstance.init(mockData.findBy('status_id', status));
               toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: 203, //manager's contact id
-                leaveRequest: toilRequest
+                leaveRequest: toilRequest,
+                userRole: 'manager'
               };
 
               initTestController(directiveOptions);

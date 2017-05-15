@@ -167,28 +167,6 @@ define([
       },
 
       /**
-       * Calls the isManagedBy backend API.
-       *
-       * @param {String} leaveRequestID - ID of leave request
-       * @param {String} contactID - ID of contact
-       *
-       * @return {Promise} resolves with an {Boolean}
-       */
-      isManagedBy: function (leaveRequestID, contactID) {
-        $log.debug('LeaveRequestAPI.isManagedBy');
-
-        var params = {
-          leave_request_id: leaveRequestID,
-          contact_id: contactID
-        };
-
-        return this.sendPOST('LeaveRequest', 'isManagedBy', params)
-          .then(function (response) {
-            return response.values;
-          });
-      },
-
-      /**
        * Calls the getcomment backend API.
        *
        * @param {String} leaveRequestID - ID of leave request

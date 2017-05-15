@@ -308,33 +308,6 @@ define([
         },
 
         /**
-         * Check the role of a given contact in relationship to the leave request.
-         *
-         * @param {Object} contact - contact object
-         *
-         * @return {Promise} resolves with an {String} - owner/manager/none
-         */
-        roleOf: function (contact) {
-          var deferred = $q.defer();
-
-          if (this.contact_id == contact.id) {
-            deferred.resolve('owner');
-          } else {
-            LeaveRequestAPI.isManagedBy(this.id, contact.id)
-              .then(function (response) {
-                //TODO Implement check for Admin in MS5
-                if (!!response) {
-                  deferred.resolve('manager');
-                } else {
-                  deferred.resolve('none');
-                }
-              });
-          }
-
-          return deferred.promise;
-        },
-
-        /**
          * Override of parent method
          *
          * @param {object} result - The accumulator object

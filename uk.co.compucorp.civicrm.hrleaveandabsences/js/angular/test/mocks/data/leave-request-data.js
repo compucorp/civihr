@@ -340,12 +340,6 @@ define([
         ]
       }
     },
-    isManagedByData: {
-      "is_error": 0,
-      "version": 3,
-      "count": 1,
-      "values": true
-    },
     half_day_am_calculateBalanceChange: {
       "is_error": 0,
       "version": 3,
@@ -469,9 +463,6 @@ define([
     },
     getNotIsValid: function () {
       return mockData.isNotValidData;
-    },
-    isManagedBy: function () {
-      return mockData.isManagedByData;
     },
     singleDayCalculateBalanceChange: function () {
       return mockData.half_day_am_calculateBalanceChange;

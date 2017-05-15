@@ -384,36 +384,6 @@ define([
       });
     });
 
-    describe('isManagedBy()', function () {
-      var leaveRequestID = '101',
-        contactID = '102';
-
-      beforeEach(function () {
-        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
-        promise = LeaveRequestAPI.isManagedBy(leaveRequestID, contactID);
-      });
-
-      afterEach(function () {
-        $httpBackend.flush();
-      });
-
-      it('calls endpoint with leaveRequestID and contactID', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
-            'isManagedBy', jasmine.objectContaining({
-              leave_request_id: leaveRequestID,
-              contact_id: contactID
-            }));
-        });
-      });
-
-      it('returns data', function () {
-        promise.then(function (result) {
-          expect(result).toEqual(mockData.isManagedBy().values);
-        });
-      })
-    });
-
     describe('getComments()', function () {
       var leaveRequestID = '101',
         params = {
@@ -605,8 +575,6 @@ define([
             return [200, mockData.calculateBalanceChange()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isValid')) {
             return [200, mockData.getisValid()];
-          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
-            return [200, mockData.isManagedBy()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'deletecomment')) {
             return [200, mockData.deleteComment()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'addcomment')) {

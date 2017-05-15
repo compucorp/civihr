@@ -96,7 +96,7 @@
       describe('staff opens request popup', function () {
         beforeEach(inject(function () {
           var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId
+            contactId: CRM.vars.leaveAndAbsences.contactId,
           };
 
           initTestController(directiveOptions);
@@ -850,7 +850,8 @@
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: leaveRequest.contact_id, //owner's contact id
-                leaveRequest: leaveRequest
+                leaveRequest: leaveRequest,
+                userRole: 'owner'
               };
 
               initTestController(directiveOptions);
@@ -962,7 +963,8 @@
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
                   contactId: leaveRequest.contact_id, //owner's contact id
-                  leaveRequest: leaveRequest
+                  leaveRequest: leaveRequest,
+                  userRole: 'owner'
                 };
 
                 initTestController(directiveOptions);
@@ -1020,7 +1022,8 @@
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             var directiveOptions = {
               contactId: leaveRequest.contact_id, //owner's contact id
-              leaveRequest: leaveRequest
+              leaveRequest: leaveRequest,
+              userRole: 'owner'
             };
 
             initTestController(directiveOptions);
@@ -1049,13 +1052,13 @@
       });
       describe('manager opens leave request popup', function () {
         beforeEach(function () {
-          $rootScope.isManager = true;
           var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
           var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
           var directiveOptions = {
             contactId: 203, //manager's contact id
-            leaveRequest: leaveRequest
+            leaveRequest: leaveRequest,
+            userRole: 'manager'
           };
 
           initTestController(directiveOptions);
@@ -1136,9 +1139,9 @@
 
       describe('manager raises absence request on behalf of staff', function () {
         beforeEach(function () {
-          $rootScope.isManager = true;
           var directiveOptions = {
             contactId: 203, //manager's contact id
+            userRole: 'manager'
           };
 
           initTestController(directiveOptions);

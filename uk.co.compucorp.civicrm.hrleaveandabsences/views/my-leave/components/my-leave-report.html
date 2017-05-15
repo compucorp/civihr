@@ -224,7 +224,7 @@
                                     </a>
                                     <a ng-if="action !== 'cancel'" href
                                       leave-request-popup leave-request="request"
-                                      contact-id="report.contactId">
+                                      contact-id="report.contactId" user-role="{{$root.role}}">
                                       {{action}}
                                     </a>
                                   </li>
@@ -394,7 +394,7 @@
                                     </a>
                                   <a ng-if="action !== 'cancel'" href
                                     leave-request-popup leave-request="request"
-                                    contact-id="report.contactId">
+                                    contact-id="report.contactId" user-role="{{$root.role}}">
                                     {{action}}
                                   </a>
                                 </li>
@@ -487,7 +487,7 @@
                                 <li ng-repeat="action in report.actionsFor(request)">
                                   <a href
                                     leave-request-popup leave-request="request"
-                                    contact-id="report.contactId">
+                                    contact-id="report.contactId" user-role="{{$root.role}}">
                                     {{action}}
                                   </a>
                                 </li>
