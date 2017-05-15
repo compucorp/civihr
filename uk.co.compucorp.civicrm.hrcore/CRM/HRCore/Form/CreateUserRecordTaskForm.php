@@ -105,7 +105,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
     $user = $this->drupalUserService->createNew($id, $email, TRUE, $roles);
 
     if ($this->sendEmail) {
-      $this->drupalUserService->sendActivationMail($id, $user);
+      $this->drupalUserService->sendActivationMail($id, $email);
     }
 
     return $user;

@@ -54,9 +54,14 @@ class CRM_HRCore_Service_DrupalUserService {
 
   /**
    * @param int $contactID
-   * @param object $user
+   * @param string $email
    */
-  public function sendActivationMail($contactID, $user) {
+  public function sendActivationMail($contactID, $email) {
+    $user = user_load_by_mail($email);
+    if (!$user) {
+      return;
+    }
+
     _user_mail_notify('status_activated', $user);
     $this->createActivity($contactID, 'Send Onboarding Email');
   }
