@@ -26,7 +26,6 @@ function hrcore_civicrm_config(&$config) {
  * @param $tasks
  */
 function hrcore_civicrm_searchTasks($objectName, &$tasks) {
-  // todo according to Mike this should be "Create new users"
   if ($objectName !== 'contact' || !CRM_Core_Permission::check('administer CiviCRM')) {
     return;
   }
