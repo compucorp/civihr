@@ -1,8 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-use Civi\Test;
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
@@ -10,7 +7,7 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 /**
  * @group headless
  */
-class DrupalUserServiceTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
+class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   /**
    * @var string
@@ -21,10 +18,6 @@ class DrupalUserServiceTest extends \PHPUnit_Framework_TestCase implements Headl
    * @var array
    */
   private $testContact;
-
-  public function setUpHeadless() {
-    return Test::headless()->installMe(__DIR__)->apply();
-  }
 
   public function setUp() {
     $this->registerCurrentLoggedInContactInSession(1);
@@ -71,14 +64,6 @@ class DrupalUserServiceTest extends \PHPUnit_Framework_TestCase implements Headl
     if ($user) {
       user_delete($user->uid);
     }
-  }
-
-  /**
-   * @param int $contactID
-   */
-  private function registerCurrentLoggedInContactInSession($contactID) {
-    $session = CRM_Core_Session::singleton();
-    $session->set('userID', $contactID);
   }
 
 }
