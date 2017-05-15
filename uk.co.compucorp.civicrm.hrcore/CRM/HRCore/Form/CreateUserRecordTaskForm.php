@@ -207,7 +207,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends CRM_Contact_Form_Task {
       }
     }
 
-    return array_unique($badContacts);
+    return $badContacts;
   }
 
 }
