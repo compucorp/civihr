@@ -31,8 +31,8 @@ abstract class CRM_HRCore_Form_AbstractDrupalInteractionTaskForm extends CRM_Con
   }
 
   public function preProcess() {
-    $this->initContactDetails();
     parent::preProcess();
+    $this->initContactDetails();
   }
 
   /**
