@@ -157,19 +157,18 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS civicrm_hrhours_location");
     CRM_Core_DAO::executeQuery("
-        CREATE TABLE IF NOT EXISTS `civicrm_hrhours_location` (
-          `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-          `location` varchar(63) DEFAULT NULL,
-          `standard_hours` int(4) DEFAULT NULL,
-          `periodicity` varchar(63) DEFAULT NULL,
-          `is_active` tinyint(4) DEFAULT '1',
-          PRIMARY KEY(id)
-        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
-      ");
-      CRM_Core_DAO::executeQuery("
-        INSERT INTO `civicrm_hrhours_location` (`id`, `location`, `standard_hours`, `periodicity`, `is_active`) 
-        VALUES (1, 'Head office', 40, 'Week', 1)
-      ");
+      CREATE TABLE IF NOT EXISTS `civicrm_hrhours_location` (
+        `id` int(10) unsigned NOT NULL,
+        `location` varchar(63) DEFAULT NULL,
+        `standard_hours` int(4) DEFAULT NULL,
+        `periodicity` varchar(63) DEFAULT NULL,
+        `is_active` tinyint(4) DEFAULT '1'
+      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+    ");
+    CRM_Core_DAO::executeQuery("
+      INSERT INTO `civicrm_hrhours_location` (`id`, `location`, `standard_hours`, `periodicity`, `is_active`) 
+      VALUES (1, 'Head office', 40, 'Week', 1)
+    ");
 
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_revision_change_reason', 'id', 'name');
     if (!$optionGroupID) {
@@ -511,6 +510,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1027();
     $this->upgrade_1028();
     $this->upgrade_1029();
+    $this->upgrade_1030();
   }
 
   function upgrade_1001() {
@@ -1268,6 +1268,16 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
 
     $this->up1029_sortContractTypes();
+
+    return true;
+  }
+
+  /**
+   * Makes Hour Location id field autonumeric and adds id as a primary key.
+   */
+  public function upgrade_1030() {
+    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` ADD PRIMARY KEY (`id`)');
+    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT');
 
     return true;
   }
