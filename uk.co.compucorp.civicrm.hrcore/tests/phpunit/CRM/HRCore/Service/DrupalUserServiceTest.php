@@ -3,11 +3,14 @@
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_HRCore_Test_Helpers_SessionHelpersTrait as SessionHelpersTrait;
 
 /**
  * @group headless
  */
 class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
+
+  use SessionHelpersTrait;
 
   /**
    * @var string
