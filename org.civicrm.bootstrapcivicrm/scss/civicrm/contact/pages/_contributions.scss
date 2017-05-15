@@ -222,80 +222,89 @@
     }    
   }
 
-  form {
-    &[class*="CRM_Contribute_Form_"] {
-      h3 {
-        background: $gray-lighter;
-        color: $crm-h3-color;
-        padding: 17px 15px;
-        margin: 0;
-        font-family: $font-family-base;
-        font-size: $font-size-h2;
-        font-weight: 600;
+  form[class*="CRM_Contribute_Form_"] {
+    h3 {
+      background: $gray-lighter;
+      color: $crm-h3-color;
+      font-family: $font-family-base;
+      font-size: $font-size-h2;
+      font-weight: $crm-font-weight-h3;
+      margin: 0;
+      padding: 17px 15px;
+    }
+
+    .status {
+      margin-bottom: 0;
+      margin-top: 0;
+
+      p {
+        margin-top: 0;
       }
 
-      .status {
-        margin-bottom: 0;
-        margin-top: 0;
+      + .help {
+        margin: 10px 0;
+        padding: 10px;
+      }
+    }
 
-        p {
-          margin-top: 0;
-        }
+    .label-left {
+      padding: 15px;
+      width: 205px;
+    }
+
+    .crm-accordion-body {
+      .crm-form-block {
+        box-shadow: none;
+        padding: 0;
       }
 
       .label-left {
-        padding: 15px;
-        width: 205px;
+        padding: 15px 0;
+        width: 220px;
       }
+    }
 
-      .crm-accordion-body {
-        .crm-form-block {
-          box-shadow: none;
-          padding: 0;
-        }
+    .select2-container#s2id_format_id {
+      margin-right: 0 !important;
+    }
 
-        .label-left {
-          padding: 15px 0;
-          width: 220px;
-        }
+    .crm-html_email-accordion .helpIcon {
+      margin-bottom: 20px;
+      margin-right: 0;
+    }
+
+    .crm-form-submit {
+      background: $brand-primary;
+      border-color: $brand-primary;
+      border-radius: 3px;
+      margin-right: 0;
+      padding: 7px 12px;
+      text-shadow: none;
+      
+      &:hover {
+        background: $crm-blue-light;
       }
+    }  
 
-      .select2-container {
-        &#s2id_format_id {
-          margin-right: 0 !important;
-        }
+    .crm-form-submit.cancel {
+      background: $crm-white;
+      border: 1px solid $crm-copy;
+      color: $gray-darker;
+    
+      &:hover {
+        background: $crm-copy;
+        color: $crm-white;
       }
+    }
+  }
 
-      .crm-html_email-accordion {
-        .helpIcon {
-          margin-bottom: 20px;
-          margin-right: 0;
-        }
-      }
+  .CRM_Contribute_Form_Task_Result {
+    .crm-form-submit {
+      margin: 20px;
+    }
 
-      .crm-form-submit {
-        background: $brand-primary;
-        border-color: $brand-primary;
-        border-radius: 3px;
-        margin-right: 0;
-        padding: 7px 12px;
-        text-shadow: none;
-        
-        &:hover {
-          background: $crm-blue-light;
-        }
-        
-        &.cancel {
-          background: $crm-white;
-          border: 1px solid $crm-copy;
-          color: $gray-darker;
-        
-          &:hover {
-            background: $crm-copy;
-            color: $crm-white;
-          }
-        }
-      }
+    p {
+      margin: 0;
     }
   }
 }
