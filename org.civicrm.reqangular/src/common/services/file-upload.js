@@ -35,6 +35,21 @@ define([
         $log.error(headers);
       }
 
+      /**
+       * Helper to set defaults if not set in passed parameter
+       *
+       * @param {Object} customSettings user defined settings for uploader
+       * @return {Object} a updated list of settings
+       */
+      function setDefaults(customSettings) {
+
+        return _.defaults(customSettings, {
+          allowedMimeTypes: ['plain', 'png', 'jpeg', 'bmp', 'gif', 'pdf'],
+          url: '/civicrm/ajax/attachment',
+          queueLimit: 1
+        });
+      }
+
       return {
 
         /**
@@ -53,11 +68,11 @@ define([
             return error('custom settings');
           }
 
-          customSettings.allowedMimeTypes = customSettings.allowedMimeTypes || '|plain|png|jpeg|bmp|gif|pdf|';
+          customSettings = setDefaults(customSettings);
 
           uploader = new FileUploader({
-            url: customSettings.url || '/civicrm/ajax/attachment',
-            queueLimit: +customSettings.queueLimit || 1,
+            url: customSettings.url,
+            queueLimit: +customSettings.queueLimit,
             onCompleteItem: function (item, response) { results.push(response); },
             onCompleteAll: function () { deferred.resolve(results); },
             onErrorItem: function (item) {
@@ -70,12 +85,10 @@ define([
             }],
             filters: [{
               name: 'fileFormatFilter',
-              fn: function (item, options) {
-                //checks for mime types like plain for txt files and not file name extensions like
-                //|txt|jpg|png|jpeg|bmp|gif|pdf|doc|docx|xls|xlsx|ppt|pptx|
-                var mimeType = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+              fn: function (item) {
+                var mimeType = item.type.slice(item.type.lastIndexOf('/') + 1);
 
-                return customSettings.allowedMimeTypes.indexOf(mimeType) !== -1;
+                return _.includes(customSettings.allowedMimeTypes, mimeType);
               }
             }]
           });
