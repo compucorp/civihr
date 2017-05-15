@@ -10,7 +10,7 @@
         border-bottom: 1px solid $crm-background;
         border-radius: $panel-border-radius $panel-border-radius 0 0;
         color: $gray-darker;
-        font: $headings-font-weight $font-size-h2 $font-family-base;
+        font: $crm-font-weight-h3 $font-size-h2 $font-family-base;
         margin: 0;
         padding: 13px 20px;
       }
@@ -50,6 +50,7 @@
             color: $gray-dark;
             line-height: 1.5em;
             padding: 15px 20px;
+            vertical-align: middle;
 
             &:last-child {
               padding-left: 10px;
