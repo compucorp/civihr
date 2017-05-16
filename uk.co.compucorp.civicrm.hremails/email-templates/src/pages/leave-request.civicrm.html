@@ -13,10 +13,10 @@ request-type: Leave
         {{> request-data key="Staff Member" value="{contact.display_name}"}}
 
         {if $leaveRequest->from_date eq $leaveRequest->to_date}
-          {{> request-data key="Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}"}}
+          {{> request-data key="Date" value="{$fromDate|truncate:10:''|crmDate} {$fromDateType}"}}
         {else}
-          {{> request-data key="From Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}"}}
-          {{> request-data key="To Date" value="{$toDate|truncate:10:\'\'|crmDate} {$toDateType}"}}
+          {{> request-data key="From Date" value="{$fromDate|truncate:10:''|crmDate} {$fromDateType}"}}
+          {{> request-data key="To Date" value="{$toDate|truncate:10:''|crmDate} {$toDateType}"}}
         {/if}
       </callout>
       <spacer></spacer>
