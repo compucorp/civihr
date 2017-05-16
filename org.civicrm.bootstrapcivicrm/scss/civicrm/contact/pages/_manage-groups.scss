@@ -187,21 +187,23 @@
 
 .page-civicrm-group {
   .help {
+    margin: 20px 0;
+
     + .crm-submit-buttons {
       display: none;
     }
   }
 
   .crm-submit-buttons {
-    height: auto;
     @include clearfix;
+    height: auto;    
 
     a.newGroup.button {
       @extend %btn-civi-primary;
 
       .crm-i {
-        position: relative;
         bottom: 1px;
+        position: relative;        
       }
     }
   }
@@ -231,29 +233,74 @@
       padding: 0;
     }
 
-    table {
-      tr td:nth-child(5) label[for*="group_status"] {
-        margin-top: 7px;
+    table tr td:nth-child(5) label[for*="group_status"] {     
+      margin-top: 7px;
+    }
+
+    table tr td {
+      .font-italic {
+        font-style: normal;
       }
 
-      tr td {
-        .font-italic {
-          font-style: normal;
-        }
+      input[type="checkbox"]:checked + label[for]:after {
+        top: 8px;
+      }
+    }    
+  }
 
-        input[type="checkbox"]:checked + label[for]:after {
-          top: 8px;
-        }
+  .crm-block > .css_right {
+    margin-bottom: 5px;
+
+    .crm-hover-button {
+      color: $brand-primary !important;
+    }
+  }
+
+  .dataTables_wrapper {
+    border-radius: $border-radius-child;
+    box-shadow: $box-shadow;
+    margin: 20px 0;
+
+    .crm-datatable-pager-top {
+      background: $gray-lighter;
+      border-bottom: 1px solid $crm-background;
+      border-radius: $border-radius-child $border-radius-child 0 0;
+      margin-top: 10px;    
+      padding-bottom: 39px;
+      padding-top: 10px;
+
+      .dataTables_length {
+        padding-left: 20px;
+      }
+
+      .dataTables_paginate {
+        padding-right: 5px;
+        padding-top: 0;
+      }
+    }
+
+    .crm-datatable-pager-bottom {
+      background: $gray-lighter;
+      border-radius: 0 0 $border-radius-child $border-radius-child;
+      line-height: 1.8em;
+      padding-bottom: 39px;
+      padding-top: 10px;
+
+      .dataTables_info {
+        line-height: 2.3em;
+        padding-left: 20px;
+      }
+
+      .dataTables_info,
+      .dataTables_paginate {
+        padding-top: 0;
       }
     }
   }
 
-  .crm-block > .css_right .crm-hover-button {
-     color: $brand-primary !important;
-   }
-
   #DataTables_Table_0 {
     @include mx-expandable-table();
+    box-shadow: none !important;
 
     .crm-group-group_links {
       text-align: right;
@@ -324,71 +371,64 @@
     }
   }
 
-  .ui-dialog {
+  .ui-dialog .CRM_Group_Form_Edit .crm-form-block {
+    padding: 0 13px;
+
     .help {
-      border-radius: 0;
-      padding: 10px 0;      
+      padding: 10px;
     }
 
-    .CRM_Group_Form_Edit .crm-form-block {
-      padding: 0 13px;
+    table tr {
+      border-bottom: 0 !important;
 
-      table tr {
+      td {
         border-bottom: 0 !important;
+      }
 
-        td {
-          border-bottom: 0 !important;
+      td.label,
+      td.report-label {
+        padding: 0;
+        text-align: left;
+
+        label[for='parents'] {
+          left: -19px;
+          position: relative;
         }
 
-        td.label,
-        td.report-label {
-          padding: 0;
-          text-align: left;                
-
-          label[for='parents'] {
-            left: -19px;
-            position: relative;                  
-          }
-
-          label {
-            margin: 0 !important;
-            padding: 8px 0;                  
-          }
+        label {
+          margin: 0 !important;
+          padding: 8px 0;
         }
       }
+    }
 
-      .crm-submit-buttons {
-        margin: 20px 0 0 0 !important;
-      }
+    .crm-submit-buttons {
+      margin: 20px 0 0 !important;
+    }
 
-      .crm-form-textarea {
-        min-height: 70px;
-      }
+    .crm-form-textarea {
+      min-height: 70px;
+    }
 
-      #s2id_visibility {
-        &:after {
-          display: none;
-        }
-      }
+    #s2id_visibility:after {
+      display: none;
+    }
 
-      .crm-group-form-block-isReserved {
-        .report-label {            
-          padding-top: 8px;
-          vertical-align: top;
-        }
-      }
+    .crm-group-form-block-isReserved .report-label {
+      padding-top: 8px;
+      vertical-align: top;
+    }
 
-      div,
-      span {
-        &.description {
-          display: block;
-          line-height: 1.5em;
-        }
-      }
-
-      textarea {
+    div,
+    span {
+      &.description {
+        display: block;
         line-height: 1.5em;
       }
+    }
+
+    textarea {
+      line-height: 1.5em;
     }
   }
 
@@ -417,10 +457,8 @@
     box-shadow: $box-shadow;
     padding: 5px 20px !important;
 
-    li {
-      a {
-        color: $crm-copy;
-      }
+    li a {
+      color: $crm-copy;
     }
   }
 
@@ -430,92 +468,92 @@
       top: 10px;
     }
 
-    .crm-hover-button {
+    .crm-hover-button:hover {
+      background: none !important;
+    }
+  }
+
+  .CRM_Contact_Form_Task_Result {
+    .crm-submit-buttons {
+      padding-top: 10px !important;
+    }
+
+    #_qf_Result_done {
+      background: $brand-primary;
+      border-color: $brand-primary;
+      border-radius: $border-radius-base;
+      color: $crm-white;
+      font-size: $font-size-base;
+      font-family: $font-family-base;
+      opacity: 0.8;
+      padding: 8px 12px;
+      text-shadow: none;
+      text-transform: uppercase;
+
       &:hover {
-        background: none !important;
+        opacity: 1;
       }
     }
   }
 
-  .CRM_Group_Form_Edit {
-    .crm-group-form-block {
+  .CRM_Group_Form_Edit .crm-group-form-block {
+    .label,
+    .report-label {
+      text-align: left !important;
+      vertical-align: middle;
 
-      .label,
-      .report-label {
-        text-align: left !important;
-        vertical-align: middle;
-
-        label[for='parents'] {
-          position: relative;
-          left: -19px;
-        }
-      }
-
-      .crm-form-textarea {
-        min-height: 70px;
-      }
-
-      h3 {
-        @extend .collapsible-title;
-        margin-top: 20px;
-      }
-
-      .crm-submit-buttons {
-        margin: 20px 0 0 0 !important;
+      label[for='parents'] {
+        left: -19px;
+        position: relative;        
       }
     }
-  }
 
-  .ui-dialog {
-    max-height: 90% !important;
-    overflow-y: auto;
-  }
-
-  #group_type-block {
-
-    label {
-      margin-top: 7px;
+    .crm-form-textarea {
+      min-height: 70px;
     }
+
+    h3 {
+      @extend .collapsible-title;
+      margin-top: 20px;
+    }
+
+    .crm-submit-buttons {
+      margin: 20px 0 0 !important;
+    }    
   }
 
-  #branding {
-    h1 {
-      &.page-title {
-        margin-bottom: 25px !important;
-      }
-    }
+  #group_type-block label {
+    margin-top: 7px;
+  }
+
+  #branding h1.page-title {
+    margin-bottom: 25px !important;
   }
 }
 
-.page-civicrm-group-add {
-  .CRM_Group_Form_Edit {
-    .crm-group-form-block {
-      padding: 15px;
+.page-civicrm-group-add .CRM_Group_Form_Edit .crm-group-form-block  {
+  padding: 15px;
 
-      .help {
-        padding: 5px;
-      }
+  .help {
+    padding: 5px;
+  }
 
-      textarea {
-        line-height: 1.5em;
-      }
+  textarea {
+    line-height: 1.5em;
+  }
 
-      td {
-        vertical-align: middle;
+  td {
+    vertical-align: middle;
 
-        &.label {
-          label {
-            padding: 15px 0;
-            margin: 0;
-          }
-        }
-      }
-
-      #s2id_visibility {
-        &:after {
-          display: none;
-        }
+    &.label {
+      label {
+        margin: 0;
+        padding: 15px 0;        
       }
     }
   }
+
+  #s2id_visibility:after {
+    display: none;
+  }  
 }
