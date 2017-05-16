@@ -193,7 +193,7 @@
           sicknessRequest.sickness_required_documents = '1,2';
 
           var directiveOptions = {
-            contactId: sicknessRequest.contact_id, //owner's contact id
+            contactId: sicknessRequest.contact_id, //staff's contact id
             leaveRequest: sicknessRequest
           };
 

@@ -12,7 +12,7 @@ define([
     controller: ['$log', '$rootScope', '$scope', '$uibModal', 'settings', function ($log, $rootScope, $scope, $modal, settings) {
       $log.debug('Component: my-leave-container');
 
-      $rootScope.role = 'owner';
+      $rootScope.role = 'staff';
 
       var vm = {};
       vm.leaveRequest = {

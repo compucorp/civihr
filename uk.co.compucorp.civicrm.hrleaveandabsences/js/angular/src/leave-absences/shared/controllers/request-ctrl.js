@@ -263,7 +263,7 @@ define([
       /**
        * Checks if popup is opened in given role
        *
-       * @param {String} roleParam like manager, owner
+       * @param {String} roleParam like manager, staff
        * @return {Boolean}
        */
       this.isRole = function (roleParam) {
@@ -406,7 +406,6 @@ define([
        * @return {Object} attributes
        */
       this._initRequestAttributes = function () {
-        initUserRole.call(this);
         var attributes = {};
 
         //if set indicates self leaverequest is either being managed or edited
@@ -586,6 +585,9 @@ define([
        */
       this._init = function () {
         var self = this;
+
+        role = this.directiveOptions.userRole || 'staff';
+        this._initRequest();
 
         return loadStatuses.call(self)
           .then(function () {
@@ -840,7 +842,7 @@ define([
             this.requestStatuses['rejected'].value, this.requestStatuses['cancelled'].value
           ];
 
-          if (this.isRole('owner') && viewModes.indexOf(this.request.status_id) > -1) {
+          if (this.isRole('staff') && viewModes.indexOf(this.request.status_id) > -1) {
             mode = 'view';
           }
         } else {
@@ -915,7 +917,7 @@ define([
           //set it before self.requestStatuses gets filtered
           this.statusBeforeEdit = getStatusFromValue.call(this, this.request.status_id);
 
-          if (this.isRole('owner')) {
+          if (this.isRole('staff')) {
             this.request.status_id = this.requestStatuses['waiting_approval'].value;
           }
         } else if (this.isMode('create')) {
@@ -939,13 +941,6 @@ define([
         }
 
         return $q.resolve();
-      }
-
-      /**
-       * Initialize user's role to either owner, manager or admin
-       */
-      function initUserRole () {
-        role = this.directiveOptions.userRole;
       }
 
       /**
@@ -1121,7 +1116,7 @@ define([
               .then(function (result) {
                 if (self.isRole('manager')) {
                   postSubmit.call(self, 'LeaveRequest::updatedByManager');
-                } else if (self.isRole('owner')) {
+                } else if (self.isRole('staff')) {
                   postSubmit.call(self, 'LeaveRequest::edit');
                 }
               })

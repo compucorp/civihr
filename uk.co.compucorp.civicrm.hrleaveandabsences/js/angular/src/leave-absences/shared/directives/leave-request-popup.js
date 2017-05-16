@@ -40,12 +40,6 @@ define([
         link: function (scope, element) {
           var controller = _.capitalize(getLeaveType(scope.leaveType, scope.leaveRequest)) + 'RequestCtrl';
 
-          if (!scope.userRole) {
-            $log.error("User role not specified.");
-            //set to owner as default value
-            scope.userRole = "owner";
-          }
-
           element.on('click', function (event) {
             $modal.open({
               templateUrl: settings.pathTpl + 'directives/leave-request-popup.html',

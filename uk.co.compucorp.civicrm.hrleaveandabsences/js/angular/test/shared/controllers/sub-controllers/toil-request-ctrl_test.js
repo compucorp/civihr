@@ -212,7 +212,7 @@
             toilRequest = TOILRequestInstance.init(mockData.findBy('request_type', 'toil'));
             toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             var directiveOptions = {
-              contactId: toilRequest.contact_id, //owner's contact id
+              contactId: toilRequest.contact_id, //staff's contact id
               leaveRequest: toilRequest
             };
 
@@ -285,7 +285,7 @@
               describe('and staff edits', function() {
                 beforeEach(function () {
                   var directiveOptions = {
-                    contactId: toilRequest.contact_id, //owner's contact id
+                    contactId: toilRequest.contact_id, //staff's contact id
                     leaveRequest: $ctrl.request
                   };
 
