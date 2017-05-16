@@ -19,9 +19,7 @@
     background: transparent;
     border: none;
     border-radius: $border-radius-child;
-    display: block;
     font-family: $font-family-base;
-    overflow-x: auto;
 
     thead {
       background: transparent !important;
@@ -47,24 +45,34 @@
       }
     }
 
-    tbody {
-      tr {
-        background: $crm-white;
-        border-bottom: 1px solid $crm-background;
+    tbody tr {
+      background: $crm-white;
+      border-bottom: 1px solid $crm-background;
 
-        td {
-          background: $crm-white;
-          border: none;
-          color: $gray-dark;
-          line-height: 1.5em;
-          padding: 10px 20px;
-          white-space: nowrap;
+      td {
+        background: $crm-white;
+        border: none;
+        color: $gray-dark;
+        line-height: 1.5em;
+        max-width: 130px;
+        overflow: hidden;
+        padding: 10px;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+        white-space: nowrap;
+
+        &:first-child {
+          padding-left: 20px;
         }
 
         &:last-child {
-          border-radius: 0 0 $border-radius-base $border-radius-base;
+          padding-right: 20px;
         }
       }
+
+      &:last-child {
+        border-radius: 0 0 $border-radius-base $border-radius-base;
+      }      
     }
   }
 
@@ -74,7 +82,6 @@
 }
 
 #Participant {
-
   input,
   select,
   textarea,
