@@ -55,6 +55,7 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification {
       'toDateType' => $this->getLeaveRequestDayTypeLabel($leaveRequest->to_date_type),
       'leaveStatus' => $this->getLeaveRequestStatusLabel($leaveRequest->status_id),
       'leaveRequest' => $leaveRequest,
+      'absenceTypeName' => $this->getAbsenceTypeName($leaveRequest),
       'currentDateTime' => new DateTime()
     ];
 
@@ -124,5 +125,20 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification {
     ]);
 
     return $result['values'];
+  }
+
+  /**
+   * Gets the Name of the Absence Type for this LeaveRequest
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return string
+   */
+  private function getAbsenceTypeName(LeaveRequest $leaveRequest) {
+    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $absenceType->id = $leaveRequest->type_id;
+    $absenceType->find(true);
+
+    return $absenceType->title;
   }
 }
