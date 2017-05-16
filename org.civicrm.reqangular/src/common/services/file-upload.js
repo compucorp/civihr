@@ -35,6 +35,21 @@ define([
         $log.error(headers);
       }
 
+      /**
+       * Helper to set defaults if not set in passed parameter
+       *
+       * @param {Object} customSettings user defined settings for uploader
+       * @return {Object} a updated list of settings
+       */
+      function setDefaults(customSettings) {
+
+        return _.defaults(customSettings, {
+          allowedMimeTypes: ['plain', 'png', 'jpeg', 'bmp', 'gif', 'pdf'],
+          url: '/civicrm/ajax/attachment',
+          queueLimit: 1
+        });
+      }
+
       return {
 
         /**
@@ -53,9 +68,11 @@ define([
             return error('custom settings');
           }
 
+          customSettings = setDefaults(customSettings);
+
           uploader = new FileUploader({
-            url: customSettings.url || '/civicrm/ajax/attachment',
-            queueLimit: +customSettings.queueLimit || 1,
+            url: customSettings.url,
+            queueLimit: +customSettings.queueLimit,
             onCompleteItem: function (item, response) { results.push(response); },
             onCompleteAll: function () { deferred.resolve(results); },
             onErrorItem: function (item) {
@@ -65,6 +82,14 @@ define([
             formData: [{
               entity_table: customSettings.entityTable || error('entityTable'),
               crm_attachment_token: customSettings.crmAttachmentToken || error('crmAttachmentToken')
+            }],
+            filters: [{
+              name: 'fileFormatFilter',
+              fn: function (item) {
+                var mimeType = item.type.slice(item.type.lastIndexOf('/') + 1);
+
+                return _.includes(customSettings.allowedMimeTypes, mimeType);
+              }
             }]
           });
 

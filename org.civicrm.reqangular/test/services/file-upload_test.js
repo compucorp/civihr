@@ -138,5 +138,33 @@ define([
         });
       });
     });
+
+    describe('allowed mime types', function () {
+      var filterFn, allowedMimeTypes,
+        fileLikeObject = {
+          lastModifiedDate: new Date(),
+          size: 1e6,
+          name: 'test_file_name'
+        };
+
+      beforeEach(function () {
+        uploaderParams.allowedMimeTypes = ['jpeg'];
+        uploader = fileUpload.uploader(uploaderParams);
+
+        filterFn = _.find(uploader.filters, function (filter) {
+          return filter.name === 'fileFormatFilter';
+        }).fn;
+      });
+
+      it('allows files with allowed mime types', function () {
+        fileLikeObject.type = 'image/jpeg';
+        expect(filterFn(fileLikeObject)).toBe(true);
+      });
+
+      it('filters out files with not allowed mime types', function () {
+        fileLikeObject.type = 'application/octet-stream';
+        expect(filterFn(fileLikeObject)).toBe(false);
+      });
+    });
   });
 });

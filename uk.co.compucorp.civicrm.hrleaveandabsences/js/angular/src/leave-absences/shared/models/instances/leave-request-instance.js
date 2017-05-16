@@ -128,7 +128,8 @@ define([
             fileUploader: FileUpload.uploader({
               entityTable: 'civicrm_hrleaveandabsences_leave_request',
               crmAttachmentToken: sharedSettings.attachmentToken,
-              queueLimit: 5
+              queueLimit: sharedSettings.fileUploader.queueLimit,
+              allowedMimeTypes: sharedSettings.fileUploader.allowedMimeTypes
             })
           };
         },
