@@ -331,15 +331,14 @@ define([
       "count": 1,
       "values": {
         "from_date": [
-          "overlaps_existing_leave_request"
+          "Error 1",
+          "Error 2"
+        ],
+        "to_date": [
+          "Error 3",
+          "Error 4"
         ]
       }
-    },
-    isManagedByData: {
-      "is_error": 0,
-      "version": 3,
-      "count": 1,
-      "values": true
     },
     half_day_am_calculateBalanceChange: {
       "is_error": 0,
@@ -464,9 +463,6 @@ define([
     },
     getNotIsValid: function () {
       return mockData.isNotValidData;
-    },
-    isManagedBy: function () {
-      return mockData.isManagedByData;
     },
     singleDayCalculateBalanceChange: function () {
       return mockData.half_day_am_calculateBalanceChange;

@@ -34,7 +34,7 @@ define([
           contactId: '<',
           leaveRequest: '<',
           leaveType: '@',
-          forStaff: '<'
+          userRole: '@'
         },
         restrict: 'EA',
         link: function (scope, element) {
@@ -51,7 +51,7 @@ define([
                   return {
                     contactId: scope.contactId,
                     leaveRequest: scope.leaveRequest,
-                    forStaff: scope.forStaff
+                    userRole: scope.userRole
                   };
                 },
                 //to set HR_settings DateFormat

@@ -27,14 +27,14 @@ define([
       var absenceTypesAndIds,
         initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
         mode = '', //can be edit, create, view
-        role = '', //could be manager, owner or admin
+        role = '',
         initialCommentsLength = 0; //number of comments when the request model is loaded
 
       this.absencePeriods = [];
       this.absenceTypes = [];
       this.calendar = {};
       this.contactName = null;
-      this.error = null;
+      this.errors = [];
       this.managedContacts = [];
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
@@ -150,7 +150,7 @@ define([
        * Closes the error alerts if any
        */
       this.closeAlert = function () {
-        this.error = null;
+        this.errors = [];
       };
 
       /**
@@ -167,7 +167,7 @@ define([
           return $q.resolve();
         }
 
-        self.error = null;
+        self.errors = [];
         self.loading.showBalanceChange = true;
         return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange.call(self))
           .then(function (balanceChange) {
@@ -263,7 +263,7 @@ define([
       /**
        * Checks if popup is opened in given role
        *
-       * @param {String} roleParam like manager, owner
+       * @param {String} roleParam like manager, staff
        * @return {Boolean}
        */
       this.isRole = function (roleParam) {
@@ -323,11 +323,11 @@ define([
         // current absence type (this.request.type_id) doesn't allow self
         if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse == '0') {
           // show an error
-          this.error = 'You are not allowed to apply leave in negative';
+          this.errors = ['You are not allowed to apply leave in negative'];
           return;
         }
 
-        this.error = null;
+        this.errors = [];
 
         if (canViewOrEdit.call(this)) {
           updateRequest.call(this);
@@ -383,7 +383,7 @@ define([
             return self.updateBalance.call(self);
           })
           .catch(function (error) {
-            self.error = error;
+            self.errors = [error];
           });
       };
 
@@ -412,7 +412,7 @@ define([
         if (this.directiveOptions.leaveRequest) {
           //_.deepClone or angular.copy were not uploading files correctly
           attributes = this.directiveOptions.leaveRequest.attributes();
-        } else if (!this.directiveOptions.forStaff) {
+        } else if (!this.isRole('manager')) {
           attributes = { contact_id: this.directiveOptions.contactId };
         }
 
@@ -482,7 +482,7 @@ define([
         return _.reject(this.requestStatuses, function (status) {
           var canRemoveStatus = (status.name === 'admin_approved' || status.name === 'waiting_approval');
 
-          return this.directiveOptions.forStaff ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
+          return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
         }.bind(this));
       }
 
@@ -586,14 +586,14 @@ define([
       this._init = function () {
         var self = this;
 
+        role = this.directiveOptions.userRole || 'staff';
+        this._initRequest();
+
         return loadStatuses.call(self)
-          .then(function () {
-            return initUserRole.call(self);
-          })
           .then(function () {
             initOpenMode.call(self);
 
-            return self.directiveOptions.forStaff && loadManagees.call(self);
+            return self.isRole('manager') && loadManagees.call(self);
           })
           .then(function () {
             return loadAbsencePeriods.call(self);
@@ -822,19 +822,7 @@ define([
        */
       function handleError(errors) {
         // show errors
-        if (errors.error_message)
-          this.error = errors.error_message;
-        else {
-          if (_.isObject(errors)) {
-            this.error = _.map(errors, function (value, key) {
-              var errorMessage = _.isArray(value) ? value.join(', ') : JSON.stringify(value);
-
-              return errorMessage + ' for key ' + key;
-            }).join(', ');
-          } else {
-            this.error = errors.toString();
-          }
-        }
+        this.errors = _.isArray(errors) ? errors : [errors];
 
         //reset loading Checks
         this.loading.showBalanceChange = false;
@@ -854,24 +842,12 @@ define([
             this.requestStatuses['rejected'].value, this.requestStatuses['cancelled'].value
           ];
 
-          if (this.isRole('owner') && viewModes.indexOf(this.request.status_id) > -1) {
+          if (this.isRole('staff') && viewModes.indexOf(this.request.status_id) > -1) {
             mode = 'view';
           }
         } else {
           mode = 'create';
         }
-      }
-
-      /**
-       * Initialize user's role to either owner, manager or admin
-       *
-       * @return {Promise}
-       */
-      function initUserRole() {
-        return this.request.roleOf({ id: this.directiveOptions.contactId })
-          .then(function (roleParam) {
-            role = roleParam;
-          }.bind(this));
       }
 
       /**
@@ -941,11 +917,11 @@ define([
           //set it before self.requestStatuses gets filtered
           this.statusBeforeEdit = getStatusFromValue.call(this, this.request.status_id);
 
-          if (this.isRole('owner')) {
+          if (this.isRole('staff')) {
             this.request.status_id = this.requestStatuses['waiting_approval'].value;
           }
         } else if (this.isMode('create')) {
-          this.request.status_id = this.directiveOptions.forStaff ?
+          this.request.status_id = this.isRole('manager') ?
             this.requestStatuses['approved'].value :
             this.requestStatuses['waiting_approval'].value;
         }
@@ -975,8 +951,7 @@ define([
       function loadManagees() {
         return Contact.find(this.directiveOptions.contactId)
           .then(function (contact) {
-            //{options: {limit:0}} - Load all contacts instead of 25
-            return contact.leaveManagees({ options: { limit: 0 } });
+            return contact.leaveManagees();
           })
           .then(function (contacts) {
             this.managedContacts = contacts;
@@ -1069,7 +1044,7 @@ define([
        */
       function postSubmit(eventName) {
         $rootScope.$emit(eventName, this.request);
-        this.error = null;
+        this.errors = [];
         // close the modal
         this.ok.call(this);
       }
@@ -1141,7 +1116,7 @@ define([
               .then(function (result) {
                 if (self.isRole('manager')) {
                   postSubmit.call(self, 'LeaveRequest::updatedByManager');
-                } else if (self.isRole('owner')) {
+                } else if (self.isRole('staff')) {
                   postSubmit.call(self, 'LeaveRequest::edit');
                 }
               })

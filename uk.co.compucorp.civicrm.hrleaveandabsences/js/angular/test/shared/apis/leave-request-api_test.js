@@ -1,15 +1,16 @@
 define([
+  'common/lodash',
+  'common/moment',
   'mocks/data/leave-request-data',
   'mocks/data/sickness-leave-request-data',
   'mocks/data/toil-leave-request-data',
   'mocks/data/comments-data',
-  'common/moment',
   'mocks/helpers/helper',
   'mocks/data/absence-type-data',
   'mocks/data/option-group-mock-data',
   'leave-absences/shared/apis/leave-request-api',
   'leave-absences/shared/modules/shared-settings',
-], function (mockData, sicknessMockData, toilMockData, commentsData, moment, helper, absenceTypeData, optionGroupMock) {
+], function (_, moment, mockData, sicknessMockData, toilMockData, commentsData, helper, absenceTypeData, optionGroupMock) {
   'use strict';
 
   describe('LeaveRequestAPI', function () {
@@ -89,12 +90,12 @@ define([
           it('status and publicHoliday has default values if falsy values has been passed', function () {
             LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String));
 
-            expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', {
+            expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
               contact_id: jasmine.any(String),
               period_id: jasmine.any(String),
               statuses: null,
               public_holiday: false
-            }, false);
+            }), false);
           });
 
           it('sends as `public_holiday` the original value if truthy value had been passed', function () {
@@ -122,31 +123,6 @@ define([
           });
 
           $httpBackend.flush();
-        });
-      });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendGET').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.balanceChangeByAbsenceType(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
-          });
         });
       });
     });
@@ -219,31 +195,6 @@ define([
             promise.catch(function (result) {
               expect(result).toBe(errorMessage);
             });
-          });
-        });
-      });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendGET').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.calculateBalanceChange(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
           });
         });
       });
@@ -329,31 +280,6 @@ define([
           });
         });
       });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.create(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
-          });
-        });
-      });
     });
 
     describe('isValid()', function () {
@@ -385,8 +311,8 @@ define([
         describe('when called with invalid data', function () {
           beforeEach(function () {
             requestData = helper.createRandomSicknessRequest();
-            spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
-              return $q.reject(mockData.getNotIsValid());
+            spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function (params) {
+              return $q.resolve(mockData.getNotIsValid());
             });
             promise = LeaveRequestAPI.isValid(requestData);
           });
@@ -395,35 +321,12 @@ define([
             $rootScope.$apply();
           });
 
-          it('returns validation errors', function () {
+          it('rejects promise with validation errors', function () {
+            var errors = _(mockData.getNotIsValid().values).map().flatten().value();
+
             promise.catch(function (result) {
-              expect(result.count).toEqual(1);
+              expect(result).toEqual(errors);
             });
-          });
-        });
-      });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.isValid(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
           });
         });
       });
@@ -479,61 +382,6 @@ define([
           });
         });
       });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = mockData.all().values[0];
-          promise = LeaveRequestAPI.update(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
-          });
-        });
-      });
-    });
-
-    describe('isManagedBy()', function () {
-      var leaveRequestID = '101',
-        contactID = '102';
-
-      beforeEach(function () {
-        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
-        promise = LeaveRequestAPI.isManagedBy(leaveRequestID, contactID);
-      });
-
-      afterEach(function () {
-        $httpBackend.flush();
-      });
-
-      it('calls endpoint with leaveRequestID and contactID', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
-            'isManagedBy', jasmine.objectContaining({
-              leave_request_id: leaveRequestID,
-              contact_id: contactID
-            }));
-        });
-      });
-
-      it('returns data', function () {
-        promise.then(function (result) {
-          expect(result).toEqual(mockData.isManagedBy().values);
-        });
-      })
     });
 
     describe('getComments()', function () {
@@ -586,12 +434,12 @@ define([
       it('calls endpoint with leaveRequestID, text and contact_id', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
-            'addcomment', _.assign(params, {
+            'addcomment', jasmine.objectContaining(_.assign(params, {
               leave_request_id: leaveRequestID,
               text: commentObject.text,
               contact_id: commentObject.contact_id,
               created_at: commentObject.created_at
-            }));
+            })));
         });
       });
 
@@ -727,8 +575,6 @@ define([
             return [200, mockData.calculateBalanceChange()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isValid')) {
             return [200, mockData.getisValid()];
-          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
-            return [200, mockData.isManagedBy()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'deletecomment')) {
             return [200, mockData.deleteComment()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'addcomment')) {

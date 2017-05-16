@@ -178,7 +178,7 @@
               });
 
               it('is successful', function () {
-                expect($ctrl.error).toBeNull();
+                expect($ctrl.errors.length).toBe(0);
                 expect($ctrl.request.id).toBeDefined();
               });
 
@@ -198,7 +198,7 @@
                 });
 
                 it('saves without errors', function () {
-                  expect($ctrl.error).toBeNull();
+                  expect($ctrl.errors.length).toBe(0);
                 });
               });
             });
@@ -212,7 +212,7 @@
             toilRequest = TOILRequestInstance.init(mockData.findBy('request_type', 'toil'));
             toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             var directiveOptions = {
-              contactId: toilRequest.contact_id, //owner's contact id
+              contactId: toilRequest.contact_id, //staff's contact id
               leaveRequest: toilRequest
             };
 
@@ -245,7 +245,8 @@
               toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: 203, //manager's contact id
-                leaveRequest: toilRequest
+                leaveRequest: toilRequest,
+                userRole: 'manager'
               };
 
               initTestController(directiveOptions);
@@ -284,7 +285,7 @@
               describe('and staff edits', function() {
                 beforeEach(function () {
                   var directiveOptions = {
-                    contactId: toilRequest.contact_id, //owner's contact id
+                    contactId: toilRequest.contact_id, //staff's contact id
                     leaveRequest: $ctrl.request
                   };
 

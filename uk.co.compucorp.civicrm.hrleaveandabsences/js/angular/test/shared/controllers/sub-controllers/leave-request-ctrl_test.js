@@ -96,7 +96,7 @@
       describe('staff opens request popup', function () {
         beforeEach(inject(function () {
           var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId
+            contactId: CRM.vars.leaveAndAbsences.contactId,
           };
 
           initTestController(directiveOptions);
@@ -636,7 +636,7 @@
             });
 
             it('fails with error', function () {
-              expect($ctrl.error).toEqual(jasmine.any(String));
+              expect($ctrl.errors).toEqual(jasmine.any(Array));
             });
 
             it('does not allow user to submit', function () {
@@ -666,7 +666,7 @@
             });
 
             it('is successful', function () {
-              expect($ctrl.error).toBeNull();
+              expect($ctrl.errors.length).toBe(0);
               expect($ctrl.request.id).toBeDefined();
             });
 
@@ -726,7 +726,7 @@
               });
 
               it('checks if date is in any absence period without errors', function () {
-                expect($ctrl.error).toBeNull();
+                expect($ctrl.errors.length).toBe(0);
               });
 
               it('updates calendar', function () {
@@ -774,7 +774,7 @@
                 });
 
                 it('shows error', function () {
-                  expect($ctrl.error).toEqual(jasmine.any(String));
+                  expect($ctrl.errors).toEqual(jasmine.any(Array));
                 });
               });
 
@@ -784,7 +784,7 @@
                 });
 
                 it('selects date from selected absence period without errors', function () {
-                  expect($ctrl.error).toBeNull();
+                  expect($ctrl.errors.length).toBe(0);
                 });
 
                 it('updates balance', function () {
@@ -849,8 +849,9 @@
               var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
-                contactId: leaveRequest.contact_id, //owner's contact id
-                leaveRequest: leaveRequest
+                contactId: leaveRequest.contact_id, //staff's contact id
+                leaveRequest: leaveRequest,
+                userRole: 'staff'
               };
 
               initTestController(directiveOptions);
@@ -863,8 +864,8 @@
                 waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
               });
 
-              it('sets role to owner', function () {
-                expect($ctrl.isRole('owner')).toBeTruthy();
+              it('sets role to staff', function () {
+                expect($ctrl.isRole('staff')).toBeTruthy();
               });
 
               it('sets mode to edit', function () {
@@ -924,7 +925,7 @@
               });
 
               it('has no error', function () {
-                expect($ctrl.error).toBeNull();
+                expect($ctrl.errors.length).toBe(0);
               });
 
               it('closes model popup', function () {
@@ -940,7 +941,7 @@
                 leaveRequest.from_date = leaveRequest.to_date = dateServer2017;
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
-                  contactId: leaveRequest.contact_id, //owner's contact id
+                  contactId: leaveRequest.contact_id, //staff's contact id
                   leaveRequest: leaveRequest
                 };
 
@@ -961,8 +962,9 @@
 
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
-                  contactId: leaveRequest.contact_id, //owner's contact id
-                  leaveRequest: leaveRequest
+                  contactId: leaveRequest.contact_id, //staff's contact id
+                  leaveRequest: leaveRequest,
+                  userRole: 'staff'
                 };
 
                 initTestController(directiveOptions);
@@ -994,7 +996,7 @@
               var leaveRequest = LeaveRequestInstance.init(mockData.findBy('id', 17));
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
-                contactId: leaveRequest.contact_id, //owner's contact id
+                contactId: leaveRequest.contact_id, //staff's contact id
                 leaveRequest: leaveRequest
               };
 
@@ -1019,8 +1021,9 @@
             leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', approvalStatus));
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             var directiveOptions = {
-              contactId: leaveRequest.contact_id, //owner's contact id
-              leaveRequest: leaveRequest
+              contactId: leaveRequest.contact_id, //staff's contact id
+              leaveRequest: leaveRequest,
+              userRole: 'staff'
             };
 
             initTestController(directiveOptions);
@@ -1054,7 +1057,8 @@
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
           var directiveOptions = {
             contactId: 203, //manager's contact id
-            leaveRequest: leaveRequest
+            leaveRequest: leaveRequest,
+            userRole: 'manager'
           };
 
           initTestController(directiveOptions);
@@ -1137,7 +1141,7 @@
         beforeEach(function () {
           var directiveOptions = {
             contactId: 203, //manager's contact id
-            forStaff: true
+            userRole: 'manager'
           };
 
           initTestController(directiveOptions);
@@ -1188,6 +1192,23 @@
               expect(availableStatuses).not.toContain(cancelStatus);
             });
           });
+        });
+      });
+
+      describe('when role parameter is not passed to the controller', function () {
+        beforeEach(function () {
+          var leaveRequest = LeaveRequestInstance.init();
+          leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+          var directiveOptions = {
+            contactId: leaveRequest.contact_id, //staff's contact id
+            leaveRequest: leaveRequest
+          };
+
+          initTestController(directiveOptions);
+        });
+
+        it('defaults to staff role', function () {
+          expect($ctrl.isRole('staff')).toBe(true);
         });
       });
 

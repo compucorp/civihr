@@ -21,26 +21,25 @@ define([
       };
 
       /**
+       * Initialize leaverequest based on attributes that come from directive
+       */
+      vm._initRequest = function () {
+        var attributes = vm._initRequestAttributes();
+
+        vm.request = LeaveRequestInstance.init(attributes);
+      };
+
+      /**
        * Initializes the controller on loading the dialog
        */
       (function initController() {
         vm.loading.absenceTypes = true;
-        initRequest();
 
         vm._init()
           .finally(function () {
             vm.loading.absenceTypes = false;
           });
       })();
-
-      /**
-       * Initialize leaverequest based on attributes that come from directive
-       */
-      function initRequest() {
-        var attributes = vm._initRequestAttributes();
-
-        vm.request = LeaveRequestInstance.init(attributes);
-      }
 
       return vm;
     }

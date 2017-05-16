@@ -57,11 +57,19 @@ define([
       };
 
       /**
+       * Initialize leaverequest based on attributes that come from directive
+       */
+      vm._initRequest = function () {
+        var attributes = vm._initRequestAttributes();
+
+        vm.request = SicknessRequestInstance.init(attributes);
+      };
+
+      /**
        * Initializes the controller on loading the dialog
        */
       (function initController() {
         vm.loading.absenceTypes = true;
-        initRequest();
 
         vm._init()
           .then(function () {
@@ -74,15 +82,6 @@ define([
             vm.loading.absenceTypes = false;
           });
       })();
-
-      /**
-       * Initialize leaverequest based on attributes that come from directive
-       */
-      function initRequest() {
-        var attributes = vm._initRequestAttributes();
-
-        vm.request = SicknessRequestInstance.init(attributes);
-      }
 
       /**
        * Initializes leave request documents types required for submission

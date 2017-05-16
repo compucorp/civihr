@@ -9,16 +9,6 @@ define([
     function ($log, api, $q) {
     $log.debug('LeaveRequestAPI');
 
-    /**
-     * Checks if error is returned from server
-     *
-     * @param {Object} dataFromServer
-     * @return {Boolean}
-     */
-    function checkError(dataFromServer) {
-      return dataFromServer && !!dataFromServer.is_error;
-    }
-
     return api.extend({
 
       /**
@@ -67,11 +57,7 @@ define([
 
         this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params, false)
           .then(function (data) {
-            if (checkError(data)) {
-              deferred.reject(data.error_message);
-            } else {
-              deferred.resolve(data.values);
-            }
+            deferred.resolve(data.values);
           });
 
         return deferred.promise;
@@ -93,12 +79,7 @@ define([
 
         this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
-            if (checkError(data)) {
-              deferred.reject(data.error_message);
-            } else {
-              //returns array of single object hence getting first object
-              deferred.resolve(data.values[0]);
-            }
+            deferred.resolve(data.values[0]);
           });
 
         return deferred.promise;
@@ -124,11 +105,7 @@ define([
 
         this.sendPOST('LeaveRequest', 'calculatebalancechange', params)
           .then(function (data) {
-            if (checkError(data)) {
-              deferred.reject(data.error_message);
-            } else {
-              deferred.resolve(data.values);
-            }
+            deferred.resolve(data.values);
           });
 
         return deferred.promise;
@@ -159,12 +136,7 @@ define([
 
         this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
-            if (checkError(data)) {
-              deferred.reject(data.error_message);
-            } else {
-              //returns array of single object hence getting first object
-              deferred.resolve(data.values[0]);
-            }
+            deferred.resolve(data.values[0]);
           });
 
         return deferred.promise;
@@ -185,35 +157,13 @@ define([
         this.sendPOST('LeaveRequest', 'isValid', params)
           .then(function (data) {
             if (data.count > 0) {
-              deferred.reject(data.values);
+              deferred.reject(_(data.values).map().flatten().value());
             } else {
               deferred.resolve(data.values);
             }
           });
 
         return deferred.promise;
-      },
-
-      /**
-       * Calls the isManagedBy backend API.
-       *
-       * @param {String} leaveRequestID - ID of leave request
-       * @param {String} contactID - ID of contact
-       *
-       * @return {Promise} resolves with an {Boolean}
-       */
-      isManagedBy: function (leaveRequestID, contactID) {
-        $log.debug('LeaveRequestAPI.isManagedBy');
-
-        var params = {
-          leave_request_id: leaveRequestID,
-          contact_id: contactID
-        };
-
-        return this.sendPOST('LeaveRequest', 'isManagedBy', params)
-          .then(function (response) {
-            return response.values;
-          });
       },
 
       /**

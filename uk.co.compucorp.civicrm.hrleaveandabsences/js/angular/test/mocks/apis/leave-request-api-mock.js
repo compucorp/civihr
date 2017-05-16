@@ -1,11 +1,12 @@
 //intercepts paths for real APIs and returns mock data
 define([
+  'common/lodash',
   'mocks/module',
   'mocks/data/leave-request-data',
   'mocks/data/comments-data',
   'mocks/data/sickness-leave-request-data',
   'common/angularMocks',
-], function (mocks, mockData, commentsMock, sicknessMockData) {
+], function (_, mocks, mockData, commentsMock, sicknessMockData) {
   'use strict';
 
   mocks.factory('LeaveRequestAPIMock', [
@@ -77,15 +78,14 @@ define([
         isValid: function (params) {
           return $q(function (resolve, reject) {
             if (!params.contact_id || !params.from_date) {
-              reject(mockData.getNotIsValid().values);
+              var errorMessage = _.map(mockData.getNotIsValid().values, function (value) {
+                return _.isArray(value) ? value.join(', ') : JSON.stringify(value);
+              }).join(', ');
+
+              reject(errorMessage);
             }
 
             resolve(mockData.getisValid().values);
-          });
-        },
-        isManagedBy: function (params) {
-          return $q(function (resolve, reject) {
-            resolve(mockData.isManagedBy().values);
           });
         },
         saveComment: function (params) {

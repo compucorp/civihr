@@ -92,10 +92,10 @@ define([
         });
 
         it("API is called with absence type ID, date and parameters", function () {
-          expect(AbsenceTypeAPI.sendPOST).toHaveBeenCalledWith('AbsenceType', 'calculateToilExpiryDate', _.assign(params, {
+          expect(AbsenceTypeAPI.sendPOST).toHaveBeenCalledWith('AbsenceType', 'calculateToilExpiryDate', jasmine.objectContaining(_.assign(params, {
             absence_type_id: absenceTypeID,
             date: moment(date).format(sharedSettings.serverDateFormat)
-          }))
+          })));
         });
 
         it("returns expiry_date", function () {
