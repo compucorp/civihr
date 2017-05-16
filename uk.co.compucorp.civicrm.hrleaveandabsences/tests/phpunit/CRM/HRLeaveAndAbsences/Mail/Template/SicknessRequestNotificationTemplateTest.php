@@ -97,7 +97,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
 
     $this->assertEquals($leaveCommentText, ['Random Commenter', 'Sample text']);
 
-    $this->assertEquals($tplParams['sicknessReasons'], $sicknessReasons);
+    $this->assertEquals($tplParams['sicknessReason'], $sicknessReasons[$leaveRequest->sickness_reason]);
     $this->assertEquals($tplParams['sicknessRequiredDocuments'], $this->getSicknessRequiredDocuments());
     $this->assertEquals($tplParams['leaveRequiredDocuments'], explode(',', $leaveRequest->sickness_required_documents));
   }
