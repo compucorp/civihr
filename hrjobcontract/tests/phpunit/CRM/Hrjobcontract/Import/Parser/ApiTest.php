@@ -4,6 +4,8 @@ use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRHoursLocation as HRHoursLocationFabicator;
+use CRM_Hrjobcontract_Test_Fabricator_HRPayScale as HRPayScaleFabricator;
 
 /**
  * Class CRM_Hrjobcontract_Import_Parser_ApiTest
@@ -15,6 +17,8 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   public $_contractTypeID;
   private $_defaultImportData = [];
   private $_insurancePlanTypes = [];
+  private $_hoursLocation = [];
+  private $_payScale = [];
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
@@ -30,6 +34,8 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
 
     $this->_contractTypeID = $this->createTestContractType();
     $this->createInsurancePlanTypes();
+    $this->createHoursLocation();
+    $this->createPayScale();
 
     $this->_defaultImportData = [
       'HRJobDetails-title' => 'Test Contract Title',
@@ -45,6 +51,22 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-notice_unit' => 'day',
       'HRJobDetails-funding_notes' => 'sample',
     ];
+  }
+
+  function createPayScale() {
+    $this->_payScale = HRPayScaleFabricator::fabricate();
+    $this->_payScale['importLabel'] = $this->_payScale['pay_scale'] . ' - '
+      . $this->_payScale['pay_grade'] . ' - '
+      . $this->_payScale['currency'] . ' '
+      . $this->_payScale['amount'] . ' per ' . $this->_payScale['periodicity']
+    ;
+  }
+
+  function createHoursLocation() {
+    $this->_hoursLocation = HRHoursLocationFabicator::fabricate(['standard_hours' => '36.00']);
+    $this->_hoursLocation['importLabel'] = $this->_hoursLocation['location']
+      . ' - ' . $this->_hoursLocation['standard_hours']
+      .  ' hours per ' . $this->_hoursLocation['periodicity'];
   }
 
   function tearDown() {
@@ -162,7 +184,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
-      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobHour-location_standard_hours' => $this->_hoursLocation['importLabel'],
       'HRJobHour-hours_type' => 'part time',
       'HRJobHour-hours_amount' => '25',
     );
@@ -187,7 +209,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
-      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobHour-location_standard_hours' => $this->_hoursLocation['importLabel'],
       'HRJobHour-hours_type' => 'part time',
       'HRJobHour-hours_amount' => '25.52',
     );
@@ -202,7 +224,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   public function testFTEFieldsAreSetToZeroWhenImportingCasualHoursType() {
     $contact1 = ContactFabricator::fabricate();
     $casualContract = $this->buildContractInfo([
-      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobHour-location_standard_hours' => $this->_hoursLocation['importLabel'],
       'HRJobContract-contact_id' => $contact1['id'],
       'HRJobHour-hours_type' => 'Casual',
       'HRJobHour-hours_amount' => '16'
@@ -217,7 +239,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   public function testFTEFieldsAreSetToZeroWhenImportingEmptyHoursAmount() {
     $contact2 = ContactFabricator::fabricate();
     $emptyHoursContract = $this->buildContractInfo([
-      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobHour-location_standard_hours' => $this->_hoursLocation['importLabel'],
       'HRJobContract-contact_id' => $contact2['id'],
       'HRJobHour-hours_type' => 'part time',
       'HRJobHour-hours_amount' => ''
@@ -274,7 +296,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
       'HRJobPay-is_paid' => 'Yes',
-      'HRJobPay-pay_scale' => 'US - Senior - USD 38000.00 per Year',
+      'HRJobPay-pay_scale' => $this->_payScale['importLabel'],
       'HRJobPay-pay_currency' => 'USD',
       'HRJobPay-pay_amount' => '35000',
       'HRJobPay-pay_unit' => 'year',
@@ -302,7 +324,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
       'HRJobPay-is_paid' => 'Yes',
-      'HRJobPay-pay_scale' => 'US - Senior - USD 38000.00 per Year',
+      'HRJobPay-pay_scale' => $this->_payScale['importLabel'],
       'HRJobPay-pay_currency' => 'USD',
       'HRJobPay-pay_amount' => '35000',
       'HRJobPay-pay_unit' => 'year',
