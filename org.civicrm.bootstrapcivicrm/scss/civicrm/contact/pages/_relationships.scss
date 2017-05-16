@@ -252,43 +252,46 @@
         font-size: $font-size-base !important;
         position: relative;
       }
+    }
 
-      &.Individual-icon {
-        background: none;
-        &:before {
-          @include fa-icon($content: $fa-var-user);
-        }
+    .crm-icon.Individual-icon {
+      background: none;
+
+      &:before {
+        @include fa-icon($content: $fa-var-user);
       }
+    }
 
-      &.Organization-icon {
-        background: none;
-        &:before {
-          @include fa-icon($content: $fa-var-building-o);
-        }
+    .crm-icon.Organization-icon {
+      background: none;
+
+      &:before {
+        @include fa-icon($content: $fa-var-building-o);
       }
+    }
 
-      &.Household-icon {
-        background: none;
-        &:before {
-          @include fa-icon($content: $fa-var-home);
-        }
+    .crm-icon.Household-icon {
+      background: none;
+
+      &:before {
+        @include fa-icon($content: $fa-var-home);
       }
     }
   }
 
-  .ui-dialog .crm-relationship-view-block table.crm-info-panel {
+  .ui-dialog .crm-relationship-view-block {
+    margin-bottom: -20px;
     margin-left: -20px;
     margin-right: -20px;
-    margin-top: -20px;
-    width: 104%;
-    
-    tbody tr {
-      border-top: 1px solid $crm-background;
-    }  
 
-    tbody td {
+    table tbody td {
+      line-height: 1.5em;
       padding: 7px 20px !important;
-    }    
+    }
+
+    table tbody td label {
+        font-weight: 600;
+    }
   }
 }
 
