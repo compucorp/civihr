@@ -38,7 +38,7 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
       mkdir($downloadPath, 0755, true);
     }
 
-    file_put_contents($downloadPath, fopen($localizationURL, 'r'));
+    file_put_contents($downloadPath . 'civicrm.mo', fopen($localizationURL, 'r'));
 
     return TRUE;
   }

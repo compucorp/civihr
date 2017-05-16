@@ -15,6 +15,9 @@ class CRM_HRUI_HelperTest extends \PHPUnit_Framework_TestCase implements Headles
   public function setUpHeadless() {
     // hrcase create ( Line Manager is ) relationship type which is need for the tests
     return \Civi\Test::headless()
+      ->install('uk.co.compucorp.civicrm.hrcore')
+      ->install('org.civicrm.hrident')
+      ->install('uk.co.compucorp.civicrm.tasksassignments')
       ->installMe(__DIR__)
       ->install('org.civicrm.hrcase')
       ->apply();

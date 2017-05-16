@@ -93,7 +93,9 @@ trait CRM_HRCore_Upgrader_Steps_1001 {
       'options' => ['limit' => 1]
     ]);
 
-    return $ethnicityGroup['values'][0]['option_group_id'];
+    if ($ethnicityGroup['count'] > 0) {
+      return $ethnicityGroup['values'][0]['option_group_id'];
+    }
   }
 
   /**

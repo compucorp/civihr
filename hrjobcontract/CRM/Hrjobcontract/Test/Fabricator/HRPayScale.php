@@ -6,7 +6,7 @@ class CRM_Hrjobcontract_Test_Fabricator_HRPayScale {
     'pay_scale' => 'test scale',
     'pay_grade' => 'test grade',
     'currency' => "USD",
-    'amount' => "35000",
+    'amount' => "35000.00",
     'periodicity' => "Year",
     'sequential'   => 1
   ];
