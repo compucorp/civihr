@@ -361,10 +361,8 @@
       }
     }
 
-    .crm-activity-form-block-attachment {
-      .crm-accordion-body {
-        padding: 20px !important;
-      }
+    .crm-activity-form-block-attachment .crm-accordion-body {
+      padding: 20px !important;
     }
   }
 
@@ -375,180 +373,241 @@
     min-height: 30px;
   }
 
-  #mainTabContainer {
-    .crm-activity-selector-activity {
-      .dataTables_wrapper {
-        margin: 20px 0;
+  #mainTabContainer .crm-activity-selector-activity {
+    .crm-accordion-header {
+      border-radius: $border-radius-base $border-radius-base 0 0;
+      font-size: $font-size-h2 !important;
+      padding-bottom: 3px;
+      padding-top: 6px;
+    }
 
-        .crm-datatable-pager-top {
-          margin-bottom: 10px;
+    .crm-accordion-body {
+      padding: 6px 15px !important;
+    }
+
+    .dataTables_wrapper {
+      border-radius: $border-radius-child;
+      box-shadow: $box-shadow;
+      margin: 20px 0;
+
+      table {
+        box-shadow: none;
+      }
+
+      .crm-datatable-pager-top {
+        background: $gray-lighter;
+        border-bottom: 1px solid $crm-background;
+        border-radius: $border-radius-child $border-radius-child 0 0;
+        margin-top: 10px;    
+        padding-bottom: 39px;
+        padding-top: 10px;
+
+        .dataTables_length {
+          padding-left: 20px;
         }
 
         .dataTables_paginate {
-          width: 50% !important;
-        }
-
-        .dataTables_info {
-          font-size: $font-size-base;
-          width: 49%;
-        }
-
-        @media (max-width: $crm-page-main-max-width) {
-          overflow-x: auto;
-          width: 100%;
+          padding-right: 5px;
+          padding-top: 0;
         }
       }
 
-      div[id*="DataTables_Table_"] table {
-        background: transparent;
-        border: none;
-        display: block;
-        font-family: $font-family-base;
-        overflow-x: auto;
+      .crm-datatable-pager-bottom {
+        background: $gray-lighter;
+        border-radius: 0 0 $border-radius-child $border-radius-child;
+        line-height: 25px;
+        padding-bottom: 39px;
+        padding-top: 10px;
 
-        thead tr {
-          background: none !important;
-          border-bottom: 1px solid $crm-dark-grayblue;
-          border-radius: $border-radius-base $border-radius-base 0 0;
-
-          th {
-            border-bottom: none;
-            background: $gray-lighter !important;
-            color: $gray-darker;
-            vertical-align: middle;
-            border: none;
-            padding: 15px 20px;
-            line-height: 1.5em;
-
-            &:first-child {
-              border-top-left-radius: $border-radius-base;
-            }
-
-            &:last-child {
-              border-top-right-radius: $border-radius-base;
-            }
-
-            div {
-              padding: 0;
-            }
-          }
+        .dataTables_info,
+        .dataTables_paginate {
+          padding-top: 0;
         }
+      }
 
-        tbody tr {
-          background: $crm-white;
-          border-bottom: 1px solid $crm-background;
-          border-right: none;
+      .dataTables_paginate {
+        padding-right: 5px;
+        width: 47% !important;
+      }
 
-          td {
-            background: $crm-white;
-            border: none;
-            color: $gray-dark;
-            line-height: 18px;
-            overflow: hidden;
-            padding: 10px 20px;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+      .dataTables_info {
+        font-size: $font-size-base;
+        padding-left: 20px;
+        width: 49%;
+      }
 
-            a {
-              color: $brand-primary !important;
-            }
-          }
+      @media (max-width: $crm-page-main-max-width) {
+        overflow-x: auto;
+        width: 100%;
+      }
+    }
 
-          td:nth-child(2) .crm-editable-enabled {              
-            white-space: normal;             
-            width: 235px !important;
+    div[id*="DataTables_Table_"] table {
+      background: transparent;
+      border: none;
+      display: block;
+      font-family: $font-family-base;
+      overflow-x: auto;
+
+      thead tr {
+        background: none !important;
+        border-bottom: 1px solid $crm-dark-grayblue;
+        border-radius: $border-radius-base $border-radius-base 0 0;
+
+        th {
+          background: $gray-lighter !important;
+          border: none;
+          color: $gray-darker;
+          line-height: 1.5em;
+          padding: 15px 20px;
+          vertical-align: middle;
+
+          &:first-child {
+            border-top-left-radius: $border-radius-base;
           }
 
           &:last-child {
-            border-bottom-left-radius: $border-radius-base;
-            border-bottom-right-radius: $border-radius-base;
+            border-top-right-radius: $border-radius-base;
+          }
 
-            td {
-              &:first-child {
-                border-bottom-left-radius: $border-radius-base;
-              }
-
-              &:last-child {
-                border-bottom-right-radius: $border-radius-base;
-              }
-            }
+          div {
+            padding: 0;
           }
         }
-
-        @media (min-width: $crm-min-lg-width) { 
-          width: 100% !important;
-        }
-
-        @media screen and (min-width: $crm-min-width ) and (max-width: $crm-max-width) {
-          width: auto !important;          
-        }
       }
 
-      .accordion,
-      .crm-search_filters-accordion {
-        box-shadow: $box-shadow;
-      }
+      tbody tr {
+        background: $crm-white;
+        border-bottom: 1px solid $crm-background;
+        border-right: none;
 
-      .crm-search_filters-accordion { 
-        border-radius: $border-radius-base;
-        box-shadow: $box-shadow;
-        overflow: hidden;
-
-        .crm-accordion-header {
-          background: $crm-white !important;
-          border-bottom: 1px solid $crm-dark-grayblue;
-        }
-      }
-
-      .dataTables_length,
-      .dataTables_paginate {
-        font-size: $font-size-base;
-      }
-
-      div[id*="s2id_autogen"] {
-        .select2-choice {
+        td {
           background: $crm-white;
-          border-radius: 2px;
-          border: 1px solid $crm-darker-grayblue;
-          box-shadow: $crm-select2-box-shadow-inset;
+          border: none;
+          color: $gray-dark;
+          line-height: 1.1em;
+          max-width: 140px;
+          overflow: hidden;
+          padding: 15px 20px;
+          text-overflow: ellipsis;
+          vertical-align: middle;
+          white-space: nowrap;
+
+          a {
+            color: $brand-primary !important;
+          }
         }
 
-        .select2-arrow {
-          background: none;
-          padding: 0 5px;
+        td:nth-child(3), 
+        td:nth-child(4) {
+          overflow: visible;
+          white-space: normal;
+
+          a:last-child {
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 85%;
+          }
+        }
+
+        td:nth-child(2) .crm-editable-enabled {
+          width: 154px !important;
         }
       }
 
-      .crm-icon {
-        text-indent: 0 !important;
-        text-align: center;
+      tbody tr:last-child {
+        border-bottom-left-radius: $border-radius-base;
+        border-bottom-right-radius: $border-radius-base;
 
-        &:before {
-          font-size: $font-size-base !important;
-          position: relative;
-          bottom: 2px;
-        }
+        td {
+          &:first-child {
+            border-bottom-left-radius: $border-radius-base;
+          }
 
-        &.Individual-icon {
-          background: none;
-          &:before {
-            @include fa-icon($content: "\f007");
+          &:last-child {
+            border-bottom-right-radius: $border-radius-base;
           }
         }
+      }      
 
-        &.Organization-icon {
-          background: none;
-          &:before {
-            @include fa-icon($content: "\f0f7");
-          }
-        }
+      @media (min-width: $crm-min-lg-width) {
+        width: 100% !important;
+      }
 
-        &.Household-icon {
-          background: none;
-          &:before {
-            @include fa-icon($content: "\f015");
-          }
-        }
+      @media screen and (min-width: $crm-min-width ) and (max-width: $crm-max-width) {
+        width: auto !important;
+      }
+    }
+
+    .accordion,
+    .crm-search_filters-accordion {
+      box-shadow: $box-shadow;
+    }
+
+    .crm-search_filters-accordion { 
+      border-radius: $border-radius-base;
+      box-shadow: $box-shadow;
+      overflow: hidden;
+
+      .crm-accordion-header {
+        background: $crm-white !important;
+        border-bottom: 1px solid $crm-dark-grayblue;
+      }
+    }
+
+    .dataTables_length,
+    .dataTables_paginate {
+      font-size: $font-size-base;
+    }
+
+    div[id*="s2id_autogen"] {
+      .select2-choice {
+        background: $crm-white;
+        border: 1px solid $crm-darker-grayblue;
+        border-radius: $border-radius-base;
+        box-shadow: $crm-select2-box-shadow-inset;
+      }
+
+      .select2-arrow {
+        background: none;
+        padding: 0 5px;
+      }
+    }
+
+    .crm-icon {
+      text-align: center;
+      text-indent: 0 !important;
+
+      &:before {
+        bottom: 2px;
+        font-size: $font-size-base !important;
+        position: relative;        
+      }
+    }
+      
+    .crm-icon.Individual-icon {
+      background: none;
+
+      &:before {
+        @include fa-icon($content: $fa-var-user);
+      }
+    }
+
+    .crm-icon.Organization-icon {
+      background: none;
+
+      &:before {
+        @include fa-icon($content: $fa-var-building-o);
+      }
+    }
+
+    .crm-icon.Household-icon {
+      background: none;
+      
+      &:before {
+        @include fa-icon($content: $fa-var-cutlery);
       }
     }
   }
