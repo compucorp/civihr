@@ -20,8 +20,8 @@ request-type: Sickness
         {/if}
         <hr>
         {{> request-data key="Additional Details" value=""}}
-        {{> request-data key="The Reason" value="{$sicknessReasons[$leaveRequest->sickness_reason]}"}}
-        {if $leaveRequiredDocuments}Documents:
+        {{> request-data key="The Reason" value="{$sicknessReason}"}}
+        {if $leaveRequiredDocuments}
           <div class="request-documents">
             {foreach from=$sicknessRequiredDocuments item=value key=id}
               <div class="request-document">
