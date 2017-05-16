@@ -138,17 +138,37 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $this->assertEquals($leaveRequest->contact_id, $message->getLeaveContactID());
   }
 
-  public function testGetTemplateParameters() {
-    $expectedParameters = [
+  public function testGetTemplateParametersForLeaveContact() {
+    $templateParameters = [
       'status' => 'Mock Status',
       'date' => 'Test Date'
     ];
-    $leaveTemplate = $this->createLeaveTemplateMock($expectedParameters);
+    $expectedUrl = ['leaveRequestLink' => CRM_Utils_System::url('my-leave', [], true)];
+    $expectedParameters = array_merge($templateParameters, $expectedUrl);
+    $leaveTemplate = $this->createLeaveTemplateMock($templateParameters);
     $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock($leaveTemplate);
 
     $leaveRequest = new LeaveRequest();
+    $leaveRequest->contact_id = 1;
     $message = new Message($leaveRequest, $notificationTemplateFactory);
-    $this->assertEquals($expectedParameters, $message->getTemplateParameters());
+    $this->assertEquals($expectedParameters, $message->getTemplateParameters($leaveRequest->contact_id));
+  }
+
+  public function testGetTemplateParametersForManager() {
+    $templateParameters = [
+      'status' => 'Mock Status',
+      'date' => 'Test Date'
+    ];
+    $expectedUrl = ['leaveRequestLink' => CRM_Utils_System::url('manager-leave', [], true)];
+    $expectedParameters = array_merge($templateParameters, $expectedUrl);
+    $leaveTemplate = $this->createLeaveTemplateMock($templateParameters);
+    $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock($leaveTemplate);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->contact_id = 1;
+    $managerID = 2;
+    $message = new Message($leaveRequest, $notificationTemplateFactory);
+    $this->assertEquals($expectedParameters, $message->getTemplateParameters($managerID));
   }
 
   public function testGetTemplateID() {
@@ -181,7 +201,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     ], false);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
-    $this->assertNull($message->getTemplateParameters());
+    $this->assertNull($message->getTemplateParameters($leaveRequest->contact_id));
   }
 
   public function testGetTemplateIDReturnsNullWhenThereIsNoTemplateForARequestType() {
