@@ -26,6 +26,8 @@ trait CRM_HRCore_Upgrader_Steps_1004 {
       $this->createActivityType($activityType);
     }
 
+    $this->executeCustomDataFile('xml/onboarding_custom_group.xml');
+
     return TRUE;
   }
 
