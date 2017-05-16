@@ -695,7 +695,8 @@
                 type: 'text/plain',
                 name: '/unitTest.txt'
               });
-              spyOn($ctrl.request.fileUploader, 'uploadAll').and.callThrough();
+              //no callThrough as it calls the real URL to upload
+              spyOn($ctrl.request.fileUploader, 'uploadAll');
 
               $ctrl.submit();
               $scope.$digest();
