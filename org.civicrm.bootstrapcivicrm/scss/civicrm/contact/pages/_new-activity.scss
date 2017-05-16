@@ -485,10 +485,10 @@
           background: $crm-white;
           border: none;
           color: $gray-dark;
-          line-height: 18px;
+          line-height: 1.1em;
           max-width: 140px;
           overflow: hidden;
-          padding: 10px 20px;
+          padding: 15px 20px;
           text-overflow: ellipsis;
           vertical-align: middle;
           white-space: nowrap;
@@ -498,7 +498,8 @@
           }
         }
 
-        td:nth-child(3), td:nth-child(4) {
+        td:nth-child(3), 
+        td:nth-child(4) {
           overflow: visible;
           white-space: normal;
 
@@ -588,6 +589,7 @@
       
     .crm-icon.Individual-icon {
       background: none;
+
       &:before {
         @include fa-icon($content: $fa-var-user);
       }
@@ -595,6 +597,7 @@
 
     .crm-icon.Organization-icon {
       background: none;
+
       &:before {
         @include fa-icon($content: $fa-var-building-o);
       }
@@ -602,6 +605,7 @@
 
     .crm-icon.Household-icon {
       background: none;
+      
       &:before {
         @include fa-icon($content: $fa-var-cutlery);
       }
