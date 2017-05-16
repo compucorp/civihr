@@ -24,18 +24,53 @@
     }
 
     .dataTables_wrapper {
+      border-radius: $border-radius-child;
+      box-shadow: $crm-form-item-shadow;
+      margin: 20px 0;
+
+      table {
+        box-shadow: none !important;
+      }
+
+      .crm-datatable-pager-top {
+        background: $gray-lighter;
+        border-bottom: 1px solid $crm-background;
+        border-radius: $border-radius-child $border-radius-child 0 0;     
+        padding-bottom: 39px;
+        padding-top: 10px;
+
+        .dataTables_paginate {
+          padding-top: 0;
+        }
+      }
+
+      .crm-datatable-pager-bottom {
+        background: $crm-gray-lightest;
+        border-radius: 0 0 $border-radius-child $border-radius-child;
+        line-height: 1.8em;
+        padding-bottom: 39px;
+        padding-top: 10px;
+
+        .dataTables_info,
+        .dataTables_paginate {
+          padding-top: 0;
+        }
+      }
+
       .dataTables_paginate {
         font: $font-size-base $font-family-base;
-        width: 50% !important;
+        width: 48% !important;
       }
 
       .dataTables_length {
         font: $font-size-base $font-family-base;
+        padding-left: 20px;
       }
 
       .dataTables_info {
-        color: $gray-darker;
         font: $font-size-base $font-family-base;
+        line-height: 2.3em;
+        padding-left: 20px;
         width: 49%;
       }
     }
@@ -44,7 +79,6 @@
       background: transparent;
       border: none;
       border-radius: $border-radius-child;
-      box-shadow: $box-shadow;
       font-family: $font-family-base;
       max-width: 100%;
       width: 100% !important;
@@ -80,18 +114,21 @@
       tbody tr {
         background: $crm-white;
         border-bottom: 1px solid $crm-background;
+        border-left: none;
         border-right: none;
 
         td {
           background: $crm-white;
           border: none;
           color: $gray-dark;
-          line-height: 18px;
+          line-height: 1.1em;
           max-width: 92px;
           min-width: 76px;
+          padding: 15px 20px;
+          vertical-align: middle;
           
           &:not(:first-child) {
-            padding: 10px;
+            padding: 15px 10px;
           }
 
           &:nth-child(1),
@@ -108,7 +145,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            width: 100%;
+            width: 80%;
           }
 
           &:nth-child(3),
@@ -135,46 +172,27 @@
             background: none;
             color: $brand-primary;
           }
-
-          .btn-slide,
-          .crm-hover-button {
-            background: none;
-            color: $brand-primary;
-            text-transform: capitalize;
-
-            &:hover {
-              color: $crm-copy;
-
-              a {
-                color: $crm-copy;
-              }
-            }
-          }
-
-          .btn-slide {
-            padding: 3px 0 !important;
-            text-indent: -9999px;
-            width: 5px;
-
-            &:after, .panel {
-              text-indent: 0;
-            }
-          }
         }
 
-        &:last-child {
-          border-bottom-left-radius: $border-radius-base;
-          border-bottom-right-radius: $border-radius-base;
+        td .btn-slide,
+        td .crm-hover-button {
+          background: none;
+          color: $brand-primary;
+          text-transform: capitalize;
 
-          td {
-            &:first-child {
-              border-bottom-left-radius: $border-radius-base;
-            }
-
-            &:last-child {
-              border-bottom-right-radius: $border-radius-base;
-            }
+          &:hover a {
+            color: $crm-copy;
           }
+        }
+      }
+
+      tbody tr td .btn-slide {
+        padding: 3px 0 !important;
+        text-indent: -9999px;
+        width: 5px;
+
+        &:after, .panel {
+          text-indent: 0;
         }
       }
     }
