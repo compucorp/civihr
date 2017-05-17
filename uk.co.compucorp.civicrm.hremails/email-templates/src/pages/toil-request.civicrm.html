@@ -13,10 +13,10 @@ request-type: TOIL
         {{> request-data key="Staff Member" value="{contact.display_name}" keySize="4"}}
 
         {if $leaveRequest->from_date eq $leaveRequest->to_date}
-          {{> request-data key="Date" value="{$fromDate|truncate:10:''|crmDate} {$fromDateType}" keySize="4"}}
+          {{> request-data key="Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}" keySize="4"}}
         {else}
-          {{> request-data key="From Date" value="{$fromDate|truncate:10:''|crmDate} {$fromDateType}" keySize="4"}}
-          {{> request-data key="To Date" value="{$toDate|truncate:10:''|crmDate} {$toDateType}" keySize="4"}}
+          {{> request-data key="From Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}" keySize="4"}}
+          {{> request-data key="To Date" value="{$toDate|truncate:10:\'\'|crmDate} {$toDateType}" keySize="4"}}
         {/if}
 
         {{> request-data
