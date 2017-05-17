@@ -356,7 +356,7 @@
     dismiss-on-timeout="5000">
     <div ng-repeat="errMsg in $ctrl.errors track by $index">{{errMsg}}</div>
   </div>
-  <crm-loading show="!$ctrl.didSubmit">
+  <crm-loading show="!$ctrl.submitting">
     <div class="modal-footer">
       <button
         type="button"
@@ -367,7 +367,7 @@
       <button
         type="submit"
         class="btn btn-primary"
-        ng-disabled="!$ctrl.canSubmit() || $ctrl.didSubmit"
+        ng-disabled="!$ctrl.canSubmit() || $ctrl.submitting"
         ng-click="$ctrl.submit()">Save
       </button>
     </div>

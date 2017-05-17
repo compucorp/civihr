@@ -317,7 +317,7 @@ define([
        * Also, checks if its an update request from manager and accordingly updates leave request
        */
       this.submit = function () {
-        if (this.isMode('view')) {
+        if (this.isMode('view') || this.submitting) {
           return;
         }
 

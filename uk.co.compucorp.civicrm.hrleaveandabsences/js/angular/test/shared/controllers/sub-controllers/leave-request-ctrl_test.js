@@ -629,13 +629,19 @@
         });
 
         describe('save leave request', function () {
-          describe('does not allow multiple save', function() {
-            beforeEach(function() {
+          describe('does not allow multiple save', function () {
+            beforeEach(function () {
               $ctrl.submit();
             });
 
             it('user cannot submit again', function () {
               expect($ctrl.submitting).toBeTruthy();
+            });
+
+            it('submit does not create request again', function () {
+              spyOn($ctrl.request, 'create').and.callThrough();
+              $ctrl.submit();
+              expect($ctrl.request.create).not.toHaveBeenCalled();
             });
           });
 
