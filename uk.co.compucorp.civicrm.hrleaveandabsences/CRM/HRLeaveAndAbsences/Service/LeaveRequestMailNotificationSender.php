@@ -18,17 +18,18 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSender {
 
     $recipientEmails = $message->getRecipientEmails();
     $templateID = $message->getTemplateID();
-    $templateParameters = $message->getTemplateParameters();
     $contactID = $message->getLeaveContactID();
     $fromEmail = $message->getFromEmail();
     $status = [];
 
     foreach($recipientEmails as $recipient) {
+      $recipientID = $recipient['api.Contact.get']['values'][0]['id'];
+
       $mailSent =
         MessageTemplate::sendTemplate([
           'messageTemplateID' => $templateID,
           'contactId' => $contactID,
-          'tplParams' => $templateParameters,
+          'tplParams' => $message->getTemplateParameters($recipientID),
           'from' => $fromEmail,
           'toName' => $recipient['api.Contact.get']['values'][0]['display_name'],
           'toEmail' => $recipient['email'],

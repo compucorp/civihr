@@ -7,7 +7,7 @@ request-type: Sickness
 <div class="request request-sickness">
   <row class="collapse">
     <columns>
-      {{> callout-header title="Leave Request Type"}}
+      {{> callout-header title="{$absenceTypeName}"}}
       <callout class="request-data">
         {{> request-data key="Status" value="{$leaveStatus}"}}
         {{> request-data key="Staff Member" value="{contact.display_name}"}}

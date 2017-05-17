@@ -54,8 +54,8 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification {
       'fromDateType' => $this->getLeaveRequestDayTypeLabel($leaveRequest->from_date_type),
       'toDateType' => $this->getLeaveRequestDayTypeLabel($leaveRequest->to_date_type),
       'leaveStatus' => $this->getLeaveRequestStatusLabel($leaveRequest->status_id),
-      'leaveRequestLink' => $this->getLeaveRequestURL(),
       'leaveRequest' => $leaveRequest,
+      'absenceTypeName' => $this->getAbsenceTypeName($leaveRequest),
       'currentDateTime' => new DateTime()
     ];
 
@@ -128,13 +128,17 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification {
   }
 
   /**
-   * Return URL for the leave request on SSP
+   * Gets the Name of the Absence Type for this LeaveRequest
    *
-   * @TODO This should return the actual url for the leave request in future.
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *
    * @return string
    */
-  private function getLeaveRequestURL() {
-    return CRM_Utils_System::url('my-leave', [], true);
+  private function getAbsenceTypeName(LeaveRequest $leaveRequest) {
+    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $absenceType->id = $leaveRequest->type_id;
+    $absenceType->find(true);
+
+    return $absenceType->title;
   }
 }

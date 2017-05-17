@@ -10,6 +10,11 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
   use CRM_HRLeaveAndAbsences_Service_SettingsManagerTrait;
 
   /**
+   * @var array
+   */
+  private $templateParameters;
+
+  /**
    * @var \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
    */
   private $leaveRequest;
@@ -84,15 +89,24 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
 
   /**
    * Gets the template parameters for the Leave Request template
+   * for the recipient.
+   *
+   * @param int $recipientID
    *
    * @return array|null
    */
-  public function getTemplateParameters() {
+  public function getTemplateParameters($recipientID) {
     if (!$this->isValidTemplate()) {
       return null;
     }
 
-    return $this->getTemplate()->getTemplateParameters($this->leaveRequest);
+    if (is_null($this->templateParameters)) {
+      $this->templateParameters = $this->getTemplate()->getTemplateParameters($this->leaveRequest);
+    }
+
+    $leaveRequestLink = ['leaveRequestLink' => $this->getLeaveRequestURL($recipientID)];
+
+    return array_merge($this->templateParameters, $leaveRequestLink);
   }
 
   /**
@@ -115,6 +129,24 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
    */
   public function getLeaveContactID() {
     return $this->leaveRequest->contact_id;
+  }
+
+  /**
+   * Gets appropriate leave Request URL Link for the Contact
+   *
+   * @param int $contactID
+   *  The contact to get the Leave Request URL for
+   *
+   * @return string
+   */
+  private function getLeaveRequestURL($contactID) {
+    $leaveUrl = CRM_Utils_System::url('my-leave', [], true);
+
+    if ($this->leaveRequest->contact_id != $contactID) {
+      $leaveUrl = CRM_Utils_System::url('manager-leave', [], true);
+    }
+
+    return $leaveUrl;
   }
 
   /**
