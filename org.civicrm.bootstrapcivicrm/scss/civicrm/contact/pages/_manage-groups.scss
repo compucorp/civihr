@@ -96,7 +96,9 @@
       }
     }
 
-    #option12_wrapper {
+    #option12_wrapper,
+    #option13_wrapper {
+      border-radius: $border-radius-child; 
       margin-bottom: 20px;
     }
 
@@ -304,16 +306,17 @@
 
     .crm-group-group_links {
       text-align: right;
+    }
 
-      .btn-slide.crm-hover-button {
-        display: inline-block;
-        text-indent: -999999px;
-        width: 5px;
+    .crm-group-group_links .btn-slide.crm-hover-button {
+      display: inline-block;
+      text-indent: -999999px;
+      text-transform: capitalize;
+      width: 5px;
 
-        &:after,
-        .panel {
-          text-indent: 0;
-        }
+      &:after,
+      .panel {
+        text-indent: 0;
       }
     }
 

@@ -160,15 +160,17 @@
         }
           
         tr:first-child  th {
-          padding: 15px 20px !important;
+          padding: 15px 10px !important;
           white-space: nowrap;
 
           &:first-child {
             border-top-left-radius: $border-radius-base;
+            padding-left: 20px !important;
           }
 
           &:last-child {
             border-top-right-radius: $border-radius-base;
+            padding-right: 20px !important;
           }
         }
       }

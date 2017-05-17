@@ -745,7 +745,7 @@
     }
   }
 
-  #DataTables_Table_0_wrapper {
+  .dataTables_wrapper {
     background: $crm-white;
     border-radius: $border-radius-child;
     box-shadow: $crm-form-item-shadow; 
@@ -769,9 +769,9 @@
     }
 
     .crm-datatable-pager-bottom {
-      background: $crm-gray-lightest;
+      background: $gray-lighter;
       border-radius: 0 0 $border-radius-child $border-radius-child;
-      line-height: 1.8em;
+      line-height: 25px;
       padding-bottom: 39px;
       padding-top: 10px;
 
@@ -833,19 +833,20 @@
       padding: 15px 20px !important;
       white-space: nowrap;
     }
+  }
 
-    td {
-      padding: 15px 30px 15px 20px !important;
-      white-space: nowrap;
+  table.crm-softcredit-selector td {
+    min-width: 3.83em;
+    padding: 15px 20px !important;
+    white-space: nowrap;
 
-      .crm-hover-button {
-        color: $brand-primary !important;
-        text-transform: capitalize;
-      }
+    .crm-hover-button {
+      color: $brand-primary !important;
+      text-transform: capitalize;
+    }
 
-      .crm-hover-button:hover {
-        color: $crm-copy !important;
-      }
+    .crm-hover-button:hover {
+      color: $crm-copy !important;
     }
   }
 }

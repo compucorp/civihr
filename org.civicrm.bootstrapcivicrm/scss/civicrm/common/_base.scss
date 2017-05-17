@@ -85,6 +85,11 @@
     }
   }
 
+  a.crm-hover-button.action-item, 
+  .crm-hover-button.btn-slide {
+    text-transform: capitalize;
+  }
+
   span.btn-slide {
     background: none;
     display: inline-block;
@@ -114,8 +119,43 @@
     }
   }
 
-  .dataTables_info {
-    color: $crm-copy;
+  .dataTables_wrapper {
+    border-radius: $border-radius-child;
+    box-shadow: $crm-form-item-shadow;
+    margin: 20px 0;
+
+    table {
+      box-shadow: none !important;
+    }
+
+    .crm-datatable-pager-top {
+      background: $gray-lighter;
+      border-bottom: 1px solid $crm-background;
+      border-radius: $border-radius-child $border-radius-child 0 0;     
+      padding-bottom: 39px;
+      padding-top: 10px;
+
+      .dataTables_paginate {
+        padding-top: 0;
+      }
+    }
+
+    .crm-datatable-pager-bottom {
+      background: $crm-gray-lightest;
+      border-radius: 0 0 $border-radius-child $border-radius-child;
+      line-height: 1.8em;
+      padding-bottom: 39px;
+      padding-top: 10px;
+
+      .dataTables_info,
+      .dataTables_paginate {
+        padding-top: 0;
+      }
+    }
+
+    .dataTables_info {
+      color: $crm-copy;
+    }
   }
 }
 
