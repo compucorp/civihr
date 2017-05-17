@@ -44,7 +44,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="document.assignee_contact_id[0]"] .ui-select-match');
+        casper.click(this.modalRoot + ' [ng-model="document.assignee_contact"] .ui-select-match');
         casper.waitUntilVisible('.select2-with-searchbox');
       }.bind(this));
 
