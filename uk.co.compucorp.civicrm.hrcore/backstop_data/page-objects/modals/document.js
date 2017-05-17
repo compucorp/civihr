@@ -68,15 +68,15 @@ module.exports = (function () {
     },
 
     /**
-     * Expands fully the modal
+     * Opens the given tab
      *
      * @return {object}
      */
-    showMore: function () {
+    showTab: function (tabName) {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-click*="expanded"]');
+        casper.click(this.modalRoot + ' [heading="' + tabName + '"] a');
         casper.wait(200);
       }.bind(this));
 
