@@ -629,13 +629,13 @@
         });
 
         describe('save leave request', function () {
-          describe('allows multiple save', function() {
+          describe('does not allow multiple save', function() {
             beforeEach(function() {
               $ctrl.submit();
             });
 
-            it('does not allow user to submit again', function () {
-              expect($ctrl.didSubmit).toBeTruthy();
+            it('user cannot submit again', function () {
+              expect($ctrl.submitting).toBeTruthy();
             });
           });
 
