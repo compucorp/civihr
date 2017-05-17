@@ -629,6 +629,16 @@
         });
 
         describe('save leave request', function () {
+          describe('allows multiple save', function() {
+            beforeEach(function() {
+              $ctrl.submit();
+            });
+
+            it('does not allow user to submit again', function () {
+              expect($ctrl.didSubmit).toBeTruthy();
+            });
+          });
+
           describe('when submit with invalid fields', function () {
             beforeEach(function () {
               $ctrl.submit();

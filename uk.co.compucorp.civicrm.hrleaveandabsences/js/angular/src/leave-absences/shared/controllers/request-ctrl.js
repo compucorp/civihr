@@ -34,6 +34,7 @@ define([
       this.absenceTypes = [];
       this.calendar = {};
       this.contactName = null;
+      this.didSubmit = false;
       this.errors = [];
       this.managedContacts = [];
       this.requestDayTypes = [];
@@ -664,6 +665,7 @@ define([
        */
       function createRequest() {
         var self = this;
+        self.didSubmit = true;
 
         self.request.isValid()
           .then(function () {
@@ -671,6 +673,7 @@ define([
               .then(function (result) {
                 // refresh the list
                 postSubmit.call(self, 'LeaveRequest::new');
+                self.didSubmit = false;
               })
               .catch(handleError.bind(self));
           })
@@ -829,6 +832,8 @@ define([
         this.loading.absenceTypes = false;
         this.loading.fromDayTypes = false;
         this.loading.toDayTypes = false;
+
+        this.didSubmit = false;
       }
 
       /**
@@ -1102,6 +1107,7 @@ define([
        */
       function updateRequest() {
         var self = this;
+        self.didSubmit = true;
 
         if (self.isRole('manager')) {
           //if manager has not changed the status then reset status
@@ -1114,6 +1120,8 @@ define([
           .then(function () {
             self.request.update()
               .then(function (result) {
+                self.didSubmit = false;
+
                 if (self.isRole('manager')) {
                   postSubmit.call(self, 'LeaveRequest::updatedByManager');
                 } else if (self.isRole('staff')) {
