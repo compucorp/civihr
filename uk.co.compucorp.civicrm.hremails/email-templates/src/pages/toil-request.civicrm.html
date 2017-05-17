@@ -7,7 +7,7 @@ request-type: TOIL
 <div class="request">
   <row class="collapse">
     <columns>
-      {{> callout-header title="Leave Request Type"}}
+      {{> callout-header title="{$absenceTypeName}"}}
       <callout class="request-data">
         {{> request-data key="Status" value="{$leaveStatus}" keySize="4"}}
         {{> request-data key="Staff Member" value="{contact.display_name}" keySize="4"}}
