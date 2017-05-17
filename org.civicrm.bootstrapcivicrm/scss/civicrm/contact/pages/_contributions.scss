@@ -1487,27 +1487,40 @@ form.CRM_Contribute_Form_ContributionCharts {
     box-shadow: $box-shadow;
     color: $datepicker-gray-darker;
     height: 50px;
-    line-height: 50px;    
+    line-height: 50px;
     margin: 10px 0 0;
-    padding: 0 15px;    
+    padding: 0 15px;
   }
 
-  .spacer + h3,
-  .crm-pager {
+  .spacer + h3 {
     border-radius: $border-radius-base;
+
+    + div {
+      position: relative;
+    }
+  }
+
+  .crm-pager:first-child {
+    border-bottom: 1px solid $crm-background;
+    border-radius: $border-radius-base $border-radius-base 0 0;
+    margin-bottom: 0;
+    margin-top: 75px;
   }
 
   p.description {
     background: $crm-light-green-color;
     border-radius: $border-radius-base;
-    box-shadow: $box-shadow;
     color: $gray-darker;
     margin: 15px 0;
-    padding: 10px 20px !important; 
+    padding: 10px 20px !important;
+    position: absolute;
+    top: -70px;
+    width: calc(100% - 40px);
   }
 
   table.selector {
-    border-radius: $border-radius-base $border-radius-base 0 0;
+    border-radius: 0;
+    box-shadow: $crm-form-item-shadow !important;
 
     thead th:not(:last-child) {
       padding-right: 10px !important;
@@ -1539,10 +1552,6 @@ form.CRM_Contribute_Form_ContributionCharts {
   .selector,
   .report {
     @include mx-expandable-table();
-
-    thead.sticky {
-      background: transparent;
-    }
   }
 
   .report {
