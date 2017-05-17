@@ -1,10 +1,10 @@
 ---
 layout: leave-absences
-subject: CiviHR Leave Request
-request-type: Leave
+subject: CiviHR Sickness Request
+request-type: Sickness
 ---
 
-<div class="request">
+<div class="request request-sickness">
   <row class="collapse">
     <columns>
       {{> callout-header title="Leave Request Type"}}
@@ -13,10 +13,25 @@ request-type: Leave
         {{> request-data key="Staff Member" value="{contact.display_name}"}}
 
         {if $leaveRequest->from_date eq $leaveRequest->to_date}
-          {{> request-data key="Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}"}}
+          {{> request-data key="Date" value="{$fromDate|truncate:10:''|crmDate} {$fromDateType}"}}
         {else}
-          {{> request-data key="From Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}"}}
-          {{> request-data key="To Date" value="{$toDate|truncate:10:\'\'|crmDate} {$toDateType}"}}
+          {{> request-data key="From Date" value="{$fromDate|truncate:10:''|crmDate} {$fromDateType}"}}
+          {{> request-data key="To Date" value="{$toDate|truncate:10:''|crmDate} {$toDateType}"}}
+        {/if}
+        <hr>
+        {{> request-data key="Additional Details" value=""}}
+        {{> request-data key="The Reason" value="{$sicknessReason}"}}
+        {if $leaveRequiredDocuments}
+          <div class="request-documents">
+            {foreach from=$sicknessRequiredDocuments item=value key=id}
+              <div class="request-document">
+                <span class="request-document-required">
+                  <input type="checkbox" disabled {if in_array($id, $leaveRequiredDocuments)}checked{/if}>
+                </span>
+                <span class="request-document-title">{$value}</span>
+              </div>
+            {/foreach}
+          </div>
         {/if}
       </callout>
       <spacer></spacer>

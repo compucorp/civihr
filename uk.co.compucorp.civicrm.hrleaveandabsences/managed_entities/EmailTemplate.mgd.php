@@ -157,7 +157,7 @@ return [
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\&#x27;\&#x27;|crmDate} {$fromDateType}</span>
+                            <span>{$fromDate|truncate:10:''|crmDate} {$fromDateType}</span>
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -169,7 +169,7 @@ return [
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\&#x27;\&#x27;|crmDate} {$fromDateType}</span>
+                            <span>{$fromDate|truncate:10:''|crmDate} {$fromDateType}</span>
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -180,7 +180,7 @@ return [
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 0 !important; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$toDate|truncate:10:\&#x27;\&#x27;|crmDate} {$toDateType}</span>
+                            <span>{$toDate|truncate:10:''|crmDate} {$toDateType}</span>
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -211,9 +211,7 @@ return [
                                   </td>
                                 </tr>
                                 <tr style="padding: 0; text-align: left; vertical-align: top;">
-                                  <td class="request-comment-body" style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 20px; padding-top: 0; text-align: left; vertical-align: top; word-wrap: break-word;">
-                                    {$value.text}
-                                  </td>
+                                  <td class="request-comment-body" style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 20px; padding-top: 0; text-align: left; vertical-align: top; word-wrap: break-word;">{$value.text}</td>
                                 </tr>
                               </tbody>
                             </table>
@@ -252,6 +250,7 @@ return [
                   </th>
 <th class="expander" style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0 !important; text-align: left; visibility: hidden; width: 0;"></th></tr></table></th>
                 </tr></tbody></table>
+
               </div>
 
             </td></tr></tbody></table>
@@ -422,7 +421,7 @@ return [
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\&#x27;\&#x27;|crmDate} {$fromDateType}</span>
+                            <span>{$fromDate|truncate:10:''|crmDate} {$fromDateType}</span>
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -434,7 +433,7 @@ return [
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\&#x27;\&#x27;|crmDate} {$fromDateType}</span>
+                            <span>{$fromDate|truncate:10:''|crmDate} {$fromDateType}</span>
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -445,7 +444,7 @@ return [
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$toDate|truncate:10:\&#x27;\&#x27;|crmDate} {$toDateType}</span>
+                            <span>{$toDate|truncate:10:''|crmDate} {$toDateType}</span>
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -458,7 +457,7 @@ return [
                           </div>
                         </th></tr></table></th>
                         <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 0 !important; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                          <span style="border: 1px solid #FFF; border-color: #727E8A; display: inline-block; padding: 10px 0; text-align: center; width: 100px;">{$leaveRequest-&gt;toil_to_accrue} {if $leaveRequest-&gt;toil_to_accrue &gt; 1}days{else}day{/if}</span>
+                          <span style="border: 1px solid #FFF; border-color: #727E8A; display: inline-block; padding: 10px 0; text-align: center; width: 100px;">{$leaveRequest->toil_to_accrue} {if $leaveRequest->toil_to_accrue > 1}days{else}day{/if}</span>
                         </th></tr></table></th>
                       </tr></tbody></table>
 
@@ -488,9 +487,7 @@ return [
                                   </td>
                                 </tr>
                                 <tr style="padding: 0; text-align: left; vertical-align: top;">
-                                  <td class="request-comment-body" style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 20px; padding-top: 0; text-align: left; vertical-align: top; word-wrap: break-word;">
-                                    {$value.text}
-                                  </td>
+                                  <td class="request-comment-body" style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 20px; padding-top: 0; text-align: left; vertical-align: top; word-wrap: break-word;">{$value.text}</td>
                                 </tr>
                               </tbody>
                             </table>
@@ -529,6 +526,7 @@ return [
                   </th>
 <th class="expander" style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0 !important; text-align: left; visibility: hidden; width: 0;"></th></tr></table></th>
                 </tr></tbody></table>
+
               </div>
 
             </td></tr></tbody></table>
@@ -540,6 +538,16 @@ return [
    <div style="display:none; white-space:nowrap; font:15px courier; line-height:0;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
   </body>
 </html>',
+      'is_reserved' => 1
+    ],
+  ],
+  [
+    'name' => 'Email Template: Sickness Request',
+    'entity' => 'MessageTemplate',
+    'params' => [
+      'version' => 3,
+      'msg_title' => 'CiviHR Sickness Record Notification',
+      'msg_subject' => 'Sickness Request',
       'msg_html' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -548,7 +556,7 @@ return [
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>CiviHR TOIL Request</title>
+    <title>CiviHR Sickness Request</title>
     <style>{literal}@media only screen {
   html {
     min-height: 100%;
@@ -585,6 +593,11 @@ return [
     padding-right: 16px !important;
   }
 
+  table.body .columns .columns {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
   table.body .collapse .columns {
     padding-left: 0 !important;
     padding-right: 0 !important;
@@ -592,6 +605,11 @@ return [
 
   th.small-12 {
     display: inline-block !important;
+    width: 100% !important;
+  }
+
+  .columns th.small-12 {
+    display: block !important;
     width: 100% !important;
   }
 }
@@ -603,9 +621,14 @@ return [
 }
 
 @media only screen and (max-width: 596px) {
-  .request-data dt {
-    float: none !important;
-    width: auto !important;
+  .request-data-key {
+    padding-bottom: 0 !important;
+  }
+}
+
+@media only screen and (min-width: 597px) {
+  .request-data .row .columns {
+    padding-bottom: 10px !important;
   }
 }{/literal}</style>
   </head>
@@ -619,7 +642,7 @@ return [
             <table align="center" class="container email-heading float-center" style="Margin: 0 auto; background: transparent; border-collapse: collapse; border-spacing: 0; float: none; margin: 0 auto; padding: 0; text-align: center; vertical-align: top; width: 580px;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;"><td style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 0; text-align: left; vertical-align: top; word-wrap: break-word;">
               <table class="row collapse" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                 <th class="small-12 large-6 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0; padding-right: 0; text-align: left; width: 298px;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                  <h1 class="email-title" style="Margin: 0; Margin-bottom: 0; border-left: 5px solid #42AFCB; color: #4D5663; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 500; line-height: 40px; margin: 0; margin-bottom: 0; padding: 0; padding-left: 15px; text-align: left; word-wrap: normal;">CiviHR TOIL Request</h1>
+                  <h1 class="email-title" style="Margin: 0; Margin-bottom: 0; border-left: 5px solid #42AFCB; color: #4D5663; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 500; line-height: 40px; margin: 0; margin-bottom: 0; padding: 0; padding-left: 15px; text-align: left; word-wrap: normal;">CiviHR Sickness Request</h1>
                 </th></tr></table></th>
                 <th class="small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0; padding-right: 0; text-align: left; width: 298px;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                   <p class="email-date small-text-left text-right" style="Margin: 0; Margin-bottom: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 40px; margin: 0; margin-bottom: 0; padding: 0; text-align: right;">{$currentDateTime->format("D d F Y")}</p>
@@ -630,7 +653,7 @@ return [
             <!-- body -->
             <table align="center" class="container float-center" style="Margin: 0 auto; background: transparent; border-collapse: collapse; border-spacing: 0; float: none; margin: 0 auto; padding: 0; text-align: center; vertical-align: top; width: 580px;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;"><td style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 0; text-align: left; vertical-align: top; word-wrap: break-word;">
 
-              <div class="request">
+              <div class="request request-sickness">
                 <table class="row collapse" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                   <th class="small-12 large-12 columns first last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0; padding-right: 0; text-align: left; width: 588px;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                     <table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
@@ -641,28 +664,104 @@ return [
                       </tr>
                     </table>
 
-                    <table class="callout" style="Margin-bottom: 16px; border-collapse: collapse; border-spacing: 0; margin-bottom: 16px; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th class="callout-inner request-data request-data-large" style="Margin: 0; background: #FFF; border: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 20px; text-align: left; width: 100%;">
-                      <dl style="Margin: 0; margin: 0;">
-                        <dt style="color: #4D5663; float: left; font-weight: 600; width: 200px;">{ts}Status:{/ts}</dt>
-                        <dd style="Margin-bottom: 10px; Margin-left: 0; margin-bottom: 10px; margin-left: 0;">{$leaveStatus}</dd>
-                        <dt style="color: #4D5663; float: left; font-weight: 600; width: 200px;">{ts}Staff Member:{/ts}</dt>
-                        <dd style="Margin-bottom: 10px; Margin-left: 0; margin-bottom: 10px; margin-left: 0;">{contact.display_name}</dd>
-                        {if $leaveRequest->from_date eq $leaveRequest->to_date}
-                          <dt style="color: #4D5663; float: left; font-weight: 600; width: 200px;">Date:</dt>
-                          <dd style="Margin-bottom: 10px; Margin-left: 0; margin-bottom: 10px; margin-left: 0;">{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</dd>
-                        {else}
-                          <dt style="color: #4D5663; float: left; font-weight: 600; width: 200px;">{ts}From Date:{/ts}</dt>
-                          <dd style="Margin-bottom: 10px; Margin-left: 0; margin-bottom: 10px; margin-left: 0;">{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</dd>
-                          <dt style="color: #4D5663; float: left; font-weight: 600; width: 200px;">{ts}To Date:{/ts}</dt>
-                          <dd style="Margin-bottom: 10px; Margin-left: 0; margin-bottom: 10px; margin-left: 0;">{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</dd>
-                        {/if}
-                        <div class="request-data-toil" style="line-height: 2.5;">
-                          <dt style="color: #4D5663; float: left; font-weight: 600; width: 200px;">{ts}No. TOIL Days Requested:{/ts}</dt>
-                          <dd style="Margin-left: 0; margin-left: 0;"><span style="border: 1px solid #727E8A; display: inline-block; text-align: center; width: 100px;">{$leaveRequest->toil_to_accrue}{if $leaveRequest->toil_to_accrue > 1}days{else}day{/if}</span></dd>
+                    <table class="callout" style="Margin-bottom: 0 !important; border-collapse: collapse; border-spacing: 0; margin-bottom: 0 !important; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th class="callout-inner request-data" style="Margin: 0; background: #FFF; border: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 20px; text-align: left; width: 100%;">
+                      <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
+                        <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                          <span style="color: #4D5663; font-weight: 600;">
+                            {ts}Status:{/ts}
+                          </span>
+                        </th></tr></table></th>
+                        <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                          <span>{$leaveStatus}</span>
+                        </th></tr></table></th>
+                      </tr></tbody></table>
+
+                      <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
+                        <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                          <span style="color: #4D5663; font-weight: 600;">
+                            {ts}Staff Member:{/ts}
+                          </span>
+                        </th></tr></table></th>
+                        <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                          <span>{contact.display_name}</span>
+                        </th></tr></table></th>
+                      </tr></tbody></table>
+
+
+                      {if $leaveRequest->from_date eq $leaveRequest->to_date}
+                        <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
+                          <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                            <span style="color: #4D5663; font-weight: 600;">
+                              {ts}Date:{/ts}
+                            </span>
+                          </th></tr></table></th>
+                          <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                            <span>{$fromDate|truncate:10:''|crmDate} {$fromDateType}</span>
+                          </th></tr></table></th>
+                        </tr></tbody></table>
+
+                      {else}
+                        <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
+                          <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                            <span style="color: #4D5663; font-weight: 600;">
+                              {ts}From Date:{/ts}
+                            </span>
+                          </th></tr></table></th>
+                          <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                            <span>{$fromDate|truncate:10:''|crmDate} {$fromDateType}</span>
+                          </th></tr></table></th>
+                        </tr></tbody></table>
+
+                        <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
+                          <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                            <span style="color: #4D5663; font-weight: 600;">
+                              {ts}To Date:{/ts}
+                            </span>
+                          </th></tr></table></th>
+                          <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                            <span>{$toDate|truncate:10:''|crmDate} {$toDateType}</span>
+                          </th></tr></table></th>
+                        </tr></tbody></table>
+
+                      {/if}
+                      <hr style="Margin: 20px auto; border: 0; border-top: 1px solid #D3DEE2; height: 0; margin: 20px auto;">
+                      <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
+                        <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                          <span style="color: #4D5663; font-weight: 600;">
+                            {ts}Additional Details:{/ts}
+                          </span>
+                        </th></tr></table></th>
+                        <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                          <span></span>
+                        </th></tr></table></th>
+                      </tr></tbody></table>
+
+                      <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
+                        <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                          <span style="color: #4D5663; font-weight: 600;">
+                            {ts}The Reason:{/ts}
+                          </span>
+                        </th></tr></table></th>
+                        <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
+                          <span>{$sicknessReason}</span>
+                        </th></tr></table></th>
+                      </tr></tbody></table>
+
+                      {if $leaveRequiredDocuments}
+                        <div class="request-documents" style="Margin-top: 10px; margin-top: 10px;">
+                          {foreach from=$sicknessRequiredDocuments item=value key=id}
+                            <div class="request-document" style="Margin-bottom: 10px; margin-bottom: 10px;">
+                              <span class="request-document-required" style="Margin-right: 5px; margin-right: 5px; width: 25px;">
+                                <input type="checkbox" disabled {if="" in_array($id,="" $leaverequireddocuments)}checked{="" if}="" style="Margin: 0; margin: 0;">
+                              </span>
+                              <span class="request-document-title" style="color: #4D5663;">{$value}</span>
+                            </div>
+                          {/foreach}
                         </div>
-                      </dl>
+                      {/if}
                     </th><th class="expander" style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0 !important; text-align: left; visibility: hidden; width: 0;"></th></tr></table>
-                    <table class="button expanded alert" style="Margin: 0 0 16px 0; border-collapse: collapse; border-spacing: 0; margin: 0 0 16px 0; padding: 0; text-align: left; vertical-align: top; width: 100% !important;"><tr style="padding: 0; text-align: left; vertical-align: top;"><td style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 0; text-align: left; vertical-align: top; word-wrap: break-word;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><td style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; background: #E6807F; border: 0px solid #E6807F; border-collapse: collapse !important; color: #FFF; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 0; text-align: left; vertical-align: top; word-wrap: break-word;"><center data-parsed="" style="min-width: 0; width: 100%;"><a href="{$leaveRequestLink}" align="center" class="float-center" style="Margin: 0; border: 0 solid #E6807F; border-radius: 3px; color: #FFF; display: inline-block; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 8px 16px 8px 16px; padding-left: 0; padding-right: 0; text-align: center; text-decoration: none; width: 100%;">View This Request</a></center></td></tr></table></td>
+                    <table class="spacer" style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;"><td height="16px" style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; hyphens: auto; line-height: 16px; margin: 0; mso-line-height-rule: exactly; padding: 0; text-align: left; vertical-align: top; word-wrap: break-word;">&#xA0;</td></tr></tbody></table>
+                    <table class="button expanded alert" style="Margin: 0 0 16px 0; border-collapse: collapse; border-spacing: 0; margin: 0 0 16px 0; padding: 0; text-align: left; vertical-align: top; width: 100% !important;"><tr style="padding: 0; text-align: left; vertical-align: top;"><td style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 0; text-align: left; vertical-align: top; width: 100%; word-wrap: break-word;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><td style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; background: #E6807F; border: 0px solid #E6807F; border-collapse: collapse !important; color: #FFF; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 8px 16px 8px 16px; text-align: left; vertical-align: top; width: 100%; word-wrap: break-word;"><center data-parsed="" style="min-width: 0; width: 100%;"><a href="{$leaveRequestLink}" align="center" class="float-center" style="Margin: 0; border: 0 solid #E6807F; border-radius: 3px; color: #FFF; display: inline-block; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; padding-left: 0; padding-right: 0; text-align: center; text-decoration: none; width: 100%;">View This Request</a></center></td></tr></table></td>
 <td class="expander" style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 0 !important; text-align: left; vertical-align: top; visibility: hidden; width: 0; word-wrap: break-word;"></td></tr></table>
                     {if $leaveComments}
                       <hr style="Margin: 20px auto; border: 0; border-top: 1px solid #D3DEE2; height: 0; margin: 20px auto;">
@@ -674,18 +773,23 @@ return [
                         </tr>
                       </table>
 
-                      <table class="callout" style="Margin-bottom: 16px; border-collapse: collapse; border-spacing: 0; margin-bottom: 16px; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th class="callout-inner callout-no-padding" style="Margin: 0; background: #FFF; border: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left; width: 100%;">
+                      <table class="callout" style="Margin-bottom: 0 !important; border-collapse: collapse; border-spacing: 0; margin-bottom: 0 !important; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th class="callout-inner callout-no-padding" style="Margin: 0; background: #FFF; border: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left; width: 100%;">
                         <div class="request-comments">
                           {foreach from=$leaveComments item=value key=label}
-                            <div class="request-comment" style="border-bottom: 1px solid #E8EEF0; padding: 20px;">
-                              <div class="request-comment-header" style="Margin-bottom: 10px; color: #4D5663; font-weight: 600; margin-bottom: 10px;">
-                                <span class="request-comment-author">{$value.commenter}:</span>
-                                <span class="request-comment-datetime">{$value.created_at|crmDate}</span>
-                              </div>
-                              <div class="request-comment-body">
-                                {$value.text}
-                              </div>
-                            </div>
+                            <table class="request-comment" style="border-bottom: 1px solid #E8EEF0; border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;">
+                              <tbody>
+                                <tr style="padding: 0; text-align: left; vertical-align: top;">
+                                  <td class="request-comment-header" style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #4D5663; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; hyphens: auto; line-height: 1.53846; margin: 0; padding: 20px; padding-bottom: 10px; text-align: left; vertical-align: top; word-wrap: break-word;">
+                                    <span class="request-comment-author">{$value.commenter}:</span>
+                                    <span class="request-comment-datetime">{$value.created_at|crmDate}</span>
+                                  </td>
+                                </tr>
+                                <tr style="padding: 0; text-align: left; vertical-align: top;">
+                                  <td class="request-comment-body" style="-moz-hyphens: auto; -webkit-hyphens: auto; Margin: 0; border-collapse: collapse !important; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; hyphens: auto; line-height: 1.53846; margin: 0; padding: 20px; padding-top: 0; text-align: left; vertical-align: top; word-wrap: break-word;">{$value.text}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+
                           {/foreach}
                         </div>
                       </th><th class="expander" style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0 !important; text-align: left; visibility: hidden; width: 0;"></th></tr></table>
@@ -700,18 +804,18 @@ return [
                         </tr>
                       </table>
 
-                      <table class="callout" style="Margin-bottom: 16px; border-collapse: collapse; border-spacing: 0; margin-bottom: 16px; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th class="callout-inner" style="Margin: 0; background: #FFF; border: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 20px; text-align: left; width: 100%;">
+                      <table class="callout" style="Margin-bottom: 0 !important; border-collapse: collapse; border-spacing: 0; margin-bottom: 0 !important; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th class="callout-inner" style="Margin: 0; background: #FFF; border: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 20px; text-align: left; width: 100%;">
                         <div class="request-attachments">
                           {foreach from=$leaveFiles item=value key=label}
                             <div class="request-attachment" style="Margin-bottom: 10px; margin-bottom: 10px;">
-                              <span class="request-attachment-name" style="color: #4D5663; font-weight: 600;">{$value.name}</span>: Added on {$value.upload_date|crmDate}
+                              <span class="request-attachment-name" style="color: #4D5663; font-weight: 600;">{$value.name}</span>: Added on {$value.created_at|crmDate}
                             </div>
+
                           {/foreach}
                         </div>
                       </th><th class="expander" style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0 !important; text-align: left; visibility: hidden; width: 0;"></th></tr></table>
                     {/if}
-                  </th>
-<th class="expander" style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0 !important; text-align: left; visibility: hidden; width: 0;"></th></tr></table></th>
+                  </th></tr></table></th>
                 </tr></tbody></table>
                 <table class="row collapse" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                   <th class="small-12 large-12 columns first last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0; padding-right: 0; text-align: left; width: 588px;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
@@ -720,6 +824,7 @@ return [
                   </th>
 <th class="expander" style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0 !important; text-align: left; visibility: hidden; width: 0;"></th></tr></table></th>
                 </tr></tbody></table>
+
               </div>
 
             </td></tr></tbody></table>
@@ -731,17 +836,6 @@ return [
    <div style="display:none; white-space:nowrap; font:15px courier; line-height:0;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
   </body>
 </html>',
-      'is_reserved' => 1
-    ],
-  ],
-  [
-    'name' => 'Email Template: Sickness Request',
-    'entity' => 'MessageTemplate',
-    'params' => [
-      'version' => 3,
-      'msg_title' => 'CiviHR Sickness Record Notification',
-      'msg_subject' => 'Sickness Request',
-      'msg_html' => '<html><head><title></title></head><body><h3>CiviHR Sickness Record</h3><h4>{$currentDateTime->format("D d F Y")}</h4><p><strong>Sickness Request Type Name</strong></p><table><tbody><tr><td>{ts}Status:{/ts}</td><td>{$leaveStatus}</td></tr><tr><td>{ts}Staff Member:{/ts}</td><td>{contact.display_name}</td></tr>{if $leaveRequest->from_date eq $leaveRequest->to_date}<tr><td>{ts}Date:{/ts}</td><td>{$fromDate|truncate:10:\'\'|crmDate}{$fromDateType}</td></tr>{else}<tr><td>{ts}From Date:{/ts}</td><td>{$fromDate|truncate:10:\'\'|crmDate}{$fromDateType}</td></tr><tr><td>{ts}To Date:{/ts}</td><td>{$toDate|truncate:10:\'\'|crmDate}{$toDateType}</td></tr>{/if}</tbody></table><p>Additional Details:</p>The Reason: <table border="0" cellpadding="1" cellspacing="1" style="width: 700px;"><tbody>{foreach from=$sicknessReasons item=value key=id}<tr><td><input type="checkbox"{if $id eq $leaveRequest->sickness_reason}checked{/if}>{$value}</td></tr>{/foreach}</tbody></table>{if $leaveRequiredDocuments}Documents: <table border="0" cellpadding="1" cellspacing="1" style="width: 700px;"><tbody>{foreach from=$sicknessRequiredDocuments item=value key=id}<tr><td><input type="checkbox"{if in_array($id, $leaveRequiredDocuments)}checked{/if}>{$value}</td></tr>{/foreach}</tbody></table>{/if}<p><a href="{$leaveRequestLink}">View This Request</a></p>{if $leaveComments}<p><strong>Request Comments</strong></p><table border="0" cellpadding="1" cellspacing="1" style="width: 700px;"><tbody>{foreach from=$leaveComments item=value key=label}<tr><td>{$value.commenter}:{$value.created_at|crmDate}</td></tr><tr><td>{$value.text}</td></tr>{/foreach}</tbody></table>{/if}<p></p>{if $leaveFiles}<p><b>Other files recorded on this request</b></p><table border="0" cellpadding="1" cellspacing="1" style="width: 700px";><tbody>{foreach from=$leaveFiles item=value key=label}<tr><td>{$value.name}: Added on{$value.upload_date|crmDate}</td></tr>{/foreach}</tbody></table>{/if}</body></html>',
       'msg_text' => 'CiviHR Sickness RecordSickness Request Type Name{ts}Status:{/ts}{$leaveStatus}{ts}Staff Member:{/ts}{contact.display_name}{if $leaveRequest->from_date eq $leaveRequest->to_date}{ts}Date:{/ts}{$fromDate|truncate:10:\'\'|crmDate}{$fromDateType}{else}{ts}From Date:{/ts}{$fromDate|truncate:10:\'\'|crmDate}{$fromDateType}{ts}To Date:{/ts}{$toDate|truncate:10:\'\'|crmDate}{$toDateType}{/if}Additional Details:The Reason{foreach from=$sicknessReasons item=value key=id}{if $id eq $leaveRequest->sickness_reason}{$value}{/if}{/foreach}{if $leaveRequiredDocuments}{foreach from=$sicknessRequiredDocuments item=value key=id}{if in_array($id, $leaveRequiredDocuments)}{$value}{/if}{/foreach}{/if}{if $leaveComments}Request Comments{foreach from=$leaveComments item=value key=label}{$value.commenter}:{$value.created_at|crmDate}{$value.text}{/foreach}{/if}{if $leaveFiles}Other files recorded on this request{foreach from=$leaveFiles item=value key=label}{$value.name}: Added on{$value.upload_date|crmDate}{/foreach}{/if}',
       'is_reserved' => 1
     ],

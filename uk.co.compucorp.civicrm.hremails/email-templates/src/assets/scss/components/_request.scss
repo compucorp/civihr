@@ -1,3 +1,13 @@
+.request {
+
+  &-sickness {
+
+    .request-documents {
+      @include margin(10px, top);
+    }
+  }
+}
+
 .request-attachment {
 
   &-name {
@@ -92,5 +102,32 @@
       text-align: center;
       width: 100px;
     }
+  }
+}
+
+
+.request-documents {
+
+  .request-document {
+    @include margin(10px, bottom);
+  }
+
+  .request-document-required {
+    width: 25px;
+  }
+}
+
+.request-document {
+
+  &-required {
+    @include margin(5px, right);
+
+    [type="checkbox"] {
+      @include margin(0);
+    }
+  }
+
+  &-title {
+    color: $gray-darker;
   }
 }
