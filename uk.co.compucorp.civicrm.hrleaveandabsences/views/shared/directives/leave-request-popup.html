@@ -356,18 +356,20 @@
     dismiss-on-timeout="5000">
     <div ng-repeat="errMsg in $ctrl.errors track by $index">{{errMsg}}</div>
   </div>
-  <div class="modal-footer">
-    <button
-      type="button"
-      class="btn btn-primary pull-left"
-      ng-click="$ctrl.cancel()">
-      Back
-    </button>
-    <button
-      type="submit"
-      class="btn btn-primary"
-      ng-disabled="!$ctrl.canSubmit()"
-      ng-click="$ctrl.submit()">Save
-    </button>
-  </div>
+  <crm-loading show="!$ctrl.submitting">
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-primary pull-left"
+        ng-click="$ctrl.cancel()">
+        Back
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        ng-disabled="!$ctrl.canSubmit() || $ctrl.submitting"
+        ng-click="$ctrl.submit()">Save
+      </button>
+    </div>
+  </crm-loading>
 </crm-loading>
