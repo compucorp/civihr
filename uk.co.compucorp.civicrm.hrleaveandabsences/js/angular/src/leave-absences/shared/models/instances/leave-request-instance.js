@@ -333,6 +333,16 @@ define([
           }
 
           return $q.resolve();
+        },
+
+        /**
+         * Checks if user can upload more file, it totals the number of already
+         * uploaded files and those which are in queue and compares it to limit.
+         *
+         * @return {Boolean} true is user can upload more else false
+         */
+        canUploadMore: function () {
+          return this.files.length + this.fileUploader.queue.length < sharedSettings.fileUploader.queueLimit;
         }
       });
     }

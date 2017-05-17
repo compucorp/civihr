@@ -794,5 +794,29 @@ define([
         expect(LeaveRequestAPI.update).toHaveBeenCalledWith(jasmine.objectContaining({ is_deleted: true }));
       });
     });
+
+    describe('canUploadMore()', function() {
+      describe('when number of files are below allowed limit', function() {
+        beforeEach(function() {
+          LeaveRequestInstance.files = [1,2,3,4];
+          LeaveRequestInstance.fileUploader.queue = [1,2];
+        });
+
+        it('returns true', function() {
+          expect(LeaveRequestInstance.canUploadMore()).toBeTruthy();
+        });
+      });
+
+      describe('when number of files are above allowed limit', function() {
+        beforeEach(function() {
+          LeaveRequestInstance.files = [1, 2, 3, 4, 5];
+          LeaveRequestInstance.fileUploader.queue = [1,2, 3, 4, 5];
+        });
+
+        it('returns false', function() {
+          expect(LeaveRequestInstance.canUploadMore()).toBeFalsy();
+        });
+      });
+    });
   });
 });
