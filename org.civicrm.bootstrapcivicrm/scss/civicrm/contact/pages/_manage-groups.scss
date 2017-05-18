@@ -284,6 +284,7 @@
     .crm-datatable-pager-bottom {
       background: $crm-gray-lightest;
       border-radius: 0 0 $border-radius-child $border-radius-child;
+      border-top: 1px solid $crm-background;
       line-height: 1.8em;
       padding-bottom: 39px;
       padding-top: 10px;
@@ -305,6 +306,7 @@
     box-shadow: none !important;
 
     .crm-group-group_links {
+      min-width: 131px;
       text-align: right;
     }
 

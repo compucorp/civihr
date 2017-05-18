@@ -56,9 +56,12 @@
     border-radius: $panel-border-radius;
     box-shadow: $box-shadow;
 
+    table thead {
+      border-top: none !important;
+    }
+
     .crm-datatable-pager-top {
       border-radius: $panel-border-radius $panel-border-radius 0 0;
-
 
       div[id*="s2id_autogen"] {
         .select2-choice {
@@ -81,7 +84,6 @@
 
     .crm-datatable-pager-bottom,
     .crm-datatable-pager-top {
-      background: $crm-white;
       display: flex;
       padding: 10px 15px;      
 

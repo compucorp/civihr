@@ -416,29 +416,49 @@
     }
 
     #contributionSearch {
+      padding-top: 45px;
+      position: relative;
+
+      .crm-pager {
+        line-height: 1.7em;
+        padding: 7px 0;
+
+        > .element-right {
+          margin-top: 7px;
+        }
+      }
+
+      .crm-pager:first-child {
+        border-bottom: 1px solid $crm-background;
+        border-radius: $panel-border-radius $panel-border-radius 0 0;
+        margin-bottom: 0;
+      }
+
       .description {
         background: $crm-light-green-color;
         border-radius: $border-radius-base;
-        box-shadow: $box-shadow;
         color: $gray-darker;
-        margin: 15px 0;
         padding: 10px 20px !important;
+        position: absolute;
+        top: 0;
+        width: calc(100% - 40px);
       }
 
       .crm-ajax-container {
         border-width: 1px 2px 2px;
       }
-    }
 
-    .crm-pager {
-      border-radius: $border-radius-base;
-      margin: 0;
+      .selector {
+        border-radius: 0;
+        box-shadow: $crm-form-item-shadow;
+      }
     }
 
     table + .crm-pager {
-      border-radius: 0 0 $border-radius-base $border-radius-base;
+      border-radius: 0 0 $panel-border-radius $panel-border-radius;
       border-top: 1px solid $crm-background;
       box-shadow: $crm-form-item-shadow;
+      margin: 0;
     }
 
     .crm-accordion-header {
@@ -519,6 +539,7 @@
     padding-top: 20px; 
 
     td {
+      color: $crm-copy;
       padding: 0 20px;
     }
   }
@@ -748,7 +769,7 @@
   .dataTables_wrapper {
     background: $crm-white;
     border-radius: $border-radius-child;
-    box-shadow: $crm-form-item-shadow; 
+    box-shadow: $box-shadow;
     margin-bottom: 20px;
 
     .dataTables_length,
@@ -769,7 +790,7 @@
     }
 
     .crm-datatable-pager-bottom {
-      background: $gray-lighter;
+      background: $crm-gray-lightest;
       border-radius: 0 0 $border-radius-child $border-radius-child;
       line-height: 25px;
       padding-bottom: 39px;
@@ -1384,6 +1405,10 @@
       }
     }
 
+    .crm-submit-buttons + .status {
+      margin: 15px 20px;
+    }
+
     .crm-html_email-accordion {
       .helpIcon {
         margin-bottom: 20px;
@@ -1500,9 +1525,18 @@ form.CRM_Contribute_Form_ContributionCharts {
     }
   }
 
+  .crm-pager {
+    line-height: 1.7em;
+    padding: 7px 0;
+
+    > .element-right {
+      margin-top: 7px;
+    }
+  }
+
   .crm-pager:first-child {
     border-bottom: 1px solid $crm-background;
-    border-radius: $border-radius-base $border-radius-base 0 0;
+    border-radius: $panel-border-radius $panel-border-radius 0 0;
     margin-bottom: 0;
     margin-top: 75px;
   }
@@ -1542,7 +1576,7 @@ form.CRM_Contribute_Form_ContributionCharts {
     } 
 
     + .crm-pager {
-      border-radius: 0 0 $border-radius-base $border-radius-base;
+      border-radius: 0 0 $panel-border-radius $panel-border-radius;
       border-top: 1px solid $crm-background;
       box-shadow: $crm-form-item-shadow; 
       margin-top: 0;

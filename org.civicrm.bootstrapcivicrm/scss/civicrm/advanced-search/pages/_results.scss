@@ -4,33 +4,36 @@
   margin-top: 20px;
 
   .crm-search-tasks {
-    border-radius: 0 !important;
     border-bottom: solid 1px $crm-background;
+    border-radius: 0 !important;
+    box-shadow: none;    
     margin-bottom: 15px !important;
-    box-shadow: none;
   }
 
   .crm-pager {
-    margin-bottom: 0;
+    margin: 0;
+
+    > .element-right {
+      margin-top: 7px;
+    }
   }
 
-  .sticky {
-    th {
-      line-height: 35px !important;
+  .sticky th {
+    line-height: 1.1em !important;
+    padding: 15px 20px !important;
 
-      &:not(:first-child):not(:nth-child(2)) {
-        padding-left: 0 !important;
-      }
+    &:not(:first-child):not(:nth-child(2)) {
+      padding-left: 0 !important;
+    }
 
-      .sticky-header {
-        height: 30px;
-      }
+    .sticky-header {
+      height: 30px;
+    }
 
-      &:last-child {
-        &,
-        span {
-          line-height: normal;
-        }
+    &:last-child {
+      &,
+      span {
+        line-height: normal;
       }
     }
   }
@@ -38,7 +41,7 @@
   #alpha-filter,
   .crm-search-tasks,
   .crm-selection-reset {
-    background: #ffffff !important;
+    background: $crm-white !important;
     padding: 15px !important;
   }
 

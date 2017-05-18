@@ -121,8 +121,8 @@
 
   .dataTables_wrapper {
     border-radius: $border-radius-child;
-    box-shadow: $crm-form-item-shadow;
-    margin: 20px 0;
+    box-shadow: $box-shadow;
+    margin-bottom: 20px;
 
     table {
       box-shadow: none !important;
