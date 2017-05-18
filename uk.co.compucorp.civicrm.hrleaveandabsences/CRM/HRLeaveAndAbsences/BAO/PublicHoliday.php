@@ -24,18 +24,26 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
                       array_key_exists('date', $params) &&
                       strtotime($oldDate) != strtotime($params['date']);
 
+    $isToBeSetActive = self::isToBeSetActive($params);
+    $statusChanged = self::statusChanged($params);
+
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
     $instance = new self();
     $instance->copyValues($params);
     $transaction = new CRM_Core_Transaction();
     $instance->save();
 
-    if($dateHasChanged) {
+    if($dateHasChanged || ($isToBeSetActive === FALSE && $statusChanged)) {
       self::enqueueLeaveRequestDeletionTask($oldDate);
     }
 
-    if($hook == 'create' || $dateHasChanged) {
-      self::enqueueLeaveRequestCreationTask($instance->date);
+    if(($hook == 'create' && $isToBeSetActive) ||
+      ($dateHasChanged && $isToBeSetActive !== FALSE) ||
+      ($isToBeSetActive && $statusChanged))
+    {
+      //In some instances where only status is updated, the old date will be used to create the requests
+      $date = $instance->date ? $instance->date : $oldDate;
+      self::enqueueLeaveRequestCreationTask($date);
     }
 
     $transaction->commit();
@@ -438,5 +446,47 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
     );
 
     PublicHolidayLeaveRequestUpdatesQueue::createItem($task);
+  }
+
+  /**
+   * Checks whether a Public Holiday is to be created/updated with
+   * an Active status.
+   *
+   * @param array $params
+   *
+   * @return bool|null
+   */
+  private static function isToBeSetActive($params) {
+    $isActiveExists = array_key_exists('is_active', $params);
+    if (!$isActiveExists && empty($params['id'])) {
+      return true;
+    }
+
+    if (!$isActiveExists && !empty($params['id'])) {
+      return null;
+    }
+
+    return (bool)$params['is_active'];
+  }
+
+  /**
+   * Checks whether the status a Public Holiday is to be updated to is different
+   * from its previous value.
+   *
+   * @param array $params
+   *
+   * @return bool|null
+   */
+  private static function statusChanged($params) {
+    if(!array_key_exists('is_active', $params)) {
+      return null;
+    }
+
+    if(!empty($params['id'])) {
+      $oldValue = self::getFieldValue(self::class, $params['id'], 'is_active');
+      return $oldValue != $params['is_active'];
+    }
+
+    return false;
   }
 }
