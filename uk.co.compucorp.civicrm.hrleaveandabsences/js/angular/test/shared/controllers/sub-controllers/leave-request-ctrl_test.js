@@ -1065,7 +1065,32 @@
             });
           });
         });
+
+        describe('when user uploads files', function() {
+          describe('when number of files are below allowed limit', function() {
+            beforeEach(function() {
+              $ctrl.request.files = [1,2,3,4];
+              $ctrl.request.fileUploader.queue = [1,2];
+            });
+
+            it('returns true', function() {
+              expect($ctrl.canUploadMore()).toBeTruthy();
+            });
+          });
+
+          describe('when number of files are above allowed limit', function() {
+            beforeEach(function() {
+              $ctrl.request.files = [1, 2, 3, 4, 5];
+              $ctrl.request.fileUploader.queue = [1,2, 3, 4, 5];
+            });
+
+            it('returns false', function() {
+              expect($ctrl.canUploadMore()).toBeFalsy();
+            });
+          });
+        });
       });
+
       describe('manager opens leave request popup', function () {
         beforeEach(function () {
           var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');

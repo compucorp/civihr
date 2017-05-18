@@ -208,6 +208,16 @@ define([
       };
 
       /**
+       * Checks if user can upload more file, it totals the number of already
+       * uploaded files and those which are in queue and compares it to limit.
+       *
+       * @return {Boolean} true is user can upload more else false
+       */
+      this.canUploadMore = function () {
+        return (this.request.files.length + this.request.fileUploader.queue.length) < sharedSettings.fileUploader.queueLimit;
+      };
+
+      /**
        * Format a date-time into user format and returns
        *
        * @return {String}
