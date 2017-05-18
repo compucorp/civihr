@@ -285,7 +285,7 @@
                 uploader="$ctrl.request.fileUploader"
                 class="chr_leave-request-files_upload"
                 ng-disabled="$ctrl.isMode('view')"
-                ng-if="$ctrl.request.fileUploader && $ctrl.request.canUploadMore()">
+                ng-if="$ctrl.request.fileUploader && $ctrl.canUploadMore()">
                 <div class="chr_leave-request-files_upload_action row text-center">
                   Drag and drop file here
                 </div>
@@ -304,7 +304,7 @@
                   </label>
                 </div>
               </div>
-              <div ng-if="!$ctrl.request.canUploadMore()" class="chr_leave-request-files_upload">
+              <div ng-if="!$ctrl.canUploadMore()" class="chr_leave-request-files_upload">
                 <div class="chr_leave-request-files_upload_action row text-center">
                   You can upload upto 10 files.
                 </div>
