@@ -187,31 +187,50 @@
       br {
         display: none;
       }
+    }    
+  }
+
+  .CRM_Member_Form_MembershipRenewal {
+    .crm-button {
+      border: none;
     }
 
-    .CRM_Member_Form_MembershipRenewal {
-      .crm-button {
-        border: none;
-      }
-
-      .crm-button .crm-form-submit.cancel {
-        border: 1px solid $gray-darker;
+    .crm-button-type-cancel {
+      i {
         color: $gray-darker !important;
-
-        &:hover {
-          background-color: $crm-copy;
-          border-color: $gray-darker;
-          color: $crm-white !important;
-        }
       }
 
-      .crm-button .crm-i {
-        left: 0.7em;
+      &:hover i {
+        color: $crm-white !important;
       }
+    }
+    
 
-      #help {
-        margin-bottom: 15px;
+    .crm-button .crm-form-submit.cancel {
+      border: 1px solid $gray-darker;
+      color: $gray-darker !important;
+
+      &:hover {
+        background-color: $crm-copy;
+        border-color: $gray-darker;
+        color: $crm-white !important;
       }
+    }
+
+    .crm-button .crm-i {
+      left: 0.7em;
+      top: 50%;
+      @include transform(translate(0, -50%));
+    }
+
+    #help {
+      margin-bottom: 15px;
+      padding: 10px;
+    }
+
+    #recordContribution td,
+    [class*=crm-membership-form-block-] td {
+      padding-left: 5px !important;
     }
   }
 
