@@ -890,12 +890,13 @@ input[type="text"] {
     }
 
     .crm-contribution-form-block-soft_credit_to:not(.hiddenElement) {
-      display: flex !important;
-      flex-direction: column;
-
       td {
-        flex: 1 auto;
-        vertical-align: top;
+        width: auto;
+
+        label {
+          line-height: 20px;
+          padding: 0;
+        }
 
         .select2-container {
           margin-right: 0 !important;
@@ -908,8 +909,7 @@ input[type="text"] {
     }
 
     label {
-      display: inline-block;
-      width: 200px;
+      width: auto;
     }    
   }
 
