@@ -16,3 +16,17 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
+// Generic Transform
+@mixin transform($transforms) {
+  -moz-transform: $transforms;
+  -ms-transform: $transforms;
+  -o-transform: $transforms;
+  -webkit-transform: $transforms;
+  transform: $transforms;
+}
+
+// Translate
+@mixin translate ($x, $y) {
+  @include transform(translate($x, $y));
+}
