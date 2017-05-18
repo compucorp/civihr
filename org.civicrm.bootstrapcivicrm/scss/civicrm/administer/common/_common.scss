@@ -78,8 +78,8 @@ ul.civihr-popup {
   }
 
   .help {
-    @include civihr_panel();
     background: $crm-light-green-color;
+    border-radius: $border-radius-base;
     margin-bottom: 10px;
     padding: 10px;
   }
