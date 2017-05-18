@@ -1,5 +1,4 @@
 &.page-civicrm-admin-uf-group-add {
-
   #crm-main-content-wrapper .crm-submit-buttons,
   #crm-main-content-wrapper .crm-accordion-body .crm-form-block {
     box-shadow: none;
@@ -20,27 +19,26 @@
       thead th.sorting .DataTables_sort_icon {
         display: block;
       }
+    }
+  }
 
-      tr {
-        border: none;
-        border-bottom: $panel-border;
+  .crm-content-block table tr {
+    border: none;
+    border-bottom: $panel-border;
 
-        &.odd {
-          background: #FFFFFF;
-        }
-      }
+    &.odd {
+      background: $crm-white;
     }
   }
 }
 
 #mainTabContainer {
-  padding: 0;
   box-shadow: none;
+  padding: 0;
 
   ul.ui-tabs-nav {
-    padding: 5px;
-    padding-bottom: 0;
     background: $gray-lighter;
+    padding: 5px 5px 0;    
 
     .ui-tabs-active {
       background: $crm-white !important;
@@ -56,44 +54,65 @@
   .dataTables_wrapper {
     overflow: visible;
 
-    thead {
-      tr {
-        background: none;
+    thead tr {
+      background: none;
 
-        th {
-          color: $crm-h3-color;
-          font-family: $font-family-base;
-        }
+      th {
+        color: $crm-h3-color;
+        font-family: $font-family-base;
       }
     }
+  }
 
-    ul.panel {
-      background: $gray-lighter;
-      border: 1px solid $table-border-color;
+  .dataTables_wrapper ul.panel {
+    background: $gray-lighter;
+    border: 1px solid $table-border-color;
 
-      li {
-        background: none;
-      }
+    li {
+      background: none;
     }
   }
 }
 
 &.page-civicrm-admin-uf {
   #crm-main-content-wrapper {
-    box-shadow: $box-shadow;
-
     .help {
-      box-shadow: none;
-      margin: 0;
-      background: $gray-lighter;
+      margin: 0 0 20px;      
     }
 
     .crm-submit-buttons {
-      box-shadow: none;
       border-bottom: 1px solid $crm-background;
 
       a.button {
         background: $brand-primary;
+      }
+    }
+
+    #mainTabContainer {
+      border-radius: 0 0 $border-radius-child $border-radius-child;
+      box-shadow: $crm-form-item-shadow;
+    }
+
+    .ui-tabs-panel {
+      border: none;
+      border-radius: 0 0 $border-radius-child $border-radius-child;
+      font-family: $font-family-base;
+
+      .crm-content-block {
+        border-radius: 0 0 $border-radius-child $border-radius-child;
+      }
+
+      .crm-submit-buttons {
+        border-bottom: none;        
+        box-shadow: none;
+      }
+
+      .dataTables_wrapper {
+        margin-bottom: 0;
+
+        td:last-child {
+          min-width: 112px;
+        }
       }
     }
 
