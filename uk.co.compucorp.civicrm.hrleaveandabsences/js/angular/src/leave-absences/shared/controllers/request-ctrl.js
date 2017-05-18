@@ -510,7 +510,7 @@ define([
           .then(function (usersCalendar) {
             self.calendar = usersCalendar;
           });
-      };
+      }
 
       /**
        * Initializes values for absence types and entitlements when the
@@ -635,6 +635,11 @@ define([
       this.initAfterContactSelection = function () {
         var self = this;
         self.postContactSelection = true;
+
+        //when manager deselects contact it is called without a selected contact_id
+        if (!self.request.contact_id) {
+          return $q.reject("The contact id or period id was not set");
+        }
 
         return $q.all([
             self._loadAbsenceTypes(),

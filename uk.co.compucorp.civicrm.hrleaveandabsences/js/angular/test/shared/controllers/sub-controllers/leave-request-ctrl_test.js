@@ -1202,6 +1202,7 @@
 
           beforeEach(function () {
             approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+            $ctrl.request.contact_id = 202;
             $ctrl.initAfterContactSelection();
             $scope.$digest();
           });
@@ -1233,6 +1234,18 @@
             it('is not available', function () {
               expect(availableStatuses).not.toContain(cancelStatus);
             });
+          });
+        });
+
+        describe('after contact is deselected', function() {
+          beforeEach(function() {
+            $ctrl.request.contact_id = undefined;
+            $ctrl.initAfterContactSelection();
+            $scope.$digest();
+          });
+
+          it('does not call calendar APIs', function () {
+            expect(WorkPatternAPI.getCalendar).not.toHaveBeenCalled();
           });
         });
       });

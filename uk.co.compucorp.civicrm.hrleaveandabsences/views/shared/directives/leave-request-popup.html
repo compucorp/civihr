@@ -23,7 +23,6 @@
         autofocus
         ng-model="$ctrl.request.contact_id"
         ng-change="$ctrl.initAfterContactSelection()"
-        theme="civihr-ui-select"
         ng-required="true">
         <ui-select-match placeholder="Search Staff Member" allow-clear>
           <span ng-bind="$select.selected.display_name"></span>
