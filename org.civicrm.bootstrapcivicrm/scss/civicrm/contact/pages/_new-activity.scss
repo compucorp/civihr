@@ -448,11 +448,11 @@
       display: block;
       font-family: $font-family-base;
       overflow-x: auto;
+      width: auto;
 
       thead tr {
         background: none !important;
         border-bottom: 1px solid $crm-dark-grayblue;
-        border-radius: $border-radius-base $border-radius-base 0 0;
 
         th {
           background: $gray-lighter !important;
@@ -461,14 +461,6 @@
           line-height: 1.5em;
           padding: 15px 20px;
           vertical-align: middle;
-
-          &:first-child {
-            border-top-left-radius: $border-radius-base;
-          }
-
-          &:last-child {
-            border-top-right-radius: $border-radius-base;
-          }
 
           div {
             padding: 0;
@@ -486,12 +478,15 @@
           border: none;
           color: $gray-dark;
           line-height: 1.1em;
-          max-width: 140px;
           overflow: hidden;
           padding: 15px 20px;
           text-overflow: ellipsis;
           vertical-align: middle;
           white-space: nowrap;
+
+          &:last-child {
+            max-width: 130px;
+          }
 
           a {
             color: $brand-primary !important;
@@ -499,7 +494,8 @@
         }
 
         td:nth-child(3), 
-        td:nth-child(4) {
+        td:nth-child(4),
+        td:nth-child(5) {
           overflow: visible;
           white-space: normal;
 
@@ -508,29 +504,14 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            width: 85%;
+            width: 83%;
           }
         }
 
         td:nth-child(2) .crm-editable-enabled {
-          width: 154px !important;
+          width: 150px !important;
         }
       }
-
-      tbody tr:last-child {
-        border-bottom-left-radius: $border-radius-base;
-        border-bottom-right-radius: $border-radius-base;
-
-        td {
-          &:first-child {
-            border-bottom-left-radius: $border-radius-base;
-          }
-
-          &:last-child {
-            border-bottom-right-radius: $border-radius-base;
-          }
-        }
-      }      
 
       @media (min-width: $crm-min-lg-width) {
         width: 100% !important;

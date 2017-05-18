@@ -3,16 +3,32 @@
   label {
     padding: 0 !important;
   }
+  
+  .selector {
+    clear: both;
+
+    thead th {
+      background: $gray-lighter;
+      color: $gray-darker;
+      line-height: 1.5em;
+      padding: 15px 20px;
+      vertical-align: middle;
+    }
+  }
+  
+  .crm-search-results {
+    margin-bottom: 10px;
+  }
 
   .crm-search-form-block .crm-accordion-wrapper,
   .crm-content-block .crm-results-block {
-    border-radius: 2px;
+    border-radius: $border-radius-base;
     overflow: hidden;
   }
 
   .crm-search-form-block,
   .crm-search-form-block .crm-form-block {
-    border-radius: 3px;
+    border-radius: $panel-border-radius;
   }
 
   .crm-basic-criteria-form-block {
@@ -20,16 +36,16 @@
 
     .crm-accordion-body {
       padding: 20px;
+    }
 
-      .label {
-        text-align: left;
-        font-size: 13px;
-        color: #4d5663;
+    .crm-accordion-body .label {
+      color: $gray-darker;
+      font-size: $font-size-base;
+      text-align: left;
 
-        &,
-        > label {
-          font-weight: normal !important;
-        }
+      &,
+      > label {
+        font-weight: normal !important;
       }
     }
   }
