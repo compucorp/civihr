@@ -184,16 +184,6 @@ define([
       };
 
       /**
-       * Checks if user can upload more file, it totals the number of already
-       * uploaded files and those which are in queue and compares it to limit.
-       *
-       * @return {Boolean} true is user can upload more else false
-       */
-      this.canUploadMore = function () {
-        return this.request.files.length + this.request.fileUploader.queue.length < sharedSettings.fileUploader.queueLimit;
-      };
-
-      /**
        * Checks if submit button can be enabled for user and returns true if succeeds
        *
        * @return {Boolean}
@@ -215,6 +205,16 @@ define([
         }
 
         return canSubmit && !this.isMode('view');
+      };
+
+      /**
+       * Checks if user can upload more file, it totals the number of already
+       * uploaded files and those which are in queue and compares it to limit.
+       *
+       * @return {Boolean} true is user can upload more else false
+       */
+      this.canUploadMore = function () {
+        return (this.request.files.length + this.request.fileUploader.queue.length) < sharedSettings.fileUploader.queueLimit;
       };
 
       /**
