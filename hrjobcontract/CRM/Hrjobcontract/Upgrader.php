@@ -1275,11 +1275,21 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   /**
    * Makes Hour Location id field autonumeric and adds id as a primary key.
    */
-  public function upgrade_1030() {
-    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` ADD PRIMARY KEY (`id`)');
-    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT');
+  public function upgrade_2017051901() {
+    try {
+      CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` ADD PRIMARY KEY (`id`)');
+      CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT');
+    } catch (Exception $e) {
+      $tableStructure = CRM_Core_DAO::executeQuery('DESC civicrm_hrhours_location');
 
-    return true;
+      while ($tableStructure->fetch()) {
+        if ($tableStructure->Field == 'id' && ($tableStructure->Key != 'PRI' || stripos($tableStructure->Extra, 'auto_increment') === false)) {
+          throw $e;
+        }
+      }
+    }
+
+    return false;
   }
 
   /**
