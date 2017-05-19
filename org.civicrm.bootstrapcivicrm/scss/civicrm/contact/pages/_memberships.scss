@@ -925,7 +925,7 @@
                  
         table thead tr.columnheader {
           th, td {
-            font-size: $font-size-base !important;
+            font: bold $font-size-base $font-family-base !important;
             padding: 15px 10px;
 
             &:first-child {
