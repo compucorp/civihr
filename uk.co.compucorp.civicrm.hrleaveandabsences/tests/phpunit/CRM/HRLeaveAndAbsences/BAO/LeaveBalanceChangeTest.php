@@ -1609,7 +1609,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
-      'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
+      'type_id' => $this->getBalanceChangeTypeValue('brought_forward')
     ]);
 
     $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1699,7 +1699,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
-      'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
+      'type_id' => $this->getBalanceChangeTypeValue('brought_forward')
     ]);
 
     $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1763,7 +1763,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
-      'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
+      'type_id' => $this->getBalanceChangeTypeValue('brought_forward')
     ]);
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1813,7 +1813,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
-      'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
+      'type_id' => $this->getBalanceChangeTypeValue('brought_forward')
     ]);
 
     $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([

@@ -176,7 +176,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    */
   private function createLeaveBalanceChangeRecord(LeaveRequest $leaveRequest) {
-    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $dates = $leaveRequest->getDates();
     foreach($dates as $date) {
@@ -187,7 +187,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
       LeaveBalanceChange::create([
         'source_id'   => $date->id,
         'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
-        'type_id'     => $leaveBalanceChangeTypes['Public Holiday'],
+        'type_id'     => $leaveBalanceChangeTypes['public_holiday'],
         'amount'      => $amount
       ]);
     }

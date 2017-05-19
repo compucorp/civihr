@@ -249,12 +249,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     LeavePeriodEntitlement $periodEntitlement,
     $overriddenEntitlement = null
   ) {
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     //The original pro-rata calculation already factors in public holidays
     //since public holiday balance changes are saved differently, we need to deduct it from the pro rata
     LeaveBalanceChange::create([
-      'type_id' => $balanceChangeTypes['Leave'],
+      'type_id' => $balanceChangeTypes['leave'],
       'source_id' => $periodEntitlement->id,
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => $calculation->getProRata() - $calculation->getNumberOfPublicHolidaysInEntitlement()
@@ -266,7 +266,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
       $proposedEntitlement = $calculation->getProposedEntitlement();
       LeaveBalanceChange::create([
-        'type_id' => $balanceChangeTypes['Overridden'],
+        'type_id' => $balanceChangeTypes['overridden'],
         'source_id' => $periodEntitlement->id,
         'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
         'amount' => $overriddenEntitlement - $proposedEntitlement
@@ -285,7 +285,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     EntitlementCalculation $calculation,
     LeavePeriodEntitlement $periodEntitlement
   ) {
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $broughtForward = $calculation->getBroughtForward();
 
@@ -293,7 +293,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       $broughtForwardExpirationDate = $calculation->getBroughtForwardExpirationDate();
 
       LeaveBalanceChange::create([
-        'type_id' => $balanceChangeTypes['Brought Forward'],
+        'type_id' => $balanceChangeTypes['brought_forward'],
         'source_id' => $periodEntitlement->id,
         'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
         'amount' => $broughtForward,
@@ -321,13 +321,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     EntitlementCalculation $calculation,
     LeavePeriodEntitlement $periodEntitlement
   ) {
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
 
     if (!empty($publicHolidays)) {
       LeaveBalanceChange::create([
-        'type_id'     => $balanceChangeTypes['Public Holiday'],
+        'type_id'     => $balanceChangeTypes['public_holiday'],
         'source_id'   => $periodEntitlement->id,
         'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
         'amount'      => count($publicHolidays)
@@ -439,14 +439,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    *   ]
    */
   private static function groupBalanceChangesByType($balanceChanges) {
-    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $balanceChangesByType = [];
     foreach ($balanceChanges as $balanceChange) {
       $typeID = $balanceChange->type_id;
 
-      if ($typeID == $leaveBalanceChangeTypes['Overridden']) {
-        $typeID = $leaveBalanceChangeTypes['Leave'];
+      if ($typeID == $leaveBalanceChangeTypes['overridden']) {
+        $typeID = $leaveBalanceChangeTypes['leave'];
       }
 
       if (empty($balanceChangesByType[$typeID])) {

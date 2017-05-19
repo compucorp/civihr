@@ -382,14 +382,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     // 10 + 1 + 3 (Pro Rata + Brought Forward + No. Public Holidays)
     $this->assertEquals(14, $periodEntitlement->getEntitlement());
 
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $breakDownBalanceChanges = LeaveBalanceChange::getBreakdownBalanceChangesForEntitlement($periodEntitlement->id);
 
     // Checks if only a single balance change of "Leave" type was created
     // and that its amount is equal to the Pro Rata
     $leaveBalanceChanges = array_filter($breakDownBalanceChanges, function($balanceChange) use ($balanceChangeTypes) {
-      return $balanceChange->type_id == $balanceChangeTypes['Leave'];
+      return $balanceChange->type_id == $balanceChangeTypes['leave'];
     });
     $this->assertCount(1, $leaveBalanceChanges);
     $this->assertEquals($proRata, reset($leaveBalanceChanges)->amount);
@@ -397,7 +397,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     // Checks if only a single balance change of "Brought Forward" type was created
     // and that its amount is equal to the number of days brought forward
     $leaveBalanceChanges = array_filter($breakDownBalanceChanges, function($balanceChange) use ($balanceChangeTypes) {
-      return $balanceChange->type_id == $balanceChangeTypes['Brought Forward'];
+      return $balanceChange->type_id == $balanceChangeTypes['brought_forward'];
     });
     $this->assertCount(1, $leaveBalanceChanges);
     $this->assertEquals($broughtForward, reset($leaveBalanceChanges)->amount);
@@ -406,7 +406,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     // and that its amount is equal to the number of public holidays added to the
     // entitlement
     $leaveBalanceChanges = array_filter($breakDownBalanceChanges, function($balanceChange) use ($balanceChangeTypes) {
-      return $balanceChange->type_id == $balanceChangeTypes['Public Holiday'];
+      return $balanceChange->type_id == $balanceChangeTypes['public_holiday'];
     });
     $this->assertCount(1, $leaveBalanceChanges);
     $this->assertEquals(count($publicHolidays), reset($leaveBalanceChanges)->amount);
@@ -928,7 +928,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => '8.00',
             'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
+              'id' => $this->getBalanceChangeTypeValue('brought_forward'),
               'value' => 'brought_forward',
               'label' => 'Brought Forward'
             ]
@@ -937,7 +937,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => '10.00',
             'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Leave'),
+              'id' => $this->getBalanceChangeTypeValue('leave'),
               'value' => 'leave',
               'label' => 'Leave'
             ]
@@ -969,7 +969,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => '-3.00', //only the expired amount will be returned
             'expiry_date' => date('Y-m-d', strtotime("-{$expiredByNoOfDays} day")),
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
+              'id' => $this->getBalanceChangeTypeValue('brought_forward'),
               'value' => 'brought_forward',
               'label' => 'Brought Forward'
             ]
@@ -1016,7 +1016,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => '8',
             'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
+              'id' => $this->getBalanceChangeTypeValue('brought_forward'),
               'value' => 'brought_forward',
               'label' => 'Brought Forward'
             ]
@@ -1025,7 +1025,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => '10.00',
             'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Leave'),
+              'id' => $this->getBalanceChangeTypeValue('leave'),
               'value' => 'leave',
               'label' => 'Leave'
             ]
@@ -1039,7 +1039,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => '5',
             'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
+              'id' => $this->getBalanceChangeTypeValue('brought_forward'),
               'value' => 'brought_forward',
               'label' => 'Brought Forward'
             ]
@@ -1048,7 +1048,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => '2.00',
             'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Leave'),
+              'id' => $this->getBalanceChangeTypeValue('leave'),
               'value' => 'leave',
               'label' => 'Leave'
             ]
@@ -1091,7 +1091,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => '-5',
             'expiry_date' => date('Y-m-d', strtotime("-{$expiredByNoOfDays} day")),
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
+              'id' => $this->getBalanceChangeTypeValue('brought_forward'),
               'value' => 'brought_forward',
               'label' => 'Brought Forward'
             ]
@@ -1105,7 +1105,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => '-3',
             'expiry_date' => date('Y-m-d', strtotime("-{$expiredByNoOfDays} day")),
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Brought Forward'),
+              'id' => $this->getBalanceChangeTypeValue('brought_forward'),
               'value' => 'brought_forward',
               'label' => 'Brought Forward'
             ]
@@ -1153,7 +1153,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => 15, // 10 + 5
             'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Leave'),
+              'id' => $this->getBalanceChangeTypeValue('leave'),
               'value' => 'leave',
               'label' => 'Leave'
             ]
@@ -1167,7 +1167,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => 9, // 4 + 5
             'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Public Holiday'),
+              'id' => $this->getBalanceChangeTypeValue('public_holiday'),
               'value' => 'public_holiday',
               'label' => 'Public Holiday'
             ]
@@ -1176,7 +1176,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => 13,
             'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Leave'),
+              'id' => $this->getBalanceChangeTypeValue('leave'),
               'value' => 'leave',
               'label' => 'Leave'
             ]
@@ -1213,7 +1213,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
             'amount' => 15, // 10 from leave + 5 from overridden
             'expiry_date' => null,
             'type' => [
-              'id' => $this->getBalanceChangeTypeValue('Leave'),
+              'id' => $this->getBalanceChangeTypeValue('leave'),
               'value' => 'leave',
               'label' => 'Leave'
             ]

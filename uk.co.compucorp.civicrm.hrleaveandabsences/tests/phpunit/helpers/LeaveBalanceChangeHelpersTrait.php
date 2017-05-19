@@ -14,7 +14,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
 
   public function getBalanceChangeTypeValue($type) {
     if(empty($this->balanceChangeTypes)) {
-      $this->balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+      $this->balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
     }
 
     return $this->balanceChangeTypes[$type];
@@ -39,7 +39,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     return $this->createEntitlementBalanceChange(
       $entitlementID,
       $amount,
-      $this->getBalanceChangeTypeValue('Leave')
+      $this->getBalanceChangeTypeValue('leave')
     );
   }
 
@@ -47,7 +47,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     return $this->createEntitlementBalanceChange(
       $entitlementID,
       $amount,
-      $this->getBalanceChangeTypeValue('Overridden')
+      $this->getBalanceChangeTypeValue('overridden')
     );
   }
 
@@ -55,7 +55,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     return $this->createEntitlementBalanceChange(
       $entitlementID,
       $amount,
-      $this->getBalanceChangeTypeValue('Brought Forward'),
+      $this->getBalanceChangeTypeValue('brought_forward'),
       $expiryDate
     );
   }
@@ -64,7 +64,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     return $this->createEntitlementBalanceChange(
       $entitlementID,
       $amount,
-      $this->getBalanceChangeTypeValue('Public Holiday')
+      $this->getBalanceChangeTypeValue('public_holiday')
     );
   }
 
@@ -84,14 +84,14 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     $this->createEntitlementBalanceChange(
       $entitlementID,
       $amount,
-      $this->getBalanceChangeTypeValue('Brought Forward'),
+      $this->getBalanceChangeTypeValue('brought_forward'),
       $expiryDate
     );
 
     $broughtForwardBalanceChangeID = $this->getLastIdInTable(LeaveBalanceChange::getTableName());
 
     return LeaveBalanceChange::create([
-      'type_id' => $this->getBalanceChangeTypeValue('Brought Forward'),
+      'type_id' => $this->getBalanceChangeTypeValue('brought_forward'),
       'source_id' => $entitlementID,
       'source_type' => 'entitlement',
       'amount' => $expiredAmount * -1, //expired amounts should be negative
@@ -125,7 +125,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
       'amount' => $expiredAmount * -1,
       'expiry_date' => CRM_Utils_Date::processDate($toilBalanceChange->expiry_date),
       'expired_balance_change_id' => $toilBalanceChange->id,
-      'type_id' => $this->getBalanceChangeTypeValue('Debit')
+      'type_id' => $this->getBalanceChangeTypeValue('debit')
     ]);
   }
 
