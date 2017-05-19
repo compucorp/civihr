@@ -676,9 +676,9 @@
       color: $datepicker-gray-darker;
       font: $crm-font-weight-h2 $font-size-h2 $font-family-base;
       height: 50px;
-      line-height: 50px;
+      line-height: 2.7em;
       margin: 20px 0;       
-      padding-left: 20px; 
+      padding: 0 20px; 
     }
 
     .crm-accordion-wrapper {
@@ -700,7 +700,22 @@
     }
 
     .report {
+      border-radius: $panel-border-radius;
+
       tr {
+        &.columnheader-dark {
+          background: transparent !important;
+          border-radius: $panel-border-radius $panel-border-radius 0 0;
+
+          th:first-child {
+            border-top-left-radius: $panel-border-radius;
+          }
+
+          th:last-child {
+            border-top-right-radius: $panel-border-radius;
+          }
+        }
+
         &.columnfooter {
           border-top: 1px solid $crm-dark-grayblue !important;
         }
@@ -708,11 +723,15 @@
         th,
         td {
           font-family: $font-family-base;
-          font-size: $font-size-base !important;          
+          font-size: $font-size-base !important;
+        }
+
+        th {
+          padding: 15px 20px !important;
         }
 
         td {
-          padding: 18px 10px 17px 10px !important;
+          padding: 15px 20px !important;
 
           strong {
             color: $gray-darker;
@@ -724,9 +743,46 @@
     .selector {
       background-color: $crm-white;
 
-      tr:last-child td {       
+      thead.sticky {
+        background: transparent;
+      }
+
+      tbody tr:not(.crm-child-row) > td {
+        padding: 12px 10px !important;
+
+        &:first-child {
+          max-width: 10px;
+          padding-left: 20px !important;
+          padding-right: 5px;
+        }
+
+        &:nth-child(2),
+        &:nth-child(7) {
+          max-width: 120px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        &:nth-child(4),
+        &:nth-child(5),
+        &:nth-child(6) {
+          max-width: 130px;
+          min-width: 130px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        &:last-child {
+          min-width: 82px !important;
+          padding-right: 20px !important;
+        }
+      }
+
+      tr:last-child td {
         display: table-cell !important;
-        padding: 18px 20px 17px 20px !important;        
+        padding: 18px 20px 17px !important;
       }
     }
   }
@@ -1094,5 +1150,11 @@
           color: $crm-white !important;
         }
       }
+    }
+  }
+
+  .page-civicrm-member {
+    .CRM_Member_Form_Search h3:first-of-type {
+      margin-top: 0;
     }
   }
