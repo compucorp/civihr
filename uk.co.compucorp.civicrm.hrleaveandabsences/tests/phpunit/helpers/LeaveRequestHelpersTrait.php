@@ -13,7 +13,7 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
       $leaveRequestDayTypeOptions = LeaveRequest::buildOptions('from_date_type');
       foreach($leaveRequestDayTypeOptions  as $key => $label) {
         $name = CRM_Core_Pseudoconstant::getName(LeaveRequest::class, 'from_date_type', $key);
-        $this->leaveRequestDayTypes[$label] = [
+        $this->leaveRequestDayTypes[$name] = [
           'id' => $key,
           'value' => $key,
           'name' => $name,

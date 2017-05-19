@@ -52,9 +52,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $this->leaveContact,
       'status_id' => 3,
       'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
-      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
-      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ], false);
 
@@ -83,9 +83,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $this->leaveContact,
       'status_id' => 3,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
-      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
 
@@ -383,9 +383,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $this->leaveContact,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
-      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
-      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
     return array_merge($defaultParams, $params);
