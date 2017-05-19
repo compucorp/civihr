@@ -25,7 +25,7 @@
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
-        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl,
+        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl, spyEntitlementAPI,
         date2016 = '01/12/2016',
         date2017 = '02/02/2017',
         date2013 = '02/02/2013',
@@ -83,7 +83,7 @@
 
         spyOn(AbsencePeriodAPI, 'all').and.callThrough();
         spyOn(AbsenceTypeAPI, 'all').and.callThrough();
-        spyOn(EntitlementAPI, 'all').and.callThrough();
+        spyEntitlementAPI = spyOn(EntitlementAPI, 'all').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
@@ -1250,6 +1250,25 @@
 
         it('defaults to staff role', function () {
           expect($ctrl.isRole('staff')).toBe(true);
+        });
+      });
+
+      describe('when user has no entitlements', function () {
+        beforeEach(function () {
+          var leaveRequest = LeaveRequestInstance.init();
+
+          leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+          var directiveOptions = {
+            contactId: leaveRequest.contact_id, //staff's contact id
+            leaveRequest: leaveRequest
+          };
+
+          spyEntitlementAPI.and.returnValue($q.resolve([]));
+          initTestController(directiveOptions);
+        });
+
+        it('fails with error', function () {
+          expect($ctrl.errors).toEqual(['User has no entitlements']);
         });
       });
 

@@ -59,6 +59,7 @@ define([
         absenceTypes: true,
         showBalanceChange: false,
         fromDayTypes: false,
+        postContactSelection: false,
         toDayTypes: false
       };
       //TODO temp fix to allow pageChanged to be called from html as well from functions here with proper context
@@ -622,7 +623,8 @@ define([
             if (self.request.contact_id) {
               return self.initAfterContactSelection();
             }
-          });
+          })
+          .catch(handleError.bind(self));
       };
 
       /**
@@ -632,6 +634,7 @@ define([
        */
       this.initAfterContactSelection = function () {
         var self = this;
+        self.loading.postContactSelection = true;
 
         return $q.all([
             self._loadAbsenceTypes(),
@@ -657,7 +660,10 @@ define([
 
               initialCommentsLength = self.request.comments.length;
             }
-          });
+
+            self.loading.postContactSelection = false;
+          })
+          .catch(handleError.bind(self));
       };
 
       /**
@@ -1089,6 +1095,10 @@ define([
             type_id: { IN: absenceTypesAndIds.ids }
           }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
+            if (!entitlements.length) {
+              return $q.reject("User has no entitlements");
+            }
+
             // create a list of absence types with a `balance` property
             self.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
           });
