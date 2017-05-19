@@ -247,10 +247,11 @@
 
   .ui-dialog-content {
     tr td.html-adjust input[type="checkbox"] {
-      position: absolute;
       display: block;
+      position: absolute;
 
-      + .description , + br + .description {
+      + .description,
+      + br + .description {
         padding-left: 20px;
       }
     }
