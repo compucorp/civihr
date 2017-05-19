@@ -1,11 +1,9 @@
 &.page-civicrm-admin-custom-group {
-
   #options table td:last-of-type {
-    width: 350px;
+    width: 250px;
   }
 
   #Group {
-
     .crm-form-block {
       background: none;
       box-shadow: none;
@@ -13,6 +11,76 @@
 
     .form-layout {
       @include civihr_panel;
+    }
+  }
+
+  .help {
+    margin-bottom: 20px !important;
+  }
+
+  #options {
+    border: none;
+    border-radius: $border-radius-child $border-radius-child 0 0;
+    
+    thead tr th {
+      background: $gray-lighter;
+
+      &:first-child {
+        padding-left: 20px;
+      }
+
+      &:last-child {
+        padding-right: 20px;
+      }
+    }
+
+    tr td {
+      padding: 12px 15px;
+
+      &.crm-editable {
+        max-width: 200px;
+      }
+
+      &:first-child {
+        padding-left: 20px;
+      }
+    }
+
+    tr td:last-child {
+      min-width: 245px;
+      padding-right: 20px;
+      text-align: right;
+    }
+
+    tr td .action-item {
+      color: $brand-primary;
+
+      &:hover,
+      &:focus {
+        background: none;
+        color: $brand-primary !important;
+      }
+    }
+  }
+
+  .crm-content-block {
+    border-radius: $border-radius-child;
+  }
+
+  #custom_group {
+    border-radius: $border-radius-child;
+    overflow: auto !important;
+
+    .action-link {
+      background: $crm-white !important;
+      box-shadow: none;
+      padding: 15px !important;
+    }
+  }
+
+  .CRM_Custom_Form_Preview {
+    .crm-submit-buttons {
+      box-shadow: none !important;
     }
   }
 }
