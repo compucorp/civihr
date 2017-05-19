@@ -1102,12 +1102,12 @@
 
       #saveDetails {
         padding: 15px 5px !important;
-
-        .label {
-          float: left;
-          min-width: 136px;
-          padding-top: 5px;
-        }
+      }
+      
+      #saveDetails .label {
+        float: left;
+        min-width: 136px;
+        padding-top: 5px;
       }
     }
   }
@@ -1139,18 +1139,18 @@
           color: $crm-white !important;
         }
       }
-
-      .cancel {
-        border: 1px solid $gray-darker;
-        color: $gray-darker !important;
-        padding: 7px 12px 7px 20px !important;
-
-        &:hover {
-          background: $gray-darker;
-          color: $crm-white !important;
-        }
-      }
     }
+
+    .crm-button .cancel {
+      border: 1px solid $gray-darker;
+      color: $gray-darker !important;
+      padding: 7px 12px 7px 20px !important;
+
+      &:hover {
+        background: $gray-darker;
+        color: $crm-white !important;
+      }
+    }    
   }
 
   .page-civicrm-member {
