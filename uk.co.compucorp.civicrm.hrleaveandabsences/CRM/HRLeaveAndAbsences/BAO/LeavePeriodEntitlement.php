@@ -389,10 +389,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return float
    */
   public function getBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $filterStatuses = [
-      $leaveRequestStatus['Approved'],
-      $leaveRequestStatus['Admin Approved'],
+      $leaveRequestStatus['approved'],
+      $leaveRequestStatus['admin_approved'],
     ];
     return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
   }
@@ -400,19 +400,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   /**
    * Returns the future balance for this LeavePeriodEntitlement.
    *
-   * Future Balance is the Balance/Remainder for an entitlement when Leave Requests with Waiting Approval
-   * and More Information Requested statuses are accounted for in the calculation apart from the usual
+   * Future Balance is the Balance/Remainder for an entitlement when Leave Requests with Awaiting Approval
+   * and More Information Required statuses are accounted for in the calculation apart from the usual
    * Approved and Admin Approved Statuses.
    *
    * @return float
    */
   public function getFutureBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $filterStatuses = [
-      $leaveRequestStatus['Approved'],
-      $leaveRequestStatus['Admin Approved'],
-      $leaveRequestStatus['Waiting Approval'],
-      $leaveRequestStatus['More Information Requested'],
+      $leaveRequestStatus['approved'],
+      $leaveRequestStatus['admin_approved'],
+      $leaveRequestStatus['awaiting_approval'],
+      $leaveRequestStatus['more_information_required'],
     ];
     return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
   }
@@ -526,10 +526,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return float
    */
   public function getLeaveRequestBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $filterStatuses = [
-      $leaveRequestStatus['Approved'],
-      $leaveRequestStatus['Admin Approved'],
+      $leaveRequestStatus['approved'],
+      $leaveRequestStatus['admin_approved'],
     ];
 
     return LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($this, $filterStatuses);
@@ -611,7 +611,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * Entitlement Id or (Contact ID + Absence Period ID).
    * When params contains the include_future parameter and its true,
    * It returns also future balance for an entitlement taking the Awaiting Approval
-   * and More Information Requested leave statuses into consideration
+   * and More Information Required leave statuses into consideration
    *
    * @param array $params
    * Sample param: $params = ['entitlement_id' => 1, 'contact_id' => 9, 'include_future' => false]

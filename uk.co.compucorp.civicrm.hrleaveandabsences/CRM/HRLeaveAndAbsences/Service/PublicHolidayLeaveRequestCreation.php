@@ -149,13 +149,13 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    */
   private function createLeaveRequest($contactID, AbsenceType $absenceType, PublicHoliday $publicHoliday) {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $leaveRequestDayTypes = array_flip(LeaveRequest::buildOptions('from_date_type'));
 
     return LeaveRequest::create([
       'contact_id'     => $contactID,
       'type_id'        => $absenceType->id,
-      'status_id'      => $leaveRequestStatuses['Admin Approved'],
+      'status_id'      => $leaveRequestStatuses['admin_approved'],
       'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
       'from_date_type' => $leaveRequestDayTypes['All Day'],
       'to_date'        => CRM_Utils_Date::processDate($publicHoliday->date),

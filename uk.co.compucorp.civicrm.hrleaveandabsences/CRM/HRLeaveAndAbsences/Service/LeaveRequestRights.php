@@ -55,8 +55,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
                                  $this->currentUserIsLeaveContact($contactID);
 
     $openStatuses = [
-      $leaveRequestStatuses['waiting_approval'],
-      $leaveRequestStatuses['more_information_requested']
+      $leaveRequestStatuses['awaiting_approval'],
+      $leaveRequestStatuses['more_information_required']
     ];
 
     return $currentUserCanChangeDates && in_array($statusID, $openStatuses);
@@ -75,7 +75,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
   public function canChangeAbsenceTypeFor($contactID, $statusID) {
     $leaveRequestStatuses = self::getLeaveRequestStatuses();
     return $this->currentUserIsLeaveContact($contactID) &&
-           in_array($statusID, [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['more_information_requested']]);
+           in_array($statusID, [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['more_information_required']]);
   }
 
   /**

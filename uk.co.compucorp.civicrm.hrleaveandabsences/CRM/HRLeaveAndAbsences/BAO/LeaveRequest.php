@@ -316,11 +316,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @return float
    */
   private static function getTotalApprovedToilForPeriod(AbsencePeriod $period, $contactID, $typeID) {
-    $leaveRequestStatuses = array_flip(self::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
 
     $leaveRequestStatusFilter = [
-      $leaveRequestStatuses['Approved'],
-      $leaveRequestStatuses['Admin Approved']
+      $leaveRequestStatuses['approved'],
+      $leaveRequestStatuses['admin_approved']
     ];
 
     $totalApprovedTOIL = LeaveBalanceChange::getTotalTOILBalanceChangeForContact(
@@ -508,7 +508,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
   /**
    * This method checks that there is no overlapping leave request
-   * with the status Approved, Admin Approved, Waiting Approval or More Information Requested
+   * with the status Approved, Admin Approved, Awaiting Approval or More Information Required
    * (Exception: if the other Leave Request is a Public Holiday Leave Request, then it can overlap).
    *
    * @params array $params
@@ -517,13 +517,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateNoOverlappingLeaveRequests($params) {
-    $leaveRequestStatuses = array_flip(self::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
 
     $leaveRequestStatusFilter = [
-      $leaveRequestStatuses['Approved'],
-      $leaveRequestStatuses['Admin Approved'],
-      $leaveRequestStatuses['Waiting Approval'],
-      $leaveRequestStatuses['More Information Requested'],
+      $leaveRequestStatuses['approved'],
+      $leaveRequestStatuses['admin_approved'],
+      $leaveRequestStatuses['awaiting_approval'],
+      $leaveRequestStatuses['more_information_required'],
     ];
 
     $overlappingLeaveRequests = self::findOverlappingLeaveRequests(
@@ -560,16 +560,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateStartDateNotGreaterThanEndDate($params) {
-      $fromDate = new DateTime($params['from_date']);
-      $toDate = new DateTime($params['to_date']);
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
 
-      if ($fromDate > $toDate) {
-        throw new InvalidLeaveRequestException(
-          'Leave Request start date cannot be greater than the end date',
-          'leave_request_from_date_greater_than_end_date',
-          'from_date'
-        );
-      }
+    if ($fromDate > $toDate) {
+      throw new InvalidLeaveRequestException(
+        'Leave Request start date cannot be greater than the end date',
+        'leave_request_from_date_greater_than_end_date',
+        'from_date'
+      );
+    }
   }
 
   /**
