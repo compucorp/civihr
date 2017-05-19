@@ -1279,13 +1279,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     try {
       CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` ADD PRIMARY KEY (`id`)');
       CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT');
-    } catch (Exception $e) {
-      $tableStructure = CRM_Core_DAO::executeQuery('DESC civicrm_hrhours_location');
-
-      while ($tableStructure->fetch()) {
-        if ($tableStructure->Field == 'id' && ($tableStructure->Key != 'PRI' || stripos($tableStructure->Extra, 'auto_increment') === false)) {
-          throw $e;
-        }
+    } catch (PEAR_Exception $e) {
+      if (stripos($e->getCause()->userinfo, 'nativecode=1068') === false) {
+        throw new Exception($e->getMessage() . ' - ' . $e->getCause()->userinfo);
       }
     }
 
