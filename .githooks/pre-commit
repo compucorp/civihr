@@ -17,11 +17,11 @@ command_exists () {
 
 
 # Compliance to "JavaScript Semi-Standard Style" (https://github.com/Flet/semistandard)
-command_exists semistandard "https://www.npmjs.com/package/semistandard"
-command_exists snazzy "https://www.npmjs.com/package/snazzy"
-
 files=`git diff --name-only --cached -- '*.js' ':(exclude)**/dist/**' ':(exclude)*min.js'`
 if [ -n "$files" ]; then
+  command_exists semistandard "https://www.npmjs.com/package/semistandard"
+  command_exists snazzy "https://www.npmjs.com/package/snazzy"
+
   semistandard "$files" --verbose | snazzy
 
   if [ $? -ne 0 ]; then
