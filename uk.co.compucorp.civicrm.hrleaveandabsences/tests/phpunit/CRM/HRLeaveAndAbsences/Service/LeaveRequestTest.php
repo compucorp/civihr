@@ -161,11 +161,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->setExpectedException(
       'RuntimeException', "You can't change the Leave Request status from ".
-      $this->getDefaultParams()['status_id']. " to {$this->leaveRequestStatuses['Waiting Approval']['id']}"
+      $this->getDefaultParams()['status_id']. " to {$this->leaveRequestStatuses['awaiting_approval']['id']}"
     );
 
     $params['id'] = $leaveRequest->id;
-    $params['status_id'] = $this->leaveRequestStatuses['Waiting Approval']['id'];
+    $params['status_id'] = $this->leaveRequestStatuses['awaiting_approval']['id'];
 
     $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($params, false);
   }

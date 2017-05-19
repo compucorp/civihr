@@ -189,14 +189,14 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'to_date' => CRM_Utils_Date::processDate('+5 days'),
-      'status_id' => $leaveRequestStatuses['Approved']
+      'status_id' => $leaveRequestStatuses['approved']
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
@@ -204,7 +204,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $periodEntitlement->type_id,
       'from_date' => CRM_Utils_Date::processDate('+8 days'),
       'to_date' => CRM_Utils_Date::processDate('+9 days'),
-      'status_id' => $leaveRequestStatuses['Waiting Approval']
+      'status_id' => $leaveRequestStatuses['awaiting_approval']
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
@@ -212,13 +212,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $periodEntitlement->type_id,
       'from_date' => CRM_Utils_Date::processDate('+20 days'),
       'to_date' => CRM_Utils_Date::processDate('+35 days'),
-      'status_id' => $leaveRequestStatuses['Rejected']
+      'status_id' => $leaveRequestStatuses['rejected']
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'getbalancechangebyabsencetype', [
       'contact_id' => $periodEntitlement->contact_id,
       'period_id' => $absencePeriod->id,
-      'statuses' => ['IN' => [$leaveRequestStatuses['Approved'], $leaveRequestStatuses['Rejected']]]
+      'statuses' => ['IN' => [$leaveRequestStatuses['approved'], $leaveRequestStatuses['rejected']]]
     ]);
     $expectedResult = [$periodEntitlement->type_id => -21];
     $this->assertEquals($expectedResult, $result['values']);
@@ -226,7 +226,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'getbalancechangebyabsencetype', [
       'contact_id' => $periodEntitlement->contact_id,
       'period_id' => $absencePeriod->id,
-      'statuses' => ['IN' => [$leaveRequestStatuses['Waiting Approval'], $leaveRequestStatuses['Rejected']]]
+      'statuses' => ['IN' => [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['rejected']]]
     ]);
     $expectedResult = [$periodEntitlement->type_id => -18];
     $this->assertEquals($expectedResult, $result['values']);
@@ -246,14 +246,14 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'status_id' => $leaveRequestStatuses['Approved']
+      'status_id' => $leaveRequestStatuses['approved']
     ], true);
 
     $publicHoliday = new PublicHoliday();
@@ -283,7 +283,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetBalanceChangeByAbsenceTypeDoesNotIncludeExpiredTOILWhenExpiredOnlyIsFalse() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
@@ -299,7 +299,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->createLeaveRequestBalanceChange(
       $this->absenceType->id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-5 days'),
       CRM_Utils_Date::processDate('-4 days')
     );
@@ -316,7 +316,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-5 days'),
       CRM_Utils_Date::processDate('-5 days'),
       3,
@@ -337,7 +337,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetBalanceChangeByAbsenceTypeIncludesOnlyExpiredTOILAndBroughtForwardWhenExpiredOnlyIsTrue() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
@@ -353,7 +353,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->createLeaveRequestBalanceChange(
       $this->absenceType->id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-5 days'),
       CRM_Utils_Date::processDate('-4 days')
     );
@@ -383,7 +383,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-5 days'),
       CRM_Utils_Date::processDate('-5 days'),
       3,
@@ -404,7 +404,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetBalanceChangeByAbsenceTypeCanReturnOnlyExpiredDaysForTOILRequestsWithSpecificStatuses() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
@@ -420,7 +420,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-5 days'),
       CRM_Utils_Date::processDate('-5 days'),
       3,
@@ -431,7 +431,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Cancelled'],
+      $leaveRequestStatuses['cancelled'],
       CRM_Utils_Date::processDate('-3 days'),
       CRM_Utils_Date::processDate('-3 days'),
       3,
@@ -442,7 +442,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Waiting Approval'],
+      $leaveRequestStatuses['awaiting_approval'],
       CRM_Utils_Date::processDate('-1 days'),
       CRM_Utils_Date::processDate('-1 days'),
       5,
@@ -453,7 +453,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'getBalanceChangeByAbsenceType', [
       'contact_id' => $entitlement->contact_id,
       'period_id' => $period->id,
-      'statuses' => ['IN' => [$leaveRequestStatuses['Approved'], $leaveRequestStatuses['Cancelled']]],
+      'statuses' => ['IN' => [$leaveRequestStatuses['approved'], $leaveRequestStatuses['cancelled']]],
       'expired' => true
     ]);
 
@@ -463,7 +463,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'getBalanceChangeByAbsenceType', [
       'contact_id' => $entitlement->contact_id,
       'period_id' => $period->id,
-      'statuses' => ['IN' => [$leaveRequestStatuses['Cancelled'], $leaveRequestStatuses['Waiting Approval']]],
+      'statuses' => ['IN' => [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['awaiting_approval']]],
       'expired' => true
     ]);
 
@@ -473,7 +473,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'getBalanceChangeByAbsenceType', [
       'contact_id' => $entitlement->contact_id,
       'period_id' => $period->id,
-      'statuses' => ['IN' => [$leaveRequestStatuses['Approved'], $leaveRequestStatuses['Waiting Approval']]],
+      'statuses' => ['IN' => [$leaveRequestStatuses['approved'], $leaveRequestStatuses['awaiting_approval']]],
       'expired' => true
     ]);
 
@@ -482,7 +482,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetDoesntReturnPublicHolidayLeaveRequestsIfThePublicHolidayParamIsNotPresentOrIsFalse() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     // The get endpoint only returns leave requests overlapping contracts, so
     // we need them in place
@@ -496,7 +496,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'status_id' => $leaveRequestStatuses['Approved']
+      'status_id' => $leaveRequestStatuses['approved']
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -504,7 +504,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'status_id' => $leaveRequestStatuses['Waiting Approval']
+      'status_id' => $leaveRequestStatuses['awaiting_approval']
     ], true);
 
     $publicHoliday = new PublicHoliday();
@@ -533,7 +533,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetReturnsOnlyPublicHolidayLeaveRequestsIfThePublicHolidayIsTrue() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     // The get endpoint only returns leave requests overlapping contracts, so
     // we need them in place
@@ -547,7 +547,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'status_id' => $leaveRequestStatuses['Approved']
+      'status_id' => $leaveRequestStatuses['approved']
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -555,7 +555,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'status_id' => $leaveRequestStatuses['Waiting Approval']
+      'status_id' => $leaveRequestStatuses['awaiting_approval']
     ], true);
 
     $publicHoliday = new PublicHoliday();
@@ -573,14 +573,14 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testGetIncludesLeaveRequestsForAllRequestTypes() {
     HRJobContractFabricator::fabricate(['contact_id' => 1], ['period_start_date' => '-1 day']);
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'status_id' => $leaveRequestStatuses['Approved']
+      'status_id' => $leaveRequestStatuses['approved']
     ], true);
 
     $sicknessRequest = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -588,7 +588,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'sickness_reason' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ], true);
@@ -615,7 +615,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetCanReturnALeaveRequestWhichOverlapsAContractWithoutEndDate() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     HRJobContractFabricator::fabricate(['contact_id' => 1], ['period_start_date' => '2016-01-01']);
 
@@ -625,7 +625,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2015-12-31'),
-      'status_id' => $leaveRequestStatuses['Waiting Approval']
+      'status_id' => $leaveRequestStatuses['awaiting_approval']
     ], true);
 
     //This will be returned as it is after the contract start date
@@ -634,7 +634,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2017-12-31'),
-      'status_id' => $leaveRequestStatuses['Waiting Approval']
+      'status_id' => $leaveRequestStatuses['awaiting_approval']
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get');
@@ -643,7 +643,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetCanReturnLeaveRequestsWhichOverlapAContractWithEndDate() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
@@ -659,7 +659,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2015-12-31'),
-      'status_id' => $leaveRequestStatuses['Waiting Approval']
+      'status_id' => $leaveRequestStatuses['awaiting_approval']
     ], true);
 
     // This will be returned
@@ -668,7 +668,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-03'),
-      'status_id' => $leaveRequestStatuses['Approved']
+      'status_id' => $leaveRequestStatuses['approved']
     ], true);
 
     // This will be returned
@@ -677,7 +677,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-09-07'),
       'to_date' => CRM_Utils_Date::processDate('2016-09-08'),
-      'status_id' => $leaveRequestStatuses['Approved']
+      'status_id' => $leaveRequestStatuses['approved']
     ], true);
 
     //This will not be returned as it is after the contract start date
@@ -686,7 +686,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2017-12-31'),
-      'status_id' => $leaveRequestStatuses['Waiting Approval']
+      'status_id' => $leaveRequestStatuses['awaiting_approval']
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get');
@@ -696,7 +696,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetCanReturnLeaveRequestsWithoutToDateWhichOverlapAContractWithoutEndDate() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     HRJobContractFabricator::fabricate(['contact_id' => 1], ['period_start_date' => '2016-01-01']);
 
@@ -708,7 +708,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Cancelled']
+      'status_id' => $leaveRequestStatuses['cancelled']
     ], true);
 
     // This will be returned as it's after the contract start date
@@ -719,7 +719,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2017-09-02'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     // This will be returned as it's after the contract start date as well
@@ -730,7 +730,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2018-01-02'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get');
@@ -740,7 +740,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetCanReturnLeaveRequestsWithoutToDateWhichOverlapAContractWithEndDate() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
@@ -758,7 +758,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Cancelled']
+      'status_id' => $leaveRequestStatuses['cancelled']
     ], true);
 
     // This will be returned
@@ -769,7 +769,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     // This will be returned
@@ -780,7 +780,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     //This will not be returned as it is after the contract start date
@@ -791,7 +791,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2017-12-30'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Rejected']
+      'status_id' => $leaveRequestStatuses['rejected']
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get');
@@ -801,7 +801,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetFullIncludesTheBalanceChangeAndDatesForTheReturnedLeaveRequests() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     HRJobContractFabricator::fabricate(
       [ 'contact_id' => 1 ],
@@ -819,7 +819,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     // This will be returned. The balance change will be -4
@@ -830,7 +830,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'getFull');
@@ -849,7 +849,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetFullShouldNotIncludeTheBalanceChangeIfTheReturnOptionIsNotEmptyAndDoesntIncludeIt() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     HRJobContractFabricator::fabricate(
       [ 'contact_id' => 1 ],
@@ -866,7 +866,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -876,7 +876,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'getFull', [
@@ -899,7 +899,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetFullShouldNotIncludeTheDatesIfTheReturnOptionIsNotEmptyAndDoesntIncludeIt() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     HRJobContractFabricator::fabricate(
       [ 'contact_id' => 1 ],
@@ -916,7 +916,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -926,7 +926,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'getFull', [
@@ -949,7 +949,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetFullIncludesBalanceChangesAndDatesForToilLeaveRequests() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     HRJobContractFabricator::fabricate(
       [ 'contact_id' => 1 ],
@@ -966,7 +966,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -976,7 +976,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1020,7 +1020,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetFullShouldNotIncludeTheBalanceChangeAndDatesIfTheReturnOptionIsNotEmptyAndDoesntIncludeThem() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     HRJobContractFabricator::fabricate(
       [ 'contact_id' => 1 ],
@@ -1037,7 +1037,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1047,7 +1047,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Admin Approved']
+      'status_id' => $leaveRequestStatuses['admin_approved']
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'getFull', [
@@ -1070,7 +1070,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetDoesNotReturnALeaveRequestNotOverlappingAContractEvenIfItMatchesTheDatesParams() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
@@ -1089,7 +1089,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' =>  CRM_Utils_Date::processDate('2015-12-30'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'status_id' => $leaveRequestStatuses['Cancelled']
+      'status_id' => $leaveRequestStatuses['cancelled']
     ], true);
 
     $result = civicrm_api3('LeaveRequest', 'get', ['from_date' => '2015-12-30']);
@@ -2075,11 +2075,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('2016-11-02'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('2016-11-04'),
@@ -2089,7 +2089,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => CRM_Utils_Date::processDate('2016-11-05'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('2016-11-10'),
@@ -2398,12 +2398,12 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime();
     $toDate = new DateTime('+4 days');
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
@@ -2415,7 +2415,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'id' => $leaveRequest->id,
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
@@ -2437,12 +2437,12 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('-1 day');
     $toDate = new DateTime('+4 days');
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
@@ -2454,7 +2454,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'id' => $leaveRequest->id,
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate->format('YmdHis'),
@@ -2563,13 +2563,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $contactID  = 1;
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     //Approved TOIL for period is 3
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-6 days'),
       'to_date' => CRM_Utils_Date::processDate('-5 days'),
       'toil_to_accrue' => 3,
@@ -2582,7 +2582,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'isValid', [
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('+2 days'),

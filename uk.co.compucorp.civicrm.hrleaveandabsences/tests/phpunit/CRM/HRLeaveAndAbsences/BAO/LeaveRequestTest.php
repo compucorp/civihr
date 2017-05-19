@@ -152,12 +152,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'pattern_id' => $workPattern->id
     ]);
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('2016-11-02'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('2016-11-04'),
@@ -736,12 +736,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_NO
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -754,7 +754,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'id' => $leaveRequest->id,
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -771,12 +771,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('-1 day'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -789,7 +789,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'id' => $leaveRequest->id,
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => CRM_Utils_Date::processDate('-1 day'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -1022,11 +1022,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate3 = new DateTime('2016-11-12');
     $toDate3 = new DateTime('2016-11-15');
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => $fromDate1->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate1->format('YmdHis'),
@@ -1036,7 +1036,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['More Information Requested'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
       'from_date' => $fromDate2->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
@@ -1046,7 +1046,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate3->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate3->format('YmdHis'),
@@ -1056,23 +1056,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
 
     //The start date and end date has dates in leave request dates for leaveRequest1, leaveRequest2
-    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Requested'
+    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Required'
     //therefore only one overlapping Leave Request is expected
     $startDate = '2016-11-02';
     $endDate = '2016-11-15';
-    $filterStatus = [$leaveRequestStatuses['More Information Requested']];
+    $filterStatus = [$leaveRequestStatuses['more_information_required']];
     $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, $filterStatus);
     $this->assertCount(1, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest2->id, $overlappingRequests[0]->id);
 
     //The start date and end date has dates in leave request dates for leaveRequest1, leaveRequest2,
-    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Requested' and 'Waiting Approval'
+    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Required' and 'Awaiting Approval'
     //and overlapping public holiday leave requests is not excluded.
     //However two leave request is expected because, Public holiday leave requests have status 'Admin Approved' by default
     $startDate = '2016-11-01';
     $endDate = '2016-11-16';
-    $filterStatus = [$leaveRequestStatuses['More Information Requested'], $leaveRequestStatuses['Waiting Approval']];
+    $filterStatus = [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['awaiting_approval']];
     $overlappingRequests2 = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, $filterStatus, false);
     $this->assertCount(2, $overlappingRequests2);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
@@ -1099,11 +1099,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => $fromDate1->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate1->format('YmdHis'),
@@ -1113,7 +1113,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate2->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
@@ -1204,12 +1204,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'pattern_id' => $workPattern->id
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate2->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
@@ -1911,13 +1911,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $contactID  = 1;
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     //Approved TOIL for period is 3
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-6 days'),
       'to_date' => CRM_Utils_Date::processDate('-5 days'),
       'toil_to_accrue' => 3,
@@ -1930,7 +1930,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     LeaveRequest::create([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
       'to_date' => CRM_Utils_Date::processDate('+2 days'),

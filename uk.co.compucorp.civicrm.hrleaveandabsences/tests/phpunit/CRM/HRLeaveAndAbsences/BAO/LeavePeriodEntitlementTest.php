@@ -27,7 +27,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   public function setUp() {
     $this->setGlobalUser();
 
-    $this->leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $this->leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     // In order to make tests simpler, we disable the foreign key checks,
     // as a way to allow the creation of leave request records related
@@ -112,17 +112,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Approved'],
+      $this->leaveRequestStatuses['approved'],
       date('YmdHis'),
       date('YmdHis', strtotime('+2 day'))
     );
 
-    // This would deduct 2 days, but it's waiting approval, so
+    // This would deduct 2 days, but it's Awaiting approval, so
     // it shouldn't be included on the balance
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Waiting Approval'],
+      $this->leaveRequestStatuses['awaiting_approval'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
     );
@@ -132,7 +132,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['More Information Requested'],
+      $this->leaveRequestStatuses['more_information_required'],
       date('YmdHis')
     );
 
@@ -149,7 +149,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Approved'],
+      $this->leaveRequestStatuses['approved'],
       date('YmdHis'),
       date('YmdHis', strtotime('+2 day'))
     );
@@ -159,7 +159,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Rejected'],
+      $this->leaveRequestStatuses['rejected'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
     );
@@ -169,7 +169,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Cancelled'],
+      $this->leaveRequestStatuses['cancelled'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
     );
@@ -187,7 +187,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Approved'],
+      $this->leaveRequestStatuses['approved'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
     );
@@ -196,7 +196,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Admin Approved'],
+      $this->leaveRequestStatuses['admin_approved'],
       date('YmdHis')
     );
 
@@ -204,7 +204,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Approved'],
+      $this->leaveRequestStatuses['approved'],
       date('YmdHis')
     );
 
@@ -213,7 +213,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Cancelled'],
+      $this->leaveRequestStatuses['cancelled'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
     );
@@ -299,7 +299,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->id,
-      $this->leaveRequestStatuses['Approved'],
+      $this->leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+2 days'))
     );
@@ -322,7 +322,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Approved'],
+      $this->leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+2 days'))
     );
@@ -333,7 +333,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Approved'],
+      $this->leaveRequestStatuses['approved'],
       date('Y-m-d', strtotime('+3 days')),
       date('Y-m-d', strtotime('+8 days'))
     );
@@ -692,7 +692,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Approved'],
+      $this->leaveRequestStatuses['approved'],
       date('YmdHis'),
       date('YmdHis', strtotime('+2 day'))
     );
@@ -701,7 +701,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Waiting Approval'],
+      $this->leaveRequestStatuses['awaiting_approval'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
     );
@@ -710,7 +710,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['More Information Requested'],
+      $this->leaveRequestStatuses['more_information_required'],
       date('YmdHis')
     );
 
@@ -794,7 +794,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Approved'],
+      $this->leaveRequestStatuses['approved'],
       date('YmdHis'),
       date('YmdHis', strtotime('+2 day'))
     );
@@ -835,7 +835,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $this->leaveRequestStatuses['Waiting Approval'],
+      $this->leaveRequestStatuses['awaiting_approval'],
       date('YmdHis'),
       date('YmdHis', strtotime('+2 day'))
     );
