@@ -14,13 +14,17 @@
 
   th,
   .columnheader td {
-    color: $gray-darker !important;
     border-bottom: 0;
+    color: $gray-darker !important;
     font-weight: bold !important;
   }
 
+  .columnheader th {
+    background: $gray-lighter !important;
+  }
+
   td {
-    font-weight: 100 !important;
+    font-weight: $crm-font-weight-td !important;
   }
 
   th,
@@ -302,6 +306,8 @@
   > table,
   table.report-layout,
   table.selector,
+  table.row-highlight,
+  table.dataTable,
   .ui-dialog table,
   .CRM_HRRecruitment_Form_Search > table,
   .CRM_Case_Form_Search .caseSelector,
