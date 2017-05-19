@@ -21,9 +21,15 @@
   #options {
     border: none;
     border-radius: $border-radius-child $border-radius-child 0 0;
+
+    thead tr {
+      border-bottom: 1px solid $crm-background;
+    }
     
     thead tr th {
       background: $gray-lighter;
+      line-height: 1.5em !important;
+      padding: 15px;
 
       &:first-child {
         padding-left: 20px;
@@ -35,6 +41,7 @@
     }
 
     tr td {
+      line-height: 1.5em !important;
       padding: 12px 15px;
 
       &.crm-editable {
@@ -73,9 +80,16 @@
 
     .action-link {
       background: $crm-white !important;
+      border-top: 1px solid $crm-background;
       box-shadow: none;
       padding: 15px !important;
     }
+  }
+
+  #field_page + .action-link {
+    background: $crm-white !important;
+    box-shadow: none;
+    padding: 15px !important;
   }
 
   .CRM_Custom_Form_Preview {
@@ -232,27 +246,53 @@
   }
 
   .ui-dialog-content {
+    tr td.html-adjust input[type="checkbox"] {
+      display: block;
+      position: absolute;
 
-    tr {
-
-      > td:first-child {
-        padding-left: 0 !important;
+      + .description,
+      + br + .description {
+        padding-left: 20px;
       }
+    }
 
-      td {
+    input[type="radio"] + label[for] {
+      line-height: 17px;      
+    }
 
-        &.html-adjust {
+    table.dataTable tr {
+      border-bottom: 1px solid $crm-background;
+    }
+    
+    table.dataTable th {
+      line-height: 1.5em !important;
+      padding: 15px 20px !important;
+    }
 
-          input[type="checkbox"] {
-            position: absolute;
-            display: block;
+    table.dataTable td {
+      line-height: 1.5em !important;
+      padding: 12px 20px !important;
+      vertical-align: middle;
+    }
 
-            + .description , + br + .description {
-              padding-left: 20px;
-            }
-          }
-        }
+    .form-layout-compressed td {
+      vertical-align: top;
+
+      .crm-form-date-wrapper {
+        margin-top: 0;
       }
+    }
+
+    .form-layout tr td:first-child {
+      padding-left: 0;
+    }
+
+    .crm-info-panel td {
+      padding: 4px;
+    }
+
+    .crm-info-panel td.label label {
+      font-weight: $crm-font-weight-h3
     }
   }
 }
