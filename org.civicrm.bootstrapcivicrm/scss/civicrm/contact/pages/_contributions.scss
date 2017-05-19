@@ -112,6 +112,7 @@
         background: $gray-lighter;
         border: none;
         color: $gray-darker;
+        font: bold $font-size-base $font-family-base !important;
         padding: 10px 20px;
         vertical-align: middle;
       }
