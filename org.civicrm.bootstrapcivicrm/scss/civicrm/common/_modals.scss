@@ -24,6 +24,11 @@
       background: $crm-white;
       color: $gray-darker;
       font-weight: $crm-font-weight-h3 !important;
+
+      label {
+        color: $gray-darker;
+        font-weight: $crm-font-weight-h3 !important;
+      }
     }
   }
 
