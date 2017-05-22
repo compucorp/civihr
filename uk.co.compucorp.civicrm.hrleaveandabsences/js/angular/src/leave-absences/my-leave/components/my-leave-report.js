@@ -345,8 +345,9 @@ define([
             return entitlement.type_id === absenceType.id;
           });
 
-          absenceType.entitlement = entitlement.value;
-          absenceType.remainder = entitlement.remainder;
+          //set entitlement to 0 if no entitlement is present
+          absenceType.entitlement = entitlement ? entitlement.value : 0;
+          absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
         });
       });
     }

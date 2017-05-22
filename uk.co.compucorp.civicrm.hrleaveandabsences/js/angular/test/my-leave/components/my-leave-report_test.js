@@ -154,25 +154,29 @@
                 expect(Entitlement.all.calls.argsFor(0)[1]).toEqual(true);
               });
 
-              it('has stored the remainder in each absence type', function () {
+              it('has stored the entitlement, remainder in each absence type which has entitlement', function () {
                 _.forEach(controller.absenceTypes, function (absenceType) {
-                  var remainder = absenceType.remainder;
-
-                  expect(remainder).toBeDefined();
-                  expect(remainder).toEqual(_.find(controller.entitlements, function (entitlement) {
+                  var entitlement = _.find(controller.entitlements, function (entitlement) {
                     return entitlement.type_id === absenceType.id
-                  })['remainder']);
+                  });
+
+                  if (entitlement) {
+                    expect(absenceType.entitlement).toEqual(entitlement['value']);
+                    expect(absenceType.remainder).toEqual(entitlement['remainder']);
+                  }
                 });
               });
 
-              it('has stored the entitlement value in each absence type', function () {
+              it('has stored the 0 value for entitlement, remainder for absence types which does not have entitlement', function () {
                 _.forEach(controller.absenceTypes, function (absenceType) {
-                  var value = absenceType.entitlement;
-
-                  expect(value).toBeDefined();
-                  expect(value).toEqual(_.find(controller.entitlements, function (entitlement) {
+                  var entitlement = _.find(controller.entitlements, function (entitlement) {
                     return entitlement.type_id === absenceType.id
-                  })['value']);
+                  });
+
+                  if (!entitlement) {
+                    expect(absenceType.entitlement).toEqual(0);
+                    expect(absenceType.remainder).toEqual({ current: 0, future: 0 });
+                  }
                 });
               });
             });

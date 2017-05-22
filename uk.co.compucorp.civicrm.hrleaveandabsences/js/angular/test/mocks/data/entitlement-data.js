@@ -78,42 +78,44 @@ define([
     var i = 1, values = [];
 
     absencePeriodData.all().values.forEach(function (absencePeriod) {
-      absenceTypeData.all().values.forEach(function (absenceType) {
-        var id = i++;
-        var entitlement = {
-          "id": id,
-          "period_id": absencePeriod.id,
-          "type_id": absenceType.id,
-          "contact_id": "202",
-          "overridden": "0",
-          "api.LeavePeriodEntitlement.getentitlement": {
-            "is_error": 0,
-            "version": 3,
-            "count": 1,
-            "values": [{
-              "id": id,
-              "entitlement": _.random(0, 30)
-            }]
-          }
-        };
-
-        if (withRemainder) {
-          entitlement["api.LeavePeriodEntitlement.getremainder"] = {
-            "is_error": 0,
-            "version": 3,
-            "count": 1,
-            "id": 0,
-            "values": [{
-              "id": id,
-              "remainder": {
-                "current": _.random(0, 10),
-                "future": _.random(-10, 10)
-              }
-            }]
+      absenceTypeData.all().values.forEach(function (absenceType, index) {
+        if (index < absenceTypeData.all().values.length - 1) {
+          var id = i++;
+          var entitlement = {
+            "id": id,
+            "period_id": absencePeriod.id,
+            "type_id": absenceType.id,
+            "contact_id": "202",
+            "overridden": "0",
+            "api.LeavePeriodEntitlement.getentitlement": {
+              "is_error": 0,
+              "version": 3,
+              "count": 1,
+              "values": [{
+                "id": id,
+                "entitlement": _.random(0, 30)
+              }]
+            }
           };
-        }
 
-        values.push(entitlement);
+          if (withRemainder) {
+            entitlement["api.LeavePeriodEntitlement.getremainder"] = {
+              "is_error": 0,
+              "version": 3,
+              "count": 1,
+              "id": 0,
+              "values": [{
+                "id": id,
+                "remainder": {
+                  "current": _.random(0, 10),
+                  "future": _.random(-10, 10)
+                }
+              }]
+            };
+          }
+
+          values.push(entitlement);
+        }
       });
     });
 
