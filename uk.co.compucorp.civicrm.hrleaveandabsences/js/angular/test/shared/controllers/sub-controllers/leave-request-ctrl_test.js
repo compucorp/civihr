@@ -1279,27 +1279,6 @@
         });
       });
 
-      describe('when user has no entitlements', function () {
-        beforeEach(function () {
-          var leaveRequest;
-          var directiveOptions;
-
-          leaveRequest = LeaveRequestInstance.init();
-          leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-          directiveOptions = {
-            contactId: leaveRequest.contact_id, //staff's contact id
-            leaveRequest: leaveRequest
-          };
-
-          spyEntitlementAPI.and.returnValue($q.resolve([]));
-          initTestController(directiveOptions);
-        });
-
-        it('fails with error', function () {
-          expect($ctrl.errors).toEqual(['User has no entitlements']);
-        });
-      });
-
       /**
        * Initialize the controller
        *
