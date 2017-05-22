@@ -40,6 +40,7 @@ define([
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
       this.period = {};
+      this.postContactSelection = false, //flag to track if user is selected for enabling UI
       this.requestStatuses = {};
       this.statusBeforeEdit = {};
       this.today = Date.now();
@@ -59,7 +60,6 @@ define([
         absenceTypes: true,
         showBalanceChange: false,
         fromDayTypes: false,
-        postContactSelection: false,
         toDayTypes: false
       };
       //TODO temp fix to allow pageChanged to be called from html as well from functions here with proper context
@@ -634,7 +634,7 @@ define([
        */
       this.initAfterContactSelection = function () {
         var self = this;
-        self.loading.postContactSelection = true;
+        self.postContactSelection = true;
 
         return $q.all([
             self._loadAbsenceTypes(),
@@ -661,7 +661,7 @@ define([
               initialCommentsLength = self.request.comments.length;
             }
 
-            self.loading.postContactSelection = false;
+            self.postContactSelection = false;
           })
           .catch(handleError.bind(self));
       };
