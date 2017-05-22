@@ -88,6 +88,10 @@
   a.crm-hover-button.action-item, 
   .crm-hover-button.btn-slide {
     text-transform: capitalize;
+
+    &:hover {
+      color: $brand-primary !important;
+    }
   }
 
   span.btn-slide {
