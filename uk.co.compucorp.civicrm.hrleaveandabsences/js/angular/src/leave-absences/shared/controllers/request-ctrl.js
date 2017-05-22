@@ -1096,7 +1096,7 @@ define([
           }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
             if (!entitlements.length) {
-              return $q.reject("User has no entitlements");
+              return $q.reject('User has no entitlements');
             }
 
             // create a list of absence types with a `balance` property

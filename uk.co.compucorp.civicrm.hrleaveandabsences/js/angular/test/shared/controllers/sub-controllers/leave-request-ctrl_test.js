@@ -83,12 +83,13 @@
 
         spyOn(AbsencePeriodAPI, 'all').and.callThrough();
         spyOn(AbsenceTypeAPI, 'all').and.callThrough();
-        spyEntitlementAPI = spyOn(EntitlementAPI, 'all').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
         spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
         spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
+
+        spyEntitlementAPI = spyOn(EntitlementAPI, 'all').and.callThrough();
 
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
       }));
@@ -1256,10 +1257,8 @@
       describe('when user has no entitlements', function () {
         beforeEach(function () {
           var leaveRequest = LeaveRequestInstance.init();
-
-          leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
           var directiveOptions = {
-            contactId: leaveRequest.contact_id, //staff's contact id
+            contactId: CRM.vars.leaveAndAbsences.contactId.toString(), //staff's contact id
             leaveRequest: leaveRequest
           };
 
