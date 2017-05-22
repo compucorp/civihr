@@ -34,11 +34,11 @@
       </ui-select>
     </div>
     <div
-      ng-class="{'chr_disabled': !$ctrl.request.contact_id}"
+      ng-class="{'chr_disabled': (!$ctrl.request.contact_id || $ctrl.noEntitlement)}"
       ng-show="!$ctrl.loading.absenceTypes">
       <div class="row">
         <div class="col-xs-12">
-          <div class="chr_custom-select chr_custom-select--full">
+          <div ng-show="!$ctrl.noEntitlement" class="chr_custom-select chr_custom-select--full">
             <select
               ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))"
               name="absenceTypeSelect"
@@ -46,6 +46,7 @@
               ng-model="$ctrl.request.type_id"
               ng-change="$ctrl.updateBalance()"></select>
           </div>
+          <div ng-show="$ctrl.noEntitlement">No Entitlement</div>
         </div>
       </div>
       <hr/>

@@ -25,7 +25,7 @@
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
-        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl,
+        Contact, ContactAPIMock, EntitlementAPI, Entitlement, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl,
         date2016 = '01/12/2016',
         date2017 = '02/02/2017',
         date2013 = '02/02/2013',
@@ -59,7 +59,7 @@
       }]));
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_,
-        _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_,
+        _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
         _LeaveRequestInstance_, _LeaveRequestAPI_, _WorkPatternAPI_) {
 
         $log = _$log_;
@@ -69,6 +69,7 @@
 
         Contact = _Contact_;
         EntitlementAPI = _EntitlementAPI_;
+        Entitlement = _Entitlement_;
         LeaveRequestAPI = _LeaveRequestAPI_;
         WorkPatternAPI = _WorkPatternAPI_;
         AbsenceTypeAPI = _AbsenceTypeAPI_;
@@ -1197,40 +1198,56 @@
         });
 
         describe('after contact is selected', function () {
-          var approvalStatus;
-
-          beforeEach(function () {
-            approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
-            $ctrl.initAfterContactSelection();
-            $scope.$digest();
-          });
-
-          it('sets manager role', function () {
-            expect($ctrl.isRole('manager')).toBeTruthy();
-          });
-
-          it('sets create mode', function () {
-            expect($ctrl.isMode('create')).toBeTruthy();
-          });
-
-          it('does not initialize absence types', function () {
-            expect(AbsenceTypeAPI.all).toHaveBeenCalled();
-          });
-
-          it('sets status to approved', function () {
-            expect($ctrl.request.status_id).toEqual(approvalStatus);
-          });
-
-          describe('cancelled status', function () {
-            var cancelStatus, availableStatuses;
+          describe('when entitlement is present', function() {
+            var approvalStatus;
 
             beforeEach(function () {
-              cancelStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'cancelled');
-              availableStatuses = $ctrl.getStatuses();
+              approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+              $ctrl.initAfterContactSelection();
+              $scope.$digest();
             });
 
-            it('is not available', function () {
-              expect(availableStatuses).not.toContain(cancelStatus);
+            it('sets manager role', function () {
+              expect($ctrl.isRole('manager')).toBeTruthy();
+            });
+
+            it('sets create mode', function () {
+              expect($ctrl.isMode('create')).toBeTruthy();
+            });
+
+            it('does not initialize absence types', function () {
+              expect(AbsenceTypeAPI.all).toHaveBeenCalled();
+            });
+
+            it('sets status to approved', function () {
+              expect($ctrl.request.status_id).toEqual(approvalStatus);
+            });
+
+            describe('cancelled status', function () {
+              var cancelStatus, availableStatuses;
+
+              beforeEach(function () {
+                cancelStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'cancelled');
+                availableStatuses = $ctrl.getStatuses();
+              });
+
+              it('is not available', function () {
+                expect(availableStatuses).not.toContain(cancelStatus);
+              });
+            });
+          });
+
+          describe('when entitlement is not present', function() {
+            beforeEach(function() {
+              spyOn(Entitlement, 'all').and.callFake(function () {
+                return $q.resolve([])
+              });
+              $ctrl.initAfterContactSelection();
+              $scope.$digest();
+            });
+
+            it('No entitlement message is shown on UI', function() {
+              expect($ctrl.noEntitlement).toBe(true);
             });
           });
         });

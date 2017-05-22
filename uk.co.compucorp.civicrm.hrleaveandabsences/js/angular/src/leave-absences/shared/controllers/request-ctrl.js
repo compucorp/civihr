@@ -37,6 +37,7 @@ define([
       this.submitting = false;
       this.errors = [];
       this.managedContacts = [];
+      this.noEntitlement = false;
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
       this.period = {};
@@ -657,7 +658,10 @@ define([
 
               initialCommentsLength = self.request.comments.length;
             }
-          });
+          })
+          .catch(function (error) {
+            self.noEntitlement = ( error === 'No entitlement' );
+          })
       };
 
       /**
@@ -1089,6 +1093,9 @@ define([
             type_id: { IN: absenceTypesAndIds.ids }
           }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
+            if (!entitlements.length) {
+              return $q.reject('No entitlement');
+            }
             // create a list of absence types with a `balance` property
             self.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
           });
