@@ -34,7 +34,7 @@
       </ui-select>
     </div>
     <div
-      ng-class="{'chr_disabled': !$ctrl.request.contact_id}"
+      ng-class="{'chr_disabled': (!$ctrl.request.contact_id || $ctrl.postContactSelection)}"
       ng-show="!$ctrl.loading.absenceTypes">
       <div class="row">
         <div class="col-xs-12">

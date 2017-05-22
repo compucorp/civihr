@@ -40,6 +40,7 @@ define([
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
       this.period = {};
+      this.postContactSelection = false, //flag to track if user is selected for enabling UI
       this.requestStatuses = {};
       this.statusBeforeEdit = {};
       this.today = Date.now();
@@ -622,7 +623,8 @@ define([
             if (self.request.contact_id) {
               return self.initAfterContactSelection();
             }
-          });
+          })
+          .catch(handleError.bind(self));
       };
 
       /**
@@ -632,6 +634,7 @@ define([
        */
       this.initAfterContactSelection = function () {
         var self = this;
+        self.postContactSelection = true;
 
         return $q.all([
             self._loadAbsenceTypes(),
@@ -657,7 +660,10 @@ define([
 
               initialCommentsLength = self.request.comments.length;
             }
-          });
+
+            self.postContactSelection = false;
+          })
+          .catch(handleError.bind(self));
       };
 
       /**
@@ -1089,6 +1095,10 @@ define([
             type_id: { IN: absenceTypesAndIds.ids }
           }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
+            if (!entitlements.length) {
+              return $q.reject('User has no entitlements');
+            }
+
             // create a list of absence types with a `balance` property
             self.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
           });
