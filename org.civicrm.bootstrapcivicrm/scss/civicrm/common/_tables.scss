@@ -44,6 +44,26 @@
     border-right: none;
   }
 
+  thead {
+    background: $gray-lighter;
+
+    th.ui-state-default {
+      background-color: $gray-lighter;
+
+      &.sorting_disabled {
+        background: $gray-lighter;
+      }
+    }
+
+    > tr:first-child > th {
+      border-color: $crm-table-heading-border-color;
+    }
+  }
+
+  &:not(.table-bordered) > tbody > tr:first-child > td {
+    border-color: $crm-background;
+  }
+
   td .crm-hover-button {
     background: none !important;
     border: 0;
@@ -308,6 +328,7 @@
   table.selector,
   table.row-highlight,
   table.dataTable,
+  table.crm-multifield-selector,
   .ui-dialog table,
   .CRM_HRRecruitment_Form_Search > table,
   .CRM_Case_Form_Search .caseSelector,

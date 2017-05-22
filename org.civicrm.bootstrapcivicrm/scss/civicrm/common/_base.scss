@@ -70,6 +70,11 @@
           margin-top: 2px;
         }
       }
+
+      abbr {
+        right: 28px;
+        top: 8px;
+      }
     }
 
     &.select2-dropdown-open {
@@ -85,7 +90,19 @@
     }
   }
 
-  a.crm-hover-button.action-item, 
+  .crm-section {
+    color: $crm-copy;
+    font-family: $font-family-base;
+    font-size: $font-size-base;
+
+    .label {
+      color: $gray-darker;
+      font-weight: $crm-font-weight-h3;
+      text-align: left;
+    }
+  }
+
+  a.crm-hover-button.action-item,
   .crm-hover-button.btn-slide {
     text-transform: capitalize;
 
@@ -130,6 +147,17 @@
 
     table {
       box-shadow: none !important;
+      max-width: 100%;
+
+      thead th {
+        line-height: 1.4em;
+        padding: 15px 20px;        
+      }
+
+      tbody td {
+        line-height: 1.4em;
+        padding: 12px 20px; 
+      }
     }
 
     .crm-datatable-pager-top {
