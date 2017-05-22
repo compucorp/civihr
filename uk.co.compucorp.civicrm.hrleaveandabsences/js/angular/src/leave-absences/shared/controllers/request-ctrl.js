@@ -620,9 +620,7 @@ define([
             ]);
           })
           .then(function () {
-            if (self.request.contact_id) {
-              return self.initAfterContactSelection();
-            }
+            return self.initAfterContactSelection();
           })
           .catch(handleError.bind(self));
       };
@@ -636,9 +634,9 @@ define([
         var self = this;
         self.postContactSelection = true;
 
-        //when manager deselects contact it is called without a selected contact_id
+        // when manager deselects contact it is called without a selected contact_id
         if (!self.request.contact_id) {
-          return $q.reject("The contact id or period id was not set");
+          return $q.reject("The contact id was not set");
         }
 
         return $q.all([

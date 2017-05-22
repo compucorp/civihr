@@ -1238,14 +1238,26 @@
         });
 
         describe('after contact is deselected', function() {
+          var promise;
+
           beforeEach(function() {
             $ctrl.request.contact_id = undefined;
-            $ctrl.initAfterContactSelection();
+            promise = $ctrl.initAfterContactSelection();
             $scope.$digest();
+          });
+
+          afterEach(function () {
+            $rootScope.$apply();
           });
 
           it('does not call calendar APIs', function () {
             expect(WorkPatternAPI.getCalendar).not.toHaveBeenCalled();
+          });
+
+          it('throws error', function () {
+            promise.catch(function (err) {
+              expect(err).toEqual('The contact id was not set');
+            });
           });
         });
       });
