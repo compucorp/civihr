@@ -341,6 +341,7 @@
         > td {          
           max-width: 80px;
           min-width: auto;
+          padding: 15px !important;
           vertical-align: middle;
           word-break: normal !important;
 
@@ -355,12 +356,13 @@
           &:first-child {
             display: table-cell !important;
             min-width: auto;
+            padding-left: 20px !important;
           }
 
           &:nth-child(2) {
             align-items: center;
             display: flex;
-            padding: 17px 20px !important;
+            padding: 17px 15px !important;
 
             a:nth-child(2) {
               display: inline-block;
@@ -785,7 +787,8 @@
     padding: 15px 20px 11px;
 
     .label {
-      color: $gray-darker;    
+      color: $gray-darker;
+      font-weight: $crm-font-weight-h2;
     }
 
     + .form-layout-compressed {
@@ -874,8 +877,6 @@
   }
 
   table.crm-softcredit-selector {
-    display: block;
-    overflow-x: auto;
     width: 100% !important;
 
     thead th {
@@ -887,7 +888,6 @@
   }
 
   table.crm-softcredit-selector td {
-    min-width: 3.83em;
     padding: 15px 20px !important;
     white-space: nowrap;
 
