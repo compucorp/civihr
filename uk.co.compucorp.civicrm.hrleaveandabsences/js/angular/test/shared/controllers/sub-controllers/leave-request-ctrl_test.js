@@ -1281,9 +1281,13 @@
 
       describe('when user has no entitlements', function () {
         beforeEach(function () {
-          var leaveRequest = LeaveRequestInstance.init();
-          var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId.toString(), //staff's contact id
+          var leaveRequest;
+          var directiveOptions;
+
+          leaveRequest = LeaveRequestInstance.init();
+          leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+          directiveOptions = {
+            contactId: leaveRequest.contact_id, //staff's contact id
             leaveRequest: leaveRequest
           };
 
