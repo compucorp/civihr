@@ -101,25 +101,33 @@
   }
 
   td {
-    display: table-cell;
-    vertical-align: middle;
+    display: table-cell;    
     line-height: 1.5em;
     padding: 5px;
+    vertical-align: middle;
 
     &.label {
-      width: 185px;
-      padding: 17px 0;
-      text-align: left;
       box-sizing: border-box;
+      padding: 17px 0;
+      text-align: left;      
       vertical-align: top;
+      width: 185px;
     }
   }
 
-  #id-paymentReminders {
-    tr:not([class*='crm-contribution-form-block']) {
-      td {
-        padding: 5px;
-      }
+  #id-paymentReminders tr:not([class*='crm-contribution-form-block']) td {
+    padding: 5px;
+  }
+
+  .crm-pledge-form-block-installments  #eachPaymentAmount {
+    &[disabled],
+    &[readonly] {
+      background: $gray-lighter !important;
+      border-color: $crm-darker-grayblue;
+      color: $gray-darker;
+      cursor: not-allowed;
+      margin-right: 5px !important;
+      opacity: 0.6;
     }
   }
 }
