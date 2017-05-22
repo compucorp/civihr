@@ -1098,7 +1098,6 @@ define([
             type_id: { IN: absenceTypesAndIds.ids }
           }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
-
             // create a list of absence types with a `balance` property
             self.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
           });

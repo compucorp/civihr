@@ -25,7 +25,7 @@
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
-        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl, spyEntitlementAPI,
+        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl,
         date2016 = '01/12/2016',
         date2017 = '02/02/2017',
         date2013 = '02/02/2013',
@@ -88,8 +88,7 @@
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
         spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
         spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
-
-        spyEntitlementAPI = spyOn(EntitlementAPI, 'all').and.callThrough();
+        spyOn(EntitlementAPI, 'all').and.callThrough();
 
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
       }));
