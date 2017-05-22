@@ -470,7 +470,7 @@ define([
        */
       this._convertDateToServerFormat = function (date) {
         return moment(date).format(sharedSettings.serverDateFormat);
-      }
+      };
 
       /**
        * Converts given date to javascript date as expected by uib-datepicker
@@ -480,7 +480,7 @@ define([
        */
       this._convertDateFormatFromServer = function (date) {
         return moment(date, sharedSettings.serverDateFormat).toDate();
-      }
+      };
 
       /**
        * Flattens statuses from object to array of objects. This is used to
@@ -496,7 +496,7 @@ define([
 
           return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
         }.bind(this));
-      }
+      };
 
       /**
        * Initializes user's calendar (work patterns)
@@ -510,7 +510,7 @@ define([
           .then(function (usersCalendar) {
             self.calendar = usersCalendar;
           });
-      }
+      };
 
       /**
        * Initializes values for absence types and entitlements when the
