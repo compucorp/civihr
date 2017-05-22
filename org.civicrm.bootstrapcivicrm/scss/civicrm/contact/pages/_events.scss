@@ -68,6 +68,10 @@
         &:last-child {
           padding-right: 20px;
         }
+
+        a.crm-hover-button.action-item:hover {
+          color: $brand-primary !important;
+        }
       }
 
       &:last-child {
@@ -417,7 +421,7 @@
   }
 
   .description {
-    margin: 10px 20px;
+    margin: 20px 20px 10px;
   }
 
   table {
@@ -442,7 +446,6 @@
       th {
         background: $gray-lighter !important;
         border: none;
-        border-bottom: none;
         color: $gray-darker !important;
         vertical-align: middle;
 
@@ -454,9 +457,7 @@
 
     tbody tr {
       background: $crm-white;
-      border: 1px solid $crm-background;
-      border-left: 0;
-      border-right: 0;
+      border: none;
 
       &.crm-event-participantview-form-block-displayName td {
         strong {
@@ -480,7 +481,6 @@
           th {                
             background: $gray-lighter !important;
             border: none;
-            border-bottom: none;
             color: $gray-darker;
             vertical-align: middle;
           }
@@ -491,7 +491,7 @@
         background: $crm-white !important;
         border: none;
         line-height: 1.1em;
-        padding: 20px;
+        padding: 10px;
 
         &.label {
           border-bottom: none;
@@ -508,8 +508,8 @@
         }
       }
 
-      &:first-child {
-        border-top: 0;
+      td  > table {
+        margin: 0 !important;
       }      
     }
   }
