@@ -113,7 +113,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testBalanceForEntitlementCanSumOnlyTheBalanceChangesForLeaveRequestWithSpecificStatuses() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('-10 days'),
       new DateTime('+10 days')
@@ -125,7 +125,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $entitlement->type_id,
       'contact_id' => $entitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => date('YmdHis', strtotime('-10 days')),
       'to_date' => date('YmdHis', strtotime('-10 days'))
     ], true);
@@ -133,7 +133,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $entitlement->type_id,
       'contact_id' => $entitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => date('YmdHis', strtotime('-9 days')),
       'to_date' => date('YmdHis', strtotime('-9 days'))
     ], true);
@@ -141,7 +141,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $entitlement->type_id,
       'contact_id' => $entitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => date('YmdHis', strtotime('-8 days')),
       'to_date' => date('YmdHis', strtotime('-8 days'))
     ], true);
@@ -149,7 +149,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $entitlement->type_id,
       'contact_id' => $entitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['Admin Approved'],
+      'status_id' => $leaveRequestStatuses['admin_approved'],
       'from_date' => date('YmdHis', strtotime('-7 days')),
       'to_date' => date('YmdHis', strtotime('-7 days'))
     ], true);
@@ -157,7 +157,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $entitlement->type_id,
       'contact_id' => $entitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => date('YmdHis', strtotime('-6 days')),
       'to_date' => date('YmdHis', strtotime('-6 days'))
     ], true);
@@ -165,7 +165,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $entitlement->type_id,
       'contact_id' => $entitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['More Information Requested'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
       'from_date' => date('YmdHis', strtotime('-6 days')),
       'to_date' => date('YmdHis', strtotime('-6 days'))
     ], true);
@@ -175,29 +175,29 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     // Only Include balance changes from approved leave requests
     $statusesToInclude = [
-      $leaveRequestStatuses['Approved'],
-      $leaveRequestStatuses['Admin Approved'],
+      $leaveRequestStatuses['approved'],
+      $leaveRequestStatuses['admin_approved'],
     ];
     $this->assertEquals(8, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statusesToInclude));
 
     // Only Include balance changes from cancelled/rejected leave requests
     $statusesToInclude = [
-      $leaveRequestStatuses['Cancelled'],
-      $leaveRequestStatuses['Rejected'],
+      $leaveRequestStatuses['cancelled'],
+      $leaveRequestStatuses['rejected'],
     ];
     $this->assertEquals(8, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statusesToInclude));
 
-    // Only Include balance changes from leave requests waiting approval
-    $statusesToInclude = [ $leaveRequestStatuses['Waiting Approval'] ];
+    // Only Include balance changes from leave requests Awaiting approval
+    $statusesToInclude = [ $leaveRequestStatuses['awaiting_approval'] ];
     $this->assertEquals(9, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statusesToInclude));
 
     // Only Include balance changes from leave requests waiting for more information
-    $statusesToInclude = [ $leaveRequestStatuses['More Information Requested'] ];
+    $statusesToInclude = [ $leaveRequestStatuses['more_information_required'] ];
     $this->assertEquals(9, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statusesToInclude));
   }
 
   public function testBalanceForEntitlementDoesNotSumForSoftDeletedLeaveRequests() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('-10 days'),
       new DateTime('+10 days')
@@ -209,7 +209,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $entitlement->type_id,
       'contact_id' => $entitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['More Information Requested'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
       'from_date' => date('YmdHis', strtotime('-6 days')),
       'to_date' => date('YmdHis', strtotime('-6 days'))
     ], true);
@@ -221,12 +221,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     // Only Include balance changes from leave requests waiting for more information
     // but the leave request has been soft deleted and is not accounted for.
-    $statusesToInclude = [ $leaveRequestStatuses['More Information Requested'] ];
+    $statusesToInclude = [ $leaveRequestStatuses['more_information_required'] ];
     $this->assertEquals(10, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statusesToInclude));
   }
 
   public function testBalanceForEntitlementIncludesExpiredBroughtForwardAndTOIL() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('-10 days'),
       new DateTime('+10 days')
@@ -244,7 +244,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-5 days'),
       CRM_Utils_Date::processDate('-5 days'),
       3,
@@ -257,7 +257,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testBalanceForEntitlementCanIncludeOnlyTheExpiredBalanceChanges() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('-10 days'),
       new DateTime('+10 days')
@@ -275,7 +275,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-5 days'),
       CRM_Utils_Date::processDate('-5 days'),
       3,
@@ -288,7 +288,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testBalanceForEntitlementCanIncludeOnlyTheExpiredBalanceChangesForTOILRequestsWithSpecificStatuses() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('-10 days'),
       new DateTime('+10 days')
@@ -306,7 +306,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-5 days'),
       CRM_Utils_Date::processDate('-5 days'),
       3,
@@ -317,7 +317,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Cancelled'],
+      $leaveRequestStatuses['cancelled'],
       CRM_Utils_Date::processDate('-3 days'),
       CRM_Utils_Date::processDate('-3 days'),
       3,
@@ -328,7 +328,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Waiting Approval'],
+      $leaveRequestStatuses['awaiting_approval'],
       CRM_Utils_Date::processDate('-1 days'),
       CRM_Utils_Date::processDate('-1 days'),
       5,
@@ -336,27 +336,27 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       2
     );
 
-    $statuses = [$leaveRequestStatuses['Approved']];
+    $statuses = [$leaveRequestStatuses['approved']];
     // -5 (Expired Brought Forward) - 1 (Expired Approved TOIL)
     $this->assertEquals(-6, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
 
-    $statuses = [$leaveRequestStatuses['Approved'], $leaveRequestStatuses['Waiting Approval']];
-    // -5 (Expired Brought Forward) - 1 (Expired Approved TOIL) - 2 (Expired Waiting Approval TOIL)
+    $statuses = [$leaveRequestStatuses['approved'], $leaveRequestStatuses['awaiting_approval']];
+    // -5 (Expired Brought Forward) - 1 (Expired Approved TOIL) - 2 (Expired Awaiting Approval TOIL)
     $this->assertEquals(-8, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
 
-    $statuses = [$leaveRequestStatuses['Cancelled'], $leaveRequestStatuses['Waiting Approval']];
-    // -5 (Expired Brought Forward) - 3 (Expired Cancelled TOIL) -2 (Expired Waiting Approval TOIL)
+    $statuses = [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['awaiting_approval']];
+    // -5 (Expired Brought Forward) - 3 (Expired Cancelled TOIL) -2 (Expired Awaiting_Approval TOIL)
     $this->assertEquals(-10, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
 
-    $statuses = [$leaveRequestStatuses['Waiting Approval']];
-    // -5 (Expired Brought Forward) - 2 (Expired Waiting Approval TOIL)
+    $statuses = [$leaveRequestStatuses['awaiting_approval']];
+    // -5 (Expired Brought Forward) - 2 (Expired awaiting_approval TOIL)
     $this->assertEquals(-7, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
 
-    $statuses = [$leaveRequestStatuses['Cancelled']];
+    $statuses = [$leaveRequestStatuses['cancelled']];
     // -5 (Expired Brought Forward) - 3 (Expired Cancelled TOIL)
     $this->assertEquals(-8, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
 
-    $statuses = [$leaveRequestStatuses['Cancelled'], $leaveRequestStatuses['Approved']];
+    $statuses = [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['approved']];
     // -5 (Expired Brought Forward) - 3 (Expired Cancelled TOIL) - 1 (Expired Approved TOIL)
     $this->assertEquals(-9, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statuses, $expiredOnly));
   }
@@ -386,7 +386,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testTheEntitlementBreakdownSumsOnlyThePositiveLeaveBroughtForwardAndPublicHolidayChangesWithoutASource() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlement();
 
     $this->createLeaveBalanceChange($entitlement->id, 23.5);
@@ -408,7 +408,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // won't be returned as part of the breakdown
     $this->createLeaveRequestBalanceChange(
       $entitlement->id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
     );
@@ -418,7 +418,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testLeaveRequestBalanceForEntitlementOnlySumBalanceChangesCreatedByLeaveRequestsWithSpecificStatus() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime(),
       new DateTime('+20 days')
@@ -435,7 +435,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
     );
@@ -444,7 +444,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Admin Approved'],
+      $leaveRequestStatuses['admin_approved'],
       date('Y-m-d', strtotime('+11 days'))
     );
 
@@ -452,7 +452,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Cancelled'],
+      $leaveRequestStatuses['cancelled'],
       date('Y-m-d', strtotime('+12 days'))
     );
 
@@ -460,7 +460,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Rejected'],
+      $leaveRequestStatuses['rejected'],
       date('Y-m-d', strtotime('+13 days'))
     );
 
@@ -468,7 +468,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Waiting Approval'],
+      $leaveRequestStatuses['awaiting_approval'],
       date('Y-m-d', strtotime('+14 days'))
     );
 
@@ -476,7 +476,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['More Information Requested'],
+      $leaveRequestStatuses['more_information_required'],
       date('Y-m-d', strtotime('+15 days'))
     );
 
@@ -487,34 +487,34 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // Balance including only approved leave requests
     $leaveRequestBalanceChange = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
       $entitlement,
-      [ $leaveRequestStatuses['Approved'], $leaveRequestStatuses['Admin Approved'] ]
+      [ $leaveRequestStatuses['approved'], $leaveRequestStatuses['admin_approved'] ]
     );
     $this->assertEquals(-12, $leaveRequestBalanceChange);
 
     // Balance including only cancelled or rejected leave requests
     $leaveRequestBalanceChange = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
       $entitlement,
-      [ $leaveRequestStatuses['Cancelled'], $leaveRequestStatuses['Rejected'] ]
+      [ $leaveRequestStatuses['cancelled'], $leaveRequestStatuses['rejected'] ]
     );
     $this->assertEquals(-2, $leaveRequestBalanceChange);
 
-    // Balance including only leave requests waiting approval
+    // Balance including only leave requests Awaiting approval
     $leaveRequestBalanceChange = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
       $entitlement,
-      [ $leaveRequestStatuses['Waiting Approval'] ]
+      [ $leaveRequestStatuses['awaiting_approval'] ]
     );
     $this->assertEquals(-1, $leaveRequestBalanceChange);
 
     // Balance including only leave requests waiting for more information
     $leaveRequestBalanceChange = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
       $entitlement,
-      [ $leaveRequestStatuses['More Information Requested'] ]
+      [ $leaveRequestStatuses['more_information_required'] ]
     );
     $this->assertEquals(-1, $leaveRequestBalanceChange);
   }
 
   public function testLeaveRequestBalanceForEntitlementCanSumBalanceChangesCreatedByLeaveRequestsUpToASpecificDate() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime(),
       new DateTime('+20 days')
@@ -527,7 +527,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
     );
@@ -571,7 +571,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testLeaveRequestBalanceForEntitlementCanSumBalanceChangesCreatedByLeaveRequestsOnASpecificDateRange() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime(),
       new DateTime('+20 days')
@@ -584,7 +584,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
     );
@@ -626,7 +626,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testLeaveRequestBalanceForEntitlementCanExcludeBalanceChangesForPublicHolidayLeaveRequests() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('today'),
       new DateTime('+100 days')
@@ -639,7 +639,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
     );
@@ -655,7 +655,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testLeaveRequestBalanceForEntitlementCanIncludeOnlyBalanceChangesForPublicHolidayLeaveRequests() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('today'),
       new DateTime('+100 days')
@@ -668,7 +668,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
     );
@@ -695,7 +695,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testLeaveRequestBalanceForEntitlementWithParamsToBothExcludeAndIncludePublicHolidaysShouldReturnZero() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('today'),
       new DateTime('+100 days')
@@ -708,7 +708,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
       $entitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
     );
@@ -1191,7 +1191,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $balanceChange = $this->createBroughtForwardBalanceChange(
       $periodEntitlement->id,
@@ -1203,7 +1203,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $periodEntitlement->type_id,
       'contact_id' => $periodEntitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-10 days'),
       'to_date' => CRM_Utils_Date::processDate('-10 days')
     ], true);
@@ -1213,7 +1213,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $periodEntitlement->type_id,
       'contact_id' => $periodEntitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-15 days'),
       'to_date' => CRM_Utils_Date::processDate('-15 days')
     ], true);
@@ -1223,7 +1223,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $periodEntitlement->type_id,
       'contact_id' => $periodEntitlement->contact_id,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => CRM_Utils_Date::processDate('-20 days'),
       'to_date' => CRM_Utils_Date::processDate('-21 days')
     ], true);
@@ -1256,7 +1256,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $balanceChange1 = $this->createBroughtForwardBalanceChange(
       $periodEntitlement->id,
@@ -1274,7 +1274,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-7 days'),
       CRM_Utils_Date::processDate('-1 day')
     );
@@ -1315,7 +1315,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $balanceChange = $this->createBroughtForwardBalanceChange(
       $periodEntitlement->id,
@@ -1328,7 +1328,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-2 days'),
       CRM_Utils_Date::processDate('+5 days')
     );
@@ -1366,7 +1366,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $balanceChange1 = $this->createBroughtForwardBalanceChange(
       $periodEntitlement1->id,
@@ -1385,7 +1385,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement1->type_id,
       $periodEntitlement1->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-2 days'),
       CRM_Utils_Date::processDate('+5 days')
     );
@@ -1395,7 +1395,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement2->type_id,
       $periodEntitlement2->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-4 days'),
       CRM_Utils_Date::processDate('+3 days')
     );
@@ -1443,7 +1443,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 2,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $balanceChange = $this->createBroughtForwardBalanceChange(
       $periodEntitlement2->id,
@@ -1454,7 +1454,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('-2 days'),
       CRM_Utils_Date::processDate('+5 days')
     );
@@ -1563,7 +1563,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testCreateExpiryRecordsCanExpireTOILRequests() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-30 days'),
@@ -1579,7 +1579,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-20 days'),
       'to_date' => CRM_Utils_Date::processDate('-20 days'),
       'toil_to_accrue' => 1,
@@ -1609,7 +1609,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
-      'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
+      'type_id' => $this->getBalanceChangeTypeValue('brought_forward')
     ]);
 
     $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1699,7 +1699,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
-      'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
+      'type_id' => $this->getBalanceChangeTypeValue('brought_forward')
     ]);
 
     $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1763,7 +1763,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
-      'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
+      'type_id' => $this->getBalanceChangeTypeValue('brought_forward')
     ]);
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1813,7 +1813,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => 5,
       'expiry_date' => CRM_Utils_Date::processDate('2016-02-27'),
-      'type_id' => $this->getBalanceChangeTypeValue('Brought Forward')
+      'type_id' => $this->getBalanceChangeTypeValue('brought_forward')
     ]);
 
     $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1852,7 +1852,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testCreateExpiryRecordsConsidersOnlyTheApprovedLeaveRequestsBetweenTheTOILRequestDateAndTOILExpiryDateToExpireTOILRequests() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-30 days'),
@@ -1868,7 +1868,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-20 days'),
       'to_date' => CRM_Utils_Date::processDate('-20 days'),
       'toil_to_accrue' => 2,
@@ -1880,7 +1880,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => CRM_Utils_Date::processDate('-15 days'),
       'to_date' => CRM_Utils_Date::processDate('-15 days'),
     ], true);
@@ -1888,7 +1888,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
       'type_id' => $periodEntitlement->type_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-13 days'),
       'to_date' => CRM_Utils_Date::processDate('-13 days'),
     ], true);
@@ -2041,12 +2041,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $contactID = 1;
     $absenceTypeID = 1;
     $absenceTypeID2 = 2;
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
       'to_date_type' => 1,
@@ -2060,7 +2060,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Admin Approved'],
+      'status_id' => $leaveRequestStatuses['admin_approved'],
       'from_date' => CRM_Utils_Date::processDate('+3 days'),
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
@@ -2074,7 +2074,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID2,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Admin Approved'],
+      'status_id' => $leaveRequestStatuses['admin_approved'],
       'from_date' => CRM_Utils_Date::processDate('+3 days'),
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'to_date_type' => 1,
@@ -2088,7 +2088,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('+5 days'),
       'to_date' => CRM_Utils_Date::processDate('+6 days'),
       'to_date_type' => 1,
@@ -2108,7 +2108,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       $absenceTypeID,
       $startDate,
       $endDate,
-      [$leaveRequestStatuses['Admin Approved'], $leaveRequestStatuses['Approved']]
+      [$leaveRequestStatuses['admin_approved'], $leaveRequestStatuses['approved']]
     );
     $this->assertEquals(3, $totalBalanceChange);
   }
@@ -2125,7 +2125,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $broughtForwardPeriod1 = $this->createExpiredBroughtForwardBalanceChange(
       $periodEntitlement1->id,
@@ -2145,7 +2145,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $accruedToilPeriod1 = $this->createExpiredTOILRequestBalanceChange(
       $periodEntitlement1->type_id,
       $periodEntitlement1->contact_id,
-      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['approved'],
       CRM_Utils_Date::processDate('2016-01-09'),
       CRM_Utils_Date::processDate('2016-01-10'),
       5,
@@ -2163,7 +2163,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $periodEntitlement1->type_id,
       'contact_id' => $periodEntitlement1->contact_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('2016-03-10'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-12')
     ], true);
@@ -2204,7 +2204,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $balanceChangePeriod1 = $this->createExpiredBroughtForwardBalanceChange(
       $periodEntitlement1->id,
@@ -2218,7 +2218,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $periodEntitlement1->type_id,
       'contact_id' => $periodEntitlement1->contact_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-2 days'),
       'to_date' => CRM_Utils_Date::processDate('+1 day')
     ], true);
@@ -2249,7 +2249,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $balanceChangePeriod1 = $this->createExpiredBroughtForwardBalanceChange(
       $periodEntitlement1->id,
@@ -2263,7 +2263,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $periodEntitlement1->type_id,
       'contact_id' => $periodEntitlement1->contact_id,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('-2 days'),
       'to_date' => CRM_Utils_Date::processDate('+1 day')
     ], true);
@@ -2289,7 +2289,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $balanceChangePeriod1 = $this->createExpiredBroughtForwardBalanceChange(
       $periodEntitlement1->id,
@@ -2303,7 +2303,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $periodEntitlement1->type_id,
       'contact_id' => $periodEntitlement1->contact_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-2 days'),
       'to_date' => CRM_Utils_Date::processDate('+1 day')
     ], true);
@@ -2332,7 +2332,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 1,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $balanceChangePeriod1 = $this->createExpiredBroughtForwardBalanceChange(
       $periodEntitlement1->id,
@@ -2344,7 +2344,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $periodEntitlement1->type_id,
       'contact_id' => $periodEntitlement1->contact_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('today'),
       'to_date' => CRM_Utils_Date::processDate('+2 days')
     ], true);
@@ -2377,7 +2377,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'type_id' => 2,
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $balanceChangePeriod1 = $this->createExpiredBroughtForwardBalanceChange(
       $periodEntitlement1->id,
@@ -2389,7 +2389,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $periodEntitlement2->type_id,
       'contact_id' => $periodEntitlement2->contact_id,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-2 days'),
       'to_date' => CRM_Utils_Date::processDate('+1 day')
     ], true);

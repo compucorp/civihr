@@ -152,12 +152,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'pattern_id' => $workPattern->id
     ]);
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('2016-11-02'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('2016-11-04'),
@@ -218,8 +218,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-11-13');
     $toDate = new DateTime('2016-11-15');
-    $fromType = $this->leaveRequestDayTypes['1/2 AM']['value'];
-    $toType = $this->leaveRequestDayTypes['1/2 AM']['value'];
+    $fromType = $this->leaveRequestDayTypes['half_day_am']['value'];
+    $toType = $this->leaveRequestDayTypes['half_day_am']['value'];
 
     $expectedResultsBreakdown = [
       'amount' => 0,
@@ -231,9 +231,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-11-13',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
 
@@ -243,9 +243,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-11-14',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -255,9 +255,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-11-15',
       'amount' => 0.5,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['1/2 AM']['id'],
-        'value' => $this->leaveRequestDayTypes['1/2 AM']['value'],
-        'label' => $this->leaveRequestDayTypes['1/2 AM']['label']
+        'id' => $this->leaveRequestDayTypes['half_day_am']['id'],
+        'value' => $this->leaveRequestDayTypes['half_day_am']['value'],
+        'label' => $this->leaveRequestDayTypes['half_day_am']['label']
       ]
     ];
 
@@ -295,8 +295,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-11-14');
     $toDate = new DateTime('2016-11-15');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
+    $toType = $this->leaveRequestDayTypes['all_day']['value'];
 
     $expectedResultsBreakdown = [
       'amount' => 0,
@@ -309,9 +309,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-11-14',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Public Holiday']['id'],
-        'value' => $this->leaveRequestDayTypes['Public Holiday']['value'],
-        'label' => $this->leaveRequestDayTypes['Public Holiday']['label']
+        'id' => $this->leaveRequestDayTypes['public_holiday']['id'],
+        'value' => $this->leaveRequestDayTypes['public_holiday']['value'],
+        'label' => $this->leaveRequestDayTypes['public_holiday']['label']
       ]
     ];
 
@@ -321,9 +321,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-11-15',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -352,8 +352,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-07-31');
     $toDate = new DateTime('2016-08-15');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['1/2 AM']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
+    $toType = $this->leaveRequestDayTypes['half_day_am']['value'];
 
     $expectedResultsBreakdown = [
       'amount' => 0,
@@ -365,9 +365,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-07-31',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
 
@@ -378,9 +378,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-01',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
 
@@ -390,9 +390,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-02',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -401,9 +401,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-03',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
 
@@ -413,9 +413,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-04',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -424,9 +424,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-05',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
 
@@ -434,9 +434,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-06',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
 
@@ -444,9 +444,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-07',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
 
@@ -460,9 +460,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-08',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -471,9 +471,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-09',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
     // Wednesday is a working day on the first week
@@ -482,9 +482,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-10',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
     // Thursday is not a working day on the first week
@@ -492,9 +492,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-11',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
 
@@ -504,9 +504,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-12',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -515,9 +515,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-13',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
 
@@ -525,9 +525,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-14',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
     // Hit sunday again, so we are now on the fourth week since the start date.
@@ -538,9 +538,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-15',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
     $expectedResultsBreakdown['amount'] *= -1;
@@ -663,9 +663,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value']
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value']
     ]);
   }
 
@@ -736,12 +736,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_NO
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -754,7 +754,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'id' => $leaveRequest->id,
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -771,12 +771,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('-1 day'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -789,7 +789,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'id' => $leaveRequest->id,
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => CRM_Utils_Date::processDate('-1 day'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -1022,11 +1022,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate3 = new DateTime('2016-11-12');
     $toDate3 = new DateTime('2016-11-15');
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => $fromDate1->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate1->format('YmdHis'),
@@ -1036,7 +1036,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['More Information Requested'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
       'from_date' => $fromDate2->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
@@ -1046,7 +1046,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate3->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate3->format('YmdHis'),
@@ -1056,23 +1056,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
 
     //The start date and end date has dates in leave request dates for leaveRequest1, leaveRequest2
-    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Requested'
+    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Required'
     //therefore only one overlapping Leave Request is expected
     $startDate = '2016-11-02';
     $endDate = '2016-11-15';
-    $filterStatus = [$leaveRequestStatuses['More Information Requested']];
+    $filterStatus = [$leaveRequestStatuses['more_information_required']];
     $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, $filterStatus);
     $this->assertCount(1, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest2->id, $overlappingRequests[0]->id);
 
     //The start date and end date has dates in leave request dates for leaveRequest1, leaveRequest2,
-    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Requested' and 'Waiting Approval'
+    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Required' and 'Awaiting Approval'
     //and overlapping public holiday leave requests is not excluded.
     //However two leave request is expected because, Public holiday leave requests have status 'Admin Approved' by default
     $startDate = '2016-11-01';
     $endDate = '2016-11-16';
-    $filterStatus = [$leaveRequestStatuses['More Information Requested'], $leaveRequestStatuses['Waiting Approval']];
+    $filterStatus = [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['awaiting_approval']];
     $overlappingRequests2 = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, $filterStatus, false);
     $this->assertCount(2, $overlappingRequests2);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
@@ -1099,11 +1099,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => $fromDate1->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate1->format('YmdHis'),
@@ -1113,7 +1113,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate2->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
@@ -1204,12 +1204,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'pattern_id' => $workPattern->id
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate2->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
@@ -1269,8 +1269,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-11-14');
     $toDate = new DateTime('2016-11-17');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
+    $toType = $this->leaveRequestDayTypes['all_day']['value'];
 
     //four working days which will create a balance change of 4
 
@@ -1319,8 +1319,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-11-14');
     $toDate = new DateTime('2016-11-17');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
+    $toType = $this->leaveRequestDayTypes['all_day']['value'];
 
     //four working days which will create a balance change of 4
     $leaveRequest = LeaveRequest::create([
@@ -1369,8 +1369,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //both days are on weekends
     $fromDate = new DateTime('2016-11-12');
     $toDate = new DateTime('2016-11-13');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
+    $toType = $this->leaveRequestDayTypes['all_day']['value'];
 
     LeaveRequest::create([
       'type_id' => $periodEntitlement->type_id,
@@ -1420,7 +1420,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     //there's a public holiday on the leave request day
     $fromDate = new DateTime('2016-11-16');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
     $date = $fromDate->format('YmdHis');
 
     LeaveRequest::create([
@@ -1445,9 +1445,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => 'çfdklajfewiojçdasojfdsa'. microtime()
     ]);
   }
@@ -1462,9 +1462,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
   }
@@ -1479,9 +1479,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
@@ -1497,9 +1497,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ]);
@@ -1515,9 +1515,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_to_accrue' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1533,9 +1533,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_expiry_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1551,9 +1551,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ]);
   }
@@ -1568,9 +1568,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'sickness_reason' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1586,9 +1586,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'sickness_required_documents' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1610,9 +1610,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
@@ -1637,9 +1637,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
@@ -1695,9 +1695,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $periodEntitlement->contact_id,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-06-25'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-07-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
@@ -1718,9 +1718,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'sickness_reason' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ]);
@@ -1742,9 +1742,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1,
       'toil_to_accrue' => 10,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1767,9 +1767,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1000,
       'toil_to_accrue' => 10,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1792,9 +1792,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1000,
       'toil_to_accrue' => "4 days",
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1828,9 +1828,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1000,
       'toil_to_accrue' => $toilAmount,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1857,9 +1857,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('-2 days'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('-1 day'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1,
       'toil_to_accrue' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1886,9 +1886,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_to_accrue' => 2,
       'toil_duration' => 120,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1911,13 +1911,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $contactID  = 1;
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     //Approved TOIL for period is 3
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-6 days'),
       'to_date' => CRM_Utils_Date::processDate('-5 days'),
       'toil_to_accrue' => 3,
@@ -1930,11 +1930,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     LeaveRequest::create([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_to_accrue' => 2,
       'toil_duration' => 120,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1958,9 +1958,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 3,
       'from_date' => date('YmdHis'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => date('YmdHis'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_to_accrue' => 3,
       'toil_duration' => 300,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL

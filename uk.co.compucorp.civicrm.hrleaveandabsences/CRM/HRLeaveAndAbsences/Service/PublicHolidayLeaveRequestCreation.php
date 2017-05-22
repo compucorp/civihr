@@ -149,17 +149,17 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    */
   private function createLeaveRequest($contactID, AbsenceType $absenceType, PublicHoliday $publicHoliday) {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
-    $leaveRequestDayTypes = array_flip(LeaveRequest::buildOptions('from_date_type'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $leaveRequestDayTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
 
     return LeaveRequest::create([
       'contact_id'     => $contactID,
       'type_id'        => $absenceType->id,
-      'status_id'      => $leaveRequestStatuses['Admin Approved'],
+      'status_id'      => $leaveRequestStatuses['admin_approved'],
       'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
-      'from_date_type' => $leaveRequestDayTypes['All Day'],
+      'from_date_type' => $leaveRequestDayTypes['all_day'],
       'to_date'        => CRM_Utils_Date::processDate($publicHoliday->date),
-      'to_date_type'   => $leaveRequestDayTypes['All Day'],
+      'to_date_type'   => $leaveRequestDayTypes['all_day'],
       'request_type'   => LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY
     ], false);
   }
@@ -176,7 +176,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    */
   private function createLeaveBalanceChangeRecord(LeaveRequest $leaveRequest) {
-    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $dates = $leaveRequest->getDates();
     foreach($dates as $date) {
@@ -187,7 +187,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
       LeaveBalanceChange::create([
         'source_id'   => $date->id,
         'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
-        'type_id'     => $leaveBalanceChangeTypes['Public Holiday'],
+        'type_id'     => $leaveBalanceChangeTypes['public_holiday'],
         'amount'      => $amount
       ]);
     }
