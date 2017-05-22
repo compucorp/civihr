@@ -522,7 +522,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    *  A date string in a format supported by strtotime
    * @param null|string $endDate
    *  A date string in a format supported by strtotime
-   * @param null|int $contactID
+   * @param null|int|array $contactID
    *
    * @return array
    */
@@ -541,9 +541,12 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     }
 
     $whereContactID = '';
-    if($contactID) {
-      $contactID = (int)$contactID;
-      $whereContactID = " AND c.contact_id = {$contactID}";
+    if(!empty($contactID)) {
+      if(!is_array($contactID)) {
+        $contactID = [$contactID];
+      }
+      array_walk($contactID, 'intval');
+      $whereContactID = ' AND c.contact_id IN('. implode(', ', $contactID) .')';
     }
 
     $query = "
