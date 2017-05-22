@@ -470,7 +470,7 @@ define([
        */
       this._convertDateToServerFormat = function (date) {
         return moment(date).format(sharedSettings.serverDateFormat);
-      }
+      };
 
       /**
        * Converts given date to javascript date as expected by uib-datepicker
@@ -480,7 +480,7 @@ define([
        */
       this._convertDateFormatFromServer = function (date) {
         return moment(date, sharedSettings.serverDateFormat).toDate();
-      }
+      };
 
       /**
        * Flattens statuses from object to array of objects. This is used to
@@ -496,7 +496,7 @@ define([
 
           return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
         }.bind(this));
-      }
+      };
 
       /**
        * Initializes user's calendar (work patterns)
@@ -620,9 +620,7 @@ define([
             ]);
           })
           .then(function () {
-            if (self.request.contact_id) {
-              return self.initAfterContactSelection();
-            }
+            return self.initAfterContactSelection();
           })
           .catch(handleError.bind(self));
       };
@@ -635,6 +633,11 @@ define([
       this.initAfterContactSelection = function () {
         var self = this;
         self.postContactSelection = true;
+
+        // when manager deselects contact it is called without a selected contact_id
+        if (!self.request.contact_id) {
+          return $q.reject("The contact id was not set");
+        }
 
         return $q.all([
             self._loadAbsenceTypes(),
