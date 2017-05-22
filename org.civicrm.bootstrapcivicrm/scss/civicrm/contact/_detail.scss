@@ -175,6 +175,18 @@
         }
       }
 
+      tr:not(.crm-child-row) > td {
+        padding: 15px !important;
+
+        &:first-child {
+          padding-left: 20px !important;
+        }
+
+        &:last-child {
+          padding-right: 20px !important;
+        }
+      }
+
       tbody tr:last-child {
         border-bottom-left-radius: $border-radius-base;
         border-bottom-right-radius: $border-radius-base;
