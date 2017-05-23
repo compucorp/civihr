@@ -966,9 +966,9 @@
     }
 
     .CRM_Member_Form_Task_Batch {
+      padding-top: 4em;
+
       .crm-member-task-batch-form-block {
-        box-shadow: none;
-        margin-top: 9.5em;
         position: relative;
 
         .help {
@@ -977,7 +977,6 @@
           position: absolute;
           top: -75px;
         }
-
                  
         table thead tr.columnheader {
           th, td {
@@ -1050,7 +1049,7 @@
         }
 
         .crm-button:first-of-type {
-          margin-right: 10px;
+          margin-right: 15px;
         }
       }
     }
