@@ -1560,6 +1560,7 @@ form.CRM_Contribute_Form_ContributionCharts {
   }
 
   .crm-pager {
+    background: $crm-gray-lightest;
     line-height: 1.7em;
     padding: 7px 0;
 
@@ -1569,6 +1570,7 @@ form.CRM_Contribute_Form_ContributionCharts {
   }
 
   .crm-pager:first-child {
+    background: $gray-lighter;
     border-bottom: 1px solid $crm-background;
     border-radius: $panel-border-radius $panel-border-radius 0 0;
     margin-bottom: 0;
