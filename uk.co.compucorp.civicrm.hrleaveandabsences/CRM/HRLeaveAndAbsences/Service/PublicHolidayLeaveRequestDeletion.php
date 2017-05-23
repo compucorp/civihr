@@ -4,6 +4,8 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
 
@@ -86,14 +88,18 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
   /**
    * Deletes all the Public Holiday Leave Requests for Public Holidays in the
    * future
+   *
+   * @param array $contactID
+   *   If not empty, Public Holiday Leave Requests are deleted for only these contacts
    */
-  public function deleteAllInTheFuture() {
+  public function deleteAllInTheFuture(array $contactID = []) {
     $futurePublicHolidays = PublicHoliday::getAllInFuture();
     $lastPublicHoliday = end($futurePublicHolidays);
 
     $contracts = $this->jobContractService->getContractsForPeriod(
       new DateTime(),
-      new DateTime($lastPublicHoliday->date)
+      new DateTime($lastPublicHoliday->date),
+      $contactID
     );
 
     foreach($contracts as $contract) {
@@ -127,5 +133,29 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
         'amount' => $deduction
       ]);
     }
+  }
+
+  /**
+   * Deletes all the Public Holiday Leave Requests for Public Holidays in the
+   * future for the contacts using the given workPatternID, If it is the default Work Pattern
+   * the Leave Requests are deleted for all contacts.
+   *
+   * @param int $workPatternID
+   */
+  public function deleteAllInTheFutureForWorkPatternContacts($workPatternID) {
+    $workPattern = WorkPattern::findById($workPatternID);
+    $contacts = [];
+
+    if (!$workPattern->is_default) {
+      $ignoreEffectiveDate = true;
+      $contacts = ContactWorkPattern::getContactsForPeriod(
+        new DateTime(),
+        new DateTime(),
+        $workPatternID,
+        $ignoreEffectiveDate
+      );
+    }
+
+    $this->deleteAllInTheFuture($contacts);
   }
 }
