@@ -442,7 +442,7 @@
       }
     }
 
-    div[id*="DataTables_Table_"] table {
+    div[id*="DataTables_Table_"] table.dataTable  {
       background: transparent;
       border: none;
       display: block;
@@ -468,12 +468,12 @@
         }
       }
 
-      tbody tr {
+      > tbody > tr {
         background: $crm-white;
         border-bottom: 1px solid $crm-background;
         border-right: none;
 
-        td {
+        > td {
           background: $crm-white;
           border: none;
           color: $gray-dark;
@@ -493,9 +493,9 @@
           }
         }
 
-        td:nth-child(3), 
-        td:nth-child(4),
-        td:nth-child(5) {
+        > td:nth-child(3), 
+        > td:nth-child(4),
+        > td:nth-child(5) {
           overflow: visible;
           white-space: normal;
 
@@ -508,7 +508,7 @@
           }
         }
 
-        td:nth-child(2) .crm-editable-enabled {
+        > td:nth-child(2) .crm-editable-enabled {
           width: 150px !important;
         }
       }
