@@ -118,6 +118,7 @@ function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$para
     'getbalancechangebyabsencetype' => ['leave_request'],
     'calculatebalancechange' => ['leave_request'],
     'create' => ['leave_request', 'comment'],
+    'delete' => ['leave_request', 'comment'],
     'update' => ['leave_request'],
     'getcalendar' => ['work_pattern'],
     'ismanagedby' => ['leave_request'],
