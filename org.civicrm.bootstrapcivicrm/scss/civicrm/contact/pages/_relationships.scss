@@ -1,4 +1,8 @@
 .page-civicrm-contact {
+  #crm-main-content-wrapper {
+    overflow: hidden;
+  }
+
   #contact-summary-relationship-tab {
     font-family: $font-family-base;
 
@@ -75,7 +79,7 @@
       }
     }
 
-    div[id*="DataTables_Table_"] table {
+    div[id*="DataTables_Table_"] table.dataTable {
       background: transparent;
       border: none;
       border-radius: $border-radius-child;
@@ -111,13 +115,13 @@
         }
       }
 
-      tbody tr {
+      > tbody > tr {
         background: $crm-white;
         border-bottom: 1px solid $crm-background;
         border-left: none;
         border-right: none;
 
-        td {
+        > td {
           background: $crm-white;
           border: none;
           color: $gray-dark;
@@ -174,10 +178,14 @@
             background: none;
             color: $brand-primary;
           }
+
+          .crm-table-group-summary td {
+            background: $crm-dark-blue !important;
+          }
         }
 
-        td .btn-slide,
-        td .crm-hover-button {
+        > td .btn-slide,
+        > td .crm-hover-button {
           background: none;
           color: $brand-primary;
           text-transform: capitalize;
@@ -188,9 +196,9 @@
         }
       }
 
-      tbody tr td .btn-slide {
+      tbody > tr > td .btn-slide {
         padding: 3px 0 !important;
-        text-indent: -9999px;
+        text-indent: -600em;
         width: 5px;
 
         &:after, .panel {

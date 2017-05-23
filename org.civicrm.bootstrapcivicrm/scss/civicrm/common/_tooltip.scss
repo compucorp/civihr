@@ -25,6 +25,11 @@
         background: $crm-dark-blue !important;
       }
 
+      tbody > tr:first-child td {
+        text-align: left;
+        width: 100%;
+      }
+
       > div {
         line-height: 30px;
       }

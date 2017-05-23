@@ -74,30 +74,30 @@
     tr {
       padding-left: 0 !important;
 
-      > td,
-      > th {
+      td,
+      th {
         vertical-align: middle;
       }
 
-      > td:last-child {
-        padding-right: 15px;
-        text-align: right;
-      }
-
-      > td:not(:last-child),
-      > th:not(:last-child) {
+      td:not(:last-child),
+      th:not(:last-child) {
         line-height: 20px;
 
         .privacy-flag {
-          width: 27px;
           margin-left: 5px;
+          width: 27px;
         }
 
         > span {
-         display: flex;
-         align-items: center;
-       }
+          align-items: center;
+          display: flex;
+        }
       }
+    }
+
+    > tbody > tr > td:last-child {
+      padding-right: 15px;
+      text-align: right;
     }
 
     tr.highlight > td {

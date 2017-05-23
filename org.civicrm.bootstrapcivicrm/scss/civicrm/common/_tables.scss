@@ -89,6 +89,14 @@
     &.label {
       vertical-align: middle !important;
     }
+
+    .crm-table-group-summary td {
+      background: $crm-dark-blue !important;
+
+      &:last-child {
+        text-align: left;
+      }
+    }
   }
 
   &.form-layout {
