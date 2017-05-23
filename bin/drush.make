@@ -25,7 +25,7 @@ projects[] = drupal
 libraries[civicrm][destination] = modules
 libraries[civicrm][directory_name] = civicrm
 libraries[civicrm][download][type] = get
-libraries[civicrm][download][url] = "https://download.civicrm.org/civicrm-4.7.9-drupal.tar.gz"
+libraries[civicrm][download][url] = "https://download.civicrm.org/civicrm-4.7.18-drupal.tar.gz"
 
 libraries[civihr][destination] = modules
 libraries[civihr][directory_name] = civicrm/tools/extensions/civihr
@@ -40,7 +40,6 @@ libraries[civihr][overwrite] = TRUE
 
 projects[civicrm_error][subdir] = contrib
 projects[civicrm_error][version] = 2.0-rc3
-
 
 projects[libraries][subdir] = contrib
 projects[libraries][version] = 2.2
@@ -161,6 +160,9 @@ projects[views_autocomplete_filters][version] = "1.2"
 projects[views_merge_rows][subdir] = civihr-contrib-required
 projects[views_merge_rows][version] = "1.0-rc1"
 
+projects[masquerade][subdir] = civihr-contrib-required
+projects[masquerade][version] = "1.0-rc7"
+
 ; Patch for pagination
 projects[views_merge_rows][patch][] = "https://www.drupal.org/files/issues/views_merge_rows-views_merge_rows_and_pagination-2188939-3_0.patch"
 projects[views_merge_rows][patch][] = "https://www.drupal.org/files/issues/views_merge_rows-views_merge_rows_pagination-2724691-2.patch"
@@ -188,7 +190,7 @@ projects[views_json_query][patch][] = "https://raw.githubusercontent.com/compuco
 projects[views_data_export][subdir] = civihr-contrib-required
 projects[views_data_export][version] = 3.1
 
-projects[views_bulk_operations][subdir] = civihr-contrib-required 
+projects[views_bulk_operations][subdir] = civihr-contrib-required
 projects[views_bulk_operations][version] = 3.3
 
 projects[browserclass][subdir] = civihr-contrib-required
@@ -196,6 +198,10 @@ projects[browserclass][version] = 1.7
 
 projects[conditional_styles][subdir] = civihr-contrib-required
 projects[conditional_styles][version] = 2.2
+
+; SMTP Module
+projects[smtp][subdir] = civihr-contrib-required
+projects[smtp][version] = 1.6
 
 ; ****************************************
 ; Compucorp custom drupal modules
@@ -230,20 +236,28 @@ libraries[civihr_employee_portal_theme][overwrite] = TRUE
 projects[bootstrap][version] = "3.1"
 
 ; ****************************************
-; Compucorp custom civicrm modules (not required anymore as the extensions are moved to civihr repo)
+; Compucorp custom civicrm extensions
 ; ****************************************
-
-; libraries[civihr_compucorp][destination] = modules/civicrm/tools/extensions
-; libraries[civihr_compucorp][download][type] = git
-; libraries[civihr_compucorp][download][url] = https://github.com/compucorp/civihr-custom-civi-extensions
-; libraries[civihr_compucorp][download][branch] = master
-; libraries[civihr_compucorp][overwrite] = TRUE
 
 libraries[civihr_tasks][destination] = modules/civicrm/tools/extensions
 libraries[civihr_tasks][download][type] = git
 libraries[civihr_tasks][download][url] = https://github.com/compucorp/civihr-tasks-assignments
 libraries[civihr_tasks][download][branch] = master
 libraries[civihr_tasks][overwrite] = TRUE
+
+; ****************************************
+; Compucorp forks of civicrm modules (for internal development cycle)
+; ****************************************
+
+libraries[org.civicrm.shoreditch][destination] = modules/civicrm/tools/extensions
+libraries[org.civicrm.shoreditch][download][type] = git
+libraries[org.civicrm.shoreditch][download][url] = https://github.com/compucorp/org.civicrm.shoreditch
+libraries[org.civicrm.shoreditch][overwrite] = TRUE
+
+libraries[org.civicrm.styleguide][destination] = modules/civicrm/tools/extensions
+libraries[org.civicrm.styleguide][download][type] = git
+libraries[org.civicrm.styleguide][download][url] = https://github.com/compucorp/org.civicrm.styleguide
+libraries[org.civicrm.styleguide][overwrite] = TRUE
 
 ; ****************************************
 ; Compucorp custom libraries for Drupal
