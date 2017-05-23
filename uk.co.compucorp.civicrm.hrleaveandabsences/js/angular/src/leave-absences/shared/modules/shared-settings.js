@@ -14,6 +14,15 @@
         queueLimit: 10,
         //set the mime types which are allowed to be uploaded as attachments
         allowedMimeTypes: ['plain', 'png', 'jpeg', 'bmp', 'gif', 'pdf', 'msword', 'vnd.openxmlformats-officedocument.wordprocessingml.document', 'vnd.ms-excel', 'vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'vnd.ms-powerpoint', 'vnd.openxmlformats-officedocument.presentationml.presentation']
+      },
+      //TODO move all strings to a separate file otherwise this settings files will become a string repository
+      statusNames: {
+        approved: 'approved',
+        adminApproved: 'admin_approved',
+        awaitingApproval: 'awaiting_approval',
+        moreInformationRequired: 'more_information_required',
+        rejected: 'rejected',
+        cancelled: 'cancelled'
       }
     });
   });

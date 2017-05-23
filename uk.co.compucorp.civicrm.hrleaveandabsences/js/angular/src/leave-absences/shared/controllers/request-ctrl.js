@@ -492,7 +492,7 @@ define([
        */
       this.getStatuses = function () {
         return _.reject(this.requestStatuses, function (status) {
-          var canRemoveStatus = (status.name === 'admin_approved' || status.name === 'awaiting_approval');
+          var canRemoveStatus = (status.name === sharedSettings.statusNames.adminApproved || status.name === sharedSettings.statusNames.awaitingApproval);
 
           return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
         }.bind(this));
@@ -862,8 +862,8 @@ define([
         if (this.request.id) {
           mode = 'edit';
 
-          var viewModes = [this.requestStatuses['approved'].value, this.requestStatuses['admin_approved'].value,
-            this.requestStatuses['rejected'].value, this.requestStatuses['cancelled'].value
+          var viewModes = [this.requestStatuses[sharedSettings.statusNames.approved].value, this.requestStatuses[sharedSettings.statusNames.adminApproved].value,
+            this.requestStatuses[sharedSettings.statusNames.rejected].value, this.requestStatuses[sharedSettings.statusNames.cancelled].value
           ];
 
           if (this.isRole('staff') && viewModes.indexOf(this.request.status_id) > -1) {
@@ -942,12 +942,12 @@ define([
           this.statusBeforeEdit = getStatusFromValue.call(this, this.request.status_id);
 
           if (this.isRole('staff')) {
-            this.request.status_id = this.requestStatuses['awaiting_approval'].value;
+            this.request.status_id = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
           }
         } else if (this.isMode('create')) {
           this.request.status_id = this.isRole('manager') ?
-            this.requestStatuses['approved'].value :
-            this.requestStatuses['awaiting_approval'].value;
+            this.requestStatuses[sharedSettings.statusNames.approved].value :
+            this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
         }
       }
 

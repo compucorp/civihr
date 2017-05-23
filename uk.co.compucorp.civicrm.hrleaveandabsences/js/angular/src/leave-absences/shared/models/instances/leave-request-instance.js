@@ -138,28 +138,28 @@ define([
          * Cancel a leave request
          */
         cancel: function () {
-          return changeLeaveStatus.call(this, 'cancelled');
+          return changeLeaveStatus.call(this, sharedSettings.statusNames.cancelled);
         },
 
         /**
          * Approve a leave request
          */
         approve: function () {
-          return changeLeaveStatus.call(this, 'approved');
+          return changeLeaveStatus.call(this, sharedSettings.statusNames.approved);
         },
 
         /**
          * Reject a leave request
          */
         reject: function () {
-          return changeLeaveStatus.call(this, 'rejected');
+          return changeLeaveStatus.call(this, sharedSettings.statusNames.rejected);
         },
 
         /**
          * Sends a leave request back as more information is required
          */
         sendBack: function () {
-          return changeLeaveStatus.call(this, 'more_information_required');
+          return changeLeaveStatus.call(this, sharedSettings.statusNames.moreInformationRequired);
         },
 
         /**
@@ -252,7 +252,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isApproved: function () {
-          return checkLeaveStatus.call(this, 'approved');
+          return checkLeaveStatus.call(this, sharedSettings.statusNames.approved);
         },
 
         /**
@@ -261,7 +261,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isAwaitingApproval: function () {
-          return checkLeaveStatus.call(this, 'awaiting_approval');
+          return checkLeaveStatus.call(this, sharedSettings.statusNames.awaitingApproval);
         },
 
         /**
@@ -270,7 +270,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isCancelled: function () {
-          return checkLeaveStatus.call(this, 'cancelled');
+          return checkLeaveStatus.call(this, sharedSettings.statusNames.cancelled);
         },
 
         /**
@@ -279,7 +279,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isRejected: function () {
-          return checkLeaveStatus.call(this, 'rejected');
+          return checkLeaveStatus.call(this, sharedSettings.statusNames.rejected);
         },
 
         /**
@@ -288,7 +288,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isSentBack: function () {
-          return checkLeaveStatus.call(this, 'more_information_required');
+          return checkLeaveStatus.call(this, sharedSettings.statusNames.moreInformationRequired);
         },
 
         /**

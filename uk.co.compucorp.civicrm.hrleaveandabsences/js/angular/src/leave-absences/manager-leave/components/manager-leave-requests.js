@@ -13,21 +13,20 @@ define([
     }],
     controllerAs: 'ctrl',
     controller: ['$log', '$q', '$rootScope', 'Contact', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
-      'OptionGroup', 'dialog', controller]
+      'OptionGroup', 'dialog', 'shared-settings', controller]
   });
 
-  function controller($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup, dialog) {
+  function controller($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup, dialog, sharedSettings) {
     "use strict";
     $log.debug('Component: manager-leave-requests');
 
-    var vm = Object.create(this),
-      actionMatrix = {
-        'awaiting_approval': ['respond', 'cancel'],
-        'more_information_required': ['edit', 'cancel'],
-        'approved': ['edit'],
-        'cancelled': ['edit'],
-        'rejected': ['edit']
-      };
+    var vm = Object.create(this);
+    var actionMatrix = {};
+    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['respond', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['edit', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.approved] = ['edit'];
+    actionMatrix[sharedSettings.statusNames.cancelled] = ['edit'];
+    actionMatrix[sharedSettings.statusNames.rejected] = ['edit'];
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -170,11 +169,11 @@ define([
      */
     vm.getNavBadge = function (name) {
       switch (name) {
-        case 'approved':
+        case sharedSettings.statusNames.approved:
           return 'badge-success';
-        case 'rejected':
+        case sharedSettings.statusNames.rejected:
           return 'badge-danger';
-        case 'cancelled':
+        case sharedSettings.statusNames.cancelled:
         case 'all':
           return '';
         default:
@@ -475,7 +474,7 @@ define([
         statusFilter = [],
         //get the value for the waiting_approval status
         waitingApprovalID = _.find(vm.leaveRequestStatuses, function (status) {
-          return status.name === 'awaiting_approval';
+          return status.name === sharedSettings.statusNames.awaitingApproval;
         }).value;
 
       //if filterByStatus is true then add the leaveStatus to be used in the leave request api

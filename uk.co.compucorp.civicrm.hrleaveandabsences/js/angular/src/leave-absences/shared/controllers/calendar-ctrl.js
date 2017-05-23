@@ -213,7 +213,7 @@ define([
     this._isPendingApproval = function (leaveRequest) {
       var status = leaveRequestStatuses[leaveRequest.status_id];
 
-      return status.name === 'awaiting_approval';
+      return status.name === sharedSettings.statusNames.awaitingApproval;
     };
 
     /**
@@ -273,9 +273,9 @@ define([
         from_date: {from: this.selectedPeriod.start_date},
         to_date: {to: this.selectedPeriod.end_date},
         status_id: {"IN": [
-          getLeaveStatusValuefromName("approved"),
-          getLeaveStatusValuefromName("admin_approved"),
-          getLeaveStatusValuefromName("awaiting_approval")
+          getLeaveStatusValuefromName(sharedSettings.statusNames.approved),
+          getLeaveStatusValuefromName(sharedSettings.statusNames.adminApproved),
+          getLeaveStatusValuefromName(sharedSettings.statusNames.awaitingApproval)
         ]}
       };
       params[contactParamName] = this.contactId;

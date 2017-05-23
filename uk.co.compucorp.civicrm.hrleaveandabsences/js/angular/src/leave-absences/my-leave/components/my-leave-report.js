@@ -14,22 +14,21 @@ define([
     controllerAs: 'report',
     controller: [
       '$log', '$q', '$rootScope', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest',
-      'OptionGroup', 'dialog', 'HR_settings', controller
+      'OptionGroup', 'dialog', 'HR_settings', 'shared-settings', controller
     ]
   });
 
-  function controller($log, $q, $rootScope, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HR_settings) {
+  function controller($log, $q, $rootScope, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HR_settings, sharedSettings) {
     $log.debug('Component: my-leave-report');
 
     var vm = Object.create(this);
 
-    var actionMatrix = {
-      'awaiting_approval'          : ['edit'   , 'cancel'],
-      'more_information_required': ['respond', 'cancel'],
-      'approved'                  : ['view'   , 'cancel'],
-      'cancelled'                 : ['view'             ],
-      'rejected'                  : ['view'             ]
-    };
+    var actionMatrix = {};
+    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['edit', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['respond', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.approved] = ['view', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.cancelled] = ['view'];
+    actionMatrix[sharedSettings.statusNames.rejected] = ['view'];
 
     vm.absencePeriods = [];
     vm.absenceTypes = {};
@@ -290,7 +289,7 @@ define([
         contact_id: vm.contactId,
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
-        status_id: valueOfRequestStatus('approved')
+        status_id: valueOfRequestStatus(sharedSettings.statusNames.approved)
       })
       .then(function (leaveRequests) {
         vm.sections.approved.data = leaveRequests.list;
@@ -307,11 +306,11 @@ define([
       return $q.all([
         LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, null, true),
         LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
-          valueOfRequestStatus('approved')
+          valueOfRequestStatus(sharedSettings.statusNames.approved)
         ]),
         LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
-          valueOfRequestStatus('awaiting_approval'),
-          valueOfRequestStatus('more_information_required')
+          valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
+          valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
         ])
       ])
       .then(function (results) {
@@ -427,8 +426,8 @@ define([
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         status_id: { in: [
-          valueOfRequestStatus('rejected'),
-          valueOfRequestStatus('cancelled')
+          valueOfRequestStatus(sharedSettings.statusNames.rejected),
+          valueOfRequestStatus(sharedSettings.statusNames.cancelled)
         ] }
       })
       .then(function (leaveRequests) {
@@ -447,8 +446,8 @@ define([
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         status_id: { in: [
-          valueOfRequestStatus('awaiting_approval'),
-          valueOfRequestStatus('more_information_required')
+          valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
+          valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
         ] },
       }, null, null, null, false)
       .then(function (leaveRequests) {

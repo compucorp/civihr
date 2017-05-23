@@ -19,10 +19,11 @@ define([
       $rootScope,
       instance,
       requestData,
-      expectedError;
+      expectedError,
+      sharedSettings;
 
     beforeEach(module('leave-absences.models', 'leave-absences.models.instances',
-      'leave-absences.mocks', 'common.mocks',
+      'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
       function (_$provide_) {
         $provide = _$provide_;
       }));
@@ -38,12 +39,14 @@ define([
       'LeaveRequestAPI',
       '$rootScope',
       '$q',
+      'shared-settings',
       'OptionGroup',
-      function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _OptionGroup_) {
+      function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _sharedSettings_, _OptionGroup_) {
         LeaveRequestInstance = _LeaveRequestInstance_.init({}, false);
         LeaveRequestAPI = _LeaveRequestAPI_;
         $q = _$q_;
         $rootScope = _$rootScope_;
+        sharedSettings = _sharedSettings_;
         OptionGroup = _OptionGroup_;
 
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
@@ -87,7 +90,7 @@ define([
         describe('success', function () {
 
           beforeEach(function () {
-            commonSetup('cancelled', 'cancel', leaveRequestMockData.singleDataSuccess());
+            commonSetup(sharedSettings.statusNames.cancelled, 'cancel', leaveRequestMockData.singleDataSuccess());
           });
 
           it('updates the status_id of the instance', function () {
@@ -174,7 +177,7 @@ define([
         describe('success', function () {
 
           beforeEach(function () {
-            commonSetup('more_information_required', 'sendBack', leaveRequestMockData.singleDataSuccess());
+            commonSetup(sharedSettings.statusNames.moreInformationRequired, 'sendBack', leaveRequestMockData.singleDataSuccess());
           });
 
           it('updates the status_id of the instance', function () {
@@ -444,7 +447,7 @@ define([
         describe('status is approved', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
             promise = LeaveRequestInstance.isApproved();
           });
 
@@ -458,7 +461,7 @@ define([
         describe('status is not approved', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('cancelled');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
             promise = LeaveRequestInstance.isApproved();
           });
 
@@ -475,7 +478,7 @@ define([
         describe('status is awaiting_approval', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('awaiting_approval');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.awaitingApproval);
             promise = LeaveRequestInstance.isAwaitingApproval();
           });
 
@@ -489,7 +492,7 @@ define([
         describe('status is not awaiting_approval', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('cancelled');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
             promise = LeaveRequestInstance.isAwaitingApproval();
           });
 
@@ -506,7 +509,7 @@ define([
         describe('status is cancelled', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('cancelled');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
             promise = LeaveRequestInstance.isCancelled();
           });
 
@@ -520,7 +523,7 @@ define([
         describe('status is not cancelled', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
             promise = LeaveRequestInstance.isCancelled();
           });
 
@@ -537,7 +540,7 @@ define([
         describe('status is rejected', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('rejected');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.rejected);
             promise = LeaveRequestInstance.isRejected();
           });
 
@@ -551,7 +554,7 @@ define([
         describe('status is not rejected', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
             promise = LeaveRequestInstance.isRejected();
           });
 
@@ -568,7 +571,7 @@ define([
         describe('status is more_information_required', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('more_information_required');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.moreInformationRequired);
             promise = LeaveRequestInstance.isSentBack();
           });
 
@@ -582,7 +585,7 @@ define([
         describe('status is not more_information_required', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
             promise = LeaveRequestInstance.isSentBack();
           });
 

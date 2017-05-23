@@ -31,10 +31,11 @@
         LeaveRequestInstance,
         Contact,
         ContactAPIMock,
+        sharedSettings,
         OptionGroupAPIMock;
 
       beforeEach(module('leave-absences.templates', 'manager-leave',
-        'leave-absences.mocks', function (_$provide_) {
+        'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
           $provide = _$provide_;
       }));
 
@@ -45,8 +46,9 @@
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
       }));
 
-      beforeEach(inject(['api.contact.mock', function (_ContactAPIMock_) {
+      beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
         ContactAPIMock = _ContactAPIMock_;
+        sharedSettings = _sharedSettings_;
       }]));
 
       beforeEach(inject(function (
@@ -316,7 +318,7 @@
         describe('when status is approved', function () {
 
           beforeEach(function () {
-            returnValue = controller.getNavBadge('approved');
+            returnValue = controller.getNavBadge(sharedSettings.statusNames.approved);
           });
 
           it('returns badge-success', function () {
@@ -819,7 +821,7 @@
 
         describe('status: awaiting approval', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('awaiting_approval');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
           });
 
           it('shows the "respond" and "cancel" actions', function () {
@@ -829,7 +831,7 @@
 
         describe('status: more information required', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('more_information_required');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
           });
 
           it('shows the "edit" and "cancel" actions', function () {
@@ -839,7 +841,7 @@
 
         describe('status: approved', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('approved');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
           });
 
           it('shows the "edit" action', function () {
@@ -849,7 +851,7 @@
 
         describe('status: cancelled', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('cancelled');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
           });
 
           it('shows the "edit" action', function () {
@@ -859,7 +861,7 @@
 
         describe('status: rejected', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('rejected');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
           });
 
           it('shows the "edit" action', function () {

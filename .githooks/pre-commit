@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Colors
+# (http://wiki.bash-hackers.org/snipplets/add_color_to_your_scripts)
+ESC_SEQ="\x1b["
+COL_RESET=$ESC_SEQ"39;49;00m"
+COL_RED=$ESC_SEQ"31;01m"
+COL_YELLOW=$ESC_SEQ"33;01m"
+
+## Checks if a given command exists in the local environment
+command_exists () {
+  if ! hash "$1" >/dev/null 2>&1; then
+    echo >&2 "$COL_RED $1 ($2) is required globally but it's not installed. Aborting commit. $COL_RESET";
+    exit 1;
+  fi;
+}
+
+
+# Compliance to "JavaScript Semi-Standard Style" (https://github.com/Flet/semistandard)
+files=`git diff --name-only --cached -- '*.js' ':(exclude)**/dist/**' ':(exclude)*min.js'`
+if [ -n "$files" ]; then
+  command_exists semistandard "https://www.npmjs.com/package/semistandard"
+  command_exists snazzy "https://www.npmjs.com/package/snazzy"
+
+  semistandard "$files" --verbose | snazzy
+
+  if [ $? -ne 0 ]; then
+    echo "$COL_YELLOW Some of the JS files you have committed are not following the \"JavaScript Semi-Standard Style\", please fix them! $COL_RESET";
+    echo "$COL_YELLOW Run the following to check the state of your file as you work on it: semistandard %{path_to_file} --verbose | snazzy $COL_RESET \n";
+    echo "$COL_RED For the time being the files had been committed and can be pushed, but in the future the commit will be rejected until all the issues are fixed! $COL_RESET";
+  fi
+fi
