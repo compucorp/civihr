@@ -67,13 +67,6 @@ projects[userprotect][version] = "1.1"
 projects[devel][subdir] = contrib
 projects[devel][version] = 1.5
 
-libraries[civicrmdeveloper][destination] = modules
-libraries[civicrmdeveloper][directory_name] = contrib/civicrm_developer
-libraries[civicrmdeveloper][download][type] = git
-libraries[civicrmdeveloper][download][url] = https://github.com/eileenmcnaughton/civicrm_developer.git
-libraries[civicrmdeveloper][download][branch] = master
-libraries[civicrmdeveloper][overwrite] = TRUE
-
 ; ****************************************
 ; Compucorp contrib modules
 ; ****************************************
