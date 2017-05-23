@@ -201,7 +201,7 @@ define([
 
         //check if manager has changed status
         if (this.isRole('manager') && this.requestStatuses) {
-          //waiting_approval will not be available in this.requestStatuses if manager has changed selection
+          //awaiting_approval will not be available in this.requestStatuses if manager has changed selection
           canSubmit = canSubmit && !!getStatusFromValue.call(this, this.request.status_id);
         }
 
@@ -492,7 +492,7 @@ define([
        */
       this.getStatuses = function () {
         return _.reject(this.requestStatuses, function (status) {
-          var canRemoveStatus = (status.name === 'admin_approved' || status.name === 'waiting_approval');
+          var canRemoveStatus = (status.name === 'admin_approved' || status.name === 'awaiting_approval');
 
           return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
         }.bind(this));
@@ -942,12 +942,12 @@ define([
           this.statusBeforeEdit = getStatusFromValue.call(this, this.request.status_id);
 
           if (this.isRole('staff')) {
-            this.request.status_id = this.requestStatuses['waiting_approval'].value;
+            this.request.status_id = this.requestStatuses['awaiting_approval'].value;
           }
         } else if (this.isMode('create')) {
           this.request.status_id = this.isRole('manager') ?
             this.requestStatuses['approved'].value :
-            this.requestStatuses['waiting_approval'].value;
+            this.requestStatuses['awaiting_approval'].value;
         }
       }
 

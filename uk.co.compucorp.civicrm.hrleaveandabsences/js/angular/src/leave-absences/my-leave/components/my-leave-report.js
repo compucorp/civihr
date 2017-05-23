@@ -24,8 +24,8 @@ define([
     var vm = Object.create(this);
 
     var actionMatrix = {
-      'waiting_approval'          : ['edit'   , 'cancel'],
-      'more_information_requested': ['respond', 'cancel'],
+      'awaiting_approval'          : ['edit'   , 'cancel'],
+      'more_information_required': ['respond', 'cancel'],
       'approved'                  : ['view'   , 'cancel'],
       'cancelled'                 : ['view'             ],
       'rejected'                  : ['view'             ]
@@ -310,8 +310,8 @@ define([
           valueOfRequestStatus('approved')
         ]),
         LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
-          valueOfRequestStatus('waiting_approval'),
-          valueOfRequestStatus('more_information_requested')
+          valueOfRequestStatus('awaiting_approval'),
+          valueOfRequestStatus('more_information_required')
         ])
       ])
       .then(function (results) {
@@ -447,8 +447,8 @@ define([
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         status_id: { in: [
-          valueOfRequestStatus('waiting_approval'),
-          valueOfRequestStatus('more_information_requested')
+          valueOfRequestStatus('awaiting_approval'),
+          valueOfRequestStatus('more_information_required')
         ] },
       }, null, null, null, false)
       .then(function (leaveRequests) {

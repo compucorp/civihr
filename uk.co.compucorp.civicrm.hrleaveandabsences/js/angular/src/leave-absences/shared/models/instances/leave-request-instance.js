@@ -159,7 +159,7 @@ define([
          * Sends a leave request back as more information is required
          */
         sendBack: function () {
-          return changeLeaveStatus.call(this, 'more_information_requested');
+          return changeLeaveStatus.call(this, 'more_information_required');
         },
 
         /**
@@ -261,7 +261,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isAwaitingApproval: function () {
-          return checkLeaveStatus.call(this, 'waiting_approval');
+          return checkLeaveStatus.call(this, 'awaiting_approval');
         },
 
         /**
@@ -288,7 +288,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isSentBack: function () {
-          return checkLeaveStatus.call(this, 'more_information_requested');
+          return checkLeaveStatus.call(this, 'more_information_required');
         },
 
         /**

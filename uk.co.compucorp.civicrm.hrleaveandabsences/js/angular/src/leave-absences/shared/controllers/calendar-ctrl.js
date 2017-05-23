@@ -213,7 +213,7 @@ define([
     this._isPendingApproval = function (leaveRequest) {
       var status = leaveRequestStatuses[leaveRequest.status_id];
 
-      return status.name === 'waiting_approval';
+      return status.name === 'awaiting_approval';
     };
 
     /**
@@ -275,7 +275,7 @@ define([
         status_id: {"IN": [
           getLeaveStatusValuefromName("approved"),
           getLeaveStatusValuefromName("admin_approved"),
-          getLeaveStatusValuefromName("waiting_approval")
+          getLeaveStatusValuefromName("awaiting_approval")
         ]}
       };
       params[contactParamName] = this.contactId;

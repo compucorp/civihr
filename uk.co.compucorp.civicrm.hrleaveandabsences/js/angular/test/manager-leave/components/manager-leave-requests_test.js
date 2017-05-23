@@ -789,7 +789,7 @@
 
             describe('when only pending requests need to be loaded', function () {
               var waitingApprovalValue = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status').find(function (data) {
-                return data.name === 'waiting_approval';
+                return data.name === 'awaiting_approval';
               }).value;
 
               beforeEach(function () {
@@ -819,7 +819,7 @@
 
         describe('status: awaiting approval', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('waiting_approval');
+            actionMatrix = getActionMatrixForStatus('awaiting_approval');
           });
 
           it('shows the "respond" and "cancel" actions', function () {
@@ -829,7 +829,7 @@
 
         describe('status: more information required', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('more_information_requested');
+            actionMatrix = getActionMatrixForStatus('more_information_required');
           });
 
           it('shows the "edit" and "cancel" actions', function () {

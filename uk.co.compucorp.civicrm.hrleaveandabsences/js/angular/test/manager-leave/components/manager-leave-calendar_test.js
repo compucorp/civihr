@@ -308,7 +308,7 @@
           describe('when leave request is not approved', function () {
             beforeEach(function () {
               var status = optionGroupMock.specificObject(
-                'hrleaveandabsences_leave_request_status', 'name', 'waiting_approval');
+                'hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval');
 
               leaveRequest.contact_id = '203';
               leaveRequest.status_id = status.value;

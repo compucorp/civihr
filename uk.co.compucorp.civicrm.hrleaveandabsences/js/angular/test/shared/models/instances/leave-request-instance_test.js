@@ -174,7 +174,7 @@ define([
         describe('success', function () {
 
           beforeEach(function () {
-            commonSetup('more_information_requested', 'sendBack', leaveRequestMockData.singleDataSuccess());
+            commonSetup('more_information_required', 'sendBack', leaveRequestMockData.singleDataSuccess());
           });
 
           it('updates the status_id of the instance', function () {
@@ -472,10 +472,10 @@ define([
 
       describe('isAwaitingApproval', function () {
 
-        describe('status is waiting_approval', function () {
+        describe('status is awaiting_approval', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('waiting_approval');
+            LeaveRequestInstance.status_id = getStatusIdByName('awaiting_approval');
             promise = LeaveRequestInstance.isAwaitingApproval();
           });
 
@@ -486,7 +486,7 @@ define([
           });
         });
 
-        describe('status is not waiting_approval', function () {
+        describe('status is not awaiting_approval', function () {
 
           beforeEach(function () {
             LeaveRequestInstance.status_id = getStatusIdByName('cancelled');
@@ -565,10 +565,10 @@ define([
 
       describe('isSentBack', function () {
 
-        describe('status is more_information_requested', function () {
+        describe('status is more_information_required', function () {
 
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('more_information_requested');
+            LeaveRequestInstance.status_id = getStatusIdByName('more_information_required');
             promise = LeaveRequestInstance.isSentBack();
           });
 
@@ -579,7 +579,7 @@ define([
           });
         });
 
-        describe('status is not more_information_requested', function () {
+        describe('status is not more_information_required', function () {
 
           beforeEach(function () {
             LeaveRequestInstance.status_id = getStatusIdByName('approved');

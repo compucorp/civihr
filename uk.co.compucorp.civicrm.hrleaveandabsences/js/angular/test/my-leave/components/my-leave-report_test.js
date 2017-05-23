@@ -228,8 +228,8 @@
                   var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2);
 
                   expect(args[2]).toEqual([
-                    valueOfRequestStatus('waiting_approval'),
-                    valueOfRequestStatus('more_information_requested')
+                    valueOfRequestStatus('awaiting_approval'),
+                    valueOfRequestStatus('more_information_required')
                   ]);
                 });
 
@@ -460,8 +460,8 @@
           it('fetches all pending leave requests', function () {
             expect(LeaveRequest.all.calls.argsFor(0)[0]).toEqual(jasmine.objectContaining({
               status_id: { in: [
-                valueOfRequestStatus('waiting_approval'),
-                valueOfRequestStatus('more_information_requested')
+                valueOfRequestStatus('awaiting_approval'),
+                valueOfRequestStatus('more_information_required')
               ] }
             }));
           });
@@ -615,7 +615,7 @@
 
         describe('status: awaiting approval', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('waiting_approval');
+            actionMatrix = getActionMatrixForStatus('awaiting_approval');
           });
 
           it('shows the "edit" and "cancel" actions', function () {
@@ -625,7 +625,7 @@
 
         describe('status: more information required', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('more_information_requested');
+            actionMatrix = getActionMatrixForStatus('more_information_required');
           });
 
           it('shows the "respond" and "cancel" actions', function () {

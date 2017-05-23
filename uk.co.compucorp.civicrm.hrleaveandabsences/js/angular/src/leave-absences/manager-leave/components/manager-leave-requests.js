@@ -22,8 +22,8 @@ define([
 
     var vm = Object.create(this),
       actionMatrix = {
-        'waiting_approval': ['respond', 'cancel'],
-        'more_information_requested': ['edit', 'cancel'],
+        'awaiting_approval': ['respond', 'cancel'],
+        'more_information_required': ['edit', 'cancel'],
         'approved': ['edit'],
         'cancelled': ['edit'],
         'rejected': ['edit']
@@ -475,7 +475,7 @@ define([
         statusFilter = [],
         //get the value for the waiting_approval status
         waitingApprovalID = _.find(vm.leaveRequestStatuses, function (status) {
-          return status.name === 'waiting_approval';
+          return status.name === 'awaiting_approval';
         }).value;
 
       //if filterByStatus is true then add the leaveStatus to be used in the leave request api
@@ -483,7 +483,7 @@ define([
         statusFilter.push(filters.leaveStatus.value);
       }
 
-      //if pending_requests is true then add the waiting_approval to be used in the leave request api
+      //if pending_requests is true then add the awaiting_approval to be used in the leave request api
       if (filters.pending_requests && waitingApprovalID) {
         statusFilter.push(waitingApprovalID);
       }

@@ -113,7 +113,7 @@
             status_id: {"IN": [
               optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'approved').value,
               optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'admin_approved').value,
-              optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'waiting_approval').value
+              optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval').value
             ]},
             contact_id: CRM.vars.leaveAndAbsences.contactId
           }, {}, null, null, false);
@@ -271,7 +271,7 @@
           describe('when leave request is not approved', function () {
             beforeEach(function () {
               var status = optionGroupMock.specificObject(
-                'hrleaveandabsences_leave_request_status', 'name', 'waiting_approval');
+                'hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval');
 
               leaveRequest.status_id = status.value;
               leaveRequest.balance_change = -1;
