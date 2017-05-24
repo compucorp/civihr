@@ -784,7 +784,7 @@ function _civihr_delete_name_and_address_profile() {
 #   None
 ##########################################################
 function _civihr_disabled_unused_blocks() {
-  for block in 'navigation' 'form' 'powered-by' 'help' 'navigation' 'login' \
+  for block in 'navigation' 'form' 'powered-by' 'help' 'login' \
     '2' '3' '5' '7'
   do
     drush block-disable --delta="$block"
@@ -861,7 +861,7 @@ function civihr_install_site(){
 
     drush -y updatedb
     drush -y dis overlay shortcut color
-    drush -y en administerusersbyrole role_delegation subpermissions civicrm toolbar locale seven userprotect
+    drush -y en administerusersbyrole role_delegation subpermissions civicrm toolbar locale seven userprotect masquerade smtp
 
     install_civihr
 
