@@ -128,8 +128,11 @@
     }
   }
 
-  .crm-activity-form-block-followup_activity_type_id .dateplugin {
-    margin: 0 !important;
+  .crm-activity-form-block-followup_activity_type_id {
+    input.crm-form-text,
+    .dateplugin {
+      margin: 0 !important;
+    }
   }
 }
 
