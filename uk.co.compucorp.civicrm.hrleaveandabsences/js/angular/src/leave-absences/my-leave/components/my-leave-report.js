@@ -351,8 +351,8 @@ define([
           absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
 
           return !((absenceType.entitlement === 0) &&
-          (absenceType.allow_overuse === "0") &&
-          (absenceType.allow_accruals_request === "0"));
+          (absenceType.allow_overuse !== "1") &&
+          (absenceType.allow_accruals_request !== "1"));
         });
       });
     }
