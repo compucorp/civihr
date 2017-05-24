@@ -84,12 +84,12 @@
 
         spyOn(AbsencePeriodAPI, 'all').and.callThrough();
         spyOn(AbsenceTypeAPI, 'all').and.callThrough();
-        spyOn(EntitlementAPI, 'all').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
         spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
         spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
+        spyOn(EntitlementAPI, 'all').and.callThrough();
 
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
       }));
@@ -1203,6 +1203,7 @@
 
             beforeEach(function () {
               approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+              $ctrl.request.contact_id = 202;
               $ctrl.initAfterContactSelection();
               $scope.$digest();
             });
@@ -1242,12 +1243,37 @@
               spyOn(Entitlement, 'all').and.callFake(function () {
                 return $q.resolve([])
               });
+              $ctrl.request.contact_id = 202;
               $ctrl.initAfterContactSelection();
               $scope.$digest();
             });
 
             it('No entitlement message is shown on UI', function() {
               expect($ctrl.noEntitlement).toBe(true);
+            });
+          });
+        });
+
+        describe('after contact is deselected', function() {
+          var promise;
+
+          beforeEach(function() {
+            $ctrl.request.contact_id = undefined;
+            promise = $ctrl.initAfterContactSelection();
+            $scope.$digest();
+          });
+
+          afterEach(function () {
+            $rootScope.$apply();
+          });
+
+          it('does not call calendar APIs', function () {
+            expect(WorkPatternAPI.getCalendar).not.toHaveBeenCalled();
+          });
+
+          it('throws error', function () {
+            promise.catch(function (err) {
+              expect(err).toEqual('The contact id was not set');
             });
           });
         });

@@ -301,10 +301,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
   }
 
   private function countNumberOfPublicHolidayBalanceChanges() {
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $bao = new LeaveBalanceChange();
-    $bao->type_id = $balanceChangeTypes['Public Holiday'];
+    $bao->type_id = $balanceChangeTypes['public_holiday'];
     $bao->source_type = LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY;
 
     return $bao->count();

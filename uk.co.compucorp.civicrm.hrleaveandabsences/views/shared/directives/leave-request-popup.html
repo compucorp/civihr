@@ -23,7 +23,6 @@
         autofocus
         ng-model="$ctrl.request.contact_id"
         ng-change="$ctrl.initAfterContactSelection()"
-        theme="civihr-ui-select"
         ng-required="true">
         <ui-select-match placeholder="Search Staff Member" allow-clear>
           <span ng-bind="$select.selected.display_name"></span>
@@ -34,7 +33,7 @@
       </ui-select>
     </div>
     <div
-      ng-class="{'chr_disabled': (!$ctrl.request.contact_id || $ctrl.noEntitlement)}"
+      ng-class="{'chr_disabled': (!$ctrl.request.contact_id || $ctrl.noEntitlement || $ctrl.postContactSelection)}"
       ng-show="!$ctrl.loading.absenceTypes">
       <div class="row">
         <div class="col-xs-12">

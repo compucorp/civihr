@@ -249,12 +249,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     LeavePeriodEntitlement $periodEntitlement,
     $overriddenEntitlement = null
   ) {
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     //The original pro-rata calculation already factors in public holidays
     //since public holiday balance changes are saved differently, we need to deduct it from the pro rata
     LeaveBalanceChange::create([
-      'type_id' => $balanceChangeTypes['Leave'],
+      'type_id' => $balanceChangeTypes['leave'],
       'source_id' => $periodEntitlement->id,
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => $calculation->getProRata() - $calculation->getNumberOfPublicHolidaysInEntitlement()
@@ -266,7 +266,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
       $proposedEntitlement = $calculation->getProposedEntitlement();
       LeaveBalanceChange::create([
-        'type_id' => $balanceChangeTypes['Overridden'],
+        'type_id' => $balanceChangeTypes['overridden'],
         'source_id' => $periodEntitlement->id,
         'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
         'amount' => $overriddenEntitlement - $proposedEntitlement
@@ -285,7 +285,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     EntitlementCalculation $calculation,
     LeavePeriodEntitlement $periodEntitlement
   ) {
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $broughtForward = $calculation->getBroughtForward();
 
@@ -293,7 +293,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       $broughtForwardExpirationDate = $calculation->getBroughtForwardExpirationDate();
 
       LeaveBalanceChange::create([
-        'type_id' => $balanceChangeTypes['Brought Forward'],
+        'type_id' => $balanceChangeTypes['brought_forward'],
         'source_id' => $periodEntitlement->id,
         'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
         'amount' => $broughtForward,
@@ -321,13 +321,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     EntitlementCalculation $calculation,
     LeavePeriodEntitlement $periodEntitlement
   ) {
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
 
     if (!empty($publicHolidays)) {
       LeaveBalanceChange::create([
-        'type_id'     => $balanceChangeTypes['Public Holiday'],
+        'type_id'     => $balanceChangeTypes['public_holiday'],
         'source_id'   => $periodEntitlement->id,
         'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
         'amount'      => count($publicHolidays)
@@ -389,10 +389,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return float
    */
   public function getBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $filterStatuses = [
-      $leaveRequestStatus['Approved'],
-      $leaveRequestStatus['Admin Approved'],
+      $leaveRequestStatus['approved'],
+      $leaveRequestStatus['admin_approved'],
     ];
     return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
   }
@@ -400,19 +400,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   /**
    * Returns the future balance for this LeavePeriodEntitlement.
    *
-   * Future Balance is the Balance/Remainder for an entitlement when Leave Requests with Waiting Approval
-   * and More Information Requested statuses are accounted for in the calculation apart from the usual
+   * Future Balance is the Balance/Remainder for an entitlement when Leave Requests with Awaiting Approval
+   * and More Information Required statuses are accounted for in the calculation apart from the usual
    * Approved and Admin Approved Statuses.
    *
    * @return float
    */
   public function getFutureBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $filterStatuses = [
-      $leaveRequestStatus['Approved'],
-      $leaveRequestStatus['Admin Approved'],
-      $leaveRequestStatus['Waiting Approval'],
-      $leaveRequestStatus['More Information Requested'],
+      $leaveRequestStatus['approved'],
+      $leaveRequestStatus['admin_approved'],
+      $leaveRequestStatus['awaiting_approval'],
+      $leaveRequestStatus['more_information_required'],
     ];
     return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
   }
@@ -439,14 +439,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    *   ]
    */
   private static function groupBalanceChangesByType($balanceChanges) {
-    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $balanceChangesByType = [];
     foreach ($balanceChanges as $balanceChange) {
       $typeID = $balanceChange->type_id;
 
-      if ($typeID == $leaveBalanceChangeTypes['Overridden']) {
-        $typeID = $leaveBalanceChangeTypes['Leave'];
+      if ($typeID == $leaveBalanceChangeTypes['overridden']) {
+        $typeID = $leaveBalanceChangeTypes['leave'];
       }
 
       if (empty($balanceChangesByType[$typeID])) {
@@ -526,10 +526,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return float
    */
   public function getLeaveRequestBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $filterStatuses = [
-      $leaveRequestStatus['Approved'],
-      $leaveRequestStatus['Admin Approved'],
+      $leaveRequestStatus['approved'],
+      $leaveRequestStatus['admin_approved'],
     ];
 
     return LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($this, $filterStatuses);
@@ -611,7 +611,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * Entitlement Id or (Contact ID + Absence Period ID).
    * When params contains the include_future parameter and its true,
    * It returns also future balance for an entitlement taking the Awaiting Approval
-   * and More Information Requested leave statuses into consideration
+   * and More Information Required leave statuses into consideration
    *
    * @param array $params
    * Sample param: $params = ['entitlement_id' => 1, 'contact_id' => 9, 'include_future' => false]

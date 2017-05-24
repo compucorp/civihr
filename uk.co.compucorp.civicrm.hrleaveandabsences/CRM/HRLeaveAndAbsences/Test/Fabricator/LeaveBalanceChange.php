@@ -32,7 +32,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
       'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
       'amount' => $leaveRequest->toil_to_accrue,
       'expiry_date' => $leaveRequest->toil_expiry_date,
-      'type_id' => self::getTypeId('Credit'),
+      'type_id' => self::getTypeId('credit'),
     ]);
 
     foreach($dates as $date) {
@@ -41,7 +41,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
         'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
         'amount' => 0,
         'expiry_date' => null,
-        'type_id' => self::getTypeId('Credit'),
+        'type_id' => self::getTypeId('credit'),
       ]);
     }
   }
@@ -60,18 +60,18 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
     ]);
   }
 
-  private static function getTypeId($typeLabel) {
+  private static function getTypeId($typeName) {
     if(is_null(self::$balanceChangeTypes)) {
-      self::$balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+      self::$balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
     }
 
-    return self::$balanceChangeTypes[$typeLabel];
+    return self::$balanceChangeTypes[$typeName];
   }
 
   private static function getDefaultParams() {
     return [
       'amount' => -1,
-      'type_id' => self::getTypeId('Leave')
+      'type_id' => self::getTypeId('leave')
     ];
   }
 }
