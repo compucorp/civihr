@@ -17,3 +17,10 @@
     position: relative;
   }
 }
+
+
+// workaround to make sure that the texarea always go full-width
+// the !important is necessary to override the #bootstrap-theme style
+.editable-textarea {
+  display: block !important;
+}
