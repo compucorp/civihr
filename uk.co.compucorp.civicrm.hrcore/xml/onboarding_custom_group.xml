@@ -25,7 +25,7 @@
       <data_type>String</data_type>
       <html_type>CheckBox</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>1</weight>
       <help_pre>What steps the user has completed in the onboarding process</help_pre>
