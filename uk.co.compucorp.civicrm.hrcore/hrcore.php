@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\Reference as Reference;
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_Service_OnboardingStatusService as OnboardingStatusService;
+use CRM_HRCore_Service_OnboardingSteps as OnboardingSteps;
 
 /**
  * Implements hook_civicrm_config().
@@ -49,6 +50,25 @@ function hrcore_civicrm_container($container) {
     'drupal_user_service',
     new Definition(DrupalUserService::class, [new Reference('drupal_role_service')])
   );
+}
+
+/**
+ * Implements hook_civicrm_post().
+ *
+ * @param string $op
+ * @param string $objectName
+ * @param int $objectId
+ * @param object $objectRef
+ */
+function hrcore_civicrm_post($op, $objectName, $objectId, &$objectRef) {
+  if ($objectName !== 'UFMatch' || !in_array($op, ['create', 'delete'])) {
+    return;
+  }
+
+  $service = Civi::container()->get('onboarding_status_service');
+  $isComplete = $op === 'create';
+  $contactId = $objectRef->contact_id;
+  $service->setStep($contactId, OnboardingSteps::ACCOUNT_CREATED, $isComplete);
 }
 
 /**
