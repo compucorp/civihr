@@ -17,12 +17,13 @@
   }
   
   .crm-search-results {
-    margin-bottom: 10px;
+    background: $gray-lighter;
+    margin: 0;
   }
 
   .crm-search-form-block .crm-accordion-wrapper,
   .crm-content-block .crm-results-block {
-    border-radius: $border-radius-base;
+    border-radius: $panel-border-radius;
     overflow: hidden;
   }
 
