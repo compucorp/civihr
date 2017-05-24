@@ -11,11 +11,12 @@
   "semistandard": {
     "globals": [
       "CRM",
-      "jasmine",
-      "define",
-      "inject",
-      "_"
-    ]
+      "inject"
+    ],
+    "env": {
+        "jasmine": true,
+        "amd": true
+    }
   },
   "devDependencies": {
     "gulp": "^3.9.0",

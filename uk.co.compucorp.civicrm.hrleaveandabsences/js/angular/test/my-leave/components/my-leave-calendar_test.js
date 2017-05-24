@@ -1,4 +1,4 @@
-/* eslint-env jasmine */
+/* eslint-env amd, jasmine */
 (function (CRM) {
   define([
     'common/angular',
@@ -181,9 +181,8 @@
       });
 
       describe('getMonthData', function () {
-        var januaryMonth,
-          returnValue;
-        januaryMonth = 0;
+        var returnValue;
+        var januaryMonth = 0;
 
         beforeEach(function () {
           returnValue = controller.getMonthData(januaryMonth);
@@ -286,7 +285,7 @@
 
             it('styles are fetched', function () {
               var color = _.find(controller.absenceTypes, function (absenceType) {
-                return absenceType.id == leaveRequest.type_id;
+                return absenceType.id === leaveRequest.type_id;
               }).color;
 
               expect(dateObj.UI.styles).toEqual({
@@ -381,7 +380,7 @@
         var date;
         _.each(controller.months, function (month) {
           _.each(month.data, function (dateObj) {
-            if (dateObj.date == getDateByType(dayType).date) {
+            if (dateObj.date === getDateByType(dayType).date) {
               date = dateObj;
             }
           });

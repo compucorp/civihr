@@ -1,3 +1,4 @@
+/* eslint-env amd */
 (function (CRM) {
   define([
     'common/angular'

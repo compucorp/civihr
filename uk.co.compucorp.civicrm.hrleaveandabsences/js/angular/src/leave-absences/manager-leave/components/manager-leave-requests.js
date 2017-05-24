@@ -1,3 +1,4 @@
+/* eslint-env amd */
 define([
   'common/lodash',
   'leave-absences/manager-leave/modules/components',
@@ -126,7 +127,7 @@ define([
       }
 
       return vm.leaveRequests.filter.list.filter(function (request) {
-        return request.status_id == status.value;
+        return request.status_id === status.value;
       });
     };
 
@@ -154,7 +155,7 @@ define([
      */
     vm.getLeaveStatusByValue = function (value) {
       var status = _.find(vm.leaveRequestStatuses, function (status) {
-        return status.value == value;
+        return status.value === value;
       });
 
       return status ? status.label : null;
@@ -188,7 +189,7 @@ define([
      */
     vm.getUserNameByID = function (id) {
       var user = _.find(vm.filteredUsers, function (contact) {
-        return contact.contact_id == id;
+        return contact.contact_id === id;
       });
       return user ? user.display_name : null;
     };
@@ -355,12 +356,10 @@ define([
      * @return {Promise}
      */
     function loadLeaveRequest (type) {
-      var filterByStatus, pagination, returnFields;
-
-      filterByStatus = type !== 'filter';
+      var filterByStatus = type !== 'filter';
       // {pagination: {size:0}} - Load all requests instead of 25
-      pagination = type === 'filter' ? { size: 0 } : vm.pagination;
-      returnFields = type === 'filter' ? {
+      var pagination = type === 'filter' ? { size: 0 } : vm.pagination;
+      var returnFields = type === 'filter' ? {
         return: ['status_id']
       } : {};
       // cache is set to always false as changing selection either in status menu
@@ -470,11 +469,10 @@ define([
      * @return {Object}
      */
     function prepareStatusFilter (filterByStatus) {
-      var filters, statusFilter, waitingApprovalID;
-      filters = vm.filters.leaveRequest;
-      statusFilter = [];
+      var filters = vm.filters.leaveRequest;
+      var statusFilter = [];
       // get the value for the waiting_approval status
-      waitingApprovalID = _.find(vm.leaveRequestStatuses, function (status) {
+      var waitingApprovalID = _.find(vm.leaveRequestStatuses, function (status) {
         return status.name === sharedSettings.statusNames.awaitingApproval;
       }).value;
 

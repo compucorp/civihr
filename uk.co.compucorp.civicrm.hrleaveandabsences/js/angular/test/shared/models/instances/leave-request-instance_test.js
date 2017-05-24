@@ -1,5 +1,6 @@
-/* eslint-env jasmine */
+/* eslint-env amd, jasmine */
 define([
+  'common/lodash',
   'mocks/data/leave-request-data',
   'mocks/data/option-group-mock-data',
   'mocks/data/comments-data',
@@ -8,7 +9,7 @@ define([
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/models/instances/leave-request-instance',
   'leave-absences/shared/modules/models'
-], function (leaveRequestMockData, optionGroupMockData, commentsData, helper) {
+], function (_, leaveRequestMockData, optionGroupMockData, commentsData, helper) {
   'use strict';
 
   describe('LeaveRequestInstance', function () {
@@ -215,8 +216,8 @@ define([
     });
 
     describe('update()', function () {
-      var promise, toAPIReturnValue;
-      toAPIReturnValue = {
+      var promise;
+      var toAPIReturnValue = {
         key: jasmine.any(String)
       };
 
@@ -645,8 +646,8 @@ define([
     });
 
     describe('attachments', function () {
-      var attachments, numberOfFiles, promise, testId;
-      testId = '63';
+      var attachments, numberOfFiles, promise;
+      var testId = '63';
 
       beforeEach(function () {
         LeaveRequestInstance.id = '12';
@@ -677,7 +678,7 @@ define([
         it('sets flag toBeDeleted', function () {
           promise.then(function () {
             _.each(LeaveRequestInstance.files, function (file) {
-              if (file.attachment_id == testId) {
+              if (file.attachment_id === testId) {
                 expect(file.toBeDeleted).toBeTruthy();
               } else {
                 expect(file.toBeDeleted).toBeFalsy();

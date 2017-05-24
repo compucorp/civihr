@@ -1,4 +1,4 @@
-/* eslint-env jasmine */
+/* eslint-env amd, jasmine */
 (function (CRM) {
   define([
     'common/angular',

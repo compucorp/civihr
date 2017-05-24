@@ -1,10 +1,10 @@
+/* eslint-env amd */
 define([
   'common/lodash',
   'common/moment',
   'leave-absences/my-leave/modules/components',
   'leave-absences/shared/controllers/calendar-ctrl'
 ], function (_, moment, components) {
-
   components.component('myLeaveCalendar', {
     bindings: {
       contactId: '<'
@@ -16,11 +16,11 @@ define([
     controller: ['$controller', '$log', '$rootScope', 'Calendar', controller]
   });
 
-  function controller($controller, $log, $rootScope, Calendar) {
+  function controller ($controller, $log, $rootScope, Calendar) {
     $log.debug('Component: my-leave-calendar');
 
-    var parentCtrl = $controller('CalendarCtrl'),
-      vm = Object.create(parentCtrl);
+    var parentCtrl = $controller('CalendarCtrl');
+    var vm = Object.create(parentCtrl);
 
     /**
      * Returns the calendar information for a specific month
@@ -104,11 +104,11 @@ define([
      * @param  {object} calendar
      */
     vm._setCalendarProps = function (calendar) {
-      var leaveRequest,
-        monthData = _.clone(vm.months);
+      var leaveRequest;
+      var monthData = _.clone(vm.months);
 
       _.each(calendar.days, function (dateObj) {
-        //fetch leave request, search by date
+        // fetch leave request, search by date
         leaveRequest = vm.leaveRequests[dateObj.date];
 
         dateObj.UI = {
@@ -131,7 +131,7 @@ define([
       vm.months = monthData;
     };
 
-    (function init() {
+    (function init () {
       vm._init();
 
       $rootScope.$on('LeaveRequest::new', vm.refresh);

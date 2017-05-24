@@ -1,3 +1,4 @@
+/* eslint-env amd */
 define([
   'leave-absences/shared/modules/controllers',
   'common/lodash',
@@ -12,12 +13,9 @@ define([
     'LeaveRequest', 'PublicHoliday', 'OptionGroup', controller]);
 
   function controller ($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup) {
-    var dayTypes,
-      leaveRequestStatuses,
-      publicHolidays;
-    dayTypes = [];
-    leaveRequestStatuses = [];
-    publicHolidays = [];
+    var dayTypes = [];
+    var leaveRequestStatuses = [];
+    var publicHolidays = [];
 
     this.absencePeriods = [];
     this.absenceTypes = [];
@@ -87,12 +85,9 @@ define([
      * save it in vm.months
      */
     this._fetchMonthsFromPeriod = function () {
-      var months,
-        startDate,
-        endDate;
-      months = [];
-      startDate = moment(this.selectedPeriod.start_date);
-      endDate = moment(this.selectedPeriod.end_date);
+      var months = [];
+      var startDate = moment(this.selectedPeriod.start_date);
+      var endDate = moment(this.selectedPeriod.end_date);
 
       while (startDate.isBefore(endDate)) {
         months.push(this._getMonthSkeleton(startDate));
@@ -140,7 +135,7 @@ define([
       dateObj.leaveRequest = leaveRequest;
 
       absenceType = _.find(this.absenceTypes, function (absenceType) {
-        return absenceType.id == leaveRequest.type_id;
+        return absenceType.id === leaveRequest.type_id;
       });
 
       // If Balance change is positive, mark as Accrued TOIL
@@ -202,11 +197,11 @@ define([
       var dayType = dayTypes[name];
 
       if (moment(date).isSame(leaveRequest.from_date)) {
-        return dayType.value == leaveRequest.from_date_type;
+        return dayType.value === leaveRequest.from_date_type;
       }
 
       if (moment(date).isSame(leaveRequest.to_date)) {
-        return dayType.value == leaveRequest.to_date_type;
+        return dayType.value === leaveRequest.to_date_type;
       }
     };
 
@@ -293,7 +288,7 @@ define([
           return this._loadCalendar();
         }.bind(this))
         .then(function () {
-          intermediateSteps ? intermediateSteps() : false;
+          intermediateSteps && intermediateSteps();
           this.loading.calendar = false;
           this._showMonthLoader();
         }.bind(this));
@@ -340,10 +335,8 @@ define([
      * then hide each loader on the interval of an offset value
      */
     this._showMonthLoader = function () {
-      var monthLoadDelay,
-        offset;
-      monthLoadDelay = 500;
-      offset = 0;
+      var monthLoadDelay = 500;
+      var offset = 0;
 
       this.months.forEach(function (month) {
         // immediately show the current month...

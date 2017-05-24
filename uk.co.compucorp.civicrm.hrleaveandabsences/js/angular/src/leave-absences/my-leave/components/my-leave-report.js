@@ -1,3 +1,4 @@
+/* eslint-env amd */
 define([
   'common/lodash',
   'common/moment',
@@ -97,11 +98,11 @@ define([
     vm.canCancel = function (request) {
       var allowRequestCancelation = vm.absenceTypes[request.type_id].allow_request_cancelation;
 
-      if (allowRequestCancelation == 3) {
+      if (allowRequestCancelation === '3') {
         return moment().isBefore(request.from_date);
       }
 
-      return allowRequestCancelation == 2;
+      return allowRequestCancelation === '2';
     };
 
     /**
@@ -201,8 +202,8 @@ define([
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function cancelRequest (leaveRequest) {
-      var sectionBelonged, sectionsAllowed;
-      sectionsAllowed = ['approved', 'pending'];
+      var sectionBelonged;
+      var sectionsAllowed = ['approved', 'pending'];
 
       $q.resolve()
         .then(function () {

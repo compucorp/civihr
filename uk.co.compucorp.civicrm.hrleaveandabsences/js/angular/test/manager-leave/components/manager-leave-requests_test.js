@@ -1,4 +1,4 @@
-/* eslint-env jasmine */
+/* eslint-env amd, jasmine */
 (function (CRM) {
   define([
     'common/angular',
@@ -302,7 +302,7 @@
             status = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
             returnValue = controller.filterLeaveRequestByStatus(status);
             filteredList = controller.leaveRequests.filter.list.filter(function (request) {
-              return request.status_id == status.value;
+              return request.status_id === status.value;
             });
           });
 
@@ -421,9 +421,8 @@
           });
 
           describe('when sent page number is more than total no of pages', function () {
-            var pageNoParam, oldPageNo;
-            pageNoParam = 5;
-            oldPageNo = 4;
+            var pageNoParam = 5;
+            var oldPageNo = 4;
 
             beforeEach(function () {
               controller.pagination.page = oldPageNo;

@@ -1,3 +1,4 @@
+/* eslint-env amd */
 define([
   'leave-absences/shared/modules/controllers',
   'common/lodash',
@@ -23,12 +24,11 @@ define([
       LeaveRequest, PublicHoliday, sharedSettings
     ) {
       $log.debug('RequestCtrl');
-      var absenceTypesAndIds, initialLeaveRequestAttributes, mode, role, initialCommentsLength;
-
-      initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
-      mode = ''; // can be edit, create, view
-      role = '';
-      initialCommentsLength = 0; // number of comments when the request model is loaded
+      var absenceTypesAndIds;
+      var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
+      var mode = ''; // can be edit, create, view
+      var role = '';
+      var initialCommentsLength = 0; // number of comments when the request model is loaded
 
       this.absencePeriods = [];
       this.absenceTypes = [];
@@ -74,10 +74,9 @@ define([
          * breakdown to obtain the ones for currently selected page.
          */
         pageChanged: function () {
-          var begin, end;
           // filter breakdowns
-          begin = (this.currentPage - 1) * this.numPerPage;
-          end = begin + this.numPerPage;
+          var begin = (this.currentPage - 1) * this.numPerPage;
+          var end = begin + this.numPerPage;
 
           this.filteredbreakdown = parentThis.balance.change.breakdown.slice(begin, end);
         }
@@ -235,7 +234,7 @@ define([
        * @return {String}
        */
       this.getCommentorName = function (contactId) {
-        if (contactId == this.directiveOptions.contactId) {
+        if (contactId === this.directiveOptions.contactId) {
           return 'Me';
         } else if (this.comment.contacts[contactId]) {
           return this.comment.contacts[contactId].display_name;
@@ -334,7 +333,7 @@ define([
         }
 
         // current absence type (this.request.type_id) doesn't allow self
-        if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse == '0') {
+        if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse === '0') {
           // show an error
           this.errors = ['You are not allowed to apply leave in negative'];
           return;
@@ -359,15 +358,14 @@ define([
        * @return {Promise}
        */
       this.updateAbsencePeriodDatesTypes = function (date, dayType) {
-        var self, oldPeriodId;
-        self = this;
-        oldPeriodId = self.period.id;
+        var self = this;
+        var oldPeriodId = self.period.id;
         dayType = dayType || 'from';
         self.loading[dayType + 'DayTypes'] = true;
 
         return self._checkAndSetAbsencePeriod(date)
           .then(function () {
-            var isInCurrentPeriod = oldPeriodId == self.period.id;
+            var isInCurrentPeriod = oldPeriodId === self.period.id;
 
             if (!isInCurrentPeriod) {
               // partial reset is required when user has selected a to date and
@@ -827,7 +825,7 @@ define([
         var self = this;
 
         return _.find(self.absenceTypes, function (absenceType) {
-          return absenceType.id == self.request.type_id;
+          return absenceType.id === self.request.type_id;
         });
       }
 
@@ -839,7 +837,7 @@ define([
        */
       function getStatusFromValue (value) {
         return _.find(this.requestStatuses, function (status) {
-          return status.value == value;
+          return status.value === value;
         });
       }
 
@@ -910,9 +908,8 @@ define([
        * @return {Promise}
        */
       function initDates () {
-        var deferred, self;
-        deferred = $q.defer();
-        self = this;
+        var deferred = $q.defer();
+        var self = this;
 
         if (canViewOrEdit.call(self)) {
           var attributes = self.request.attributes();
@@ -1012,7 +1009,7 @@ define([
 
         _.each(self.request.comments, function (comment) {
           // Push only unique contactId's which are not same as logged in user
-          if (comment.contact_id != self.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
+          if (comment.contact_id !== self.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
             contactIDs.push(comment.contact_id);
           }
         });

@@ -1,10 +1,11 @@
-/* eslint-env jasmine */
+/* eslint-env amd */
 define([
+  'common/lodash',
   'leave-absences/shared/modules/models-instances',
   'common/models/option-group',
   'common/models/instances/instance',
   'common/services/file-upload'
-], function (instances) {
+], function (_, instances) {
   'use strict';
 
   instances.factory('LeaveRequestInstance', ['$q', 'OptionGroup', 'FileUpload',
@@ -76,9 +77,8 @@ define([
        * @return {Promise}
        */
       function saveAndDeleteComments () {
-        var promises, self;
-        promises = [];
-        self = this;
+        var promises = [];
+        var self = this;
 
         // Save comments which dont have an ID
         self.comments.map(function (comment, index) {

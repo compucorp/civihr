@@ -1,4 +1,4 @@
-/* eslint-env jasmine */
+/* eslint-env amd, jasmine */
 (function (CRM) {
   define([
     'common/angular',
@@ -223,7 +223,7 @@
 
           it('filters the contacts which have a leave request', function () {
             expect(!!_.find(returnValue, function (contact) {
-              return contact.id == anyLeaveRequest.contact_id;
+              return contact.id === anyLeaveRequest.contact_id;
             })).toBe(true);
           });
         });
@@ -323,7 +323,7 @@
 
             it('styles are fetched', function () {
               var color = _.find(controller.absenceTypes, function (absenceType) {
-                return absenceType.id == leaveRequest.type_id;
+                return absenceType.id === leaveRequest.type_id;
               }).color;
 
               _.each(controller.managedContacts, function (contact) {
@@ -408,7 +408,7 @@
 
         _.each(contact.calendarData, function (month) {
           _.each(month.data, function (dateObj) {
-            if (dateObj.date == dateStr) {
+            if (dateObj.date === dateStr) {
               date = dateObj;
             }
           });
@@ -427,7 +427,7 @@
         var date;
         _.each(contact.calendarData, function (month) {
           _.each(month.data, function (dateObj) {
-            if (dateObj.date == getDateByType(dayType).date) {
+            if (dateObj.date === getDateByType(dayType).date) {
               date = dateObj;
             }
           });
