@@ -8,6 +8,15 @@
   },
   "author": "",
   "license": "ISC",
+  "semistandard": {
+    "globals": [
+      "CRM",
+      "jasmine",
+      "define",
+      "inject",
+      "_"
+    ]
+  },
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-clean": "^0.3.1",

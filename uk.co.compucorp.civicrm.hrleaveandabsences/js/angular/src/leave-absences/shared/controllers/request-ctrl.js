@@ -10,7 +10,7 @@ define([
   'leave-absences/shared/models/calendar-model',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/leave-request-model',
-  'leave-absences/shared/models/public-holiday-model',
+  'leave-absences/shared/models/public-holiday-model'
 ], function (controllers, _, moment) {
   'use strict';
 
@@ -19,16 +19,16 @@ define([
     'api.optionGroup', 'Calendar', 'Entitlement', 'HR_settings',
     'LeaveRequest', 'PublicHoliday', 'shared-settings',
     function ($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType,
-      OptionGroup, Calendar, Entitlement, HR_settings,
+      OptionGroup, Calendar, Entitlement, HRSettings,
       LeaveRequest, PublicHoliday, sharedSettings
     ) {
       $log.debug('RequestCtrl');
+      var absenceTypesAndIds, initialLeaveRequestAttributes, mode, role, initialCommentsLength;
 
-      var absenceTypesAndIds,
-        initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
-        mode = '', //can be edit, create, view
-        role = '',
-        initialCommentsLength = 0; //number of comments when the request model is loaded
+      initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
+      mode = ''; // can be edit, create, view
+      role = '';
+      initialCommentsLength = 0; // number of comments when the request model is loaded
 
       this.absencePeriods = [];
       this.absenceTypes = [];
@@ -40,7 +40,7 @@ define([
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
       this.period = {};
-      this.postContactSelection = false, //flag to track if user is selected for enabling UI
+      this.postContactSelection = false; // flag to track if user is selected for enabling UI
       this.requestStatuses = {};
       this.statusBeforeEdit = {};
       this.today = Date.now();
@@ -62,7 +62,7 @@ define([
         fromDayTypes: false,
         toDayTypes: false
       };
-      //TODO temp fix to allow pageChanged to be called from html as well from functions here with proper context
+      // TODO temp fix to allow pageChanged to be called from html as well from functions here with proper context
       var parentThis = this;
       this.pagination = {
         currentPage: 1,
@@ -74,9 +74,10 @@ define([
          * breakdown to obtain the ones for currently selected page.
          */
         pageChanged: function () {
-          //filter breakdowns
-          var begin = (this.currentPage - 1) * this.numPerPage,
-            end = begin + this.numPerPage;
+          var begin, end;
+          // filter breakdowns
+          begin = (this.currentPage - 1) * this.numPerPage;
+          end = begin + this.numPerPage;
 
           this.filteredbreakdown = parentThis.balance.change.breakdown.slice(begin, end);
         }
@@ -84,8 +85,8 @@ define([
       this.uiOptions = {
         isChangeExpanded: false,
         multipleDays: true,
-        userDateFormat: HR_settings.DATE_FORMAT,
-        userDateFormatWithTime: HR_settings.DATE_FORMAT + ' HH:mm',
+        userDateFormat: HRSettings.DATE_FORMAT,
+        userDateFormatWithTime: HRSettings.DATE_FORMAT + ' HH:mm',
         showBalance: false,
         date: {
           from: {
@@ -135,7 +136,7 @@ define([
        */
       this.changeInNoOfDays = function () {
         this._reset();
-        //reinitialize opening balance
+        // reinitialize opening balance
         initAbsenceType.call(this);
       };
 
@@ -163,7 +164,7 @@ define([
       this.calculateBalanceChange = function () {
         var self = this;
 
-        self._setDateAndTypes.call(self);
+        self._setDateAndTypes();
 
         if (!canCalculateChange.call(self)) {
           return $q.resolve();
@@ -175,7 +176,7 @@ define([
           .then(function (balanceChange) {
             if (balanceChange) {
               self.balance.change = balanceChange;
-              //the change is negative so adding it will actually subtract it
+              // the change is negative so adding it will actually subtract it
               self.balance.closing = self.balance.opening + self.balance.change.amount;
               rePaginate.call(self);
             }
@@ -192,16 +193,16 @@ define([
       this.canSubmit = function () {
         var canSubmit = canCalculateChange.call(this);
 
-        //check if user has changed any attribute
+        // check if user has changed any attribute
         if (this.isMode('edit')) {
           canSubmit = canSubmit && !_.isEqual(initialLeaveRequestAttributes, this.request.attributes());
-          //user has added a comment
+          // user has added a comment
           canSubmit = canSubmit || this.request.comments.length !== initialCommentsLength;
         }
 
-        //check if manager has changed status
+        // check if manager has changed status
         if (this.isRole('manager') && this.requestStatuses) {
-          //awaiting_approval will not be available in this.requestStatuses if manager has changed selection
+          // awaiting_approval will not be available in this.requestStatuses if manager has changed selection
           canSubmit = canSubmit && !!getStatusFromValue.call(this, this.request.status_id);
         }
 
@@ -233,11 +234,11 @@ define([
        *
        * @return {String}
        */
-      this.getCommentorName = function (contact_id) {
-        if (contact_id == this.directiveOptions.contactId) {
+      this.getCommentorName = function (contactId) {
+        if (contactId == this.directiveOptions.contactId) {
           return 'Me';
-        } else if (this.comment.contacts[contact_id]) {
-          return this.comment.contacts[contact_id].display_name;
+        } else if (this.comment.contacts[contactId]) {
+          return this.comment.contacts[contactId].display_name;
         }
       };
 
@@ -286,7 +287,7 @@ define([
        * Dismiss modal on successful creation on submit
        */
       this.ok = function () {
-        //todo handle closure to pass data back to callee
+        // todo handle closure to pass data back to callee
         this.$modalInstance.close({
           $value: this.request
         });
@@ -358,19 +359,20 @@ define([
        * @return {Promise}
        */
       this.updateAbsencePeriodDatesTypes = function (date, dayType) {
-        var self = this,
-          oldPeriodId = self.period.id;
+        var self, oldPeriodId;
+        self = this;
+        oldPeriodId = self.period.id;
         dayType = dayType || 'from';
         self.loading[dayType + 'DayTypes'] = true;
 
-        return self._checkAndSetAbsencePeriod.call(self, date)
+        return self._checkAndSetAbsencePeriod(date)
           .then(function () {
             var isInCurrentPeriod = oldPeriodId == self.period.id;
 
             if (!isInCurrentPeriod) {
-              //partial reset is required when user has selected a to date and
-              //then changes absence period from from date
-              //no reset required for single days and to date changes
+              // partial reset is required when user has selected a to date and
+              // then changes absence period from from date
+              // no reset required for single days and to date changes
               if (self.uiOptions.multipleDays && dayType === 'from') {
                 self.uiOptions.showBalance = false;
                 self.uiOptions.toDate = null;
@@ -379,20 +381,20 @@ define([
               }
 
               return $q.all([
-                self._loadAbsenceTypes.call(self),
-                self._loadCalendar.call(self)
+                self._loadAbsenceTypes(),
+                self._loadCalendar()
               ]);
             }
           })
           .then(function () {
-            self._setMinMaxDate.call(self);
+            self._setMinMaxDate();
 
             return filterLeaveRequestDayTypes.call(self, date, dayType);
           })
           .then(function () {
             self.loading[dayType + 'DayTypes'] = false;
 
-            return self.updateBalance.call(self);
+            return self.updateBalance();
           })
           .catch(function (error) {
             self.errors = [error];
@@ -409,7 +411,7 @@ define([
         // get the `balance` of the newly selected absence type
         this.balance.opening = this.selectedAbsenceType.remainder;
 
-        this.calculateBalanceChange.call(this);
+        this.calculateBalanceChange();
       };
 
       /**
@@ -420,9 +422,9 @@ define([
       this._initRequestAttributes = function () {
         var attributes = {};
 
-        //if set indicates self leaverequest is either being managed or edited
+        // if set indicates self leaverequest is either being managed or edited
         if (this.directiveOptions.leaveRequest) {
-          //_.deepClone or angular.copy were not uploading files correctly
+          // _.deepClone or angular.copy were not uploading files correctly
           attributes = this.directiveOptions.leaveRequest.attributes();
         } else if (!this.isRole('manager')) {
           attributes = { contact_id: this.directiveOptions.contactId };
@@ -455,7 +457,7 @@ define([
         });
 
         if (!this.period) {
-          //inform user if absence period is not found
+          // inform user if absence period is not found
           return $q.reject('Please change date as it is not in any absence period');
         }
 
@@ -553,7 +555,7 @@ define([
        * Sets dates and types for this.request from UI
        */
       this._setDateAndTypes = function () {
-        this._setDates.call(this);
+        this._setDates();
 
         if (this.uiOptions.multipleDays) {
           this.uiOptions.showBalance = !!this.request.to_date && !!this.request.from_date;
@@ -564,7 +566,7 @@ define([
 
           this.uiOptions.showBalance = !!this.request.from_date;
         }
-      }
+      };
 
       /**
        * Sets the min and max for to date from absence period. It also sets the
@@ -578,7 +580,7 @@ define([
           this.uiOptions.date.to.options.minDate = nextFromDay;
           this.uiOptions.date.to.options.initDate = nextFromDay;
 
-          //also re-set to date if from date is changing and less than to date
+          // also re-set to date if from date is changing and less than to date
           if (this.uiOptions.toDate && moment(this.uiOptions.toDate).isBefore(this.uiOptions.fromDate)) {
             this.uiOptions.toDate = this.uiOptions.fromDate;
           }
@@ -636,13 +638,13 @@ define([
 
         // when manager deselects contact it is called without a selected contact_id
         if (!self.request.contact_id) {
-          return $q.reject("The contact id was not set");
+          return $q.reject('The contact id was not set');
         }
 
         return $q.all([
-            self._loadAbsenceTypes(),
-            self._loadCalendar()
-          ])
+          self._loadAbsenceTypes(),
+          self._loadCalendar()
+        ])
           .then(function () {
             return loadDayTypes.call(self);
           })
@@ -674,7 +676,7 @@ define([
        *
        * @param {Boolean} true if all present else false
        */
-      function canCalculateChange() {
+      function canCalculateChange () {
         return !!this.request.from_date && !!this.request.to_date &&
           !!this.request.from_date_type && !!this.request.to_date_type;
       }
@@ -682,7 +684,7 @@ define([
       /**
        * Creates leaverequest
        */
-      function createRequest() {
+      function createRequest () {
         var self = this;
         self.submitting = true;
 
@@ -704,7 +706,7 @@ define([
        *
        * @return {Boolean}
        */
-      function canViewOrEdit() {
+      function canViewOrEdit () {
         return this.isMode('edit') || this.isMode('view');
       }
 
@@ -715,7 +717,7 @@ define([
        * @param {Object} entitlements
        * @return {Array} of filtered absence types for given entitlements
        */
-      function mapAbsenceTypesWithBalance(absenceTypes, entitlements) {
+      function mapAbsenceTypesWithBalance (absenceTypes, entitlements) {
         return entitlements.map(function (entitlementItem) {
           var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
             return absenceTypeItem.id === entitlementItem.type_id;
@@ -742,11 +744,13 @@ define([
        * @param  {String} dayType - set to from if from date is selected else to
        * @return {Promise} of array with day types
        */
-      function filterLeaveRequestDayTypes(date, dayType) {
-        var deferred = $q.defer(),
+      function filterLeaveRequestDayTypes (date, dayType) {
+        var deferred,
           inCalendarList,
           listToReturn,
-          self = this;
+          self;
+        deferred = $q.defer();
+        self = this;
 
         if (!date) {
           deferred.reject([]);
@@ -755,7 +759,7 @@ define([
         // Make a copy of the list
         listToReturn = self.requestDayTypes.slice(0);
 
-        date = self._convertDateToServerFormat.call(self, date);
+        date = self._convertDateToServerFormat(date);
         PublicHoliday.isPublicHoliday(date)
           .then(function (result) {
             if (result) {
@@ -787,7 +791,7 @@ define([
        *
        * @return {Object} containing required keys for leave request
        */
-      function getParamsForBalanceChange() {
+      function getParamsForBalanceChange () {
         return _.pick(this.request, ['contact_id', 'from_date',
           'from_date_type', 'to_date', 'to_date_type'
         ]);
@@ -800,7 +804,7 @@ define([
        * @param {Array} listOfDayTypes array of day types
        * @return {Array} non-empty if found else empty array
        */
-      function getDayTypesFromDate(date, listOfDayTypes) {
+      function getDayTypesFromDate (date, listOfDayTypes) {
         var nameFilter = null;
 
         if (this.calendar.isNonWorkingDay(moment(date))) {
@@ -819,7 +823,7 @@ define([
        *
        * @return {Object} absence type object
        */
-      function getSelectedAbsenceType() {
+      function getSelectedAbsenceType () {
         var self = this;
 
         return _.find(self.absenceTypes, function (absenceType) {
@@ -833,7 +837,7 @@ define([
        * @param value of the status
        * @return {Object} option group of type status or undefined if not found
        */
-      function getStatusFromValue(value) {
+      function getStatusFromValue (value) {
         return _.find(this.requestStatuses, function (status) {
           return status.value == value;
         });
@@ -842,11 +846,11 @@ define([
       /**
        * Error handler, generally used in catch calls
        */
-      function handleError(errors) {
+      function handleError (errors) {
         // show errors
         this.errors = _.isArray(errors) ? errors : [errors];
 
-        //reset loading Checks
+        // reset loading Checks
         this.loading.showBalanceChange = false;
         this.loading.absenceTypes = false;
         this.loading.fromDayTypes = false;
@@ -858,7 +862,7 @@ define([
       /**
        * Initialize open mode of the dialog
        */
-      function initOpenMode() {
+      function initOpenMode () {
         if (this.request.id) {
           mode = 'edit';
 
@@ -877,7 +881,7 @@ define([
       /**
        * Inits absence period for the current date
        */
-      function initAbsencePeriod() {
+      function initAbsencePeriod () {
         this.period = _.find(this.absencePeriods, function (period) {
           return period.current;
         });
@@ -886,7 +890,7 @@ define([
       /**
        * Initialize absence types
        */
-      function initAbsenceType() {
+      function initAbsenceType () {
         if (canViewOrEdit.call(this)) {
           this.selectedAbsenceType = getSelectedAbsenceType.call(this);
         } else {
@@ -905,24 +909,25 @@ define([
        *
        * @return {Promise}
        */
-      function initDates() {
-        var deferred = $q.defer(),
-          self = this;
+      function initDates () {
+        var deferred, self;
+        deferred = $q.defer();
+        self = this;
 
         if (canViewOrEdit.call(self)) {
           var attributes = self.request.attributes();
 
           self.uiOptions.fromDate = self._convertDateFormatFromServer(self.request.from_date);
 
-          self.updateAbsencePeriodDatesTypes.call(self, self.uiOptions.fromDate, 'from')
+          self.updateAbsencePeriodDatesTypes(self.uiOptions.fromDate, 'from')
             .then(function () {
-              //to_date and type has been reset in above call so reinitialize from clone
+              // to_date and type has been reset in above call so reinitialize from clone
               self.request.to_date = attributes.to_date;
               self.request.to_date_type = attributes.to_date_type;
               self.uiOptions.toDate = self._convertDateFormatFromServer(self.request.to_date);
-              self.updateAbsencePeriodDatesTypes.call(self, self.uiOptions.toDate, 'to')
+              self.updateAbsencePeriodDatesTypes(self.uiOptions.toDate, 'to')
                 .then(function () {
-                  //resolve only after both from and to day types are also set
+                  // resolve only after both from and to day types are also set
                   deferred.resolve();
                 });
             });
@@ -936,18 +941,18 @@ define([
       /**
        * Initialize status
        */
-      function initStatus() {
+      function initStatus () {
         if (canViewOrEdit.call(this)) {
-          //set it before self.requestStatuses gets filtered
+          // set it before self.requestStatuses gets filtered
           this.statusBeforeEdit = getStatusFromValue.call(this, this.request.status_id);
 
           if (this.isRole('staff')) {
             this.request.status_id = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
           }
         } else if (this.isMode('create')) {
-          this.request.status_id = this.isRole('manager') ?
-            this.requestStatuses[sharedSettings.statusNames.approved].value :
-            this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
+          this.request.status_id = this.isRole('manager')
+            ? this.requestStatuses[sharedSettings.statusNames.approved].value
+            : this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
         }
       }
 
@@ -956,7 +961,7 @@ define([
        *
        * {Promise}
        */
-      function initContact() {
+      function initContact () {
         if (this.isRole('manager')) {
           return Contact.find(this.request.contact_id)
             .then(function (contact) {
@@ -972,7 +977,7 @@ define([
        *
        * @return {Promise}
        */
-      function loadManagees() {
+      function loadManagees () {
         return Contact.find(this.directiveOptions.contactId)
           .then(function (contact) {
             return contact.leaveManagees();
@@ -987,10 +992,10 @@ define([
        *
        * @return {Promise}
        */
-      function loadCommentsAndContactNames() {
+      function loadCommentsAndContactNames () {
         return this.request.loadComments()
           .then(function () {
-            //loadComments sets the comments on request object instead of returning it
+            // loadComments sets the comments on request object instead of returning it
             this.request.comments.length && loadContactNames.call(this);
           }.bind(this));
       }
@@ -1000,12 +1005,13 @@ define([
        *
        * @return {Promise}
        */
-      function loadContactNames() {
-        var contactIDs = [],
-          self = this;
+      function loadContactNames () {
+        var contactIDs, self;
+        contactIDs = [];
+        self = this;
 
         _.each(self.request.comments, function (comment) {
-          //Push only unique contactId's which are not same as logged in user
+          // Push only unique contactId's which are not same as logged in user
           if (comment.contact_id != self.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
             contactIDs.push(comment.contact_id);
           }
@@ -1024,7 +1030,7 @@ define([
       /**
        * Loads all absence periods
        */
-      function loadAbsencePeriods() {
+      function loadAbsencePeriods () {
         var self = this;
 
         return AbsencePeriod.all()
@@ -1038,7 +1044,7 @@ define([
        *
        * @return {Promise}
        */
-      function loadDayTypes() {
+      function loadDayTypes () {
         var self = this;
 
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
@@ -1052,7 +1058,7 @@ define([
        *
        * @return {Promise}
        */
-      function loadStatuses() {
+      function loadStatuses () {
         var self = this;
 
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
@@ -1066,17 +1072,17 @@ define([
        *
        * @param {String} eventName name of the event to emit
        */
-      function postSubmit(eventName) {
+      function postSubmit (eventName) {
         $rootScope.$emit(eventName, this.request);
         this.errors = [];
         // close the modal
-        this.ok.call(this);
+        this.ok();
       }
 
       /**
        * Helper function to reset pagination for balance breakdow
        */
-      function rePaginate() {
+      function rePaginate () {
         this.pagination.totalItems = this.balance.change.breakdown.length;
         this.pagination.filteredbreakdown = this.balance.change.breakdown;
         this.pagination.pageChanged();
@@ -1089,14 +1095,14 @@ define([
        * @param {Object} absenceTypesAndIds contains all absencetypes and their ids
        * @return {Promise}
        */
-      function setAbsenceTypesFromEntitlements(absenceTypesAndIds) {
+      function setAbsenceTypesFromEntitlements (absenceTypesAndIds) {
         var self = this;
 
         return Entitlement.all({
-            contact_id: self.request.contact_id,
-            period_id: self.period.id,
-            type_id: { IN: absenceTypesAndIds.ids }
-          }, true) // `true` because we want to use the 'future' balance for calculation
+          contact_id: self.request.contact_id,
+          period_id: self.period.id,
+          type_id: { IN: absenceTypesAndIds.ids }
+        }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
             // create a list of absence types with a `balance` property
             self.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
@@ -1110,8 +1116,8 @@ define([
        * @param {String} dayType like `from` or `to`
        * @param {Array} listOfDayTypes collection of available day types
        */
-      function setDayType(dayType, listOfDayTypes) {
-        //will create either of leaveRequestFromDayTypes or leaveRequestToDayTypes key
+      function setDayType (dayType, listOfDayTypes) {
+        // will create either of leaveRequestFromDayTypes or leaveRequestToDayTypes key
         var keyForDayTypeCollection = 'request' + _.startCase(dayType) + 'DayTypes';
 
         this[keyForDayTypeCollection] = listOfDayTypes;
@@ -1124,12 +1130,12 @@ define([
       /**
        * Updates the leaverequest
        */
-      function updateRequest() {
+      function updateRequest () {
         var self = this;
         self.submitting = true;
 
         if (self.isRole('manager')) {
-          //if manager has not changed the status then reset status
+          // if manager has not changed the status then reset status
           if (!self.request.status_id) {
             self.request.status_id = self.statusBeforeEdit.value;
           }

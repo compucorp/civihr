@@ -1,3 +1,4 @@
+/* eslint-env jasmine */
 (function (CRM) {
   define([
     'common/angular',
@@ -12,7 +13,7 @@
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
     'leave-absences/shared/config',
-    'leave-absences/manager-leave/app',
+    'leave-absences/manager-leave/app'
   ], function (angular, _, optionGroupMock, absencePeriodData, absenceTypeData, leaveRequestData) {
     'use strict';
 
@@ -37,7 +38,7 @@
       beforeEach(module('leave-absences.templates', 'manager-leave',
         'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
           $provide = _$provide_;
-      }));
+        }));
 
       beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
         LeaveRequestAPIMock) {
@@ -54,7 +55,6 @@
       beforeEach(inject(function (
         _$compile_, _$log_, _$rootScope_, _$q_, _OptionGroup_, _OptionGroupAPIMock_,
         _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_, _LeaveRequestInstance_) {
-
         $compile = _$compile_;
         $log = _$log_;
         $q = _$q_;
@@ -108,7 +108,7 @@
       });
 
       describe('data loading', function () {
-        //TODO need to figure out how to test variables which are changed when controller gets initialized
+        // TODO need to figure out how to test variables which are changed when controller gets initialized
         xdescribe('before loading starts', function () {
           it('loader is hidden', function () {});
           it('leave requests are empty', function () {});
@@ -153,7 +153,7 @@
             expect(controller.levelTypes).toEqual(optionGroupMock.getCollection('hrjc_level_type'));
           });
 
-          describe('absence periods', function() {
+          describe('absence periods', function () {
             it('loads the absence periods', function () {
               expect(controller.absencePeriods.length).toBe(absencePeriodData.all().values.length);
             });
@@ -316,7 +316,6 @@
         var returnValue;
 
         describe('when status is approved', function () {
-
           beforeEach(function () {
             returnValue = controller.getNavBadge(sharedSettings.statusNames.approved);
           });
@@ -422,8 +421,9 @@
           });
 
           describe('when sent page number is more than total no of pages', function () {
-            var pageNoParam = 5,
-              oldPageNo = 4;
+            var pageNoParam, oldPageNo;
+            pageNoParam = 5;
+            oldPageNo = 4;
 
             beforeEach(function () {
               controller.pagination.page = oldPageNo;
@@ -738,7 +738,7 @@
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     contact_id: {
-                      "IN": [mockUsers[0].contact_id]
+                      'IN': [mockUsers[0].contact_id]
                     }
                   }));
                 });
@@ -876,34 +876,34 @@
          * @param  {string} statusName
          * @return {Array}
          */
-        function getActionMatrixForStatus(statusName) {
+        function getActionMatrixForStatus (statusName) {
           return controller.actionsFor(LeaveRequestInstance.init({
             status_id: optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', statusName).value
           }));
         }
       });
 
-      describe('when new leave request is created', function() {
-        beforeEach(function() {
+      describe('when new leave request is created', function () {
+        beforeEach(function () {
           $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
         });
 
-        it('calls related contact API to update', function() {
+        it('calls related contact API to update', function () {
           expect(Contact.all).toHaveBeenCalled();
         });
       });
 
-      describe('when new leave request is updated', function() {
-        beforeEach(function() {
+      describe('when new leave request is updated', function () {
+        beforeEach(function () {
           $rootScope.$emit('LeaveRequest::updatedByManager', jasmine.any(Object));
         });
 
-        it('calls related contact API to update', function() {
+        it('calls related contact API to update', function () {
           expect(Contact.all).toHaveBeenCalled();
         });
       });
 
-      function compileComponent() {
+      function compileComponent () {
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;
 

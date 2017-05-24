@@ -10,12 +10,12 @@
       serverDateFormat: 'YYYY-MM-DD',
       serverDateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
       fileUploader: {
-        //TODO for now set the limit to 10 files until a better solution is found to configure it
+        // TODO for now set the limit to 10 files until a better solution is found to configure it
         queueLimit: 10,
-        //set the mime types which are allowed to be uploaded as attachments
+        // set the mime types which are allowed to be uploaded as attachments
         allowedMimeTypes: ['plain', 'png', 'jpeg', 'bmp', 'gif', 'pdf', 'msword', 'vnd.openxmlformats-officedocument.wordprocessingml.document', 'vnd.ms-excel', 'vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'vnd.ms-powerpoint', 'vnd.openxmlformats-officedocument.presentationml.presentation']
       },
-      //TODO move all strings to a separate file otherwise this settings files will become a string repository
+      // TODO move all strings to a separate file otherwise this settings files will become a string repository
       statusNames: {
         approved: 'approved',
         adminApproved: 'admin_approved',

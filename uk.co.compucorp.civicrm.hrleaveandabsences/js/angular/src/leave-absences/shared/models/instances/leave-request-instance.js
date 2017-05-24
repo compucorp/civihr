@@ -1,22 +1,22 @@
+/* eslint-env jasmine */
 define([
   'leave-absences/shared/modules/models-instances',
   'common/models/option-group',
   'common/models/instances/instance',
-  'common/services/file-upload',
+  'common/services/file-upload'
 ], function (instances) {
   'use strict';
 
   instances.factory('LeaveRequestInstance', ['$q', 'OptionGroup', 'FileUpload',
     'shared-settings', 'ModelInstance', 'LeaveRequestAPI',
     function ($q, OptionGroup, FileUpload, sharedSettings, ModelInstance, LeaveRequestAPI) {
-
       /**
        * Update status ID
        *
        * @param {string} status - name of the option value
        * @return {Promise} Resolved with {Object} - Error Data in case of error
        */
-      function changeLeaveStatus(status) {
+      function changeLeaveStatus (status) {
         return getOptionIDByName(status)
           .then(function (statusId) {
             this.status_id = statusId.value;
@@ -30,7 +30,7 @@ define([
        * @param {string} statusName - name of the option value
        * @return {Promise} Resolved with {Boolean}
        */
-      function checkLeaveStatus(statusName) {
+      function checkLeaveStatus (statusName) {
         return getOptionIDByName(statusName)
           .then(function (statusObj) {
             return this.status_id === statusObj.value;
@@ -43,7 +43,7 @@ define([
        *
        * @return {Promise}
        */
-      function deleteAttachments() {
+      function deleteAttachments () {
         var promises = [];
 
         _.forEach(this.files, function (file) {
@@ -61,13 +61,13 @@ define([
        * @param {string} name - name of the option value
        * @return {Promise} Resolved with {Object} - Specific leave request
        */
-      function getOptionIDByName(name) {
+      function getOptionIDByName (name) {
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
           .then(function (data) {
             return data.find(function (statusObj) {
               return statusObj.name === name;
-            })
-          })
+            });
+          });
       }
 
       /**
@@ -75,14 +75,15 @@ define([
        *
        * @return {Promise}
        */
-      function saveAndDeleteComments() {
-        var promises = [],
-          self = this;
+      function saveAndDeleteComments () {
+        var promises, self;
+        promises = [];
+        self = this;
 
-        //Save comments which dont have an ID
+        // Save comments which dont have an ID
         self.comments.map(function (comment, index) {
           if (!comment.comment_id) {
-            //IIFE is created to keep actual value of 'index' when promise is resolved
+            // IIFE is created to keep actual value of 'index' when promise is resolved
             (function (index) {
               promises.push(LeaveRequestAPI.saveComment(self.id, comment)
                 .then(function (commentData) {
@@ -102,7 +103,7 @@ define([
        *
        * @return {Promise}
        */
-      function uploadAttachments() {
+      function uploadAttachments () {
         if (this.fileUploader.queue && this.fileUploader.queue.length > 0) {
           return this.fileUploader.uploadAll({ entityID: this.id });
         } else {
@@ -123,8 +124,8 @@ define([
             comments: [],
             files: [],
             request_type: 'leave',
-            //FileUpload.uploader has uploader property which was causing circular reference issue
-            //hence renamed this uploader to fileUploader
+            // FileUpload.uploader has uploader property which was causing circular reference issue
+            // hence renamed this uploader to fileUploader
             fileUploader: FileUpload.uploader({
               entityTable: 'civicrm_hrleaveandabsences_leave_request',
               crmAttachmentToken: sharedSettings.attachmentToken,
@@ -214,7 +215,7 @@ define([
          * @param {Object} commentObj - comment object
          */
         deleteComment: function (commentObj) {
-          //If its an already saved comment, mark a toBeDeleted flag
+          // If its an already saved comment, mark a toBeDeleted flag
           if (commentObj.comment_id) {
             commentObj.toBeDeleted = true;
             return;

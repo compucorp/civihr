@@ -1,3 +1,4 @@
+/* eslint-env jasmine */
 (function (CRM) {
   define([
     'common/angular',
@@ -22,7 +23,7 @@
     describe('myLeaveReport', function () {
       var contactId = CRM.vars.leaveAndAbsences.contactId;
       var $compile, $q, $log, $provide, $rootScope, component, controller;
-      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HR_settings, dialog, sharedSettings;
+      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, dialog, sharedSettings;
 
       beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
         $provide = _$provide_;
@@ -54,7 +55,7 @@
         LeaveRequest = _LeaveRequest_;
         LeaveRequestInstance = _LeaveRequestInstance_;
         OptionGroup = _OptionGroup_;
-        HR_settings = _HR_settings_;
+        HRSettings = _HR_settings_;
         dialog = _dialog_;
 
         spyOn(AbsencePeriod, 'all').and.callThrough();
@@ -79,7 +80,7 @@
 
         it('holds the date format', function () {
           expect(controller.dateFormat).toBeDefined();
-          expect(controller.dateFormat).toBe(HR_settings.DATE_FORMAT);
+          expect(controller.dateFormat).toBe(HRSettings.DATE_FORMAT);
         });
 
         it('has all the sections collapsed', function () {
@@ -118,7 +119,7 @@
               expect(controller.absenceTypes.length).not.toBe(0);
             });
 
-            describe('absence periods', function() {
+            describe('absence periods', function () {
               it('has fetched the absence periods', function () {
                 expect(AbsencePeriod.all).toHaveBeenCalled();
                 expect(controller.absencePeriods.length).not.toBe(0);
@@ -164,7 +165,7 @@
 
                   expect(remainder).toBeDefined();
                   expect(remainder).toEqual(_.find(controller.entitlements, function (entitlement) {
-                    return entitlement.type_id === absenceType.id
+                    return entitlement.type_id === absenceType.id;
                   })['remainder']);
                 });
               });
@@ -175,7 +176,7 @@
 
                   expect(value).toBeDefined();
                   expect(value).toEqual(_.find(controller.entitlements, function (entitlement) {
-                    return entitlement.type_id === absenceType.id
+                    return entitlement.type_id === absenceType.id;
                   })['value']);
                 });
               });
@@ -260,7 +261,7 @@
               return period.current;
             });
             label = controller.labelPeriod(period);
-          })
+          });
 
           it('labels it as such', function () {
             expect(label).toBe('Current Period (' + period.title + ')');
@@ -331,7 +332,7 @@
           it('reloads all data for sections already opened', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               from_date: { from: newPeriod.start_date },
-              to_date: {to: newPeriod.end_date },
+              to_date: { to: newPeriod.end_date },
               status_id: valueOfRequestStatus('approved')
             }));
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
@@ -539,7 +540,7 @@
                 });
               });
 
-              function entitlementBreakdownEntries(entitlement) {
+              function entitlementBreakdownEntries (entitlement) {
                 return controller.sections.entitlements.data.filter(function (entry) {
                   return _.contains(entitlement.breakdown, entry);
                 });
@@ -674,7 +675,7 @@
          * @param  {string} statusName
          * @return {Array}
          */
-        function getActionMatrixForStatus(statusName) {
+        function getActionMatrixForStatus (statusName) {
           return controller.actionsFor(LeaveRequestInstance.init({
             status_id: valueOfRequestStatus(statusName)
           }));
@@ -809,7 +810,7 @@
            *
            * @param  {LeaveRequestInstance} leaveRequest
            */
-          function cancelRequest(leaveRequest) {
+          function cancelRequest (leaveRequest) {
             resolveDialogWith(true);
             controller.action(leaveRequest1, 'cancel');
             $rootScope.$digest();
@@ -833,18 +834,18 @@
           });
         });
 
-        describe('when new leave request is created', function() {
-          beforeEach(function() {
-            spyOn(controller,'refresh').and.callThrough();
+        describe('when new leave request is created', function () {
+          beforeEach(function () {
+            spyOn(controller, 'refresh').and.callThrough();
             $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
             openSection('pending');
           });
 
-          it('refreshes the report', function() {
+          it('refreshes the report', function () {
             expect(controller.refresh).toHaveBeenCalled();
           });
 
-          it('gets data from the server, does not use cache', function() {
+          it('gets data from the server, does not use cache', function () {
             expect(LeaveRequest.all.calls.mostRecent().args[4]).toEqual(false);
           });
         });
@@ -854,7 +855,7 @@
          *
          * @param {any} value
          */
-        function resolveDialogWith(value) {
+        function resolveDialogWith (value) {
           var spy;
 
           if (typeof dialog.open.calls !== 'undefined') {
@@ -871,62 +872,62 @@
               .then(function () {
                 return value;
               });
-          });;
+          });
         }
       });
 
-      describe('canCancel', function() {
+      describe('canCancel', function () {
         var leaveRequest;
 
-        beforeEach(function() {
+        beforeEach(function () {
           leaveRequest = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
         });
 
-        describe('when absence type does not allow to cancel', function() {
-          beforeEach(function() {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','1').id;
+        describe('when absence type does not allow to cancel', function () {
+          beforeEach(function () {
+            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '1').id;
           });
 
-          it('does not allow user to cancel request', function() {
+          it('does not allow user to cancel request', function () {
             expect(controller.canCancel(leaveRequest)).toBe(false);
           });
         });
 
-        describe('when absence type does allow to cancel', function() {
-          beforeEach(function() {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','2').id;
+        describe('when absence type does allow to cancel', function () {
+          beforeEach(function () {
+            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '2').id;
           });
 
-          it('does allow user to cancel request', function() {
+          it('does allow user to cancel request', function () {
             expect(controller.canCancel(leaveRequest)).toBe(true);
           });
         });
 
-        describe('when absence type does allow cancellation in advance of start date', function() {
-          beforeEach(function() {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','3').id;
+        describe('when absence type does allow cancellation in advance of start date', function () {
+          beforeEach(function () {
+            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '3').id;
           });
 
-          describe('when from date is less than today', function() {
-            beforeEach(function() {
+          describe('when from date is less than today', function () {
+            beforeEach(function () {
               var baseDate = moment(leaveRequest.from_date);
               var dateAfterFromDate = baseDate.add(10, 'days').toDate();
               jasmine.clock().mockDate(dateAfterFromDate);
             });
 
-            it('does not allow user to cancel request', function() {
+            it('does not allow user to cancel request', function () {
               expect(controller.canCancel(leaveRequest)).toBe(false);
             });
           });
 
-          describe('when from date is more than today', function() {
-            beforeEach(function() {
+          describe('when from date is more than today', function () {
+            beforeEach(function () {
               var baseDate = moment(leaveRequest.from_date);
               var dateBeforeFromDate = baseDate.subtract(10, 'days').toDate();
               jasmine.clock().mockDate(dateBeforeFromDate);
             });
 
-            it('does allow user to cancel request', function() {
+            it('does allow user to cancel request', function () {
               expect(controller.canCancel(leaveRequest)).toBe(true);
             });
           });
@@ -939,7 +940,7 @@
        * @param  {string} statusName
        * @return {integer}
        */
-      function valueOfRequestStatus(statusName) {
+      function valueOfRequestStatus (statusName) {
         var statuses = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status');
 
         return _.find(statuses, function (status) {
@@ -947,7 +948,7 @@
         })['value'];
       }
 
-      function compileComponent() {
+      function compileComponent () {
         var $scope = $rootScope.$new();
 
         component = angular.element('<my-leave-report contact-id="' + contactId + '"></my-leave-report>');
@@ -962,12 +963,12 @@
        *
        * @param {string} section
        */
-      function openSection(section, digest) {
+      function openSection (section, digest) {
         digest = typeof digest === 'undefined' ? true : !!digest;
 
         controller.toggleSection(section);
         digest && $rootScope.$digest();
       }
     });
-  })
+  });
 })(CRM);
