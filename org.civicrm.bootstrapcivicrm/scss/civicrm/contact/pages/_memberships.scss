@@ -927,18 +927,33 @@
       }
     }
 
-    .CRM_Member_Form_Task_Email {
+    .CRM_Member_Form_Task_Email .crm-contactEmail-form-block {
+      padding: 0 20px;
+
       .status {
-        margin: 10px 20px;
+        margin: 10px 0;
         padding: 10px 25px !important;
       }
 
-      .crm-form-block .form-layout-compressed {
-        width: 100%;      
+      .crm-submit-buttons {
+        margin: 0 !important;
+      }
+
+      .form-layout-compressed {
+        width: 100%;
+
+        tbody tr td {
+          padding: 10px 10px 10px 0;
+        }
 
         .select2-container-multi {
           width: 100% !important;
         }
+      }
+
+      .crm-accordion-wrapper {
+        margin-left: -20px;
+        margin-right: -20px;
       }
 
       .crm-html_email-accordion  .helpIcon {
@@ -950,7 +965,20 @@
       }
 
       .crm-accordion-body td {
-        padding-left: 0 !important
+        padding-left: 5px !important
+      }
+      
+      .spacer {
+        height: 20px;
+      }
+
+      .section {
+        padding: 15px 0 !important;
+      }
+
+      .crm-submit-buttons:last-child {
+        margin: 20px -20px 0 !important;
+        padding: 20px !important;
       }
 
       #saveDetails {

@@ -117,11 +117,6 @@
         &:first-child {
           padding-left: 20px;
         }
-
-        &:last-child {
-          padding-right: 20px;
-          text-align: right;
-        }
       }
 
       > td:not(:last-child),
@@ -139,7 +134,7 @@
     }
 
     > tbody > tr > td:last-child {
-      padding-right: 15px;
+      padding-right: 20px;
       text-align: right;
     }
 
