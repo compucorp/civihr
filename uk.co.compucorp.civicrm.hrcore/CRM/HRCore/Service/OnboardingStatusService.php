@@ -29,7 +29,7 @@ class CRM_HRCore_Service_OnboardingStatusService {
     else {
       // remove from complete steps
       $key = array_search($stepValue, $steps);
-      if ($key) {
+      if (NULL !== $key) {
         unset($steps[$key]);
       }
     }
