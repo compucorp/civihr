@@ -125,52 +125,51 @@
   }
 }
 
-.page-civicrm-batch {
-  #Batch {
-    box-shadow: $box-shadow;
+.page-civicrm-batch #Batch {
+  box-shadow: $box-shadow;
 
-    .crm-submit-buttons {
-      margin: 0 15px !important;
-      border: none;
+  .crm-submit-buttons {
+    border: none;
+    margin: 0 15px !important;
+  }
+
+  .crm-batch-form-block {
+    box-shadow: none;
+
+    td {
+      padding: 0 !important;
+      vertical-align: middle;
+
+      &.label label {
+        padding: 15px 0 5px 25px;
+      }
     }
 
-    .crm-batch-form-block {
-      box-shadow: none;
-
-      td {
-        padding: 0 !important;
-        vertical-align: middle;
-
-        &.label {
-          label {
-            padding: 15px 0 5px 25px;
-          }
-        }
-      }
-
-      textarea {
-        line-height: 1.5em;
-        vertical-align: middle;        
-      }
+    textarea {
+      line-height: 1.5em;
+      vertical-align: middle;
     }
   }
 }
 
 .page-civicrm-batch-entry #crm-main-content-wrapper {
-  background: $crm-white;
-  border-radius: $panel-border-radius;
+  padding-top: 5.5em;
 
   .CRM_Batch_Form_Entry {
+    background: $crm-white;
     border-radius: $panel-border-radius;
     box-shadow: $crm-form-layout-shadow;
-    padding: 15px 0 0;
+    padding: 0;
+    position: relative;
   }
 
   .help {
     background: $crm-light-green-color;
     border: none;
     color: $gray-darker;
-    margin: 0 15px;
+    padding: 10px;
+    position: absolute;
+    top: -5.6em;
   }
 
   .crm-button_qf_Entry_upload_force-save {
@@ -239,13 +238,10 @@
     }
 
     .crm-grid-row {
+      background: $crm-white;
       border-bottom: 1px solid  $crm-background;
       border-bottom-left-radius: $border-radius-base;
       border-bottom-right-radius: $border-radius-base;
-
-      &.odd-row {
-        background: $crm-white;
-      }
 
       &:last-child .crm-grid-cell {
         &:first-child {
