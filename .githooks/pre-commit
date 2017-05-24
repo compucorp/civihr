@@ -22,7 +22,7 @@ if [ -n "$files" ]; then
   command_exists semistandard "https://www.npmjs.com/package/semistandard"
   command_exists snazzy "https://www.npmjs.com/package/snazzy"
 
-  semistandard --env jasmine --env amd --global inject --global CRM --verbose "$files" | snazzy
+  semistandard --global inject --global CRM --verbose "$files" | snazzy
 
   if [ $? -ne 0 ]; then
     echo "$COL_YELLOW Some of the JS files you have committed are not following the \"JavaScript Semi-Standard Style\", please fix them! $COL_RESET";
