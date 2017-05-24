@@ -137,7 +137,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
 
   /**
    * Deletes all the Public Holiday Leave Requests for Public Holidays in the
-   * future for the contacts using the given workPatternID, If it is the default Work Pattern
+   * future for the contacts using the given workPatternID. If it is the default Work Pattern
    * the Leave Requests are deleted for all contacts.
    *
    * @param int $workPatternID

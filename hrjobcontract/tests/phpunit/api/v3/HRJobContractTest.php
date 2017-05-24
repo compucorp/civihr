@@ -68,7 +68,7 @@ class api_v3_HRJobContractTest extends PHPUnit_Framework_TestCase implements
    *
    * @dataProvider invalidGetContractsWithDetailsInPeriodContactIDOperator
    */
-  public function testOnGetContractsWithDetailsInPeriodTheContactIDOnlyAcceptsINOperator($operator) {
+  public function testGetContractsWithDetailsInPeriodTheContactIDOnlyAcceptsINOperator($operator) {
     civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', ['contact_id' => [$operator => '1']]);
   }
 

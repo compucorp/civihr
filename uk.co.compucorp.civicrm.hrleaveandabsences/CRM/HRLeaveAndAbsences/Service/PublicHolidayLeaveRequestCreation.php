@@ -241,7 +241,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
   /**
    * Creates Public Holiday Leave Requests for all Public Holidays in the
-   * Future for the contacts using the given workPatternID, If it is the default Work Pattern
+   * Future for the contacts using the given workPatternID. If it is the default Work Pattern
    * the Leave Requests are created for all contacts.
    *
    * @param int $workPatternID

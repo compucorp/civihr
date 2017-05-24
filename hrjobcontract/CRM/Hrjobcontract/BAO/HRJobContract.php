@@ -513,8 +513,9 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    *   dates
    * - The contract is not deleted
    *
-   * This method also accepts a Contact ID as a parameter. In that case, it will
-   * only return contracts for that given Contact.
+   * This method also accepts a Contact ID as a parameter which could be a single contact
+   * or an array of Contact(s). In that case, it will only return contracts for the given Contact(s).
+   *
    *
    * The contracts are returned ordered by their start date in ascending order.
    *
