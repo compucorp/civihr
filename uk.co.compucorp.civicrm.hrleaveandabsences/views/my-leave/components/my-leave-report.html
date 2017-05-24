@@ -30,7 +30,7 @@
                 <th class="chr_leave-report__table__heading--status">Status</th>
                 <th
                   class="chr_leave-report__table__heading--type"
-                  ng-repeat="absenceType in report.absenceTypes track by $index">
+                  ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                   {{absenceType.title}}
                 </th>
                 <th class="chr_leave-report__table__heading--action"></th>
@@ -49,7 +49,7 @@
                 </td>
                 <td></td>
                 <td></td>
-                <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                   {{absenceType.entitlement}}
                 </td>
                 <td></td>
@@ -76,7 +76,7 @@
                             <th class="chr_leave-report__table__heading--status">Status</th>
                             <th
                               class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypes track by $index">
+                              ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                               {{absenceType.title}}
                             </th>
                             <th class="chr_leave-report__table__heading--action"></th>
@@ -92,7 +92,7 @@
                             </td>
                             <td></td>
                             <td></td>
-                            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                               {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
                             </td>
                             <td></td>
@@ -115,7 +115,7 @@
                 </td>
                 <td></td>
                 <td></td>
-                <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                   {{absenceType.balanceChanges.publicHolidays}}
                 </td>
                 <td></td>
@@ -142,7 +142,7 @@
                             <th class="chr_leave-report__table__heading--status">Status</th>
                             <th
                               class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypes track by $index">
+                              ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                               {{absenceType.title}}
                             </th>
                             <th class="chr_leave-report__table__heading--action"></th>
@@ -153,7 +153,7 @@
                             <td class="chr_leave-report__label">Public Holiday</td>
                             <td>{{request.from_date | date:report.dateFormat}}</td>
                             <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
-                            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                               {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                             </td>
                             <td></td>
@@ -176,7 +176,7 @@
                 </td>
                 <td></td>
                 <td></td>
-                <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                   {{absenceType.balanceChanges.approved}}
                 </td>
                 <td></td>
@@ -193,7 +193,7 @@
                             <th class="chr_leave-report__table__heading--status">Status</th>
                             <th
                               class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypes track by $index">
+                              ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                               {{absenceType.title}}
                             </th>
                             <th class="chr_leave-report__table__heading--action"></th>
@@ -208,7 +208,7 @@
                               {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
                             </td>
                             <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
-                            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                               {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                             </td>
                             <td>
@@ -250,7 +250,7 @@
                 </td>
                 <td></td>
                 <td></td>
-                <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                   {{absenceType.balanceChanges.expired}}
                 </td>
                 <td></td>
@@ -277,7 +277,7 @@
                             <th class="chr_leave-report__table__heading--status">Status</th>
                             <th
                               class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypes track by $index">
+                              ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                               {{absenceType.title}}
                             </th>
                             <th class="chr_leave-report__table__heading--action"></th>
@@ -293,7 +293,7 @@
                             </td>
                             <td></td>
                             <td></td>
-                            <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                               {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
                             </td>
                             <td></td>
@@ -308,7 +308,7 @@
                 <td class="chr_leave-report__label">Balance</td>
                 <td></td>
                 <td></td>
-                <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                   {{absenceType.remainder.current}}
                 </td>
                 <td></td>
@@ -336,7 +336,7 @@
               <td class="chr_leave-report__table__heading--status"></td>
               <td
                 class="chr_leave-report__table__heading--type"
-                ng-repeat="absenceType in report.absenceTypes track by $index">
+                ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                 {{absenceType.balanceChanges.pending}}
               </td>
               <td class="chr_leave-report__table__heading--action"></td>
@@ -363,7 +363,7 @@
                           <th class="chr_leave-report__table__heading--status">Status</th>
                           <th
                             class="chr_leave-report__table__heading--type"
-                            ng-repeat="absenceType in report.absenceTypes track by $index">
+                            ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                             {{absenceType.title}}
                           </th>
                           <th class="chr_leave-report__table__heading--action"></th>
@@ -378,7 +378,7 @@
                             {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
                           </td>
                           <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
-                          <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                          <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                             {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                           </td>
                           <td>
@@ -412,7 +412,7 @@
               <td class="chr_leave-report__label">Future Balance</td>
               <td></td>
               <td></td>
-              <td ng-repeat="absenceType in report.absenceTypes track by $index">
+              <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                 {{absenceType.remainder.future}}
               </td>
               <td></td>
@@ -459,7 +459,7 @@
                           <th class="chr_leave-report__table__heading--status">Status</th>
                           <th
                             class="chr_leave-report__table__heading--type"
-                            ng-repeat="absenceType in report.absenceTypes track by $index">
+                            ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                             {{absenceType.title}}
                           </th>
                           <th class="chr_leave-report__table__heading--action"></th>
@@ -474,7 +474,7 @@
                             {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
                           </td>
                           <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
-                          <td ng-repeat="absenceType in report.absenceTypes track by $index">
+                          <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                             {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                           </td>
                           <td>

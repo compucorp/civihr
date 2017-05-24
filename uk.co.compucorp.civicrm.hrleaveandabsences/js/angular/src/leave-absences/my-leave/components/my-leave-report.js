@@ -33,6 +33,7 @@ define([
 
     vm.absencePeriods = [];
     vm.absenceTypes = {};
+    vm.absenceTypesFiltered = {};
     vm.dateFormat = HR_settings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.selectedPeriod = null;
@@ -340,7 +341,7 @@ define([
         vm.entitlements = entitlements;
       })
       .then(function () {
-        _.forEach(vm.absenceTypes, function (absenceType) {
+        vm.absenceTypesFiltered = _.filter(vm.absenceTypes, function (absenceType) {
           var entitlement = _.find(vm.entitlements, function (entitlement) {
             return entitlement.type_id === absenceType.id;
           });
@@ -348,6 +349,10 @@ define([
           //set entitlement to 0 if no entitlement is present
           absenceType.entitlement = entitlement ? entitlement.value : 0;
           absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
+
+          return !((absenceType.entitlement === 0) &&
+          (absenceType.allow_overuse === "0") &&
+          (absenceType.allow_accruals_request === "0"));
         });
       });
     }

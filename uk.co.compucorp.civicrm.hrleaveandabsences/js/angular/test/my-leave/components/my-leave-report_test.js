@@ -167,6 +167,13 @@
                 });
               });
 
+              it('display only the absence types which has entitlement or allows negative balance or allows accrual requests', function () {
+                _.forEach(controller.absenceTypesFiltered, function (absenceType) {
+                  expect((absenceType.entitlement === 0) && (absenceType.allow_overuse === "0") &&
+                    (absenceType.allow_accruals_request === "0")).toBe(false)
+                });
+              });
+
               it('has stored the 0 value for entitlement, remainder for absence types which does not have entitlement', function () {
                 _.forEach(controller.absenceTypes, function (absenceType) {
                   var entitlement = _.find(controller.entitlements, function (entitlement) {
