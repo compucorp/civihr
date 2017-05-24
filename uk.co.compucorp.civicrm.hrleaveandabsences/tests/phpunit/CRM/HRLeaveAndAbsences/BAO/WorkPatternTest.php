@@ -646,67 +646,64 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
 
   public function testItDoesNotEnqueueTaskToUpdatePublicHolidayLeaveRequestsWhenANewWorkPatternIsCreatedAndNotSetToDefault() {
     WorkPatternFabricator::fabricate(['is_default' => 0]);
-    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
-    $this->assertEquals(0, $queue->numberOfItems());
+    $numberOfItems = 0;
+    $this->assertPublicHolidayQueueTask($numberOfItems);
   }
 
   public function testItEnqueueTaskToUpdatePublicHolidayLeaveRequestsWhenANewWorkPatternIsCreatedSetToDefault() {
     $workPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
-    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
-    $this->assertEquals(1, $queue->numberOfItems());
-
-    $item = $queue->claimItem();
-    $this->assertEquals(
+    $this->assertPublicHolidayQueueTask(
+      1,
       'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequestsForWorkPatternContacts',
-      $item->data->callback[0]
+      $workPattern->id
     );
-    $this->assertEquals($workPattern->id, $item->data->arguments[0]);
-    $queue->deleteItem($item);
   }
 
   public function testItEnqueueTaskToUpdatePublicHolidayLeaveRequestsWhenTheDefaultWorkPatternIsUpdated() {
     $workPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
-    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
-    $this->assertEquals(1, $queue->numberOfItems());
-
-    $item = $queue->claimItem();
-    $this->assertEquals(
+    $this->assertPublicHolidayQueueTask(
+      1,
       'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequestsForWorkPatternContacts',
-      $item->data->callback[0]
+      $workPattern->id
     );
-    $this->assertEquals($workPattern->id, $item->data->arguments[0]);
-    $queue->deleteItem($item);
 
     //update work pattern
     WorkPatternFabricator::fabricate(['id' => $workPattern->id, ]);
 
-    $this->assertEquals(1, $queue->numberOfItems());
-
-    $item = $queue->claimItem();
-    $this->assertEquals(
+    $this->assertPublicHolidayQueueTask(
+      1,
       'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequestsForWorkPatternContacts',
-      $item->data->callback[0]
+      $workPattern->id
     );
-    $this->assertEquals($workPattern->id, $item->data->arguments[0]);
-    $queue->deleteItem($item);
   }
 
   public function testItEnqueueTaskToUpdatePublicHolidayLeaveRequestsWhenANonDefaultWorkPatternIsUpdated() {
     $workPattern = WorkPatternFabricator::fabricate();
-    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
-    $this->assertEquals(0, $queue->numberOfItems());
+    $numberOfItems = 0;
+    $this->assertPublicHolidayQueueTask($numberOfItems);
 
     //update work pattern
     WorkPatternFabricator::fabricate(['id' => $workPattern->id, ]);
 
-    $this->assertEquals(1, $queue->numberOfItems());
-
-    $item = $queue->claimItem();
-    $this->assertEquals(
+    $this->assertPublicHolidayQueueTask(
+      1,
       'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequestsForWorkPatternContacts',
-      $item->data->callback[0]
+      $workPattern->id
     );
-    $this->assertEquals($workPattern->id, $item->data->arguments[0]);
+  }
+
+  private function assertPublicHolidayQueueTask($numberOfItems, $class = null, $expectedArgument = null) {
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals($numberOfItems, $queue->numberOfItems());
+    $item = $queue->claimItem();
+
+    if($class) {
+      $this->assertEquals($class, $item->data->callback[0]);
+    }
+
+    if($expectedArgument) {
+      $this->assertEquals($expectedArgument, $item->data->arguments[0]);
+    }
     $queue->deleteItem($item);
   }
 }
