@@ -223,41 +223,25 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
   }
 
   /**
-   * Gets the contacts that have work patterns overlapping the start and end date period.
+   * Gets the contacts that have work patterns with effective_end_date
+   * greater than or equal to the date parameter.
    *
-   * @param \DateTime $start
-   * @param \DateTime $end
-   * @param null|int $workPatternID
-   * @param bool $ignoreEffectiveDate
-   *   If true will return contacts who has Contact work patterns with effective_end date greater than
-   *   or equal to the start date parameter irrespective of what the effective/start date of the
-   *   Contact Work Pattern is.
+   * @param \DateTime $date
+   * @param int $workPatternID
    *
    * @return array
    *   Array of contact ID's
    */
-  public static function getContactsForPeriod(DateTime $start, DateTime $end, $workPatternID = null, $ignoreEffectiveDate = false) {
+  public static function getContactsUsingWorkPatternFromDate(DateTime $date, $workPatternID) {
     $tableName = self::getTableName();
-    $where = '';
+    $query = "SELECT DISTINCT contact_id FROM {$tableName} WHERE pattern_id = %1 AND
+              (effective_end_date >= %2 OR effective_end_date IS NULL)";
 
     $params = [
-      1 => [$end->format('Y-m-d'), 'String'],
-      2 => [$start->format('Y-m-d'), 'String']
+      1 => [$workPatternID, 'Integer'],
+      2 => [$date->format('Y-m-d'), 'String']
     ];
-
-    if($workPatternID) {
-      $where .= "pattern_id = %3 AND ";
-      $params[3] = [$workPatternID, 'Integer'];
-    }
-
-    if(!$ignoreEffectiveDate) {
-      $where .= "effective_date <= %1 AND ";
-    }
-
-    $where .= "(effective_end_date >= %2 OR effective_end_date IS NULL)";
-    $query = "SELECT DISTINCT contact_id FROM {$tableName} WHERE  ". $where;
-
-    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
+    $result = CRM_Core_DAO::executeQuery($query, $params);
 
     $contacts = [];
     while($result->fetch()) {

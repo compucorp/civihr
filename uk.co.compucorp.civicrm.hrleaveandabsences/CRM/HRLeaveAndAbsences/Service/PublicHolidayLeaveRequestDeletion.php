@@ -147,12 +147,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
     $contacts = [];
 
     if (!$workPattern->is_default) {
-      $ignoreEffectiveDate = true;
-      $contacts = ContactWorkPattern::getContactsForPeriod(
+      $contacts = ContactWorkPattern::getContactsUsingWorkPatternFromDate(
         new DateTime(),
-        new DateTime(),
-        $workPatternID,
-        $ignoreEffectiveDate
+        $workPatternID
       );
     }
 
