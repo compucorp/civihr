@@ -103,6 +103,7 @@ CIVI_UF=
 # The name of the organization (for inclusion in footers, etc)
 CIVI_DOMAIN_NAME=
 
+
 # The default from email address
 CIVI_DOMAIN_EMAIL=
 
@@ -861,7 +862,7 @@ function civihr_install_site(){
 
     drush -y updatedb
     drush -y dis overlay shortcut color
-    drush -y en administerusersbyrole role_delegation subpermissions civicrm toolbar locale seven userprotect masquerade smtp
+    drush -y en administerusersbyrole role_delegation civicrm toolbar locale seven userprotect masquerade smtp
 
     install_civihr
 
