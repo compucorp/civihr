@@ -1,4 +1,8 @@
 .page-civicrm-contact-view {
+  #crm-main-content-wrapper {
+    overflow: hidden;
+  }
+  
   #crm-container {
     .ui-widget-content {
       font-family: $font-family-base;
