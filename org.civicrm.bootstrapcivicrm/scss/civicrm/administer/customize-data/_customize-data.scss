@@ -82,14 +82,23 @@
       background: $crm-white !important;
       border-top: 1px solid $crm-background;
       box-shadow: none;
-      padding: 15px !important;
+      padding: 20px 15px !important;
+    }
+
+    .action-link .button {
+      box-shadow: none;
     }
   }
 
   #field_page + .action-link {
     background: $crm-white !important;
-    box-shadow: none;
-    padding: 15px !important;
+    border-radius: 0 0 $border-radius-base $border-radius-base;
+    box-shadow: $crm-form-item-shadow;
+    padding: 20px 15px !important;
+
+    .button {
+      box-shadow: none;
+    }
   }
 
   .CRM_Custom_Form_Preview {
