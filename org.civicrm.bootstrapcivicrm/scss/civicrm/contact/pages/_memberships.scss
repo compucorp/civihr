@@ -1140,12 +1140,39 @@
   }
 
   .CRM_Member_Form_Task_Print {
+    padding: 0 15px;
+
     table {
-      margin-bottom: 10px;
+      @extend %civihr-table;
+      border: none;
+      border-radius: $panel-border-radius;
+      margin: 30px 0 20px;
+
+      tr.columnheader {
+        border: none !important;
+        border-bottom: 1px solid $crm-dark-grayblue !important;
+      }
+
+      tr.crm-membership {
+        border-left: none;
+        border-right: none;
+      }
+
+      th,
+      td {
+        border: none !important;
+        line-height: 1.5em !important;
+        padding: 15px 20px !important;
+      }
+    }
+
+    .element-right {
+      margin-right: 0 !important;
     }
 
     .crm-button {
       border: none;
+      margin: 0 0 0 15px;
 
       i {
         left: 0.7em;
@@ -1157,21 +1184,19 @@
         padding: 8px 12px 8px 25px !important;
       }
 
-      &.crm-button-type-back {
-        i {
-          color: $gray-darker !important;
-        }
+      &.crm-button_qf_Print_next i:before {
+        @include fa-icon($font-size-base, $fa-var-print, $crm-white);
+      }
 
-        &:hover i {
-          color: $crm-white !important;
-        }
+      &.crm-button-type-back i {
+        display: none;
       }
     }
 
     .crm-button .cancel {
       border: 1px solid $gray-darker;
       color: $gray-darker !important;
-      padding: 7px 12px 7px 20px !important;
+      padding: 7px 15px !important;
 
       &:hover {
         background: $gray-darker;
