@@ -1237,21 +1237,6 @@
               });
             });
           });
-
-          describe('when entitlement is not present', function() {
-            beforeEach(function() {
-              spyOn(Entitlement, 'all').and.callFake(function () {
-                return $q.resolve([])
-              });
-              $ctrl.request.contact_id = 202;
-              $ctrl.initAfterContactSelection();
-              $scope.$digest();
-            });
-
-            it('No entitlement message is shown on UI', function() {
-              expect($ctrl.noEntitlement).toBe(true);
-            });
-          });
         });
 
         describe('after contact is deselected', function() {

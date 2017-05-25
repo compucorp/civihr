@@ -33,19 +33,24 @@
       </ui-select>
     </div>
     <div
-      ng-class="{'chr_disabled': (!$ctrl.request.contact_id || $ctrl.noEntitlement || $ctrl.postContactSelection)}"
+      ng-class="{'chr_disabled': (!$ctrl.request.contact_id || $ctrl.absenceTypes.length === 0 || $ctrl.postContactSelection)}"
       ng-show="!$ctrl.loading.absenceTypes">
       <div class="row">
         <div class="col-xs-12">
-          <div ng-show="!$ctrl.noEntitlement" class="chr_custom-select chr_custom-select--full">
+          <div class="chr_custom-select chr_custom-select--full">
             <select
+              ng-hide="$ctrl.absenceTypes.length === 0"
               ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))"
               name="absenceTypeSelect"
               ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes"
               ng-model="$ctrl.request.type_id"
               ng-change="$ctrl.updateBalance()"></select>
+            <select
+              ng-show="$ctrl.absenceTypes.length === 0"
+              disabled="disabled">
+              <option>You don't have any leave entitlement</option>
+            </select>
           </div>
-          <div ng-show="$ctrl.noEntitlement">No Entitlement</div>
         </div>
       </div>
       <hr/>

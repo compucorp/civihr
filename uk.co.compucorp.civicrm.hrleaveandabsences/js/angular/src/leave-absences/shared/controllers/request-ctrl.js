@@ -29,6 +29,7 @@ define([
       var mode = ''; // can be edit, create, view
       var role = '';
       var initialCommentsLength = 0; // number of comments when the request model is loaded
+      var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
       this.absencePeriods = [];
       this.absenceTypes = [];
@@ -37,7 +38,6 @@ define([
       this.submitting = false;
       this.errors = [];
       this.managedContacts = [];
-      this.noEntitlement = false;
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
       this.period = {};
@@ -668,7 +668,9 @@ define([
             self.postContactSelection = false;
           })
           .catch(function (error) {
-            self.noEntitlement = ( error === 'No entitlement' );
+            if(error !== NO_ENTITLEMENT_ERROR) {
+              return $q.reject(error);
+            }
           })
       };
 
@@ -719,7 +721,11 @@ define([
        * @return {Array} of filtered absence types for given entitlements
        */
       function mapAbsenceTypesWithBalance (absenceTypes, entitlements) {
-        return entitlements.map(function (entitlementItem) {
+        return entitlements
+          .filter(function (entitlementItem) {
+            return entitlementItem.remainder.current !== 0;
+          })
+          .map(function (entitlementItem) {
           var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
             return absenceTypeItem.id === entitlementItem.type_id;
           });
@@ -1104,11 +1110,11 @@ define([
           type_id: { IN: absenceTypesAndIds.ids }
         }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
-            if (!entitlements.length) {
-              return $q.reject('No entitlement');
-            }
             // create a list of absence types with a `balance` property
             self.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
+            if (!self.absenceTypes.length) {
+              return $q.reject(NO_ENTITLEMENT_ERROR);
+            }
           });
       }
 
