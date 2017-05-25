@@ -17,14 +17,17 @@ define([
         AbsenceTypeAPI = _AbsenceTypeAPI_;
         $httpBackend = _$httpBackend_;
         sharedSettings = _sharedSettings_;
+
+        spyOn(AbsenceTypeAPI, 'sendGET').and.callThrough();
       }]));
 
       it("has expected interface", function () {
-        expect(Object.keys(AbsenceTypeAPI)).toContain("all");
+        expect(Object.keys(AbsenceTypeAPI)).toContain("all", "calculateToilExpiryDate");
       });
 
       describe("all()", function () {
         var absenceTypePromise, totalAbsenceTypes;
+        var params = {};
 
         beforeEach(function () {
           $httpBackend.whenGET(/action=get&entity=AbsenceType/)
@@ -33,12 +36,16 @@ define([
 
         beforeEach(function () {
           totalAbsenceTypes = mockData.all().values.length;
-          absenceTypePromise = AbsenceTypeAPI.all();
+          absenceTypePromise = AbsenceTypeAPI.all(params);
         });
 
         afterEach(function () {
           //enforce flush to make calls to httpBackend
           $httpBackend.flush();
+        });
+
+        it('sends GET request with correct parameters', function () {
+          expect(AbsenceTypeAPI.sendGET).toHaveBeenCalledWith('AbsenceType', 'get', { is_active: true });
         });
 
         it("with expected length", function () {

@@ -12,7 +12,7 @@ define([
     return api.extend({
 
       /**
-       * This method returns all the AbsenceTypes.
+       * This method returns all the active AbsenceTypes unless specified in param.
        *
        * @param  {Object} params  matches the api endpoint params (title, weight etc)
        * @return {Promise}
@@ -20,7 +20,7 @@ define([
       all: function (params) {
         $log.debug('AbsenceTypeAPI.all');
 
-        return this.sendGET('AbsenceType', 'get', params)
+        return this.sendGET('AbsenceType', 'get', _.defaults(params || {}, { is_active: true }))
           .then(function (data) {
             return data.values;
           });
