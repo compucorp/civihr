@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -e
+
 #
 # Setups CiviHR site using Drupal CMS and CiviCRM.
 
