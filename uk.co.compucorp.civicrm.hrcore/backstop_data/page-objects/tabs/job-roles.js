@@ -2,7 +2,7 @@ var tab = require('./tab');
 
 module.exports = (function () {
   return tab.extend({
-    readySelector: '.hrjobroles-basic-details',
+    readySelector: '.job-role__tabs',
     tabTitle: 'Job Roles',
 
     /**
@@ -12,7 +12,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click('.hrjobroles-list-role-item [ng-click*="removeRole"]');
+        casper.click('.job-role [ng-click*="removeRole"]');
         this.waitForModal();
       }.bind(this));
     },
@@ -26,7 +26,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click('.tab-pane.active form > .btn-tab-action');
+        casper.click('.tab-pane.active .job-role__actions .btn-link[ng-click$="show()"]');
         casper.wait(100);
       });
 
@@ -40,6 +40,8 @@ module.exports = (function () {
      * @return {object}
      */
     openDropdown: function (name) {
+      var casper = this.casper;
+
       casper.then(function () {
         var common = 'jobroles.edit_data[job_roles_data.id]';
 
