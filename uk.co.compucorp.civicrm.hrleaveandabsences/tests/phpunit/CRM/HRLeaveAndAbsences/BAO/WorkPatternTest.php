@@ -695,6 +695,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   private function assertPublicHolidayQueueTask($numberOfItems, $class = null, $expectedArgument = null) {
     $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
     $this->assertEquals($numberOfItems, $queue->numberOfItems());
+    $item = '';
 
     if($class || $expectedArgument) {
       $item = $queue->claimItem();
@@ -708,7 +709,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
       $this->assertEquals($expectedArgument, $item->data->arguments[0]);
     }
 
-    if($class || $expectedArgument) {
+    if($item) {
       $queue->deleteItem($item);
     }
   }

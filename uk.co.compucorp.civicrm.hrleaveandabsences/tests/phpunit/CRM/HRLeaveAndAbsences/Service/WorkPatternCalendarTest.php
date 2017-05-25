@@ -434,7 +434,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     ]);
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
-    $contact2 =ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $this->contact['id']],
