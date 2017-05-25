@@ -30,6 +30,7 @@ define([
       var mode = ''; // can be edit, create, view
       var role = '';
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
+      var initialFilesLength = 0; // number of attachment files when the request model is loaded
 
       this.absencePeriods = [];
       this.absenceTypes = [];
@@ -196,6 +197,8 @@ define([
         // check if user has changed any attribute
         if (this.isMode('edit')) {
           canSubmit = canSubmit && hasRequestChanged.call(this);
+          // user has added file Attachment
+          canSubmit = canSubmit || (this.request.files.length + this.request.fileUploader.queue.length) !== initialFilesLength;
         }
 
         // check if manager has changed status
@@ -662,6 +665,7 @@ define([
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
               }
+              initialFilesLength = self.request.files.length;
             }
 
             self.postContactSelection = false;
