@@ -426,4 +426,34 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     // second week and a friday is a non working day on it
     $this->assertEquals($workDayTypes['non_working_day'], $calendarDates[11]['type']);
   }
+
+  public function testItGeneratesAccurateNumberOfCalendarDatesUsingOnlyTheContractOfTheContact() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->contact['id']],
+      [
+        'period_start_date' => '2016-01-01'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      [
+        'period_start_date' => '2016-05-01'
+      ]
+    );
+
+    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    $calendarDates = $calendar->get();
+
+    //Year 2016 is a leap year, so there are 366 days.
+    $this->assertCount(366, $calendarDates);
+  }
 }
