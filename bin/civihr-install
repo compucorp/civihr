@@ -17,7 +17,7 @@ BLDDIR=
 # Codename for the build instance.
 SITE_NAME=
 
-# Identifies site pointing ot default state.
+# Identifies site pointing to default state.
 # (default: default)
 SITE_ID=default
 
@@ -28,10 +28,6 @@ SITE_TOKEN=
 # Root directory where the site's code will be installed
 # (default: BLDDIR/SITE_NAME)
 WEB_ROOT=
-
-# Root directory where we store cached copies of git repositories
-# (default: TMPDIR/git-cache)
-CACHE_DIR=
 
 # Time to wait before allowing updates to git/svn caches (seconds)
 CACHE_TTL=60
@@ -53,14 +49,8 @@ ADMIN_USER="admin"
 # Printable name of the site (default: $SITE_NAME)
 CMS_TITLE=
 
-# The Drupal version
-CMS_VERSION=
-
 # The CiviCRM API (default: randomly generated)
 CIVI_SITE_KEY=
-
-# The CiviCRM branch/version
-CIVI_VERSION=4.7.9
 
 # Public URL of the site
 CMS_URL=
@@ -102,7 +92,6 @@ CIVI_UF=
 
 # The name of the organization (for inclusion in footers, etc)
 CIVI_DOMAIN_NAME=
-
 
 # The default from email address
 CIVI_DOMAIN_EMAIL=
@@ -845,13 +834,6 @@ function civihr_install_site(){
   CIVI_FILES="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/files/civicrm"
   CIVI_TEMPLATEC="${CIVI_FILES}/templates_c"
   CIVI_UF="Drupal"
-
-
-  ## civicrm-core v4.7+ sets default ext dir; for older versions, we'll set our own.
-  if [[ "$CIVI_VERSION" =~ ^4.[0123456](\.([0-9]|alpha|beta)+)?$ ]] ; then
-    CIVI_EXT_DIR="${WEB_ROOT}/sites/${DRUPAL_SITE_DIR}/ext"
-    CIVI_EXT_URL="${CMS_URL}/sites/${DRUPAL_SITE_DIR}/ext"
-  fi
 
   civicrm_install
 
