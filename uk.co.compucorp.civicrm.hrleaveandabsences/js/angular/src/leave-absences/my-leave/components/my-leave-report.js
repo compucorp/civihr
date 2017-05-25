@@ -346,13 +346,13 @@ define([
             return entitlement.type_id === absenceType.id;
           });
 
-          //set entitlement to 0 if no entitlement is present
+          // set entitlement to 0 if no entitlement is present
           absenceType.entitlement = entitlement ? entitlement.value : 0;
           absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
 
           return !((absenceType.entitlement === 0) &&
-          (absenceType.allow_overuse !== "1") &&
-          (absenceType.allow_accruals_request !== "1"));
+          (absenceType.allow_overuse !== '1') &&
+          (absenceType.allow_accruals_request !== '1'));
         });
       });
     }

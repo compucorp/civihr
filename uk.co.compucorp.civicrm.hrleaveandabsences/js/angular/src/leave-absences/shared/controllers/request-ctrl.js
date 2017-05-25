@@ -668,10 +668,10 @@ define([
             self.postContactSelection = false;
           })
           .catch(function (error) {
-            if(error !== NO_ENTITLEMENT_ERROR) {
+            if (error !== NO_ENTITLEMENT_ERROR) {
               return $q.reject(error);
             }
-          })
+          });
       };
 
       /**
@@ -726,17 +726,17 @@ define([
             return entitlementItem.remainder.current !== 0;
           })
           .map(function (entitlementItem) {
-          var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
-            return absenceTypeItem.id === entitlementItem.type_id;
-          });
+            var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
+              return absenceTypeItem.id === entitlementItem.type_id;
+            });
 
-          return {
-            id: entitlementItem.type_id,
-            title: absenceType.title + ' ( ' + entitlementItem.remainder.current + ' ) ',
-            remainder: entitlementItem.remainder.current,
-            allow_overuse: absenceType.allow_overuse
-          };
-        });
+            return {
+              id: entitlementItem.type_id,
+              title: absenceType.title + ' ( ' + entitlementItem.remainder.current + ' ) ',
+              remainder: entitlementItem.remainder.current,
+              allow_overuse: absenceType.allow_overuse
+            };
+          });
       }
 
       /**

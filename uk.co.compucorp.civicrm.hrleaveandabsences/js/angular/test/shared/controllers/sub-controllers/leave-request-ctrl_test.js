@@ -18,50 +18,50 @@
     'mocks/apis/public-holiday-api-mock',
     'common/mocks/services/api/contact-mock',
     'leave-absences/shared/controllers/sub-controllers/leave-request-ctrl',
-    'leave-absences/shared/modules/shared-settings',
+    'leave-absences/shared/modules/shared-settings'
   ], function (_, moment, optionGroupMock, mockData, helper) {
     'use strict';
 
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
-        Contact, ContactAPIMock, EntitlementAPI, Entitlement, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl,
-        date2016 = '01/12/2016',
-        date2017 = '02/02/2017',
-        date2013 = '02/02/2013',
-        dateServer2017 = '2017-02-02';
+        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl;
+      var date2016 = '01/12/2016';
+      var date2017 = '02/02/2017';
+      var date2013 = '02/02/2013';
+      var dateServer2017 = '2017-02-02';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
         'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
         function (_$provide_, $exceptionHandlerProvider) {
           $provide = _$provide_;
-          //this will consume all throw
+          // this will consume all throw
           $exceptionHandlerProvider.mode('log');
         }));
 
-      beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_,
-        _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
-        _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
+      beforeEach(inject(function (_AbsencePeriodAPIMock_,
+                                  _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
+                                  _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
         $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
         $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
         $provide.value('EntitlementAPI', _EntitlementAPIMock_);
         $provide.value('WorkPatternAPI', _WorkPatternAPIMock_);
-        $provide.value('HR_settings', _HR_settingsMock_);
         $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
         $provide.value('api.optionGroup', _OptionGroupAPIMock_);
         $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
       }));
 
-      beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
+      beforeEach(inject(['api.contact.mock', 'shared-settings', 'HR_settingsMock', function (_ContactAPIMock_, _sharedSettings_, _HRSettingsMock_) {
         $provide.value('api.contact', _ContactAPIMock_);
+        $provide.value('HR_settings', _HRSettingsMock_);
         ContactAPIMock = _ContactAPIMock_;
         sharedSettings = _sharedSettings_;
       }]));
 
-      beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_,
-        _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
-        _LeaveRequestInstance_, _LeaveRequestAPI_, _WorkPatternAPI_) {
-
+      beforeEach(inject(function (
+        _$log_, _$controller_, _$rootScope_, _$q_, _AbsenceTypeAPI_, _AbsencePeriodAPI_,
+        _Contact_, _EntitlementAPI_, _Entitlement_, _LeaveRequestInstance_, _LeaveRequestAPI_,
+        _WorkPatternAPI_) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
@@ -69,7 +69,6 @@
 
         Contact = _Contact_;
         EntitlementAPI = _EntitlementAPI_;
-        Entitlement = _Entitlement_;
         LeaveRequestAPI = _LeaveRequestAPI_;
         WorkPatternAPI = _WorkPatternAPI_;
         AbsenceTypeAPI = _AbsenceTypeAPI_;
@@ -97,11 +96,11 @@
       describe('staff opens request popup', function () {
         beforeEach(inject(function () {
           var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId,
+            contactId: CRM.vars.leaveAndAbsences.contactId
           };
 
           initTestController(directiveOptions);
-          parentRequestCtrl = $controller('RequestCtrl')
+          parentRequestCtrl = $controller('RequestCtrl');
         }));
 
         it('is called', function () {
@@ -194,7 +193,7 @@
               expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
                 is_sick: false,
                 allow_accruals_request: false
-              })
+              });
             });
 
             describe('leave request instance', function () {
@@ -383,8 +382,8 @@
         });
 
         describe('removeCommentVisibility()', function () {
-          var comment = {},
-            returnValue;
+          var comment = {};
+          var returnValue;
 
           beforeEach(function () {
             spyOn($ctrl, 'isRole');
@@ -561,7 +560,7 @@
           describe('when day type changed', function () {
             describe('for single day', function () {
               beforeEach(function () {
-                //select half_day_am  to get single day mock data
+                // select half_day_am  to get single day mock data
                 $ctrl.request.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am');
                 $ctrl.calculateBalanceChange();
                 $scope.$digest();
@@ -579,7 +578,7 @@
             describe('for multiple days', function () {
               beforeEach(function () {
                 $ctrl.uiOptions.multipleDays = true;
-                //select all_day to get multiple day mock data
+                // select all_day to get multiple day mock data
                 setTestDates(date2016, date2016);
                 $ctrl.request.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
                 $ctrl.calculateBalanceChange();
@@ -665,7 +664,7 @@
             beforeEach(function () {
               spyOn($rootScope, '$emit');
               setTestDates(date2016, date2016);
-              //entitlements are randomly generated so resetting them to positive here
+              // entitlements are randomly generated so resetting them to positive here
               $ctrl.balance.closing = 1;
 
               $ctrl.submit();
@@ -704,7 +703,7 @@
           describe('when submit with attachments', function () {
             beforeEach(function () {
               setTestDates(date2016, date2016);
-              //entitlements are randomly generated so resetting them to positive here
+              // entitlements are randomly generated so resetting them to positive here
               $ctrl.balance.closing = 1;
               $ctrl.request.fileUploader.addToQueue({
                 lastModifiedDate: new Date(),
@@ -712,7 +711,7 @@
                 type: 'text/plain',
                 name: '/unitTest.txt'
               });
-              //no callThrough as it calls the real URL to upload
+              // no callThrough as it calls the real URL to upload
               spyOn($ctrl.request.fileUploader, 'uploadAll');
 
               $ctrl.submit();
@@ -720,7 +719,7 @@
             });
 
             it('upoads attachments', function () {
-              expect($ctrl.request.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: jasmine.any(String) });
+              expect($ctrl.request.fileUploader.uploadAll).toHaveBeenCalledWith({entityID: jasmine.any(String)});
             });
           });
         });
@@ -831,7 +830,8 @@
 
                 describe('and from date is less than to date', function () {
                   beforeEach(function () {
-                    from = '9/12/2016', to = '10/12/2016';
+                    from = '9/12/2016';
+                    to = '10/12/2016';
 
                     setTestDates(null, to);
                     setTestDates(from);
@@ -844,7 +844,8 @@
 
                 describe('and from date is greater than to date', function () {
                   beforeEach(function () {
-                    from = '11/12/2016', to = '10/12/2016';
+                    from = '11/12/2016';
+                    to = '10/12/2016';
 
                     setTestDates(null, to);
                     setTestDates(from);
@@ -866,7 +867,7 @@
               var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
-                contactId: leaveRequest.contact_id, //staff's contact id
+                contactId: leaveRequest.contact_id, // staff's contact id
                 leaveRequest: leaveRequest,
                 userRole: 'staff'
               };
@@ -917,10 +918,10 @@
               beforeEach(function () {
                 spyOn($rootScope, '$emit');
                 spyOn($ctrl.request, 'update').and.callThrough();
-                //change date to enable submit button
+                // change date to enable submit button
                 setTestDates(date2016);
 
-                //entitlements are randomly generated so resetting them to positive here
+                // entitlements are randomly generated so resetting them to positive here
                 if ($ctrl.balance.closing < 0) {
                   $ctrl.balance.closing = 5;
                 }
@@ -958,7 +959,7 @@
                 leaveRequest.from_date = leaveRequest.to_date = dateServer2017;
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
-                  contactId: leaveRequest.contact_id, //staff's contact id
+                  contactId: leaveRequest.contact_id, // staff's contact id
                   leaveRequest: leaveRequest
                 };
 
@@ -979,7 +980,7 @@
 
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
-                  contactId: leaveRequest.contact_id, //staff's contact id
+                  contactId: leaveRequest.contact_id, // staff's contact id
                   leaveRequest: leaveRequest,
                   userRole: 'staff'
                 };
@@ -1013,7 +1014,7 @@
               var leaveRequest = LeaveRequestInstance.init(mockData.findBy('id', 17));
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
-                contactId: leaveRequest.contact_id, //staff's contact id
+                contactId: leaveRequest.contact_id, // staff's contact id
                 leaveRequest: leaveRequest
               };
 
@@ -1038,7 +1039,7 @@
             leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', approvalStatus));
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             var directiveOptions = {
-              contactId: leaveRequest.contact_id, //staff's contact id
+              contactId: leaveRequest.contact_id, // staff's contact id
               leaveRequest: leaveRequest,
               userRole: 'staff'
             };
@@ -1058,7 +1059,7 @@
             beforeEach(function () {
               spyOn($ctrl.request, 'update').and.callThrough();
               $ctrl.submit();
-              $scope.$apply()
+              $scope.$apply();
             });
 
             it('does not update leave request', function () {
@@ -1067,25 +1068,25 @@
           });
         });
 
-        describe('when user uploads files', function() {
-          describe('when number of files are below allowed limit', function() {
-            beforeEach(function() {
-              $ctrl.request.files = [1,2,3,4];
-              $ctrl.request.fileUploader.queue = [1,2];
+        describe('when user uploads files', function () {
+          describe('when number of files are below allowed limit', function () {
+            beforeEach(function () {
+              $ctrl.request.files = [1, 2, 3, 4];
+              $ctrl.request.fileUploader.queue = [1, 2];
             });
 
-            it('returns true', function() {
+            it('returns true', function () {
               expect($ctrl.canUploadMore()).toBeTruthy();
             });
           });
 
-          describe('when number of files are above allowed limit', function() {
-            beforeEach(function() {
+          describe('when number of files are above allowed limit', function () {
+            beforeEach(function () {
               $ctrl.request.files = [1, 2, 3, 4, 5];
-              $ctrl.request.fileUploader.queue = [1,2, 3, 4, 5];
+              $ctrl.request.fileUploader.queue = [1, 2, 3, 4, 5];
             });
 
-            it('returns false', function() {
+            it('returns false', function () {
               expect($ctrl.canUploadMore()).toBeFalsy();
             });
           });
@@ -1098,7 +1099,7 @@
           var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
           var directiveOptions = {
-            contactId: 203, //manager's contact id
+            contactId: 203, // manager's contact id
             leaveRequest: leaveRequest,
             userRole: 'manager'
           };
@@ -1150,11 +1151,11 @@
             spyOn($rootScope, '$emit');
             spyOn($ctrl.request, 'update').and.callThrough();
 
-            //entitlements are randomly generated so resetting them to positive here
+            // entitlements are randomly generated so resetting them to positive here
             if ($ctrl.balance.closing < 0) {
               $ctrl.balance.closing = 0;
             }
-            //set status id manually as manager would set it on UI
+            // set status id manually as manager would set it on UI
             $ctrl.request.status_id = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
             $ctrl.submit();
             $scope.$apply();
@@ -1182,7 +1183,7 @@
       describe('manager raises absence request on behalf of staff', function () {
         beforeEach(function () {
           var directiveOptions = {
-            contactId: 203, //manager's contact id
+            contactId: 203, // manager's contact id
             userRole: 'manager'
           };
 
@@ -1198,7 +1199,7 @@
         });
 
         describe('after contact is selected', function () {
-          describe('when entitlement is present', function() {
+          describe('when entitlement is present', function () {
             var approvalStatus;
 
             beforeEach(function () {
@@ -1239,10 +1240,10 @@
           });
         });
 
-        describe('after contact is deselected', function() {
+        describe('after contact is deselected', function () {
           var promise;
 
-          beforeEach(function() {
+          beforeEach(function () {
             $ctrl.request.contact_id = undefined;
             promise = $ctrl.initAfterContactSelection();
             $scope.$digest();
@@ -1269,7 +1270,7 @@
           var leaveRequest = LeaveRequestInstance.init();
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
           var directiveOptions = {
-            contactId: leaveRequest.contact_id, //staff's contact id
+            contactId: leaveRequest.contact_id, // staff's contact id
             leaveRequest: leaveRequest
           };
 
@@ -1286,7 +1287,7 @@
        *
        * @param leave request
        */
-      function initTestController(directiveOptions) {
+      function initTestController (directiveOptions) {
         $scope = $rootScope.$new();
 
         $ctrl = $controller('LeaveRequestCtrl', {
@@ -1303,7 +1304,7 @@
        * @param {String} from date set if passed
        * @param {String} to date set if passed
        */
-      function setTestDates(from, to) {
+      function setTestDates (from, to) {
         if (from) {
           $ctrl.uiOptions.fromDate = new Date(from);
           $ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from');

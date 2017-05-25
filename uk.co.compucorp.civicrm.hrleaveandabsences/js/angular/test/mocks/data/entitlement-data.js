@@ -9,10 +9,10 @@ define([
       var entitlements = generateEntitlements();
 
       return {
-        "is_error": 0,
-        "version": 3,
-        "count": entitlements.length,
-        "values": entitlements
+        'is_error': 0,
+        'version': 3,
+        'count': entitlements.length,
+        'values': entitlements
       };
     })(),
     breakdown_data: (function () {
@@ -20,23 +20,23 @@ define([
       var dayTypes = optionGroupData.getCollection('hrleaveandabsences_leave_request_day_type');
 
       return {
-        "is_error": 0,
-        "version": 3,
-        "count": entitlements.length,
-        "values": (function () {
+        'is_error': 0,
+        'version': 3,
+        'count': entitlements.length,
+        'values': (function () {
           return entitlements.map(function (entitlement) {
             return {
-              "id": entitlement.id,
-              "breakdown": _.times(_.random(1, 10)).map(function () {
+              'id': entitlement.id,
+              'breakdown': _.times(_.random(1, 10)).map(function () {
                 var dayType = _.sample(dayTypes);
 
                 return {
-                  "amount": _.random(-30, 30) + ".00",
-                  "expiry_date": null,
-                  "type": {
-                    "id": dayType.id,
-                    "value": dayType.value,
-                    "label": dayType.label
+                  'amount': _.random(-30, 30) + '.00',
+                  'expiry_date': null,
+                  'type': {
+                    'id': dayType.id,
+                    'value': dayType.value,
+                    'label': dayType.label
                   }
                 };
               })
@@ -49,12 +49,12 @@ define([
       var entitlements = generateEntitlements(true);
 
       return {
-        "is_error": 0,
-        "version": 3,
-        "count": entitlements.length,
-        "values": entitlements
+        'is_error': 0,
+        'version': 3,
+        'count': entitlements.length,
+        'values': entitlements
       };
-    })(),
+    })()
   };
   return {
     all: function (withBalance) {
@@ -66,7 +66,7 @@ define([
     breakdown: function () {
       return mockData.breakdown_data;
     }
-  }
+  };
 
   /**
    * Generates an entitlement for each absence type in each period
@@ -74,41 +74,42 @@ define([
    * @param {Boolean} withRemainder if the remainder data should be attached
    * @return {Array}
    */
-  function generateEntitlements(withRemainder) {
-    var i = 1, values = [];
+  function generateEntitlements (withRemainder) {
+    var i = 1;
+    var values = [];
 
     absencePeriodData.all().values.forEach(function (absencePeriod) {
       absenceTypeData.all().values.forEach(function (absenceType, index) {
         if (index < absenceTypeData.all().values.length - 1) {
           var id = i++;
           var entitlement = {
-            "id": id,
-            "period_id": absencePeriod.id,
-            "type_id": absenceType.id,
-            "contact_id": "202",
-            "overridden": "0",
-            "api.LeavePeriodEntitlement.getentitlement": {
-              "is_error": 0,
-              "version": 3,
-              "count": 1,
-              "values": [{
-                "id": id,
-                "entitlement": _.random(0, 30)
+            'id': id,
+            'period_id': absencePeriod.id,
+            'type_id': absenceType.id,
+            'contact_id': '202',
+            'overridden': '0',
+            'api.LeavePeriodEntitlement.getentitlement': {
+              'is_error': 0,
+              'version': 3,
+              'count': 1,
+              'values': [{
+                'id': id,
+                'entitlement': _.random(0, 30)
               }]
             }
           };
 
           if (withRemainder) {
-            entitlement["api.LeavePeriodEntitlement.getremainder"] = {
-              "is_error": 0,
-              "version": 3,
-              "count": 1,
-              "id": 0,
-              "values": [{
-                "id": id,
-                "remainder": {
-                  "current": _.random(0, 10),
-                  "future": _.random(-10, 10)
+            entitlement['api.LeavePeriodEntitlement.getremainder'] = {
+              'is_error': 0,
+              'version': 3,
+              'count': 1,
+              'id': 0,
+              'values': [{
+                'id': id,
+                'remainder': {
+                  'current': _.random(0, 10),
+                  'future': _.random(-10, 10)
                 }
               }]
             };

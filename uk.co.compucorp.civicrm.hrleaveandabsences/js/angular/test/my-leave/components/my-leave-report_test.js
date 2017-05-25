@@ -28,19 +28,21 @@
       beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
         $provide = _$provide_;
       }));
-      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock, HR_settingsMock) {
+
+      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('EntitlementAPI', EntitlementAPIMock);
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
-        $provide.value('HR_settings', HR_settingsMock);
       }));
 
-      beforeEach(inject(['shared-settings', function (_sharedSettings_) {
+      beforeEach(inject(['shared-settings', 'HR_settingsMock', function (_sharedSettings_, HRSettingsMock) {
         sharedSettings = _sharedSettings_;
+        $provide.value('HR_settings', HRSettingsMock);
+        HRSettings = HRSettingsMock;
       }]));
 
-      beforeEach(inject(function (_$compile_, _$q_, _$log_, _$rootScope_, _$httpBackend_) {
+      beforeEach(inject(function (_$compile_, _$q_, _$log_, _$rootScope_) {
         $compile = _$compile_;
         $q = _$q_;
         $log = _$log_;
@@ -48,14 +50,14 @@
 
         spyOn($log, 'debug');
       }));
-      beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _HR_settings_, _dialog_) {
+
+      beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _dialog_) {
         AbsencePeriod = _AbsencePeriod_;
         AbsenceType = _AbsenceType_;
         Entitlement = _Entitlement_;
         LeaveRequest = _LeaveRequest_;
         LeaveRequestInstance = _LeaveRequestInstance_;
         OptionGroup = _OptionGroup_;
-        HRSettings = _HR_settings_;
         dialog = _dialog_;
 
         spyOn(AbsencePeriod, 'all').and.callThrough();
@@ -162,7 +164,7 @@
               it('has stored the entitlement, remainder in each absence type which has entitlement', function () {
                 _.forEach(controller.absenceTypes, function (absenceType) {
                   var entitlement = _.find(controller.entitlements, function (entitlement) {
-                    return entitlement.type_id === absenceType.id
+                    return entitlement.type_id === absenceType.id;
                   });
 
                   if (entitlement) {
@@ -174,15 +176,15 @@
 
               it('display only the absence types which has entitlement or allows negative balance or allows accrual requests', function () {
                 _.forEach(controller.absenceTypesFiltered, function (absenceType) {
-                  expect((absenceType.entitlement === 0) && (absenceType.allow_overuse === "0") &&
-                    (absenceType.allow_accruals_request === "0")).toBe(false)
+                  expect((absenceType.entitlement === 0) && (absenceType.allow_overuse === '0') &&
+                    (absenceType.allow_accruals_request === '0')).toBe(false);
                 });
               });
 
               it('has stored the 0 value for entitlement, remainder for absence types which does not have entitlement', function () {
                 _.forEach(controller.absenceTypes, function (absenceType) {
                   var entitlement = _.find(controller.entitlements, function (entitlement) {
-                    return entitlement.type_id === absenceType.id
+                    return entitlement.type_id === absenceType.id;
                   });
 
                   if (!entitlement) {
