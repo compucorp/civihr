@@ -1,3 +1,4 @@
+/* eslint-env amd, jasmine */
 (function (CRM) {
   define([
     'common/angular',
@@ -22,9 +23,9 @@
     describe('myLeaveReport', function () {
       var contactId = CRM.vars.leaveAndAbsences.contactId;
       var $compile, $q, $log, $provide, $rootScope, component, controller;
-      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HR_settings, dialog;
+      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, dialog, sharedSettings;
 
-      beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', function (_$provide_) {
+      beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
         $provide = _$provide_;
       }));
       beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock, HR_settingsMock) {
@@ -34,6 +35,10 @@
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
         $provide.value('HR_settings', HR_settingsMock);
       }));
+
+      beforeEach(inject(['shared-settings', function (_sharedSettings_) {
+        sharedSettings = _sharedSettings_;
+      }]));
 
       beforeEach(inject(function (_$compile_, _$q_, _$log_, _$rootScope_, _$httpBackend_) {
         $compile = _$compile_;
@@ -50,7 +55,7 @@
         LeaveRequest = _LeaveRequest_;
         LeaveRequestInstance = _LeaveRequestInstance_;
         OptionGroup = _OptionGroup_;
-        HR_settings = _HR_settings_;
+        HRSettings = _HR_settings_;
         dialog = _dialog_;
 
         spyOn(AbsencePeriod, 'all').and.callThrough();
@@ -75,7 +80,7 @@
 
         it('holds the date format', function () {
           expect(controller.dateFormat).toBeDefined();
-          expect(controller.dateFormat).toBe(HR_settings.DATE_FORMAT);
+          expect(controller.dateFormat).toBe(HRSettings.DATE_FORMAT);
         });
 
         it('has all the sections collapsed', function () {
@@ -114,7 +119,7 @@
               expect(controller.absenceTypes.length).not.toBe(0);
             });
 
-            describe('absence periods', function() {
+            describe('absence periods', function () {
               it('has fetched the absence periods', function () {
                 expect(AbsencePeriod.all).toHaveBeenCalled();
                 expect(controller.absencePeriods.length).not.toBe(0);
@@ -221,7 +226,7 @@
               describe('approved requests', function () {
                 it('has fetched the balance changes for the approved requests', function () {
                   var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1);
-                  expect(args[2]).toEqual([ valueOfRequestStatus('approved') ]);
+                  expect(args[2]).toEqual([ valueOfRequestStatus(sharedSettings.statusNames.approved) ]);
                 });
 
                 it('has stored them in each absence type', function () {
@@ -239,8 +244,8 @@
                   var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2);
 
                   expect(args[2]).toEqual([
-                    valueOfRequestStatus('waiting_approval'),
-                    valueOfRequestStatus('more_information_requested')
+                    valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
+                    valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
                   ]);
                 });
 
@@ -267,7 +272,7 @@
               return period.current;
             });
             label = controller.labelPeriod(period);
-          })
+          });
 
           it('labels it as such', function () {
             expect(label).toBe('Current Period (' + period.title + ')');
@@ -338,7 +343,7 @@
           it('reloads all data for sections already opened', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               from_date: { from: newPeriod.start_date },
-              to_date: {to: newPeriod.end_date },
+              to_date: { to: newPeriod.end_date },
               status_id: valueOfRequestStatus('approved')
             }));
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
@@ -471,8 +476,8 @@
           it('fetches all pending leave requests', function () {
             expect(LeaveRequest.all.calls.argsFor(0)[0]).toEqual(jasmine.objectContaining({
               status_id: { in: [
-                valueOfRequestStatus('waiting_approval'),
-                valueOfRequestStatus('more_information_requested')
+                valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
+                valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
               ] }
             }));
           });
@@ -490,8 +495,8 @@
           it('fetches all cancelled/rejected leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               status_id: { in: [
-                valueOfRequestStatus('rejected'),
-                valueOfRequestStatus('cancelled')
+                valueOfRequestStatus(sharedSettings.statusNames.rejected),
+                valueOfRequestStatus(sharedSettings.statusNames.cancelled)
               ] }
             }));
           });
@@ -546,7 +551,7 @@
                 });
               });
 
-              function entitlementBreakdownEntries(entitlement) {
+              function entitlementBreakdownEntries (entitlement) {
                 return controller.sections.entitlements.data.filter(function (entry) {
                   return _.contains(entitlement.breakdown, entry);
                 });
@@ -626,7 +631,7 @@
 
         describe('status: awaiting approval', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('waiting_approval');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
           });
 
           it('shows the "edit" and "cancel" actions', function () {
@@ -636,7 +641,7 @@
 
         describe('status: more information required', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('more_information_requested');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
           });
 
           it('shows the "respond" and "cancel" actions', function () {
@@ -646,7 +651,7 @@
 
         describe('status: approved', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('approved');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
           });
 
           it('shows the "cancel" and the "view" action', function () {
@@ -656,7 +661,7 @@
 
         describe('status: cancelled', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('cancelled');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
           });
 
           it('shows the "view" action', function () {
@@ -666,7 +671,7 @@
 
         describe('status: rejected', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('rejected');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
           });
 
           it('shows the "view" action', function () {
@@ -681,7 +686,7 @@
          * @param  {string} statusName
          * @return {Array}
          */
-        function getActionMatrixForStatus(statusName) {
+        function getActionMatrixForStatus (statusName) {
           return controller.actionsFor(LeaveRequestInstance.init({
             status_id: valueOfRequestStatus(statusName)
           }));
@@ -816,7 +821,7 @@
            *
            * @param  {LeaveRequestInstance} leaveRequest
            */
-          function cancelRequest(leaveRequest) {
+          function cancelRequest (leaveRequest) {
             resolveDialogWith(true);
             controller.action(leaveRequest1, 'cancel');
             $rootScope.$digest();
@@ -840,18 +845,18 @@
           });
         });
 
-        describe('when new leave request is created', function() {
-          beforeEach(function() {
-            spyOn(controller,'refresh').and.callThrough();
+        describe('when new leave request is created', function () {
+          beforeEach(function () {
+            spyOn(controller, 'refresh').and.callThrough();
             $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
             openSection('pending');
           });
 
-          it('refreshes the report', function() {
+          it('refreshes the report', function () {
             expect(controller.refresh).toHaveBeenCalled();
           });
 
-          it('gets data from the server, does not use cache', function() {
+          it('gets data from the server, does not use cache', function () {
             expect(LeaveRequest.all.calls.mostRecent().args[4]).toEqual(false);
           });
         });
@@ -861,7 +866,7 @@
          *
          * @param {any} value
          */
-        function resolveDialogWith(value) {
+        function resolveDialogWith (value) {
           var spy;
 
           if (typeof dialog.open.calls !== 'undefined') {
@@ -878,62 +883,62 @@
               .then(function () {
                 return value;
               });
-          });;
+          });
         }
       });
 
-      describe('canCancel', function() {
+      describe('canCancel', function () {
         var leaveRequest;
 
-        beforeEach(function() {
+        beforeEach(function () {
           leaveRequest = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
         });
 
-        describe('when absence type does not allow to cancel', function() {
-          beforeEach(function() {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','1').id;
+        describe('when absence type does not allow to cancel', function () {
+          beforeEach(function () {
+            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '1').id;
           });
 
-          it('does not allow user to cancel request', function() {
+          it('does not allow user to cancel request', function () {
             expect(controller.canCancel(leaveRequest)).toBe(false);
           });
         });
 
-        describe('when absence type does allow to cancel', function() {
-          beforeEach(function() {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','2').id;
+        describe('when absence type does allow to cancel', function () {
+          beforeEach(function () {
+            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '2').id;
           });
 
-          it('does allow user to cancel request', function() {
+          it('does allow user to cancel request', function () {
             expect(controller.canCancel(leaveRequest)).toBe(true);
           });
         });
 
-        describe('when absence type does allow cancellation in advance of start date', function() {
-          beforeEach(function() {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation','3').id;
+        describe('when absence type does allow cancellation in advance of start date', function () {
+          beforeEach(function () {
+            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '3').id;
           });
 
-          describe('when from date is less than today', function() {
-            beforeEach(function() {
+          describe('when from date is less than today', function () {
+            beforeEach(function () {
               var baseDate = moment(leaveRequest.from_date);
               var dateAfterFromDate = baseDate.add(10, 'days').toDate();
               jasmine.clock().mockDate(dateAfterFromDate);
             });
 
-            it('does not allow user to cancel request', function() {
+            it('does not allow user to cancel request', function () {
               expect(controller.canCancel(leaveRequest)).toBe(false);
             });
           });
 
-          describe('when from date is more than today', function() {
-            beforeEach(function() {
+          describe('when from date is more than today', function () {
+            beforeEach(function () {
               var baseDate = moment(leaveRequest.from_date);
               var dateBeforeFromDate = baseDate.subtract(10, 'days').toDate();
               jasmine.clock().mockDate(dateBeforeFromDate);
             });
 
-            it('does allow user to cancel request', function() {
+            it('does allow user to cancel request', function () {
               expect(controller.canCancel(leaveRequest)).toBe(true);
             });
           });
@@ -946,7 +951,7 @@
        * @param  {string} statusName
        * @return {integer}
        */
-      function valueOfRequestStatus(statusName) {
+      function valueOfRequestStatus (statusName) {
         var statuses = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status');
 
         return _.find(statuses, function (status) {
@@ -954,7 +959,7 @@
         })['value'];
       }
 
-      function compileComponent() {
+      function compileComponent () {
         var $scope = $rootScope.$new();
 
         component = angular.element('<my-leave-report contact-id="' + contactId + '"></my-leave-report>');
@@ -969,12 +974,12 @@
        *
        * @param {string} section
        */
-      function openSection(section, digest) {
+      function openSection (section, digest) {
         digest = typeof digest === 'undefined' ? true : !!digest;
 
         controller.toggleSection(section);
         digest && $rootScope.$digest();
       }
     });
-  })
+  });
 })(CRM);

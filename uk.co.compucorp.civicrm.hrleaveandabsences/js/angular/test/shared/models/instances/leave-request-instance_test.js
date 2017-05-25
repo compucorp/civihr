@@ -1,4 +1,6 @@
+/* eslint-env amd, jasmine */
 define([
+  'common/lodash',
   'mocks/data/leave-request-data',
   'mocks/data/option-group-mock-data',
   'mocks/data/comments-data',
@@ -6,8 +8,8 @@ define([
   'common/mocks/services/file-uploader-mock',
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/models/instances/leave-request-instance',
-  'leave-absences/shared/modules/models',
-], function (leaveRequestMockData, optionGroupMockData, commentsData, helper) {
+  'leave-absences/shared/modules/models'
+], function (_, leaveRequestMockData, optionGroupMockData, commentsData, helper) {
   'use strict';
 
   describe('LeaveRequestInstance', function () {
@@ -19,16 +21,17 @@ define([
       $rootScope,
       instance,
       requestData,
-      expectedError;
+      expectedError,
+      sharedSettings;
 
     beforeEach(module('leave-absences.models', 'leave-absences.models.instances',
-      'leave-absences.mocks', 'common.mocks',
+      'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
       function (_$provide_) {
         $provide = _$provide_;
       }));
 
     beforeEach(inject(function (_LeaveRequestAPIMock_, _FileUploaderMock_) {
-      //LeaveRequestAPI is internally used by Model and hence need to be mocked
+      // LeaveRequestAPI is internally used by Model and hence need to be mocked
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
       $provide.value('FileUploader', _FileUploaderMock_);
     }));
@@ -38,12 +41,14 @@ define([
       'LeaveRequestAPI',
       '$rootScope',
       '$q',
+      'shared-settings',
       'OptionGroup',
-      function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _OptionGroup_) {
+      function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _sharedSettings_, _OptionGroup_) {
         LeaveRequestInstance = _LeaveRequestInstance_.init({}, false);
         LeaveRequestAPI = _LeaveRequestAPI_;
         $q = _$q_;
         $rootScope = _$rootScope_;
+        sharedSettings = _sharedSettings_;
         OptionGroup = _OptionGroup_;
 
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
@@ -83,11 +88,9 @@ define([
       });
 
       describe('cancel', function () {
-
         describe('success', function () {
-
           beforeEach(function () {
-            commonSetup('cancelled', 'cancel', leaveRequestMockData.singleDataSuccess());
+            commonSetup(sharedSettings.statusNames.cancelled, 'cancel', leaveRequestMockData.singleDataSuccess());
           });
 
           it('updates the status_id of the instance', function () {
@@ -112,9 +115,7 @@ define([
       });
 
       describe('approve', function () {
-
         describe('success', function () {
-
           beforeEach(function () {
             commonSetup('approved', 'approve', leaveRequestMockData.singleDataSuccess());
           });
@@ -141,9 +142,7 @@ define([
       });
 
       describe('reject', function () {
-
         describe('success', function () {
-
           beforeEach(function () {
             commonSetup('rejected', 'reject', leaveRequestMockData.singleDataSuccess());
           });
@@ -170,11 +169,9 @@ define([
       });
 
       describe('sendBack', function () {
-
         describe('success', function () {
-
           beforeEach(function () {
-            commonSetup('more_information_requested', 'sendBack', leaveRequestMockData.singleDataSuccess());
+            commonSetup(sharedSettings.statusNames.moreInformationRequired, 'sendBack', leaveRequestMockData.singleDataSuccess());
           });
 
           it('updates the status_id of the instance', function () {
@@ -198,7 +195,7 @@ define([
         });
       });
 
-      function commonSetup(statusName, methodName, returnData) {
+      function commonSetup (statusName, methodName, returnData) {
         optionGroupDeferred = $q.defer();
         leaveRequestDeferred = $q.defer();
         mockOptionValue = [{
@@ -219,10 +216,10 @@ define([
     });
 
     describe('update()', function () {
-      var promise,
-        toAPIReturnValue = {
-          key: jasmine.any(String)
-        };
+      var promise;
+      var toAPIReturnValue = {
+        key: jasmine.any(String)
+      };
 
       beforeEach(function () {
         var defer = $q.defer();
@@ -291,7 +288,7 @@ define([
       });
 
       afterEach(function () {
-        //to excute the promise force an digest
+        // to excute the promise force an digest
         $rootScope.$apply();
       });
 
@@ -330,7 +327,6 @@ define([
       });
 
       describe('when one mandatory filed is missing', function () {
-
         beforeEach(function () {
           expectedError = 'contact_id, from_date and from_date_type in params are mandatory';
           delete instance.contact_id;
@@ -338,7 +334,7 @@ define([
         });
 
         afterEach(function () {
-          //to excute the promise force an digest
+          // to excute the promise force an digest
           $rootScope.$apply();
         });
 
@@ -387,7 +383,7 @@ define([
       });
 
       afterEach(function () {
-        //to excute the promise force an digest
+        // to excute the promise force an digest
         $rootScope.$apply();
       });
 
@@ -405,14 +401,13 @@ define([
         });
 
         describe('when valid data not present', function () {
-
           beforeEach(function () {
             delete instance.contact_id;
             instanceValid = instance.isValid();
           });
 
           afterEach(function () {
-            //to excute the promise force an digest
+            // to excute the promise force an digest
             $rootScope.$apply();
           });
 
@@ -426,7 +421,6 @@ define([
     });
 
     describe('check status methods', function () {
-
       var promise;
 
       beforeEach(function () {
@@ -440,163 +434,148 @@ define([
       });
 
       describe('isApproved', function () {
-
         describe('status is approved', function () {
-
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
             promise = LeaveRequestInstance.isApproved();
           });
 
           it('returns true', function () {
             promise.then(function (data) {
               expect(data).toBe(true);
-            })
+            });
           });
         });
 
         describe('status is not approved', function () {
-
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('cancelled');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
             promise = LeaveRequestInstance.isApproved();
           });
 
           it('returns false', function () {
             promise.then(function (data) {
               expect(data).toBe(false);
-            })
+            });
           });
         });
       });
 
       describe('isAwaitingApproval', function () {
-
-        describe('status is waiting_approval', function () {
-
+        describe('status is awaiting_approval', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('waiting_approval');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.awaitingApproval);
             promise = LeaveRequestInstance.isAwaitingApproval();
           });
 
           it('returns true', function () {
             promise.then(function (data) {
               expect(data).toBe(true);
-            })
+            });
           });
         });
 
-        describe('status is not waiting_approval', function () {
-
+        describe('status is not awaiting_approval', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('cancelled');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
             promise = LeaveRequestInstance.isAwaitingApproval();
           });
 
           it('returns false', function () {
             promise.then(function (data) {
               expect(data).toBe(false);
-            })
+            });
           });
         });
       });
 
       describe('isCancelled', function () {
-
         describe('status is cancelled', function () {
-
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('cancelled');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
             promise = LeaveRequestInstance.isCancelled();
           });
 
           it('returns true', function () {
             promise.then(function (data) {
               expect(data).toBe(true);
-            })
+            });
           });
         });
 
         describe('status is not cancelled', function () {
-
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
             promise = LeaveRequestInstance.isCancelled();
           });
 
           it('returns false', function () {
             promise.then(function (data) {
               expect(data).toBe(false);
-            })
+            });
           });
         });
       });
 
       describe('isRejected', function () {
-
         describe('status is rejected', function () {
-
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('rejected');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.rejected);
             promise = LeaveRequestInstance.isRejected();
           });
 
           it('returns true', function () {
             promise.then(function (data) {
               expect(data).toBe(true);
-            })
+            });
           });
         });
 
         describe('status is not rejected', function () {
-
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
             promise = LeaveRequestInstance.isRejected();
           });
 
           it('returns false', function () {
             promise.then(function (data) {
               expect(data).toBe(false);
-            })
+            });
           });
         });
       });
 
       describe('isSentBack', function () {
-
-        describe('status is more_information_requested', function () {
-
+        describe('status is more_information_required', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('more_information_requested');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.moreInformationRequired);
             promise = LeaveRequestInstance.isSentBack();
           });
 
           it('returns true', function () {
             promise.then(function (data) {
               expect(data).toBe(true);
-            })
+            });
           });
         });
 
-        describe('status is not more_information_requested', function () {
-
+        describe('status is not more_information_required', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName('approved');
+            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
             promise = LeaveRequestInstance.isSentBack();
           });
 
           it('returns false', function () {
             promise.then(function (data) {
               expect(data).toBe(false);
-            })
+            });
           });
         });
       });
 
-      function getStatusIdByName(statusName) {
+      function getStatusIdByName (statusName) {
         return optionGroupMockData.getCollection('hrleaveandabsences_leave_request_status').find(function (option) {
-          return option.name === statusName
+          return option.name === statusName;
         }).value;
       }
     });
@@ -667,8 +646,8 @@ define([
     });
 
     describe('attachments', function () {
-      var attachments, numberOfFiles, promise,
-        test_id = '63';
+      var attachments, numberOfFiles, promise;
+      var testId = '63';
 
       beforeEach(function () {
         LeaveRequestInstance.id = '12';
@@ -699,7 +678,7 @@ define([
         it('sets flag toBeDeleted', function () {
           promise.then(function () {
             _.each(LeaveRequestInstance.files, function (file) {
-              if (file.attachment_id == test_id) {
+              if (file.attachment_id === testId) {
                 expect(file.toBeDeleted).toBeTruthy();
               } else {
                 expect(file.toBeDeleted).toBeFalsy();
