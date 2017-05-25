@@ -624,8 +624,9 @@ function civihr_parse_options() {
           echo -n "Enter Password for Mysql:"
           read -s DB_PASS
           echo
+        else
+          DB_PASS="$1"
         fi
-        DB_PASS="$1"
         [ -n "$DB_PASS" ] && PASS_PARAM="-p$DB_PASS"
         shift
         ;;
