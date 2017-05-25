@@ -100,16 +100,40 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
    * to be on the top.
    */
   public function upgrade_1501() {
-    // hence that type_20130502144049 is
-    // the hardcoded name for this option group
-    civicrm_api3('OptionValue', 'create', [
+
+    $result = civicrm_api3('OptionValue', 'get', [
       'sequential' => 1,
       'option_group_id' => 'type_20130502144049',
-      'name' => 'National_Insurance',
-      'is_default' => 1,
-      'weight' => 0,
+      'name' => ['IN' => ['National Insurance', 'National_Insurance']],
+      'options' => ['limit' => 0],
     ]);
-    
+
+    if ($result['count'] == 0) {
+      // since that type_20130502144049 is
+      // the hardcoded name for this option group
+      civicrm_api3('OptionValue', 'create', [
+        'option_group_id' => 'type_20130502144049',
+        'label' => 'National Insurance',
+        'value' => 'National Insurance',
+        'name' => 'National_Insurance',
+        'is_default' => 1,
+        'weight' => 0,
+      ]);
+    } elseif ($result['count'] > 0) {
+      civicrm_api3('OptionValue', 'create', [
+        'id' => $result['values'][0]['id'],
+        'option_group_id' => 'type_20130502144049',
+        'is_default' => 1,
+        'weight' => 0,
+      ]);
+
+      for ($i = 1; $i < $result['count']; $i++) {
+        civicrm_api3('OptionValue', 'delete', [
+          'id' => $result['values'][$i]['id']
+        ]);
+      }
+    }
+
     return true;
   }
 }
