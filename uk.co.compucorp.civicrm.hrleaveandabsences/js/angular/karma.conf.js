@@ -4,7 +4,7 @@ module.exports = function (config) {
   var extPath = civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/';
 
   config.set({
-    browserNoActivityTimeout: 50000,
+    browserNoActivityTimeout: 100000,
     basePath: civicrmPath,
     browsers: ['Chrome'],
     frameworks: ['jasmine'],

@@ -1,9 +1,9 @@
+/* eslint-env amd */
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/my-leave/modules/components',
+  'leave-absences/my-leave/modules/components'
 ], function (_, moment, components) {
-
   components.component('myLeaveReport', {
     bindings: {
       contactId: '<'
@@ -14,26 +14,25 @@ define([
     controllerAs: 'report',
     controller: [
       '$log', '$q', '$rootScope', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest',
-      'OptionGroup', 'dialog', 'HR_settings', controller
+      'OptionGroup', 'dialog', 'HR_settings', 'shared-settings', controller
     ]
   });
 
-  function controller($log, $q, $rootScope, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HR_settings) {
+  function controller ($log, $q, $rootScope, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HRSettings, sharedSettings) {
     $log.debug('Component: my-leave-report');
 
     var vm = Object.create(this);
 
-    var actionMatrix = {
-      'waiting_approval'          : ['edit'   , 'cancel'],
-      'more_information_requested': ['respond', 'cancel'],
-      'approved'                  : ['view'   , 'cancel'],
-      'cancelled'                 : ['view'             ],
-      'rejected'                  : ['view'             ]
-    };
+    var actionMatrix = {};
+    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['edit', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['respond', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.approved] = ['view', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.cancelled] = ['view'];
+    actionMatrix[sharedSettings.statusNames.rejected] = ['view'];
 
     vm.absencePeriods = [];
     vm.absenceTypes = {};
-    vm.dateFormat = HR_settings.DATE_FORMAT;
+    vm.dateFormat = HRSettings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.selectedPeriod = null;
     vm.loading = {
@@ -41,12 +40,12 @@ define([
       page: true
     };
     vm.sections = {
-      approved:     { open: false, data: [], loading: false, loadFn: loadApprovedRequests },
+      approved: { open: false, data: [], loading: false, loadFn: loadApprovedRequests },
       entitlements: { open: false, data: [], loading: false, loadFn: loadEntitlementsBreakdown },
-      expired:      { open: false, data: [], loading: false, loadFn: loadExpiredBalanceChanges },
-      holidays:     { open: false, data: [], loading: false, loadFn: loadPublicHolidaysRequests },
-      pending:      { open: false, data: [], loading: false, loadFn: loadPendingRequests },
-      other:        { open: false, data: [], loading: false, loadFn: loadOtherRequests }
+      expired: { open: false, data: [], loading: false, loadFn: loadExpiredBalanceChanges },
+      holidays: { open: false, data: [], loading: false, loadFn: loadPublicHolidaysRequests },
+      pending: { open: false, data: [], loading: false, loadFn: loadPendingRequests },
+      other: { open: false, data: [], loading: false, loadFn: loadOtherRequests }
     };
 
     /**
@@ -97,13 +96,13 @@ define([
      * @return {Boolean}
      */
     vm.canCancel = function (request) {
-      var allow_request_cancelation = vm.absenceTypes[request.type_id].allow_request_cancelation;
+      var allowRequestCancelation = vm.absenceTypes[request.type_id].allow_request_cancelation;
 
-      if (allow_request_cancelation == 3) {
+      if (allowRequestCancelation === '3') {
         return moment().isBefore(request.from_date);
       }
 
-      return allow_request_cancelation == 2;
+      return allowRequestCancelation === '2';
     };
 
     /**
@@ -125,7 +124,7 @@ define([
 
       $q.all([
         loadEntitlements(),
-        loadBalanceChanges(),
+        loadBalanceChanges()
       ])
       .then(function () {
         vm.loading.content = false;
@@ -154,7 +153,7 @@ define([
     };
 
     // Init block
-    (function init() {
+    (function init () {
       $q.all([
         loadStatuses(),
         loadAbsenceTypes(),
@@ -183,7 +182,7 @@ define([
      * @param  {Object} section
      * @return {Promise}
      */
-    function callSectionLoadFn(section) {
+    function callSectionLoadFn (section) {
       section.loading = true;
 
       return section.loadFn().then(function () {
@@ -202,8 +201,9 @@ define([
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
-    function cancelRequest(leaveRequest) {
-      var sectionBelonged, sectionsAllowed = ['approved', 'pending'];
+    function cancelRequest (leaveRequest) {
+      var sectionBelonged;
+      var sectionsAllowed = ['approved', 'pending'];
 
       $q.resolve()
         .then(function () {
@@ -230,7 +230,7 @@ define([
     /**
      * Clears the cached data of all the closed sections
      */
-    function clearClosedSectionsData() {
+    function clearClosedSectionsData () {
       Object.values(vm.sections)
         .filter(function (section) {
           return !section.open;
@@ -246,7 +246,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadStatuses() {
+    function loadStatuses () {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
           vm.leaveRequestStatuses = _.indexBy(statuses, 'value');
@@ -258,7 +258,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadAbsencePeriods() {
+    function loadAbsencePeriods () {
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
           vm.absencePeriods = _.sortBy(absencePeriods, 'start_date');
@@ -273,7 +273,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadAbsenceTypes() {
+    function loadAbsenceTypes () {
       return AbsenceType.all()
         .then(function (absenceTypes) {
           vm.absenceTypes = _.indexBy(absenceTypes, 'id');
@@ -285,12 +285,12 @@ define([
      *
      * @return {Promise}
      */
-    function loadApprovedRequests() {
+    function loadApprovedRequests () {
       return LeaveRequest.all({
         contact_id: vm.contactId,
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
-        status_id: valueOfRequestStatus('approved')
+        status_id: valueOfRequestStatus(sharedSettings.statusNames.approved)
       })
       .then(function (leaveRequests) {
         vm.sections.approved.data = leaveRequests.list;
@@ -303,15 +303,15 @@ define([
      *
      * @return {Promise}
      */
-    function loadBalanceChanges() {
+    function loadBalanceChanges () {
       return $q.all([
         LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, null, true),
         LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
-          valueOfRequestStatus('approved')
+          valueOfRequestStatus(sharedSettings.statusNames.approved)
         ]),
         LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
-          valueOfRequestStatus('waiting_approval'),
-          valueOfRequestStatus('more_information_requested')
+          valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
+          valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
         ])
       ])
       .then(function (results) {
@@ -319,7 +319,7 @@ define([
           absenceType.balanceChanges = {
             publicHolidays: results[0][absenceType.id],
             approved: results[1][absenceType.id],
-            pending: results[2][absenceType.id],
+            pending: results[2][absenceType.id]
           };
         });
       });
@@ -331,7 +331,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadEntitlements() {
+    function loadEntitlements () {
       return Entitlement.all({
         contact_id: vm.contactId,
         period_id: vm.selectedPeriod.id
@@ -356,7 +356,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadEntitlementsBreakdown() {
+    function loadEntitlementsBreakdown () {
       return Entitlement.breakdown({
         contact_id: vm.contactId,
         period_id: vm.selectedPeriod.id
@@ -374,7 +374,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadExpiredBalanceChanges() {
+    function loadExpiredBalanceChanges () {
       return $q.all([
         Entitlement.breakdown({
           contact_id: vm.contactId,
@@ -398,7 +398,6 @@ define([
         .then(function (results) {
           vm.sections.expired.data = results.expiredBalanceChangesFlatten.concat(results.expiredTOILS);
         });
-
     }
 
     /**
@@ -406,7 +405,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadOpenSectionsData() {
+    function loadOpenSectionsData () {
       return $q.all(Object.values(vm.sections)
         .filter(function (section) {
           return section.open;
@@ -421,14 +420,14 @@ define([
      *
      * @return {Promise}
      */
-    function loadOtherRequests() {
+    function loadOtherRequests () {
       return LeaveRequest.all({
         contact_id: vm.contactId,
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         status_id: { in: [
-          valueOfRequestStatus('rejected'),
-          valueOfRequestStatus('cancelled')
+          valueOfRequestStatus(sharedSettings.statusNames.rejected),
+          valueOfRequestStatus(sharedSettings.statusNames.cancelled)
         ] }
       })
       .then(function (leaveRequests) {
@@ -441,15 +440,15 @@ define([
      *
      * @return {Promise}
      */
-    function loadPendingRequests() {
+    function loadPendingRequests () {
       return LeaveRequest.all({
         contact_id: vm.contactId,
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         status_id: { in: [
-          valueOfRequestStatus('waiting_approval'),
-          valueOfRequestStatus('more_information_requested')
-        ] },
+          valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
+          valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
+        ] }
       }, null, null, null, false)
       .then(function (leaveRequests) {
         vm.sections.pending.data = leaveRequests.list;
@@ -461,7 +460,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadPublicHolidaysRequests() {
+    function loadPublicHolidaysRequests () {
       return LeaveRequest.all({
         contact_id: vm.contactId,
         from_date: { from: vm.selectedPeriod.start_date },
@@ -508,14 +507,14 @@ define([
      * @param  {Array} list of expired TOIL request
      * @return {Promise} resolves to the flatten list
      */
-    function processExpiredTOILS(list) {
+    function processExpiredTOILS (list) {
       return $q.resolve()
         .then(function () {
           return list.map(function (listEntry) {
             return {
-              "expiry_date": listEntry.to_date,
-              "type": {
-                "label": "Accrued TOIL"
+              'expiry_date': listEntry.to_date,
+              'type': {
+                'label': 'Accrued TOIL'
               }
             };
           });
@@ -525,7 +524,7 @@ define([
     /**
      * Register events which will be called by other modules
      */
-    function registerEvents() {
+    function registerEvents () {
       $rootScope.$on('LeaveRequest::new', function () {
         vm.refresh();
       });
@@ -541,7 +540,7 @@ define([
      * @param  {string} statusName
      * @return {integer}
      */
-    function valueOfRequestStatus(statusName) {
+    function valueOfRequestStatus (statusName) {
       return _.find(vm.leaveRequestStatuses, function (status) {
         return status.name === statusName;
       })['value'];

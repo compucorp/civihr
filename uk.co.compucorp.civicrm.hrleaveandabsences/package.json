@@ -8,6 +8,16 @@
   },
   "author": "",
   "license": "ISC",
+  "semistandard": {
+    "globals": [
+      "CRM",
+      "inject"
+    ],
+    "env": {
+        "jasmine": true,
+        "amd": true
+    }
+  },
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-clean": "^0.3.1",

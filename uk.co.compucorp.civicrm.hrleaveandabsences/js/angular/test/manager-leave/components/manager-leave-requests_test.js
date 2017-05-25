@@ -1,3 +1,4 @@
+/* eslint-env amd, jasmine */
 (function (CRM) {
   define([
     'common/angular',
@@ -12,7 +13,7 @@
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
     'leave-absences/shared/config',
-    'leave-absences/manager-leave/app',
+    'leave-absences/manager-leave/app'
   ], function (angular, _, optionGroupMock, absencePeriodData, absenceTypeData, leaveRequestData) {
     'use strict';
 
@@ -31,12 +32,13 @@
         LeaveRequestInstance,
         Contact,
         ContactAPIMock,
+        sharedSettings,
         OptionGroupAPIMock;
 
       beforeEach(module('leave-absences.templates', 'manager-leave',
-        'leave-absences.mocks', function (_$provide_) {
+        'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
           $provide = _$provide_;
-      }));
+        }));
 
       beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
         LeaveRequestAPIMock) {
@@ -45,14 +47,14 @@
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
       }));
 
-      beforeEach(inject(['api.contact.mock', function (_ContactAPIMock_) {
+      beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
         ContactAPIMock = _ContactAPIMock_;
+        sharedSettings = _sharedSettings_;
       }]));
 
       beforeEach(inject(function (
         _$compile_, _$log_, _$rootScope_, _$q_, _OptionGroup_, _OptionGroupAPIMock_,
         _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_, _LeaveRequestInstance_) {
-
         $compile = _$compile_;
         $log = _$log_;
         $q = _$q_;
@@ -106,7 +108,7 @@
       });
 
       describe('data loading', function () {
-        //TODO need to figure out how to test variables which are changed when controller gets initialized
+        // TODO need to figure out how to test variables which are changed when controller gets initialized
         xdescribe('before loading starts', function () {
           it('loader is hidden', function () {});
           it('leave requests are empty', function () {});
@@ -151,7 +153,7 @@
             expect(controller.levelTypes).toEqual(optionGroupMock.getCollection('hrjc_level_type'));
           });
 
-          describe('absence periods', function() {
+          describe('absence periods', function () {
             it('loads the absence periods', function () {
               expect(controller.absencePeriods.length).toBe(absencePeriodData.all().values.length);
             });
@@ -300,7 +302,7 @@
             status = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
             returnValue = controller.filterLeaveRequestByStatus(status);
             filteredList = controller.leaveRequests.filter.list.filter(function (request) {
-              return request.status_id == status.value;
+              return request.status_id === status.value;
             });
           });
 
@@ -314,9 +316,8 @@
         var returnValue;
 
         describe('when status is approved', function () {
-
           beforeEach(function () {
-            returnValue = controller.getNavBadge('approved');
+            returnValue = controller.getNavBadge(sharedSettings.statusNames.approved);
           });
 
           it('returns badge-success', function () {
@@ -420,8 +421,8 @@
           });
 
           describe('when sent page number is more than total no of pages', function () {
-            var pageNoParam = 5,
-              oldPageNo = 4;
+            var pageNoParam = 5;
+            var oldPageNo = 4;
 
             beforeEach(function () {
               controller.pagination.page = oldPageNo;
@@ -736,7 +737,7 @@
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     contact_id: {
-                      "IN": [mockUsers[0].contact_id]
+                      'IN': [mockUsers[0].contact_id]
                     }
                   }));
                 });
@@ -789,7 +790,7 @@
 
             describe('when only pending requests need to be loaded', function () {
               var waitingApprovalValue = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status').find(function (data) {
-                return data.name === 'waiting_approval';
+                return data.name === 'awaiting_approval';
               }).value;
 
               beforeEach(function () {
@@ -819,7 +820,7 @@
 
         describe('status: awaiting approval', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('waiting_approval');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
           });
 
           it('shows the "respond" and "cancel" actions', function () {
@@ -829,7 +830,7 @@
 
         describe('status: more information required', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('more_information_requested');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
           });
 
           it('shows the "edit" and "cancel" actions', function () {
@@ -839,7 +840,7 @@
 
         describe('status: approved', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('approved');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
           });
 
           it('shows the "edit" action', function () {
@@ -849,7 +850,7 @@
 
         describe('status: cancelled', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('cancelled');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
           });
 
           it('shows the "edit" action', function () {
@@ -859,7 +860,7 @@
 
         describe('status: rejected', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('rejected');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
           });
 
           it('shows the "edit" action', function () {
@@ -874,34 +875,34 @@
          * @param  {string} statusName
          * @return {Array}
          */
-        function getActionMatrixForStatus(statusName) {
+        function getActionMatrixForStatus (statusName) {
           return controller.actionsFor(LeaveRequestInstance.init({
             status_id: optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', statusName).value
           }));
         }
       });
 
-      describe('when new leave request is created', function() {
-        beforeEach(function() {
+      describe('when new leave request is created', function () {
+        beforeEach(function () {
           $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
         });
 
-        it('calls related contact API to update', function() {
+        it('calls related contact API to update', function () {
           expect(Contact.all).toHaveBeenCalled();
         });
       });
 
-      describe('when new leave request is updated', function() {
-        beforeEach(function() {
+      describe('when new leave request is updated', function () {
+        beforeEach(function () {
           $rootScope.$emit('LeaveRequest::updatedByManager', jasmine.any(Object));
         });
 
-        it('calls related contact API to update', function() {
+        it('calls related contact API to update', function () {
           expect(Contact.all).toHaveBeenCalled();
         });
       });
 
-      function compileComponent() {
+      function compileComponent () {
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;
 

@@ -1,9 +1,9 @@
+/* eslint-env amd */
 define([
   'common/lodash',
   'leave-absences/manager-leave/modules/components',
   'common/models/contact'
 ], function (_, components) {
-
   components.component('managerLeaveRequests', {
     bindings: {
       contactId: '<'
@@ -13,21 +13,20 @@ define([
     }],
     controllerAs: 'ctrl',
     controller: ['$log', '$q', '$rootScope', 'Contact', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
-      'OptionGroup', 'dialog', controller]
+      'OptionGroup', 'dialog', 'shared-settings', controller]
   });
 
-  function controller($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup, dialog) {
-    "use strict";
+  function controller ($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup, dialog, sharedSettings) {
+    'use strict';
     $log.debug('Component: manager-leave-requests');
 
-    var vm = Object.create(this),
-      actionMatrix = {
-        'waiting_approval': ['respond', 'cancel'],
-        'more_information_requested': ['edit', 'cancel'],
-        'approved': ['edit'],
-        'cancelled': ['edit'],
-        'rejected': ['edit']
-      };
+    var vm = Object.create(this);
+    var actionMatrix = {};
+    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['respond', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['edit', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.approved] = ['edit'];
+    actionMatrix[sharedSettings.statusNames.cancelled] = ['edit'];
+    actionMatrix[sharedSettings.statusNames.rejected] = ['edit'];
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -52,8 +51,8 @@ define([
     };
     vm.filteredUsers = [];
     vm.isFilterExpanded = false;
-    //leaveRequests.table - to handle table data
-    //leaveRequests.filter - to handle left nav filter data
+    // leaveRequests.table - to handle table data
+    // leaveRequests.filter - to handle left nav filter data
     vm.leaveRequests = {
       table: {
         list: []
@@ -128,7 +127,7 @@ define([
       }
 
       return vm.leaveRequests.filter.list.filter(function (request) {
-        return request.status_id == status.value;
+        return request.status_id === status.value;
       });
     };
 
@@ -141,8 +140,8 @@ define([
     vm.getAbsenceTypesByID = function (id) {
       if (vm.absenceTypes && id) {
         var type = _.find(vm.absenceTypes, function (absenceType) {
-            return absenceType.id === id;
-          });
+          return absenceType.id === id;
+        });
 
         return type ? type.title : null;
       }
@@ -156,7 +155,7 @@ define([
      */
     vm.getLeaveStatusByValue = function (value) {
       var status = _.find(vm.leaveRequestStatuses, function (status) {
-        return status.value == value;
+        return status.value === value;
       });
 
       return status ? status.label : null;
@@ -170,11 +169,11 @@ define([
      */
     vm.getNavBadge = function (name) {
       switch (name) {
-        case 'approved':
+        case sharedSettings.statusNames.approved:
           return 'badge-success';
-        case 'rejected':
+        case sharedSettings.statusNames.rejected:
           return 'badge-danger';
-        case 'cancelled':
+        case sharedSettings.statusNames.cancelled:
         case 'all':
           return '';
         default:
@@ -190,7 +189,7 @@ define([
      */
     vm.getUserNameByID = function (id) {
       var user = _.find(vm.filteredUsers, function (contact) {
-        return contact.contact_id == id;
+        return contact.contact_id === id;
       });
       return user ? user.display_name : null;
     };
@@ -221,12 +220,12 @@ define([
      * @param {int} page - page number of the pagination element
      */
     vm.refresh = function (page) {
-      //vm.refresh is called from registerEvents and was sending events object in the function "arguments".
-      //Without the check parameter page was set to the passed event object from function "arguments" and
-      //hence the page was not getting refreshed as the below condition would always fail.
-      page = typeof(page) === 'number' ? page : 1;
+      // vm.refresh is called from registerEvents and was sending events object in the function "arguments".
+      // Without the check parameter page was set to the passed event object from function "arguments" and
+      // hence the page was not getting refreshed as the below condition would always fail.
+      page = typeof (page) === 'number' ? page : 1;
 
-      if(page <=  vm.totalNoOfPages()) {
+      if (page <= vm.totalNoOfPages()) {
         vm.pagination.page = page;
 
         loadAllRequests();
@@ -252,7 +251,7 @@ define([
       return Math.ceil(vm.leaveRequests.table.total / vm.pagination.size);
     };
 
-    (function init() {
+    (function init () {
       $q.all([
         loadAbsencePeriods(),
         loadAbsenceTypes(),
@@ -275,7 +274,7 @@ define([
      *
      * @return {Object}
      */
-    function contactFilters() {
+    function contactFilters () {
       var filters = vm.filters.contact;
 
       return {
@@ -291,7 +290,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadAbsencePeriods() {
+    function loadAbsencePeriods () {
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
           vm.absencePeriods = _.sortBy(absencePeriods, 'start_date');
@@ -306,7 +305,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadAbsenceTypes() {
+    function loadAbsenceTypes () {
       return AbsenceType.all()
         .then(function (absenceTypes) {
           vm.absenceTypes = absenceTypes;
@@ -318,13 +317,13 @@ define([
      *
      * @return {Promise}
      */
-    function loadAllRequests() {
+    function loadAllRequests () {
       vm.loading.content = true;
 
       Contact.all(contactFilters(), {
-          page: 1,
-          size: 0
-        })
+        page: 1,
+        size: 0
+      })
         .then(function (users) {
           vm.filteredUsers = users.list;
 
@@ -343,7 +342,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadDepartments() {
+    function loadDepartments () {
       return OptionGroup.valuesOf('hrjc_department')
         .then(function (departments) {
           vm.departments = departments;
@@ -356,16 +355,15 @@ define([
      * @param {string} type - load leave requests for the either the filter or the table
      * @return {Promise}
      */
-    function loadLeaveRequest(type) {
-      var filterByStatus = type !== 'filter',
-        //{pagination: {size:0}} - Load all requests instead of 25
-        pagination = type === 'filter' ? { size: 0 } : vm.pagination,
-        returnFields = type === 'filter' ? {
-            return: ['status_id']
-          } : {};
-
-      //cache is set to always false as changing selection either in status menu
-      //or pages or adding new requests was reverting back to older cache
+    function loadLeaveRequest (type) {
+      var filterByStatus = type !== 'filter';
+      // {pagination: {size:0}} - Load all requests instead of 25
+      var pagination = type === 'filter' ? { size: 0 } : vm.pagination;
+      var returnFields = type === 'filter' ? {
+        return: ['status_id']
+      } : {};
+      // cache is set to always false as changing selection either in status menu
+      // or pages or adding new requests was reverting back to older cache
       return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, null, returnFields, false)
         .then(function (leaveRequests) {
           vm.leaveRequests[type] = leaveRequests;
@@ -377,7 +375,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadLevelTypes() {
+    function loadLevelTypes () {
       return OptionGroup.valuesOf('hrjc_level_type')
         .then(function (levels) {
           vm.levelTypes = levels;
@@ -389,7 +387,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadLocations() {
+    function loadLocations () {
       return OptionGroup.valuesOf('hrjc_location')
         .then(function (locations) {
           vm.locations = locations;
@@ -404,7 +402,7 @@ define([
      * numbers of different statuses
      * @return {Object}
      */
-    function leaveRequestFilters(filterByStatus) {
+    function leaveRequestFilters (filterByStatus) {
       var filters = vm.filters.leaveRequest;
 
       return {
@@ -426,7 +424,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadRegions() {
+    function loadRegions () {
       return OptionGroup.valuesOf('hrjc_region')
         .then(function (regions) {
           vm.regions = regions;
@@ -438,7 +436,7 @@ define([
      *
      * @return {Promise}
      */
-    function loadStatuses() {
+    function loadStatuses () {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
           vm.leaveRequestStatuses = statuses.concat(vm.leaveRequestStatuses);
@@ -450,15 +448,15 @@ define([
      *
      * @return {Object}
      */
-    function prepareContactID() {
+    function prepareContactID () {
       if (vm.filters.leaveRequest.contact) {
         return vm.filters.leaveRequest.contact.contact_id;
       }
 
       return vm.filteredUsers.length ? {
-        "IN": vm.filteredUsers.map(function (contact) {
-            return contact.contact_id;
-          })
+        'IN': vm.filteredUsers.map(function (contact) {
+          return contact.contact_id;
+        })
       } : null;
     }
 
@@ -470,35 +468,35 @@ define([
      * numbers of different status's
      * @return {Object}
      */
-    function prepareStatusFilter(filterByStatus) {
-      var filters = vm.filters.leaveRequest,
-        statusFilter = [],
-        //get the value for the waiting_approval status
-        waitingApprovalID = _.find(vm.leaveRequestStatuses, function (status) {
-          return status.name === 'waiting_approval';
-        }).value;
+    function prepareStatusFilter (filterByStatus) {
+      var filters = vm.filters.leaveRequest;
+      var statusFilter = [];
+      // get the value for the waiting_approval status
+      var waitingApprovalID = _.find(vm.leaveRequestStatuses, function (status) {
+        return status.name === sharedSettings.statusNames.awaitingApproval;
+      }).value;
 
-      //if filterByStatus is true then add the leaveStatus to be used in the leave request api
+      // if filterByStatus is true then add the leaveStatus to be used in the leave request api
       if (filterByStatus && filters.leaveStatus && filters.leaveStatus.value) {
         statusFilter.push(filters.leaveStatus.value);
       }
 
-      //if pending_requests is true then add the waiting_approval to be used in the leave request api
+      // if pending_requests is true then add the awaiting_approval to be used in the leave request api
       if (filters.pending_requests && waitingApprovalID) {
         statusFilter.push(waitingApprovalID);
       }
 
       if (statusFilter.length) {
         return {
-          "IN": statusFilter
-        }
+          'IN': statusFilter
+        };
       }
     }
 
     /**
      * Register events which will be called by other modules
      */
-    function registerEvents() {
+    function registerEvents () {
       $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
       $rootScope.$on('LeaveRequest::new', vm.refresh);
     }

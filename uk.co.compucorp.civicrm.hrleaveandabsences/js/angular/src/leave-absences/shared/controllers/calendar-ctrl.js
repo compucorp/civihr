@@ -1,20 +1,21 @@
+/* eslint-env amd */
 define([
   'leave-absences/shared/modules/controllers',
   'common/lodash',
   'common/moment',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
-  'leave-absences/shared/models/public-holiday-model',
+  'leave-absences/shared/models/public-holiday-model'
 ], function (controllers, _, moment) {
   'use strict';
 
   controllers.controller('CalendarCtrl', ['$q', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
     'LeaveRequest', 'PublicHoliday', 'OptionGroup', controller]);
 
-  function controller($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup) {
-    var dayTypes = [],
-      leaveRequestStatuses = [],
-      publicHolidays = [];
+  function controller ($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup) {
+    var dayTypes = [];
+    var leaveRequestStatuses = [];
+    var publicHolidays = [];
 
     this.absencePeriods = [];
     this.absenceTypes = [];
@@ -84,9 +85,9 @@ define([
      * save it in vm.months
      */
     this._fetchMonthsFromPeriod = function () {
-      var months = [],
-        startDate = moment(this.selectedPeriod.start_date),
-        endDate = moment(this.selectedPeriod.end_date);
+      var months = [];
+      var startDate = moment(this.selectedPeriod.start_date);
+      var endDate = moment(this.selectedPeriod.end_date);
 
       while (startDate.isBefore(endDate)) {
         months.push(this._getMonthSkeleton(startDate));
@@ -134,10 +135,10 @@ define([
       dateObj.leaveRequest = leaveRequest;
 
       absenceType = _.find(this.absenceTypes, function (absenceType) {
-        return absenceType.id == leaveRequest.type_id;
+        return absenceType.id === leaveRequest.type_id;
       });
 
-      //If Balance change is positive, mark as Accrued TOIL
+      // If Balance change is positive, mark as Accrued TOIL
       if (leaveRequest.balance_change > 0) {
         dateObj.UI.isAccruedTOIL = true;
 
@@ -159,7 +160,7 @@ define([
      */
     this._init = function (intermediateSteps) {
       this.loading.page = true;
-      //Select current month as default
+      // Select current month as default
       this.selectedMonths = [this.monthLabels[moment().month()]];
 
       $q.all([
@@ -196,11 +197,11 @@ define([
       var dayType = dayTypes[name];
 
       if (moment(date).isSame(leaveRequest.from_date)) {
-        return dayType.value == leaveRequest.from_date_type;
+        return dayType.value === leaveRequest.from_date_type;
       }
 
       if (moment(date).isSame(leaveRequest.to_date)) {
-        return dayType.value == leaveRequest.to_date_type;
+        return dayType.value === leaveRequest.to_date_type;
       }
     };
 
@@ -213,7 +214,7 @@ define([
     this._isPendingApproval = function (leaveRequest) {
       var status = leaveRequestStatuses[leaveRequest.status_id];
 
-      return status.name === 'waiting_approval';
+      return status.name === sharedSettings.statusNames.awaitingApproval;
     };
 
     /**
@@ -272,10 +273,10 @@ define([
       var params = {
         from_date: {from: this.selectedPeriod.start_date},
         to_date: {to: this.selectedPeriod.end_date},
-        status_id: {"IN": [
-          getLeaveStatusValuefromName("approved"),
-          getLeaveStatusValuefromName("admin_approved"),
-          getLeaveStatusValuefromName("waiting_approval")
+        status_id: {'IN': [
+          getLeaveStatusValuefromName(sharedSettings.statusNames.approved),
+          getLeaveStatusValuefromName(sharedSettings.statusNames.adminApproved),
+          getLeaveStatusValuefromName(sharedSettings.statusNames.awaitingApproval)
         ]}
       };
       params[contactParamName] = this.contactId;
@@ -287,7 +288,7 @@ define([
           return this._loadCalendar();
         }.bind(this))
         .then(function () {
-          intermediateSteps ? intermediateSteps() : false;
+          intermediateSteps && intermediateSteps();
           this.loading.calendar = false;
           this._showMonthLoader();
         }.bind(this));
@@ -334,14 +335,14 @@ define([
      * then hide each loader on the interval of an offset value
      */
     this._showMonthLoader = function () {
-      var monthLoadDelay = 500,
-        offset = 0;
+      var monthLoadDelay = 500;
+      var offset = 0;
 
       this.months.forEach(function (month) {
         // immediately show the current month...
         month.loading = month.label !== this.selectedMonths[0];
 
-        //delay other months
+        // delay other months
         if (month.loading) {
           $timeout(function () {
             month.loading = false;
@@ -357,7 +358,7 @@ define([
      * @param {String} name - name of the leave status
      * @returns {int/boolean}
      */
-    function getLeaveStatusValuefromName(name) {
+    function getLeaveStatusValuefromName (name) {
       var leaveStatus = _.find(leaveRequestStatuses, function (status) {
         return status.name === name;
       });
