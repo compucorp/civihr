@@ -95,4 +95,40 @@ class CRM_HRLeaveAndAbsences_Service_JobContractTest extends BaseHeadlessTest {
     $this->assertEquals($contract2['id'], $contracts[0]['id']);
     $this->assertEquals($contract3['id'], $contracts[1]['id']);
   }
+
+  public function testGetContractsForPeriodWithContactIDs() {
+    $contact2 = ContactFabricator::fabricate();
+    $contract1 = HRJobContractFabricator::fabricate([
+      'contact_id' => $this->contact['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+      'period_end_date' => '2016-03-15',
+    ]);
+
+    $contract2 = HRJobContractFabricator::fabricate([
+      'contact_id' => $this->contact['id']
+    ],
+    [
+      'period_start_date' => '2016-04-02',
+      'period_end_date' => '2016-11-30',
+    ]);
+
+    $contract3 = HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ],
+    [
+      'period_start_date' => '2016-12-01'
+    ]);
+
+    $contracts = $this->jobContractService->getContractsForPeriod(
+      new DateTime('2016-07-01'),
+      new DateTime('2016-12-21'),
+      [$this->contact['id'], $contact2['id']]
+    );
+
+    $this->assertCount(2, $contracts);
+    $this->assertEquals($contract2['id'], $contracts[0]['id']);
+    $this->assertEquals($contract3['id'], $contracts[1]['id']);
+  }
 }

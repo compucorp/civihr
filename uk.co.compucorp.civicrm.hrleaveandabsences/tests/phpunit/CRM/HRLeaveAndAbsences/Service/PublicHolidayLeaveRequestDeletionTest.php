@@ -12,6 +12,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest
@@ -310,4 +311,186 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     return $bao->count();
   }
 
+  public function testCanDeleteAllPublicHolidayLeaveRequestsForFuturePublicHolidaysForSelectedContact() {
+    $contact = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('2016-01-01'),
+      new DateTime('+2 years')
+    );
+    $periodEntitlement->contact_id = $contact['id'];
+    $periodEntitlement->type_id = $this->absenceType->id;
+
+    $periodEntitlement2 = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('2016-01-01'),
+      new DateTime('+2 years')
+    );
+    $periodEntitlement2->contact_id = $contact2['id'];
+    $periodEntitlement2->type_id = $this->absenceType->id;
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
+
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('+2 months')
+    ]);
+
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact2['id'], $publicHoliday);
+
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
+
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
+    $deletionLogic->deleteAllInTheFuture([$contact['id']]);
+
+    //Only public Holiday leave requests for $contact will be deleted
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
+  }
+
+  public function testCanDeleteAllPublicHolidayLeaveRequestsForFuturePublicHolidaysForWorkPatternContacts() {
+    $contact = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('2016-01-01'),
+      new DateTime('+2 years')
+    );
+    $periodEntitlement->contact_id = $contact['id'];
+    $periodEntitlement->type_id = $this->absenceType->id;
+
+    $periodEntitlement2 = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('2016-01-01'),
+      new DateTime('+2 years')
+    );
+    $periodEntitlement2->contact_id = $contact2['id'];
+    $periodEntitlement2->type_id = $this->absenceType->id;
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    $workPattern1 = WorkPatternFabricator::fabricate();
+    $workPattern2 = WorkPatternFabricator::fabricate();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-10'),
+    ]);
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact2['id'],
+      'pattern_id' => $workPattern2->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-15'),
+    ]);
+
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
+
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('+2 months')
+    ]);
+
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact2['id'], $publicHoliday);
+
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
+
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
+    $deletionLogic->deleteAllInTheFutureForWorkPatternContacts($workPattern1->id);
+
+    //Only public Holiday leave requests for $contact will be deleted since it uses work pattern1
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
+  }
+
+  public function testCanDeleteAllPublicHolidayLeaveRequestsForFuturePublicHolidaysForWorkPatternWhenItIsTheDefault() {
+    $contact = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('2016-01-01'),
+      new DateTime('+2 years')
+    );
+    $periodEntitlement->contact_id = $contact['id'];
+    $periodEntitlement->type_id = $this->absenceType->id;
+
+    $periodEntitlement2 = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('2016-01-01'),
+      new DateTime('+2 years')
+    );
+    $periodEntitlement2->contact_id = $contact2['id'];
+    $periodEntitlement2->type_id = $this->absenceType->id;
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    $workPattern1 = WorkPatternFabricator::fabricate(['is_default' => 1]);
+    $workPattern2 = WorkPatternFabricator::fabricate();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern2->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-10'),
+    ]);
+
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
+
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('+2 months')
+    ]);
+
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact2['id'], $publicHoliday);
+
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
+
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
+    $deletionLogic->deleteAllInTheFutureForWorkPatternContacts($workPattern1->id);
+
+    //Leave Requests for all contacts are deleted
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
+  }
 }

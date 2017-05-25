@@ -7,6 +7,8 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
@@ -50,8 +52,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    *
    * For each contract overlapping one Public Holiday, a Leave Request will be
    * created for the contract's contact and the public holiday date.
+   *
+   * @param array $contactID
+   *  If not empty, Public Holiday Leave Requests are created for only these contacts
    */
-  public function createForAllInTheFuture() {
+  public function createForAllInTheFuture(array $contactID = []) {
     $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
 
     if(!$absenceType) {
@@ -63,7 +68,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
     $contracts = $this->jobContractService->getContractsForPeriod(
       new DateTime(),
-      new DateTime($lastPublicHoliday->date)
+      new DateTime($lastPublicHoliday->date),
+      $contactID
     );
 
     foreach($contracts as $contract) {
@@ -233,4 +239,24 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     return $startDate <= $publicHolidayDate && (!$endDate || $endDate >= $publicHolidayDate);
   }
 
+  /**
+   * Creates Public Holiday Leave Requests for all Public Holidays in the
+   * Future for the contacts using the given workPatternID. If it is the default Work Pattern
+   * the Leave Requests are created for all contacts.
+   *
+   * @param int $workPatternID
+   */
+  public function createAllInFutureForWorkPatternContacts($workPatternID) {
+    $workPattern = WorkPattern::findById($workPatternID);
+    $contacts = [];
+
+    if (!$workPattern->is_default) {
+      $contacts = ContactWorkPattern::getContactsUsingWorkPatternFromDate(
+        new DateTime(),
+        $workPatternID
+      );
+    }
+
+    $this->createForAllInTheFuture($contacts);
+  }
 }

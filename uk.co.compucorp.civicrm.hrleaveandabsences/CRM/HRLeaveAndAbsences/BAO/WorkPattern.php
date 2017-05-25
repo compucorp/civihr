@@ -2,6 +2,9 @@
 
 use CRM_HRCore_Date_BasicDatePeriod as BasicDatePeriod;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
+
 
 class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_WorkPattern {
 
@@ -75,6 +78,10 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
       // We throw the catched Exception how forms can handle the
       // error and properly inform the user about what happened
       throw $e;
+    }
+
+    if (self::shouldEnqueuePublicHolidayLeaveRequestTask($params)) {
+      self::enqueuePublicHolidayLeaveRequestUpdateTask($instance);
     }
 
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
@@ -496,5 +503,37 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
     return [
       'id' => "{$workWeekTable}:pattern_id"
     ];
+  }
+
+  /**
+   * Enqueue a new task to update the Public Holiday Leave Requests due to
+   * changes on WorkPattern
+   *
+   * @param WorkPattern $workPattern
+   */
+  private static function enqueuePublicHolidayLeaveRequestUpdateTask(WorkPattern $workPattern) {
+    $task = new CRM_Queue_Task(
+      ['CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequestsForWorkPatternContacts', 'run'],
+      [$workPattern->id]
+    );
+
+    PublicHolidayLeaveRequestUpdatesQueue::createItem($task);
+  }
+
+  /**
+   * Checks if a PublicHolidayLeaveRequest Update Task should be enqueued.
+   * No need to enqueue a task for a freshly created Work Pattern that is not
+   * the default since no contact will be attached to it yet.
+   *
+   * @param array $params
+   *
+   * @return bool
+   */
+  private static function shouldEnqueuePublicHolidayLeaveRequestTask($params) {
+    if(!empty($params['id']) || !empty($params['is_default'])) {
+      return true;
+    }
+
+    return false;
   }
 }

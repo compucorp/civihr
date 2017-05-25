@@ -123,7 +123,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $this->assertCount(2, $contracts);
   }
 
-  public function testGetContractsWithDetailsInPeriodCanReturnOnlyContractsOfASpecificContact() {
+  public function testGetContractsWithDetailsInPeriodCanReturnContractsOfASpecificContact() {
     $this->createContacts(2);
 
     $startDateContract1 = '2016-01-01';
@@ -170,6 +170,38 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($contract3->id, $contact2Contracts[0]['id']);
     $this->assertEquals($startDateContract3, $contact2Contracts[0]['period_start_date']);
     $this->assertNull($contact2Contracts[0]['period_end_date']);
+  }
+
+  public function testGetContractsWithDetailsInPeriodCanReturnContractsOfMultipleContacts() {
+    $this->createContacts(2);
+
+    $startDateContract1 = '2016-01-01';
+    $endDateContract1 = '2016-03-10';
+
+    $contract1 = $this->createJobContract(
+      $this->contacts[0]['id'],
+      $startDateContract1,
+      $endDateContract1
+    );
+
+    $startDateContract2 = '2016-03-03';
+
+    $contract2 = $this->createJobContract(
+      $this->contacts[1]['id'],
+      $startDateContract2
+    );
+
+    $allContracts = CRM_Hrjobcontract_BAO_HRJobContract::getContractsWithDetailsInPeriod(
+      '2016-01-01', '2016-12-31', [$this->contacts[0]['id'], $this->contacts[1]['id']]
+    );
+
+    $this->assertCount(2, $allContracts);
+    $this->assertEquals($contract1->id, $allContracts[0]['id']);
+    $this->assertEquals($startDateContract1, $allContracts[0]['period_start_date']);
+    $this->assertEquals($endDateContract1, $allContracts[0]['period_end_date']);
+    $this->assertEquals($contract2->id, $allContracts[1]['id']);
+    $this->assertEquals($startDateContract2, $allContracts[1]['period_start_date']);
+    $this->assertNull($allContracts[1]['period_end_date']);
   }
 
   public function testGetContractsWithDetailsInPeriodShouldReturnTheDetailsFromTheLatestDetailsRevision() {

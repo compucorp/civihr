@@ -63,13 +63,15 @@ class CRM_HRLeaveAndAbsences_Service_JobContract {
    *
    * @param \DateTime $startDate
    * @param \DateTime|NULL $endDate
+   * @param array $contactID
    *
    * @return mixed
    */
-  public function getContractsForPeriod(DateTime $startDate, DateTime $endDate) {
+  public function getContractsForPeriod(DateTime $startDate, DateTime $endDate, array $contactID = []) {
     $result = $this->callHRJobContractAPI('getcontractswithdetailsinperiod', [
       'start_date' => $startDate->format('Y-m-d'),
       'end_date' => $endDate->format('Y-m-d'),
+      'contact_id' => !empty($contactID) ? ['IN' => $contactID] : []
     ]);
 
     return $result['values'];

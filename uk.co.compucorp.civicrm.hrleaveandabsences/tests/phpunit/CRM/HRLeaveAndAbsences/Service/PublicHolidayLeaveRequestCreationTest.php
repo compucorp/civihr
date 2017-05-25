@@ -11,6 +11,8 @@ use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest
@@ -415,5 +417,118 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $bao->from_date = $date;
 
     return $bao->count();
+  }
+
+  public function testCreateLeaveRequestsForAllPublicHolidaysInTheFutureForSelectedContacts() {
+    $contact = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    $date = new DateTime('+5 days');
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => $date->format('Ymd')
+    ]);
+
+    $this->creationLogic->createForAllInTheFuture([$contact['id']]);
+
+    $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
+    $this->assertEquals(0, $this->countNumberOfLeaveRequests($contact2['id'], $date->format('Ymd')));
+  }
+
+  public function testCreateLeaveRequestsForAllPublicHolidaysInTheFutureForWorkPatternContacts() {
+    $contact = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    $workPattern1 = WorkPatternFabricator::fabricate();
+    $workPattern2 = WorkPatternFabricator::fabricate();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-10'),
+    ]);
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact2['id'],
+      'pattern_id' => $workPattern2->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-15'),
+    ]);
+
+    $date = new DateTime('+5 days');
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => $date->format('Ymd')
+    ]);
+
+    $this->creationLogic->createAllInFutureForWorkPatternContacts($workPattern1->id);
+    //Public Holiday Leave Requests will not be created for contact2 because contact2 is using
+    //work pattern2
+    $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
+    $this->assertEquals(0, $this->countNumberOfLeaveRequests($contact2['id'], $date->format('Ymd')));
+  }
+
+  public function testCreateLeaveRequestsForAllPublicHolidaysInTheFutureForDefaultWorkPattern() {
+    $contact = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    $workPattern1 = WorkPatternFabricator::fabricate(['is_default' => 1]);
+    $workPattern2 = WorkPatternFabricator::fabricate();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern2->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-10'),
+    ]);
+
+    $date = new DateTime('+5 days');
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => $date->format('Ymd')
+    ]);
+
+    $this->creationLogic->createAllInFutureForWorkPatternContacts($workPattern1->id);
+
+    //Public Holiday Leave Requests are created for both contacts
+    $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
+    $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact2['id'], $date->format('Ymd')));
   }
 }

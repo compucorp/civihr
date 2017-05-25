@@ -222,4 +222,32 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
     return $contactWorkPatterns;
   }
 
+  /**
+   * Gets the contacts that have work patterns with effective_end_date
+   * greater than or equal to the date parameter.
+   *
+   * @param \DateTime $date
+   * @param int $workPatternID
+   *
+   * @return array
+   *   Array of contact ID's
+   */
+  public static function getContactsUsingWorkPatternFromDate(DateTime $date, $workPatternID) {
+    $tableName = self::getTableName();
+    $query = "SELECT DISTINCT contact_id FROM {$tableName} WHERE pattern_id = %1 AND
+              (effective_end_date >= %2 OR effective_end_date IS NULL)";
+
+    $params = [
+      1 => [$workPatternID, 'Integer'],
+      2 => [$date->format('Y-m-d'), 'String']
+    ];
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+
+    $contacts = [];
+    while($result->fetch()) {
+      $contacts[] = $result->contact_id;
+    }
+
+    return $contacts;
+  }
 }
