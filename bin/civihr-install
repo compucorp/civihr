@@ -138,6 +138,7 @@ Required parameters:
 
 Optional parameters:
   --dbpass [mysql-password]     Password for mysql
+  --webroot [root dir path]     The full path to the website root. If not given, the site will be installed in the current directory
   --force-drop                  Drop existing databases for --crmdb and --cmsdb options.
 EOT
   exit 99
@@ -651,6 +652,12 @@ function civihr_parse_options() {
         shift
         ;;
 
+      --webroot)
+        [ -z "$1" ] && echo "[[Missing value for option --webroot.]]" && civihr_app_usage && exit 1
+        WEB_ROOT="$1"
+        shift
+        ;;
+
       --force-drop)
         FORCE_DROP=1
         ;;
@@ -890,7 +897,7 @@ function civihr_app_download() {
       exit 97
     fi
   else
-    echo "Already downloaded ${SITE_NAME}"
+    echo "The $WEB_ROOT folder already exists" && exit
   fi
 }
 
