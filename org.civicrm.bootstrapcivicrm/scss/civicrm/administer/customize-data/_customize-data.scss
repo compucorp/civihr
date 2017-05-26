@@ -101,10 +101,32 @@
     }
   }
 
-  .CRM_Custom_Form_Preview {
-    .crm-submit-buttons {
-      box-shadow: none !important;
+  .CRM_Custom_Form_Preview .crm-submit-buttons {
+    box-shadow: none !important;
+  }
+
+  .dataTable > tbody > tr > td.crm-custom_option-links {
+    padding-right: 20px;
+    text-align: right;
+  }
+
+  .ui-dialog-content #field_page {
+    margin: -38px -20px;
+
+    .form-item {
+      padding: 0;
     }
+
+    .dataTables_wrapper {
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0;
+    }
+
+    .dataTables_wrapper .crm-datatable-pager-top,
+    .dataTables_wrapper .crm-datatable-pager-bottom {
+      border-radius: 0;
+    }   
   }
 }
 
