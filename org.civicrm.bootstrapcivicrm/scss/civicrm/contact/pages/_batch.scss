@@ -26,15 +26,18 @@
       border-bottom: 1px solid $crm-dark-grayblue;
       border-radius: $border-radius-child $border-radius-child 0 0;
       color: $crm-h3-color;
+      font: $crm-font-weight-h3 $font-size-h2 $font-family-base;
       margin: 0;
       padding: 17px 25px;
-      font-size: $font-size-h2;
-      font-weight: $crm-font-weight-h3;
+    }
+
+    div.messages {
+      margin: 0 20px;
     }
 
     table tr td {
-      vertical-align: top;
       padding: 15px 25px;
+      vertical-align: top;
 
       &:nth-child(2) {
         padding: 15px 0;
