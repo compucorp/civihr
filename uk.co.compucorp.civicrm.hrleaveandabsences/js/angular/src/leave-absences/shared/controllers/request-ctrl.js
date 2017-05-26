@@ -45,7 +45,9 @@ define([
       this.postContactSelection = false; // flag to track if user is selected for enabling UI
       this.requestStatuses = {};
       this.statusBeforeEdit = {};
+      this.supportedFileTypes = '';
       this.today = Date.now();
+      this.userRemovedFile = false; // flag to track if user has removed file
       this.balance = {
         closing: 0,
         opening: 0,
@@ -199,6 +201,8 @@ define([
           canSubmit = canSubmit && hasRequestChanged.call(this);
           // user has added file Attachment
           canSubmit = canSubmit || (this.request.files.length + this.request.fileUploader.queue.length) !== initialFilesLength;
+          // did user remove file
+          canSubmit = canSubmit || this.userRemovedFile;
         }
 
         // check if manager has changed status
@@ -218,6 +222,21 @@ define([
        */
       this.canUploadMore = function () {
         return (this.request.files.length + this.request.fileUploader.queue.length) < sharedSettings.fileUploader.queueLimit;
+      };
+
+      /**
+       * Removes attachment. Also, sets the flag to let UI know that a removal has happened.
+       * @param {String} fromWhere source from where deletion is being made like
+       * from files array or fileuploader's queue
+       * @param {Object} file
+       */
+      this.removeAttachment = function (fromWhere, file) {
+        if (fromWhere === 'files') {
+          this.request.deleteAttachment(file);
+        } else if (fromWhere === 'queue') {
+          this.request.fileUploader.removeFromQueue(file);
+        }
+        this.userRemovedFile = true;
       };
 
       /**
@@ -600,6 +619,7 @@ define([
       this._init = function () {
         var self = this;
 
+        this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes).join(', ');
         role = this.directiveOptions.userRole || 'staff';
         this._initRequest();
 

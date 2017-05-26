@@ -242,7 +242,7 @@
                           <span
                             class="btn btn-link"
                             ng-disabled="$ctrl.isMode('view')"
-                            ng-click="$ctrl.request.deleteAttachment(file)">
+                            ng-click="$ctrl.removeAttachment('files', file)">
                             Remove</span>
                         </div>
                       </div>
@@ -276,7 +276,7 @@
                           <span
                             class="btn btn-link"
                             ng-disabled="$ctrl.isMode('view')"
-                            ng-click="$ctrl.request.fileUploader.removeFromQueue(file)">
+                            ng-click="$ctrl.removeAttachment('queue', file)">
                             Remove</span>
                         </div>
                       </div>
@@ -285,36 +285,33 @@
                   </span>
                 </ul>
               </div>
-            <div class="chr_leave-request-files_upload" ng-disabled="$ctrl.isMode('view')">
-              <div
-                nv-file-drop
-                uploader="$ctrl.request.fileUploader"
-                ng-disabled="$ctrl.isMode('view')"
-                ng-if="$ctrl.request.fileUploader && $ctrl.canUploadMore()">
-                <div class="chr_leave-request-files_upload_action row text-center">
-                  Drag and drop file here
+              <div class="chr_leave-request-files_upload" ng-disabled="$ctrl.isMode('view')">
+                <div
+                  nv-file-drop
+                  uploader="$ctrl.request.fileUploader"
+                  ng-if="$ctrl.request.fileUploader && ($ctrl.canUploadMore() || $ctrl.userRemovedFile)">
+                  <div class="chr_leave-request-files_upload_action row text-center">
+                    Drag and drop file here
+                  </div>
+                  <div class="chr_leave-request-files_upload_action row text-center">
+                    or
+                  </div>
+                  <div class="chr_leave-request-files_upload_action row text-center">
+                    <label class="btn btn-primary btn-file">
+                      Browse
+                      <input
+                        type="file"
+                        nv-file-select
+                        ng-readonly="$ctrl.isMode('view')"
+                        uploader="$ctrl.request.fileUploader"
+                        style="display:none;">
+                    </label>
+                  </div>
                 </div>
-                <div class="chr_leave-request-files_upload_action row text-center">
-                  or
-                </div>
-                <div class="chr_leave-request-files_upload_action row text-center">
-                  <label class="btn btn-primary btn-file">
-                    Browse
-                    <input
-                      type="file"
-                      nv-file-select
-                      ng-readonly="$ctrl.isMode('view')"
-                      ng-disabled="$ctrl.isMode('view')"
-                      uploader="$ctrl.request.fileUploader"
-                      style="display:none;">
-                  </label>
+                <div class="chr_leave-request-files_upload_action row text-warning">
+                  You can upload up to 10 files. The supported file extensions are {{ $ctrl.supportedFileTypes }}.
                 </div>
               </div>
-              <div class="chr_leave-request-files_upload_action row text-center text-warning">
-                You can upload up to 10 files. The supported file extensions are txt, jpg, png,
-                jpeg, bmp, gif, pdf, doc, docx, xls, xlsx, ppt, pptx.
-              </div>
-            </div>
             </uib-tab>
           </uib-tabset>
         </div>
