@@ -24,7 +24,6 @@
   }
 
   .crm-pager {
-    background: $gray-lighter;
     margin: 0;
 
     > .element-right {
@@ -66,7 +65,7 @@
   #alpha-filter,
   .crm-search-tasks,
   .crm-selection-reset {
-    background: $gray-lighter !important;
+    background: $crm-white !important;
     padding: 15px 15px 5px !important;
   }
 
