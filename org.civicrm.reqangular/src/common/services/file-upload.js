@@ -1,3 +1,4 @@
+/* eslint-env amd */
 define([
   'common/modules/services',
   'common/lodash',
@@ -7,14 +8,13 @@ define([
 
   module.factory('FileUpload', ['$q', '$log', 'FileUploader',
     function ($q, $log, FileUploader) {
-
       /**
        * Helper to call throw on expressions by wrapping it on function
        *
        * @param {String} error message to throw
        */
-      function error(param) {
-        throw param + ' missing from parameter';
+      function error (param) {
+        throw new Error(param + ' missing from parameter');
       }
 
       /**
@@ -25,7 +25,7 @@ define([
        * @param {Number} status
        * @param {Object} headers
        */
-      function logError(item, response, status, headers) {
+      function logError (item, response, status, headers) {
         $log.error(' ===== Item Error: ' + status + ' ======');
         $log.error(' =====  - item ======');
         $log.error(item);
@@ -41,10 +41,16 @@ define([
        * @param {Object} customSettings user defined settings for uploader
        * @return {Object} a updated list of settings
        */
-      function setDefaults(customSettings) {
-
+      function setDefaults (customSettings) {
         return _.defaults(customSettings, {
-          allowedMimeTypes: ['plain', 'png', 'jpeg', 'bmp', 'gif', 'pdf'],
+          allowedMimeTypes: {
+            'txt': 'plain',
+            'png': 'png',
+            'jpeg': 'jpeg',
+            'bmp': 'bmp',
+            'gif': 'gif',
+            'pdf': 'pdf'
+          },
           url: '/civicrm/ajax/attachment',
           queueLimit: 1
         });
@@ -61,8 +67,9 @@ define([
          * @throws {String} of error if parameters are not set properly
          */
         uploader: function (customSettings) {
-          var uploader, oldUploadAll, deferred = $q.defer(),
-            results = [];
+          var uploader, oldUploadAll;
+          var deferred = $q.defer();
+          var results = [];
 
           if (!customSettings) {
             return error('custom settings');
@@ -88,7 +95,7 @@ define([
               fn: function (item) {
                 var mimeType = item.type.slice(item.type.lastIndexOf('/') + 1);
 
-                return _.includes(customSettings.allowedMimeTypes, mimeType);
+                return _.includes(_.values(customSettings.allowedMimeTypes), mimeType);
               }
             }]
           });
@@ -123,7 +130,7 @@ define([
               oldUploadAll.apply(uploader);
 
               return deferred.promise;
-            }
+            };
           }());
 
           return uploader;
