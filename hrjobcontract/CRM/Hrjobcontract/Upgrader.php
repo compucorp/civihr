@@ -1098,10 +1098,27 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
+   * Makes Hour Location id field autonumeric and adds id as a primary key.
+   */
+  public function upgrade_1030() {
+    try {
+      CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` ADD PRIMARY KEY (`id`)');
+      CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT');
+    } catch (PEAR_Exception $e) {
+      $isDuplicatePrimaryKeyException = stripos($e->getCause()->userinfo, 'nativecode=1068');
+      if ($isDuplicatePrimaryKeyException === false) {
+        throw new Exception($e->getMessage() . ' - ' . $e->getCause()->userinfo);
+      }
+    }
+
+    return true;
+  }
+
+  /**
    * Concats data in pay_grade field to pay_scale fieldand removes pay_grade
    * field from datbase.
    */
-  public function upgrade_1030() {
+  public function upgrade_1031() {
     $query = "
       UPDATE civicrm_hrpay_scale
       SET pay_scale = CONCAT(pay_scale, ' - ', pay_grade)
@@ -1311,54 +1328,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       // OptionGroup already exists
       // Skip this
     }
-  }
-
-  /**
-   * Upgrader to :
-   *
-   * - Remove unused pay scales except 'Not Applicable'
-   * - Remove unused Hour Locations except 'Head Office'
-   * - Remove Duplicated 'Employee - Permanent' Contract Type
-   * - Add 'Fixed Term' Contract Type
-   * - Sort contract types alphabetically
-   * - Add 'Retirement' contract end reason
-   * - Add new contract change reason options
-   *
-   * @return TRUE
-   */
-  public function upgrade_1029() {
-    $this->up1029_removeDuplicateContractType();
-
-    $optionValues = [
-      'hrjc_contract_type' => ['Fixed Term'],
-      'hrjc_contract_end_reason' => ['Retirement'],
-      'hrjc_revision_change_reason' => ['Promotion', 'Increment', 'Disciplinary'],
-    ];
-
-    foreach ($optionValues as $optionGroup => $values) {
-      $this->addOptionValues($optionGroup, $values);
-    }
-
-    $this->up1029_sortContractTypes();
-
-    return true;
-  }
-
-  /**
-   * Makes Hour Location id field autonumeric and adds id as a primary key.
-   */
-  public function upgrade_1030() {
-    try {
-      CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` ADD PRIMARY KEY (`id`)');
-      CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT');
-    } catch (PEAR_Exception $e) {
-      $isDuplicatePrimaryKeyException = stripos($e->getCause()->userinfo, 'nativecode=1068');
-      if ($isDuplicatePrimaryKeyException === false) {
-        throw new Exception($e->getMessage() . ' - ' . $e->getCause()->userinfo);
-      }
-    }
-
-    return true;
   }
 
   /**
