@@ -104,6 +104,8 @@ function hrleaveandabsences_civicrm_permission(&$permissions) {
   $prefix = ts('CiviHRLeaveAndAbsences') . ': '; // name of extension or module
   $permissions['access leave and absences'] = $prefix . ts('Access Leave and Absences');
   $permissions['administer leave and absences'] = $prefix . ts('Administer Leave and Absences');
+  $permissions['access leave and absences in ssp'] = $prefix . ts('Access Leave and Absences in SSP');
+  $permissions['manage leave and absences in ssp'] = $prefix . ts('Manage Leave and Absences in SSP');
 }
 
 /**
