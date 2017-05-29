@@ -714,3 +714,25 @@ function _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_t
     );
   }
 }
+
+/**
+ * Implementation of the hook_civicrm_validateForm.
+ *
+ * @param string $formName
+ * @param array $fields
+ * @param array $files
+ * @param object $form
+ * @param array $errors
+ */
+function hrleaveandabsences_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
+  if ($formName == 'CRM_Contact_Form_Relationship') {
+    //True If the contact is being assigned a relationship with itself
+    if($fields['related_contact_id'] == $form->_contactId) {
+      $leaveApproverRelationships = Civi::service('hrleaveandabsences.settings_manager')
+                                    ->get('relationship_types_allowed_to_approve_leave');
+      if(in_array($form->_relationshipTypeId, $leaveApproverRelationships)) {
+        $errors['relationship_type_id'] = ts('You cannot assign a contact as its own leave approver');
+      }
+    }
+  }
+}
