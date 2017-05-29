@@ -212,7 +212,6 @@
                 </button>
               </div>
             </uib-tab>
-            len{{$ctrl.request.files.length}} || {{$ctrl.request.fileUploader.queue.length}} || {{$ctrl.canShowFileList()}}
             <uib-tab heading="Files">
               <div>
                 <ul class="chr_leave-request-files_list container-fluid" ng-if="$ctrl.canShowFileList()">
@@ -305,7 +304,7 @@
                         nv-file-select
                         ng-readonly="$ctrl.isMode('view')"
                         uploader="$ctrl.request.fileUploader"
-                        style="display:none;">
+                        class="hidden">
                     </label>
                   </div>
                 </div>
