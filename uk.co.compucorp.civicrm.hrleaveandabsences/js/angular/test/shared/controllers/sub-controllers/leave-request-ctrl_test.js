@@ -1,3 +1,4 @@
+/* eslint-env amd, jasmine */
 (function (CRM) {
   define([
     'common/lodash',
@@ -58,10 +59,9 @@
         sharedSettings = _sharedSettings_;
       }]));
 
-      beforeEach(inject(function (
-        _$log_, _$controller_, _$rootScope_, _$q_, _AbsenceTypeAPI_, _AbsencePeriodAPI_,
-        _Contact_, _EntitlementAPI_, _Entitlement_, _LeaveRequestInstance_, _LeaveRequestAPI_,
-        _WorkPatternAPI_) {
+      beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_,
+        _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
+        _LeaveRequestInstance_, _LeaveRequestAPI_, _WorkPatternAPI_) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
@@ -382,8 +382,8 @@
         });
 
         describe('removeCommentVisibility()', function () {
-          var comment = {};
           var returnValue;
+          var comment = {};
 
           beforeEach(function () {
             spyOn($ctrl, 'isRole');
