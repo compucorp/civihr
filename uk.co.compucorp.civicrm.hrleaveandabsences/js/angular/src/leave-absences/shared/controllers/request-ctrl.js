@@ -225,6 +225,20 @@ define([
       };
 
       /**
+       * Checks if user can see file list in files tab. It needs to check for
+       * soft delete flag on leave request as well for files.
+       *
+       * @return {Boolean} true is user can see file list
+       */
+      this.canShowFileList = function () {
+        var filesWithOutSoftDelete = _.filter(this.request.files, function (file) {
+          return !file.toBeDeleted;
+        });
+
+        return !!this.request.fileUploader.queue.length || !!filesWithOutSoftDelete.length;
+      };
+
+      /**
        * Removes attachment. Also, sets the flag to let UI know that a removal has happened.
        * @param {String} fromWhere source from where deletion is being made like
        * from files array or fileuploader's queue

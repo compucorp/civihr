@@ -701,16 +701,18 @@
           });
 
           describe('when submit with attachments', function () {
+            var sampleFileInQueue = {
+              lastModifiedDate: new Date(),
+              size: 1e6,
+              type: 'text/plain',
+              name: '/unitTest.txt'
+            };
+
             beforeEach(function () {
               setTestDates(date2016, date2016);
               // entitlements are randomly generated so resetting them to positive here
               $ctrl.balance.closing = 1;
-              $ctrl.request.fileUploader.addToQueue({
-                lastModifiedDate: new Date(),
-                size: 1e6,
-                type: 'text/plain',
-                name: '/unitTest.txt'
-              });
+              $ctrl.request.fileUploader.addToQueue(sampleFileInQueue);
               // no callThrough as it calls the real URL to upload
               spyOn($ctrl.request.fileUploader, 'uploadAll');
 
@@ -720,6 +722,38 @@
 
             it('uploads attachments', function () {
               expect($ctrl.request.fileUploader.uploadAll).toHaveBeenCalledWith({entityID: jasmine.any(String)});
+            });
+
+            describe('removes attachment from queue', function () {
+              beforeEach(function () {
+                spyOn($ctrl.request.fileUploader, 'removeFromQueue');
+                $ctrl.removeAttachment('queue', sampleFileInQueue);
+              });
+
+              it('removes file from file queue', function () {
+                expect($ctrl.request.fileUploader.removeFromQueue).toHaveBeenCalledWith(sampleFileInQueue);
+              });
+
+              it('sets flag to enable user to save changes', function () {
+                expect($ctrl.userRemovedFile).toBeTruthy();
+              });
+            });
+
+            describe('removes attachment from files array', function () {
+              var dummyFile = { name: 'dummyFile' };
+
+              beforeEach(function () {
+                spyOn($ctrl.request, 'deleteAttachment').and.callThrough();
+                $ctrl.removeAttachment('files', dummyFile);
+              });
+
+              it('removes file from file array', function () {
+                expect($ctrl.request.deleteAttachment).toHaveBeenCalledWith(dummyFile);
+              });
+
+              it('sets flag to enable user to save changes', function () {
+                expect($ctrl.userRemovedFile).toBeTruthy();
+              });
             });
           });
         });

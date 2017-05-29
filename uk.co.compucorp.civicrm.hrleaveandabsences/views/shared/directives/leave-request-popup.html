@@ -212,9 +212,10 @@
                 </button>
               </div>
             </uib-tab>
+            len{{$ctrl.request.files.length}} || {{$ctrl.request.fileUploader.queue.length}} || {{$ctrl.canShowFileList()}}
             <uib-tab heading="Files">
               <div>
-                <ul class="chr_leave-request-files_list container-fluid">
+                <ul class="chr_leave-request-files_list container-fluid" ng-if="$ctrl.canShowFileList()">
                   <li ng-repeat="file in $ctrl.request.files">
                     <span ng-if="!file.toBeDeleted">
                       <div class="chr_leave-request-files_meta">
