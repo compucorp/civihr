@@ -621,7 +621,10 @@ define([
             ]);
           })
           .then(function () {
-            return self.initAfterContactSelection();
+            // The additional check here prevents error being displayed on startup when no contact is selected
+            if (self.request.contact_id) {
+              return self.initAfterContactSelection();
+            }
           })
           .catch(handleError.bind(self));
       };
