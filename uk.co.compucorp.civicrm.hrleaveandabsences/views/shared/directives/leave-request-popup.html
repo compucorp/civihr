@@ -285,11 +285,12 @@
                   </span>
                 </ul>
               </div>
-              <div class="chr_leave-request-files_upload" ng-disabled="$ctrl.isMode('view')">
+              <div class="chr_leave-request-files_upload"
+                ng-class="{'chr_disabled': !$ctrl.canUploadMore() || $ctrl.isMode('view')}">
                 <div
                   nv-file-drop
                   uploader="$ctrl.request.fileUploader"
-                  ng-if="$ctrl.request.fileUploader && ($ctrl.canUploadMore() || $ctrl.userRemovedFile)">
+                  ng-disabled="!$ctrl.request.fileUploader">
                   <div class="chr_leave-request-files_upload_action row text-center">
                     Drag and drop file here
                   </div>
@@ -302,14 +303,16 @@
                       <input
                         type="file"
                         nv-file-select
-                        ng-readonly="$ctrl.isMode('view')"
                         uploader="$ctrl.request.fileUploader"
                         class="hidden">
                     </label>
                   </div>
                 </div>
-                <div class="chr_leave-request-files_upload_action row text-warning">
+                <div class="chr_leave-request-files_upload_action row text-warning" ng-if="$ctrl.canUploadMore() || $ctrl.userRemovedFile">
                   You can upload up to 10 files. The supported file extensions are {{ $ctrl.supportedFileTypes }}.
+                </div>
+                <div class="chr_leave-request-files_upload_action row text-warning text-center" ng-if="!($ctrl.canUploadMore() || $ctrl.userRemovedFile)">
+                  You have reached the limit of 10 uploaded files.
                 </div>
               </div>
             </uib-tab>

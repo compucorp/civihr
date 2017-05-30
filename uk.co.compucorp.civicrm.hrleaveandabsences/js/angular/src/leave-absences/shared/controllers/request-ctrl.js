@@ -221,7 +221,11 @@ define([
        * @return {Boolean} true is user can upload more else false
        */
       this.canUploadMore = function () {
-        return (this.request.files.length + this.request.fileUploader.queue.length) < sharedSettings.fileUploader.queueLimit;
+        var filesWithoutSoftDelete = _.filter(this.request.files, function (file) {
+          return !file.toBeDeleted;
+        });
+
+        return (filesWithoutSoftDelete.length + this.request.fileUploader.queue.length) < sharedSettings.fileUploader.queueLimit;
       };
 
       /**
@@ -231,11 +235,11 @@ define([
        * @return {Boolean} true is user can see file list
        */
       this.canShowFileList = function () {
-        var filesWithOutSoftDelete = _.filter(this.request.files, function (file) {
+        var filesWithoutSoftDelete = _.filter(this.request.files, function (file) {
           return !file.toBeDeleted;
         });
 
-        return !!this.request.fileUploader.queue.length || !!filesWithOutSoftDelete.length;
+        return !!(this.request.fileUploader.queue.length || filesWithoutSoftDelete.length);
       };
 
       /**
