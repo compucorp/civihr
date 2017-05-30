@@ -407,6 +407,24 @@ function hrleaveandabsences_hrcomments_selectWhereClause(&$conditions, $params) 
   $conditions = array_merge($conditions, $commentsWhereClause->get());
 }
 
+
+/**
+ * Implementation of the hook_civicrm_validateForm.
+ *
+ * @param string $formName
+ * @param array $fields
+ * @param array $files
+ * @param object $form
+ * @param array $errors
+ */
+function hrleaveandabsences_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
+  if($formName == 'CRM_Contact_Form_Relationship') {
+    if(_hrleaveandabsences_contact_is_being_assigned_as_its_own_leave_approver($form, $fields)){
+      $errors['relationship_type_id'] = ts('You cannot assign a contact as its own leave approver');
+    }
+  }
+}
+
 //----------------------------------------------------------------------------//
 //                               Helper Functions                             //
 //----------------------------------------------------------------------------//
@@ -716,23 +734,22 @@ function _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_t
 }
 
 /**
- * Implementation of the hook_civicrm_validateForm.
+ * A helper function that checks whether a contact being set as its own Leave
+ * Approver based on the leave approver relationships defined on L&A general settings page.
  *
- * @param string $formName
- * @param array $fields
- * @param array $files
  * @param object $form
- * @param array $errors
+ * @param array $fields
+ *
+ * @return bool
  */
-function hrleaveandabsences_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
-  if ($formName == 'CRM_Contact_Form_Relationship') {
-    //True If the contact is being assigned a relationship with itself
-    if($fields['related_contact_id'] == $form->_contactId) {
-      $leaveApproverRelationships = Civi::service('hrleaveandabsences.settings_manager')
-                                    ->get('relationship_types_allowed_to_approve_leave');
-      if(in_array($form->_relationshipTypeId, $leaveApproverRelationships)) {
-        $errors['relationship_type_id'] = ts('You cannot assign a contact as its own leave approver');
-      }
+function _hrleaveandabsences_contact_is_being_assigned_as_its_own_leave_approver($form, $fields) {
+  if($fields['related_contact_id'] == $form->_contactId) {
+    $leaveApproverRelationships = Civi::service('hrleaveandabsences.settings_manager')
+      ->get('relationship_types_allowed_to_approve_leave');
+    if(in_array($form->_relationshipTypeId, $leaveApproverRelationships)) {
+      return true;
     }
   }
+
+  return false;
 }
