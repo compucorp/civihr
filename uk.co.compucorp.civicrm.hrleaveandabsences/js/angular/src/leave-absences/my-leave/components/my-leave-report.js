@@ -329,6 +329,8 @@ define([
     /**
      * Loads the entitlements, including current and future balance,
      * and groups the entitlements value and remainder by absence type
+     * Also Filters the absence types which allows overuse or allows
+     * accrual request or has entitlement more than 0
      *
      * @return {Promise}
      */

@@ -720,7 +720,7 @@ define([
        * @param {Object} entitlements
        * @return {Array} of filtered absence types for given entitlements
        */
-      function mapAbsenceTypesWithBalance(absenceTypes, entitlements) {
+      function mapAbsenceTypesWithBalance (absenceTypes, entitlements) {
         return entitlements.map(function (entitlementItem) {
           var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
             return absenceTypeItem.id === entitlementItem.type_id;
