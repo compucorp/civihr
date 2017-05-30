@@ -100,7 +100,6 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
    * to be on the top.
    */
   public function upgrade_1501() {
-
     $result = civicrm_api3('OptionValue', 'get', [
       'sequential' => 1,
       'option_group_id' => 'type_20130502144049',

@@ -8,7 +8,6 @@ trait CRM_HRCore_Upgrader_Steps_1002 {
    * @return bool
    */
   public function upgrade_1002() {
-
     $this->up1002_createMissPrefix();
     $this->up1002_sortIndividualPrefixes();
 
