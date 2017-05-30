@@ -39,7 +39,8 @@ trait CRM_HRUI_Upgrader_Steps_4702 {
     civicrm_api3('OptionValue', 'get', [
       'option_group_id' => 'instant_messenger_service',
       'name' => 'Skype',
-      'api.OptionGroup.create' => [
+      'api.OptionValue.create' => [
+        'id' => '$value.id',
         'weight' => 0,
       ],
     ]);

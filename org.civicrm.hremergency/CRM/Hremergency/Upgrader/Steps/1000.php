@@ -14,7 +14,7 @@ trait CRM_Hremergency_Upgrader_Steps_1000 {
 
     // create required options
     foreach($relationships as $relationship) {
-      if (!$this->up1000_isExistingOptionValue($relationship, 'relationship_with_employee_20150304120408')) {
+      if (!$this->up1000_isOptionValueExist($relationship, 'relationship_with_employee_20150304120408')) {
         civicrm_api3('OptionValue', 'create', [
           'sequential' => 1,
           'option_group_id' => 'relationship_with_employee_20150304120408',
@@ -40,7 +40,7 @@ trait CRM_Hremergency_Upgrader_Steps_1000 {
    * @return bool
    *   true if value is found, false otherwise
    */
-  private function up1000_isExistingOptionValue($value, $groupName) {
+  private function up1000_isOptionValueExist($value, $groupName) {
     $result = civicrm_api3('OptionValue', 'get', [
       'sequential' => 1,
       'option_group_id' => $groupName,
