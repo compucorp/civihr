@@ -1,5 +1,6 @@
 /* eslint-env amd */
 define([
+  'common/angular',
   'leave-absences/shared/modules/controllers',
   'common/lodash',
   'common/moment',
@@ -12,7 +13,7 @@ define([
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/shared/models/public-holiday-model'
-], function (controllers, _, moment) {
+], function (angular, controllers, _, moment) {
   'use strict';
 
   controllers.controller('RequestCtrl', [
@@ -28,7 +29,6 @@ define([
       var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
       var mode = ''; // can be edit, create, view
       var role = '';
-      var initialCommentsLength = 0; // number of comments when the request model is loaded
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
       this.absencePeriods = [];
@@ -195,9 +195,7 @@ define([
 
         // check if user has changed any attribute
         if (this.isMode('edit')) {
-          canSubmit = canSubmit && !_.isEqual(initialLeaveRequestAttributes, this.request.attributes());
-          // user has added a comment
-          canSubmit = canSubmit || this.request.comments.length !== initialCommentsLength;
+          canSubmit = canSubmit && this.hasRequestUpdated();
         }
 
         // check if manager has changed status
@@ -251,6 +249,22 @@ define([
         return this.request.comments.filter(function (comment) {
           return !comment.toBeDeleted;
         });
+      };
+
+      /**
+       * Checks if a leave request has been updated since opening the modal
+       *
+       * @return {Boolean}
+       */
+      this.hasRequestUpdated = function () {
+        // angular copy is necessary to remove the $$hashkey property from
+        // all nested objects
+        var updatedRequestAttributes = angular.copy(this.request.attributes());
+        // fileUploader property deleted because it will not be used
+        // in object comparison
+        delete updatedRequestAttributes.fileUploader;
+
+        return !_.isEqual(initialLeaveRequestAttributes, updatedRequestAttributes);
       };
 
       /**
@@ -659,13 +673,14 @@ define([
             initContact.call(self);
 
             if (self.isMode('edit')) {
-              initialLeaveRequestAttributes = self.request.attributes();
+              initialLeaveRequestAttributes = angular.copy(self.request.attributes());
+              // fileUploader property deleted because it will not be used
+              // in object comparison
+              delete initialLeaveRequestAttributes.fileUploader;
 
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
               }
-
-              initialCommentsLength = self.request.comments.length;
             }
 
             self.postContactSelection = false;
