@@ -32,6 +32,7 @@ define([
 
     vm.absencePeriods = [];
     vm.absenceTypes = {};
+    vm.absenceTypesFiltered = {};
     vm.dateFormat = HRSettings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.selectedPeriod = null;
@@ -328,6 +329,8 @@ define([
     /**
      * Loads the entitlements, including current and future balance,
      * and groups the entitlements value and remainder by absence type
+     * Also Filters the absence types which allows overuse or allows
+     * accrual request or has entitlement more than 0
      *
      * @return {Promise}
      */
@@ -340,13 +343,18 @@ define([
         vm.entitlements = entitlements;
       })
       .then(function () {
-        _.forEach(vm.absenceTypes, function (absenceType) {
+        vm.absenceTypesFiltered = _.filter(vm.absenceTypes, function (absenceType) {
           var entitlement = _.find(vm.entitlements, function (entitlement) {
             return entitlement.type_id === absenceType.id;
           });
 
-          absenceType.entitlement = entitlement.value;
-          absenceType.remainder = entitlement.remainder;
+          // set entitlement to 0 if no entitlement is present
+          absenceType.entitlement = entitlement ? entitlement.value : 0;
+          absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
+
+          return !((absenceType.entitlement === 0) &&
+          (absenceType.allow_overuse !== '1') &&
+          (absenceType.allow_accruals_request !== '1'));
         });
       });
     }

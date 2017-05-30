@@ -29,6 +29,7 @@ define([
       var mode = ''; // can be edit, create, view
       var role = '';
       var initialCommentsLength = 0; // number of comments when the request model is loaded
+      var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
       this.absencePeriods = [];
       this.absenceTypes = [];
@@ -666,7 +667,11 @@ define([
 
             self.postContactSelection = false;
           })
-          .catch(handleError.bind(self));
+          .catch(function (error) {
+            if (error !== NO_ENTITLEMENT_ERROR) {
+              return $q.reject(error);
+            }
+          });
       };
 
       /**
@@ -1103,6 +1108,9 @@ define([
           .then(function (entitlements) {
             // create a list of absence types with a `balance` property
             self.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
+            if (!self.absenceTypes.length) {
+              return $q.reject(NO_ENTITLEMENT_ERROR);
+            }
           });
       }
 
