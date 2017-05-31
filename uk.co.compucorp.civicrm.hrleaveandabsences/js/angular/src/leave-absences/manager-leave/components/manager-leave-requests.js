@@ -189,7 +189,7 @@ define([
      */
     vm.getUserNameByID = function (id) {
       var user = _.find(vm.filteredUsers, function (contact) {
-        return contact.contact_id === id;
+        return contact.id === id;
       });
       return user ? user.display_name : null;
     };
@@ -320,12 +320,9 @@ define([
     function loadAllRequests () {
       vm.loading.content = true;
 
-      Contact.all(contactFilters(), {
-        page: 1,
-        size: 0
-      })
+      Contact.leaveManagees(vm.contactId, contactFilters())
         .then(function (users) {
-          vm.filteredUsers = users.list;
+          vm.filteredUsers = users;
 
           return $q.all([
             loadLeaveRequest('table'),
@@ -450,12 +447,12 @@ define([
      */
     function prepareContactID () {
       if (vm.filters.leaveRequest.contact) {
-        return vm.filters.leaveRequest.contact.contact_id;
+        return vm.filters.leaveRequest.contact.id;
       }
 
       return vm.filteredUsers.length ? {
         'IN': vm.filteredUsers.map(function (contact) {
-          return contact.contact_id;
+          return contact.id;
         })
       } : null;
     }

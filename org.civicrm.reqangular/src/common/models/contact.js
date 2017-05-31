@@ -157,6 +157,16 @@ define([
           return contactAPI.find(id).then(function (contact) {
             return instance.init(contact, true);
           });
+        },
+
+        /**
+         * Finds all the contacts managed by the sent contact id
+         *
+         * @param {string} id - contact id
+         * @return {Promise} - Resolves with found contacts/API Errors
+         */
+        leaveManagees: function (id, params) {
+          return contactAPI.leaveManagees(id, params);
         }
       });
     }
