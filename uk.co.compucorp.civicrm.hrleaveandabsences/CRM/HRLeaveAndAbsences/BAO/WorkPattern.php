@@ -2,6 +2,7 @@
 
 use CRM_HRCore_Date_BasicDatePeriod as BasicDatePeriod;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRLeaveAndAbsences_BAO_WorkWeek as WorkWeek;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
 
@@ -253,31 +254,94 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    * @return array An array containing the values
    */
   public static function getValuesArray($id) {
-    try {
-      $params = [
-        'id' => $id,
-        'api.WorkWeek.get' => [
-          'pattern_id' => '$value.id',
-          'api.WorkDay.get' => [
-            'week_id' => '$value.id'
-          ]
-        ]
-      ];
-      $result = civicrm_api3('WorkPattern', 'getsingle', $params);
+    $values = [];
 
-      $workWeeks = $result['api.WorkWeek.get']['values'];
-      foreach($workWeeks as $i => $week) {
-        $workWeeks[$i]['days'] = $week['api.WorkDay.get']['values'];
-        unset($workWeeks[$i]['api.WorkDay.get']);
+    if(empty($id)) {
+      return $values;
+    }
+
+    $workPatternTable = WorkPattern::getTableName();
+    $workWeekTable = WorkWeek::getTableName();
+    $workDayTable = WorkDay::getTableName();
+
+    $query = "
+      SELECT
+        wp.id,
+        wp.label,
+        wp.description,
+        wp.is_default,
+        wp.is_active,
+        wp.weight,
+        ww.id as week_id,
+        ww.number,
+        ww.pattern_id,
+        wd.id as work_day_id,
+        wd.day_of_the_week,
+        wd.type,
+        wd.time_from,
+        wd.time_to,
+        wd.break,
+        wd.leave_days,
+        wd.number_of_hours,
+        wd.week_id
+      FROM {$workPatternTable} wp
+      LEFT JOIN {$workWeekTable} ww ON ww.pattern_id = wp.id
+      LEFT JOIN {$workDayTable} wd ON wd.week_id = ww.id
+      WHERE wp.id = {$id}
+      ORDER BY wp.weight ASC, ww.number ASC, wd.day_of_the_week ASC
+    ";
+
+    $result = CRM_Core_DAO::executeQuery($query);
+
+    $weekID = null;
+    $weekIndex = 0;
+    $workDayIndex = 0;
+
+    while($result->fetch()) {
+      $row = $result->toArray();
+      if(empty($values['id'])) {
+        $values = [
+          'id' => $row['id'],
+          'label' => $row['label'],
+          'description' => $row['description'],
+          'is_default' => $row['is_default'],
+          'is_active' => $row['is_active'],
+          'weight' => $row['weight'],
+          'weeks' => []
+        ];
       }
 
-      $result['weeks'] = $workWeeks;
-      unset($result['api.WorkWeek.get']);
-      return $result;
+      if(empty($row['week_id'])) {
+        break;
+      }
 
-    } catch(CiviCRM_API3_Exception $ex) {
-      return [];
+      if($row['week_id'] != $weekID) {
+        if(!is_null($weekID)) {
+          $weekIndex++;
+        }
+        $weekID = $row['week_id'];
+        $values['weeks'][$weekIndex] = [
+          'number' => $row['number'],
+          'pattern_id' => $row['pattern_id'],
+          'days' => []
+        ];
+        $workDayIndex = 0;
+      }
+
+      $values['weeks'][$weekIndex]['days'][$workDayIndex] = [
+        'day_of_the_week' => $row['day_of_the_week'],
+        'type' => $row['type'],
+        'time_from' => $row['time_from'],
+        'time_to' => $row['time_to'],
+        'break' => $row['break'],
+        'leave_days' => $row['leave_days'],
+        'number_of_hours' => $row['number_of_hours'],
+      ];
+
+      $workDayIndex++;
     }
+
+    return $values;
   }
 
   /**
@@ -292,7 +356,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    */
   public function getLeaveDaysForDate(DateTime $date, DateTime $startDate) {
     $day = $this->getWorkDayForDate($date, $startDate);
-    return isset($day['leave_days']) ? (float)$day['leave_days'] : 0;
+    return !empty($day['leave_days']) ? (float)$day['leave_days'] : 0;
   }
 
   /**
