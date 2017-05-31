@@ -10,17 +10,11 @@
   margin-top: 20px;
 
   #civicrm-getting-started {
-    table {
-      tbody {
-        tr {
-          border-bottom: 0;
+    table tbody tr {
+      border-bottom: 0;
 
-          td {
-            &:nth-child(2) {
-              padding-left: 0;
-            }
-          }
-        }
+      td:nth-child(2) {
+        padding-left: 0;
       }
     }
   }
@@ -41,7 +35,7 @@
 
       a {
         font-family: $font-family-base;
-        font-weight: 600;
+        font-weight: $crm-font-weight-h1;
       }
     }
 
@@ -49,24 +43,16 @@
       padding: 0 !important;
 
       .crm-accordion-wrapper {
-        &.collapsed {
-          .crm-accordion-header {
-            &:before {
-              color: $gray-darker;
-              content: "\f054";
-              font-size: $font-size-base;
-            }
-          }
+        &.collapsed .crm-accordion-header:before {
+          color: $gray-darker;
+          content: $fa-caret-right;
+          font-size: $font-size-base;
         }
 
-        &:not(.collapsed) {
-          .crm-accordion-header {
-            &:before {
-              color: $gray-darker;
-              content: "\f078";
-              font-size: $font-size-base;
-            }
-          }
+        &:not(.collapsed) .crm-accordion-header:before {
+          color: $gray-darker;
+          content: $fa-caret-down;
+          font-size: $font-size-base;
         }
       }
 
@@ -78,7 +64,7 @@
         .crm-news-feed-item-title {
           color: $crm-dasboard-header;
           font-family: $font-family-base;
-          font-weight: 600 !important;
+          font-weight: $crm-font-weight-h1 !important;
         }
       }
 
@@ -99,7 +85,7 @@
   .crm-activity-selector-dashlet {
     .crm-accordion-header {
       color: $gray-darker;
-      font-weight: 600 !important;
+      font-weight: $crm-font-weight-h1 !important;
     }
 
     .crm-search_filters-accordion {
@@ -143,7 +129,7 @@
         .select2-choice {
           background: none;
           border: 1px solid $crm-darker-grayblue;
-          border-radius: 2px;
+          border-radius: $border-radius-small;
           box-shadow: $crm-select2-box-shadow-inset;
         }
 

@@ -1,195 +1,177 @@
-#crm-container {
-  .widget {
-    .widget-controls {
-      padding: 17px 10px !important;
+#crm-container .widget .widget-controls {
+  padding: 17px 10px !important;
 
-      h3 {
-        font-family: $font-family-base;
-        font-size: $font-size-h2;
-      }
+  h3 {
+    font-family: $font-family-base;
+    font-size: $font-size-h2;
+  }
 
-      .fa-caret-down {
-        &:before {
-          content: "\f078";
-        }
-      }
+  .fa-caret-down:before {
+    content: $fa-caret-down;
+  }
 
-      .fa-caret-right {
-        &:before {
-          content: "\f054";
-        }
+  .fa-caret-right {
+    content: $fa-caret-right;
+  }
+}
+
+#crm-container .widget .widget-content {
+  padding: 0;
+
+  table {
+    background: transparent;
+    border: none;
+    font-family: $font-family-base;
+
+    thead {
+      border-bottom: 1px solid $crm-dark-grayblue;
+    }
+
+    thead th {
+      background: $gray-lighter !important;
+      border: none;
+      border-bottom: none;
+      color: $gray-darker !important;
+      line-height: 1.5em;
+      padding: 10px 15px;
+      text-align: left;
+      vertical-align: middle;
+
+      div {
+        padding: 0;
       }
     }
 
-    .widget-content {
-      padding: 0;
+    tbody tr {
+      background: $crm-white;
+      border-bottom: 1px solid $crm-background;
 
-      table {
-        background: transparent;
+      td {
+        background: $crm-white;
         border: none;
-        font-family: $font-family-base;
-
-        thead {
-          border-bottom: 1px solid $crm-dark-grayblue;
-
-          th {
-            background: $gray-lighter !important;
-            border: none;
-            border-bottom: none;
-            color: $gray-darker !important;
-            line-height: 1.5em;
-            padding: 10px 15px;
-            text-align: left;
-            vertical-align: middle;
-
-            div {
-              padding: 0;
-            }
-          }
-        }
-
-        tbody {
-          tr {
-            background: $crm-white;
-            border-bottom: 1px solid $crm-background;
-
-            td {
-              background: $crm-white;
-              border: none;
-              color: $gray-dark;
-              line-height: 1.5em;
-              padding: 10px 15px;
-              text-align: left;
-            }
-          }
-        }
-      }
-
-      #help {
-        background-color: $crm-help-success;
-        border: none;
-        box-shadow: $box-shadow;
-        clear: both;
-        color: $crm-dasboard-header;
-        margin: 0;
-        padding: 15px;
-      }
-
-      h3 {
-        background-color: $gray-lighter;
-        border-bottom: 1px solid $crm-dark-grayblue;
-        border-top: 1px solid $crm-background;
-        color: $crm-dasboard-header;
-        font-family: $font-family-base;
-        font-size: $font-size-medium;
+        color: $gray-dark;
+        line-height: 1.5em;
         padding: 10px 15px;
+        text-align: left;
       }
     }
+  }
+
+  #help {
+    background-color: $crm-help-success;
+    border: none;
+    box-shadow: $box-shadow;
+    clear: both;
+    color: $crm-dasboard-header;
+    margin: 0;
+    padding: 15px;
+  }
+
+  h3 {
+    background-color: $gray-lighter;
+    border-bottom: 1px solid $crm-dark-grayblue;
+    border-top: 1px solid $crm-background;
+    color: $crm-dasboard-header;
+    font-family: $font-family-base;
+    font-size: $font-size-medium;
+    padding: 10px 15px;
+  }
+}
+
+#crm-container .portlet {
+  border: none;
+
+  .portlet-header {
+    background: $crm-accordion-header-color;
+    border-color: $crm-dark-grayblue;
+    -webkit-border-radius: $border-radius-small;
+    -moz-border-radius: $border-radius-small;
+    border-radius: $border-radius-small;
+    color: $crm-dark-blue;
+    font: $crm-font-weight-h1 $font-size-base $font-family-base;
+    margin: 0;
+    padding: 15px !important;
+  }
+}
+
+.dashlets-header {
+  font-size: $font-size-h3;
+  margin-bottom: 20px;
+}
+
+#configure-dashlet {
+  #available-dashlets {
+    background-color: $crm-white;
+    border: 1px dashed $crm-dasboard-header;
+    min-height: 40px;
+    padding: 25px;
+    width: 96%;
+  }
+
+  #help {
+    background-color: $crm-help-success;
+    border: none;
+    box-shadow: $box-shadow;
+    clear: both;
+    color: $crm-copy;
+    margin-top: 30px;
+  }
+
+  .crm-submit-buttons a.button {
+    background-color: $brand-primary;
+  }
+}
+
+div[id*="dashlets-header-col"] {
+  @include border-box();
+  background: $crm-dasboard-header;
+  color: $crm-white;
+  float: left;
+  font-family: $font-family-base;
+  font-size: $font-size-h3;
+  margin: 0 !important;
+  padding: 15px;
+  width: 49% !important;
+
+  &[id*="col-1"] {
+    float: right;
+  }
+}
+
+div[id*="existing-dashlets-col"] {
+  @include border-box();
+  background: $crm-white !important;
+  border: none !important;
+  float: left;
+  margin: 0 !important;
+  padding: 15px;
+  width: 49% !important;
+
+  &[id*="col-1"] {
+    float: right;
   }
 
   .portlet {
     border: none;
+    margin-bottom: 10px;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
 
     .portlet-header {
       background: $crm-accordion-header-color;
       border-color: $crm-dark-grayblue;
-      -webkit-border-radius: 2px;
-      -moz-border-radius: 2px;
-      border-radius: 2px;
+      -webkit-border-radius: $border-radius-small;
+      -moz-border-radius: $border-radius-small;
+      border-radius: $border-radius-small;
       color: $crm-dark-blue;
-      font-family: $font-family-base;
-      font-size: $font-size-medium;
-      font-weight: 600;
+      font: $crm-font-weight-h1 $font-size-medium $font-family-base;
       margin: 0;
-      padding: 15px !important;
-    }
-  }
-
-  .dashlets-header {
-    font-size: $font-size-h3;
-    margin-bottom: 20px;
-  }
-
-  #configure-dashlet {
-    #available-dashlets {
-      background-color: $crm-white;
-      border: 1px dashed $crm-dasboard-header;
-      min-height: 40px;
-      padding: 25px;
-      width: 96%;
-    }
-
-    #help {
-      background-color: $crm-help-success;
-      border: none;
-      box-shadow: $box-shadow;
-      clear: both;
-      color: $crm-copy;
-      margin-top: 30px;
-    }
-
-    .crm-submit-buttons a.button {
-      background-color: $brand-primary;
-    }
-  }
-
-  div[id*="dashlets-header-col"] {
-    background: $crm-dasboard-header;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    color: $crm-white;
-    float: left;
-    font-family: $font-family-base;
-    font-size: $font-size-h3;
-    margin: 0 !important;
-    padding: 15px;
-    width: 49% !important;
-
-    &[id*="col-1"] {
-      float: right;
-    }
-  }
-
-  div[id*="existing-dashlets-col"] {
-    background: $crm-white !important;
-    border: none !important;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    float: left;
-    margin: 0 !important;
-    padding: 15px;
-    width: 49% !important;
-
-    &[id*="col-1"] {
-      float: right;
-    }
-
-    .portlet {
-      border: none;
-      margin-bottom: 10px;
-      margin-left: 0;
-      margin-right: 0;
-      width: 100%;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-
-      .portlet-header {
-        background: $crm-accordion-header-color;
-        border-color: $crm-dark-grayblue;
-        -webkit-border-radius: 2px;
-        -moz-border-radius: 2px;
-        border-radius: 2px;
-        color: $crm-dark-blue;
-        font-family: $font-family-base;
-        font-size: $font-size-medium;
-        font-weight: 600;
-        margin: 0;
-        padding: 15px;
-      }
+      padding: 15px;
     }
   }
 }
