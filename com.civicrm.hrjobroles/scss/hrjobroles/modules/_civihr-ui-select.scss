@@ -9,8 +9,8 @@ $gray-lighter:           #F3F6F7;
 $input-border-radius:    0;
 
 // Include the original ui-select css + the civihr-ui-select dropdown theme
-@import "../../../civihr/org.civicrm.shoreditch/scss/bootstrap/vendor/ui-select/ui-select";
-@import "../../../civihr/org.civicrm.shoreditch/scss/bootstrap/components/civihr-ui-select/civihr-ui-select";
+@import "../../../org.civicrm.shoreditch/scss/bootstrap/vendor/ui-select/ui-select";
+@import "../../../org.civicrm.shoreditch/scss/bootstrap/components/civihr-ui-select/civihr-ui-select";
 
 // Customizations specific for Job Roles
 .ui-select-bootstrap {
