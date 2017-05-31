@@ -82,7 +82,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
     $service->updateAllInTheFutureForWorkPatternContacts($workPatternID);
   }
 
-  public function testUpdateAllInTheFutureForContract() {
+  public function testUpdateAllForContract() {
     $contactID = 10;
 
     $deletionLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestDeletion::class)
@@ -104,7 +104,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
                       ->with($this->identicalTo($contactID));
 
     $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
-    $service->updateAllInTheFutureForContract($contactID);
+    $service->updateAllForContract($contactID);
   }
 
   /**
@@ -117,7 +117,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
    * requests before creating the contract and then checking that they were
    * created after the contract gets saved.
    */
-  public function testItUpdateAllInTheFutureWhenTheContractDetailsAreCreated() {
+  public function testItUpdateAllWhenTheContractDetailsAreCreated() {
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
     //All the days selected for the public holidays are working days for the 40hr work week
     $datePublicHoliday1 = new DateTime('last monday');

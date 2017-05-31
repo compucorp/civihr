@@ -45,7 +45,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion::deleteAllForContract()
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation::createAllForContract()
    */
-  public function updateAllInTheFutureForContract($contractID) {
+  public function updateAllForContract($contractID) {
     $this->deletionLogic->deleteAllForContract($contractID);
     $this->creationLogic->createAllForContract($contractID);
   }
