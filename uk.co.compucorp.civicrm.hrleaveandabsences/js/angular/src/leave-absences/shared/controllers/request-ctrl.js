@@ -244,6 +244,7 @@ define([
 
       /**
        * Removes attachment. Also, sets the flag to let UI know that a removal has happened.
+       *
        * @param {String} fromWhere source from where deletion is being made like
        * from files array or fileuploader's queue
        * @param {Object} file
@@ -637,7 +638,7 @@ define([
       this._init = function () {
         var self = this;
 
-        this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes).join(', ');
+        this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
         role = this.directiveOptions.userRole || 'staff';
         this._initRequest();
 
