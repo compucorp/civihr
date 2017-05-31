@@ -25,10 +25,10 @@
         border-bottom: 2px solid $crm-white;
         border-color: $crm-dark-grayblue;
         border-bottom-color: $crm-white;
+      }
 
-        a {
-          font-weight: $badge-font-weight;
-        }
+      .ui-tabs-active a {
+        font-weight: $badge-font-weight;
       }
 
       a {
