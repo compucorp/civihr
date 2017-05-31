@@ -47,7 +47,6 @@ define([
       this.statusBeforeEdit = {};
       this.supportedFileTypes = '';
       this.today = Date.now();
-      this.userRemovedFile = false; // flag to track if user has removed file
       this.balance = {
         closing: 0,
         opening: 0,
@@ -199,10 +198,6 @@ define([
         // check if user has changed any attribute
         if (this.isMode('edit')) {
           canSubmit = canSubmit && hasRequestChanged.call(this);
-          // user has added file Attachment
-          canSubmit = canSubmit || (this.request.files.length + this.request.fileUploader.queue.length) !== initialFilesLength;
-          // did user remove file
-          canSubmit = canSubmit || this.userRemovedFile;
         }
 
         // check if manager has changed status
@@ -240,22 +235,6 @@ define([
         });
 
         return !!(this.request.fileUploader.queue.length || filesWithoutSoftDelete.length);
-      };
-
-      /**
-       * Removes attachment. Also, sets the flag to let UI know that a removal has happened.
-       *
-       * @param {String} fromWhere source from where deletion is being made like
-       * from files array or fileuploader's queue
-       * @param {Object} file
-       */
-      this.removeAttachment = function (fromWhere, file) {
-        if (fromWhere === 'files') {
-          this.request.deleteAttachment(file);
-        } else if (fromWhere === 'queue') {
-          this.request.fileUploader.removeFromQueue(file);
-        }
-        this.userRemovedFile = true;
       };
 
       /**
@@ -912,12 +891,12 @@ define([
        *
        * @return {Boolean}
        */
-      function hasRequestChanged() {
+      function hasRequestChanged () {
         // using angular.equals to automatically ignore the $$hashkey property
         return !angular.equals(
           _.omit(initialLeaveRequestAttributes, 'fileUploader'),
           _.omit(this.request.attributes(), 'fileUploader')
-        );
+        ) || this.request.fileUploader.queue.length !== 0;
       }
 
       /**

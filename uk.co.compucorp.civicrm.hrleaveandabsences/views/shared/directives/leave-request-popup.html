@@ -215,7 +215,7 @@
             <uib-tab heading="Files">
               <div>
                 <ul class="chr_leave-request-files_list container-fluid" ng-if="$ctrl.canShowFileList()">
-                  <li ng-repeat="file in $ctrl.request.files | filter: {toBeDeleted: '!false'}">
+                  <li ng-repeat="file in $ctrl.request.files | filter: {toBeDeleted: '!'}">{{file.toBeDeleted}}
                     <div class="chr_leave-request-files_meta">
                       <span class="chr_leave-request-files_author">{{$ctrl.getCommentorName(file.contact_id)}}</span>
                       <span>-</span>
@@ -241,7 +241,7 @@
                         <span
                           class="btn btn-link"
                           ng-disabled="$ctrl.isMode('view')"
-                          ng-click="$ctrl.removeAttachment('files', file)">
+                          ng-click="$ctrl.request.deleteAttachment(file)">
                           Remove</span>
                       </div>
                     </div>
@@ -274,7 +274,7 @@
                           <span
                             class="btn btn-link"
                             ng-disabled="$ctrl.isMode('view')"
-                            ng-click="$ctrl.removeAttachment('queue', file)">
+                            ng-click="$ctrl.request.fileUploader.removeFromQueue(file)">
                             Remove</span>
                         </div>
                       </div>
@@ -306,10 +306,10 @@
                     </label>
                   </div>
                 </div>
-                <div class="chr_leave-request-files_upload_action row text-warning" ng-if="$ctrl.canUploadMore() || $ctrl.userRemovedFile">
+                <div class="chr_leave-request-files_upload_action row text-warning" ng-if="$ctrl.canUploadMore()">
                   You can upload up to 10 files. The supported file extensions are {{ $ctrl.supportedFileTypes.join(', ') }}.
                 </div>
-                <div class="chr_leave-request-files_upload_action row text-warning text-center" ng-if="!($ctrl.canUploadMore() || $ctrl.userRemovedFile)">
+                <div class="chr_leave-request-files_upload_action row text-warning text-center" ng-if="!($ctrl.canUploadMore())">
                   You have reached the limit of 10 uploaded files.
                 </div>
               </div>

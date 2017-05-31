@@ -723,38 +723,6 @@
             it('uploads attachments', function () {
               expect($ctrl.request.fileUploader.uploadAll).toHaveBeenCalledWith({entityID: jasmine.any(String)});
             });
-
-            describe('removes attachment from queue', function () {
-              beforeEach(function () {
-                spyOn($ctrl.request.fileUploader, 'removeFromQueue');
-                $ctrl.removeAttachment('queue', sampleFileInQueue);
-              });
-
-              it('removes file from file queue', function () {
-                expect($ctrl.request.fileUploader.removeFromQueue).toHaveBeenCalledWith(sampleFileInQueue);
-              });
-
-              it('sets flag to enable user to save changes', function () {
-                expect($ctrl.userRemovedFile).toBeTruthy();
-              });
-            });
-
-            describe('removes attachment from files array', function () {
-              var dummyFile = { name: 'dummyFile' };
-
-              beforeEach(function () {
-                spyOn($ctrl.request, 'deleteAttachment').and.callThrough();
-                $ctrl.removeAttachment('files', dummyFile);
-              });
-
-              it('removes file from file array', function () {
-                expect($ctrl.request.deleteAttachment).toHaveBeenCalledWith(dummyFile);
-              });
-
-              it('sets flag to enable user to save changes', function () {
-                expect($ctrl.userRemovedFile).toBeTruthy();
-              });
-            });
           });
         });
 
