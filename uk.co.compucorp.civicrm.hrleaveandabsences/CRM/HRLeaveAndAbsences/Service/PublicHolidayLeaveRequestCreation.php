@@ -140,6 +140,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
     $leaveRequest = $this->createLeaveRequest($contactID, $absenceType, $publicHoliday);
     $this->createLeaveBalanceChangeRecord($leaveRequest);
+    $this->recalculateExpiredBalanceChange($leaveRequest);
   }
 
   /**
@@ -256,5 +257,21 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     }
 
     $this->createForAllInTheFuture($contacts);
+  }
+
+  /**
+   * Recalculates expired Balance changes for the contact of a Public Holiday leave request
+   * with past dates and having expired LeaveBalanceChanges that expired on or after
+   * the LeaveRequest past date.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   */
+  private function recalculateExpiredBalanceChange(LeaveRequest $leaveRequest) {
+    $today = new DateTime();
+    $leaveRequestDate = new DateTime($leaveRequest->from_date);
+
+    if($leaveRequestDate < $today) {
+      $this->leaveBalanceChangeService->recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
+    }
   }
 }
