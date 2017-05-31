@@ -718,7 +718,7 @@
               $scope.$digest();
             });
 
-            it('upoads attachments', function () {
+            it('uploads attachments', function () {
               expect($ctrl.request.fileUploader.uploadAll).toHaveBeenCalledWith({entityID: jasmine.any(String)});
             });
           });
@@ -1027,6 +1027,35 @@
 
             it('gets commentor contact detail', function () {
               expect(Contact.all).toHaveBeenCalled();
+            });
+          });
+        });
+
+        describe('canSubmit()', function () {
+          beforeEach(function () {
+            var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+            var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+            leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+
+            initTestController({
+              contactId: leaveRequest.contact_id, // staff's contact id
+              leaveRequest: leaveRequest,
+              userRole: 'staff'
+            });
+          });
+
+          it('does not allow to submit the leave request without changes', function () {
+            expect($ctrl.canSubmit()).toBe(false);
+          });
+
+          describe('when a comment is added', function() {
+            beforeEach(function() {
+              $ctrl.request.comments.push(jasmine.any(Object));
+            });
+
+            it('allows to submit the leave request', function () {
+              expect($ctrl.canSubmit()).toBe(true);
             });
           });
         });

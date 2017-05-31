@@ -1,5 +1,6 @@
 /* eslint-env amd */
 define([
+  'common/angular',
   'leave-absences/shared/modules/controllers',
   'common/lodash',
   'common/moment',
@@ -12,7 +13,7 @@ define([
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/shared/models/public-holiday-model'
-], function (controllers, _, moment) {
+], function (angular, controllers, _, moment) {
   'use strict';
 
   controllers.controller('RequestCtrl', [
@@ -28,7 +29,6 @@ define([
       var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
       var mode = ''; // can be edit, create, view
       var role = '';
-      var initialCommentsLength = 0; // number of comments when the request model is loaded
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
       this.absencePeriods = [];
@@ -195,9 +195,7 @@ define([
 
         // check if user has changed any attribute
         if (this.isMode('edit')) {
-          canSubmit = canSubmit && !_.isEqual(initialLeaveRequestAttributes, this.request.attributes());
-          // user has added a comment
-          canSubmit = canSubmit || this.request.comments.length !== initialCommentsLength;
+          canSubmit = canSubmit && hasRequestChanged.call(this);
         }
 
         // check if manager has changed status
@@ -659,13 +657,11 @@ define([
             initContact.call(self);
 
             if (self.isMode('edit')) {
-              initialLeaveRequestAttributes = self.request.attributes();
+              initialLeaveRequestAttributes = angular.copy(self.request.attributes());
 
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
               }
-
-              initialCommentsLength = self.request.comments.length;
             }
 
             self.postContactSelection = false;
@@ -863,6 +859,22 @@ define([
         this.loading.toDayTypes = false;
 
         this.submitting = false;
+      }
+
+      /**
+       * Checks if a leave request has been changed since opening the modal
+       *
+       * FileUploader property deleted because it will not be used
+       * in object comparison
+       *
+       * @return {Boolean}
+       */
+      function hasRequestChanged() {
+        // using angular.equals to automatically ignore the $$hashkey property
+        return !angular.equals(
+          _.omit(initialLeaveRequestAttributes, 'fileUploader'),
+          _.omit(this.request.attributes(), 'fileUploader')
+        );
       }
 
       /**
