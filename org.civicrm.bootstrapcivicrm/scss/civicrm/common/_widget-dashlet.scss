@@ -122,7 +122,7 @@
   }
 }
 
-div[id*="dashlets-header-col"] {
+#crm-container div[id*="dashlets-header-col"] {
   @include border-box();
   background: $crm-dasboard-header;
   color: $crm-white;
@@ -138,7 +138,7 @@ div[id*="dashlets-header-col"] {
   }
 }
 
-div[id*="existing-dashlets-col"] {
+#crm-container div[id*="existing-dashlets-col"] {
   @include border-box();
   background: $crm-white !important;
   border: none !important;

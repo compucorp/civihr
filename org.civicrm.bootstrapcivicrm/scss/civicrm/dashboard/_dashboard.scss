@@ -9,13 +9,11 @@
 #civicrm-dashboard {
   margin-top: 20px;
 
-  #civicrm-getting-started {
-    table tbody tr {
-      border-bottom: 0;
+  #civicrm-getting-started table tbody tr {
+    border-bottom: 0;
 
-      td:nth-child(2) {
-        padding-left: 0;
-      }
+    td:nth-child(2) {
+      padding-left: 0;
     }
   }
 
@@ -29,7 +27,7 @@
         border-bottom-color: $crm-white;
 
         a {
-          font-weight: 400;
+          font-weight: $badge-font-weight;
         }
       }
 
