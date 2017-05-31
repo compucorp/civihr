@@ -195,7 +195,7 @@ define([
 
         // check if user has changed any attribute
         if (this.isMode('edit')) {
-          canSubmit = canSubmit && this.hasRequestUpdated();
+          canSubmit = canSubmit && this.hasRequestChanged();
         }
 
         // check if manager has changed status
@@ -252,19 +252,20 @@ define([
       };
 
       /**
-       * Checks if a leave request has been updated since opening the modal
+       * Checks if a leave request has been changed since opening the modal
+       *
+       * Angular equals is necessary to ignore the $$hashkey(from angular) property
+       * while making the object comparison
+       *
+       * FileUploader property deleted because it will not be used
+       * in object comparison
        *
        * @return {Boolean}
        */
-      this.hasRequestUpdated = function () {
-        // angular copy is necessary to remove the $$hashkey property from
-        // all nested objects
-        var updatedRequestAttributes = angular.copy(this.request.attributes());
-        // fileUploader property deleted because it will not be used
-        // in object comparison
-        delete updatedRequestAttributes.fileUploader;
+      this.hasRequestChanged = function () {
+        var updatedRequestAttributes = _.omit(this.request.attributes(), 'fileUploader');
 
-        return !_.isEqual(initialLeaveRequestAttributes, updatedRequestAttributes);
+        return !angular.equals(initialLeaveRequestAttributes, updatedRequestAttributes);
       };
 
       /**
@@ -673,10 +674,9 @@ define([
             initContact.call(self);
 
             if (self.isMode('edit')) {
-              initialLeaveRequestAttributes = angular.copy(self.request.attributes());
               // fileUploader property deleted because it will not be used
               // in object comparison
-              delete initialLeaveRequestAttributes.fileUploader;
+              initialLeaveRequestAttributes = _.omit(angular.copy(self.request.attributes()), 'fileUploader');
 
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
