@@ -14,7 +14,20 @@
         // TODO for now set the limit to 10 files until a better solution is found to configure it
         queueLimit: 10,
         // set the mime types which are allowed to be uploaded as attachments
-        allowedMimeTypes: ['plain', 'png', 'jpeg', 'bmp', 'gif', 'pdf', 'msword', 'vnd.openxmlformats-officedocument.wordprocessingml.document', 'vnd.ms-excel', 'vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'vnd.ms-powerpoint', 'vnd.openxmlformats-officedocument.presentationml.presentation']
+        allowedMimeTypes: {
+          'txt': 'plain',
+          'png': 'png',
+          'jpeg': 'jpeg',
+          'bmp': 'bmp',
+          'gif': 'gif',
+          'pdf': 'pdf',
+          'doc': 'msword',
+          'docx': 'vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'xls': 'vnd.ms-excel',
+          'xlsx': 'vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'ppt': 'vnd.ms-powerpoint',
+          'pptx': 'vnd.openxmlformats-officedocument.presentationml.presentation'
+        }
       },
       // TODO move all strings to a separate file otherwise this settings files will become a string repository
       statusNames: {

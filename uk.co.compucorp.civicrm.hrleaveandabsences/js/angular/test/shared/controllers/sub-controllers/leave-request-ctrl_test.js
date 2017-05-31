@@ -1,3 +1,4 @@
+/* eslint-env amd, jasmine */
 (function (CRM) {
   define([
     'common/lodash',
@@ -58,10 +59,9 @@
         sharedSettings = _sharedSettings_;
       }]));
 
-      beforeEach(inject(function (
-        _$log_, _$controller_, _$rootScope_, _$q_, _AbsenceTypeAPI_, _AbsencePeriodAPI_,
-        _Contact_, _EntitlementAPI_, _Entitlement_, _LeaveRequestInstance_, _LeaveRequestAPI_,
-        _WorkPatternAPI_) {
+      beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_,
+        _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
+        _LeaveRequestInstance_, _LeaveRequestAPI_, _WorkPatternAPI_) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
@@ -382,8 +382,8 @@
         });
 
         describe('removeCommentVisibility()', function () {
-          var comment = {};
           var returnValue;
+          var comment = {};
 
           beforeEach(function () {
             spyOn($ctrl, 'isRole');
@@ -701,16 +701,18 @@
           });
 
           describe('when submit with attachments', function () {
+            var sampleFileInQueue = {
+              lastModifiedDate: new Date(),
+              size: 1e6,
+              type: 'text/plain',
+              name: '/unitTest.txt'
+            };
+
             beforeEach(function () {
               setTestDates(date2016, date2016);
               // entitlements are randomly generated so resetting them to positive here
               $ctrl.balance.closing = 1;
-              $ctrl.request.fileUploader.addToQueue({
-                lastModifiedDate: new Date(),
-                size: 1e6,
-                type: 'text/plain',
-                name: '/unitTest.txt'
-              });
+              $ctrl.request.fileUploader.addToQueue(sampleFileInQueue);
               // no callThrough as it calls the real URL to upload
               spyOn($ctrl.request.fileUploader, 'uploadAll');
 

@@ -12,11 +12,7 @@
     "globals": [
       "CRM",
       "inject"
-    ],
-    "env": {
-        "jasmine": true,
-        "amd": true
-    }
+    ]
   },
   "devDependencies": {
     "gulp": "^3.9.0",

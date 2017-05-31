@@ -44,6 +44,7 @@ define([
       this.postContactSelection = false; // flag to track if user is selected for enabling UI
       this.requestStatuses = {};
       this.statusBeforeEdit = {};
+      this.supportedFileTypes = '';
       this.today = Date.now();
       this.balance = {
         closing: 0,
@@ -214,7 +215,20 @@ define([
        * @return {Boolean} true is user can upload more else false
        */
       this.canUploadMore = function () {
-        return (this.request.files.length + this.request.fileUploader.queue.length) < sharedSettings.fileUploader.queueLimit;
+        return this.getFilesCount() < sharedSettings.fileUploader.queueLimit;
+      };
+
+      /**
+       * Calculates the total number of files associated with request.
+       *
+       * @return {Number} of files
+       */
+      this.getFilesCount = function () {
+        var filesWithSoftDelete = _.filter(this.request.files, function (file) {
+          return file.toBeDeleted;
+        });
+
+        return this.request.files.length + this.request.fileUploader.queue.length - filesWithSoftDelete.length;
       };
 
       /**
@@ -597,6 +611,7 @@ define([
       this._init = function () {
         var self = this;
 
+        this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
         role = this.directiveOptions.userRole || 'staff';
         this._initRequest();
 
@@ -869,12 +884,12 @@ define([
        *
        * @return {Boolean}
        */
-      function hasRequestChanged() {
+      function hasRequestChanged () {
         // using angular.equals to automatically ignore the $$hashkey property
         return !angular.equals(
           _.omit(initialLeaveRequestAttributes, 'fileUploader'),
           _.omit(this.request.attributes(), 'fileUploader')
-        );
+        ) || this.request.fileUploader.queue.length !== 0;
       }
 
       /**

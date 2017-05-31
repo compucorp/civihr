@@ -1,18 +1,19 @@
+/* eslint-env amd, jasmine */
 define([
   'common/lodash',
   'common/angular',
   'common/angularMocks',
   'common/services/file-upload',
-  'common/mocks/services/file-uploader-mock',
+  'common/mocks/services/file-uploader-mock'
 ], function (_) {
   'use strict';
 
   describe('FileUpload', function () {
-    var $provide, $rootScope, $q, fileUpload, uploader, promise,
-      uploaderParams = {
-        entityTable: 'civicrm_hrleaveandabsences_leave_request',
-        crmAttachmentToken: '123abc'
-      };
+    var $provide, $rootScope, fileUpload, uploader, promise;
+    var uploaderParams = {
+      entityTable: 'civicrm_hrleaveandabsences_leave_request',
+      crmAttachmentToken: '123abc'
+    };
 
     beforeEach(module('common.services', 'common.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -28,9 +29,8 @@ define([
       }
     ]));
 
-    beforeEach(inject(function (_$rootScope_, _$q_) {
+    beforeEach(inject(function (_$rootScope_) {
       $rootScope = _$rootScope_;
-      $q = _$q_;
     }));
 
     it('has all endpoints', function () {
@@ -48,17 +48,17 @@ define([
 
       describe('missing params', function () {
         it('throws error if no param is passed', function () {
-          expect(fileUpload.uploader).toThrow('custom settings missing from parameter');
+          expect(fileUpload.uploader).toThrow(new Error('custom settings missing from parameter'));
         });
 
         it('throws error if entityTable is not defined', function () {
-          expect(function () { fileUpload.uploader({ crmAttachmentToken: '123abc' }) })
-            .toThrow('entityTable missing from parameter');
+          expect(function () { fileUpload.uploader({ crmAttachmentToken: '123abc' }); })
+            .toThrow(new Error('entityTable missing from parameter'));
         });
 
         it('throws error if crmAttachmentToken is not defined', function () {
-          expect(function () { fileUpload.uploader({ entityTable: 'civicrm_hrleaveandabsences_leave_request' }) })
-            .toThrow('crmAttachmentToken missing from parameter');
+          expect(function () { fileUpload.uploader({ entityTable: 'civicrm_hrleaveandabsences_leave_request' }); })
+            .toThrow(new Error('crmAttachmentToken missing from parameter'));
         });
       });
     });
@@ -89,8 +89,9 @@ define([
       });
 
       describe('onBeforeUploadItem()', function () {
-        var snakeCasekey, snakeCaseObject, testItem = { formData: [] },
-          modifiedItem = {};
+        var snakeCasekey;
+        var testItem = { formData: [] };
+        var modifiedItem = {};
 
         beforeEach(function () {
           uploader = fileUpload.uploader(uploaderParams);
@@ -140,12 +141,12 @@ define([
     });
 
     describe('allowed mime types', function () {
-      var filterFn, allowedMimeTypes,
-        fileLikeObject = {
-          lastModifiedDate: new Date(),
-          size: 1e6,
-          name: 'test_file_name'
-        };
+      var filterFn;
+      var fileLikeObject = {
+        lastModifiedDate: new Date(),
+        size: 1e6,
+        name: 'test_file_name'
+      };
 
       beforeEach(function () {
         uploaderParams.allowedMimeTypes = ['jpeg'];
