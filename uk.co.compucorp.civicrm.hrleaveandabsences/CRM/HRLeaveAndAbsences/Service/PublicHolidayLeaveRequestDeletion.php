@@ -79,9 +79,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
     );
 
     foreach($publicHolidays as $publicHoliday) {
-      if(strtotime($publicHoliday->date) >= strtotime('today')) {
-        $this->deleteForContact($contract['contact_id'], $publicHoliday);
-      }
+      $this->deleteForContact($contract['contact_id'], $publicHoliday);
     }
   }
 

@@ -181,7 +181,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
 
-  public function testItCreatesLeaveRequestsForAllPublicHolidaysInTheFutureOverlappingTheContractDates() {
+  public function testItCreatesLeaveRequestsForAllPublicHolidaysOverlappingTheContractDates() {
     $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
 
     $contract = HRJobContractFabricator::fabricate([
@@ -218,13 +218,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
 
     $this->creationLogic->createAllForContract($contract['id']);
 
-    // The balance should be -2 because only two leave requests were created:
-    // The one for +5 days and the other one for + 47 days.
-    // The holiday for "yesterday" overlaps the contract, but it is in the past,
-    // so nothing will be created. The holiday for "+101 days" is in the future,
-    // but it doesn't overlap the contract dates and no leave request will be
-    // created for it as well
-    $this->assertEquals(-2, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    // The balance should be -3 because three leave requests were created:
+    // The one for +5 days, one for + 47 days and the one for yesterday
+    // The holiday for "+101 days" is in the future, but it doesn't overlap the contract dates and
+    // and no leave request will be created for it as well
+    $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
 
   public function testItCreatesLeaveRequestsForAllPublicHolidaysInTheFutureOverlappingAContractWithNoEndDate() {

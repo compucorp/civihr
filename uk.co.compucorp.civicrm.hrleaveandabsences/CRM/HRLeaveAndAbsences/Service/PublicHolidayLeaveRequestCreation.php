@@ -100,9 +100,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     );
 
     foreach($publicHolidays as $publicHoliday) {
-      if(strtotime($publicHoliday->date) >= strtotime('today')) {
-        $this->createForContact($contract['contact_id'], $publicHoliday);
-      }
+      $this->createForContact($contract['contact_id'], $publicHoliday);
     }
   }
 
