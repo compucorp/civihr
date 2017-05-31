@@ -1031,18 +1031,18 @@
           });
         });
 
-        describe('canSubmit', function () {
+        describe('canSubmit()', function () {
           beforeEach(function () {
             var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
             var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            var directiveOptions = {
+
+            initTestController({
               contactId: leaveRequest.contact_id, // staff's contact id
               leaveRequest: leaveRequest,
               userRole: 'staff'
-            };
-
-            initTestController(directiveOptions);
+            });
           });
 
           it('does not allow to submit the leave request without changes', function () {
@@ -1051,12 +1051,7 @@
 
           describe('when a comment is added', function() {
             beforeEach(function() {
-              $ctrl.request.comments.push({
-                contact_id: CRM.vars.leaveAndAbsences.contactId.toString(),
-                created_at: "2017-05-31 11:28:44",
-                leave_request_id: "30",
-                text: "some text"
-              });
+              $ctrl.request.comments.push(jasmine.any(Object));
             });
 
             it('allows to submit the leave request', function () {

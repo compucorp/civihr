@@ -195,7 +195,7 @@ define([
 
         // check if user has changed any attribute
         if (this.isMode('edit')) {
-          canSubmit = canSubmit && this.hasRequestChanged();
+          canSubmit = canSubmit && hasRequestChanged.call(this);
         }
 
         // check if manager has changed status
@@ -249,23 +249,6 @@ define([
         return this.request.comments.filter(function (comment) {
           return !comment.toBeDeleted;
         });
-      };
-
-      /**
-       * Checks if a leave request has been changed since opening the modal
-       *
-       * Angular equals is necessary to ignore the $$hashkey(from angular) property
-       * while making the object comparison
-       *
-       * FileUploader property deleted because it will not be used
-       * in object comparison
-       *
-       * @return {Boolean}
-       */
-      this.hasRequestChanged = function () {
-        var updatedRequestAttributes = _.omit(this.request.attributes(), 'fileUploader');
-
-        return !angular.equals(initialLeaveRequestAttributes, updatedRequestAttributes);
       };
 
       /**
@@ -674,9 +657,7 @@ define([
             initContact.call(self);
 
             if (self.isMode('edit')) {
-              // fileUploader property deleted because it will not be used
-              // in object comparison
-              initialLeaveRequestAttributes = _.omit(angular.copy(self.request.attributes()), 'fileUploader');
+              initialLeaveRequestAttributes = angular.copy(self.request.attributes());
 
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
@@ -878,6 +859,22 @@ define([
         this.loading.toDayTypes = false;
 
         this.submitting = false;
+      }
+
+      /**
+       * Checks if a leave request has been changed since opening the modal
+       *
+       * FileUploader property deleted because it will not be used
+       * in object comparison
+       *
+       * @return {Boolean}
+       */
+      function hasRequestChanged() {
+        // using angular.equals to automatically ignore the $$hashkey property
+        return !angular.equals(
+          _.omit(initialLeaveRequestAttributes, 'fileUploader'),
+          _.omit(this.request.attributes(), 'fileUploader')
+        );
       }
 
       /**
