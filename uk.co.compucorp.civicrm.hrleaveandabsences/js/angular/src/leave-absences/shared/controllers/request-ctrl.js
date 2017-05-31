@@ -30,7 +30,6 @@ define([
       var mode = ''; // can be edit, create, view
       var role = '';
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
-      var initialFilesLength = 0; // number of attachment files when the request model is loaded
 
       this.absencePeriods = [];
       this.absenceTypes = [];
@@ -216,25 +215,20 @@ define([
        * @return {Boolean} true is user can upload more else false
        */
       this.canUploadMore = function () {
-        var filesWithoutSoftDelete = _.filter(this.request.files, function (file) {
-          return !file.toBeDeleted;
-        });
-
-        return (filesWithoutSoftDelete.length + this.request.fileUploader.queue.length) < sharedSettings.fileUploader.queueLimit;
+        return this.getFilesCount() < sharedSettings.fileUploader.queueLimit;
       };
 
       /**
-       * Checks if user can see file list in files tab. It needs to check for
-       * soft delete flag on leave request as well for files.
+       * Calculates the total number of files associated with request.
        *
-       * @return {Boolean} true is user can see file list
+       * @return {Number} of files
        */
-      this.canShowFileList = function () {
-        var filesWithoutSoftDelete = _.filter(this.request.files, function (file) {
-          return !file.toBeDeleted;
+      this.getFilesCount = function () {
+        var filesWithSoftDelete = _.filter(this.request.files, function (file) {
+          return file.toBeDeleted;
         });
 
-        return !!(this.request.fileUploader.queue.length || filesWithoutSoftDelete.length);
+        return this.request.files.length + this.request.fileUploader.queue.length - filesWithSoftDelete.length;
       };
 
       /**
@@ -683,7 +677,6 @@ define([
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
               }
-              initialFilesLength = self.request.files.length;
             }
 
             self.postContactSelection = false;

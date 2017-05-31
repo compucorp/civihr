@@ -214,7 +214,7 @@
             </uib-tab>
             <uib-tab heading="Files">
               <div>
-                <ul class="chr_leave-request-files_list container-fluid" ng-if="$ctrl.canShowFileList()">
+                <ul class="chr_leave-request-files_list container-fluid" ng-if="$ctrl.getFilesCount() > 0">
                   <li ng-repeat="file in $ctrl.request.files | filter: {toBeDeleted: '!'}">{{file.toBeDeleted}}
                     <div class="chr_leave-request-files_meta">
                       <span class="chr_leave-request-files_author">{{$ctrl.getCommentorName(file.contact_id)}}</span>
@@ -226,10 +226,10 @@
                         <i
                           class="fa fa-file-o"
                           ng-class="{
-                            'fa fa-file-pdf-o': file.mime_type == 'application/pdf',
-                            'fa fa-file-image-o': file.mime_type == 'image/png' || file.mime_type == 'image/jpeg' || file.mime_type == 'image/gif',
-                            'fa fa-file-excel-o': file.mime_type == 'application/excel',
-                            'fa fa-file-word-o': file.mime_type == 'application/msword'
+                            'fa fa-file-pdf-o': file.mime_type === 'application/pdf',
+                            'fa fa-file-image-o': file.mime_type === 'image/png' || file.mime_type == 'image/jpeg' || file.mime_type == 'image/gif',
+                            'fa fa-file-excel-o': file.mime_type === 'application/excel',
+                            'fa fa-file-word-o': file.mime_type === 'application/msword'
                             }"
                           aria-hidden="true"></i>
                         <span>{{file.name}}</span>
