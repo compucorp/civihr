@@ -22,7 +22,7 @@ define([
 
     var vm = Object.create(this);
     var actionMatrix = {};
-    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['respond', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['respond', 'cancel', 'approve', 'reject'];
     actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['edit', 'cancel'];
     actionMatrix[sharedSettings.statusNames.approved] = ['edit'];
     actionMatrix[sharedSettings.statusNames.cancelled] = ['edit'];
@@ -93,17 +93,43 @@ define([
      * @param {string} action
      */
     vm.action = function (leaveRequest, action) {
-      if (action === 'cancel') {
-        dialog.open({
-          title: 'Confirm Cancellation?',
-          copyCancel: 'Cancel',
-          copyConfirm: 'Confirm',
-          classConfirm: 'btn-danger',
-          msg: 'This cannot be undone',
-          onConfirm: function () {
-            return leaveRequest.cancel();
-          }
-        });
+      switch (action) {
+        case "cancel":
+          dialog.open({
+            title: 'Confirm Cancellation?',
+            copyCancel: 'Cancel',
+            copyConfirm: 'Confirm',
+            classConfirm: 'btn-danger',
+            msg: 'This cannot be undone',
+            onConfirm: function () {
+              return leaveRequest.cancel();
+            }
+          });
+          break;
+        case "approve":
+          dialog.open({
+            title: 'Confirm Approval?',
+            copyCancel: 'Cancel',
+            copyConfirm: 'Approve',
+            classConfirm: 'btn-primary',
+            msg: 'Please confirm approval',
+            onConfirm: function () {
+              return leaveRequest.approve();
+            }
+          });
+          break;
+        case "reject":
+          dialog.open({
+            title: 'Confirm Rejection?',
+            copyCancel: 'Cancel',
+            copyConfirm: 'Reject',
+            classConfirm: 'btn-primary',
+            msg: 'Please confirm rejection',
+            onConfirm: function () {
+              return leaveRequest.reject();
+            }
+          });
+          break;
       }
     };
 
