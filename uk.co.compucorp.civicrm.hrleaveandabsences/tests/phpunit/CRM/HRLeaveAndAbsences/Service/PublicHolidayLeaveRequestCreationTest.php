@@ -574,7 +574,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday2);
     $this->creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday3);
 
-    $expiredBalanceChange = $this->getBalanceChangeRecord($balanceChange->id);
+    $expiredBalanceChange = LeaveBalanceChange::findById($balanceChange->id);
 
     //The public holiday date (2016-11-03) is before the date the balance change expired so one will be deducted
     //from $balanceChange remaining 4 left after recalculation.
@@ -592,7 +592,6 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
 
-
     $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
       'contact_id' => $contact1['id'],
       'period_id' => $absencePeriod->id,
@@ -605,19 +604,15 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'type_id' => $this->absenceType->id,
     ]);
 
-    HRJobContractFabricator::fabricate([
-      'contact_id' => $contact1['id']
-    ],
-    [
-      'period_start_date' => CRM_Utils_Date::processDate('2016-06-01'),
-    ]);
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('2016-06-01')]
+    );
 
-    HRJobContractFabricator::fabricate([
-      'contact_id' => $contact2['id']
-    ],
-    [
-      'period_start_date' => CRM_Utils_Date::processDate('2016-06-01'),
-    ]);
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('2016-06-01')]
+    );
 
     $expiryDate = new DateTime('2016-11-04');
     $balanceChange1 = $this->createExpiredBroughtForwardBalanceChange(
@@ -647,8 +642,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->creationLogic->createForAllContacts($publicHoliday2);
     $this->creationLogic->createForAllContacts($publicHoliday3);
 
-    $expiredBalanceChange1 = $this->getBalanceChangeRecord($balanceChange1->id);
-    $expiredBalanceChange2 = $this->getBalanceChangeRecord($balanceChange2->id);
+    $expiredBalanceChange1 = LeaveBalanceChange::findById($balanceChange1->id);
+    $expiredBalanceChange2 = LeaveBalanceChange::findById($balanceChange2->id);
 
     //The public holiday date (2016-11-03) is before the date the balance change expired so one will be deducted
     //from $balanceChange1 and also from $balanceChange2
@@ -701,23 +696,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
 
     $this->creationLogic->createAllForContract($contract1['id']);
 
-    $expiredBalanceChange1 = $this->getBalanceChangeRecord($balanceChange1->id);
+    $expiredBalanceChange1 = LeaveBalanceChange::findById($balanceChange1->id);
     //The public holiday date (2016-11-03) is before the date the balance change expired so one will be deducted
     //from $balanceChange1
     //Public Holiday2 is in past but the date is not before an already expired balance change
     //Public Holiday3 is in the future, so it does not affect the recalculation
     $this->assertEquals(-2, $expiredBalanceChange1->amount);
-  }
-
-  private function getBalanceChangeRecord($balanceChangeID) {
-    $record = new LeaveBalanceChange();
-    $record->id = $balanceChangeID;
-    $record->find();
-    if($record->N == 1) {
-      $record->fetch();
-      return $record;
-    }
-
-    return null;
   }
 }
