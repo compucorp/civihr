@@ -111,7 +111,7 @@ define([
             title: 'Confirm Approval?',
             copyCancel: 'Cancel',
             copyConfirm: 'Approve',
-            classConfirm: 'btn-primary',
+            classConfirm: 'btn-success',
             msg: 'Please confirm approval',
             onConfirm: function () {
               return leaveRequest.approve();
@@ -123,7 +123,7 @@ define([
             title: 'Confirm Rejection?',
             copyCancel: 'Cancel',
             copyConfirm: 'Reject',
-            classConfirm: 'btn-primary',
+            classConfirm: 'btn-warning',
             msg: 'Please confirm rejection',
             onConfirm: function () {
               return leaveRequest.reject();
