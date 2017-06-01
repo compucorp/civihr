@@ -783,7 +783,7 @@
                     status_id: {
                       IN: ['mockvalue']
                     }
-                  }), jasmine.any(Object), null, jasmine.any(Object), jasmine.any(Boolean));
+                  }), jasmine.any(Object), jasmine.any(String), jasmine.any(Object), jasmine.any(Boolean));
                 });
               });
             });

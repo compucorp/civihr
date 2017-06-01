@@ -48,10 +48,6 @@ define([
           expect(LeaveRequestAPI.getAll.calls.mostRecent().args[5]).toBe('getFull');
         });
 
-        it('sorts from_date by descending', function () {
-          expect(LeaveRequestAPI.getAll.calls.mostRecent().args[3]).toBe('from_date DESC');
-        });
-
         it('returns all the data', function () {
           promise.then(function (response) {
             expect(response.list).toEqual(mockData.all().values);
