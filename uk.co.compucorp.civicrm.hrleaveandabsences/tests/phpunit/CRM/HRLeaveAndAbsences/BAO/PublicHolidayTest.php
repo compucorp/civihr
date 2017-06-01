@@ -76,44 +76,6 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     ]);
   }
 
-  public function testCannotChangeDateToOneInThePast() {
-    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
-      'date' => CRM_Utils_Date::processDate('+1 day')
-    ]);
-
-    try {
-      PublicHolidayFabricator::fabricate([
-        'id' => $publicHoliday->id,
-        'date' => CRM_Utils_Date::processDate('-1 day')
-      ]);
-    } catch(Exception $e) {
-      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
-      $this->assertEquals('The date cannot be in the past', $e->getMessage());
-      return;
-    }
-
-    $this->fail('Expected an exception, but the public holiday was updated with to a date in the past');
-  }
-
-  public function testCannotChangeTheDateOfAPastPublicHoliday() {
-    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
-      'date' => CRM_Utils_Date::processDate('2016-01-02')
-    ]);
-
-    try {
-      PublicHoliday::create([
-        'id' => $publicHoliday->id,
-        'date' => CRM_Utils_Date::processDate('+1 day')
-      ]);
-    } catch(Exception $e) {
-      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
-      $this->assertEquals('You cannot change the date of a past public holiday', $e->getMessage());
-      return;
-    }
-
-    $this->fail('Expected an exception, but the public holiday was updated with to a date in the past');
-  }
-
   public function testCanChangeTheTitleOfAPastPublicHoliday() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -129,47 +91,6 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
       'id' => $publicHoliday->id,
       'title' => 'Updated'
     ]);
-  }
-
-  public function testCannotDisableAnEnabledPastPublicHoliday() {
-    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
-      'title' => 'Holiday',
-      'date' => CRM_Utils_Date::processDate('2016-01-02')
-    ]);
-
-    try {
-      PublicHoliday::create([
-        'id' => $publicHoliday->id,
-        'is_active' => false
-      ]);
-    } catch(Exception $e) {
-      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
-      $this->assertEquals('You cannot disable/enable a past public holiday', $e->getMessage());
-      return;
-    }
-
-    $this->fail('Expected an exception, but the public holiday was disabled');
-  }
-
-  public function testCannotEnableADisabledPastPublicHoliday() {
-    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
-      'title' => 'Holiday',
-      'date' => CRM_Utils_Date::processDate('2016-01-02'),
-      'is_active' => false,
-    ]);
-
-    try {
-      PublicHoliday::create([
-        'id' => $publicHoliday->id,
-        'is_active' => true
-      ]);
-    } catch(Exception $e) {
-      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
-      $this->assertEquals('You cannot disable/enable a past public holiday', $e->getMessage());
-      return;
-    }
-
-    $this->fail('Expected an exception, but the public holiday was disabled');
   }
 
   /**
@@ -489,18 +410,6 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     $this->assertCount(1, $publicHolidays);
     $this->assertEquals($nextSunday->title, $publicHolidays[0]->title);
     $this->assertEquals($nextSunday->id, $publicHolidays[0]->id);
-  }
-
-  /**
-   * @expectedException RuntimeException
-   * @expectedExceptionMessage Past Public Holidays cannot be deleted
-   */
-  public function testPublicHolidaysInThePastCannotBeDeleted() {
-    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
-      'date' => CRM_Utils_Date::processDate('yesterday')
-    ]);
-
-    PublicHoliday::del($publicHoliday->id);
   }
 
   public function testItEnqueuesOnlyATaskToCreateLeaveRequestsWhenCreatingANewPublicHoliday() {
