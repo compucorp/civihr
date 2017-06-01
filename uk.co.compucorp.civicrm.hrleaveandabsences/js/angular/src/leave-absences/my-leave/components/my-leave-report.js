@@ -520,7 +520,7 @@ define([
         .then(function () {
           return list.map(function (listEntry) {
             return {
-              'expiry_date': listEntry.to_date,
+              'expiry_date': listEntry.toil_expiry_date,
               'type': {
                 'label': 'Accrued TOIL'
               }
