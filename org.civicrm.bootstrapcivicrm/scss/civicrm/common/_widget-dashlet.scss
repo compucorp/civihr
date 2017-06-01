@@ -1,17 +1,22 @@
-#crm-container .widget .widget-controls {
-  padding: 17px 10px !important;
+#crm-container li.widget {
+  padding: 5px !important;
 
-  h3 {
-    font-family: $font-family-base;
-    font-size: $font-size-h2;
-  }
+  .widget-controls {
+    background-color: $crm-copy;
+    padding: 17px 10px;
 
-  .fa-caret-down:before {
-    content: $fa-caret-down;
-  }
+    h3 {
+      font-family: $font-family-base;
+      font-size: $font-size-h2;
+    }
 
-  .fa-caret-right {
-    content: $fa-caret-right;
+    .fa-caret-down:before {
+      content: $fa-caret-down;
+    }
+
+    .fa-caret-right {
+      content: $fa-caret-right;
+    }
   }
 }
 
