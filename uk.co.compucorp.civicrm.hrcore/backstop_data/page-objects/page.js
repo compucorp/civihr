@@ -7,7 +7,7 @@ var customCasperJS = require('../utils/custom-casperjs');
  *
  * @return {object}
  */
-function closeAnyModal() {
+function closeAnyModal () {
   var casper = this.casper;
   var openModalSelector = '.modal.in';
 
@@ -26,7 +26,7 @@ function closeAnyModal() {
  *
  * @return {object}
  */
-function closeNotifications() {
+function closeNotifications () {
   var casper = this.casper;
   var notificationSelector = 'a.ui-notify-cross.ui-notify-close';
 
@@ -39,7 +39,6 @@ function closeNotifications() {
 
   return this;
 }
-
 
 module.exports = {
 
@@ -57,6 +56,7 @@ module.exports = {
     clearDialogs = typeof clearDialogs !== 'undefined' ? !!clearDialogs : true;
 
     this.casper = customCasperJS(casper);
+    this.casper.options.waitTimeout = 60000;
 
     !!this.waitForReady && this.casper.then(function () {
       this.waitForReady();

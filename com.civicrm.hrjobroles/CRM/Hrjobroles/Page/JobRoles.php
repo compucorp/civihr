@@ -19,6 +19,5 @@ class CRM_Hrjobroles_Page_JobRoles extends CRM_Core_Page {
 
     CRM_Core_Resources::singleton()->addScriptFile('com.civicrm.hrjobroles', CRM_Core_Config::singleton()->debug ? 'js/src/job-roles.js' : 'js/dist/job-roles.min.js', 1010);
     CRM_Core_Resources::singleton()->addStyleFile('com.civicrm.hrjobroles', 'css/hrjobroles.css');
-    CRM_Core_Resources::singleton()->addStyleFile('com.civicrm.hrjobroles', 'angular-xeditable/css/xeditable.css');
   }
 }
