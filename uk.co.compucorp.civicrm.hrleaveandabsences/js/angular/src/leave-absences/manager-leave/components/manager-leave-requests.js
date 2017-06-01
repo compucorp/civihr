@@ -44,7 +44,7 @@ define([
       leaveRequest: {
         leaveStatus: vm.leaveRequestStatuses[0],
         pending_requests: false,
-        contact: null,
+        contact_id: null,
         selectedPeriod: null,
         selectedAbsenceTypes: null
       }
@@ -111,7 +111,7 @@ define([
      * Clears selected users and refreshes leave requests
      */
     vm.clearStaffSelection = function () {
-      vm.filters.leaveRequest.contact = null;
+      vm.filters.leaveRequest.contact_id = null;
       vm.refresh();
     };
 
@@ -278,10 +278,10 @@ define([
       var filters = vm.filters.contact;
 
       return {
-        department: filters.department ? filters.department.value : null,
-        level_type: filters.level_type ? filters.level_type.value : null,
-        location: filters.location ? filters.location.value : null,
-        region: filters.region ? filters.region.value : null
+        department: filters.department,
+        level_type: filters.level_type,
+        location: filters.location,
+        region: filters.region
       };
     }
 
@@ -446,10 +446,12 @@ define([
      * @return {Object}
      */
     function prepareContactID () {
-      if (vm.filters.leaveRequest.contact) {
-        return vm.filters.leaveRequest.contact.id;
+      if (vm.filters.leaveRequest.contact_id) {
+        return vm.filters.leaveRequest.contact_id;
       }
 
+      // This is necessary as otherwise all leave requests will be loaded
+      // instead of the ones managed by current user
       return vm.filteredUsers.length ? {
         'IN': vm.filteredUsers.map(function (contact) {
           return contact.id;

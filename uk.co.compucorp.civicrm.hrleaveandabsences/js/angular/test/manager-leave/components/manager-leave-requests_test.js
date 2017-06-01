@@ -449,9 +449,7 @@
         describe('contactFilters', function () {
           describe('region', function () {
             describe('when region filter has value', function () {
-              var mockRegion = {
-                value: 'mockvalue'
-              };
+              var mockRegion = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.region = mockRegion;
@@ -460,7 +458,7 @@
 
               it('Contact API gets called with region value', function () {
                 expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  region: mockRegion.value
+                  region: mockRegion
                 }));
               });
             });
@@ -481,9 +479,7 @@
 
           describe('department', function () {
             describe('when department filter has value', function () {
-              var mockDepartment = {
-                value: 'mockvalue'
-              };
+              var mockDepartment = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.department = mockDepartment;
@@ -492,7 +488,7 @@
 
               it('Contact API gets called with department value', function () {
                 expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  department: mockDepartment.value
+                  department: mockDepartment
                 }));
               });
             });
@@ -513,9 +509,7 @@
 
           describe('location', function () {
             describe('when location filter has value', function () {
-              var mockLocation = {
-                value: 'mockvalue'
-              };
+              var mockLocation = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.location = mockLocation;
@@ -524,7 +518,7 @@
 
               it('Contact API gets called with location value', function () {
                 expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  location: mockLocation.value
+                  location: mockLocation
                 }));
               });
             });
@@ -545,9 +539,7 @@
 
           describe('levelTypes', function () {
             describe('when levelTypes filter has value', function () {
-              var mockLevelType = {
-                value: 'mockvalue'
-              };
+              var mockLevelType = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.level_type = mockLevelType;
@@ -556,7 +548,7 @@
 
               it('ContactAPI gets called with level types value', function () {
                 expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  level_type: mockLevelType.value
+                  level_type: mockLevelType
                 }));
               });
             });
@@ -689,12 +681,10 @@
 
           describe('contact_id', function () {
             describe('when contact has value', function () {
-              var mockUser = {
-                id: '202'
-              };
+              var mockUserID = '202';
 
               beforeEach(function () {
-                controller.filters.leaveRequest.contact = mockUser;
+                controller.filters.leaveRequest.contact_id = mockUserID;
                 controller.refresh();
                 defer.resolve([]);
               });
@@ -702,7 +692,7 @@
               it('filtered by contact id', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                    contact_id: mockUser.id
+                    contact_id: mockUserID
                   }));
                 });
               });
