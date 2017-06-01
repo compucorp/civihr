@@ -37,7 +37,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
   }
 
   /**
-   * Updates all the Leave Requests for Public Holidays in the future between
+   * Updates all the Leave Requests for Public Holidays between
    * the start and end dates of the given contract.
    *
    * @param int $contractID

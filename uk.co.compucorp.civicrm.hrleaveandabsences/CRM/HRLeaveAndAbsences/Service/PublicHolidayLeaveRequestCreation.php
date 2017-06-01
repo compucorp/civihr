@@ -82,8 +82,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   }
 
   /**
-   * Creates Public Holiday Leave Requests for all Public Holidays in the
-   * Future overlapping the start and end dates of the given contract
+   * Creates Public Holiday Leave Requests for all Public Holidays
+   * overlapping the start and end dates of the given contract
    *
    * @param int $contractID
    */
