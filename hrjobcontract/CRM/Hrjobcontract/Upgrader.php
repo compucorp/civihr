@@ -511,7 +511,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1029();
     $this->upgrade_1030();
     $this->upgrade_1032();
-    $this->upgrade_1033();
   }
 
   function upgrade_1001() {
@@ -1133,21 +1132,11 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Makes Hour Location id field autonumeric and adds id as a primary key.
-   */
-  public function upgrade_1032() {
-    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` ADD PRIMARY KEY (`id`)');
-    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT');
-
-    return TRUE;
-  }
-
-  /**
    * Rename the 'periodicity' column
    *
    * @return bool
    */
-  public function upgrade_1033() {
+  public function upgrade_1032() {
     $query = "ALTER TABLE civicrm_hrpay_scale CHANGE periodicity pay_frequency VARCHAR(63)";
     CRM_Core_DAO::executeQuery($query);
 
