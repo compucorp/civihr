@@ -25,6 +25,7 @@
         border-bottom: 2px solid $crm-white;
         border-color: $crm-dark-grayblue;
         border-bottom-color: $crm-white;
+        border-radius: $border-radius-child $border-radius-child 0 0;
       }
 
       .ui-tabs-active a {
@@ -88,7 +89,8 @@
 
     .crm-search_filters-accordion {
       .crm-accordion-body {
-        padding: 15px;
+        display: flex;
+        padding: 20px 15px !important;
       }
 
       .crm-inline-edit-field {
@@ -101,7 +103,17 @@
       }
     }
 
+    .contact-activity-selector-dashlet {
+      display: grid;
+
+      tr td,
+      tr th {
+        padding: 10px;
+      }
+    }
+
     .dataTables_wrapper {
+      box-shadow: none;
       overflow: scroll;
 
       table {
