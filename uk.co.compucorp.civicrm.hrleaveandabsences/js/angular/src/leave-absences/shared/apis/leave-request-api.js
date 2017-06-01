@@ -26,6 +26,7 @@ define([
       all: function (filters, pagination, sort, params, cache) {
         $log.debug('LeaveRequestAPI.all');
 
+        sort = sort || 'from_date DESC';
         return this.getAll('LeaveRequest', filters, pagination, sort, params, 'getFull', cache);
       },
 
