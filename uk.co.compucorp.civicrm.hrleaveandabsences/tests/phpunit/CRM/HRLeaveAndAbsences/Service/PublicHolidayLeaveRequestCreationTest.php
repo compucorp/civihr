@@ -78,6 +78,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   }
 
   public function testItUpdatesTheBalanceChangeForOverlappingLeaveRequestDayToZero() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
     $contactID = 2;
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -184,6 +188,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   }
 
   public function testItCreatesLeaveRequestsForAllPublicHolidaysOverlappingTheContractDates() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('yesterday'),
+      'end_date' => CRM_Utils_Date::processDate('+300 days')
+    ]);
+
     $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
 
     $contract = HRJobContractFabricator::fabricate([

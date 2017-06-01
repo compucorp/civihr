@@ -180,6 +180,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testCanFindAPublicHolidayLeaveRequestForAContact() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-01')
+    ]);
+    
     $contactID = 2;
 
     $publicHoliday = new PublicHoliday();
@@ -1009,6 +1014,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testFindOverlappingLeaveRequestsFilteredBySpecificStatusesAndPublicHolidayCondition() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
     $contactID = 1;
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = '2016-11-11';

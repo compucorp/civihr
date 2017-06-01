@@ -13,6 +13,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabrica
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest
@@ -42,6 +43,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
   }
 
   public function testCanDeleteAPublicHolidayLeaveRequestForASingleContact() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('2016-01-01'),
       new DateTime('2016-12-31')
@@ -62,6 +67,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
   }
 
   public function testItUpdatesOverlappingLeaveRequestDatesAfterDeletingAPublicHolidayLeaveRequests() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
+
     // We need the Work Pattern and the contract in order to be able to
     // recalculate the deduction after deleting the Public Holiday Leave Request
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
@@ -91,6 +101,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
   }
 
   public function testCanDeleteAllPublicHolidayLeaveRequestsForFuturePublicHolidays() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
     $contact = ContactFabricator::fabricate();
 
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
@@ -132,6 +146,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
   }
 
   public function testItDeletesLeaveRequestsForPublicHolidaysOverlappingTheContractDates() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('yesterday'),
+      'end_date' => CRM_Utils_Date::processDate('+300 days')
+    ]);
     $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
 
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
@@ -176,6 +194,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
   }
 
   public function testItDeletesLeaveRequestsForAllPublicHolidaysOverlappingAContractWithNoEndDate() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+400 days')
+    ]);
     $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
 
     $contract = HRJobContractFabricator::fabricate([
@@ -217,6 +239,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
   }
 
   public function testItDoesntDeleteAnythingIfTheContractIDDoesntExist() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('yesterday'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
     $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
 
     $publicHoliday = $this->instantiatePublicHoliday('today');
