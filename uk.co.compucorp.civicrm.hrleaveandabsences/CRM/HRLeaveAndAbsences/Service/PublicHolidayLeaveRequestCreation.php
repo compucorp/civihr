@@ -82,8 +82,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   }
 
   /**
-   * Creates Public Holiday Leave Requests for all Public Holidays in the
-   * Future overlapping the start and end dates of the given contract
+   * Creates Public Holiday Leave Requests for all Public Holidays
+   * overlapping the start and end dates of the given contract
    *
    * @param int $contractID
    */
@@ -100,9 +100,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     );
 
     foreach($publicHolidays as $publicHoliday) {
-      if(strtotime($publicHoliday->date) >= strtotime('today')) {
-        $this->createForContact($contract['contact_id'], $publicHoliday);
-      }
+      $this->createForContact($contract['contact_id'], $publicHoliday);
     }
   }
 
@@ -142,6 +140,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
     $leaveRequest = $this->createLeaveRequest($contactID, $absenceType, $publicHoliday);
     $this->createLeaveBalanceChangeRecord($leaveRequest);
+    $this->recalculateExpiredBalanceChange($leaveRequest);
   }
 
   /**
@@ -258,5 +257,21 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     }
 
     $this->createForAllInTheFuture($contacts);
+  }
+
+  /**
+   * Recalculates expired Balance changes for the contact of a Public Holiday leave request
+   * with past dates and having expired LeaveBalanceChanges that expired on or after
+   * the LeaveRequest past date.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   */
+  private function recalculateExpiredBalanceChange(LeaveRequest $leaveRequest) {
+    $today = new DateTime();
+    $leaveRequestDate = new DateTime($leaveRequest->from_date);
+
+    if($leaveRequestDate < $today) {
+      $this->leaveBalanceChangeService->recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
+    }
   }
 }

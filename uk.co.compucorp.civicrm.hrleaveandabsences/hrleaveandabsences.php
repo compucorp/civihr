@@ -580,7 +580,7 @@ function _hrleaveandabsences_civicrm_post_hrjobdetails($op, $objectId, &$objectR
       ]);
 
       $service = PublicHolidayLeaveRequestServiceFactory::create();
-      $service->updateAllInTheFutureForContract($revision['jobcontract_id']);
+      $service->updateAllForContract($revision['jobcontract_id']);
     } catch(Exception $e) {}
   }
 }

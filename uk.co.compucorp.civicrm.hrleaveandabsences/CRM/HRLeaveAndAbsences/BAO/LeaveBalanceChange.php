@@ -634,10 +634,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
             ON balance_change.source_id = leave_request_date.id AND balance_change.source_type = %1
         INNER JOIN {$leaveRequestTable} leave_request
             ON leave_request_date.leave_request_id = leave_request.id AND 
-               (leave_request.request_type IN(%2, %3) AND leave_request.is_deleted = 0)
+               (leave_request.request_type IN(%2, %3, %9) AND leave_request.is_deleted = 0)
         WHERE ({$wherePeriodEntitlementDates}) AND 
               (leave_request_date.date BETWEEN %4 AND %5) AND
-              (leave_request.status_id = %6) AND 
+              (leave_request.status_id IN (%6, %10)) AND 
               (leave_request.contact_id = %7) AND 
               (leave_request.type_id = %8)
       ";
@@ -650,7 +650,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
         5 => [$balanceChangeToExpire['expiry_date']->format('Y-m-d'), 'String'],
         6 => [$leaveRequestStatuses['approved'], 'String'],
         7 => [$periodEntitlement->contact_id, 'Integer'],
-        8 => [$periodEntitlement->type_id, 'Integer']
+        8 => [$periodEntitlement->type_id, 'Integer'],
+        9 => [LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY, 'String'],
+        10 => [$leaveRequestStatuses['admin_approved'], 'String']
       ];
 
       $result = CRM_Core_DAO::executeQuery($query, $params);

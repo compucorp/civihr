@@ -2408,6 +2408,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   public function testCalculateAmountForDateForAContactWithWorkPatternHavingMultipleWeeks() {
     $periodStartDate = new DateTime('2016-01-01');
 
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
+
     $contract = HRJobContractFabricator::fabricate(
       [ 'contact_id' => 1 ],
       [ 'period_start_date' => $periodStartDate->format('Y-m-d') ]
@@ -2459,6 +2464,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   public function testCalculateAmountForDateForAContactWithWorkPatternHavingOneWeek() {
     $periodStartDate = new DateTime('2016-01-01');
 
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
+
     $contract = HRJobContractFabricator::fabricate(
       [ 'contact_id' => 1 ],
       [ 'period_start_date' => $periodStartDate->format('Y-m-d') ]
@@ -2503,6 +2513,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   public function testCalculateAmountForDateForAContactUsingTheDefaultWorkPattern() {
     $periodStartDate = new DateTime('2016-01-01');
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
 
     $contract = HRJobContractFabricator::fabricate(
       [ 'contact_id' => 1 ],
