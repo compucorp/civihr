@@ -347,7 +347,7 @@
               from_date: { from: newPeriod.start_date },
               to_date: { to: newPeriod.end_date },
               status_id: valueOfRequestStatus('approved')
-            }));
+            }), null, jasmine.any(String));
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
               period_id: newPeriod.id
             }), jasmine.any(Array));
@@ -446,7 +446,7 @@
           it('fetches all leave requests linked to a public holiday', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               public_holiday: true
-            }));
+            }), null, jasmine.any(String));
           });
 
           it('caches the data', function () {
@@ -462,7 +462,7 @@
           it('fetches all approved leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               status_id: valueOfRequestStatus('approved')
-            }));
+            }), null, jasmine.any(String));
           });
 
           it('caches the data', function () {
@@ -500,7 +500,7 @@
                 valueOfRequestStatus(sharedSettings.statusNames.rejected),
                 valueOfRequestStatus(sharedSettings.statusNames.cancelled)
               ] }
-            }));
+            }), null, jasmine.any(String));
           });
 
           it('caches the data', function () {
@@ -583,7 +583,7 @@
                 to_date: {to: controller.selectedPeriod.end_date},
                 request_type: 'toil',
                 expired: true
-              });
+              }, null, jasmine.any(String));
             });
 
             it('does not pass to the Model the entitlements already stored', function () {

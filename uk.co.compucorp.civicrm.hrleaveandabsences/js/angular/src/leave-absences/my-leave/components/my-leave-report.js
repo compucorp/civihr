@@ -29,6 +29,7 @@ define([
     actionMatrix[sharedSettings.statusNames.approved] = ['view', 'cancel'];
     actionMatrix[sharedSettings.statusNames.cancelled] = ['view'];
     actionMatrix[sharedSettings.statusNames.rejected] = ['view'];
+    var requestSort = 'from_date DESC';
 
     vm.absencePeriods = [];
     vm.absenceTypes = {};
@@ -292,7 +293,7 @@ define([
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         status_id: valueOfRequestStatus(sharedSettings.statusNames.approved)
-      })
+      }, null, requestSort)
       .then(function (leaveRequests) {
         vm.sections.approved.data = leaveRequests.list;
       });
@@ -395,7 +396,7 @@ define([
           to_date: {to: vm.selectedPeriod.end_date},
           request_type: 'toil',
           expired: true
-        })
+        }, null, requestSort)
       ])
         .then(function (results) {
           return $q.all({
@@ -437,7 +438,7 @@ define([
           valueOfRequestStatus(sharedSettings.statusNames.rejected),
           valueOfRequestStatus(sharedSettings.statusNames.cancelled)
         ] }
-      })
+      }, null, requestSort)
       .then(function (leaveRequests) {
         vm.sections.other.data = leaveRequests.list;
       });
@@ -457,7 +458,7 @@ define([
           valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
           valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
         ] }
-      }, null, null, null, false)
+      }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.pending.data = leaveRequests.list;
       });
@@ -474,7 +475,7 @@ define([
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         public_holiday: true
-      })
+      }, null, requestSort)
       .then(function (leaveRequests) {
         vm.sections.holidays.data = leaveRequests.list;
       });
