@@ -93,44 +93,37 @@ define([
      * @param {string} action
      */
     vm.action = function (leaveRequest, action) {
-      switch (action) {
-        case "cancel":
-          dialog.open({
-            title: 'Confirm Cancellation?',
-            copyCancel: 'Cancel',
-            copyConfirm: 'Confirm',
-            classConfirm: 'btn-danger',
-            msg: 'This cannot be undone',
-            onConfirm: function () {
-              return leaveRequest.cancel();
-            }
-          });
-          break;
-        case "approve":
-          dialog.open({
-            title: 'Confirm Approval?',
-            copyCancel: 'Cancel',
-            copyConfirm: 'Approve',
-            classConfirm: 'btn-success',
-            msg: 'Please confirm approval',
-            onConfirm: function () {
-              return leaveRequest.approve();
-            }
-          });
-          break;
-        case "reject":
-          dialog.open({
-            title: 'Confirm Rejection?',
-            copyCancel: 'Cancel',
-            copyConfirm: 'Reject',
-            classConfirm: 'btn-warning',
-            msg: 'Please confirm rejection',
-            onConfirm: function () {
-              return leaveRequest.reject();
-            }
-          });
-          break;
-      }
+      var map = {
+        cancel: {
+          title: 'Cancellation',
+          btnClass: 'danger',
+          btnLabel: 'Confirm',
+          msg: 'This cannot be undone'
+        },
+        approve: {
+          title: 'Approval',
+          btnClass: 'success',
+          btnLabel: 'Approve',
+          msg: 'Please confirm approval'
+        },
+        reject: {
+          title: 'Rejection',
+          btnClass: 'warning',
+          btnLabel: 'Reject',
+          msg: 'Please confirm rejection'
+        }
+      };
+
+      dialog.open({
+        title: 'Confirm ' + map[action].title + '?',
+        copyCancel: 'Cancel',
+        copyConfirm: map[action].btnLabel,
+        classConfirm: 'btn-' + map[action].btnClass,
+        msg: map[action].msg,
+        onConfirm: function () {
+          return leaveRequest[action]();
+        }
+      });
     };
 
     /**
