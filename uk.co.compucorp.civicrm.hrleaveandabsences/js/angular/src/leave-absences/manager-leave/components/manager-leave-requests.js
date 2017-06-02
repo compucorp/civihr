@@ -225,7 +225,11 @@ define([
       // hence the page was not getting refreshed as the below condition would always fail.
       page = typeof (page) === 'number' ? page : 1;
 
-      if (page <= vm.totalNoOfPages()) {
+      // page <= vm.totalNoOfPages() - Do not load new data if the page no is more than total
+      // no of pages, this can happen when Next button is pressed on the pagination
+      // vm.totalNoOfPages() === 0 - If total no of pages is 0 then load new data
+      // This can happen when the list is empty and a new filter is applied
+      if (page <= vm.totalNoOfPages() || vm.totalNoOfPages() === 0) {
         vm.pagination.page = page;
 
         loadAllRequests();
@@ -353,6 +357,13 @@ define([
      * @return {Promise}
      */
     function loadLeaveRequest (type) {
+      // if there is no contacts after applying filters, there is no point making the
+      // call to the Leave Request API
+      if (!vm.filteredUsers.length) {
+        vm.leaveRequests[type] = { list: [], total: 0, size: 1 };
+        return $q.resolve();
+      }
+
       var filterByStatus = type !== 'filter';
       // {pagination: {size:0}} - Load all requests instead of 25
       var pagination = type === 'filter' ? { size: 0 } : vm.pagination;
@@ -450,13 +461,11 @@ define([
         return vm.filters.leaveRequest.contact_id;
       }
 
-      // This is necessary as otherwise all leave requests will be loaded
-      // instead of the ones managed by current user
-      return vm.filteredUsers.length ? {
+      return {
         'IN': vm.filteredUsers.map(function (contact) {
           return contact.id;
         })
-      } : null;
+      };
     }
 
     /**

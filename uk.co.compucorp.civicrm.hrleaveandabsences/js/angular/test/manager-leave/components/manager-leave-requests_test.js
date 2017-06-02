@@ -587,7 +587,7 @@
           describe('managed_by', function () {
             beforeEach(function () {
               controller.refresh();
-              defer.resolve([]);
+              defer.resolve(ContactAPIMock.mockedContacts().list);
             });
 
             it('fetches only the leave requests managed by the user', function () {
@@ -608,7 +608,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.selectedAbsenceTypes = mockAbsenceType;
                 controller.refresh();
-                defer.resolve([]);
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by type id', function () {
@@ -626,7 +626,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.selectedAbsenceTypes = mockAbsenceType;
                 controller.refresh();
-                defer.resolve([]);
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('not filtered by type id', function () {
@@ -645,7 +645,7 @@
             beforeEach(function () {
               controller.filters.leaveRequest.selectedPeriod.start_date = mockFromDate;
               controller.refresh();
-              defer.resolve([]);
+              defer.resolve(ContactAPIMock.mockedContacts().list);
             });
 
             it('filtered by from date', function () {
@@ -665,7 +665,7 @@
             beforeEach(function () {
               controller.filters.leaveRequest.selectedPeriod.end_date = mockToDate;
               controller.refresh();
-              defer.resolve([]);
+              defer.resolve(ContactAPIMock.mockedContacts().list);
             });
 
             it('filtered by to date', function () {
@@ -686,7 +686,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.contact_id = mockUserID;
                 controller.refresh();
-                defer.resolve([]);
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by contact id', function () {
@@ -704,7 +704,7 @@
               }];
 
               beforeEach(function () {
-                controller.filters.leaveRequest.contact = null;
+                controller.filters.leaveRequest.contact_id = null;
                 controller.refresh();
                 defer.resolve(mockUsers);
               });
@@ -720,18 +720,23 @@
               });
             });
 
-            describe('when contact is null and filtered users is null', function () {
+            describe('when contact is null and filtered users is empty', function () {
               beforeEach(function () {
                 controller.filters.leaveRequest.contact = null;
                 controller.refresh();
                 defer.resolve([]);
               });
 
-              it('is not filtered by contact id', function () {
+              it('does not call LeaveRequest API', function () {
                 promise.then(function () {
-                  expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                    contact_id: null
-                  }));
+                  expect(LeaveRequest.all).not.toHaveBeenCalled();
+                });
+              });
+
+              it('empties the leave requests', function () {
+                promise.then(function () {
+                  expect(controller.leaveRequests.table.list.length).toBe(0);
+                  expect(controller.leaveRequests.filter.list.length).toBe(0);
                 });
               });
             });
@@ -746,7 +751,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.leaveStatus = mockStatus;
                 controller.refresh();
-                defer.resolve([]);
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by selected leave status', function () {
@@ -768,7 +773,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.pending_requests = true;
                 controller.refresh();
-                defer.resolve([]);
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by waiting approval status', function () {
