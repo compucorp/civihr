@@ -1514,15 +1514,25 @@ form.CRM_Contribute_Form_ContributionCharts {
       border: 0;
       border-top: 1px solid $gray-lighter;
       margin-top: 20px;
-
-      &.chart td {
-        border: 0;
-      }
     }
   }
   
-  #chartData table {
-    box-shadow: none;
+  #chartData {
+    table {
+      box-shadow: none;
+
+      td {
+        padding: 10px 20px;
+      }
+    }
+
+    .chart {
+      border: none !important;
+
+      td {
+        border: none !important;
+      }
+    }
   }
 
   .ui-tabs {
