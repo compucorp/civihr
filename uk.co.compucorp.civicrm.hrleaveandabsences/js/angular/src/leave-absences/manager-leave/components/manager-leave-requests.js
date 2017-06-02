@@ -22,7 +22,7 @@ define([
 
     var vm = Object.create(this);
     var actionMatrix = {};
-    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['respond', 'cancel'];
+    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['respond', 'cancel', 'approve', 'reject'];
     actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['edit', 'cancel'];
     actionMatrix[sharedSettings.statusNames.approved] = ['edit'];
     actionMatrix[sharedSettings.statusNames.cancelled] = ['edit'];
@@ -93,18 +93,37 @@ define([
      * @param {string} action
      */
     vm.action = function (leaveRequest, action) {
-      if (action === 'cancel') {
-        dialog.open({
-          title: 'Confirm Cancellation?',
-          copyCancel: 'Cancel',
-          copyConfirm: 'Confirm',
-          classConfirm: 'btn-danger',
-          msg: 'This cannot be undone',
-          onConfirm: function () {
-            return leaveRequest.cancel();
-          }
-        });
-      }
+      var map = {
+        cancel: {
+          title: 'Cancellation',
+          btnClass: 'danger',
+          btnLabel: 'Confirm',
+          msg: 'This cannot be undone'
+        },
+        approve: {
+          title: 'Approval',
+          btnClass: 'success',
+          btnLabel: 'Approve',
+          msg: 'Please confirm approval'
+        },
+        reject: {
+          title: 'Rejection',
+          btnClass: 'warning',
+          btnLabel: 'Reject',
+          msg: 'Please confirm rejection'
+        }
+      };
+
+      dialog.open({
+        title: 'Confirm ' + map[action].title + '?',
+        copyCancel: 'Cancel',
+        copyConfirm: map[action].btnLabel,
+        classConfirm: 'btn-' + map[action].btnClass,
+        msg: map[action].msg,
+        onConfirm: function () {
+          return leaveRequest[action]();
+        }
+      });
     };
 
     /**
