@@ -51,15 +51,17 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    */
   public function canChangeDatesFor($contactID, $statusID, $requestType) {
     $leaveRequestStatuses = self::getLeaveRequestStatuses();
-    $currentUserCanChangeDates = $requestType === LeaveRequest::REQUEST_TYPE_SICKNESS ||
-                                 $this->currentUserIsLeaveContact($contactID);
-
     $openStatuses = [
       $leaveRequestStatuses['awaiting_approval'],
       $leaveRequestStatuses['more_information_required']
     ];
+    $isSicknessRequest = $requestType === LeaveRequest::REQUEST_TYPE_SICKNESS;
+    $isOpenLeaveRequest = in_array($statusID, $openStatuses);
 
-    return $currentUserCanChangeDates && in_array($statusID, $openStatuses);
+    $currentUserCanChangeDates = ($isSicknessRequest && $this->currentUserIsManagerOrAdmin($contactID)) ||
+                                 ($this->currentUserIsLeaveContact($contactID) && $isOpenLeaveRequest);
+
+    return $currentUserCanChangeDates;
   }
 
   /**
