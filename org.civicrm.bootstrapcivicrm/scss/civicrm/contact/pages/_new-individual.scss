@@ -74,9 +74,25 @@
     }
 
     .crm-form-block.crm-form-block {
-      > .crm-submit-buttons {
-        &:nth-child(3) {
-          display: none;
+      > .crm-submit-buttons:nth-child(3) {
+        display: none;
+      }
+
+      [class*='add-more-link-'] {
+        padding: 15px;
+
+        .crm-hover-button {
+          background-color: $crm-copy !important;
+          color: $crm-white !important;
+          padding: 7px 19px;
+        }
+
+        .crm-hover-button:hover {
+          background-color: $crm-light-gray-color !important;
+        }
+
+        .crm-hover-button .crm-i {
+          margin-right: 10px;
         }
       }
     }
@@ -214,13 +230,12 @@
 
   #customData1 {
     .help {
-      padding: 15px 0;
+      padding: 15px;
     }
-    table {
-      td {
-        padding-left: 0;
-        vertical-align: middle;
-      }
+
+    table td {
+      padding-left: 0;
+      vertical-align: middle;
     }
   }
 
