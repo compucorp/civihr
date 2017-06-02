@@ -703,4 +703,36 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     //Public Holiday3 is in the future, so it does not affect the recalculation
     $this->assertEquals(-2, $expiredBalanceChange1->amount);
   }
+
+  public function testCreateForAllContactsDoesNotCreatePublicHolidayLeaveRequestsWhenNoAbsenceTypeWithMustTakePublicHolidayAsLeaveRequestExist() {
+    //We need to delete any absence type already created
+    $tableName = AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 0]);
+
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('5 days ago')]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('tomorrow')]
+    );
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = date('Y-m-d', strtotime('+5 days'));
+
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+
+    $this->creationLogic->createForAllContacts($publicHoliday);
+
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+  }
 }
