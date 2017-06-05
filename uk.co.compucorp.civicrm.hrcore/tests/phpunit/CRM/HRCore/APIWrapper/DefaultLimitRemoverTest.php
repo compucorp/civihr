@@ -3,6 +3,8 @@
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
 
+use CRM_HRCore_APIWrapper_DefaultLimitRemover as DefaultLimitRemover;
+
 /**
  * Class CRM_HRCore_APIWrapper_DefaultLimitRemoverTest
  *
@@ -10,9 +12,10 @@ use Civi\Test\TransactionalInterface;
  */
 class CRM_HRCore_APIWrapper_DefaultLimitRemoverTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
 
-  private $defaultLimitRemoverObj;
-
-  private $testParameters = [];
+  /**
+   * @var DefaultLimitRemover
+   */
+  private $defaultLimitRemover;
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
@@ -21,46 +24,37 @@ class CRM_HRCore_APIWrapper_DefaultLimitRemoverTest extends \PHPUnit_Framework_T
   }
 
   public function setUp() {
-    $this->defaultLimitRemoverObj = new CRM_HRCore_APIWrapper_DefaultLimitRemover();
-
-    $this->testParameters['params'] = [
-      'action' => 'get',
-      'entity' => 'contact',
-      'id' => 1,
-    ];
+    $this->defaultLimitRemover = new DefaultLimitRemover();
   }
 
-  public function testFromApiInputWithLimitSetInParameters() {
-    $this->testParameters['params']['options']['limit'] = 10;
+  public function testTheDefaultLimitShouldNotBeAppliedIfASpecificLimitHasBeenSet() {
+    $testParameters['params']['options']['limit'] = 10;
 
-    $actualValue =  $this->defaultLimitRemoverObj->fromApiInput($this->testParameters);
+    $actualValue =  $this->defaultLimitRemover->fromApiInput($testParameters);
 
     $this->assertEquals(
-      $this->testParameters['params']['options']['limit'],
+      $testParameters['params']['options']['limit'],
       $actualValue['params']['options']['limit']
     );
   }
 
-  public function testFromApiInputWithLimitNotSetInParameters() {
-    $actualValue =  $this->defaultLimitRemoverObj->fromApiInput($this->testParameters);
+  public function testTheDefaultLimitValueShouldBeAppliedIfNoLimitHasBeenSet() {
+    $actualValue =  $this->defaultLimitRemover->fromApiInput([]);
 
     $this->assertEquals(
-      $this->defaultLimitRemoverObj->getDefaultNoLimitValue(),
+      $this->defaultLimitRemover->getDefaultNoLimitValue(),
       $actualValue['params']['options']['limit']
     );
   }
 
-  public function testToApiInputDoesNotChangeResults() {
+  public function testTheResultOfAPIResponseShouldNotBeAffectedOrChanged() {
     $testResult = [
       'is_error' => 0,
       'version' => 3,
       'count' =>  5
     ];
 
-    $actualValue =  $this->defaultLimitRemoverObj->toApiOutput(
-      $this->testParameters,
-      $testResult
-    );
+    $actualValue =  $this->defaultLimitRemover->toApiOutput([], $testResult);
 
     $this->assertEquals($testResult, $actualValue);
   }
