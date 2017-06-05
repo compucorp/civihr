@@ -777,8 +777,8 @@
             actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
           });
 
-          it('shows the "respond" and "cancel" actions', function () {
-            expect(actionMatrix).toEqual(['respond', 'cancel']);
+          it('shows the "respond", "cancel", "approve" and "reject" actions', function () {
+            expect(actionMatrix).toEqual(['respond', 'cancel', 'approve', 'reject']);
           });
         });
 
