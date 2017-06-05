@@ -64,9 +64,6 @@
         {/if}
     </div>
   </div>
-  <script type="text/javascript">
-    CRM.$('.crm-editable').crmEditable();
-  </script>
 {else}
     <div class="messages status no-popup">
         <div class="icon inform-icon"></div>
