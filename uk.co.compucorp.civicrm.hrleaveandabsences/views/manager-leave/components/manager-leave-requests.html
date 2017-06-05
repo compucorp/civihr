@@ -30,18 +30,18 @@
     <div class="panel-subheading chr_manager_dashboard__sub-header" ng-show="ctrl.isFilterExpanded">
       <div>
         <ui-select ng-change="ctrl.refresh()"
-                   ng-model="ctrl.filters.leaveRequest.contact">
+                   ng-model="ctrl.filters.leaveRequest.contact_id">
           <ui-select-match placeholder="Staff Member" allow-clear>
             <span ng-bind="$select.selected.display_name"></span>
           </ui-select-match>
-          <ui-select-choices repeat="user in (ctrl.filteredUsers | filter: $select.search) track by user.id">
+          <ui-select-choices repeat="user.id as user in (ctrl.filteredUsers | filter: $select.search) track by user.id">
             <span ng-bind="user.display_name"></span>
           </ui-select-choices>
         </ui-select>
       </div>
       <div class="chr_custom-select">
         <select
-          ng-options="region.label for region in ctrl.regions track by region.id"
+          ng-options="region.value as region.label for region in ctrl.regions track by region.id"
           ng-model="ctrl.filters.contact.region"
           ng-change="ctrl.refresh(region)">
           <option value="">Region</option>
@@ -49,7 +49,7 @@
       </div>
       <div class="chr_custom-select">
         <select
-          ng-options="department.label for department in ctrl.departments track by department.id"
+          ng-options="department.value as department.label for department in ctrl.departments track by department.id"
           ng-model="ctrl.filters.contact.department"
           ng-change="ctrl.refresh()">
           <option value="">Department</option>
@@ -57,7 +57,7 @@
       </div>
       <div class="chr_custom-select">
         <select
-          ng-options="levelType.value for levelType in ctrl.levelTypes track by levelType.id"
+          ng-options="levelType.value as levelType.value for levelType in ctrl.levelTypes track by levelType.id"
           ng-model="ctrl.filters.contact.level_type"
           ng-change="ctrl.refresh()">
           <option value="">Level Type</option>
@@ -65,7 +65,7 @@
       </div>
       <div class="chr_custom-select">
         <select
-          ng-options="location.label for location in ctrl.locations track by location.id"
+          ng-options="location.value as location.label for location in ctrl.locations track by location.id"
           ng-model="ctrl.filters.contact.location"
           ng-change="ctrl.refresh()">
           <option value="">Locations</option>
@@ -145,34 +145,43 @@
             <tr>
               <td colspan="5" class="text-center">
                 <ul class="pagination">
-                  <li ng-click="ctrl.refresh(1)"
-                      class="active">
-                    <a class="pointer">
-                      <i class="fa fa-angle-double-left" aria-hidden="true"></i> First
-                    </a>
+                  <li
+                    ng-click="ctrl.refresh(1)"
+                    ng-hide="ctrl.pagination.page === 1"
+                    class="active">
+                      <a class="pointer">
+                        <i class="fa fa-angle-double-left" aria-hidden="true"></i> First
+                      </a>
                   </li>
-                  <li ng-click="ctrl.refresh(ctrl.pagination.page - 1)"
-                      class="active">
-                    <a class="pointer">
-                      <i class="fa fa-angle-left" aria-hidden="true"></i> Previous
-                    </a>
+                  <li
+                    ng-click="ctrl.refresh(ctrl.pagination.page - 1)"
+                    ng-hide="ctrl.pagination.page === 1"
+                    class="active">
+                      <a class="pointer">
+                        <i class="fa fa-angle-left" aria-hidden="true"></i> Previous
+                      </a>
                   </li>
-                  <li ng-class="{'active': ctrl.pagination.page - 1 === $index}"
-                      ng-click="ctrl.refresh($index + 1)"
-                      ng-repeat="a in ctrl.getArrayOfSize(ctrl.totalNoOfPages()) track by $index">
-                    <a>{{$index + 1}}</a>
+                  <li
+                    ng-class="{'active': ctrl.pagination.page - 1 === $index}"
+                    ng-click="ctrl.refresh($index + 1)"
+                    ng-repeat="a in ctrl.getArrayOfSize(ctrl.totalNoOfPages()) track by $index">
+                      <a>{{$index + 1}}</a>
                   </li>
-                  <li ng-click="ctrl.refresh(ctrl.pagination.page + 1)"
-                      class="active">
-                    <a class="pointer">
-                      Next <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
+                  <li
+                    ng-click="ctrl.refresh(ctrl.pagination.page + 1)"
+                    ng-hide="ctrl.pagination.page >= ctrl.totalNoOfPages()"
+                    class="active">
+                      <a class="pointer">
+                        Next <i class="fa fa-angle-right" aria-hidden="true"></i>
+                      </a>
                   </li>
-                  <li ng-click="ctrl.refresh(ctrl.totalNoOfPages())"
-                      class="active">
-                    <a class="pointer">
-                      Last <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                    </a>
+                  <li
+                    ng-click="ctrl.refresh(ctrl.totalNoOfPages())"
+                    ng-hide="ctrl.pagination.page >= ctrl.totalNoOfPages()"
+                    class="active">
+                      <a class="pointer">
+                        Last <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                      </a>
                   </li>
                 </ul>
               </td>

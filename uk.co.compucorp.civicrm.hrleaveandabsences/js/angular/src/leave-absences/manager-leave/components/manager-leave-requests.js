@@ -44,7 +44,7 @@ define([
       leaveRequest: {
         leaveStatus: vm.leaveRequestStatuses[0],
         pending_requests: false,
-        contact: null,
+        contact_id: null,
         selectedPeriod: null,
         selectedAbsenceTypes: null
       }
@@ -130,7 +130,7 @@ define([
      * Clears selected users and refreshes leave requests
      */
     vm.clearStaffSelection = function () {
-      vm.filters.leaveRequest.contact = null;
+      vm.filters.leaveRequest.contact_id = null;
       vm.refresh();
     };
 
@@ -208,7 +208,7 @@ define([
      */
     vm.getUserNameByID = function (id) {
       var user = _.find(vm.filteredUsers, function (contact) {
-        return contact.contact_id === id;
+        return contact.id === id;
       });
       return user ? user.display_name : null;
     };
@@ -244,10 +244,14 @@ define([
       // hence the page was not getting refreshed as the below condition would always fail.
       page = typeof (page) === 'number' ? page : 1;
 
-      if (page <= vm.totalNoOfPages()) {
+      // page <= vm.totalNoOfPages() - Do not load new data if the page no is more than total
+      // no of pages, this can happen when Next button is pressed on the pagination
+      // vm.totalNoOfPages() === 0 - If total no of pages is 0 then load new data
+      // This can happen when the list is empty and a new filter is applied
+      if (page <= vm.totalNoOfPages() || vm.totalNoOfPages() === 0) {
         vm.pagination.page = page;
 
-        loadAllRequests();
+        loadManageesAndLeaves();
       }
     };
 
@@ -282,7 +286,7 @@ define([
       ])
       .then(function () {
         vm.loading.page = false;
-        loadAllRequests();
+        loadManageesAndLeaves();
       });
 
       registerEvents();
@@ -297,10 +301,10 @@ define([
       var filters = vm.filters.contact;
 
       return {
-        department: filters.department ? filters.department.value : null,
-        level_type: filters.level_type ? filters.level_type.value : null,
-        location: filters.location ? filters.location.value : null,
-        region: filters.region ? filters.region.value : null
+        department: filters.department,
+        level_type: filters.level_type,
+        location: filters.location,
+        region: filters.region
       };
     }
 
@@ -332,23 +336,20 @@ define([
     }
 
     /**
-     * Loads all requests
+     * Loads the managees and calls loadLeaveRequests()
      *
      * @return {Promise}
      */
-    function loadAllRequests () {
+    function loadManageesAndLeaves () {
       vm.loading.content = true;
 
-      Contact.all(contactFilters(), {
-        page: 1,
-        size: 0
-      })
+      Contact.leaveManagees(vm.contactId, contactFilters())
         .then(function (users) {
-          vm.filteredUsers = users.list;
+          vm.filteredUsers = users;
 
           return $q.all([
-            loadLeaveRequest('table'),
-            loadLeaveRequest('filter')
+            loadLeaveRequests('table'),
+            loadLeaveRequests('filter')
           ]);
         })
         .then(function () {
@@ -374,7 +375,7 @@ define([
      * @param {string} type - load leave requests for the either the filter or the table
      * @return {Promise}
      */
-    function loadLeaveRequest (type) {
+    function loadLeaveRequests (type) {
       var filterByStatus = type !== 'filter';
       // {pagination: {size:0}} - Load all requests instead of 25
       var pagination = type === 'filter' ? { size: 0 } : vm.pagination;
@@ -468,15 +469,18 @@ define([
      * @return {Object}
      */
     function prepareContactID () {
-      if (vm.filters.leaveRequest.contact) {
-        return vm.filters.leaveRequest.contact.contact_id;
+      // If there is no users after applying filter, the selected contact_id
+      // should not be sent to the leave request API, as it will still load
+      // the leave requests for the selected contact id
+      if (vm.filteredUsers.length > 0 && vm.filters.leaveRequest.contact_id) {
+        return vm.filters.leaveRequest.contact_id;
       }
 
-      return vm.filteredUsers.length ? {
+      return {
         'IN': vm.filteredUsers.map(function (contact) {
-          return contact.contact_id;
+          return contact.id;
         })
-      } : null;
+      };
     }
 
     /**

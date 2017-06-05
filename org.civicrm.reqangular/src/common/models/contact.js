@@ -1,3 +1,4 @@
+/* eslint-env amd */
 define([
   'common/lodash',
   'common/modules/models',
@@ -23,7 +24,7 @@ define([
        * @param {Array} foreignKeys - The keys that are for foreign models
        * @return {boolean}
        */
-      function containsForeignFilters(filters, foreignKeys) {
+      function containsForeignFilters (filters, foreignKeys) {
         return !_.isEmpty(_.intersection(_.keys(filters), foreignKeys));
       }
 
@@ -33,17 +34,17 @@ define([
        * @param {object} filters
        * @return {Promise} resolve to an array of contact ids
        */
-      function jobRoleContactids(filters) {
+      function jobRoleContactids (filters) {
         return JobRole.all(_.assign(filters, {
-          "api.HRJobContract.getsingle": {
-            "id": "$value.id"
+          'api.HRJobContract.getsingle': {
+            'id': '$value.job_contract_id'
           }
         }))
-          .then(function (jobRoles) {
-            return jobRoles.list.map(function (jobRole) {
-              return jobRole.contact_id;
-            })
+        .then(function (jobRoles) {
+          return jobRoles.list.map(function (jobRole) {
+            return jobRole.contact_id;
           });
+        });
       }
 
       /**
@@ -59,8 +60,8 @@ define([
        *   an array of arrays
        * @return {object}
        */
-      function injectContactIdsInFilters(filters, contactIds) {
-        return filters = _(filters)
+      function injectContactIdsInFilters (filters, contactIds) {
+        return _(filters)
           .omit(groupFiltersKeys)
           .omit(jobRoleFiltersKeys)
           .assign({
@@ -79,7 +80,7 @@ define([
        * @param {object} filters
        * @return {Promise} resolves to the processed filters
        */
-      function processContactFilters(filters) {
+      function processContactFilters (filters) {
         var deferred = $q.defer();
         var promises = [];
 
@@ -122,21 +123,12 @@ define([
         all: function (filters, pagination, sort, additionalParams) {
           return processContactFilters.call(this, filters)
             .then(function (filters) {
-              var defer = $q.defer();
-
-              //if ID is empty array directly resolve the promise without calling the API
+              // if ID is empty array directly resolve the promise without calling the API
               if (filters && filters.id && !filters.id.IN.length) {
-                defer.resolve({
-                  list: []
-                });
+                return {list: []};
               } else {
-                contactAPI.all(filters, pagination, sort, additionalParams)
-                  .then(function (data) {
-                    defer.resolve(data);
-                  });
+                return contactAPI.all(filters, pagination, sort, additionalParams);
               }
-
-              return defer.promise;
             })
             .then(function (response) {
               response.list = response.list.map(function (contact) {
@@ -157,6 +149,25 @@ define([
           return contactAPI.find(id).then(function (contact) {
             return instance.init(contact, true);
           });
+        },
+
+        /**
+         * Finds all the contacts managed by the sent contact id
+         *
+         * @param {string} id - contact id
+         * @param {object} filters
+         * @return {Promise} - Resolves with found contacts/API Errors
+         */
+        leaveManagees: function (id, filters) {
+          return processContactFilters.call(this, filters)
+            .then(function (filters) {
+              // if ID is empty array directly resolve the promise without calling the API
+              if (filters && filters.id && !filters.id.IN.length) {
+                return [];
+              } else {
+                return contactAPI.leaveManagees(id, filters);
+              }
+            });
         }
       });
     }

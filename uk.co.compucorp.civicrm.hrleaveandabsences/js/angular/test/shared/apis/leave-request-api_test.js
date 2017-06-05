@@ -33,9 +33,12 @@ define([
     ]));
 
     describe('all()', function () {
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'getAll').and.callThrough();
+      });
+
       describe('leave request', function () {
         beforeEach(function () {
-          spyOn(LeaveRequestAPI, 'getAll').and.callThrough();
           promise = LeaveRequestAPI.all();
         });
 
@@ -51,6 +54,25 @@ define([
         it('returns all the data', function () {
           promise.then(function (response) {
             expect(response.list).toEqual(mockData.all().values);
+          });
+        });
+      });
+      describe('leave request', function () {
+        beforeEach(function () {
+          promise = LeaveRequestAPI.all({ contact_id: { IN: [] } });
+        });
+
+        afterEach(function () {
+          $rootScope.$digest();
+        });
+
+        it('does not call the API', function () {
+          expect(LeaveRequestAPI.getAll).not.toHaveBeenCalled();
+        });
+
+        it('returns empty data structure', function () {
+          promise.then(function (response) {
+            expect(response).toEqual({ list: [], total: 0, allIds: [] });
           });
         });
       });

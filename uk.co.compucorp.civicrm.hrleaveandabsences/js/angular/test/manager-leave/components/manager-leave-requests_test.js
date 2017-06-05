@@ -74,8 +74,8 @@
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
 
-        spyOn(Contact, 'all').and.callFake(function () {
-          return $q.resolve(ContactAPIMock.mockedContacts());
+        spyOn(Contact, 'leaveManagees').and.callFake(function () {
+          return ContactAPIMock.leaveManagees();
         });
 
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
@@ -449,9 +449,7 @@
         describe('contactFilters', function () {
           describe('region', function () {
             describe('when region filter has value', function () {
-              var mockRegion = {
-                value: 'mockvalue'
-              };
+              var mockRegion = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.region = mockRegion;
@@ -459,9 +457,9 @@
               });
 
               it('Contact API gets called with region value', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  region: mockRegion.value
-                }), jasmine.any(Object));
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                  region: mockRegion
+                }));
               });
             });
 
@@ -472,18 +470,16 @@
               });
 
               it('Contact API gets called with null', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
                   region: null
-                }), jasmine.any(Object));
+                }));
               });
             });
           });
 
           describe('department', function () {
             describe('when department filter has value', function () {
-              var mockDepartment = {
-                value: 'mockvalue'
-              };
+              var mockDepartment = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.department = mockDepartment;
@@ -491,9 +487,9 @@
               });
 
               it('Contact API gets called with department value', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  department: mockDepartment.value
-                }), jasmine.any(Object));
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                  department: mockDepartment
+                }));
               });
             });
 
@@ -504,18 +500,16 @@
               });
 
               it('Contact API gets called with null', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
                   department: null
-                }), jasmine.any(Object));
+                }));
               });
             });
           });
 
           describe('location', function () {
             describe('when location filter has value', function () {
-              var mockLocation = {
-                value: 'mockvalue'
-              };
+              var mockLocation = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.location = mockLocation;
@@ -523,9 +517,9 @@
               });
 
               it('Contact API gets called with location value', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  location: mockLocation.value
-                }), jasmine.any(Object));
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                  location: mockLocation
+                }));
               });
             });
 
@@ -536,18 +530,16 @@
               });
 
               it('ContactAPI gets called with null', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
                   location: null
-                }), jasmine.any(Object));
+                }));
               });
             });
           });
 
           describe('levelTypes', function () {
             describe('when levelTypes filter has value', function () {
-              var mockLevelType = {
-                value: 'mockvalue'
-              };
+              var mockLevelType = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.level_type = mockLevelType;
@@ -555,9 +547,9 @@
               });
 
               it('ContactAPI gets called with level types value', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  level_type: mockLevelType.value
-                }), jasmine.any(Object));
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                  level_type: mockLevelType
+                }));
               });
             });
 
@@ -568,9 +560,9 @@
               });
 
               it('Contact API gets called with null', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
                   level_type: null
-                }), jasmine.any(Object));
+                }));
               });
             });
           });
@@ -584,7 +576,7 @@
             defer = $q.defer();
             spyOn(LeaveRequest, 'all').and.callThrough();
             spyOn(controller, 'getUserNameByID');
-            Contact.all.and.returnValue(defer.promise);
+            Contact.leaveManagees.and.returnValue(defer.promise);
             promise = defer.promise;
           });
 
@@ -595,9 +587,7 @@
           describe('managed_by', function () {
             beforeEach(function () {
               controller.refresh();
-              defer.resolve({
-                list: []
-              });
+              defer.resolve(ContactAPIMock.mockedContacts().list);
             });
 
             it('fetches only the leave requests managed by the user', function () {
@@ -618,9 +608,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.selectedAbsenceTypes = mockAbsenceType;
                 controller.refresh();
-                defer.resolve({
-                  list: []
-                });
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by type id', function () {
@@ -638,9 +626,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.selectedAbsenceTypes = mockAbsenceType;
                 controller.refresh();
-                defer.resolve({
-                  list: []
-                });
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('not filtered by type id', function () {
@@ -659,9 +645,7 @@
             beforeEach(function () {
               controller.filters.leaveRequest.selectedPeriod.start_date = mockFromDate;
               controller.refresh();
-              defer.resolve({
-                list: []
-              });
+              defer.resolve(ContactAPIMock.mockedContacts().list);
             });
 
             it('filtered by from date', function () {
@@ -681,9 +665,7 @@
             beforeEach(function () {
               controller.filters.leaveRequest.selectedPeriod.end_date = mockToDate;
               controller.refresh();
-              defer.resolve({
-                list: []
-              });
+              defer.resolve(ContactAPIMock.mockedContacts().list);
             });
 
             it('filtered by to date', function () {
@@ -699,22 +681,18 @@
 
           describe('contact_id', function () {
             describe('when contact has value', function () {
-              var mockUser = {
-                contact_id: '202'
-              };
+              var mockUserID = '202';
 
               beforeEach(function () {
-                controller.filters.leaveRequest.contact = mockUser;
+                controller.filters.leaveRequest.contact_id = mockUserID;
                 controller.refresh();
-                defer.resolve({
-                  list: []
-                });
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by contact id', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                    contact_id: mockUser.contact_id
+                    contact_id: mockUserID
                   }));
                 });
               });
@@ -722,41 +700,21 @@
 
             describe('when contact is null and filtered users has value', function () {
               var mockUsers = [{
-                contact_id: '202'
+                id: '202'
               }];
 
               beforeEach(function () {
-                controller.filters.leaveRequest.contact = null;
+                controller.filters.leaveRequest.contact_id = null;
                 controller.refresh();
-                defer.resolve({
-                  list: mockUsers
-                });
+                defer.resolve(mockUsers);
               });
 
               it('filtered by filtered users', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     contact_id: {
-                      'IN': [mockUsers[0].contact_id]
+                      'IN': [mockUsers[0].id]
                     }
-                  }));
-                });
-              });
-            });
-
-            describe('when contact is null and filtered users is null', function () {
-              beforeEach(function () {
-                controller.filters.leaveRequest.contact = null;
-                controller.refresh();
-                defer.resolve({
-                  list: []
-                });
-              });
-
-              it('is not filtered by contact id', function () {
-                promise.then(function () {
-                  expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                    contact_id: null
                   }));
                 });
               });
@@ -772,9 +730,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.leaveStatus = mockStatus;
                 controller.refresh();
-                defer.resolve({
-                  list: []
-                });
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by selected leave status', function () {
@@ -796,9 +752,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.pending_requests = true;
                 controller.refresh();
-                defer.resolve({
-                  list: []
-                });
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by waiting approval status', function () {
@@ -888,7 +842,7 @@
         });
 
         it('calls related contact API to update', function () {
-          expect(Contact.all).toHaveBeenCalled();
+          expect(Contact.leaveManagees).toHaveBeenCalled();
         });
       });
 
@@ -898,7 +852,7 @@
         });
 
         it('calls related contact API to update', function () {
-          expect(Contact.all).toHaveBeenCalled();
+          expect(Contact.leaveManagees).toHaveBeenCalled();
         });
       });
 

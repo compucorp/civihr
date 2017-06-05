@@ -26,8 +26,18 @@ define([
        */
         all: function (filters, pagination, sort, params, cache) {
           $log.debug('LeaveRequestAPI.all');
+          var defer = $q.defer();
 
-          return this.getAll('LeaveRequest', filters, pagination, sort, params, 'getFull', cache);
+          // if contact_id has an empty array for IN condition, there is no point making the
+          // call to the Leave Request API
+          // TODO Move to Base API
+          if (filters && filters.contact_id && filters.contact_id.IN && filters.contact_id.IN.length === 0) {
+            defer.resolve({ list: [], total: 0, allIds: [] });
+          } else {
+            defer.resolve(this.getAll('LeaveRequest', filters, pagination, sort, params, 'getFull', cache));
+          }
+
+          return defer.promise;
         },
 
       /**
