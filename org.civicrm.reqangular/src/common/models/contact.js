@@ -57,15 +57,13 @@ define([
        * @return {object}
        */
       function injectContactIdsInFilters (filters, contactIds) {
-        filters = _(filters)
+        return _(filters)
           .omit(groupFiltersKeys)
           .omit(jobRoleFiltersKeys)
           .assign({
             id: {in: _.intersection.apply(null, contactIds)}
           })
           .value();
-
-        return filters;
       }
 
       /**
