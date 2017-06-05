@@ -5,7 +5,11 @@ class CRM_HRCore_APIWrapper_DefaultLimitRemover implements API_Wrapper {
   /**
    * In civicrm API, 0 means there is no limit on the retrieved results
    */
-  const NO_LIMIT_ON_RESULTS = 0;
+  static private $DEFAULT_NO_LIMIT_VALUE = 0;
+
+  public function getDefaultNoLimitValue() {
+    return self::$DEFAULT_NO_LIMIT_VALUE;
+  }
 
   /**
    * {@inheritDoc}
@@ -30,7 +34,7 @@ class CRM_HRCore_APIWrapper_DefaultLimitRemover implements API_Wrapper {
    */
   private function removeDefaultLimit(&$apiRequest) {
     if (empty($apiRequest['params']['options']['limit'])) {
-      $apiRequest['params']['options']['limit'] = self::NO_LIMIT_ON_RESULTS;
+      $apiRequest['params']['options']['limit'] = $this->getDefaultNoLimitValue();
     }
   }
 }
