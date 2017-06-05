@@ -65,7 +65,7 @@
   #help {
     background-color: $crm-help-success;
     border: none;
-    box-shadow: $box-shadow;
+    border-radius: $border-radius-base;
     clear: both;
     color: $crm-dasboard-header;
     margin: 0;
@@ -116,7 +116,7 @@
   #help {
     background-color: $crm-help-success;
     border: none;
-    box-shadow: $box-shadow;
+    border-radius: $border-radius-base;
     clear: both;
     color: $crm-copy;
     margin-top: 30px;
