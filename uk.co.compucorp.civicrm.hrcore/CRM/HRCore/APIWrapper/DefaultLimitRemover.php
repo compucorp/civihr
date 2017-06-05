@@ -8,7 +8,7 @@ class CRM_HRCore_APIWrapper_DefaultLimitRemover implements API_Wrapper {
   const NO_LIMIT_ON_RESULTS = 0;
 
   /**
-   * the wrapper contains a method that allows you to alter the parameters of the api request (including the action and the entity)
+   * {@inheritDoc}
    */
   public function fromApiInput($apiRequest) {
     $this->removeDefaultLimit($apiRequest);
@@ -17,7 +17,7 @@ class CRM_HRCore_APIWrapper_DefaultLimitRemover implements API_Wrapper {
   }
 
   /**
-   * alter the result before returning it to the caller.
+   * {@inheritDoc}
    */
   public function toApiOutput($apiRequest, $result) {
     return $result;
