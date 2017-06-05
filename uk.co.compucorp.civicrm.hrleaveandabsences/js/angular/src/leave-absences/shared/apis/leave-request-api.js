@@ -32,7 +32,7 @@ define([
           // call to the Leave Request API
           // TODO Move to Base API
           if (filters && filters.contact_id && filters.contact_id.IN && filters.contact_id.IN.length === 0) {
-            defer.resolve({ list: [], total: 0, size: 1 });
+            defer.resolve({ list: [], total: 0, allIds: [] });
           } else {
             defer.resolve(this.getAll('LeaveRequest', filters, pagination, sort, params, 'getFull', cache));
           }

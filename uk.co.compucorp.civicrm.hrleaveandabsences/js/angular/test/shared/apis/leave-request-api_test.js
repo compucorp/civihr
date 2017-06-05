@@ -72,7 +72,7 @@ define([
 
         it('returns empty data structure', function () {
           promise.then(function (response) {
-            expect(response).toEqual({ list: [], total: 0, size: 1 });
+            expect(response).toEqual({ list: [], total: 0, allIds: [] });
           });
         });
       });

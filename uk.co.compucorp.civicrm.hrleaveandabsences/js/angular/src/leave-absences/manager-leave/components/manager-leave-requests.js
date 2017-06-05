@@ -450,7 +450,10 @@ define([
      * @return {Object}
      */
     function prepareContactID () {
-      if (vm.filters.leaveRequest.contact_id) {
+      // If there is no users after applying filter, the selected contact_id
+      // should not be sent to the leave request API, as it will still load
+      // the leave requests for the selected contact id
+      if (vm.filteredUsers.length > 0 && vm.filters.leaveRequest.contact_id) {
         return vm.filters.leaveRequest.contact_id;
       }
 
