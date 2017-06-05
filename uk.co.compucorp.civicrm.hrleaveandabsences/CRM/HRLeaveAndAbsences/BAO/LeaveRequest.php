@@ -251,7 +251,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past) {
       throw new InvalidLeaveRequestException(
-        'You cannot request TOIL for past days',
+        'You may only request TOIL for Overtime to be worked in the future. Please modify the date of this request',
         'leave_request_toil_cannot_be_requested_for_past_days',
         'from_date'
       );
@@ -296,9 +296,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       }
     }
 
-    if ($totalProjectedToilForPeriod > $absenceType->max_leave_accrual && !$unlimitedAccrual) {
+    $maxLeaveAccrual = $absenceType->max_leave_accrual;
+    if ($totalProjectedToilForPeriod > $maxLeaveAccrual && !$unlimitedAccrual) {
       throw new InvalidLeaveRequestException(
-        'The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type',
+        'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual .' days. Please modify the dates of this request',
         'leave_request_toil_amount_more_than_maximum_for_absence_type',
         'toil_to_accrue'
       );
@@ -413,7 +414,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if ($contract['count'] > 1) {
       throw new InvalidLeaveRequestException(
-        'The Leave request dates must not have dates in more than one contract period',
+        'This leave request is after your contract end date. Please modify dates of this request',
         'leave_request_overlapping_multiple_contracts',
         'from_date'
       );
@@ -447,7 +448,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
       throw new InvalidLeaveRequestException(
-        'Balance change for the leave request cannot be greater than the remaining balance of the period',
+        'There are only '. $currentBalance .' days leave available. This request cannot be made or approved',
         'leave_request_balance_change_greater_than_remaining_balance',
         'type_id'
       );
@@ -542,7 +543,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if ($overlappingLeaveRequests) {
       throw new InvalidLeaveRequestException(
-        'This Leave request has dates that overlaps with an existing leave request',
+        'This leave request overlaps with another request. Please modify dates of this request',
         'leave_request_overlaps_another_leave_request',
         'from_date'
       );
@@ -588,10 +589,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $interval = $toDate->diff($fromDate);
     $intervalInDays = $interval->format("%a");
+    $maxConsecutiveLeaveDays = $absenceType->max_consecutive_leave_days;
 
-    if (!empty($absenceType->max_consecutive_leave_days) && $intervalInDays > $absenceType->max_consecutive_leave_days) {
+    if (!empty($maxConsecutiveLeaveDays) && $intervalInDays > $absenceType->max_consecutive_leave_days) {
       throw new InvalidLeaveRequestException(
-        'Leave Request days cannot be greater than maximum consecutive days for absence type',
+        'Only a maximum '. $maxConsecutiveLeaveDays .' days leave can be taken in one request. Please modify days of this request',
         'leave_request_days_greater_than_max_consecutive_days',
         'type_id'
       );
