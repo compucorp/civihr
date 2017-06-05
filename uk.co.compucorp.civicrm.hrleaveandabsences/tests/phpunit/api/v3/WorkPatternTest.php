@@ -84,13 +84,14 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
     ]);
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    $workPattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
 
     // contracts covering the whole period
     HRJobContractFabricator::fabricate(
       ['contact_id' => $contact1['id']],
       [
         'period_start_date' => '2015-01-05',
-        'period_end_date' => '2015-01-19'
+        'period_end_date' => '2015-01-08'
       ]
     );
 
@@ -98,9 +99,14 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
       ['contact_id' => $contact2['id']],
       [
         'period_start_date' => '2015-01-05',
-        'period_end_date' => '2015-01-19'
+        'period_end_date' => '2015-01-08'
       ]
     );
+
+    ContactWorkPatternFabricator::fabricate([
+      'pattern_id' => $workPattern->id,
+      'contact_id' => $contact2['id']
+    ]);
 
     $workDayTypes = $this->getWorkDayTypeOptionsArray();
 
@@ -113,28 +119,74 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
 
     // Since there's not guarantee about the order on which the calendars will
     // be returned, we get all the contacts ID's from the result, put them in an
-    // array and then check if this array only contains the IDs we're expecting
+    // ordered array and then check if this array have is equal to the contact
+    // id we passed to the API
     $returnedContactsIDs = array_column($calendars, 'contact_id');
-    $this->assertContains($contact1['id'], $returnedContactsIDs);
-    $this->assertContains($contact2['id'], $returnedContactsIDs);
+    sort($returnedContactsIDs);
+    $this->assertEquals([$contact1['id'], $contact2['id']], $returnedContactsIDs);
 
-    // Asserting ALL the dates would make the test too big, so we assert the
-    // total number of dates, the first and last ones and a few dates in the
-    // middle, assuming all the other will be correct.
-    // Since both contacts have the same work pattern, both calendars should be equal
+    $expectedContact1Calendar = [
+      [
+        'date' => '2015-01-05',
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2015-01-06',
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2015-01-07',
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2015-01-08',
+        'type' => $workDayTypes['working_day']
+      ],
+    ];
+
+    $expectedContact2Calendar = [
+      [
+        'date' => '2015-01-05',
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2015-01-06',
+        'type' => $workDayTypes['non_working_day']
+      ],
+      [
+        'date' => '2015-01-07',
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2015-01-08',
+        'type' => $workDayTypes['non_working_day']
+      ],
+    ];
+
+    $contact1Calendar = $this->getCalendarByContactID($calendars, $contact1['id']);
+    $contact2Calendar = $this->getCalendarByContactID($calendars, $contact2['id']);
+
+    $this->assertEquals($expectedContact1Calendar, $contact1Calendar);
+    $this->assertEquals($expectedContact2Calendar, $contact2Calendar);
+  }
+
+  /**
+   * Given a list of calendars returned by WorkPattern.getCalendar, returns the
+   * one beloging to the contact with the given ID
+   *
+   * @param array $calendars
+   * @param int $contactID
+   *
+   * @return null
+   */
+  private function getCalendarByContactID($calendars, $contactID) {
     foreach($calendars as $calendar) {
-      $this->assertEquals('2015-01-05', $calendar['calendar'][0]['date']);
-      $this->assertEquals($workDayTypes['working_day'], $calendar['calendar'][0]['type']);
-      $this->assertEquals('2015-01-08', $calendar['calendar'][3]['date']);
-      $this->assertEquals($workDayTypes['working_day'], $calendar['calendar'][3]['type']);
-      $this->assertEquals('2015-01-11', $calendar['calendar'][6]['date']);
-      $this->assertEquals($workDayTypes['weekend'], $calendar['calendar'][6]['type']);
-      $this->assertEquals('2015-01-16', $calendar['calendar'][11]['date']);
-      $this->assertEquals($workDayTypes['working_day'], $calendar['calendar'][11]['type']);
-      $this->assertEquals('2015-01-19', $calendar['calendar'][14]['date']);
-      $this->assertEquals($workDayTypes['working_day'], $calendar['calendar'][14]['type']);
+      if ($calendar['contact_id'] == $contactID) {
+        return $calendar['calendar'];
+      }
     }
 
+    return null;
   }
 
   public function invalidGetCalendarContactIDOperators() {
