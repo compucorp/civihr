@@ -40,11 +40,11 @@ define([
             'id': '$value.job_contract_id'
           }
         }))
-          .then(function (jobRoles) {
-            return jobRoles.list.map(function (jobRole) {
-              return jobRole.contact_id;
-            });
+        .then(function (jobRoles) {
+          return jobRoles.list.map(function (jobRole) {
+            return jobRole.contact_id;
           });
+        });
       }
 
       /**
@@ -61,15 +61,13 @@ define([
        * @return {object}
        */
       function injectContactIdsInFilters (filters, contactIds) {
-        filters = _(filters)
+        return _(filters)
           .omit(groupFiltersKeys)
           .omit(jobRoleFiltersKeys)
           .assign({
             id: {in: _.intersection.apply(null, contactIds)}
           })
           .value();
-
-        return filters;
       }
 
       /**
@@ -127,7 +125,7 @@ define([
             .then(function (filters) {
               // if ID is empty array directly resolve the promise without calling the API
               if (filters && filters.id && !filters.id.IN.length) {
-                return { list: [] };
+                return {list: []};
               } else {
                 return contactAPI.all(filters, pagination, sort, additionalParams);
               }
