@@ -2,6 +2,12 @@
 
 require_once 'hrcore.civix.php';
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference as Reference;
+use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
+use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
+
 /**
  * Implements hook_civicrm_config().
  *
@@ -11,6 +17,36 @@ function hrcore_civicrm_config(&$config) {
   _hrcore_civix_civicrm_config($config);
   $smarty = CRM_Core_Smarty::singleton();
   array_push($smarty->plugins_dir, __DIR__ . '/CRM/Smarty/plugins');
+}
+
+/**
+ * Implements hook_civicrm_searchTasks().
+ *
+ * @param string $objectName
+ * @param array $tasks
+ */
+function hrcore_civicrm_searchTasks($objectName, &$tasks) {
+  if ($objectName !== 'contact' || !CRM_Core_Permission::check('Create new users')) {
+    return;
+  }
+
+  $tasks[] = [
+    'title'  => ts('Create User Record'),
+    'class'  => CRM_HRCore_Form_CreateUserRecordTaskForm::class,
+  ];
+}
+
+/**
+ * Implements hook_civicrm_container().
+ *
+ * @param ContainerBuilder $container
+ */
+function hrcore_civicrm_container($container) {
+  $container->register('drupal_role_service', DrupalRoleService::class);
+  $container->setDefinition(
+    'drupal_user_service',
+    new Definition(DrupalUserService::class, [new Reference('drupal_role_service')])
+  );
 }
 
 /**
