@@ -719,27 +719,6 @@
                 });
               });
             });
-
-            describe('when contact is null and filtered users is empty', function () {
-              beforeEach(function () {
-                controller.filters.leaveRequest.contact = null;
-                controller.refresh();
-                defer.resolve([]);
-              });
-
-              it('does not call LeaveRequest API', function () {
-                promise.then(function () {
-                  expect(LeaveRequest.all).not.toHaveBeenCalled();
-                });
-              });
-
-              it('empties the leave requests', function () {
-                promise.then(function () {
-                  expect(controller.leaveRequests.table.list.length).toBe(0);
-                  expect(controller.leaveRequests.filter.list.length).toBe(0);
-                });
-              });
-            });
           });
 
           describe('status_id', function () {

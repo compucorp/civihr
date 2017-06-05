@@ -232,7 +232,7 @@ define([
       if (page <= vm.totalNoOfPages() || vm.totalNoOfPages() === 0) {
         vm.pagination.page = page;
 
-        loadAllRequests();
+        loadManageesAndLeaves();
       }
     };
 
@@ -267,7 +267,7 @@ define([
       ])
       .then(function () {
         vm.loading.page = false;
-        loadAllRequests();
+        loadManageesAndLeaves();
       });
 
       registerEvents();
@@ -317,11 +317,11 @@ define([
     }
 
     /**
-     * Loads all requests
+     * Loads the managees and calls loadLeaveRequests()
      *
      * @return {Promise}
      */
-    function loadAllRequests () {
+    function loadManageesAndLeaves () {
       vm.loading.content = true;
 
       Contact.leaveManagees(vm.contactId, contactFilters())
@@ -329,8 +329,8 @@ define([
           vm.filteredUsers = users;
 
           return $q.all([
-            loadLeaveRequest('table'),
-            loadLeaveRequest('filter')
+            loadLeaveRequests('table'),
+            loadLeaveRequests('filter')
           ]);
         })
         .then(function () {
@@ -356,14 +356,7 @@ define([
      * @param {string} type - load leave requests for the either the filter or the table
      * @return {Promise}
      */
-    function loadLeaveRequest (type) {
-      // if there is no contacts after applying filters, there is no point making the
-      // call to the Leave Request API
-      if (!vm.filteredUsers.length) {
-        vm.leaveRequests[type] = { list: [], total: 0, size: 1 };
-        return $q.resolve();
-      }
-
+    function loadLeaveRequests (type) {
       var filterByStatus = type !== 'filter';
       // {pagination: {size:0}} - Load all requests instead of 25
       var pagination = type === 'filter' ? { size: 0 } : vm.pagination;
