@@ -1,3 +1,4 @@
+/* eslint-env amd */
 define([
   'common/lodash',
   'common/modules/models',
@@ -23,7 +24,7 @@ define([
        * @param {Array} foreignKeys - The keys that are for foreign models
        * @return {boolean}
        */
-      function containsForeignFilters(filters, foreignKeys) {
+      function containsForeignFilters (filters, foreignKeys) {
         return !_.isEmpty(_.intersection(_.keys(filters), foreignKeys));
       }
 
@@ -59,8 +60,8 @@ define([
        *   an array of arrays
        * @return {object}
        */
-      function injectContactIdsInFilters(filters, contactIds) {
-        return filters = _(filters)
+      function injectContactIdsInFilters (filters, contactIds) {
+        return _(filters)
           .omit(groupFiltersKeys)
           .omit(jobRoleFiltersKeys)
           .assign({
@@ -79,7 +80,7 @@ define([
        * @param {object} filters
        * @return {Promise} resolves to the processed filters
        */
-      function processContactFilters(filters) {
+      function processContactFilters (filters) {
         var deferred = $q.defer();
         var promises = [];
 

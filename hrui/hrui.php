@@ -64,6 +64,12 @@ function hrui_civicrm_pageRun($page) {
   CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
 }
 
+/**
+ * Implements hook_civicrm_buildForm().
+ *
+ * @param string $formName
+ * @param CRM_Core_Form $form
+ */
 function hrui_civicrm_buildForm($formName, &$form) {
   CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
 
@@ -92,6 +98,10 @@ function hrui_civicrm_buildForm($formName, &$form) {
 
       CRM_Core_Session::setStatus($message, $title, 'no-popup crm-error', ['expires' => 0]);
     }
+  }
+
+  if ($formName === 'CRM_Admin_Form_Options' && $form->elementExists('value')) {
+    $form->removeElement('value');
   }
 }
 

@@ -1,10 +1,6 @@
-@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/overrides/variables";
-@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/mixins/ALL";
-
 @import "overrides/variables";
 
-@import "SCSSROOT/org.civicrm.shoreditch/base/scss/overrides/variables";
-@import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/variables";
+@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/mixins/ALL";
 @import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/mixins";
 
 @import "fonts/*";

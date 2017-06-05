@@ -1,31 +1,39 @@
-<div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">{{jobroles.message}}</div>
+<section class="job-roles">
+  <div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">
+    {{jobroles.message}}
+  </div>
 
-<h3 ng-show="jobroles.loading || jobroles.present_job_roles.length" class="header-bar header-bar-primary">Current Roles and Projects:</h3>
-<div id="bootstrap-theme">
-  <crm-loading ng-show="jobroles.loading"></crm-loading>
-</div>
-<div class="" ng-show="!loading">
-  <ul class="{{prefix}}list-role">
-    <li class="{{prefix}}list-role-item"
-      ng-repeat="job_roles_data in jobroles.present_job_roles"
-      ng-include
-      src="jobroles.job_role_panel_url">
-    </li>
-  </ul>
-  <h3 ng-show="jobroles.past_job_roles.length > 0" class="header-bar header-bar-danger">Past Roles and Projects:</h3>
-  <ul class="{{prefix}}list-role">
-    <li class="{{prefix}}list-role-item"
-      ng-repeat="job_roles_data in jobroles.past_job_roles"
-      ng-include
-      src="jobroles.job_role_panel_url">
-    </li>
-  </ul>
-</div>
+  <section class="job-roles__list">
+    <div class="page-header page-header-primary" ng-show="jobroles.present_job_roles.length">
+      <h2>Current Roles and Projects:</h2>
+    </div>
+    <crm-loading show="!jobroles.loading">
+      <ul class="list-unstyled">
+        <li ng-repeat="job_roles_data in jobroles.present_job_roles"
+          ng-include src="jobroles.job_role_panel_url">
+        </li>
+      </ul>
+    </crm-loading>
+  </section>
+  <section class="job-roles__list" ng-show="jobroles.past_job_roles.length">
+    <div class="page-header page-header-danger">
+      <h2>Past Roles and Projects:</h2>
+    </div>
+    <crm-loading show="!jobroles.loading">
+      <ul class="list-unstyled">
+        <li ng-repeat="job_roles_data in jobroles.past_job_roles"
+          ng-include src="jobroles.job_role_panel_url">
+        </li>
+      </ul>
+    </crm-loading>
+  </section>
 
-<div class="{{prefix}}list-role-item" ng-show="!!jobroles.add_new">
-  <div ng-include src="jobroles.add_new_role_url"></div>
-</div>
-
-<button class="btn btn-default btn-primary" ng-click="jobroles.add_new_role()" ng-hide="jobroles.add_new">
-  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add new job role
-</button>
+  <section>
+    <div ng-show="!!jobroles.add_new">
+      <div ng-include src="jobroles.add_new_role_url"></div>
+    </div>
+    <button class="btn btn-primary" ng-click="jobroles.add_new_role()" ng-hide="jobroles.add_new">
+      <span class="btn-icon"><i class="fa fa-plus"></i></span> Add new job role
+    </button>
+  </section>
+</section>
