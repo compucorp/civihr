@@ -848,6 +848,10 @@
 
   .selector {
     @include mx-expandable-table();
+
+    .sticky th:first-child {
+      text-align: left !important;
+    }
     
     tbody tr td {
       &:nth-child(3) {
@@ -1637,5 +1641,73 @@ form.CRM_Contribute_Form_ContributionCharts {
   .report {
     border: solid 1px $crm-background;
     margin-top: 20px;
+  }
+}
+
+.CRM_Contribute_Form_Task_Print {
+  padding: 0 15px;
+
+  .crm-form-block {
+    background: transparent;
+  }
+
+  table {
+    @extend %civihr-table;
+    border: none;
+    border-radius: $panel-border-radius;
+    margin: 30px 0 20px;
+
+    tr.columnheader {
+      border: none !important;
+      border-bottom: 1px solid $crm-dark-grayblue !important;
+    }
+
+    tr.crm-contribution {
+      border-left: none;
+      border-right: none;
+    }
+
+    th,
+    td {
+      border: none !important;
+      line-height: 1.5em !important;
+      padding: 15px 20px !important;
+    }
+
+    td.crm-contribution-contribution_source {
+      max-width: 300px;
+    }
+  }
+
+  .element-right {
+    margin-right: 0 !important;
+  }
+
+  .crm-form-submit {
+    background: $brand-primary;
+    border: none;
+    border-radius: $border-radius-base;
+    font-family: $font-family-base;
+    margin: 0;
+    padding: 9px 15px;
+    text-shadow: none;
+    text-transform: uppercase;
+
+    &:hover {
+      background: $crm-blue-light;        
+      color: $crm-white;
+    }
+  }
+
+  .crm-form-submit.cancel {
+    background: transparent;
+    border: 1px solid $gray-darker;
+    color: $gray-darker;
+    padding: 8px 15px;
+
+    &:hover {
+      background: $gray-darker;
+      color: $crm-white;
+    }
   }
 }
