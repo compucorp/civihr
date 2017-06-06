@@ -9,75 +9,52 @@ define([
   'use strict';
 
   describe('CalendarInstance', function () {
-    var CalendarInstance;
+    var instance, mockedCalendar;
 
     beforeEach(module('leave-absences.models.instances'));
-
-    beforeEach(inject([
-      'CalendarInstance',
-      function (_CalendarInstance_) {
-        CalendarInstance = _CalendarInstance_.init(mockData.daysData().values[0]);
-      }]
-    ));
+    beforeEach(inject(['CalendarInstance', function (CalendarInstance) {
+      mockedCalendar = mockData.daysData().values[0];
+      instance = CalendarInstance.init(mockedCalendar);
+    }]));
 
     describe('init()', function () {
       var key, date;
 
       beforeEach(function () {
-        // check with first key of the object
-        key = Object.keys(CalendarInstance.days)[0];
-        date = moment(CalendarInstance.days[key].date).valueOf().toString();
+        key = Object.keys(instance.days)[0];
+        date = moment(instance.days[key].date).valueOf();
       });
 
-      it('dates arrays has been converted to an object with proper timestamp values', function () {
-        expect(key).toBe(date);
+      it('converts the dates array to an object with timestamps as keys', function () {
+        expect(+key).toBe(date);
       });
     });
 
-    describe('test date functions', function () {
-      var dateToSearch;
-
-      describe('isWorkingDay()', function () {
-        it('return true if it is a working day', function () {
-          dateToSearch = moment(getDate('working_day').date);
-          expect(CalendarInstance.isWorkingDay(dateToSearch)).toBe(true);
-        });
-
-        it('return false if it is a not working day', function () {
-          dateToSearch = moment(getDate('non_working_day').date);
-          expect(CalendarInstance.isWorkingDay(dateToSearch)).toBe(false);
-        });
+    describe('isWorkingDay()', function () {
+      it('determines if a given date is a working day', function () {
+        expect(instance.isWorkingDay(getDate('working_day'))).toBe(true);
+        expect(instance.isWorkingDay(getDate('non_working_day'))).toBe(false);
       });
-
-      describe('isNonWorkingDay()', function () {
-        it('return true if it is a non working day', function () {
-          dateToSearch = moment(getDate('non_working_day').date);
-          expect(CalendarInstance.isNonWorkingDay(dateToSearch)).toBe(true);
-        });
-
-        it('return false if it is a not non working day', function () {
-          dateToSearch = moment(getDate('working_day').date);
-          expect(CalendarInstance.isNonWorkingDay(dateToSearch)).toBe(false);
-        });
-      });
-
-      describe('isWeekend()', function () {
-        it('return true if it is a weekend', function () {
-          dateToSearch = moment((getDate('weekend').date));
-          expect(CalendarInstance.isWeekend(dateToSearch)).toBe(true);
-        });
-
-        it('return false if it is a not weekend', function () {
-          dateToSearch = moment(getDate('working_day').date);
-          expect(CalendarInstance.isWeekend(dateToSearch)).toBe(false);
-        });
-      });
-
-      function getDate (dayType) {
-        return mockData.daysData().values[0].calendar.find(function (data) {
-          return data.type.name === dayType;
-        });
-      }
     });
+
+    describe('isNonWorkingDay()', function () {
+      it('determines if a given date is a non working day', function () {
+        expect(instance.isNonWorkingDay(getDate('non_working_day'))).toBe(true);
+        expect(instance.isNonWorkingDay(getDate('working_day'))).toBe(false);
+      });
+    });
+
+    describe('isWeekend()', function () {
+      it('determines if a given date is a weekend', function () {
+        expect(instance.isWeekend(getDate('weekend'))).toBe(true);
+        expect(instance.isWeekend(getDate('working_day'))).toBe(false);
+      });
+    });
+
+    function getDate (dayType) {
+      return moment(Object.values(instance.days).find(function (data) {
+        return data.type.name === dayType;
+      }).date);
+    }
   });
 });
