@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'leave-absences/shared/modules/apis',
@@ -22,8 +24,8 @@ define([
       getCalendar: function (contactId, periodId, params) {
         $log.debug('WorkPatternAPI.getCalendar', contactId, periodId, params);
 
-        return this.sendGET('WorkPattern', 'getcalendar',  _.assign({}, params, {
-          contact_id: _.isArray(contactId) ? { "IN": contactId } : contactId,
+        return this.sendGET('WorkPattern', 'getcalendar', _.assign({}, params, {
+          contact_id: _.isArray(contactId) ? { 'IN': contactId } : contactId,
           period_id: periodId
         }));
       }

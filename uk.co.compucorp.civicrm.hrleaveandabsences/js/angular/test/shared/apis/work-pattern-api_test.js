@@ -1,9 +1,10 @@
-/** eslint-env amd, jasmine */
+/* eslint-env amd, jasmine */
+/* global inject */
 
 define([
   'common/lodash',
   'mocks/data/work-pattern-data',
-  'leave-absences/shared/apis/work-pattern-api',
+  'leave-absences/shared/apis/work-pattern-api'
 ], function (_, mockData) {
   'use strict';
 
@@ -24,10 +25,10 @@ define([
       var workPatternPromise;
       var dummyContactId = 1;
       var dummyPeriodId = 2;
-      var additionalFilters = { foo: 'foo', bar: 'bar' }
+      var additionalFilters = { foo: 'foo', bar: 'bar' };
 
       beforeEach(function () {
-        $httpBackend.whenGET(/action\=getcalendar&entity\=WorkPattern/).respond(mockData.daysData());
+        $httpBackend.whenGET(/action=getcalendar&entity=WorkPattern/).respond(mockData.daysData());
         spyOn(WorkPatternAPI, 'sendGET').and.callThrough();
       });
 
@@ -76,7 +77,7 @@ define([
 
         it('passes the contact ids as an "IN" filter', function () {
           expect(WorkPatternAPI.sendGET.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
-            contact_id: { "IN": multipleContacts }
+            contact_id: { 'IN': multipleContacts }
           }));
         });
       });
