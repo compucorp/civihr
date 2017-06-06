@@ -2544,7 +2544,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
-    $errorMessage = 'You may only request TOIL for Overtime to be worked in the future. Please modify the date of this request';
+    $errorMessage = 'You may only request TOIL for overtime to be worked in the future. Please modify the date of this request';
     $expectedResult = $this->getExpectedArrayForIsValidError(
       'from_date',
       $errorMessage

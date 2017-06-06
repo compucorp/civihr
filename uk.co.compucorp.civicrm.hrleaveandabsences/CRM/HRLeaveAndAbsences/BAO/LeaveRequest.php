@@ -251,7 +251,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past) {
       throw new InvalidLeaveRequestException(
-        'You may only request TOIL for Overtime to be worked in the future. Please modify the date of this request',
+        'You may only request TOIL for overtime to be worked in the future. Please modify the date of this request',
         'leave_request_toil_cannot_be_requested_for_past_days',
         'from_date'
       );
@@ -406,19 +406,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $fromDate = new DateTime($params['from_date']);
     $toDate = new DateTime($params['to_date']);
 
-    $contract = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
+    $contractsContainingToOrFromDates = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
       'contact_id' => $params['contact_id'],
       'start_date' => $fromDate->format('Y-m-d'),
       'end_date' => $toDate->format('Y-m-d'),
     ]);
 
-    $contractForEndDate = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
+    $contractsContainingEndDate = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
       'contact_id' => $params['contact_id'],
       'start_date' => $toDate->format('Y-m-d'),
       'end_date' => $toDate->format('Y-m-d'),
     ]);
 
-    if ($contract['count'] > 1 || $contractForEndDate['count'] != 1) {
+    if ($contractsContainingToOrFromDates['count'] > 1 || $contractsContainingEndDate['count'] != 1) {
       throw new InvalidLeaveRequestException(
         'This leave request is after your contract end date. Please modify dates of this request',
         'leave_request_overlapping_multiple_contracts',
@@ -597,7 +597,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $intervalInDays = $interval->format("%a");
     $maxConsecutiveLeaveDays = $absenceType->max_consecutive_leave_days;
 
-    if (!empty($maxConsecutiveLeaveDays) && $intervalInDays > $absenceType->max_consecutive_leave_days) {
+    if (!empty($maxConsecutiveLeaveDays) && $intervalInDays > $maxConsecutiveLeaveDays) {
       throw new InvalidLeaveRequestException(
         'Only a maximum '. $maxConsecutiveLeaveDays .' days leave can be taken in one request. Please modify days of this request',
         'leave_request_days_greater_than_max_consecutive_days',

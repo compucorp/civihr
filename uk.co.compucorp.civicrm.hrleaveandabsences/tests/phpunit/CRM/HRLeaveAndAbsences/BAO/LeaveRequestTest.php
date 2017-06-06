@@ -1906,7 +1906,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage You may only request TOIL for Overtime to be worked in the future. Please modify the date of this request
+   * @expectedExceptionMessage You may only request TOIL for overtime to be worked in the future. Please modify the date of this request
    */
   public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndDatesAreInThePastAndAbsenceTypeDoesNotAllow() {
     AbsencePeriodFabricator::fabricate([
