@@ -178,13 +178,20 @@ define([
           .then(function (balanceChange) {
             if (balanceChange) {
               self.balance.change = balanceChange;
-              // the change is negative so adding it will actually subtract it
-              self.balance.closing = self.balance.opening + self.balance.change.amount;
+              self.calculateClosingBalanceChange();
               rePaginate.call(self);
             }
             self.loading.showBalanceChange = false;
           })
           .catch(handleError.bind(self));
+      };
+
+      /**
+       * Calculates and updates closing balance
+       */
+      this.calculateClosingBalanceChange = function () {
+        // the change is negative so adding it will actually subtract it
+        this.balance.closing = this.balance.opening + this.balance.change.amount;
       };
 
       /**
@@ -943,6 +950,7 @@ define([
 
         // Init the `balance` object based on the first absence type
         this.balance.opening = this.selectedAbsenceType.remainder;
+        this.calculateClosingBalanceChange();
       }
 
       /**
