@@ -2693,6 +2693,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2016-01-01']
+    );
+
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,

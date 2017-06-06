@@ -139,6 +139,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => '2016-01-01']
+    );
+
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
@@ -1156,6 +1161,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2016-01-01']
+    );
+
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
@@ -1199,6 +1209,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2016-01-01']
+    );
 
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'type_id' => $this->absenceType->id,
@@ -2410,6 +2425,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'end_date' => CRM_Utils_Date::processDate('+15 days'),
     ]);
 
+    $contactID = 1;
+    $periodStartDate = new DateTime('-2 days');
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $periodStartDate->format('Y-m-d')]
+    );
+
     $absenceType = AbsenceTypeFabricator::fabricate([
       'title' => 'Type 1',
       'allow_accruals_request' => true,
@@ -2424,7 +2446,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $params = [
       'type_id' => $absenceType->id,
-      'contact_id' => 1,
+      'contact_id' => $contactID,
       'toil_to_accrue'=> 2,
       'from_date' => CRM_Utils_Date::processDate('monday'),
       'to_date' => CRM_Utils_Date::processDate('monday'),
@@ -2455,6 +2477,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testToilCanBeAccruedWhenUpdatingApprovedToilWithAToilAmountLesserThanWhatWasInitiallyApprovedAndTotalToilToBeAccruedIsNotGreaterThanMaximumForTheAbsenceType() {
+    $contactID = 1;
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-1 day'),
       'end_date' => CRM_Utils_Date::processDate('+15 days'),
@@ -2466,9 +2489,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'max_leave_accrual' => 5
     ]);
 
+    $periodStartDate = new DateTime('-2 days');
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $periodStartDate->format('Y-m-d')]
+    );
+
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'type_id' => $absenceType->id,
-      'contact_id' => 1,
+      'contact_id' => $contactID,
       'period_id' => $period->id
     ]);
 
@@ -2505,6 +2534,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testToilCanBeAccruedWhenUpdatingApprovedToilWithAToilAmountSameAsWhatWasInitiallyApprovedAndTotalToilToBeAccruedIsNotGreaterThanMaximumForTheAbsenceType() {
+    $contactID = 1;
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-1 day'),
       'end_date' => CRM_Utils_Date::processDate('+15 days'),
@@ -2516,9 +2546,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'max_leave_accrual' => 5
     ]);
 
+    $periodStartDate = new DateTime('-5 days');
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $periodStartDate->format('Y-m-d')]
+    );
+
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'type_id' => $absenceType->id,
-      'contact_id' => 1,
+      'contact_id' => $contactID,
       'period_id' => $period->id
     ]);
 
