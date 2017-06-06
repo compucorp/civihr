@@ -43,6 +43,7 @@ define([
     $log.debug('app.run');
 
     $rootScope.pathTpl = sharedSettings.pathTpl;
+    $rootScope.sharedSettings = sharedSettings;
     $rootScope.settings = settings;
   }]);
 

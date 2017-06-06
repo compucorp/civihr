@@ -266,6 +266,22 @@ define([
       };
 
       /**
+       * Checks if the leave request is of a specific status(sent as a param)
+       * If 'statusBeforeEdit' is available ->its an existing request, so search is done on this object
+       * If 'statusBeforeEdit' is not present -> its a new request, so search is done on this.request object
+       *
+       * @param {String} leaveStatus
+       * @return {Boolean}
+       */
+      this.isLeaveStatus = function (leaveStatus) {
+        var status = this.statusBeforeEdit.name
+          ? this.statusBeforeEdit
+          : getStatusFromValue.call(this, this.request.status_id);
+
+        return status ? status.name === leaveStatus : false;
+      };
+
+      /**
        * Checks if popup is opened in given leave type like `leave` or `sickness` or 'toil'
        *
        * @param {String} leaveTypeParam to check the leave type of current request
@@ -443,6 +459,7 @@ define([
 
         return attributes;
       };
+
       /**
        * Resets data in dates, types, balance.
        */
