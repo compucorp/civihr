@@ -9,11 +9,15 @@
     }
   });
 
-  require([
-      'leave-absences/shared/config',
-      'leave-absences/my-leave/app',
-    ],
-    function (__, angular) {
-      angular.bootstrap(document.querySelector('[data-leave-absences-my-leave]'), ['my-leave']);
-    });
+  require(['leave-absences/shared/config'], function(__){
+    require(
+      [
+        'leave-absences/my-leave/app'
+      ],
+      function (angular) {
+        angular.bootstrap(document.querySelector('[data-leave-absences-my-leave]'), ['my-leave']);
+      }
+    );
+  });
+
 })(CRM, require);
