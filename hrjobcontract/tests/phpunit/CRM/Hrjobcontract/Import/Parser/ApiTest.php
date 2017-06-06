@@ -56,9 +56,8 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   function createPayScale() {
     $this->_payScale = HRPayScaleFabricator::fabricate();
     $this->_payScale['importLabel'] = $this->_payScale['pay_scale'] . ' - '
-      . $this->_payScale['pay_grade'] . ' - '
       . $this->_payScale['currency'] . ' '
-      . $this->_payScale['amount'] . ' per ' . $this->_payScale['periodicity']
+      . $this->_payScale['amount'] . ' per ' . $this->_payScale['pay_frequency']
     ;
   }
 
@@ -245,7 +244,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobHour-hours_amount' => ''
     ]);
     $importEmptyContractResponse = $this->runImport($emptyHoursContract);
-    $this->assertEquals(CRM_Import_Parser::VALID, $importEmptyContractResponse);    
+    $this->assertEquals(CRM_Import_Parser::VALID, $importEmptyContractResponse);
 
     $expected = ['fte_num' => 0, 'fte_denom' => 0, 'hours_fte' => 0];
     $this->validateHourAutoFields($contact2['id'], $expected);
@@ -255,7 +254,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $contact3 = ContactFabricator::fabricate();
     $importResponse = $this->runImport([
       'HRJobContract-contact_id' => $contact3['id'],
-      'HRJobDetails-contract_type' => $this->_contractTypeID,      
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-title' => 'Test Contract Title',
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-period_start_date' => '2016-01-01'
@@ -269,10 +268,10 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   /**
    * Merges parmeter array given with default import data for contracts. Given
    * parameters override values of default import data array.
-   * 
+   *
    * @param array $params
    *   Parameters to be set to array
-   * 
+   *
    * @return array
    *   Result of merging given array with default import data array
    */
@@ -395,7 +394,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $importResponse = $this->runImport($params);
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
-  
+
   function testPensionImport() {
     $contact2Params = array(
       'first_name' => 'John_9',
