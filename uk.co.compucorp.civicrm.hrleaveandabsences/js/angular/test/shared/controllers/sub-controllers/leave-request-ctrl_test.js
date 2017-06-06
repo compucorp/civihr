@@ -483,7 +483,7 @@
             });
 
             it('resets balance and types', function () {
-              expect($ctrl.balance.closing).toEqual(0);
+              expect($ctrl.balance.closing).toEqual($ctrl.balance.opening);
               expect($ctrl.balance.change.amount).toEqual(0);
             });
 
