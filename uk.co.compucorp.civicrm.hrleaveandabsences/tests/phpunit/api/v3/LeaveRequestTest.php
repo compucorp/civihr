@@ -1925,7 +1925,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['from_date' => '']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', 'leave_request_empty_from_date');
+    $errorMessage = 'The from_date field should not be empty';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -1933,7 +1934,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['contact_id' => '']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('contact_id', 'leave_request_empty_contact_id');
+    $errorMessage = 'The contact_id field should not be empty';
+    $expectedResult = $this->getExpectedArrayForIsValidError('contact_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -1941,7 +1943,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['type_id' => '']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', 'leave_request_empty_type_id');
+    $errorMessage = 'The type_id field should not be empty';
+    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -1949,7 +1952,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['status_id' => '']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('status_id', 'leave_request_empty_status_id');
+    $errorMessage = 'The status_id field should not be empty';
+    $expectedResult = $this->getExpectedArrayForIsValidError('status_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -1957,7 +1961,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['to_date_type' => '']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('to_date_type', 'leave_request_empty_to_date_type');
+    $errorMessage = 'The to_date_type field should not be empty';
+    $expectedResult = $this->getExpectedArrayForIsValidError('to_date_type', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -1965,7 +1970,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['request_type' => '']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('request_type', 'leave_request_empty_request_type');
+    $errorMessage = 'The request_type field should not be empty';
+    $expectedResult = $this->getExpectedArrayForIsValidError('request_type', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -1973,7 +1979,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['request_type' => 'fdasfdasfdsafdsafdsafsda' . microtime()]);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('request_type', 'leave_request_invalid_request_type');
+    $errorMessage = 'The request_type is invalid';
+    $expectedResult = $this->getExpectedArrayForIsValidError('request_type', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -1981,7 +1988,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultTOILRequestParams(['toil_duration' => '', 'toil_to_accrue' => 1]);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('toil_duration', 'leave_request_empty_toil_duration');
+    $errorMessage = 'The toil_duration can not be empty when request_type is toil';
+    $expectedResult = $this->getExpectedArrayForIsValidError('toil_duration', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -1989,7 +1997,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultTOILRequestParams(['toil_to_accrue' => '']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('toil_to_accrue', 'leave_request_empty_toil_to_accrue');
+    $errorMessage = 'The toil_to_accrue can not be empty when request_type is toil';
+    $expectedResult = $this->getExpectedArrayForIsValidError('toil_to_accrue', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -1997,7 +2006,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['toil_duration' => '1']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('toil_duration', 'leave_request_non_empty_toil_duration');
+    $errorMessage = 'The toil_duration should be empty when request_type is not toil';
+    $expectedResult = $this->getExpectedArrayForIsValidError('toil_duration', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2005,7 +2015,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['toil_to_accrue' => '1']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('toil_to_accrue', 'leave_request_non_empty_toil_to_accrue');
+    $errorMessage = 'The toil_to_accrue should be empty when request_type is not toil';
+    $expectedResult = $this->getExpectedArrayForIsValidError('toil_to_accrue', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2013,7 +2024,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['toil_expiry_date' => '2016-01-01']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('toil_expiry_date', 'leave_request_non_empty_toil_expiry_date');
+    $errorMessage = 'The toil_expiry_date should be empty when request_type is not toil';
+    $expectedResult = $this->getExpectedArrayForIsValidError('toil_expiry_date', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2021,7 +2033,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultSicknessRequestParams(['sickness_reason' => '']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('sickness_reason', 'leave_request_empty_sickness_reason');
+    $errorMessage = 'The sickness_reason can not be empty when request_type is sickness';
+    $expectedResult = $this->getExpectedArrayForIsValidError('sickness_reason', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2029,7 +2042,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['sickness_reason' => '1']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('sickness_reason', 'leave_request_non_empty_sickness_reason');
+    $errorMessage = 'The sickness_reason should be empty when request_type is not sickness';
+    $expectedResult = $this->getExpectedArrayForIsValidError('sickness_reason', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2037,9 +2051,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params = $this->mergeWithDefaultLeaveRequestParams(['sickness_required_documents' => '1']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
+    $errorMessage = 'The sickness_required_documents should be empty when request_type is not sickness';
     $expectedResult = $this->getExpectedArrayForIsValidError(
       'sickness_required_documents',
-      'leave_request_non_empty_sickness_required_documents'
+      $errorMessage
     );
     $this->assertEquals($expectedResult, $result);
   }
@@ -2052,7 +2067,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', 'leave_request_from_date_greater_than_end_date');
+    $errorMessage = 'Leave Request start date cannot be greater than the end date';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2063,7 +2079,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('is_deleted', 'leave_request_cannot_be_soft_deleted');
+    $errorMessage = 'Leave Request can not be soft deleted during an update, use the delete method instead!';
+    $expectedResult = $this->getExpectedArrayForIsValidError('is_deleted', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2103,7 +2120,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', 'leave_request_overlaps_another_leave_request');
+    $errorMessage = 'This leave request overlaps with another request. Please modify dates of this request';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2124,7 +2142,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'period_id' => $period->id
     ]);
 
-    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
+    $entitlementBalanceChange = 3;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
     $periodStartDate = date('2016-01-01');
 
     HRJobContractFabricator::fabricate(
@@ -2154,7 +2173,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', 'leave_request_balance_change_greater_than_remaining_balance');
+    $errorMessage =  'There are only '. $entitlementBalanceChange .' days leave available. This request cannot be made or approved';
+    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2203,7 +2223,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', 'leave_request_doesnt_have_working_day');
+    $errorMessage = 'Leave Request must have at least one working day to be created';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2230,7 +2251,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', 'leave_request_not_within_absence_period');
+    $errorMessage = 'The Leave request dates are not contained within a valid absence period';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2292,7 +2314,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', 'leave_request_overlapping_multiple_contracts');
+    $errorMessage = 'This leave request is after your contract end date. Please modify dates of this request';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2315,7 +2338,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', 'leave_request_absence_type_not_active');
+    $errorMessage = 'Absence Type is not active';
+    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2339,7 +2363,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', 'leave_request_invalid_toil_absence_type');
+    $errorMessage = 'This absence type does not allow TOIL requests';
+    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2362,13 +2387,15 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', 'leave_request_invalid_sickness_absence_type');
+    $errorMessage = 'This absence type does not allow sickness requests';
+    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenLeaveDaysIsGreaterThanAbsenceTypeMaxConsecutiveLeaveDays() {
+    $maxConsecutiveLeaveDays = 2;
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'max_consecutive_leave_days' => 2
+      'max_consecutive_leave_days' => $maxConsecutiveLeaveDays
     ]);
 
     $fromDate = new DateTime();
@@ -2384,7 +2411,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', 'leave_request_days_greater_than_max_consecutive_days');
+    $errorMessage = 'Only a maximum '. $maxConsecutiveLeaveDays .' days leave can be taken in one request. Please modify days of this request';
+    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2423,7 +2451,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', 'leave_request_absence_type_disallows_cancellation');
+    $errorMessage = 'Absence Type does not allow leave request cancellation';
+    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2462,7 +2491,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', 'leave_request_past_days_cannot_be_cancelled');
+    $errorMessage = 'Leave Request with past days cannot be cancelled';
+    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2486,7 +2516,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
-    $expectedResult = $this->getExpectedArrayForIsValidError('toil_to_accrue', 'leave_request_toil_to_accrue_is_invalid');
+    $errorMessage = 'The TOIL to accrue amount is not valid';
+    $expectedResult = $this->getExpectedArrayForIsValidError('toil_to_accrue', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2513,9 +2544,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
+    $errorMessage = 'You may only request TOIL for Overtime to be worked in the future. Please modify the date of this request';
     $expectedResult = $this->getExpectedArrayForIsValidError(
       'from_date',
-      'leave_request_toil_cannot_be_requested_for_past_days'
+      $errorMessage
     );
     $this->assertEquals($expectedResult, $result);
   }
@@ -2526,9 +2558,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('+100 days'),
     ]);
 
+    $maxLeaveAccrual = 1;
     $absenceType = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => true,
-      'max_leave_accrual' => 1,
+      'max_leave_accrual' => $maxLeaveAccrual,
     ]);
 
     $result = civicrm_api3('LeaveRequest', 'isValid', [
@@ -2544,9 +2577,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
+    $errorMessage = 'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual .' days. Please modify the dates of this request';
     $expectedResult = $this->getExpectedArrayForIsValidError(
       'toil_to_accrue',
-      'leave_request_toil_amount_more_than_maximum_for_absence_type'
+      $errorMessage
     );
     $this->assertEquals($expectedResult, $result);
   }
@@ -2557,9 +2591,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('+10 days'),
     ]);
 
+    $maxLeaveAccrual = 4;
     $absenceType = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => true,
-      'max_leave_accrual' => 4,
+      'max_leave_accrual' => $maxLeaveAccrual,
     ]);
 
     $contactID  = 1;
@@ -2592,9 +2627,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
+    $errorMessage = 'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual .' days. Please modify the dates of this request';
     $expectedResult = $this->getExpectedArrayForIsValidError(
       'toil_to_accrue',
-      'leave_request_toil_amount_more_than_maximum_for_absence_type'
+      $errorMessage
     );
     $this->assertEquals($expectedResult, $result);
   }
@@ -2626,6 +2662,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
 
+    $maxLeaveAccrual = 1;
     // decrease the max leave accrual
     AbsenceType::create([
       'id' => $absenceType->id,
@@ -2639,9 +2676,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $params['status_id'] = 1;
     $result = civicrm_api3('LeaveRequest', 'isValid', $params);
 
+    $errorMessage = 'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual .' days. Please modify the dates of this request';
+
     $expectedResult = $this->getExpectedArrayForIsValidError(
       'toil_to_accrue',
-      'leave_request_toil_amount_more_than_maximum_for_absence_type'
+      $errorMessage
     );
     $this->assertEquals($expectedResult, $result);
   }
