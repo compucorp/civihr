@@ -1,7 +1,11 @@
+/* eslint-env amd, jasmine */
+/* global inject */
+
 define([
+  'common/lodash',
   'mocks/data/work-pattern-data',
-  'leave-absences/shared/models/calendar-model',
-], function (mockData) {
+  'leave-absences/shared/models/calendar-model'
+], function (_, mockData) {
   'use strict';
 
   describe('Calendar', function () {
@@ -25,11 +29,11 @@ define([
       $rootScope.$apply();
     });
 
-    describe('getCalendar()', function () {
+    describe('get()', function () {
       var CalendarPromise,
         deferred;
 
-      function commonSetUp(returnData) {
+      function commonSetUp (returnData) {
         deferred = $q.defer();
         deferred.resolve(returnData);
         WorkPatternAPI.getCalendar.and.returnValue(deferred.promise);
@@ -37,17 +41,37 @@ define([
         CalendarPromise = Calendar.get(jasmine.any(String), jasmine.any(String), jasmine.any(Object));
       }
 
-      it('calls equivalent API method', function () {
-        commonSetUp(mockData.daysData());
-        CalendarPromise.then(function () {
-          expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
+      describe('basic tests', function () {
+        it('calls equivalent API method', function () {
+          commonSetUp(mockData.daysData());
+          CalendarPromise.then(function () {
+            expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
+          });
         });
       });
 
-      it('returns model instances when request is successful', function () {
-        commonSetUp(mockData.daysData());
-        CalendarPromise.then(function (response) {
-          expect('days' in response).toBe(true);
+      describe('when passing a single contact id', function () {
+        it('returns a single CalendarInstance', function () {
+          commonSetUp(mockData.daysData());
+          CalendarPromise.then(function (response) {
+            expect(_.isArray(response)).toBe(false);
+            expect('days' in response).toBe(true);
+          });
+        });
+      });
+
+      describe('when passing multiple contact ids', function () {
+        beforeEach(function () {
+          WorkPatternAPI.getCalendar.and.returnValue($q.resolve(mockData.daysData()));
+          CalendarPromise = Calendar.get([jasmine.any(String), jasmine.any(String)], jasmine.any(String));
+        });
+
+        it('returns multiple CalendarInstances', function () {
+          CalendarPromise.then(function (response) {
+            expect(_.isArray(response)).toBe(true);
+            expect('days' in response[0]).toBe(true);
+            expect('days' in response[1]).toBe(true);
+          });
         });
       });
     });
