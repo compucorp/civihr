@@ -412,7 +412,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       'end_date' => $toDate->format('Y-m-d'),
     ]);
 
-    if ($contract['count'] > 1) {
+    $contractForEndDate = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
+      'contact_id' => $params['contact_id'],
+      'start_date' => $toDate->format('Y-m-d'),
+      'end_date' => $toDate->format('Y-m-d'),
+    ]);
+
+    if ($contract['count'] > 1 || $contractForEndDate['count'] != 1) {
       throw new InvalidLeaveRequestException(
         'This leave request is after your contract end date. Please modify dates of this request',
         'leave_request_overlapping_multiple_contracts',
