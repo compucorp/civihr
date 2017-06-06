@@ -13,7 +13,7 @@ define([
     beforeEach(inject([
       'CalendarInstance',
       function (_CalendarInstance_) {
-        CalendarInstance = _CalendarInstance_.init(mockData.daysData().values);
+        CalendarInstance = _CalendarInstance_.init(mockData.daysData().values[0]);
       }]
     ));
 
@@ -74,7 +74,7 @@ define([
       });
 
       function getDate(dayType) {
-        return mockData.daysData().values.find(function (data) {
+        return mockData.daysData().values[0].calendar.find(function (data) {
           return data.type.name === dayType;
         });
       }

@@ -21,7 +21,7 @@ define([
        */
       function checkDate(date, dayType) {
         var searchedDate = this.days[getDateObjectWithFormat(date).valueOf()];
-        
+
         return searchedDate ? searchedDate.type.name === dayType : false;
       }
 
@@ -49,7 +49,7 @@ define([
           var datesObj = {};
 
           // convert array to an object with the timestamp being the key
-          data.forEach(function (calendar) {
+          data.calendar.forEach(function (calendar) {
             datesObj[getDateObjectWithFormat(calendar.date).valueOf()] = calendar;
           });
 
