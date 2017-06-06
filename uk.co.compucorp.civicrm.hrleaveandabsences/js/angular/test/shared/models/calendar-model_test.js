@@ -9,70 +9,74 @@ define([
   'use strict';
 
   describe('Calendar', function () {
-    var Calendar,
-      WorkPatternAPI,
-      $q,
-      $rootScope;
+    var $q, $rootScope, Calendar, WorkPatternAPI;
 
     beforeEach(module('leave-absences.models'));
-
-    beforeEach(inject(function (_Calendar_, _WorkPatternAPI_, _$rootScope_, _$q_) {
+    beforeEach(inject(function (_$q_, _$rootScope_, _Calendar_, _WorkPatternAPI_) {
+      $q = _$q_;
+      $rootScope = _$rootScope_;
       Calendar = _Calendar_;
       WorkPatternAPI = _WorkPatternAPI_;
-      $rootScope = _$rootScope_;
-      $q = _$q_;
-
-      spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
     }));
 
     afterEach(function () {
-      $rootScope.$apply();
+      $rootScope.$digest();
     });
 
     describe('get()', function () {
-      var CalendarPromise,
-        deferred;
+      var promise;
 
-      function commonSetUp (returnData) {
-        deferred = $q.defer();
-        deferred.resolve(returnData);
-        WorkPatternAPI.getCalendar.and.returnValue(deferred.promise);
-
-        CalendarPromise = Calendar.get(jasmine.any(String), jasmine.any(String), jasmine.any(Object));
-      }
+      beforeEach(function () {
+        spyOn(WorkPatternAPI, 'getCalendar').and.returnValue($q.resolve(mockData.daysData()));
+      });
 
       describe('basic tests', function () {
-        it('calls equivalent API method', function () {
-          commonSetUp(mockData.daysData());
-          CalendarPromise.then(function () {
-            expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
-          });
-        });
-      });
-
-      describe('when passing a single contact id', function () {
-        it('returns a single CalendarInstance', function () {
-          commonSetUp(mockData.daysData());
-          CalendarPromise.then(function (response) {
-            expect(_.isArray(response)).toBe(false);
-            expect('days' in response).toBe(true);
-          });
-        });
-      });
-
-      describe('when passing multiple contact ids', function () {
         beforeEach(function () {
-          WorkPatternAPI.getCalendar.and.returnValue($q.resolve(mockData.daysData()));
-          CalendarPromise = Calendar.get([jasmine.any(String), jasmine.any(String)], jasmine.any(String));
+          Calendar.get(jasmine.any(String), jasmine.any(String));
         });
 
-        it('returns multiple CalendarInstances', function () {
-          CalendarPromise.then(function (response) {
-            expect(_.isArray(response)).toBe(true);
-            expect('days' in response[0]).toBe(true);
-            expect('days' in response[1]).toBe(true);
+        it('calls the equivalent API method', function () {
+          expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
+        });
+      });
+
+      describe('resolved value', function () {
+        describe('when passing a single contact id', function () {
+          beforeEach(function () {
+            promise = Calendar.get(jasmine.any(String), jasmine.any(String));
+          });
+
+          it('resolves to a single CalendarInstance', function () {
+            promise.then(function (response) {
+              expect(_.isArray(response)).toBe(false);
+              expect(isInstance(response)).toBe(true);
+            });
           });
         });
+
+        describe('when passing multiple contact ids', function () {
+          beforeEach(function () {
+            promise = Calendar.get([jasmine.any(String), jasmine.any(String)], jasmine.any(String));
+          });
+
+          it('resolves to multiple CalendarInstances', function () {
+            promise.then(function (response) {
+              expect(_.isArray(response)).toBe(true);
+              expect(isInstance(response[0])).toBe(true);
+              expect(isInstance(response[1])).toBe(true);
+            });
+          });
+        });
+
+        /**
+         * Checks if the given object is a CalendarInstance
+         *
+         * @param  {Object}  instance
+         * @return {Boolean}
+         */
+        function isInstance (instance) {
+          return !!(instance.fromAPI && instance.toAPI && instance.days);
+        }
       });
     });
   });
