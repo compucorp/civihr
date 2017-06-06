@@ -1,15 +1,16 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/models-instances',
-  'common/models/instances/instance',
+  'common/models/instances/instance'
 ], function (_, moment, instances) {
   'use strict';
 
   instances.factory('CalendarInstance', [
     '$log', 'ModelInstance', 'shared-settings',
     function ($log, ModelInstance, sharedSettings) {
-
       /**
        * This method checks whether a date matches the send type.
        *
@@ -19,7 +20,7 @@ define([
        * @return {Boolean}
        * @throws error if date is not found in calendarData
        */
-      function checkDate(date, dayType) {
+      function checkDate (date, dayType) {
         var searchedDate = this.days[getDateObjectWithFormat(date).valueOf()];
 
         return searchedDate ? searchedDate.type.name === dayType : false;
@@ -31,7 +32,7 @@ define([
        * @param {Date/String} date from server
        * @return {Date} Moment date
        */
-      function getDateObjectWithFormat(date) {
+      function getDateObjectWithFormat (date) {
         return moment(date, sharedSettings.serverDateFormat).clone();
       }
 
