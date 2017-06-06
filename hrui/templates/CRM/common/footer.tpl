@@ -41,6 +41,7 @@
     {/if}
     CiviHR is openly available under the <a href="http://www.gnu.org/licenses/agpl-3.0.html "> GNU AGPL License</a>.
     <br />
+    <a target="_blank" href="http://civihr-documentation.readthedocs.io/en/latest/">User Guide</a>&nbsp;
     <a target="_blank" href="https://github.com/civicrm/civihr">{ts}Download CiviHR{/ts}</a>&nbsp;
     <a target="_blank" href="https://civihr.atlassian.net/wiki/display/CIV/Welcome ">View Wiki page</a>&nbsp;
     <a target="_blank" href="https://civihr.org">Project website</a>
@@ -52,5 +53,3 @@
   </div>
   {include file="CRM/common/notifications.tpl"}
 {/if}
-
-
