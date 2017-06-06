@@ -67,7 +67,7 @@
                   <hr/>
                   <div
                     class="row chr_leave-request-modal__form-group"
-                    ng-if="$ctrl.isRole('manager') || $ctrl.isLeaveStatus($root.sharedSettings.statusNames.awaitingApproval) || $ctrl.isLeaveStatus($root.sharedSettings.statusNames.moreInformationRequired)">
+                    ng-if="$ctrl.isRole('manager') || $ctrl.isLeaveStatus($ctrl.sharedSettings.statusNames.awaitingApproval) || $ctrl.isLeaveStatus($ctrl.sharedSettings.statusNames.moreInformationRequired)">
                     <div class="col-xs-4">Opening Balance</div>
                     <div class="col-xs-8">{{$ctrl.balance.opening}}</div>
                   </div>
@@ -128,7 +128,7 @@
                   <div
                     class="row"
                     ng-class="{'text-danger': $ctrl.balance.closing < 0}"
-                    ng-if="$ctrl.isRole('manager') || $ctrl.isLeaveStatus($root.sharedSettings.statusNames.awaitingApproval) || $ctrl.isLeaveStatus($root.sharedSettings.statusNames.moreInformationRequired)">
+                    ng-if="$ctrl.isRole('manager') || $ctrl.isLeaveStatus($ctrl.sharedSettings.statusNames.awaitingApproval) || $ctrl.isLeaveStatus($ctrl.sharedSettings.statusNames.moreInformationRequired)">
                     <div class="col-xs-4">Closing Balance</div>
                     <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
                   </div>

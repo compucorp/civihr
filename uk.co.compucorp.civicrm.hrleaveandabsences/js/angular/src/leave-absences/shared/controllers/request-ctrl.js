@@ -40,6 +40,7 @@ define([
       this.managedContacts = [];
       this.requestDayTypes = [];
       this.selectedAbsenceType = {};
+      this.sharedSettings = sharedSettings;
       this.period = {};
       this.postContactSelection = false; // flag to track if user is selected for enabling UI
       this.requestStatuses = {};
