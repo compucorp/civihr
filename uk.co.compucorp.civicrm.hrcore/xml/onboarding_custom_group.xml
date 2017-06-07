@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+  <CustomGroups>
+    <CustomGroup>
+      <name>Onboarding_Information</name>
+      <title>Onboarding Information</title>
+      <extends>Contact</extends>
+      <style>Inline</style>
+      <collapse_display>1</collapse_display>
+      <help_pre>Information regarding contact onboarding status</help_pre>
+      <help_post>Information regarding contact onboarding status</help_post>
+      <weight>22</weight>
+      <is_active>1</is_active>
+      <table_name>civicrm_value_onboarding_information_100000</table_name>
+      <is_multiple>0</is_multiple>
+      <collapse_adv_display>0</collapse_adv_display>
+      <is_reserved>0</is_reserved>
+    </CustomGroup>
+  </CustomGroups>
+  <CustomFields>
+    <CustomField>
+      <name>Onboarding_Status</name>
+      <label>Onboarding Status</label>
+      <data_type>String</data_type>
+      <html_type>CheckBox</html_type>
+      <is_required>0</is_required>
+      <is_searchable>1</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>1</weight>
+      <help_pre>What steps the user has completed in the onboarding process</help_pre>
+      <help_post>What steps the user has completed in the onboarding process</help_post>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <options_per_line>1</options_per_line>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>onboarding_status_100013</column_name>
+      <in_selector>0</in_selector>
+      <option_group_name>onboarding_status</option_group_name>
+      <custom_group_name>Onboarding_Information</custom_group_name>
+    </CustomField>
+  </CustomFields>
+  <OptionGroups>
+    <OptionGroup>
+      <name>onboarding_status</name>
+      <title>Onboarding Status</title>
+      <data_type>String</data_type>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+  <OptionValues>
+    <OptionValue>
+      <label>User account created</label>
+      <value>1</value>
+      <name>User_account_created</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>onboarding_status</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Invitation email sent</label>
+      <value>2</value>
+      <name>Invitation_email_sent</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>onboarding_status</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Password created</label>
+      <value>3</value>
+      <name>Password_created</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>onboarding_status</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Personal details completed</label>
+      <value>4</value>
+      <name>Personal_details_completed</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>onboarding_status</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Address completed</label>
+      <value>5</value>
+      <name>Address_completed</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>onboarding_status</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Contact information completed</label>
+      <value>6</value>
+      <name>Contact_information_completed</name>
+      <is_default>0</is_default>
+      <weight>6</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>onboarding_status</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Payroll details completed</label>
+      <value>7</value>
+      <name>Payroll_details_completed</name>
+      <is_default>0</is_default>
+      <weight>7</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>onboarding_status</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Emergency contact added</label>
+      <value>8</value>
+      <name>Emergency_contact_added</name>
+      <is_default>0</is_default>
+      <weight>8</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>onboarding_status</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Onboarded</label>
+      <value>9</value>
+      <name>Onboarded</name>
+      <is_default>0</is_default>
+      <weight>9</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>onboarding_status</option_group_name>
+    </OptionValue>
+  </OptionValues>
+</CustomData>
