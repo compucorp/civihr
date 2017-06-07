@@ -29,7 +29,7 @@
       }
 
       .ui-tabs-active a {
-        font-weight: $badge-font-weight;
+        font-weight: $crm-font-weight-h3;
       }
 
       a {
@@ -83,22 +83,30 @@
 
   .crm-activity-selector-dashlet {
     .crm-accordion-header {
+      border-bottom: 1px solid $crm-background;
       color: $gray-darker;
       font-weight: $crm-font-weight-h1 !important;
     }
 
     .crm-search_filters-accordion {
+      margin-bottom: 0;
+
       .crm-accordion-body {
-        display: flex;
         padding: 20px 15px !important;
       }
 
       .crm-inline-edit-field {
         float: left;
+        margin-bottom: 20px;
         width: 50%;
 
         .select2-container {
           width: 98% !important;
+        }
+
+        label {
+          display: block;
+          margin-bottom: 5px;
         }
       }
     }
@@ -114,6 +122,8 @@
 
     .dataTables_wrapper {
       box-shadow: none;
+      border-radius: 0;
+      margin-bottom: 0;
       overflow: scroll;
 
       table {
@@ -121,13 +131,22 @@
         width: 100% !important;
       }
 
+      .crm-datatable-pager-top {
+        border-radius: 0;
+      }
+
       .crm-datatable-pager-bottom {
-        padding: 15px;
+        padding: 0 15px;
+        line-height: 1.5em;
       }
 
       .dataTables_paginate {
         margin: 0;
         width: 50% !important;
+      }
+
+      .dataTables_paginate .ui-button {
+        padding: 10px;
       }
 
       .dataTables_info {

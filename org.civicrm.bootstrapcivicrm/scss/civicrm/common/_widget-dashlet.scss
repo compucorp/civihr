@@ -65,7 +65,7 @@
   #help {
     background-color: $crm-help-success;
     border: none;
-    border-radius: $border-radius-base;
+    border-radius: 0;
     clear: both;
     color: $crm-dasboard-header;
     margin: 0;
@@ -100,8 +100,13 @@
 }
 
 .dashlets-header {
+  border-radius: $border-radius-small $border-radius-small 0 0;
   font-size: $font-size-h3;
   margin-bottom: 20px;
+}
+
+.dash-column {
+  border-radius: 0 0 $border-radius-small $border-radius-small;
 }
 
 #configure-dashlet {
@@ -132,10 +137,10 @@
   background: $crm-dasboard-header;
   color: $crm-white;
   float: left;
-  font-family: $font-family-base;
-  font-size: $font-size-h3;
+  font: $crm-font-weight-h4 $font-size-h3 $font-family-base;
   margin: 0 !important;
   padding: 15px;
+  text-align: center;
   width: 49% !important;
 
   &[id*="col-1"] {
