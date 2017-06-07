@@ -10,5 +10,6 @@
   mainConfigFile: 'src/leave-absences/shared/config.js',
   paths: {
     'common': 'empty:'
-  }
-})
+  },
+  findNestedDependencies: true
+});
