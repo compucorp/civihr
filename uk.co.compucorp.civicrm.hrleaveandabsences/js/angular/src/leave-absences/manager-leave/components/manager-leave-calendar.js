@@ -123,7 +123,7 @@ define([
     };
 
     /**
-     * Loads the calendar data
+     * Loads the calendar data for each contact
      *
      * @return {Promise}
      */
@@ -134,10 +134,14 @@ define([
         return contact.id;
       }), vm.selectedPeriod.id)
       .then(function (calendars) {
+        // contacts are stored by index rather than by id, so it's necessary
+        // to find the index of each contact by using their id
+        var contactIds = tempContactData.map(function (contact) {
+          return contact.id;
+        });
+
         calendars.forEach(function (calendar) {
-          var index = _.findIndex(tempContactData, function (contact) {
-            return +contact.id === +calendar.contact_id;
-          });
+          var index = contactIds.indexOf(calendar.contact_id);
 
           tempContactData[index].calendarData = vm._setCalendarProps(calendar.contact_id, calendar);
         });

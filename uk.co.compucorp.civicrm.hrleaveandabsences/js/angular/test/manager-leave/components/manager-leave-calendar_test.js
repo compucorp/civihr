@@ -102,9 +102,9 @@
 
           return $q.resolve(_.assign(mockedGetCalendarResponse, {
             values: ContactAPIMock.mockedContacts().list.map(function (contact) {
-              var clonedCalendar = _.clone(singleMockedCalendarTemplate);
-
-              return _.assign(clonedCalendar, { contact_id: contact.id });
+              return _.assign(_.clone(singleMockedCalendarTemplate), {
+                contact_id: contact.id
+              });
             })
           }));
         });

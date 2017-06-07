@@ -62,8 +62,9 @@ define([
           it('resolves to multiple CalendarInstances', function () {
             promise.then(function (response) {
               expect(_.isArray(response)).toBe(true);
-              expect(isInstance(response[0])).toBe(true);
-              expect(isInstance(response[1])).toBe(true);
+              expect(response.every(function (instance) {
+                return isInstance(instance);
+              })).toBe(true);
             });
           });
         });
