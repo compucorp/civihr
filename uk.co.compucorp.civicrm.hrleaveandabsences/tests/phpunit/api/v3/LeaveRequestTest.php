@@ -2256,7 +2256,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidShouldReturnErrorWhenTheDatesOverlapMoreThanOneContract() {
+  public function testLeaveRequestCanNotBeCreatedWhenTheDatesOverlapTwoContractsWithALapseBetweenTheContracts() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
@@ -2272,7 +2272,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $periodStartDate1 = date('2016-01-01');
     $periodEndDate1 = date('2016-06-30');
 
-    $periodStartDate2 = date('2016-07-01');
+    $periodStartDate2 = date('2016-07-02');
     $periodEndDate2 = date('2016-12-31');
 
     HRJobContractFabricator::fabricate(

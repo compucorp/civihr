@@ -83,7 +83,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateNoOverlappingLeaveRequests($params);
     self::validateWorkingDay($params);
     self::validateBalanceChange($params);
-    self::validateLeaveDatesDoesNotOverlapContracts($params);
+    self::validateLeaveDatesDoesNotOverlapContractsWithLapses($params);
   }
 
   /**
@@ -395,35 +395,42 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * This method validates that the leave request does not have dates in more than one contract period
+   * This method validates that the leave request does not overlapp
+   * contracts with lapses in between any of the contract periods.
    *
    * @param array $params
    *   The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateLeaveDatesDoesNotOverlapContracts($params) {
+  private static function validateLeaveDatesDoesNotOverlapContractsWithLapses($params) {
     $fromDate = new DateTime($params['from_date']);
     $toDate = new DateTime($params['to_date']);
 
-    $contractsContainingToOrFromDates = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
+    $contractsOverlappingToAndFromDates = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
       'contact_id' => $params['contact_id'],
       'start_date' => $fromDate->format('Y-m-d'),
       'end_date' => $toDate->format('Y-m-d'),
     ]);
 
-    $contractsContainingEndDate = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
-      'contact_id' => $params['contact_id'],
-      'start_date' => $toDate->format('Y-m-d'),
-      'end_date' => $toDate->format('Y-m-d'),
-    ]);
+    if ($contractsOverlappingToAndFromDates['count'] > 1) {
+      $contractToCompare = reset($contractsOverlappingToAndFromDates['values']);
+      while($nextContract = next($contractsOverlappingToAndFromDates['values'])) {
+        $intervalInDays = self::getDateIntervalInDays(
+          new DateTime($contractToCompare['period_end_date']),
+          new DateTime($nextContract['period_start_date'])
+        );
 
-    if ($contractsContainingToOrFromDates['count'] > 1 || $contractsContainingEndDate['count'] != 1) {
-      throw new InvalidLeaveRequestException(
-        'This leave request is after your contract end date. Please modify dates of this request',
-        'leave_request_overlapping_multiple_contracts',
-        'from_date'
-      );
+        $contractToCompare =  $nextContract;
+
+        if($intervalInDays > 1) {
+          throw new InvalidLeaveRequestException(
+            'This leave request is after your contract end date. Please modify dates of this request',
+            'leave_request_overlapping_multiple_contracts',
+            'from_date'
+          );
+        }
+      }
     }
   }
 
@@ -1102,5 +1109,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     );
 
     return $periodContainingDates;
+  }
+
+  /**
+   * Returns the interval in days between the from and to Dates.
+   *
+   * @param \DateTime $fromDate
+   * @param \DateTime $toDate
+   *
+   * @return int
+   */
+  private static function getDateIntervalInDays(DateTime $fromDate, DateTime $toDate) {
+    $interval = $toDate->diff($fromDate);
+    return (int) $interval->format("%a");
   }
 }

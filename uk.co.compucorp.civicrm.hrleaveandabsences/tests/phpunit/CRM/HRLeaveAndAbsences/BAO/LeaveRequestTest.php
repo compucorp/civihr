@@ -1674,7 +1674,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage This leave request is after your contract end date. Please modify dates of this request
    */
-  public function testLeaveRequestCanNotBeCreatedWhenTheDatesOverlapMoreThanOneContract() {
+  public function testLeaveRequestCanNotBeCreatedWhenTheDatesOverlapTwoContractsWithALapseBetweenTheContracts() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
@@ -1690,8 +1690,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $periodStartDate1 = date('2016-01-01');
     $periodEndDate1 = date('2016-06-30');
 
-    $periodStartDate2 = date('2016-07-01');
-    $periodEndDate2 = date('2016-12-31');
+    $periodStartDate2 = date('2016-07-02');
+    $periodEndDate2 = date('2016-07-31');
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $periodEntitlement->contact_id],
@@ -1715,14 +1715,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'pattern_id' => $workPattern->id
     ]);
 
-    //The from date and to date overlaps the two job contracts
+    //The from date and to date overlaps the two job contracts with a lapse of 1 day without any contract between
+    //the contract dates.
     LeaveRequest::create([
       'type_id' => $periodEntitlement->type_id,
       'contact_id' => $periodEntitlement->contact_id,
       'status_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('2016-06-25'),
+      'from_date' => CRM_Utils_Date::processDate('2016-06-29'),
       'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
-      'to_date' => CRM_Utils_Date::processDate('2016-07-13'),
+      'to_date' => CRM_Utils_Date::processDate('2016-07-03'),
       'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1732,7 +1733,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage This leave request is after your contract end date. Please modify dates of this request
    */
-  public function testLeaveRequestCanNotBeCreatedWhenLeaveRequestDateIsGreaterThanTheContractEndDate() {
+  public function testLeaveRequestCanNotBeCreatedWhenTheDatesOverlapMoreThanTwoContractsWithALapseBetweenTheContracts() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
@@ -1744,26 +1745,51 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'period_id' => $period->id
     ]);
 
-    $this->createLeaveBalanceChange($periodEntitlement->id, 4);
+    $this->createLeaveBalanceChange($periodEntitlement->id, 30);
+    $periodStartDate1 = date('2016-06-01');
+    $periodEndDate1 = date('2016-06-08');
+
+    $periodStartDate2 = date('2016-06-09');
+    $periodEndDate2 = date('2016-06-12');
+
+    $periodStartDate3 = date('2016-06-14');
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $periodEntitlement->contact_id],
       [
-        'period_start_date' => '2016-01-01',
-        'period_end_date' => '2016-06-30'
+        'period_start_date' => $periodStartDate1,
+        'period_end_date' => $periodEndDate1
       ]
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      [
+        'period_start_date' => $periodStartDate2,
+        'period_end_date' => $periodEndDate2
+      ]
+    );
 
-    //The to_date of the leave request is outside the contract dates
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate3]
+    );
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $periodEntitlement->contact_id,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    //The from date and to date overlaps the three job contracts with a lapse of
+    // 1 day without any contract between the last two contracts
     LeaveRequest::create([
       'type_id' => $periodEntitlement->type_id,
       'contact_id' => $periodEntitlement->contact_id,
       'status_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('2016-06-29'),
+      'from_date' => CRM_Utils_Date::processDate('2016-06-07'),
       'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
-      'to_date' => CRM_Utils_Date::processDate('2016-07-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-06-16'),
       'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
