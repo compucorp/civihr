@@ -98,7 +98,7 @@
   </tbody>
 </table>
 <div class="crm-submit-buttons">
-  <a href="{$smarty.get.returnUrl}" class="button"><span>{ts}Back{/ts}</span></a>
+  <a href="{$returnUrl}" class="button"><span>{ts}Back{/ts}</span></a>
   {include file="CRM/common/formButtons.tpl" location="bottom"}
 </div>
 <div id="add-comment-dialog" title="{ts}Add/Edit comment{/ts}">
