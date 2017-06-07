@@ -1,4 +1,6 @@
 /* eslint-env amd, jasmine */
+/* global CRM, inject */
+
 (function (CRM) {
   define([
     'common/angular',
@@ -18,7 +20,7 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/my-leave/app'
-  ], function (angular, moment, _, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData, workPatternData, leaveRequestData) {
+  ], function (angular, moment, _, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData, workPatternMocked, leaveRequestData) {
     'use strict';
 
     describe('myLeaveCalendar', function () {
@@ -263,9 +265,9 @@
             leaveRequest;
 
           beforeEach(function () {
-            workPattern = workPatternData.daysData();
+            workPattern = workPatternMocked.getCalendar;
             leaveRequest = leaveRequestData.singleDataSuccess().values[0];
-            workPattern.values[0].date = leaveRequest.from_date;
+            workPattern.values[0].calendar[0].date = leaveRequest.from_date;
           });
 
           describe('when leave request is not approved', function () {
@@ -338,7 +340,7 @@
 
           function commonSetup () {
             spyOn(Calendar, 'get').and.callFake(function () {
-              return $q.resolve(CalendarInstance.init(workPattern.values));
+              return $q.resolve(CalendarInstance.init(workPattern.values[0]));
             });
 
             LeaveRequest.all.and.callFake(function () {
@@ -365,13 +367,13 @@
       }
 
       function getDate (dateStr) {
-        return workPatternData.daysData().values.find(function (data) {
+        return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
           return data.date === dateStr;
         });
       }
 
       function getDateByType (dayType) {
-        return workPatternData.daysData().values.find(function (data) {
+        return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
           return data.type.name === dayType;
         });
       }

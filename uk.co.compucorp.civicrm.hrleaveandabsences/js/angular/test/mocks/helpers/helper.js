@@ -1,9 +1,10 @@
+/* eslint-env amd */
+
 define([
   'mocks/data/option-group-mock-data',
   'mocks/data/absence-type-data',
-  'mocks/data/work-pattern-data',
-], function (optionGroupMock, absenceTypeData, workPatternMock) {
-
+  'mocks/data/work-pattern-data'
+], function (optionGroupMock, absenceTypeData, workPatternMocked) {
   return {
     /**
      * Creates a LeaveRequest with random values
@@ -18,7 +19,7 @@ define([
         'from_date': '2016-02-01',
         'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
         'to_date': '2016-02-03',
-        'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
+        'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name')
       };
     },
     /**
@@ -35,7 +36,7 @@ define([
         'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
         'to_date': '2016-02-03',
         'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
-        "reason": optionGroupMock.randomValue('hrleaveandabsences_sickness_reason', 'name'),
+        'reason': optionGroupMock.randomValue('hrleaveandabsences_sickness_reason', 'name')
       };
     },
     /**
@@ -52,7 +53,7 @@ define([
         'from_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
         'to_date': '2016-02-03',
         'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name'),
-        "duration": 180
+        'duration': 180
       };
     },
     /**
@@ -68,7 +69,7 @@ define([
       var uriParts = decodeURIComponent(data).split('&');
       var uriEntityAction = {};
 
-      var uriFilter = uriParts.filter(function (item) {
+      uriParts.filter(function (item) {
         var itemSplit = item.split('=');
         if (itemSplit[0] === 'entity' || itemSplit[0] === 'action') {
           uriEntityAction[itemSplit[0]] = itemSplit[1];
@@ -76,7 +77,7 @@ define([
         }
       });
 
-      //'update' is 'create' call with id set
+      // 'update' is 'create' call with id set
       if (uriEntityAction.entity === entity && uriEntityAction.action === action) {
         return true;
       }
@@ -90,7 +91,7 @@ define([
      * @return {string} date
      **/
     getDate: function (dayType) {
-      return workPatternMock.daysData().values.find(function (data) {
+      return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
         return data.type.name === dayType;
       });
     }

@@ -83,13 +83,52 @@ function _civicrm_api3_work_pattern_getcalendar_spec(&$spec) {
  * @return array
  */
 function civicrm_api3_work_pattern_getcalendar($params) {
+  $contactIDs = _civicrm_api3_work_pattern_get_contact_id_from_params($params);
   $jobContractService = new CRM_HRLeaveAndAbsences_Service_JobContract();
   $absencePeriod = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::findById($params['period_id']);
-  $calendar = new CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar(
-    $params['contact_id'],
-    $absencePeriod,
-    $jobContractService
-  );
 
-  return civicrm_api3_create_success($calendar->get());
+  $calendars = [];
+  foreach($contactIDs as $contactID) {
+    $calendar = new CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar(
+      $contactID,
+      $absencePeriod,
+      $jobContractService
+    );
+
+    $calendars[] = [
+      'contact_id' => $contactID,
+      'calendar' => $calendar->get()
+    ];
+  }
+
+  return civicrm_api3_create_success($calendars);
+}
+
+/**
+ * Extracts the contact id(s) from the params array.
+ *
+ * It can be either a single value, or one of the operators supported by the API
+ * followed by a list of IDs. In the second case, only the IN operator is
+ * supported, since that supporting other operators would be extremely complex
+ * and it would not even make sense to support operators like >= and <.
+ *
+ * @param array $params
+ *   The $params array passed to the WorkPattern.getCalendar API
+ *
+ * @return array
+ */
+function _civicrm_api3_work_pattern_get_contact_id_from_params($params) {
+  if(empty($params['contact_id'])) {
+    return [];
+  }
+
+  if(!is_array($params['contact_id'])) {
+    return [$params['contact_id']];
+  }
+
+  if(!array_key_exists('IN', $params['contact_id'])) {
+    throw new InvalidArgumentException('The contact_id parameter only supports the IN operator');
+  }
+
+  return $params['contact_id']['IN'];
 }

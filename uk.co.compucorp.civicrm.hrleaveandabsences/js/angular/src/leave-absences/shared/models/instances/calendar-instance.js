@@ -1,15 +1,16 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/models-instances',
-  'common/models/instances/instance',
+  'common/models/instances/instance'
 ], function (_, moment, instances) {
   'use strict';
 
   instances.factory('CalendarInstance', [
     '$log', 'ModelInstance', 'shared-settings',
     function ($log, ModelInstance, sharedSettings) {
-
       /**
        * This method checks whether a date matches the send type.
        *
@@ -19,9 +20,9 @@ define([
        * @return {Boolean}
        * @throws error if date is not found in calendarData
        */
-      function checkDate(date, dayType) {
+      function checkDate (date, dayType) {
         var searchedDate = this.days[getDateObjectWithFormat(date).valueOf()];
-        
+
         return searchedDate ? searchedDate.type.name === dayType : false;
       }
 
@@ -31,31 +32,31 @@ define([
        * @param {Date/String} date from server
        * @return {Date} Moment date
        */
-      function getDateObjectWithFormat(date) {
+      function getDateObjectWithFormat (date) {
         return moment(date, sharedSettings.serverDateFormat).clone();
       }
 
       return ModelInstance.extend({
 
         /**
-         * Creates a new instance, optionally with its data normalized.
-         * Also, it will allow children to add/remove/update current attributes of
-         * the instance using transformAttributes method
+         * Removes the `calendar` property and creates the `day` property
+         * which indexes the dates by their timestamp
          *
-         * @param {object} data - The instance data
-         * @return {object}
+         * @param  {Object} attributes
+         * @return {Object}
          */
-        init: function (data) {
+        transformAttributes: function (attributes) {
           var datesObj = {};
 
           // convert array to an object with the timestamp being the key
-          data.forEach(function (calendar) {
+          attributes.calendar.forEach(function (calendar) {
             datesObj[getDateObjectWithFormat(calendar.date).valueOf()] = calendar;
           });
 
-          return _.assign(Object.create(this), {
-            days: datesObj
-          });
+          return _(attributes)
+            .omit('calendar')
+            .assign({ days: datesObj })
+            .value();
         },
 
         /**

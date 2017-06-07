@@ -1,4 +1,6 @@
 /* eslint-env amd, jasmine */
+/* global CRM, inject */
+
 (function (CRM) {
   define([
     'common/angular',
@@ -16,13 +18,13 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/manager-leave/app'
-  ], function (angular, _, moment, absencePeriodData, optionGroupMock, leaveRequestData, publicHolidayData, workPatternData) {
+  ], function (angular, _, moment, absencePeriodData, optionGroupMock, leaveRequestData, publicHolidayData, workPatternMocked) {
     'use strict';
 
     describe('managerLeaveCalendar', function () {
       var $compile, $q, $log, $rootScope, component, controller, $provide,
         OptionGroup, OptionGroupAPIMock, ContactAPIMock, AbsencePeriod,
-        Contact, LeaveRequest, CalendarInstance, Calendar;
+        Contact, LeaveRequest, WorkPatternAPI;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -42,7 +44,7 @@
 
       beforeEach(inject(function (
         _$compile_, _$q_, _$log_, _$rootScope_, _OptionGroup_, _OptionGroupAPIMock_,
-        _AbsencePeriod_, _Contact_, _LeaveRequest_, _CalendarInstance_, _Calendar_) {
+        _AbsencePeriod_, _Contact_, _LeaveRequest_, _WorkPatternAPI_) {
         $compile = _$compile_;
         $q = _$q_;
         $log = _$log_;
@@ -50,10 +52,9 @@
         AbsencePeriod = _AbsencePeriod_;
         Contact = _Contact_;
         LeaveRequest = _LeaveRequest_;
-        Calendar = _Calendar_;
-        CalendarInstance = _CalendarInstance_;
         OptionGroup = _OptionGroup_;
         OptionGroupAPIMock = _OptionGroupAPIMock_;
+        WorkPatternAPI = _WorkPatternAPI_;
 
         spyOn($log, 'debug');
 
@@ -80,6 +81,32 @@
           data[0].current = true;
 
           return $q.resolve(data);
+        });
+
+        /**
+         * This is unfortunately a hack to make sure that
+         * all mocked contacts have a mocked calendar
+         *
+         * It takes the mocked WorkPattern.getcalendar response and expands it
+         * by making copies of the first mocked calendar and assigning it to
+         * each mocked contacts.
+         *
+         * The ideal solution would be to decouple the mocked data from the
+         * `api.contact.mock` (common/mocks/services/api/contact-mock) and put it
+         * in a separate file, so that mocks/data/work-pattern-data can inject it
+         * and dynamically generate the data by looping through all mocked contacts
+         */
+        spyOn(WorkPatternAPI, 'getCalendar').and.callFake(function () {
+          var mockedGetCalendarResponse = _.clone(workPatternMocked.getCalendar);
+          var singleMockedCalendarTemplate = mockedGetCalendarResponse.values[0];
+
+          return $q.resolve(_.assign(mockedGetCalendarResponse, {
+            values: ContactAPIMock.mockedContacts().list.map(function (contact) {
+              return _.assign(_.clone(singleMockedCalendarTemplate), {
+                contact_id: contact.id
+              });
+            })
+          }));
         });
 
         compileComponent();
@@ -298,9 +325,9 @@
             leaveRequest;
 
           beforeEach(function () {
-            workPattern = workPatternData.daysData();
+            workPattern = workPatternMocked.getCalendar;
             leaveRequest = leaveRequestData.singleDataSuccess().values[0];
-            workPattern.values[0].date = leaveRequest.from_date;
+            workPattern.values[0].calendar[0].date = leaveRequest.from_date;
           });
 
           describe('when leave request is not approved', function () {
@@ -376,10 +403,6 @@
           });
 
           function commonSetup () {
-            spyOn(Calendar, 'get').and.callFake(function () {
-              return $q.resolve(CalendarInstance.init(workPattern.values));
-            });
-
             spyOn(LeaveRequest, 'all').and.callFake(function () {
               return $q.resolve({
                 list: [leaveRequest]
@@ -418,7 +441,7 @@
       }
 
       function getDateByType (dayType) {
-        return workPatternData.daysData().values.find(function (data) {
+        return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
           return data.type.name === dayType;
         });
       }
