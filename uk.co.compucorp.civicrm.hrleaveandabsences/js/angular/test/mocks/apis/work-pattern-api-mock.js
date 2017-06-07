@@ -1,7 +1,9 @@
+/* eslint-env amd */
+
 define([
   'mocks/module',
   'mocks/data/work-pattern-data',
-  'common/angularMocks',
+  'common/angularMocks'
 ], function (mocks, workPatternMocked) {
   'use strict';
 
