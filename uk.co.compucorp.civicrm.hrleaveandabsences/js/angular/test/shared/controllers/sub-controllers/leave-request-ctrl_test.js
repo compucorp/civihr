@@ -191,8 +191,7 @@
 
             it('gets absence types with false sick param', function () {
               expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
-                is_sick: false,
-                allow_accruals_request: false
+                is_sick: false
               });
             });
 
