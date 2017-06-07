@@ -5,7 +5,7 @@ define([
   'common/lodash',
   'mocks/data/work-pattern-data',
   'leave-absences/shared/models/calendar-model'
-], function (_, mockData) {
+], function (_, workPatternMocked) {
   'use strict';
 
   describe('Calendar', function () {
@@ -27,7 +27,7 @@ define([
       var promise;
 
       beforeEach(function () {
-        spyOn(WorkPatternAPI, 'getCalendar').and.returnValue($q.resolve(mockData.daysData()));
+        spyOn(WorkPatternAPI, 'getCalendar').and.returnValue($q.resolve(workPatternMocked.getCalendar));
       });
 
       describe('basic tests', function () {

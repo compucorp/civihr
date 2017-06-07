@@ -16,7 +16,7 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/manager-leave/app'
-  ], function (angular, _, moment, absencePeriodData, optionGroupMock, leaveRequestData, publicHolidayData, workPatternData) {
+  ], function (angular, _, moment, absencePeriodData, optionGroupMock, leaveRequestData, publicHolidayData, workPatternMocked) {
     'use strict';
 
     describe('managerLeaveCalendar', function () {
@@ -298,9 +298,9 @@
             leaveRequest;
 
           beforeEach(function () {
-            workPattern = workPatternData.daysData();
+            workPattern = workPatternMocked.getCalendar;
             leaveRequest = leaveRequestData.singleDataSuccess().values[0];
-            workPattern.values[0].date = leaveRequest.from_date;
+            workPattern.values[0].calendar[0].date = leaveRequest.from_date;
           });
 
           describe('when leave request is not approved', function () {
@@ -377,7 +377,7 @@
 
           function commonSetup () {
             spyOn(Calendar, 'get').and.callFake(function () {
-              return $q.resolve(CalendarInstance.init(workPattern.values));
+              return $q.resolve(CalendarInstance.init(workPattern.values[0]));
             });
 
             spyOn(LeaveRequest, 'all').and.callFake(function () {
@@ -418,7 +418,7 @@
       }
 
       function getDateByType (dayType) {
-        return workPatternData.daysData().values.find(function (data) {
+        return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
           return data.type.name === dayType;
         });
       }

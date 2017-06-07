@@ -1,8 +1,8 @@
 /* eslint-env amd */
 
 define(function () {
-  var mockData = {
-    daysData: {
+  return {
+    getCalendar: {
       'is_error': 0,
       'version': 3,
       'count': 2,
@@ -66,12 +66,6 @@ define(function () {
           ]
         }
       ]
-    }
-  };
-
-  return {
-    daysData: function () {
-      return mockData.daysData;
     }
   };
 });

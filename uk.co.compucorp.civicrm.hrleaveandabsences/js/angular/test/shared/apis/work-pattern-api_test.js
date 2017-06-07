@@ -5,7 +5,7 @@ define([
   'common/lodash',
   'mocks/data/work-pattern-data',
   'leave-absences/shared/apis/work-pattern-api'
-], function (_, mockData) {
+], function (_, workPatternMocked) {
   'use strict';
 
   describe('WorkPatternAPI', function () {
@@ -28,7 +28,7 @@ define([
       var additionalFilters = { foo: 'foo', bar: 'bar' };
 
       beforeEach(function () {
-        $httpBackend.whenGET(/action=getcalendar&entity=WorkPattern/).respond(mockData.daysData());
+        $httpBackend.whenGET(/action=getcalendar&entity=WorkPattern/).respond(workPatternMocked.getCalendar);
         spyOn(WorkPatternAPI, 'sendGET').and.callThrough();
       });
 
@@ -63,7 +63,7 @@ define([
 
         it('returns the calendar data', function () {
           workPatternPromise.then(function (response) {
-            expect(response).toEqual(mockData.daysData());
+            expect(response).toEqual(workPatternMocked.getCalendar);
           });
         });
       });

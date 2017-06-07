@@ -2,7 +2,7 @@ define([
   'mocks/data/option-group-mock-data',
   'mocks/data/absence-type-data',
   'mocks/data/work-pattern-data',
-], function (optionGroupMock, absenceTypeData, workPatternMock) {
+], function (optionGroupMock, absenceTypeData, workPatternMocked) {
 
   return {
     /**
@@ -90,7 +90,7 @@ define([
      * @return {string} date
      **/
     getDate: function (dayType) {
-      return workPatternMock.daysData().values.find(function (data) {
+      return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
         return data.type.name === dayType;
       });
     }

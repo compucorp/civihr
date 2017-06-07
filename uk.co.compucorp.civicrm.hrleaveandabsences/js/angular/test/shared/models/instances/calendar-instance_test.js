@@ -5,7 +5,7 @@ define([
   'common/moment',
   'mocks/data/work-pattern-data',
   'leave-absences/shared/models/instances/calendar-instance'
-], function (moment, mockData) {
+], function (moment, workPatternMocked) {
   'use strict';
 
   describe('CalendarInstance', function () {
@@ -13,7 +13,7 @@ define([
 
     beforeEach(module('leave-absences.models.instances'));
     beforeEach(inject(['CalendarInstance', function (CalendarInstance) {
-      mockedCalendar = mockData.daysData().values[0];
+      mockedCalendar = workPatternMocked.getCalendar.values[0];
       instance = CalendarInstance.init(mockedCalendar);
     }]));
 
