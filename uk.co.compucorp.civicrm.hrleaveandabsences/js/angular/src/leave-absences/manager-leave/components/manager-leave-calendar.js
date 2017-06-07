@@ -1,11 +1,12 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'common/moment',
   'leave-absences/manager-leave/modules/components',
   'leave-absences/shared/controllers/calendar-ctrl',
-  'common/models/contact',
+  'common/models/contact'
 ], function (_, moment, components) {
-
   components.component('managerLeaveCalendar', {
     bindings: {
       contactId: '<'
@@ -17,11 +18,11 @@ define([
     controller: ['$controller', '$log', '$q', '$rootScope', 'Calendar', 'Contact', 'OptionGroup', controller]
   });
 
-  function controller($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup) {
+  function controller ($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup) {
     $log.debug('Component: manager-leave-calendar');
 
-    var parentCtrl = $controller('CalendarCtrl'),
-      vm = Object.create(parentCtrl);
+    var parentCtrl = $controller('CalendarCtrl');
+    var vm = Object.create(parentCtrl);
 
     /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
      * Calendar data saved temporarily in tempContactData and once all the promises are resolved,
@@ -66,7 +67,7 @@ define([
     vm.getMonthData = function (contactID, monthObj) {
       var month;
       var contact = _.find(vm.managedContacts, function (contact) {
-        return contact.id == contactID
+        return +contact.id === +contactID;
       });
 
       if (contact && contact.calendarData) {
@@ -139,7 +140,7 @@ define([
           });
 
           tempContactData[index].calendarData = vm._setCalendarProps(calendar.contact_id, calendar);
-        })
+        });
       });
     };
 
@@ -149,10 +150,10 @@ define([
      * @return {Promise}
      */
     vm._loadContacts = function () {
-      return Contact.all(vm._prepareContactFilters(), {page: 1, size: 0}, "display_name")
+      return Contact.all(vm._prepareContactFilters(), {page: 1, size: 0}, 'display_name')
         .then(function (contacts) {
           vm.filteredContacts = contacts.list;
-        })
+        });
     };
 
     /**
@@ -240,8 +241,8 @@ define([
 
       return {
         id: {
-          "IN": vm.filters.contact ? [vm.filters.contact.id] :
-            vm.managedContacts.map(function (contact) {
+          'IN': vm.filters.contact ? [vm.filters.contact.id]
+            : vm.managedContacts.map(function (contact) {
               return contact.id;
             })
         },
@@ -261,15 +262,15 @@ define([
      * @return {object}
      */
     vm._setCalendarProps = function (contactID, calendar) {
-      var leaveRequest,
-        monthData = _.map(vm.months, function (month) {
-          return _.extend(_.clone(month), {
-            data: []
-          })
+      var leaveRequest;
+      var monthData = _.map(vm.months, function (month) {
+        return _.extend(_.clone(month), {
+          data: []
         });
+      });
 
       _.each(calendar.days, function (dateObj) {
-        //fetch leave request, first search by contact_id then by date
+        // fetch leave request, first search by contact_id then by date
         leaveRequest = vm.leaveRequests[contactID] ? vm.leaveRequests[contactID][dateObj.date] : null;
         dateObj.UI = {
           isWeekend: calendar.isWeekend(vm._getDateObjectWithFormat(dateObj.date)),
@@ -291,7 +292,7 @@ define([
       return monthData;
     };
 
-    (function init() {
+    (function init () {
       vm._init(function () {
         return $q.all([
           vm._loadRegions(),

@@ -24,7 +24,7 @@
     describe('managerLeaveCalendar', function () {
       var $compile, $q, $log, $rootScope, component, controller, $provide,
         OptionGroup, OptionGroupAPIMock, ContactAPIMock, AbsencePeriod,
-        Contact, LeaveRequest, CalendarInstance, Calendar, WorkPatternAPI;
+        Contact, LeaveRequest, WorkPatternAPI;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -44,7 +44,7 @@
 
       beforeEach(inject(function (
         _$compile_, _$q_, _$log_, _$rootScope_, _OptionGroup_, _OptionGroupAPIMock_,
-        _AbsencePeriod_, _Contact_, _LeaveRequest_, _CalendarInstance_, _Calendar_, _WorkPatternAPI_) {
+        _AbsencePeriod_, _Contact_, _LeaveRequest_, _WorkPatternAPI_) {
         $compile = _$compile_;
         $q = _$q_;
         $log = _$log_;
@@ -52,8 +52,6 @@
         AbsencePeriod = _AbsencePeriod_;
         Contact = _Contact_;
         LeaveRequest = _LeaveRequest_;
-        Calendar = _Calendar_;
-        CalendarInstance = _CalendarInstance_;
         OptionGroup = _OptionGroup_;
         OptionGroupAPIMock = _OptionGroupAPIMock_;
         WorkPatternAPI = _WorkPatternAPI_;
