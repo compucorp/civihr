@@ -14,7 +14,7 @@
     ng-show="$ctrl.isRole('manager') && !$ctrl.isMode('create')"
     class="row chr_leave-request-modal__user-info">
     <span class="col-xs-6">{{$ctrl.contactName}}</span>
-    <span class="col-xs-6">{{::$ctrl.statusBeforeEdit.label}}</span>
+    <span class="col-xs-6">{{::$ctrl.getStatusFromValue($ctrl.request.status_id).label}}</span>
   </div>
   <!-- ng-show is required in model as it was not showing the list of managees for ui-select-choices-->
   <div class="modal-body chr_leave-request-modal__form">
@@ -65,7 +65,12 @@
               <crm-loading show="!$ctrl.loading.showBalanceChange">
                 <div ng-show="$ctrl.uiOptions.showBalance">
                   <hr/>
-                  <div class="row chr_leave-request-modal__form-group">
+                  <div
+                    class="row chr_leave-request-modal__form-group"
+                    ng-if="$ctrl.isRole('manager')
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.awaitingApproval)
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.moreInformationRequired)
+                      || !$ctrl.request.status_id">
                     <div class="col-xs-4">Opening Balance</div>
                     <div class="col-xs-8">{{$ctrl.balance.opening}}</div>
                   </div>
@@ -123,7 +128,13 @@
                       </tfoot>
                     </table>
                   </div>
-                  <div class="row" ng-class="{'text-danger': $ctrl.balance.closing < 0}">
+                  <div
+                    class="row"
+                    ng-class="{'text-danger': $ctrl.balance.closing < 0}"
+                    ng-if="$ctrl.isRole('manager')
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.awaitingApproval)
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.moreInformationRequired)
+                      || !$ctrl.request.status_id">
                     <div class="col-xs-4">Closing Balance</div>
                     <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
                   </div>
@@ -329,7 +340,7 @@
                 <select
                   name="statusSelect"
                   ng-options="status.value as status.label for status in $ctrl.getStatuses()"
-                  ng-model="$ctrl.request.status_id">
+                  ng-model="$ctrl.newStatusOnSave">
                   <option value="">- select -</option>
                 </select>
               </div>

@@ -1,3 +1,4 @@
+/* eslint-env amd */
 define([
   'common/angular',
   'common/lodash',
@@ -16,7 +17,7 @@ define([
      * @param {object} response - response from backend
      * @return {Promise/Any}
      */
-    function responseHandler(response) {
+    function responseHandler (response) {
       if (!!response.data.is_error) {
         $log.error(response.data);
 
@@ -26,7 +27,7 @@ define([
       return response.data;
     }
 
-    function prepareParams(params) {
+    function prepareParams (params) {
       var defaults = {
         options: { limit: 0 }
       };
@@ -84,6 +85,8 @@ define([
           }.bind(this))(),
           (function () {
             var params = _.assign({}, filters, { 'return': 'id' });
+            // Removing chained calls, they are not necessary for getting the count
+            params = _.omit(params, function (__, key) { return _.startsWith(key, 'api.'); });
 
             return this.sendGET(entity, action, params, cache);
           }.bind(this))()

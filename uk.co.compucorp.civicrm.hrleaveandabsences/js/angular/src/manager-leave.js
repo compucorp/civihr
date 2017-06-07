@@ -5,16 +5,17 @@
     urlArgs: 'bust=' + (new Date()).getTime(),
     paths: {
       'leave-absences/shared': srcPath + '/shared',
-      'leave-absences/manager-leave': srcPath + '/manager-leave',
+      'leave-absences/manager-leave': srcPath + '/manager-leave'
     }
   });
 
-  require([
-      'leave-absences/shared/config',
+  require(['leave-absences/shared/config'], function () {
+    require([
       'leave-absences/manager-leave/app',
-      'leave-absences/shared/models/leave-request-model',      
+      'leave-absences/shared/models/leave-request-model'
     ],
-    function (__, angular) {
+    function (angular) {
       angular.bootstrap(document.querySelector('[data-leave-absences-manager-leave]'), ['manager-leave']);
     });
+  });
 })(CRM, require);

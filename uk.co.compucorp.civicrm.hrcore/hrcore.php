@@ -114,7 +114,7 @@ function hrcore_civicrm_caseTypes(&$caseTypes) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
 function hrcore_civicrm_angularModules(&$angularModules) {
-_hrcore_civix_civicrm_angularModules($angularModules);
+  _hrcore_civix_civicrm_angularModules($angularModules);
 }
 
 /**

@@ -341,11 +341,16 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   private function up1402_removedUnusedManagedEntities($caseTypes, $activityTypes) {
     $entitiesToRemove['civicase:act:Background Check'] = 'OptionValue';
 
+    $allActivityTypes = [];
+    foreach ($activityTypes as $componentActivities) {
+      $allActivityTypes = array_merge($allActivityTypes, $componentActivities);
+    }
+
     foreach (array_merge($caseTypes, ['Appraisal', 'Probation']) as $caseType) {
       $entitiesToRemove[$caseType] = 'CaseType';
     }
 
-    foreach ($activityTypes as $extension) {
+    foreach ($allActivityTypes as $extension) {
       foreach ($extension as $activityType) {
         $entitiesToRemove['civitask:act:' . $activityType] = 'OptionValue';
       }
