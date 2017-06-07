@@ -83,7 +83,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateNoOverlappingLeaveRequests($params);
     self::validateWorkingDay($params);
     self::validateBalanceChange($params);
-    self::validateLeaveDatesDoesNotOverlapContracts($params);
+    self::validateLeaveDatesDoesNotOverlapContractsWithLapses($params);
   }
 
   /**
@@ -251,7 +251,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past) {
       throw new InvalidLeaveRequestException(
-        'You cannot request TOIL for past days',
+        'You may only request TOIL for overtime to be worked in the future. Please modify the date of this request',
         'leave_request_toil_cannot_be_requested_for_past_days',
         'from_date'
       );
@@ -296,9 +296,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       }
     }
 
-    if ($totalProjectedToilForPeriod > $absenceType->max_leave_accrual && !$unlimitedAccrual) {
+    $maxLeaveAccrual = $absenceType->max_leave_accrual;
+    if ($totalProjectedToilForPeriod > $maxLeaveAccrual && !$unlimitedAccrual) {
       throw new InvalidLeaveRequestException(
-        'The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type',
+        'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual .' days. Please modify the dates of this request',
         'leave_request_toil_amount_more_than_maximum_for_absence_type',
         'toil_to_accrue'
       );
@@ -394,29 +395,42 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * This method validates that the leave request does not have dates in more than one contract period
+   * This method validates that the leave request does not overlap
+   * contracts with lapses in between any of the contract periods.
    *
    * @param array $params
    *   The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateLeaveDatesDoesNotOverlapContracts($params) {
+  private static function validateLeaveDatesDoesNotOverlapContractsWithLapses($params) {
     $fromDate = new DateTime($params['from_date']);
     $toDate = new DateTime($params['to_date']);
 
-    $contract = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
+    $contractsOverlappingToAndFromDates = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
       'contact_id' => $params['contact_id'],
       'start_date' => $fromDate->format('Y-m-d'),
       'end_date' => $toDate->format('Y-m-d'),
     ]);
 
-    if ($contract['count'] > 1) {
-      throw new InvalidLeaveRequestException(
-        'The Leave request dates must not have dates in more than one contract period',
-        'leave_request_overlapping_multiple_contracts',
-        'from_date'
-      );
+    if ($contractsOverlappingToAndFromDates['count'] > 1) {
+      $contractToCompare = reset($contractsOverlappingToAndFromDates['values']);
+      while($nextContract = next($contractsOverlappingToAndFromDates['values'])) {
+        $intervalInDays = self::getDateIntervalInDays(
+          new DateTime($contractToCompare['period_end_date']),
+          new DateTime($nextContract['period_start_date'])
+        );
+
+        $contractToCompare = $nextContract;
+
+        if($intervalInDays > 1) {
+          throw new InvalidLeaveRequestException(
+            'This leave request is after your contract end date. Please modify dates of this request',
+            'leave_request_overlapping_multiple_contracts',
+            'from_date'
+          );
+        }
+      }
     }
   }
 
@@ -447,7 +461,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
       throw new InvalidLeaveRequestException(
-        'Balance change for the leave request cannot be greater than the remaining balance of the period',
+        'There are only '. $currentBalance .' days leave available. This request cannot be made or approved',
         'leave_request_balance_change_greater_than_remaining_balance',
         'type_id'
       );
@@ -542,7 +556,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if ($overlappingLeaveRequests) {
       throw new InvalidLeaveRequestException(
-        'This Leave request has dates that overlaps with an existing leave request',
+        'This leave request overlaps with another request. Please modify dates of this request',
         'leave_request_overlaps_another_leave_request',
         'from_date'
       );
@@ -588,10 +602,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $interval = $toDate->diff($fromDate);
     $intervalInDays = $interval->format("%a");
+    $maxConsecutiveLeaveDays = $absenceType->max_consecutive_leave_days;
 
-    if (!empty($absenceType->max_consecutive_leave_days) && $intervalInDays > $absenceType->max_consecutive_leave_days) {
+    if (!empty($maxConsecutiveLeaveDays) && $intervalInDays > $maxConsecutiveLeaveDays) {
       throw new InvalidLeaveRequestException(
-        'Leave Request days cannot be greater than maximum consecutive days for absence type',
+        'Only a maximum '. $maxConsecutiveLeaveDays .' days leave can be taken in one request. Please modify days of this request',
         'leave_request_days_greater_than_max_consecutive_days',
         'type_id'
       );
@@ -1094,5 +1109,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     );
 
     return $periodContainingDates;
+  }
+
+  /**
+   * Returns the interval in days between the from and to Dates.
+   *
+   * @param \DateTime $fromDate
+   * @param \DateTime $toDate
+   *
+   * @return int
+   */
+  private static function getDateIntervalInDays(DateTime $fromDate, DateTime $toDate) {
+    $interval = $toDate->diff($fromDate);
+    return (int) $interval->format("%a");
   }
 }
