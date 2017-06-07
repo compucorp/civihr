@@ -1795,6 +1795,61 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
   }
 
+  public function testLeaveRequestCanBeCreatedWhenTheDatesOverlapTwoContractsWithNoLapseBetweenTheContracts() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 30);
+    $periodStartDate1 = '2016-01-01';
+    $periodEndDate1 = '2016-06-30';
+
+    $periodStartDate2 = '2016-07-01';
+    $periodEndDate2 = '2016-07-31';
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      [
+        'period_start_date' => $periodStartDate1,
+        'period_end_date' => $periodEndDate1
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      [
+        'period_start_date' => $periodStartDate2,
+        'period_end_date' => $periodEndDate2
+      ]
+    );
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $periodEntitlement->contact_id,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $leaveRequest = LeaveRequest::create([
+      'type_id' => $periodEntitlement->type_id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-06-29'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => CRKM_Utils_Date::processDate('2016-07-03'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+
+    $this->assertNotNull($leaveRequest->id);
+  }
+
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage This absence type does not allow sickness requests
