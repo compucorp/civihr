@@ -395,7 +395,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * This method validates that the leave request does not overlapp
+   * This method validates that the leave request does not overlap
    * contracts with lapses in between any of the contract periods.
    *
    * @param array $params
@@ -421,7 +421,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
           new DateTime($nextContract['period_start_date'])
         );
 
-        $contractToCompare =  $nextContract;
+        $contractToCompare = $nextContract;
 
         if($intervalInDays > 1) {
           throw new InvalidLeaveRequestException(

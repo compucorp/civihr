@@ -1687,11 +1687,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 30);
-    $periodStartDate1 = date('2016-01-01');
-    $periodEndDate1 = date('2016-06-30');
+    $periodStartDate1 = '2016-01-01';
+    $periodEndDate1 = '2016-06-30';
 
-    $periodStartDate2 = date('2016-07-02');
-    $periodEndDate2 = date('2016-07-31');
+    $periodStartDate2 = '2016-07-02';
+    $periodEndDate2 = '2016-07-31';
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $periodEntitlement->contact_id],
@@ -1746,13 +1746,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 30);
-    $periodStartDate1 = date('2016-06-01');
-    $periodEndDate1 = date('2016-06-08');
+    $periodStartDate1 = '2016-06-01';
+    $periodEndDate1 = '2016-06-08';
 
-    $periodStartDate2 = date('2016-06-09');
-    $periodEndDate2 = date('2016-06-12');
+    $periodStartDate2 = '2016-06-09';
+    $periodEndDate2 = '2016-06-12';
 
-    $periodStartDate3 = date('2016-06-14');
+    $periodStartDate3 = '2016-06-14';
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $periodEntitlement->contact_id],
