@@ -39,24 +39,24 @@ define([
       return ModelInstance.extend({
 
         /**
-         * Creates a new instance, optionally with its data normalized.
-         * Also, it will allow children to add/remove/update current attributes of
-         * the instance using transformAttributes method
+         * Removes the `calendar` property and creates the `day` property
+         * which indexes the dates by their timestamp
          *
-         * @param {object} data - The instance data
-         * @return {object}
+         * @param  {Object} attributes
+         * @return {Object}
          */
-        init: function (data) {
+        transformAttributes: function (attributes) {
           var datesObj = {};
 
           // convert array to an object with the timestamp being the key
-          data.calendar.forEach(function (calendar) {
+          attributes.calendar.forEach(function (calendar) {
             datesObj[getDateObjectWithFormat(calendar.date).valueOf()] = calendar;
           });
 
-          return _.assign(Object.create(this), {
-            days: datesObj
-          });
+          return _(attributes)
+            .omit('calendar')
+            .assign({ days: datesObj })
+            .value();
         },
 
         /**

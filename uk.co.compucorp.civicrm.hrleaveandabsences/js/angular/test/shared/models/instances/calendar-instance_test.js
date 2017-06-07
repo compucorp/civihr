@@ -25,7 +25,16 @@ define([
         date = moment(instance.days[key].date).valueOf();
       });
 
-      it('converts the dates array to an object with timestamps as keys', function () {
+      it('keeps the `contact_id` property', function () {
+        expect(instance.contact_id).toBeDefined();
+        expect(instance.contact_id).toBe(mockedCalendar.contact_id);
+      });
+
+      it('removes the `calendar` property', function () {
+        expect(instance.calendar).not.toBeDefined();
+      });
+
+      it('creates the `days` property, an object with timestamps as keys', function () {
         expect(+key).toBe(date);
       });
     });
