@@ -989,9 +989,11 @@
 
                 initTestController(directiveOptions);
                 expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+                $ctrl.balance.closing = 5;
+                $ctrl.submit();
               });
 
-              it('status changes to waiting approval', function () {
+              it('status changes to waiting approval before calling API', function () {
                 expect($ctrl.request.status_id).toEqual(expectedStatusValue);
               });
             });
@@ -1051,8 +1053,8 @@
             expect($ctrl.canSubmit()).toBe(false);
           });
 
-          describe('when a comment is added', function() {
-            beforeEach(function() {
+          describe('when a comment is added', function () {
+            beforeEach(function () {
               $ctrl.request.comments.push(jasmine.any(Object));
             });
 
@@ -1187,7 +1189,7 @@
               $ctrl.balance.closing = 0;
             }
             // set status id manually as manager would set it on UI
-            $ctrl.request.status_id = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+            $ctrl.newStatusOnSave = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
             $ctrl.submit();
             $scope.$apply();
           });
@@ -1253,7 +1255,7 @@
             });
 
             it('sets status to approved', function () {
-              expect($ctrl.request.status_id).toEqual(approvalStatus);
+              expect($ctrl.newStatusOnSave).toEqual(approvalStatus);
             });
 
             describe('cancelled status', function () {

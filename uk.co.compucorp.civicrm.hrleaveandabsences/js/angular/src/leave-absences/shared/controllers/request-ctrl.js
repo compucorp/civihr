@@ -35,16 +35,16 @@ define([
       this.absenceTypes = [];
       this.calendar = {};
       this.contactName = null;
-      this.submitting = false;
       this.errors = [];
       this.managedContacts = [];
-      this.requestDayTypes = [];
-      this.selectedAbsenceType = {};
-      this.sharedSettings = sharedSettings;
+      this.newStatusOnSave = null;
       this.period = {};
       this.postContactSelection = false; // flag to track if user is selected for enabling UI
+      this.requestDayTypes = [];
       this.requestStatuses = {};
-      this.statusBeforeEdit = {};
+      this.selectedAbsenceType = {};
+      this.statusNames = sharedSettings.statusNames;
+      this.submitting = false;
       this.supportedFileTypes = '';
       this.today = Date.now();
       this.balance = {
@@ -203,7 +203,7 @@ define([
         // check if manager has changed status
         if (this.isRole('manager') && this.requestStatuses) {
           // awaiting_approval will not be available in this.requestStatuses if manager has changed selection
-          canSubmit = canSubmit && !!getStatusFromValue.call(this, this.request.status_id);
+          canSubmit = canSubmit && !!this.getStatusFromValue(this.newStatusOnSave);
         }
 
         return canSubmit && !this.isMode('view');
@@ -267,17 +267,13 @@ define([
       };
 
       /**
-       * Checks if the leave request is of a specific status(sent as a param)
-       * If 'statusBeforeEdit' is available ->its an existing request, so search is done on this object
-       * If 'statusBeforeEdit' is not present -> its a new request, so search is done on this.request object
+       * Checks if the leave request has the given status
        *
        * @param {String} leaveStatus
        * @return {Boolean}
        */
       this.isLeaveStatus = function (leaveStatus) {
-        var status = this.statusBeforeEdit.name
-          ? this.statusBeforeEdit
-          : getStatusFromValue.call(this, this.request.status_id);
+        var status = this.getStatusFromValue(this.request.status_id);
 
         return status ? status.name === leaveStatus : false;
       };
@@ -354,28 +350,32 @@ define([
 
       /**
        * Submits the form, only if the leave request is valid, also emits event
-       * to listeners self leaverequest is created.
-       * Also, checks if its an update request from manager and accordingly updates leave request
+       * to notify event subscribers about the the save.
+       * Updates request based on role and mode
        */
       this.submit = function () {
+        var originalStatus = this.request.status_id;
+
         if (this.isMode('view') || this.submitting) {
           return;
         }
 
-        // current absence type (this.request.type_id) doesn't allow self
-        if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse === '0') {
-          // show an error
-          this.errors = ['You are not allowed to apply leave in negative'];
-          return;
-        }
+        this.submitting = true;
+        changeStatusBeforeSave.call(this);
 
-        this.errors = [];
-
-        if (canViewOrEdit.call(this)) {
-          updateRequest.call(this);
-        } else {
-          createRequest.call(this);
-        }
+        validateBeforeSubmit.call(this)
+          .then(function () {
+            // TODO - Analyze why canViewOrEdit is used, as when in View mode, request should not be updated
+            return canViewOrEdit.call(this) ? updateRequest.call(this) : createRequest.call(this);
+          }.bind(this))
+          .catch(function (errors) {
+            // if there is an error, put back the original status
+            this.request.status_id = originalStatus;
+            errors && handleError.call(this, errors);
+          }.bind(this))
+          .finally(function () {
+            this.submitting = false;
+          }.bind(this));
       };
 
       /**
@@ -527,6 +527,18 @@ define([
 
           return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
         }.bind(this));
+      };
+
+      /**
+       * Gets status object for given status value
+       *
+       * @param {String} value - value of the status
+       * @return {Object} option group of type status or undefined if not found
+       */
+      this.getStatusFromValue = function (value) {
+        return _.find(this.requestStatuses, function (status) {
+          return status.value === value;
+        });
       };
 
       /**
@@ -717,23 +729,15 @@ define([
       }
 
       /**
-       * Creates leaverequest
+       * Validates and creates the leave request
+       *
+       * @returns {Promise}
        */
       function createRequest () {
-        var self = this;
-        self.submitting = true;
-
-        self.request.isValid()
+        return this.request.create()
           .then(function () {
-            self.request.create()
-              .then(function (result) {
-                // refresh the list
-                postSubmit.call(self, 'LeaveRequest::new');
-                self.submitting = false;
-              })
-              .catch(handleError.bind(self));
-          })
-          .catch(handleError.bind(self));
+            postSubmit.call(this, 'LeaveRequest::new');
+          }.bind(this));
       }
 
       /**
@@ -743,6 +747,19 @@ define([
        */
       function canViewOrEdit () {
         return this.isMode('edit') || this.isMode('view');
+      }
+
+      /**
+       * Changes status of the leave request before saving it
+       * For staff the status_id should be always set to awaitingApproval before saving
+       * If manager has changed the status through dropdown, assign the same before calling API
+       */
+      function changeStatusBeforeSave () {
+        if (this.isRole('staff')) {
+          this.request.status_id = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
+        } else if (this.isRole('manager')) {
+          this.request.status_id = this.newStatusOnSave || this.request.status_id;
+        }
       }
 
       /**
@@ -780,21 +797,17 @@ define([
        * @return {Promise} of array with day types
        */
       function filterLeaveRequestDayTypes (date, dayType) {
-        var deferred,
-          inCalendarList,
-          listToReturn,
-          self;
-        deferred = $q.defer();
-        self = this;
+        var inCalendarList, listToReturn;
+        var deferred = $q.defer();
 
         if (!date) {
           deferred.reject([]);
         }
 
         // Make a copy of the list
-        listToReturn = self.requestDayTypes.slice(0);
+        listToReturn = this.requestDayTypes.slice(0);
 
-        date = self._convertDateToServerFormat(date);
+        date = this._convertDateToServerFormat(date);
         PublicHoliday.isPublicHoliday(date)
           .then(function (result) {
             if (result) {
@@ -802,7 +815,7 @@ define([
                 return publicHoliday.name === 'public_holiday';
               });
             } else {
-              inCalendarList = getDayTypesFromDate.call(self, date, listToReturn);
+              inCalendarList = getDayTypesFromDate.call(this, date, listToReturn);
 
               if (!inCalendarList.length) {
                 // 'All day', '1/2 AM', and '1/2 PM' options
@@ -814,9 +827,9 @@ define([
               }
             }
 
-            setDayType.call(self, dayType, listToReturn);
+            setDayType.call(this, dayType, listToReturn);
             deferred.resolve(listToReturn);
-          });
+          }.bind(this));
 
         return deferred.promise;
       }
@@ -866,21 +879,6 @@ define([
         });
       }
 
-      /**
-       * Gets status object for given status value
-       *
-       * @param value of the status
-       * @return {Object} option group of type status or undefined if not found
-       */
-      function getStatusFromValue (value) {
-        return _.find(this.requestStatuses, function (status) {
-          return status.value === value;
-        });
-      }
-
-      /**
-       * Error handler, generally used in catch calls
-       */
       function handleError (errors) {
         // show errors
         this.errors = _.isArray(errors) ? errors : [errors];
@@ -907,7 +905,8 @@ define([
         return !angular.equals(
           _.omit(initialLeaveRequestAttributes, 'fileUploader'),
           _.omit(this.request.attributes(), 'fileUploader')
-        ) || this.request.fileUploader.queue.length !== 0;
+        ) || this.request.fileUploader.queue.length !== 0 ||
+          (this.isRole('manager') && this.newStatusOnSave);
       }
 
       /**
@@ -917,11 +916,14 @@ define([
         if (this.request.id) {
           mode = 'edit';
 
-          var viewModes = [this.requestStatuses[sharedSettings.statusNames.approved].value, this.requestStatuses[sharedSettings.statusNames.adminApproved].value,
-            this.requestStatuses[sharedSettings.statusNames.rejected].value, this.requestStatuses[sharedSettings.statusNames.cancelled].value
+          var viewModeStatuses = [
+            this.requestStatuses[sharedSettings.statusNames.approved].value,
+            this.requestStatuses[sharedSettings.statusNames.adminApproved].value,
+            this.requestStatuses[sharedSettings.statusNames.rejected].value,
+            this.requestStatuses[sharedSettings.statusNames.cancelled].value
           ];
 
-          if (this.isRole('staff') && viewModes.indexOf(this.request.status_id) > -1) {
+          if (this.isRole('staff') && viewModeStatuses.indexOf(this.request.status_id) > -1) {
             mode = 'view';
           }
         } else {
@@ -992,17 +994,8 @@ define([
        * Initialize status
        */
       function initStatus () {
-        if (canViewOrEdit.call(this)) {
-          // set it before self.requestStatuses gets filtered
-          this.statusBeforeEdit = getStatusFromValue.call(this, this.request.status_id);
-
-          if (this.isRole('staff')) {
-            this.request.status_id = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
-          }
-        } else if (this.isMode('create')) {
-          this.request.status_id = this.isRole('manager')
-            ? this.requestStatuses[sharedSettings.statusNames.approved].value
-            : this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
+        if (this.isMode('create') && this.isRole('manager')) {
+          this.newStatusOnSave = this.requestStatuses[sharedSettings.statusNames.approved].value;
         }
       }
 
@@ -1056,25 +1049,21 @@ define([
        * @return {Promise}
        */
       function loadContactNames () {
-        var contactIDs, self;
-        contactIDs = [];
-        self = this;
+        var contactIDs = [];
 
-        _.each(self.request.comments, function (comment) {
+        _.each(this.request.comments, function (comment) {
           // Push only unique contactId's which are not same as logged in user
-          if (comment.contact_id !== self.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
+          if (comment.contact_id !== this.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
             contactIDs.push(comment.contact_id);
           }
-        });
+        }.bind(this));
 
         return Contact.all({
           id: { IN: contactIDs }
-        }, {
-          page: 1,
-          size: 0
-        }).then(function (contacts) {
-          self.comment.contacts = _.indexBy(contacts.list, 'contact_id');
-        });
+        }, { page: 1, size: 0 })
+        .then(function (contacts) {
+          this.comment.contacts = _.indexBy(contacts.list, 'contact_id');
+        }.bind(this));
       }
 
       /**
@@ -1181,34 +1170,33 @@ define([
       }
 
       /**
-       * Updates the leaverequest
+       * Validates and updates the leave request
+       *
+       * @returns {Promise}
        */
       function updateRequest () {
-        var self = this;
-        self.submitting = true;
+        return this.request.update()
+          .then(function () {
+            if (this.isRole('manager')) {
+              postSubmit.call(this, 'LeaveRequest::updatedByManager');
+            } else if (this.isRole('staff')) {
+              postSubmit.call(this, 'LeaveRequest::edit');
+            }
+          }.bind(this));
+      }
 
-        if (self.isRole('manager')) {
-          // if manager has not changed the status then reset status
-          if (!self.request.status_id) {
-            self.request.status_id = self.statusBeforeEdit.value;
-          }
+      /**
+       * Validates a Leave request before submitting
+       *
+       * @returns {Promise}
+       */
+      function validateBeforeSubmit () {
+        if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse === '0') {
+          // show an error
+          return $q.reject(['You are not allowed to apply leave in negative']);
         }
 
-        self.request.isValid()
-          .then(function () {
-            self.request.update()
-              .then(function (result) {
-                self.submitting = false;
-
-                if (self.isRole('manager')) {
-                  postSubmit.call(self, 'LeaveRequest::updatedByManager');
-                } else if (self.isRole('staff')) {
-                  postSubmit.call(self, 'LeaveRequest::edit');
-                }
-              })
-              .catch(handleError.bind(self));
-          })
-          .catch(handleError.bind(self));
+        return this.request.isValid();
       }
 
       return this;

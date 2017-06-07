@@ -301,16 +301,6 @@
                 });
               });
             });
-
-            describe('and does not changes the status', function () {
-              beforeEach(function () {
-                $ctrl.submit();
-              });
-
-              it('sets status to waiting approval', function () {
-                expect($ctrl.request.status_id).toEqual($ctrl.statusBeforeEdit.value);
-              });
-            });
           });
         });
       });
