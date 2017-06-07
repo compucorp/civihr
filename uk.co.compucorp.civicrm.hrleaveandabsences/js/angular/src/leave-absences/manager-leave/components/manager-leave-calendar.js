@@ -129,12 +129,18 @@ define([
     vm._loadCalendar = function () {
       tempContactData = _.clone(vm.managedContacts);
 
-      return $q.all(vm.managedContacts.map(function (contact, index) {
-        return Calendar.get(contact.id, vm.selectedPeriod.id)
-          .then(function (calendar) {
-            tempContactData[index].calendarData = vm._setCalendarProps(vm.managedContacts[index].id, calendar);
+      return Calendar.get(vm.managedContacts.map(function (contact) {
+        return contact.id;
+      }), vm.selectedPeriod.id)
+      .then(function (calendars) {
+        calendars.forEach(function (calendar) {
+          var index = _.findIndex(tempContactData, function (contact) {
+            return +contact.id === +calendar.contact_id;
           });
-      }));
+
+          tempContactData[index].calendarData = vm._setCalendarProps(calendar.contact_id, calendar);
+        })
+      });
     };
 
     /**

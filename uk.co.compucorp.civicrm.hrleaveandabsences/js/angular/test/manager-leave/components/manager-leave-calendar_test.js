@@ -24,7 +24,7 @@
     describe('managerLeaveCalendar', function () {
       var $compile, $q, $log, $rootScope, component, controller, $provide,
         OptionGroup, OptionGroupAPIMock, ContactAPIMock, AbsencePeriod,
-        Contact, LeaveRequest, CalendarInstance, Calendar;
+        Contact, LeaveRequest, CalendarInstance, Calendar, WorkPatternAPI;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -44,7 +44,7 @@
 
       beforeEach(inject(function (
         _$compile_, _$q_, _$log_, _$rootScope_, _OptionGroup_, _OptionGroupAPIMock_,
-        _AbsencePeriod_, _Contact_, _LeaveRequest_, _CalendarInstance_, _Calendar_) {
+        _AbsencePeriod_, _Contact_, _LeaveRequest_, _CalendarInstance_, _Calendar_, _WorkPatternAPI_) {
         $compile = _$compile_;
         $q = _$q_;
         $log = _$log_;
@@ -56,6 +56,7 @@
         CalendarInstance = _CalendarInstance_;
         OptionGroup = _OptionGroup_;
         OptionGroupAPIMock = _OptionGroupAPIMock_;
+        WorkPatternAPI = _WorkPatternAPI_;
 
         spyOn($log, 'debug');
 
@@ -82,6 +83,32 @@
           data[0].current = true;
 
           return $q.resolve(data);
+        });
+
+        /**
+         * This is unfortunately a hack to make sure that
+         * all mocked contacts have a mocked calendar
+         *
+         * It takes the mocked WorkPattern.getcalendar response and expands it
+         * by making copies of the first mocked calendar and assigning it to
+         * each mocked contacts.
+         *
+         * The ideal solution would be to decouple the mocked data from the
+         * `api.contact.mock` (common/mocks/services/api/contact-mock) and put it
+         * in a separate file, so that mocks/data/work-pattern-data can inject it
+         * and dynamically generate the data by looping through all mocked contacts
+         */
+        spyOn(WorkPatternAPI, 'getCalendar').and.callFake(function () {
+          var mockedGetCalendarResponse = _.clone(workPatternMocked.getCalendar);
+          var singleMockedCalendarTemplate = mockedGetCalendarResponse.values[0];
+
+          return $q.resolve(_.assign(mockedGetCalendarResponse, {
+            values: ContactAPIMock.mockedContacts().list.map(function (contact) {
+              var clonedCalendar = _.clone(singleMockedCalendarTemplate);
+
+              return _.assign(clonedCalendar, { contact_id: contact.id });
+            })
+          }));
         });
 
         compileComponent();
@@ -378,10 +405,6 @@
           });
 
           function commonSetup () {
-            spyOn(Calendar, 'get').and.callFake(function () {
-              return $q.resolve(CalendarInstance.init(workPattern.values[0]));
-            });
-
             spyOn(LeaveRequest, 'all').and.callFake(function () {
               return $q.resolve({
                 list: [leaveRequest]

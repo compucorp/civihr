@@ -8,7 +8,7 @@ define(function () {
       'count': 2,
       'values': [
         {
-          'contact_id': 204,
+          'contact_id': 1,
           'calendar': [
             {
               'date': '2016-01-05',
@@ -37,7 +37,7 @@ define(function () {
           ]
         },
         {
-          'contact_id': 205,
+          'contact_id': 2,
           'calendar': [
             {
               'date': '2016-01-05',
