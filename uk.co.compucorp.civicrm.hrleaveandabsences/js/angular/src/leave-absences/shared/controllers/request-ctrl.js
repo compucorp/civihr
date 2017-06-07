@@ -133,13 +133,13 @@ define([
       };
 
       /**
-       * Change handler for change request type like multiple or single. It will
-       * reset dates, day types, change balance.
+       * Change handler when changing no. of days like Multiple Days or Single Day.
+       * It will reset dates, day types, change balance.
        */
       this.changeInNoOfDays = function () {
         this._reset();
         // reinitialize opening balance
-        initAbsenceType.call(this);
+        setInitialAbsenceTypes.call(this);
       };
 
       /**
@@ -365,8 +365,7 @@ define([
 
         validateBeforeSubmit.call(this)
           .then(function () {
-            // TODO - Analyze why canViewOrEdit is used, as when in View mode, request should not be updated
-            return canViewOrEdit.call(this) ? updateRequest.call(this) : createRequest.call(this);
+            return this.isMode('edit') ? updateRequest.call(this) : createRequest.call(this);
           }.bind(this))
           .catch(function (errors) {
             // if there is an error, put back the original status
@@ -697,7 +696,7 @@ define([
             return initDates.call(self);
           })
           .then(function () {
-            initAbsenceType.call(self);
+            setInitialAbsenceTypes.call(self);
             initStatus.call(self);
             initContact.call(self);
 
@@ -738,15 +737,6 @@ define([
           .then(function () {
             postSubmit.call(this, 'LeaveRequest::new');
           }.bind(this));
-      }
-
-      /**
-       * Checks if user can view or edit leaverequest
-       *
-       * @return {Boolean}
-       */
-      function canViewOrEdit () {
-        return this.isMode('edit') || this.isMode('view');
       }
 
       /**
@@ -872,11 +862,9 @@ define([
        * @return {Object} absence type object
        */
       function getSelectedAbsenceType () {
-        var self = this;
-
-        return _.find(self.absenceTypes, function (absenceType) {
-          return absenceType.id === self.request.type_id;
-        });
+        return _.find(this.absenceTypes, function (absenceType) {
+          return absenceType.id === this.request.type_id;
+        }.bind(this));
       }
 
       function handleError (errors) {
@@ -941,15 +929,16 @@ define([
       }
 
       /**
-       * Initialize absence types
+       * Set initial values to absence types when opening the popup
        */
-      function initAbsenceType () {
-        if (canViewOrEdit.call(this)) {
-          this.selectedAbsenceType = getSelectedAbsenceType.call(this);
-        } else {
+      function setInitialAbsenceTypes () {
+        if (this.isMode('create')) {
           // Assign the first absence type to the leave request
           this.selectedAbsenceType = this.absenceTypes[0];
           this.request.type_id = this.selectedAbsenceType.id;
+        } else {
+          // Either View or Edit Mode
+          this.selectedAbsenceType = getSelectedAbsenceType.call(this);
         }
 
         // Init the `balance` object based on the first absence type
@@ -963,31 +952,22 @@ define([
        * @return {Promise}
        */
       function initDates () {
-        var deferred = $q.defer();
-        var self = this;
+        if (!this.isMode('create')) {
+          var attributes = this.request.attributes();
 
-        if (canViewOrEdit.call(self)) {
-          var attributes = self.request.attributes();
+          this.uiOptions.fromDate = this._convertDateFormatFromServer(this.request.from_date);
 
-          self.uiOptions.fromDate = self._convertDateFormatFromServer(self.request.from_date);
-
-          self.updateAbsencePeriodDatesTypes(self.uiOptions.fromDate, 'from')
+          return this.updateAbsencePeriodDatesTypes(this.uiOptions.fromDate, 'from')
             .then(function () {
               // to_date and type has been reset in above call so reinitialize from clone
-              self.request.to_date = attributes.to_date;
-              self.request.to_date_type = attributes.to_date_type;
-              self.uiOptions.toDate = self._convertDateFormatFromServer(self.request.to_date);
-              self.updateAbsencePeriodDatesTypes(self.uiOptions.toDate, 'to')
-                .then(function () {
-                  // resolve only after both from and to day types are also set
-                  deferred.resolve();
-                });
-            });
+              this.request.to_date = attributes.to_date;
+              this.request.to_date_type = attributes.to_date_type;
+              this.uiOptions.toDate = this._convertDateFormatFromServer(this.request.to_date);
+              return this.updateAbsencePeriodDatesTypes(this.uiOptions.toDate, 'to');
+            }.bind(this));
         } else {
-          deferred.resolve();
+          return $q.resolve();
         }
-
-        return deferred.promise;
       }
 
       /**
@@ -1164,7 +1144,7 @@ define([
 
         this[keyForDayTypeCollection] = listOfDayTypes;
 
-        if (!canViewOrEdit.call(this)) {
+        if (this.isMode('create')) {
           this.request[dayType + '_date_type'] = this[keyForDayTypeCollection][0].value;
         }
       }
