@@ -21,6 +21,7 @@ define([
         onCompleteItem: settings.onCompleteItem,
         onCompleteAll: settings.onCompleteAll,
         onErrorItem: settings.onErrorItem,
+        filters: settings.filters,
         onBeforeUploadItem: function () {}
       };
     }

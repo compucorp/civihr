@@ -13,7 +13,7 @@ define([
 
   describe('Contact', function () {
     var $provide, $rootScope, Contact, ContactInstanceMock, Group, JobRole, $q,
-      contactAPI, jobRoleAPI, groupContactAPIMock, contacts, jobRoles, groupContacts;
+      contactAPI, contactAPIMock, jobRoleAPI, groupContactAPIMock, contacts, jobRoles, groupContacts;
 
     beforeEach(function () {
       module('common.models', 'common.mocks', function (_$provide_) {
@@ -21,7 +21,8 @@ define([
       });
       inject([
         'api.contact.mock', 'api.job-role.mock', 'HR_settingsMock',
-        function (contactAPIMock, jobRoleAPIMock, HR_settingsMock) {
+        function (_contactAPIMock_, jobRoleAPIMock, HR_settingsMock) {
+          contactAPIMock = _contactAPIMock_;
           $provide.value('api.contact', contactAPIMock);
           $provide.value('api.job-role', jobRoleAPIMock);
           $provide.value('HR_settings', HR_settingsMock);
@@ -56,7 +57,7 @@ define([
     ]));
 
     it('has the expected api', function () {
-      expect(Object.keys(Contact)).toEqual(['all', 'find']);
+      expect(Object.keys(Contact)).toEqual(['all', 'find', 'leaveManagees']);
     });
 
     describe('all()', function () {
@@ -265,6 +266,27 @@ define([
           expect(ContactInstanceMock.isInstance(contact)).toBe(true);
         })
           .finally(done) && $rootScope.$digest();
+      });
+    });
+
+    describe('leaveManagees()', function () {
+      var contactID = "123";
+      var params = { key: 'value' };
+
+      afterEach(function() {
+        $rootScope.$digest()
+      });
+
+      it('calls leaveManagees function of contact API with same parameters', function () {
+        Contact.leaveManagees(contactID, params).then(function () {
+          expect(contactAPI.leaveManagees).toHaveBeenCalledWith(contactID, params);
+        });
+      });
+
+      it('returns contacts managed by the contact id', function () {
+        Contact.leaveManagees(contactID, params).then(function (data) {
+          expect(data).toEqual(contactAPIMock.mockedContacts().list);
+        });
       });
     });
   });

@@ -1,11 +1,12 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'common/moment',
   'leave-absences/manager-leave/modules/components',
   'leave-absences/shared/controllers/calendar-ctrl',
-  'common/models/contact',
+  'common/models/contact'
 ], function (_, moment, components) {
-
   components.component('managerLeaveCalendar', {
     bindings: {
       contactId: '<'
@@ -17,11 +18,11 @@ define([
     controller: ['$controller', '$log', '$q', '$rootScope', 'Calendar', 'Contact', 'OptionGroup', controller]
   });
 
-  function controller($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup) {
+  function controller ($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup) {
     $log.debug('Component: manager-leave-calendar');
 
-    var parentCtrl = $controller('CalendarCtrl'),
-      vm = Object.create(parentCtrl);
+    var parentCtrl = $controller('CalendarCtrl');
+    var vm = Object.create(parentCtrl);
 
     /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
      * Calendar data saved temporarily in tempContactData and once all the promises are resolved,
@@ -66,7 +67,7 @@ define([
     vm.getMonthData = function (contactID, monthObj) {
       var month;
       var contact = _.find(vm.managedContacts, function (contact) {
-        return contact.id == contactID
+        return +contact.id === +contactID;
       });
 
       if (contact && contact.calendarData) {
@@ -122,19 +123,29 @@ define([
     };
 
     /**
-     * Loads the calendar data
+     * Loads the calendar data for each contact
      *
      * @return {Promise}
      */
     vm._loadCalendar = function () {
       tempContactData = _.clone(vm.managedContacts);
 
-      return $q.all(vm.managedContacts.map(function (contact, index) {
-        return Calendar.get(contact.id, vm.selectedPeriod.id)
-          .then(function (calendar) {
-            tempContactData[index].calendarData = vm._setCalendarProps(vm.managedContacts[index].id, calendar);
-          });
-      }));
+      return Calendar.get(vm.managedContacts.map(function (contact) {
+        return contact.id;
+      }), vm.selectedPeriod.id)
+      .then(function (calendars) {
+        // contacts are stored by index rather than by id, so it's necessary
+        // to find the index of each contact by using their id
+        var contactIds = tempContactData.map(function (contact) {
+          return contact.id;
+        });
+
+        calendars.forEach(function (calendar) {
+          var index = contactIds.indexOf(calendar.contact_id);
+
+          tempContactData[index].calendarData = vm._setCalendarProps(calendar.contact_id, calendar);
+        });
+      });
     };
 
     /**
@@ -143,10 +154,10 @@ define([
      * @return {Promise}
      */
     vm._loadContacts = function () {
-      return Contact.all(vm._prepareContactFilters(), {page: 1, size: 0}, "display_name")
+      return Contact.all(vm._prepareContactFilters(), {page: 1, size: 0}, 'display_name')
         .then(function (contacts) {
           vm.filteredContacts = contacts.list;
-        })
+        });
     };
 
     /**
@@ -168,8 +179,7 @@ define([
     vm._loadManagees = function () {
       return Contact.find(vm.contactId)
         .then(function (contact) {
-          //{options: {limit:0}} - Load all contacts instead of 25
-          return contact.leaveManagees({options: {limit:0}})
+          return contact.leaveManagees()
             .then(function (contacts) {
               vm.managedContacts = contacts;
               return vm._loadContacts();
@@ -235,8 +245,8 @@ define([
 
       return {
         id: {
-          "IN": vm.filters.contact ? [vm.filters.contact.id] :
-            vm.managedContacts.map(function (contact) {
+          'IN': vm.filters.contact ? [vm.filters.contact.id]
+            : vm.managedContacts.map(function (contact) {
               return contact.id;
             })
         },
@@ -256,15 +266,15 @@ define([
      * @return {object}
      */
     vm._setCalendarProps = function (contactID, calendar) {
-      var leaveRequest,
-        monthData = _.map(vm.months, function (month) {
-          return _.extend(_.clone(month), {
-            data: []
-          })
+      var leaveRequest;
+      var monthData = _.map(vm.months, function (month) {
+        return _.extend(_.clone(month), {
+          data: []
         });
+      });
 
       _.each(calendar.days, function (dateObj) {
-        //fetch leave request, first search by contact_id then by date
+        // fetch leave request, first search by contact_id then by date
         leaveRequest = vm.leaveRequests[contactID] ? vm.leaveRequests[contactID][dateObj.date] : null;
         dateObj.UI = {
           isWeekend: calendar.isWeekend(vm._getDateObjectWithFormat(dateObj.date)),
@@ -286,7 +296,7 @@ define([
       return monthData;
     };
 
-    (function init() {
+    (function init () {
       vm._init(function () {
         return $q.all([
           vm._loadRegions(),

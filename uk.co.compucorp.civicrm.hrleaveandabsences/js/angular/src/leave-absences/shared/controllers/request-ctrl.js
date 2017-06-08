@@ -1,4 +1,6 @@
+/* eslint-env amd */
 define([
+  'common/angular',
   'leave-absences/shared/modules/controllers',
   'common/lodash',
   'common/moment',
@@ -10,8 +12,8 @@ define([
   'leave-absences/shared/models/calendar-model',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/leave-request-model',
-  'leave-absences/shared/models/public-holiday-model',
-], function (controllers, _, moment) {
+  'leave-absences/shared/models/public-holiday-model'
+], function (angular, controllers, _, moment) {
   'use strict';
 
   controllers.controller('RequestCtrl', [
@@ -19,28 +21,31 @@ define([
     'api.optionGroup', 'Calendar', 'Entitlement', 'HR_settings',
     'LeaveRequest', 'PublicHoliday', 'shared-settings',
     function ($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType,
-      OptionGroup, Calendar, Entitlement, HR_settings,
+      OptionGroup, Calendar, Entitlement, HRSettings,
       LeaveRequest, PublicHoliday, sharedSettings
     ) {
       $log.debug('RequestCtrl');
-
-      var absenceTypesAndIds,
-        initialLeaveRequestAttributes = {}, //used to compare the change in leaverequest in edit mode
-        mode = '', //can be edit, create, view
-        role = '', //could be manager, owner or admin
-        initialCommentsLength = 0; //number of comments when the request model is loaded
+      var absenceTypesAndIds;
+      var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
+      var mode = ''; // can be edit, create, view
+      var role = '';
+      var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
       this.absencePeriods = [];
       this.absenceTypes = [];
       this.calendar = {};
       this.contactName = null;
-      this.error = null;
+      this.errors = [];
       this.managedContacts = [];
-      this.requestDayTypes = [];
-      this.selectedAbsenceType = {};
+      this.newStatusOnSave = null;
       this.period = {};
+      this.postContactSelection = false; // flag to track if user is selected for enabling UI
+      this.requestDayTypes = [];
       this.requestStatuses = {};
-      this.statusBeforeEdit = {};
+      this.selectedAbsenceType = {};
+      this.statusNames = sharedSettings.statusNames;
+      this.submitting = false;
+      this.supportedFileTypes = '';
       this.today = Date.now();
       this.balance = {
         closing: 0,
@@ -60,7 +65,7 @@ define([
         fromDayTypes: false,
         toDayTypes: false
       };
-      //TODO temp fix to allow pageChanged to be called from html as well from functions here with proper context
+      // TODO temp fix to allow pageChanged to be called from html as well from functions here with proper context
       var parentThis = this;
       this.pagination = {
         currentPage: 1,
@@ -72,9 +77,9 @@ define([
          * breakdown to obtain the ones for currently selected page.
          */
         pageChanged: function () {
-          //filter breakdowns
-          var begin = (this.currentPage - 1) * this.numPerPage,
-            end = begin + this.numPerPage;
+          // filter breakdowns
+          var begin = (this.currentPage - 1) * this.numPerPage;
+          var end = begin + this.numPerPage;
 
           this.filteredbreakdown = parentThis.balance.change.breakdown.slice(begin, end);
         }
@@ -82,8 +87,8 @@ define([
       this.uiOptions = {
         isChangeExpanded: false,
         multipleDays: true,
-        userDateFormat: HR_settings.DATE_FORMAT,
-        userDateFormatWithTime: HR_settings.DATE_FORMAT + ' HH:mm',
+        userDateFormat: HRSettings.DATE_FORMAT,
+        userDateFormatWithTime: HRSettings.DATE_FORMAT + ' HH:mm',
         showBalance: false,
         date: {
           from: {
@@ -128,13 +133,13 @@ define([
       };
 
       /**
-       * Change handler for change request type like multiple or single. It will
-       * reset dates, day types, change balance.
+       * Change handler when changing no. of days like Multiple Days or Single Day.
+       * It will reset dates, day types, change balance.
        */
       this.changeInNoOfDays = function () {
         this._reset();
-        //reinitialize opening balance
-        initAbsenceType.call(this);
+        // reinitialize opening balance
+        setInitialAbsenceTypes.call(this);
       };
 
       /**
@@ -150,7 +155,7 @@ define([
        * Closes the error alerts if any
        */
       this.closeAlert = function () {
-        this.error = null;
+        this.errors = [];
       };
 
       /**
@@ -161,19 +166,19 @@ define([
       this.calculateBalanceChange = function () {
         var self = this;
 
-        self._setDateAndTypes.call(self);
+        self._setDateAndTypes();
 
         if (!canCalculateChange.call(self)) {
           return $q.resolve();
         }
 
-        self.error = null;
+        self.errors = [];
         self.loading.showBalanceChange = true;
         return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange.call(self))
           .then(function (balanceChange) {
             if (balanceChange) {
               self.balance.change = balanceChange;
-              //the change is negative so adding it will actually subtract it
+              // the change is negative so adding it will actually subtract it
               self.balance.closing = self.balance.opening + self.balance.change.amount;
               rePaginate.call(self);
             }
@@ -190,20 +195,41 @@ define([
       this.canSubmit = function () {
         var canSubmit = canCalculateChange.call(this);
 
-        //check if user has changed any attribute
+        // check if user has changed any attribute
         if (this.isMode('edit')) {
-          canSubmit = canSubmit && !_.isEqual(initialLeaveRequestAttributes, this.request.attributes());
-          //user has added a comment
-          canSubmit = canSubmit || this.request.comments.length !== initialCommentsLength;
+          canSubmit = canSubmit && hasRequestChanged.call(this);
         }
 
-        //check if manager has changed status
+        // check if manager has changed status
         if (this.isRole('manager') && this.requestStatuses) {
-          //waiting_approval will not be available in this.requestStatuses if manager has changed selection
-          canSubmit = canSubmit && !!getStatusFromValue.call(this, this.request.status_id);
+          // awaiting_approval will not be available in this.requestStatuses if manager has changed selection
+          canSubmit = canSubmit && !!this.getStatusFromValue(this.newStatusOnSave);
         }
 
         return canSubmit && !this.isMode('view');
+      };
+
+      /**
+       * Checks if user can upload more file, it totals the number of already
+       * uploaded files and those which are in queue and compares it to limit.
+       *
+       * @return {Boolean} true is user can upload more else false
+       */
+      this.canUploadMore = function () {
+        return this.getFilesCount() < sharedSettings.fileUploader.queueLimit;
+      };
+
+      /**
+       * Calculates the total number of files associated with request.
+       *
+       * @return {Number} of files
+       */
+      this.getFilesCount = function () {
+        var filesWithSoftDelete = _.filter(this.request.files, function (file) {
+          return file.toBeDeleted;
+        });
+
+        return this.request.files.length + this.request.fileUploader.queue.length - filesWithSoftDelete.length;
       };
 
       /**
@@ -221,11 +247,11 @@ define([
        *
        * @return {String}
        */
-      this.getCommentorName = function (contact_id) {
-        if (contact_id == this.directiveOptions.contactId) {
+      this.getCommentorName = function (contactId) {
+        if (contactId === this.directiveOptions.contactId) {
           return 'Me';
-        } else if (this.comment.contacts[contact_id]) {
-          return this.comment.contacts[contact_id].display_name;
+        } else if (this.comment.contacts[contactId]) {
+          return this.comment.contacts[contactId].display_name;
         }
       };
 
@@ -241,7 +267,19 @@ define([
       };
 
       /**
-       * Checks if popup is opened in given leave type like `leave` or `sick` or 'toil'
+       * Checks if the leave request has the given status
+       *
+       * @param {String} leaveStatus
+       * @return {Boolean}
+       */
+      this.isLeaveStatus = function (leaveStatus) {
+        var status = this.getStatusFromValue(this.request.status_id);
+
+        return status ? status.name === leaveStatus : false;
+      };
+
+      /**
+       * Checks if popup is opened in given leave type like `leave` or `sickness` or 'toil'
        *
        * @param {String} leaveTypeParam to check the leave type of current request
        * @return {Boolean}
@@ -263,7 +301,7 @@ define([
       /**
        * Checks if popup is opened in given role
        *
-       * @param {String} roleParam like manager, owner
+       * @param {String} roleParam like manager, staff
        * @return {Boolean}
        */
       this.isRole = function (roleParam) {
@@ -274,7 +312,7 @@ define([
        * Dismiss modal on successful creation on submit
        */
       this.ok = function () {
-        //todo handle closure to pass data back to callee
+        // todo handle closure to pass data back to callee
         this.$modalInstance.close({
           $value: this.request
         });
@@ -312,28 +350,31 @@ define([
 
       /**
        * Submits the form, only if the leave request is valid, also emits event
-       * to listeners self leaverequest is created.
-       * Also, checks if its an update request from manager and accordingly updates leave request
+       * to notify event subscribers about the the save.
+       * Updates request based on role and mode
        */
       this.submit = function () {
-        if (this.isMode('view')) {
+        var originalStatus = this.request.status_id;
+
+        if (this.isMode('view') || this.submitting) {
           return;
         }
 
-        // current absence type (this.request.type_id) doesn't allow self
-        if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse == '0') {
-          // show an error
-          this.error = 'You are not allowed to apply leave in negative';
-          return;
-        }
+        this.submitting = true;
+        changeStatusBeforeSave.call(this);
 
-        this.error = null;
-
-        if (canViewOrEdit.call(this)) {
-          updateRequest.call(this);
-        } else {
-          createRequest.call(this);
-        }
+        validateBeforeSubmit.call(this)
+          .then(function () {
+            return this.isMode('edit') ? updateRequest.call(this) : createRequest.call(this);
+          }.bind(this))
+          .catch(function (errors) {
+            // if there is an error, put back the original status
+            this.request.status_id = originalStatus;
+            errors && handleError.call(this, errors);
+          }.bind(this))
+          .finally(function () {
+            this.submitting = false;
+          }.bind(this));
       };
 
       /**
@@ -346,19 +387,19 @@ define([
        * @return {Promise}
        */
       this.updateAbsencePeriodDatesTypes = function (date, dayType) {
-        var self = this,
-          oldPeriodId = self.period.id;
+        var self = this;
+        var oldPeriodId = self.period.id;
         dayType = dayType || 'from';
         self.loading[dayType + 'DayTypes'] = true;
 
-        return self._checkAndSetAbsencePeriod.call(self, date)
+        return self._checkAndSetAbsencePeriod(date)
           .then(function () {
-            var isInCurrentPeriod = oldPeriodId == self.period.id;
+            var isInCurrentPeriod = oldPeriodId === self.period.id;
 
             if (!isInCurrentPeriod) {
-              //partial reset is required when user has selected a to date and
-              //then changes absence period from from date
-              //no reset required for single days and to date changes
+              // partial reset is required when user has selected a to date and
+              // then changes absence period from from date
+              // no reset required for single days and to date changes
               if (self.uiOptions.multipleDays && dayType === 'from') {
                 self.uiOptions.showBalance = false;
                 self.uiOptions.toDate = null;
@@ -367,23 +408,23 @@ define([
               }
 
               return $q.all([
-                self._loadAbsenceTypes.call(self),
-                self._loadCalendar.call(self)
+                self._loadAbsenceTypes(),
+                self._loadCalendar()
               ]);
             }
           })
           .then(function () {
-            self._setMinMaxDate.call(self);
+            self._setMinMaxDate();
 
             return filterLeaveRequestDayTypes.call(self, date, dayType);
           })
           .then(function () {
             self.loading[dayType + 'DayTypes'] = false;
 
-            return self.updateBalance.call(self);
+            return self.updateBalance();
           })
           .catch(function (error) {
-            self.error = error;
+            self.errors = [error];
           });
       };
 
@@ -397,7 +438,7 @@ define([
         // get the `balance` of the newly selected absence type
         this.balance.opening = this.selectedAbsenceType.remainder;
 
-        this.calculateBalanceChange.call(this);
+        this.calculateBalanceChange();
       };
 
       /**
@@ -408,16 +449,17 @@ define([
       this._initRequestAttributes = function () {
         var attributes = {};
 
-        //if set indicates self leaverequest is either being managed or edited
+        // if set indicates self leaverequest is either being managed or edited
         if (this.directiveOptions.leaveRequest) {
-          //_.deepClone or angular.copy were not uploading files correctly
+          // _.deepClone or angular.copy were not uploading files correctly
           attributes = this.directiveOptions.leaveRequest.attributes();
-        } else if (!this.directiveOptions.forStaff) {
+        } else if (!this.isRole('manager')) {
           attributes = { contact_id: this.directiveOptions.contactId };
         }
 
         return attributes;
       };
+
       /**
        * Resets data in dates, types, balance.
        */
@@ -443,7 +485,7 @@ define([
         });
 
         if (!this.period) {
-          //inform user if absence period is not found
+          // inform user if absence period is not found
           return $q.reject('Please change date as it is not in any absence period');
         }
 
@@ -458,7 +500,7 @@ define([
        */
       this._convertDateToServerFormat = function (date) {
         return moment(date).format(sharedSettings.serverDateFormat);
-      }
+      };
 
       /**
        * Converts given date to javascript date as expected by uib-datepicker
@@ -468,7 +510,7 @@ define([
        */
       this._convertDateFormatFromServer = function (date) {
         return moment(date, sharedSettings.serverDateFormat).toDate();
-      }
+      };
 
       /**
        * Flattens statuses from object to array of objects. This is used to
@@ -480,11 +522,23 @@ define([
        */
       this.getStatuses = function () {
         return _.reject(this.requestStatuses, function (status) {
-          var canRemoveStatus = (status.name === 'admin_approved' || status.name === 'waiting_approval');
+          var canRemoveStatus = (status.name === sharedSettings.statusNames.adminApproved || status.name === sharedSettings.statusNames.awaitingApproval);
 
-          return this.directiveOptions.forStaff ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
+          return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
         }.bind(this));
-      }
+      };
+
+      /**
+       * Gets status object for given status value
+       *
+       * @param {String} value - value of the status
+       * @return {Object} option group of type status or undefined if not found
+       */
+      this.getStatusFromValue = function (value) {
+        return _.find(this.requestStatuses, function (status) {
+          return status.value === value;
+        });
+      };
 
       /**
        * Initializes user's calendar (work patterns)
@@ -541,7 +595,7 @@ define([
        * Sets dates and types for this.request from UI
        */
       this._setDateAndTypes = function () {
-        this._setDates.call(this);
+        this._setDates();
 
         if (this.uiOptions.multipleDays) {
           this.uiOptions.showBalance = !!this.request.to_date && !!this.request.from_date;
@@ -552,7 +606,7 @@ define([
 
           this.uiOptions.showBalance = !!this.request.from_date;
         }
-      }
+      };
 
       /**
        * Sets the min and max for to date from absence period. It also sets the
@@ -566,7 +620,7 @@ define([
           this.uiOptions.date.to.options.minDate = nextFromDay;
           this.uiOptions.date.to.options.initDate = nextFromDay;
 
-          //also re-set to date if from date is changing and less than to date
+          // also re-set to date if from date is changing and less than to date
           if (this.uiOptions.toDate && moment(this.uiOptions.toDate).isBefore(this.uiOptions.fromDate)) {
             this.uiOptions.toDate = this.uiOptions.fromDate;
           }
@@ -586,14 +640,15 @@ define([
       this._init = function () {
         var self = this;
 
+        this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
+        role = this.directiveOptions.userRole || 'staff';
+        this._initRequest();
+
         return loadStatuses.call(self)
-          .then(function () {
-            return initUserRole.call(self);
-          })
           .then(function () {
             initOpenMode.call(self);
 
-            return self.directiveOptions.forStaff && loadManagees.call(self);
+            return self.isRole('manager') && loadManagees.call(self);
           })
           .then(function () {
             return loadAbsencePeriods.call(self);
@@ -608,10 +663,12 @@ define([
             ]);
           })
           .then(function () {
+            // The additional check here prevents error being displayed on startup when no contact is selected
             if (self.request.contact_id) {
               return self.initAfterContactSelection();
             }
-          });
+          })
+          .catch(handleError.bind(self));
       };
 
       /**
@@ -621,11 +678,17 @@ define([
        */
       this.initAfterContactSelection = function () {
         var self = this;
+        self.postContactSelection = true;
+
+        // when manager deselects contact it is called without a selected contact_id
+        if (!self.request.contact_id) {
+          return $q.reject('The contact id was not set');
+        }
 
         return $q.all([
-            self._loadAbsenceTypes(),
-            self._loadCalendar()
-          ])
+          self._loadAbsenceTypes(),
+          self._loadCalendar()
+        ])
           .then(function () {
             return loadDayTypes.call(self);
           })
@@ -633,18 +696,23 @@ define([
             return initDates.call(self);
           })
           .then(function () {
-            initAbsenceType.call(self);
+            setInitialAbsenceTypes.call(self);
             initStatus.call(self);
             initContact.call(self);
 
             if (self.isMode('edit')) {
-              initialLeaveRequestAttributes = self.request.attributes();
+              initialLeaveRequestAttributes = angular.copy(self.request.attributes());
 
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
               }
+            }
 
-              initialCommentsLength = self.request.comments.length;
+            self.postContactSelection = false;
+          })
+          .catch(function (error) {
+            if (error !== NO_ENTITLEMENT_ERROR) {
+              return $q.reject(error);
             }
           });
       };
@@ -654,36 +722,34 @@ define([
        *
        * @param {Boolean} true if all present else false
        */
-      function canCalculateChange() {
+      function canCalculateChange () {
         return !!this.request.from_date && !!this.request.to_date &&
           !!this.request.from_date_type && !!this.request.to_date_type;
       }
 
       /**
-       * Creates leaverequest
+       * Validates and creates the leave request
+       *
+       * @returns {Promise}
        */
-      function createRequest() {
-        var self = this;
-
-        self.request.isValid()
+      function createRequest () {
+        return this.request.create()
           .then(function () {
-            self.request.create()
-              .then(function (result) {
-                // refresh the list
-                postSubmit.call(self, 'LeaveRequest::new');
-              })
-              .catch(handleError.bind(self));
-          })
-          .catch(handleError.bind(self));
+            postSubmit.call(this, 'LeaveRequest::new');
+          }.bind(this));
       }
 
       /**
-       * Checks if user can view or edit leaverequest
-       *
-       * @return {Boolean}
+       * Changes status of the leave request before saving it
+       * For staff the status_id should be always set to awaitingApproval before saving
+       * If manager has changed the status through dropdown, assign the same before calling API
        */
-      function canViewOrEdit() {
-        return this.isMode('edit') || this.isMode('view');
+      function changeStatusBeforeSave () {
+        if (this.isRole('staff')) {
+          this.request.status_id = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
+        } else if (this.isRole('manager')) {
+          this.request.status_id = this.newStatusOnSave || this.request.status_id;
+        }
       }
 
       /**
@@ -693,7 +759,7 @@ define([
        * @param {Object} entitlements
        * @return {Array} of filtered absence types for given entitlements
        */
-      function mapAbsenceTypesWithBalance(absenceTypes, entitlements) {
+      function mapAbsenceTypesWithBalance (absenceTypes, entitlements) {
         return entitlements.map(function (entitlementItem) {
           var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
             return absenceTypeItem.id === entitlementItem.type_id;
@@ -720,20 +786,18 @@ define([
        * @param  {String} dayType - set to from if from date is selected else to
        * @return {Promise} of array with day types
        */
-      function filterLeaveRequestDayTypes(date, dayType) {
-        var deferred = $q.defer(),
-          inCalendarList,
-          listToReturn,
-          self = this;
+      function filterLeaveRequestDayTypes (date, dayType) {
+        var inCalendarList, listToReturn;
+        var deferred = $q.defer();
 
         if (!date) {
           deferred.reject([]);
         }
 
         // Make a copy of the list
-        listToReturn = self.requestDayTypes.slice(0);
+        listToReturn = this.requestDayTypes.slice(0);
 
-        date = self._convertDateToServerFormat.call(self, date);
+        date = this._convertDateToServerFormat(date);
         PublicHoliday.isPublicHoliday(date)
           .then(function (result) {
             if (result) {
@@ -741,7 +805,7 @@ define([
                 return publicHoliday.name === 'public_holiday';
               });
             } else {
-              inCalendarList = getDayTypesFromDate.call(self, date, listToReturn);
+              inCalendarList = getDayTypesFromDate.call(this, date, listToReturn);
 
               if (!inCalendarList.length) {
                 // 'All day', '1/2 AM', and '1/2 PM' options
@@ -753,9 +817,9 @@ define([
               }
             }
 
-            setDayType.call(self, dayType, listToReturn);
+            setDayType.call(this, dayType, listToReturn);
             deferred.resolve(listToReturn);
-          });
+          }.bind(this));
 
         return deferred.promise;
       }
@@ -765,7 +829,7 @@ define([
        *
        * @return {Object} containing required keys for leave request
        */
-      function getParamsForBalanceChange() {
+      function getParamsForBalanceChange () {
         return _.pick(this.request, ['contact_id', 'from_date',
           'from_date_type', 'to_date', 'to_date_type'
         ]);
@@ -778,7 +842,7 @@ define([
        * @param {Array} listOfDayTypes array of day types
        * @return {Array} non-empty if found else empty array
        */
-      function getDayTypesFromDate(date, listOfDayTypes) {
+      function getDayTypesFromDate (date, listOfDayTypes) {
         var nameFilter = null;
 
         if (this.calendar.isNonWorkingDay(moment(date))) {
@@ -797,64 +861,57 @@ define([
        *
        * @return {Object} absence type object
        */
-      function getSelectedAbsenceType() {
-        var self = this;
-
-        return _.find(self.absenceTypes, function (absenceType) {
-          return absenceType.id == self.request.type_id;
-        });
+      function getSelectedAbsenceType () {
+        return _.find(this.absenceTypes, function (absenceType) {
+          return absenceType.id === this.request.type_id;
+        }.bind(this));
       }
 
-      /**
-       * Gets status object for given status value
-       *
-       * @param value of the status
-       * @return {Object} option group of type status or undefined if not found
-       */
-      function getStatusFromValue(value) {
-        return _.find(this.requestStatuses, function (status) {
-          return status.value == value;
-        });
-      }
-
-      /**
-       * Error handler, generally used in catch calls
-       */
-      function handleError(errors) {
+      function handleError (errors) {
         // show errors
-        if (errors.error_message)
-          this.error = errors.error_message;
-        else {
-          if (_.isObject(errors)) {
-            this.error = _.map(errors, function (value, key) {
-              var errorMessage = _.isArray(value) ? value.join(', ') : JSON.stringify(value);
+        this.errors = _.isArray(errors) ? errors : [errors];
 
-              return errorMessage + ' for key ' + key;
-            }).join(', ');
-          } else {
-            this.error = errors.toString();
-          }
-        }
-
-        //reset loading Checks
+        // reset loading Checks
         this.loading.showBalanceChange = false;
         this.loading.absenceTypes = false;
         this.loading.fromDayTypes = false;
         this.loading.toDayTypes = false;
+
+        this.submitting = false;
+      }
+
+      /**
+       * Checks if a leave request has been changed since opening the modal
+       *
+       * FileUploader property deleted because it will not be used
+       * in object comparison
+       *
+       * @return {Boolean}
+       */
+      function hasRequestChanged () {
+        // using angular.equals to automatically ignore the $$hashkey property
+        return !angular.equals(
+          _.omit(initialLeaveRequestAttributes, 'fileUploader'),
+          _.omit(this.request.attributes(), 'fileUploader')
+        ) || this.request.fileUploader.queue.length !== 0 ||
+          (this.isRole('manager') && this.newStatusOnSave);
       }
 
       /**
        * Initialize open mode of the dialog
        */
-      function initOpenMode() {
+      function initOpenMode () {
         if (this.request.id) {
           mode = 'edit';
 
-          var viewModes = [this.requestStatuses['approved'].value, this.requestStatuses['admin_approved'].value,
-            this.requestStatuses['rejected'].value, this.requestStatuses['cancelled'].value
+          var viewModeStatuses = [
+            this.requestStatuses[sharedSettings.statusNames.approved].value,
+            this.requestStatuses[sharedSettings.statusNames.adminApproved].value,
+            this.requestStatuses[sharedSettings.statusNames.rejected].value,
+            this.requestStatuses[sharedSettings.statusNames.cancelled].value
           ];
 
-          if (this.isRole('owner') && viewModes.indexOf(this.request.status_id) > -1) {
+          if (this.isRole('staff') && viewModeStatuses.indexOf(this.request.status_id) > -1) {
             mode = 'view';
           }
         } else {
@@ -863,36 +920,25 @@ define([
       }
 
       /**
-       * Initialize user's role to either owner, manager or admin
-       *
-       * @return {Promise}
-       */
-      function initUserRole() {
-        return this.request.roleOf({ id: this.directiveOptions.contactId })
-          .then(function (roleParam) {
-            role = roleParam;
-          }.bind(this));
-      }
-
-      /**
        * Inits absence period for the current date
        */
-      function initAbsencePeriod() {
+      function initAbsencePeriod () {
         this.period = _.find(this.absencePeriods, function (period) {
           return period.current;
         });
       }
 
       /**
-       * Initialize absence types
+       * Set initial values to absence types when opening the popup
        */
-      function initAbsenceType() {
-        if (canViewOrEdit.call(this)) {
-          this.selectedAbsenceType = getSelectedAbsenceType.call(this);
-        } else {
+      function setInitialAbsenceTypes () {
+        if (this.isMode('create')) {
           // Assign the first absence type to the leave request
           this.selectedAbsenceType = this.absenceTypes[0];
           this.request.type_id = this.selectedAbsenceType.id;
+        } else {
+          // Either View or Edit Mode
+          this.selectedAbsenceType = getSelectedAbsenceType.call(this);
         }
 
         // Init the `balance` object based on the first absence type
@@ -905,49 +951,31 @@ define([
        *
        * @return {Promise}
        */
-      function initDates() {
-        var deferred = $q.defer(),
-          self = this;
+      function initDates () {
+        if (!this.isMode('create')) {
+          var attributes = this.request.attributes();
 
-        if (canViewOrEdit.call(self)) {
-          var attributes = self.request.attributes();
+          this.uiOptions.fromDate = this._convertDateFormatFromServer(this.request.from_date);
 
-          self.uiOptions.fromDate = self._convertDateFormatFromServer(self.request.from_date);
-
-          self.updateAbsencePeriodDatesTypes.call(self, self.uiOptions.fromDate, 'from')
+          return this.updateAbsencePeriodDatesTypes(this.uiOptions.fromDate, 'from')
             .then(function () {
-              //to_date and type has been reset in above call so reinitialize from clone
-              self.request.to_date = attributes.to_date;
-              self.request.to_date_type = attributes.to_date_type;
-              self.uiOptions.toDate = self._convertDateFormatFromServer(self.request.to_date);
-              self.updateAbsencePeriodDatesTypes.call(self, self.uiOptions.toDate, 'to')
-                .then(function () {
-                  //resolve only after both from and to day types are also set
-                  deferred.resolve();
-                });
-            });
+              // to_date and type has been reset in above call so reinitialize from clone
+              this.request.to_date = attributes.to_date;
+              this.request.to_date_type = attributes.to_date_type;
+              this.uiOptions.toDate = this._convertDateFormatFromServer(this.request.to_date);
+              return this.updateAbsencePeriodDatesTypes(this.uiOptions.toDate, 'to');
+            }.bind(this));
         } else {
-          deferred.resolve();
+          return $q.resolve();
         }
-
-        return deferred.promise;
       }
 
       /**
        * Initialize status
        */
-      function initStatus() {
-        if (canViewOrEdit.call(this)) {
-          //set it before self.requestStatuses gets filtered
-          this.statusBeforeEdit = getStatusFromValue.call(this, this.request.status_id);
-
-          if (this.isRole('owner')) {
-            this.request.status_id = this.requestStatuses['waiting_approval'].value;
-          }
-        } else if (this.isMode('create')) {
-          this.request.status_id = this.directiveOptions.forStaff ?
-            this.requestStatuses['approved'].value :
-            this.requestStatuses['waiting_approval'].value;
+      function initStatus () {
+        if (this.isMode('create') && this.isRole('manager')) {
+          this.newStatusOnSave = this.requestStatuses[sharedSettings.statusNames.approved].value;
         }
       }
 
@@ -956,7 +984,7 @@ define([
        *
        * {Promise}
        */
-      function initContact() {
+      function initContact () {
         if (this.isRole('manager')) {
           return Contact.find(this.request.contact_id)
             .then(function (contact) {
@@ -972,10 +1000,10 @@ define([
        *
        * @return {Promise}
        */
-      function loadManagees() {
+      function loadManagees () {
         return Contact.find(this.directiveOptions.contactId)
           .then(function (contact) {
-            return contact.leaveManagees()
+            return contact.leaveManagees();
           })
           .then(function (contacts) {
             this.managedContacts = contacts;
@@ -987,10 +1015,10 @@ define([
        *
        * @return {Promise}
        */
-      function loadCommentsAndContactNames() {
+      function loadCommentsAndContactNames () {
         return this.request.loadComments()
           .then(function () {
-            //loadComments sets the comments on request object instead of returning it
+            // loadComments sets the comments on request object instead of returning it
             this.request.comments.length && loadContactNames.call(this);
           }.bind(this));
       }
@@ -1000,31 +1028,28 @@ define([
        *
        * @return {Promise}
        */
-      function loadContactNames() {
-        var contactIDs = [],
-          self = this;
+      function loadContactNames () {
+        var contactIDs = [];
 
-        _.each(self.request.comments, function (comment) {
-          //Push only unique contactId's which are not same as logged in user
-          if (comment.contact_id != self.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
+        _.each(this.request.comments, function (comment) {
+          // Push only unique contactId's which are not same as logged in user
+          if (comment.contact_id !== this.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
             contactIDs.push(comment.contact_id);
           }
-        });
+        }.bind(this));
 
         return Contact.all({
           id: { IN: contactIDs }
-        }, {
-          page: 1,
-          size: 0
-        }).then(function (contacts) {
-          self.comment.contacts = _.indexBy(contacts.list, 'contact_id');
-        });
+        }, { page: 1, size: 0 })
+        .then(function (contacts) {
+          this.comment.contacts = _.indexBy(contacts.list, 'contact_id');
+        }.bind(this));
       }
 
       /**
        * Loads all absence periods
        */
-      function loadAbsencePeriods() {
+      function loadAbsencePeriods () {
         var self = this;
 
         return AbsencePeriod.all()
@@ -1038,7 +1063,7 @@ define([
        *
        * @return {Promise}
        */
-      function loadDayTypes() {
+      function loadDayTypes () {
         var self = this;
 
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
@@ -1052,7 +1077,7 @@ define([
        *
        * @return {Promise}
        */
-      function loadStatuses() {
+      function loadStatuses () {
         var self = this;
 
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
@@ -1066,17 +1091,17 @@ define([
        *
        * @param {String} eventName name of the event to emit
        */
-      function postSubmit(eventName) {
+      function postSubmit (eventName) {
         $rootScope.$emit(eventName, this.request);
-        this.error = null;
+        this.errors = [];
         // close the modal
-        this.ok.call(this);
+        this.ok();
       }
 
       /**
        * Helper function to reset pagination for balance breakdow
        */
-      function rePaginate() {
+      function rePaginate () {
         this.pagination.totalItems = this.balance.change.breakdown.length;
         this.pagination.filteredbreakdown = this.balance.change.breakdown;
         this.pagination.pageChanged();
@@ -1089,17 +1114,20 @@ define([
        * @param {Object} absenceTypesAndIds contains all absencetypes and their ids
        * @return {Promise}
        */
-      function setAbsenceTypesFromEntitlements(absenceTypesAndIds) {
+      function setAbsenceTypesFromEntitlements (absenceTypesAndIds) {
         var self = this;
 
         return Entitlement.all({
-            contact_id: self.request.contact_id,
-            period_id: self.period.id,
-            type_id: { IN: absenceTypesAndIds.ids }
-          }, true) // `true` because we want to use the 'future' balance for calculation
+          contact_id: self.request.contact_id,
+          period_id: self.period.id,
+          type_id: { IN: absenceTypesAndIds.ids }
+        }, true) // `true` because we want to use the 'future' balance for calculation
           .then(function (entitlements) {
             // create a list of absence types with a `balance` property
             self.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
+            if (!self.absenceTypes.length) {
+              return $q.reject(NO_ENTITLEMENT_ERROR);
+            }
           });
       }
 
@@ -1110,43 +1138,45 @@ define([
        * @param {String} dayType like `from` or `to`
        * @param {Array} listOfDayTypes collection of available day types
        */
-      function setDayType(dayType, listOfDayTypes) {
-        //will create either of leaveRequestFromDayTypes or leaveRequestToDayTypes key
+      function setDayType (dayType, listOfDayTypes) {
+        // will create either of leaveRequestFromDayTypes or leaveRequestToDayTypes key
         var keyForDayTypeCollection = 'request' + _.startCase(dayType) + 'DayTypes';
 
         this[keyForDayTypeCollection] = listOfDayTypes;
 
-        if (!canViewOrEdit.call(this)) {
+        if (this.isMode('create')) {
           this.request[dayType + '_date_type'] = this[keyForDayTypeCollection][0].value;
         }
       }
 
       /**
-       * Updates the leaverequest
+       * Validates and updates the leave request
+       *
+       * @returns {Promise}
        */
-      function updateRequest() {
-        var self = this;
+      function updateRequest () {
+        return this.request.update()
+          .then(function () {
+            if (this.isRole('manager')) {
+              postSubmit.call(this, 'LeaveRequest::updatedByManager');
+            } else if (this.isRole('staff')) {
+              postSubmit.call(this, 'LeaveRequest::edit');
+            }
+          }.bind(this));
+      }
 
-        if (self.isRole('manager')) {
-          //if manager has not changed the status then reset status
-          if (!self.request.status_id) {
-            self.request.status_id = self.statusBeforeEdit.value;
-          }
+      /**
+       * Validates a Leave request before submitting
+       *
+       * @returns {Promise}
+       */
+      function validateBeforeSubmit () {
+        if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse === '0') {
+          // show an error
+          return $q.reject(['You are not allowed to apply leave in negative']);
         }
 
-        self.request.isValid()
-          .then(function () {
-            self.request.update()
-              .then(function (result) {
-                if (self.isRole('manager')) {
-                  postSubmit.call(self, 'LeaveRequest::updatedByManager');
-                } else if (self.isRole('owner')) {
-                  postSubmit.call(self, 'LeaveRequest::edit');
-                }
-              })
-              .catch(handleError.bind(self));
-          })
-          .catch(handleError.bind(self));
+        return this.request.isValid();
       }
 
       return this;

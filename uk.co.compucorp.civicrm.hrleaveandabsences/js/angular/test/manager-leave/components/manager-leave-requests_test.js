@@ -1,3 +1,4 @@
+/* eslint-env amd, jasmine */
 (function (CRM) {
   define([
     'common/angular',
@@ -12,7 +13,7 @@
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
     'leave-absences/shared/config',
-    'leave-absences/manager-leave/app',
+    'leave-absences/manager-leave/app'
   ], function (angular, _, optionGroupMock, absencePeriodData, absenceTypeData, leaveRequestData) {
     'use strict';
 
@@ -31,12 +32,13 @@
         LeaveRequestInstance,
         Contact,
         ContactAPIMock,
+        sharedSettings,
         OptionGroupAPIMock;
 
       beforeEach(module('leave-absences.templates', 'manager-leave',
-        'leave-absences.mocks', function (_$provide_) {
+        'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
           $provide = _$provide_;
-      }));
+        }));
 
       beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
         LeaveRequestAPIMock) {
@@ -45,14 +47,14 @@
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
       }));
 
-      beforeEach(inject(['api.contact.mock', function (_ContactAPIMock_) {
+      beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
         ContactAPIMock = _ContactAPIMock_;
+        sharedSettings = _sharedSettings_;
       }]));
 
       beforeEach(inject(function (
         _$compile_, _$log_, _$rootScope_, _$q_, _OptionGroup_, _OptionGroupAPIMock_,
         _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_, _LeaveRequestInstance_) {
-
         $compile = _$compile_;
         $log = _$log_;
         $q = _$q_;
@@ -72,8 +74,8 @@
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
 
-        spyOn(Contact, 'all').and.callFake(function () {
-          return $q.resolve(ContactAPIMock.mockedContacts());
+        spyOn(Contact, 'leaveManagees').and.callFake(function () {
+          return ContactAPIMock.leaveManagees();
         });
 
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
@@ -106,7 +108,7 @@
       });
 
       describe('data loading', function () {
-        //TODO need to figure out how to test variables which are changed when controller gets initialized
+        // TODO need to figure out how to test variables which are changed when controller gets initialized
         xdescribe('before loading starts', function () {
           it('loader is hidden', function () {});
           it('leave requests are empty', function () {});
@@ -151,7 +153,7 @@
             expect(controller.levelTypes).toEqual(optionGroupMock.getCollection('hrjc_level_type'));
           });
 
-          describe('absence periods', function() {
+          describe('absence periods', function () {
             it('loads the absence periods', function () {
               expect(controller.absencePeriods.length).toBe(absencePeriodData.all().values.length);
             });
@@ -300,7 +302,7 @@
             status = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
             returnValue = controller.filterLeaveRequestByStatus(status);
             filteredList = controller.leaveRequests.filter.list.filter(function (request) {
-              return request.status_id == status.value;
+              return request.status_id === status.value;
             });
           });
 
@@ -314,9 +316,8 @@
         var returnValue;
 
         describe('when status is approved', function () {
-
           beforeEach(function () {
-            returnValue = controller.getNavBadge('approved');
+            returnValue = controller.getNavBadge(sharedSettings.statusNames.approved);
           });
 
           it('returns badge-success', function () {
@@ -369,7 +370,7 @@
         var mockStatus;
 
         beforeEach(function () {
-          spyOn(controller, 'refresh');
+          spyOn(controller, 'refresh').and.callThrough();
           mockStatus = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
           controller.refreshWithFilter(mockStatus);
         });
@@ -420,8 +421,8 @@
           });
 
           describe('when sent page number is more than total no of pages', function () {
-            var pageNoParam = 5,
-              oldPageNo = 4;
+            var pageNoParam = 5;
+            var oldPageNo = 4;
 
             beforeEach(function () {
               controller.pagination.page = oldPageNo;
@@ -448,9 +449,7 @@
         describe('contactFilters', function () {
           describe('region', function () {
             describe('when region filter has value', function () {
-              var mockRegion = {
-                value: 'mockvalue'
-              };
+              var mockRegion = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.region = mockRegion;
@@ -458,9 +457,9 @@
               });
 
               it('Contact API gets called with region value', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  region: mockRegion.value
-                }), jasmine.any(Object));
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                  region: mockRegion
+                }));
               });
             });
 
@@ -471,18 +470,16 @@
               });
 
               it('Contact API gets called with null', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
                   region: null
-                }), jasmine.any(Object));
+                }));
               });
             });
           });
 
           describe('department', function () {
             describe('when department filter has value', function () {
-              var mockDepartment = {
-                value: 'mockvalue'
-              };
+              var mockDepartment = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.department = mockDepartment;
@@ -490,9 +487,9 @@
               });
 
               it('Contact API gets called with department value', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  department: mockDepartment.value
-                }), jasmine.any(Object));
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                  department: mockDepartment
+                }));
               });
             });
 
@@ -503,18 +500,16 @@
               });
 
               it('Contact API gets called with null', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
                   department: null
-                }), jasmine.any(Object));
+                }));
               });
             });
           });
 
           describe('location', function () {
             describe('when location filter has value', function () {
-              var mockLocation = {
-                value: 'mockvalue'
-              };
+              var mockLocation = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.location = mockLocation;
@@ -522,9 +517,9 @@
               });
 
               it('Contact API gets called with location value', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  location: mockLocation.value
-                }), jasmine.any(Object));
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                  location: mockLocation
+                }));
               });
             });
 
@@ -535,18 +530,16 @@
               });
 
               it('ContactAPI gets called with null', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
                   location: null
-                }), jasmine.any(Object));
+                }));
               });
             });
           });
 
           describe('levelTypes', function () {
             describe('when levelTypes filter has value', function () {
-              var mockLevelType = {
-                value: 'mockvalue'
-              };
+              var mockLevelType = 'mockvalue';
 
               beforeEach(function () {
                 controller.filters.contact.level_type = mockLevelType;
@@ -554,9 +547,9 @@
               });
 
               it('ContactAPI gets called with level types value', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                  level_type: mockLevelType.value
-                }), jasmine.any(Object));
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                  level_type: mockLevelType
+                }));
               });
             });
 
@@ -567,9 +560,9 @@
               });
 
               it('Contact API gets called with null', function () {
-                expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
                   level_type: null
-                }), jasmine.any(Object));
+                }));
               });
             });
           });
@@ -583,7 +576,7 @@
             defer = $q.defer();
             spyOn(LeaveRequest, 'all').and.callThrough();
             spyOn(controller, 'getUserNameByID');
-            Contact.all.and.returnValue(defer.promise);
+            Contact.leaveManagees.and.returnValue(defer.promise);
             promise = defer.promise;
           });
 
@@ -594,9 +587,7 @@
           describe('managed_by', function () {
             beforeEach(function () {
               controller.refresh();
-              defer.resolve({
-                list: []
-              });
+              defer.resolve(ContactAPIMock.mockedContacts().list);
             });
 
             it('fetches only the leave requests managed by the user', function () {
@@ -617,9 +608,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.selectedAbsenceTypes = mockAbsenceType;
                 controller.refresh();
-                defer.resolve({
-                  list: []
-                });
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by type id', function () {
@@ -637,9 +626,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.selectedAbsenceTypes = mockAbsenceType;
                 controller.refresh();
-                defer.resolve({
-                  list: []
-                });
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('not filtered by type id', function () {
@@ -658,9 +645,7 @@
             beforeEach(function () {
               controller.filters.leaveRequest.selectedPeriod.start_date = mockFromDate;
               controller.refresh();
-              defer.resolve({
-                list: []
-              });
+              defer.resolve(ContactAPIMock.mockedContacts().list);
             });
 
             it('filtered by from date', function () {
@@ -680,9 +665,7 @@
             beforeEach(function () {
               controller.filters.leaveRequest.selectedPeriod.end_date = mockToDate;
               controller.refresh();
-              defer.resolve({
-                list: []
-              });
+              defer.resolve(ContactAPIMock.mockedContacts().list);
             });
 
             it('filtered by to date', function () {
@@ -698,22 +681,18 @@
 
           describe('contact_id', function () {
             describe('when contact has value', function () {
-              var mockUser = {
-                contact_id: '202'
-              };
+              var mockUserID = '202';
 
               beforeEach(function () {
-                controller.filters.leaveRequest.contact = mockUser;
+                controller.filters.leaveRequest.contact_id = mockUserID;
                 controller.refresh();
-                defer.resolve({
-                  list: []
-                });
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by contact id', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                    contact_id: mockUser.contact_id
+                    contact_id: mockUserID
                   }));
                 });
               });
@@ -721,41 +700,21 @@
 
             describe('when contact is null and filtered users has value', function () {
               var mockUsers = [{
-                contact_id: '202'
+                id: '202'
               }];
 
               beforeEach(function () {
-                controller.filters.leaveRequest.contact = null;
+                controller.filters.leaveRequest.contact_id = null;
                 controller.refresh();
-                defer.resolve({
-                  list: mockUsers
-                });
+                defer.resolve(mockUsers);
               });
 
               it('filtered by filtered users', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     contact_id: {
-                      "IN": [mockUsers[0].contact_id]
+                      'IN': [mockUsers[0].id]
                     }
-                  }));
-                });
-              });
-            });
-
-            describe('when contact is null and filtered users is null', function () {
-              beforeEach(function () {
-                controller.filters.leaveRequest.contact = null;
-                controller.refresh();
-                defer.resolve({
-                  list: []
-                });
-              });
-
-              it('is not filtered by contact id', function () {
-                promise.then(function () {
-                  expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                    contact_id: null
                   }));
                 });
               });
@@ -771,9 +730,7 @@
               beforeEach(function () {
                 controller.filters.leaveRequest.leaveStatus = mockStatus;
                 controller.refresh();
-                defer.resolve({
-                  list: []
-                });
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by selected leave status', function () {
@@ -782,22 +739,20 @@
                     status_id: {
                       IN: ['mockvalue']
                     }
-                  }), jasmine.any(Object), null, jasmine.any(Object), jasmine.any(Boolean));
+                  }), jasmine.any(Object), jasmine.any(String), jasmine.any(Object), jasmine.any(Boolean));
                 });
               });
             });
 
             describe('when only pending requests need to be loaded', function () {
               var waitingApprovalValue = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status').find(function (data) {
-                return data.name === 'waiting_approval';
+                return data.name === 'awaiting_approval';
               }).value;
 
               beforeEach(function () {
                 controller.filters.leaveRequest.pending_requests = true;
                 controller.refresh();
-                defer.resolve({
-                  list: []
-                });
+                defer.resolve(ContactAPIMock.mockedContacts().list);
               });
 
               it('filtered by waiting approval status', function () {
@@ -819,17 +774,17 @@
 
         describe('status: awaiting approval', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('waiting_approval');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
           });
 
-          it('shows the "respond" and "cancel" actions', function () {
-            expect(actionMatrix).toEqual(['respond', 'cancel']);
+          it('shows the "respond", "cancel", "approve" and "reject" actions', function () {
+            expect(actionMatrix).toEqual(['respond', 'cancel', 'approve', 'reject']);
           });
         });
 
         describe('status: more information required', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('more_information_requested');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
           });
 
           it('shows the "edit" and "cancel" actions', function () {
@@ -839,7 +794,7 @@
 
         describe('status: approved', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('approved');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
           });
 
           it('shows the "edit" action', function () {
@@ -849,7 +804,7 @@
 
         describe('status: cancelled', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('cancelled');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
           });
 
           it('shows the "edit" action', function () {
@@ -859,7 +814,7 @@
 
         describe('status: rejected', function () {
           beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus('rejected');
+            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
           });
 
           it('shows the "edit" action', function () {
@@ -874,13 +829,34 @@
          * @param  {string} statusName
          * @return {Array}
          */
-        function getActionMatrixForStatus(statusName) {
+        function getActionMatrixForStatus (statusName) {
           return controller.actionsFor(LeaveRequestInstance.init({
             status_id: optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', statusName).value
           }));
         }
       });
-      function compileComponent() {
+
+      describe('when new leave request is created', function () {
+        beforeEach(function () {
+          $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+        });
+
+        it('calls related contact API to update', function () {
+          expect(Contact.leaveManagees).toHaveBeenCalled();
+        });
+      });
+
+      describe('when new leave request is updated', function () {
+        beforeEach(function () {
+          $rootScope.$emit('LeaveRequest::updatedByManager', jasmine.any(Object));
+        });
+
+        it('calls related contact API to update', function () {
+          expect(Contact.leaveManagees).toHaveBeenCalled();
+        });
+      });
+
+      function compileComponent () {
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;
 

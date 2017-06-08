@@ -5,15 +5,16 @@
     urlArgs: 'bust=' + (new Date()).getTime(),
     paths: {
       'leave-absences/shared': srcPath + '/shared',
-      'leave-absences/my-leave': srcPath + '/my-leave',
+      'leave-absences/my-leave': srcPath + '/my-leave'
     }
   });
 
-  require([
-      'leave-absences/shared/config',
-      'leave-absences/my-leave/app',
+  require(['leave-absences/shared/config'], function () {
+    require([
+      'leave-absences/my-leave/app'
     ],
-    function (__, angular) {
+    function (angular) {
       angular.bootstrap(document.querySelector('[data-leave-absences-my-leave]'), ['my-leave']);
     });
+  });
 })(CRM, require);

@@ -513,8 +513,9 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    *   dates
    * - The contract is not deleted
    *
-   * This method also accepts a Contact ID as a parameter. In that case, it will
-   * only return contracts for that given Contact.
+   * This method also accepts a Contact ID as a parameter which could be a single contact
+   * or an array of Contact(s). In that case, it will only return contracts for the given Contact(s).
+   *
    *
    * The contracts are returned ordered by their start date in ascending order.
    *
@@ -522,7 +523,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    *  A date string in a format supported by strtotime
    * @param null|string $endDate
    *  A date string in a format supported by strtotime
-   * @param null|int $contactID
+   * @param null|int|array $contactID
    *
    * @return array
    */
@@ -541,9 +542,12 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     }
 
     $whereContactID = '';
-    if($contactID) {
-      $contactID = (int)$contactID;
-      $whereContactID = " AND c.contact_id = {$contactID}";
+    if(!empty($contactID)) {
+      if(!is_array($contactID)) {
+        $contactID = [$contactID];
+      }
+      array_walk($contactID, 'intval');
+      $whereContactID = ' AND c.contact_id IN('. implode(', ', $contactID) .')';
     }
 
     $query = "

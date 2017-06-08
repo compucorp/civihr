@@ -1,54 +1,83 @@
+/* eslint-env amd, jasmine */
+/* global inject */
+
 define([
+  'common/lodash',
   'mocks/data/work-pattern-data',
-  'leave-absences/shared/models/calendar-model',
-], function (mockData) {
+  'leave-absences/shared/models/calendar-model'
+], function (_, workPatternMocked) {
   'use strict';
 
   describe('Calendar', function () {
-    var Calendar,
-      WorkPatternAPI,
-      $q,
-      $rootScope;
+    var $q, $rootScope, Calendar, WorkPatternAPI;
 
     beforeEach(module('leave-absences.models'));
-
-    beforeEach(inject(function (_Calendar_, _WorkPatternAPI_, _$rootScope_, _$q_) {
+    beforeEach(inject(function (_$q_, _$rootScope_, _Calendar_, _WorkPatternAPI_) {
+      $q = _$q_;
+      $rootScope = _$rootScope_;
       Calendar = _Calendar_;
       WorkPatternAPI = _WorkPatternAPI_;
-      $rootScope = _$rootScope_;
-      $q = _$q_;
-
-      spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
     }));
 
     afterEach(function () {
-      $rootScope.$apply();
+      $rootScope.$digest();
     });
 
-    describe('getCalendar()', function () {
-      var CalendarPromise,
-        deferred;
+    describe('get()', function () {
+      var promise;
 
-      function commonSetUp(returnData) {
-        deferred = $q.defer();
-        deferred.resolve(returnData);
-        WorkPatternAPI.getCalendar.and.returnValue(deferred.promise);
+      beforeEach(function () {
+        spyOn(WorkPatternAPI, 'getCalendar').and.returnValue($q.resolve(workPatternMocked.getCalendar));
+      });
 
-        CalendarPromise = Calendar.get(jasmine.any(String), jasmine.any(String), jasmine.any(Object));
-      }
+      describe('basic tests', function () {
+        beforeEach(function () {
+          Calendar.get(jasmine.any(String), jasmine.any(String));
+        });
 
-      it('calls equivalent API method', function () {
-        commonSetUp(mockData.daysData());
-        CalendarPromise.then(function () {
+        it('calls the equivalent API method', function () {
           expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
         });
       });
 
-      it('returns model instances when request is successful', function () {
-        commonSetUp(mockData.daysData());
-        CalendarPromise.then(function (response) {
-          expect('days' in response).toBe(true);
+      describe('resolved value', function () {
+        describe('when passing a single contact id', function () {
+          beforeEach(function () {
+            promise = Calendar.get(jasmine.any(String), jasmine.any(String));
+          });
+
+          it('resolves to a single CalendarInstance', function () {
+            promise.then(function (response) {
+              expect(_.isArray(response)).toBe(false);
+              expect(isInstance(response)).toBe(true);
+            });
+          });
         });
+
+        describe('when passing multiple contact ids', function () {
+          beforeEach(function () {
+            promise = Calendar.get([jasmine.any(String), jasmine.any(String)], jasmine.any(String));
+          });
+
+          it('resolves to multiple CalendarInstances', function () {
+            promise.then(function (response) {
+              expect(_.isArray(response)).toBe(true);
+              expect(response.every(function (instance) {
+                return isInstance(instance);
+              })).toBe(true);
+            });
+          });
+        });
+
+        /**
+         * Checks if the given object is a CalendarInstance
+         *
+         * @param  {Object}  instance
+         * @return {Boolean}
+         */
+        function isInstance (instance) {
+          return !!(instance.fromAPI && instance.toAPI && instance.days);
+        }
       });
     });
   });

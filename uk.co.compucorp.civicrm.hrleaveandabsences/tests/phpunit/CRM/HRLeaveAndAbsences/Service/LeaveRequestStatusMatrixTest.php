@@ -73,41 +73,112 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
   }
 
   public function testCanTransitionToForAdminForReturnsTrueAllPossibleTransitionStatuses() {
-    $manager = ContactFabricator::fabricate();
-    $leaveContact = ContactFabricator::fabricate();
-    $this->registerCurrentLoggedInContactInSession($manager['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+    $adminID = 5;
+    $leaveContact = 2;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
 
     $possibleTransitions = $this->allPossibleStatusTransitionForLeaveApprover();
 
     foreach($possibleTransitions as $transition) {
-      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact['id']));
+      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact));
     }
   }
 
   public function testCanTransitionToForAdminReturnsFalseForAllNonPossibleTransitionStatuses() {
-    $manager = ContactFabricator::fabricate();
-    $leaveContact = ContactFabricator::fabricate();
-    $this->registerCurrentLoggedInContactInSession($manager['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['administer leave and absences'];
+    $adminID = 5;
+    $leaveContact = 2;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
 
     $nonPossibleTransitions = $this->allNonPossibleStatusTransitionForLeaveApprover();
 
     foreach($nonPossibleTransitions as $transition) {
-      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact['id']));
+      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $leaveContact));
     }
+  }
+
+  public function testCanTransitionToReturnsTrueForAllPossibleStaffTransitionStatusesWhenLeaveApproverIsTheLeaveContact() {
+    $manager = ContactFabricator::fabricate();
+    $leaveContact = ContactFabricator::fabricate();
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $leaveContact);
+
+    $possibleTransitions = $this->allPossibleStatusTransitionForStaffDataProvider();
+
+    foreach($possibleTransitions as $transition) {
+      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $manager['id']));
+    }
+  }
+
+  public function testCanTransitionToReturnsFalseForAllNonPossibleStaffTransitionStatusesWhenLeaveApproverIsTheLeaveContact() {
+    $manager = ContactFabricator::fabricate();
+    $leaveContact = ContactFabricator::fabricate();
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $leaveContact);
+
+    $nonPossibleTransitions = $this->allNonPossibleStatusTransitionForStaffDataProvider();
+
+    foreach($nonPossibleTransitions as $transition) {
+      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $manager['id']));
+    }
+  }
+
+  public function testCanTransitionToReturnsFalseForPossibleManagerExclusiveStatusTransitionsWhenLeaveApproverIsTheLeaveContact() {
+    $manager = ContactFabricator::fabricate();
+    $leaveContact = ContactFabricator::fabricate();
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $leaveContact);
+
+    $managerExclusivePossibleStatusTransition = $this->getManagerExclusivePossibleStatusTransitionsDataProvider();
+    foreach($managerExclusivePossibleStatusTransition as $transition) {
+      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $manager['id']));
+    }
+  }
+
+  /**
+   * @dataProvider allPossibleStatusTransitionForStaffDataProvider
+   */
+  public function testCanTransitionToReturnsTrueForAllPossibleStaffTransitionStatusesWhenAdminIsTheLeaveContact($fromStatus, $toStatus) {
+    $adminID = 5;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
+
+    $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($fromStatus, $toStatus, $adminID));
+  }
+
+  /**
+   * @dataProvider allNonPossibleStatusTransitionForStaffDataProvider
+   */
+  public function testCanTransitionToReturnsFalseForAllNonPossibleStaffTransitionStatusesWhenAdminIsTheLeaveContact($fromStatus, $toStatus) {
+    $adminID = 5;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
+
+    $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($fromStatus, $toStatus, $adminID));
+  }
+
+  /**
+   * @dataProvider getManagerExclusivePossibleStatusTransitionsDataProvider
+   */
+  public function testCanTransitionToReturnsFalseForPossibleManagerExclusiveStatusTransitionsWhenAdminIsTheLeaveContact($fromStatus, $toStatus) {
+    $adminID = 5;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['administer leave and absences']);
+
+    $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($fromStatus, $toStatus, $adminID));
   }
 
   public function allPossibleStatusTransitionForStaffDataProvider() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     return [
-      [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['waiting_approval']],
-      [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['cancelled']],
-      [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['waiting_approval']],
-      [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['cancelled']],
+      [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['cancelled']],
+      [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['cancelled']],
       [$leaveRequestStatuses['approved'], $leaveRequestStatuses['cancelled']],
-      ['', $leaveRequestStatuses['waiting_approval']],
+      ['', $leaveRequestStatuses['awaiting_approval']],
     ];
   }
 
@@ -115,27 +186,27 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     return [
-      [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['more_information_requested']],
-      [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['rejected']],
-      [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['approved']],
-      [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['more_information_requested']],
-      [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['rejected']],
-      [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['approved']],
-      [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['waiting_approval']],
-      [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['more_information_requested']],
+      [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['more_information_required']],
+      [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['rejected']],
+      [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['approved']],
+      [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['more_information_required']],
+      [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['rejected']],
+      [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['approved']],
+      [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['more_information_required']],
       [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['rejected']],
       [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['approved']],
       [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['cancelled']],
-      [$leaveRequestStatuses['approved'], $leaveRequestStatuses['waiting_approval']],
-      [$leaveRequestStatuses['approved'], $leaveRequestStatuses['more_information_requested']],
+      [$leaveRequestStatuses['approved'], $leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['approved'], $leaveRequestStatuses['more_information_required']],
       [$leaveRequestStatuses['approved'], $leaveRequestStatuses['rejected']],
       [$leaveRequestStatuses['approved'], $leaveRequestStatuses['approved']],
-      [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['waiting_approval']],
-      [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['more_information_requested']],
+      [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['more_information_required']],
       [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['rejected']],
       [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['approved']],
       [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['cancelled']],
-      ['', $leaveRequestStatuses['more_information_requested']],
+      ['', $leaveRequestStatuses['more_information_required']],
       ['', $leaveRequestStatuses['rejected']],
       ['', $leaveRequestStatuses['approved']],
       ['', $leaveRequestStatuses['cancelled']],
@@ -146,43 +217,58 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     return [
-      [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['more_information_requested']],
-      [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['rejected']],
-      [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['approved']],
-      [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['cancelled']],
-      [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['more_information_requested']],
-      [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['rejected']],
-      [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['approved']],
-      [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['cancelled']],
-      [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['more_information_requested']],
+      [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['more_information_required']],
+      [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['rejected']],
+      [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['approved']],
+      [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['cancelled']],
+      [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['more_information_required']],
+      [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['rejected']],
+      [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['approved']],
+      [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['cancelled']],
+      [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['more_information_required']],
       [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['rejected']],
       [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['approved']],
       [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['cancelled']],
-      [$leaveRequestStatuses['approved'], $leaveRequestStatuses['more_information_requested']],
+      [$leaveRequestStatuses['approved'], $leaveRequestStatuses['more_information_required']],
       [$leaveRequestStatuses['approved'], $leaveRequestStatuses['rejected']],
       [$leaveRequestStatuses['approved'], $leaveRequestStatuses['approved']],
       [$leaveRequestStatuses['approved'], $leaveRequestStatuses['cancelled']],
-      [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['waiting_approval']],
-      [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['more_information_requested']],
+      [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['more_information_required']],
       [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['rejected']],
       [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['approved']],
       [$leaveRequestStatuses['cancelled'], $leaveRequestStatuses['cancelled']],
-      ['', $leaveRequestStatuses['more_information_requested']],
+      ['', $leaveRequestStatuses['more_information_required']],
       ['', $leaveRequestStatuses['approved']],
     ];
   }
 
   public function allNonPossibleStatusTransitionForLeaveApprover() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    
+
     return [
-      [$leaveRequestStatuses['waiting_approval'], $leaveRequestStatuses['waiting_approval']],
-      [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['waiting_approval']],
-      [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['waiting_approval']],
-      [$leaveRequestStatuses['approved'], $leaveRequestStatuses['waiting_approval']],
-      ['', $leaveRequestStatuses['waiting_approval']],
+      [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['rejected'], $leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['approved'], $leaveRequestStatuses['awaiting_approval']],
+      ['', $leaveRequestStatuses['awaiting_approval']],
       ['', $leaveRequestStatuses['rejected']],
       ['', $leaveRequestStatuses['cancelled']],
     ];
+  }
+
+  /**
+   * Return possible status transitions that is only exclusive to the Manager or Admin
+   *
+   * @return array
+   */
+  public function getManagerExclusivePossibleStatusTransitionsDataProvider() {
+    $possibleStaffTransitions = $this->allPossibleStatusTransitionForStaffDataProvider();
+    $possibleManagerTransitions = $this->allPossibleStatusTransitionForLeaveApprover();
+
+    $results = array_diff(array_map('serialize', $possibleManagerTransitions), array_map('serialize', $possibleStaffTransitions));
+    $managerExclusiveStatusTransition = array_map('unserialize', $results);
+
+    return $managerExclusiveStatusTransition;
   }
 }

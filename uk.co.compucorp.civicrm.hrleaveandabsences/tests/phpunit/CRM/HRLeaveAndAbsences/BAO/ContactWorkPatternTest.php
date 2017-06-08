@@ -14,6 +14,10 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
  */
 class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest {
 
+  public function setUp() {
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
+  }
+
   public function testThereCannotBeTwoWorkPatternsForTheSameEmployeeWithTheSameEffectiveDate() {
     $workPattern1 = WorkPatternFabricator::fabricate();
     $workPattern2 = WorkPatternFabricator::fabricate();
@@ -420,47 +424,47 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     ));
   }
 
-  public function getAllForPeriodReturnsOnlyTheContactWorkPatternsOverlappingTheGivenPeriod() {
-    $contact = ContactFabricator::fabricate();
-    $workPattern = WorkPatternFabricator::fabricate();
+  public function testGetContactsUsingWorkPatternFromDate() {
+    $contactID1 = 1;
+    $contactID2 = 2;
+    $contactID3 = 3;
+    $workPattern1 = 1;
+    $workPattern2 = 2;
 
-    ContactWorkPatternFabricator::fabricate([
-      'contact_id' => $contact['id'],
-      'pattern_id' => $workPattern->id,
+    $contactWorkPattern1 = ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contactID1,
+      'pattern_id' => $workPattern1,
       'effective_date' => CRM_Utils_Date::processDate('2015-01-10'),
     ]);
 
     $contactWorkPattern2 = ContactWorkPatternFabricator::fabricate([
-      'contact_id' => $contact['id'],
-      'pattern_id' => $workPattern->id,
+      'contact_id' => $contactID2,
+      'pattern_id' => $workPattern1,
       'effective_date' => CRM_Utils_Date::processDate('2015-01-15'),
     ]);
 
     $contactWorkPattern3 = ContactWorkPatternFabricator::fabricate([
-      'contact_id' => $contact['id'],
-      'pattern_id' => $workPattern->id,
+      'contact_id' => $contactID3,
+      'pattern_id' => $workPattern2,
       'effective_date' => CRM_Utils_Date::processDate('2015-01-20'),
     ]);
 
     ContactWorkPatternFabricator::fabricate([
-      'contact_id' => $contact['id'],
-      'pattern_id' => $workPattern->id,
+      'contact_id' => $contactID2,
+      'pattern_id' => $workPattern1,
       'effective_date' => CRM_Utils_Date::processDate('2015-01-30'),
     ]);
 
-    $contactWorkPatterns = ContactWorkPattern::getAllForPeriod(
-      $contact['id'],
-      new DateTime('2015-01-16'),
-      new DateTime('2015-01-29')
+    $contacts = ContactWorkPattern::getContactsUsingWorkPatternFromDate(
+      new DateTime('2015-01-14'),
+      $workPattern1
     );
 
-    // Only 2 (number 2 and 3) contact work patterns are within the given
-    // period
-    $this->assertCount(2, $contactWorkPatterns);
-    $this->assertInstanceOf(ContactWorkPattern::class, $contactWorkPatterns[0]);
-    $this->assertEquals($contactWorkPattern2->id, $contactWorkPatterns[0]);
-
-    $this->assertInstanceOf(ContactWorkPattern::class, $contactWorkPatterns[1]);
-    $this->assertEquals($contactWorkPattern3->id, $contactWorkPatterns[1]);
+    // ContactWork Patterns 1,2 and 3 has effective_end date greater than the '2015-01-14'
+    // period but ContactWorkPattern3 is attached to workPattern2,
+    // so only unique contacts attached to Contact Work Patterns 1 and 2 will be returned.
+    $this->assertCount(2, $contacts);
+    sort($contacts);
+    $this->assertEquals($contacts, [$contactID1, $contactID2]);
   }
 }

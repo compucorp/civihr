@@ -1,0 +1,64 @@
+---
+layout: leave-absences
+subject: CiviHR Sickness Request
+request-type: Sickness
+---
+
+<div class="request request-sickness">
+  <row class="collapse">
+    <columns>
+      {{> callout-header title="{$absenceTypeName}"}}
+      <callout class="request-data">
+        {{> request-data key="Status" value="{$leaveStatus}"}}
+        {{> request-data key="Staff Member" value="{contact.display_name}"}}
+
+        {if $leaveRequest->from_date eq $leaveRequest->to_date}
+          {{> request-data key="Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}"}}
+        {else}
+          {{> request-data key="From Date" value="{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}"}}
+          {{> request-data key="To Date" value="{$toDate|truncate:10:\'\'|crmDate} {$toDateType}"}}
+        {/if}
+        <hr>
+        {{> request-data key="Additional Details" value=""}}
+        {{> request-data key="The Reason" value="{$sicknessReason}"}}
+        {if $leaveRequiredDocuments}
+          <div class="request-documents">
+            {foreach from=$sicknessRequiredDocuments item=value key=id}
+              <div class="request-document">
+                <span class="request-document-required">
+                  <input type="checkbox" disabled {if in_array($id, $leaveRequiredDocuments)}checked{/if}>
+                </span>
+                <span class="request-document-title">{$value}</span>
+              </div>
+            {/foreach}
+          </div>
+        {/if}
+      </callout>
+      <spacer></spacer>
+      <button href="{$leaveRequestLink}" class="expanded alert">View This Request</button>
+      {if $leaveComments}
+        <hr>
+        {{> callout-header title="Request comments"}}
+        <callout class="callout-no-padding">
+          <div class="request-comments">
+            {foreach from=$leaveComments item=value key=label}
+              {{> request-comment commenter="{$value.commenter}" createdAt="{$value.created_at|crmDate}" text="{$value.text}"}}
+            {/foreach}
+          </div>
+        </callout>
+      {/if}
+      {if $leaveFiles}
+        <hr>
+        {{> callout-header title="Other files recorded in this request"}}
+        <callout>
+          <div class="request-attachments">
+            {foreach from=$leaveFiles item=value key=label}
+              {{> request-attachment name="{$value.name}" uploadDate="{$value.created_at|crmDate}"}}
+            {/foreach}
+          </div>
+        </callout>
+      {/if}
+    </columns>
+  </row>
+  {{> la-footer}}
+</div>

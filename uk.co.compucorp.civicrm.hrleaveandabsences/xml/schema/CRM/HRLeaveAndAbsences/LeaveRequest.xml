@@ -128,7 +128,8 @@
 
   <field>
     <name>toil_to_accrue</name>
-    <type>int unsigned</type>
+    <type>varchar</type>
+    <length>512</length>
     <comment>The amount of days accrued for this toil request</comment>
     <add>4.4</add>
     <pseudoconstant>

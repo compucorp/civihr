@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotification as Sickness
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 /**
  * Class RM_HRLeaveAndAbsences_Mail_SicknessRequestNotificationTemplateTest
@@ -34,8 +35,9 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
   }
 
   public function testGetTemplateParametersReturnsTheExpectedParametersForTheTemplate() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['title' => 'Vacation/Holiday']);
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $absenceType->id,
       'contact_id' =>2,
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
@@ -80,8 +82,8 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
     $this->assertEquals($tplParams['fromDateType'], $leaveRequestDayTypes[$leaveRequest->from_date_type]);
     $this->assertEquals($tplParams['toDateType'], $leaveRequestDayTypes[$leaveRequest->to_date_type]);
     $this->assertEquals($tplParams['leaveStatus'], $leaveRequestStatuses[$leaveRequest->status_id]);
-    $this->assertEquals($tplParams['leaveRequestLink'], CRM_Utils_System::url('my-leave', [], true));
     $this->assertEquals($tplParams['currentDateTime'], $dateTimeNow, '', 10);
+    $this->assertEquals($tplParams['absenceTypeName'], $absenceType->title);
 
     //There are two attachments for the Sickness request
     $this->assertCount(2, $tplParams['leaveFiles']);
@@ -97,7 +99,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
 
     $this->assertEquals($leaveCommentText, ['Random Commenter', 'Sample text']);
 
-    $this->assertEquals($tplParams['sicknessReasons'], $sicknessReasons);
+    $this->assertEquals($tplParams['sicknessReason'], $sicknessReasons[$leaveRequest->sickness_reason]);
     $this->assertEquals($tplParams['sicknessRequiredDocuments'], $this->getSicknessRequiredDocuments());
     $this->assertEquals($tplParams['leaveRequiredDocuments'], explode(',', $leaveRequest->sickness_required_documents));
   }

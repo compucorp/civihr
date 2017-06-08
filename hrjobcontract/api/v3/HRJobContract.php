@@ -93,9 +93,9 @@ function civicrm_api3_h_r_job_contract_deletecontract($params) {
 
 /**
  * HRJobContract.getlengthofservice
- * 
+ *
  * Return a number of Length of Service in days for specific 'contact_id'.
- * 
+ *
  * @param array $params
  * @return array API result descriptor
  * @throws API_Exception
@@ -110,11 +110,11 @@ function civicrm_api3_h_r_job_contract_getlengthofservice($params) {
 
 /**
  * HRJobContract.getlengthofserviceymd
- * 
+ *
  * Return an object containing years, months and days of Length of Service
  * for specific 'contact_id'.
  * Useful for front-end part of Contact Summary block.
- * 
+ *
  * @param array $params
  * @return array API result descriptor
  * @throws API_Exception
@@ -129,10 +129,10 @@ function civicrm_api3_h_r_job_contract_getlengthofserviceymd($params) {
 
 /**
  * HRJobContract.updatelengthofservice
- * 
+ *
  * Update Length of Service values for specific 'contact_id' or for every Contact
  * if $params['contact_id'] is not specified.
- * 
+ *
  * @param array $params
  * @return array API result descriptor
  * @throws API_Exception
@@ -185,7 +185,7 @@ function _civicrm_api3_h_r_job_contract_getcontractswithdetailsinperiod_spec(&$s
 function civicrm_api3_h_r_job_contract_getcontractswithdetailsinperiod($params) {
   $startDate = null;
   $endDate = null;
-  $contractID = null;
+  $contactID = null;
 
   if(!empty($params['start_date'])) {
     if(is_array($params['start_date'])) {
@@ -202,11 +202,34 @@ function civicrm_api3_h_r_job_contract_getcontractswithdetailsinperiod($params) 
   }
 
   if(!empty($params['contact_id'])) {
-    $contractID = (int)$params['contact_id'];
+    $contactID = _civicrm_api3_h_r_job_contract_get_contacts_from_params($params);
   }
 
-  $result = CRM_Hrjobcontract_BAO_HRJobContract::getContractsWithDetailsInPeriod($startDate, $endDate, $contractID);
+  $result = CRM_Hrjobcontract_BAO_HRJobContract::getContractsWithDetailsInPeriod($startDate, $endDate, $contactID);
   return civicrm_api3_create_success($result, $params);
+}
+
+/**
+ * Extracts the list of contactID's from the $params array
+ *
+ * @param array $params
+ *
+ * @return array
+ */
+function _civicrm_api3_h_r_job_contract_get_contacts_from_params($params) {
+  if(empty($params['contact_id'])) {
+    return [];
+  }
+
+  if(!is_array($params['contact_id'])) {
+    return [$params['contact_id']];
+  }
+
+  if(!array_key_exists('IN', $params['contact_id'])) {
+    throw new InvalidArgumentException('The contact_id parameter only supports the IN operator');
+  }
+
+  return $params['contact_id']['IN'];
 }
 
 /**

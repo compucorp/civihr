@@ -76,44 +76,6 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     ]);
   }
 
-  public function testCannotChangeDateToOneInThePast() {
-    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
-      'date' => CRM_Utils_Date::processDate('+1 day')
-    ]);
-
-    try {
-      PublicHolidayFabricator::fabricate([
-        'id' => $publicHoliday->id,
-        'date' => CRM_Utils_Date::processDate('-1 day')
-      ]);
-    } catch(Exception $e) {
-      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
-      $this->assertEquals('The date cannot be in the past', $e->getMessage());
-      return;
-    }
-
-    $this->fail('Expected an exception, but the public holiday was updated with to a date in the past');
-  }
-
-  public function testCannotChangeTheDateOfAPastPublicHoliday() {
-    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
-      'date' => CRM_Utils_Date::processDate('2016-01-02')
-    ]);
-
-    try {
-      PublicHoliday::create([
-        'id' => $publicHoliday->id,
-        'date' => CRM_Utils_Date::processDate('+1 day')
-      ]);
-    } catch(Exception $e) {
-      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
-      $this->assertEquals('You cannot change the date of a past public holiday', $e->getMessage());
-      return;
-    }
-
-    $this->fail('Expected an exception, but the public holiday was updated with to a date in the past');
-  }
-
   public function testCanChangeTheTitleOfAPastPublicHoliday() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -129,47 +91,6 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
       'id' => $publicHoliday->id,
       'title' => 'Updated'
     ]);
-  }
-
-  public function testCannotDisableAnEnabledPastPublicHoliday() {
-    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
-      'title' => 'Holiday',
-      'date' => CRM_Utils_Date::processDate('2016-01-02')
-    ]);
-
-    try {
-      PublicHoliday::create([
-        'id' => $publicHoliday->id,
-        'is_active' => false
-      ]);
-    } catch(Exception $e) {
-      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
-      $this->assertEquals('You cannot disable/enable a past public holiday', $e->getMessage());
-      return;
-    }
-
-    $this->fail('Expected an exception, but the public holiday was disabled');
-  }
-
-  public function testCannotEnableADisabledPastPublicHoliday() {
-    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
-      'title' => 'Holiday',
-      'date' => CRM_Utils_Date::processDate('2016-01-02'),
-      'is_active' => false,
-    ]);
-
-    try {
-      PublicHoliday::create([
-        'id' => $publicHoliday->id,
-        'is_active' => true
-      ]);
-    } catch(Exception $e) {
-      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
-      $this->assertEquals('You cannot disable/enable a past public holiday', $e->getMessage());
-      return;
-    }
-
-    $this->fail('Expected an exception, but the public holiday was disabled');
   }
 
   /**
@@ -491,18 +412,6 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     $this->assertEquals($nextSunday->id, $publicHolidays[0]->id);
   }
 
-  /**
-   * @expectedException RuntimeException
-   * @expectedExceptionMessage Past Public Holidays cannot be deleted
-   */
-  public function testPublicHolidaysInThePastCannotBeDeleted() {
-    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
-      'date' => CRM_Utils_Date::processDate('yesterday')
-    ]);
-
-    PublicHoliday::del($publicHoliday->id);
-  }
-
   public function testItEnqueuesOnlyATaskToCreateLeaveRequestsWhenCreatingANewPublicHoliday() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('today'),
@@ -607,5 +516,116 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
       $item->data->callback[0]
     );
     $this->assertEquals(date('Y-m-d', strtotime($date)), $item->data->arguments[0]);
+  }
+
+  public function testItDoesNotEnqueueATaskToCreateLeaveRequestsWhenCreatingANewPublicHolidayAndTheStatusIsInActive() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date' => CRM_Utils_Date::processDate('tomorrow')
+    ]);
+
+    $date = CRM_Utils_Date::processDate('tomorrow');
+    PublicHolidayFabricator::fabricate(['date' => $date, 'is_active' => 0]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(0, $queue->numberOfItems());
+  }
+
+  public function testItEnqueuesATaskToDeleteLeaveRequestsWhenAPublicHolidayIsDisabled() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date' => CRM_Utils_Date::processDate('tomorrow')
+    ]);
+
+    $date = CRM_Utils_Date::processDate('tomorrow');
+
+    //Create Public Holiday
+    $publicHoliday = PublicHolidayFabricator::fabricate(['date' => $date, 'is_active' => 1]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_CreateAllLeaveRequestsForAPublicHoliday',
+      $item->data->callback[0]
+    );
+    $queue->deleteItem($item);
+
+    //Disable Public Holiday
+    PublicHoliday::create(['id' => $publicHoliday->id, 'is_active' => 0]);
+
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_DeleteAllLeaveRequestsForAPublicHoliday',
+      $item->data->callback[0]
+    );
+    $this->assertEquals(date('Y-m-d', strtotime($date)), $item->data->arguments[0]);
+    $queue->deleteItem($item);
+  }
+
+  public function testItEnqueuesATaskToCreateLeaveRequestsWhenAPublicHolidayIsEnabled() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date' => CRM_Utils_Date::processDate('tomorrow')
+    ]);
+
+    $date = CRM_Utils_Date::processDate('tomorrow');
+
+    //Create Public Holiday With Disabled Status
+    $publicHoliday = PublicHolidayFabricator::fabricate(['date' => $date, 'is_active' => 0]);
+
+    //Enable the Public Holiday
+    PublicHoliday::create(['id' => $publicHoliday->id, 'is_active' => 1]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_CreateAllLeaveRequestsForAPublicHoliday',
+      $item->data->callback[0]
+    );
+    $this->assertEquals(date('Y-m-d', strtotime($date)), $item->data->arguments[0]);
+    $queue->deleteItem($item);
+  }
+
+  public function testItDoesNotEnqueueTaskToCreateLeaveRequestsWhenAPublicHolidayIsDisabledAndTheDatesChanged() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date' => CRM_Utils_Date::processDate('+2 days')
+    ]);
+
+    $date1 = CRM_Utils_Date::processDate('tomorrow');
+    $date2 = CRM_Utils_Date::processDate('tomorrow');
+
+    //Create Public Holiday
+    $publicHoliday = PublicHolidayFabricator::fabricate(['date' => $date1]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_CreateAllLeaveRequestsForAPublicHoliday',
+      $item->data->callback[0]
+    );
+    $queue->deleteItem($item);
+
+    //Disable Public Holiday and change the date
+    PublicHoliday::create(['id' => $publicHoliday->id, 'is_active' => 0, $date2]);
+
+    //The only task that should be present is the one to delete Public Holiday Leave requests
+    //With the old date.
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_DeleteAllLeaveRequestsForAPublicHoliday',
+      $item->data->callback[0]
+    );
+    $this->assertEquals(date('Y-m-d', strtotime($date1)), $item->data->arguments[0]);
   }
 }

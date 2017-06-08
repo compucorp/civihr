@@ -10,6 +10,7 @@ use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException as InvalidLeaveRequestException;
+use \CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
@@ -80,9 +81,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params);
     self::validateAbsencePeriod($params);
     self::validateNoOverlappingLeaveRequests($params);
-    self::validateBalanceChange($params);
     self::validateWorkingDay($params);
-    self::validateLeaveDatesDoesNotOverlapContracts($params);
+    self::validateBalanceChange($params);
+    self::validateLeaveDatesDoesNotOverlapContractsWithLapses($params);
   }
 
   /**
@@ -212,16 +213,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Validates if the value passed to the TOIL To Accrued field is one of the
-   * options available on the hrleaveandabsences_toil_amounts option group
+   * Validates if the value passed to the TOIL To Accrue field is one of the
+   * options available on the hrleaveandabsences_toil_amounts option group and
+   * is also a numeric value.
    *
    * @param array $params
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateTOILToAccrueIsAValidOptionValue($params) {
-    $toilAmountOptions = self::buildOptions('toil_to_accrue', 'validate');
-    if(!array_key_exists($params['toil_to_accrue'], $toilAmountOptions)) {
+    $toilAmountOptions = array_flip(self::buildOptions('toil_to_accrue', 'validate'));
+    if(!in_array($params['toil_to_accrue'], $toilAmountOptions) || !is_numeric($params['toil_to_accrue'])) {
       throw new InvalidLeaveRequestException(
         'The TOIL to accrue amount is not valid',
         'leave_request_toil_to_accrue_is_invalid',
@@ -249,7 +251,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past) {
       throw new InvalidLeaveRequestException(
-        'You cannot request TOIL for past days',
+        'You may only request TOIL for overtime to be worked in the future. Please modify the date of this request',
         'leave_request_toil_cannot_be_requested_for_past_days',
         'from_date'
       );
@@ -267,8 +269,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    */
   private static function validateTOILToAccruedAmountIsValid($params) {
     $absenceType = AbsenceType::findById($params['type_id']);
-    $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual != 0;
+    $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual !== 0;
+    $oldToilRequest = '';
 
+    if (!empty($params['id'])) {
+      $oldToilRequest = self::findById($params['id']);
+    }
     $periodContainingToilDates = AbsencePeriod::getPeriodContainingDates(
       new DateTime($params['from_date']),
       new DateTime($params['to_date'])
@@ -281,9 +287,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     );
     $totalProjectedToilForPeriod = $totalApprovedToilForPeriod + $params['toil_to_accrue'];
 
-    if ($totalProjectedToilForPeriod > $absenceType->max_leave_accrual && !$unlimitedAccrual) {
+    if ($oldToilRequest && $oldToilRequest->id && self::isAlreadyApproved($oldToilRequest)) {
+      $periodContainingOldToilDates = self::getPeriodContainingDates($oldToilRequest);
+      $isSamePeriodWithOldToil = $periodContainingOldToilDates->id == $periodContainingToilDates->id;
+
+      if ($isSamePeriodWithOldToil) {
+        $totalProjectedToilForPeriod -= $oldToilRequest->toil_to_accrue;
+      }
+    }
+
+    $maxLeaveAccrual = $absenceType->max_leave_accrual;
+    if ($totalProjectedToilForPeriod > $maxLeaveAccrual && !$unlimitedAccrual) {
       throw new InvalidLeaveRequestException(
-        'The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type',
+        'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual .' days. Please modify the dates of this request',
         'leave_request_toil_amount_more_than_maximum_for_absence_type',
         'toil_to_accrue'
       );
@@ -301,11 +317,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @return float
    */
   private static function getTotalApprovedToilForPeriod(AbsencePeriod $period, $contactID, $typeID) {
-    $leaveRequestStatuses = array_flip(self::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
 
     $leaveRequestStatusFilter = [
-      $leaveRequestStatuses['Approved'],
-      $leaveRequestStatuses['Admin Approved']
+      $leaveRequestStatuses['approved'],
+      $leaveRequestStatuses['admin_approved']
     ];
 
     $totalApprovedTOIL = LeaveBalanceChange::getTotalTOILBalanceChangeForContact(
@@ -379,29 +395,42 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * This method validates that the leave request does not have dates in more than one contract period
+   * This method validates that the leave request does not overlap
+   * contracts with lapses in between any of the contract periods.
    *
    * @param array $params
    *   The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateLeaveDatesDoesNotOverlapContracts($params) {
+  private static function validateLeaveDatesDoesNotOverlapContractsWithLapses($params) {
     $fromDate = new DateTime($params['from_date']);
     $toDate = new DateTime($params['to_date']);
 
-    $contract = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
+    $contractsOverlappingToAndFromDates = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
       'contact_id' => $params['contact_id'],
       'start_date' => $fromDate->format('Y-m-d'),
       'end_date' => $toDate->format('Y-m-d'),
     ]);
 
-    if ($contract['count'] > 1) {
-      throw new InvalidLeaveRequestException(
-        'The Leave request dates must not have dates in more than one contract period',
-        'leave_request_overlapping_multiple_contracts',
-        'from_date'
-      );
+    if ($contractsOverlappingToAndFromDates['count'] > 1) {
+      $contractToCompare = reset($contractsOverlappingToAndFromDates['values']);
+      while($nextContract = next($contractsOverlappingToAndFromDates['values'])) {
+        $intervalInDays = self::getDateIntervalInDays(
+          new DateTime($contractToCompare['period_end_date']),
+          new DateTime($nextContract['period_start_date'])
+        );
+
+        $contractToCompare = $nextContract;
+
+        if($intervalInDays > 1) {
+          throw new InvalidLeaveRequestException(
+            'This leave request is after your contract end date. Please modify dates of this request',
+            'leave_request_overlapping_multiple_contracts',
+            'from_date'
+          );
+        }
+      }
     }
   }
 
@@ -416,6 +445,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateBalanceChange($params) {
+    //TOIL accrual is independent of Current Balance.
+    if($params['request_type'] == self::REQUEST_TYPE_TOIL) {
+      return;
+    }
+
     $toDate = new DateTime($params['to_date']);
     $fromDate = new DateTime($params['from_date']);
     $absenceType = AbsenceType::findById($params['type_id']);
@@ -427,7 +461,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
       throw new InvalidLeaveRequestException(
-        'Balance change for the leave request cannot be greater than the remaining balance of the period',
+        'There are only '. $currentBalance .' days leave available. This request cannot be made or approved',
         'leave_request_balance_change_greater_than_remaining_balance',
         'type_id'
       );
@@ -471,6 +505,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateWorkingDay($params) {
+    //TOIL accrual is independent of Working days.
+    if($params['request_type'] == self::REQUEST_TYPE_TOIL) {
+      return;
+    }
+
     $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
     if ($leaveRequestBalance == 0) {
       throw new InvalidLeaveRequestException(
@@ -483,7 +522,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
   /**
    * This method checks that there is no overlapping leave request
-   * with the status Approved, Admin Approved, Waiting Approval or More Information Requested
+   * with the status Approved, Admin Approved, Awaiting Approval or More Information Required
    * (Exception: if the other Leave Request is a Public Holiday Leave Request, then it can overlap).
    *
    * @params array $params
@@ -492,13 +531,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateNoOverlappingLeaveRequests($params) {
-    $leaveRequestStatuses = array_flip(self::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
 
     $leaveRequestStatusFilter = [
-      $leaveRequestStatuses['Approved'],
-      $leaveRequestStatuses['Admin Approved'],
-      $leaveRequestStatuses['Waiting Approval'],
-      $leaveRequestStatuses['More Information Requested'],
+      $leaveRequestStatuses['approved'],
+      $leaveRequestStatuses['admin_approved'],
+      $leaveRequestStatuses['awaiting_approval'],
+      $leaveRequestStatuses['more_information_required'],
     ];
 
     $overlappingLeaveRequests = self::findOverlappingLeaveRequests(
@@ -517,7 +556,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if ($overlappingLeaveRequests) {
       throw new InvalidLeaveRequestException(
-        'This Leave request has dates that overlaps with an existing leave request',
+        'This leave request overlaps with another request. Please modify dates of this request',
         'leave_request_overlaps_another_leave_request',
         'from_date'
       );
@@ -535,16 +574,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateStartDateNotGreaterThanEndDate($params) {
-      $fromDate = new DateTime($params['from_date']);
-      $toDate = new DateTime($params['to_date']);
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
 
-      if ($fromDate > $toDate) {
-        throw new InvalidLeaveRequestException(
-          'Leave Request start date cannot be greater than the end date',
-          'leave_request_from_date_greater_than_end_date',
-          'from_date'
-        );
-      }
+    if ($fromDate > $toDate) {
+      throw new InvalidLeaveRequestException(
+        'Leave Request start date cannot be greater than the end date',
+        'leave_request_from_date_greater_than_end_date',
+        'from_date'
+      );
+    }
   }
 
   /**
@@ -563,10 +602,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $interval = $toDate->diff($fromDate);
     $intervalInDays = $interval->format("%a");
+    $maxConsecutiveLeaveDays = $absenceType->max_consecutive_leave_days;
 
-    if (!empty($absenceType->max_consecutive_leave_days) && $intervalInDays > $absenceType->max_consecutive_leave_days) {
+    if (!empty($maxConsecutiveLeaveDays) && $intervalInDays > $maxConsecutiveLeaveDays) {
       throw new InvalidLeaveRequestException(
-        'Leave Request days cannot be greater than maximum consecutive days for absence type',
+        'Only a maximum '. $maxConsecutiveLeaveDays .' days leave can be taken in one request. Please modify days of this request',
         'leave_request_days_greater_than_max_consecutive_days',
         'type_id'
       );
@@ -1028,5 +1068,59 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     CRM_Utils_Hook::selectWhereClause($this, $clauses);
     return $clauses;
+  }
+
+  /**
+   * Returns Statuses considered to be Approval statuses for a Leave Request
+   *
+   * @return array
+   */
+  private static function getApprovalStatuses() {
+    $leaveStatuses = array_flip(self::buildOptions('status_id', 'validate'));
+
+    return [$leaveStatuses['approved'], $leaveStatuses['admin_approved']];
+  }
+
+  /**
+   * Checks whether a leave request has been approved.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return bool
+   */
+  private static function isAlreadyApproved(LeaveRequest $leaveRequest) {
+    $oldStatus = $leaveRequest->status_id;
+
+    return in_array($oldStatus, self::getApprovalStatuses());
+  }
+
+  /**
+   * Returns the Absence Period containing the from_date and to_date
+   * of the Leave Request.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
+   */
+  private static function getPeriodContainingDates(LeaveRequest $leaveRequest) {
+    $periodContainingDates = AbsencePeriod::getPeriodContainingDates(
+      new DateTime($leaveRequest->from_date),
+      new DateTime($leaveRequest->to_date)
+    );
+
+    return $periodContainingDates;
+  }
+
+  /**
+   * Returns the interval in days between the from and to Dates.
+   *
+   * @param \DateTime $fromDate
+   * @param \DateTime $toDate
+   *
+   * @return int
+   */
+  private static function getDateIntervalInDays(DateTime $fromDate, DateTime $toDate) {
+    $interval = $toDate->diff($fromDate);
+    return (int) $interval->format("%a");
   }
 }

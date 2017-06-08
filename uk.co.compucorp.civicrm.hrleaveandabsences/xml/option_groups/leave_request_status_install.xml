@@ -37,9 +37,9 @@
     </OptionValue>
 
     <OptionValue>
-      <label>Waiting Approval</label>
+      <label>Awaiting Approval</label>
       <value>3</value>
-      <name>waiting_approval</name>
+      <name>awaiting_approval</name>
       <is_default>0</is_default>
       <weight>2</weight>
       <is_optgroup>0</is_optgroup>
@@ -49,9 +49,9 @@
     </OptionValue>
 
     <OptionValue>
-      <label>More Information Requested</label>
+      <label>More Information Required</label>
       <value>4</value>
-      <name>more_information_requested</name>
+      <name>more_information_required</name>
       <is_default>0</is_default>
       <weight>3</weight>
       <is_optgroup>0</is_optgroup>

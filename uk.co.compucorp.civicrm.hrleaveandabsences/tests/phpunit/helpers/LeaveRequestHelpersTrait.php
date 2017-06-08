@@ -13,7 +13,7 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
       $leaveRequestDayTypeOptions = LeaveRequest::buildOptions('from_date_type');
       foreach($leaveRequestDayTypeOptions  as $key => $label) {
         $name = CRM_Core_Pseudoconstant::getName(LeaveRequest::class, 'from_date_type', $key);
-        $this->leaveRequestDayTypes[$label] = [
+        $this->leaveRequestDayTypes[$name] = [
           'id' => $key,
           'value' => $key,
           'name' => $name,
@@ -30,7 +30,7 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
       $leaveRequestStatusOptions = LeaveRequest::buildOptions('status_id');
       foreach($leaveRequestStatusOptions  as $key => $label) {
         $name = CRM_Core_Pseudoconstant::getName(LeaveRequest::class, 'status_id', $key);
-        $this->leaveRequestStatuses[$label] = [
+        $this->leaveRequestStatuses[$name] = [
           'id' => $key,
           'value' => $key,
           'name' => $name,
@@ -46,8 +46,8 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
     $leaveRequestStatuses = $this->getLeaveRequestStatuses();
 
     return [
-      [$leaveRequestStatuses['More Information Requested']['id']],
-      [$leaveRequestStatuses['Waiting Approval']['id']],
+      [$leaveRequestStatuses['more_information_required']['id']],
+      [$leaveRequestStatuses['awaiting_approval']['id']],
     ];
   }
 
@@ -55,10 +55,10 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
     $leaveRequestStatuses = $this->getLeaveRequestStatuses();
 
     return [
-      [$leaveRequestStatuses['Cancelled']['id']],
-      [$leaveRequestStatuses['Rejected']['id']],
-      [$leaveRequestStatuses['Admin Approved']['id']],
-      [$leaveRequestStatuses['Approved']['id']],
+      [$leaveRequestStatuses['cancelled']['id']],
+      [$leaveRequestStatuses['rejected']['id']],
+      [$leaveRequestStatuses['admin_approved']['id']],
+      [$leaveRequestStatuses['approved']['id']],
     ];
   }
 

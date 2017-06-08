@@ -139,6 +139,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => '2016-01-01']
+    );
+
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
@@ -152,12 +157,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'pattern_id' => $workPattern->id
     ]);
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('2016-11-02'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('2016-11-04'),
@@ -180,6 +185,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testCanFindAPublicHolidayLeaveRequestForAContact() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-01')
+    ]);
+
     $contactID = 2;
 
     $publicHoliday = new PublicHoliday();
@@ -218,8 +228,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-11-13');
     $toDate = new DateTime('2016-11-15');
-    $fromType = $this->leaveRequestDayTypes['1/2 AM']['value'];
-    $toType = $this->leaveRequestDayTypes['1/2 AM']['value'];
+    $fromType = $this->leaveRequestDayTypes['half_day_am']['value'];
+    $toType = $this->leaveRequestDayTypes['half_day_am']['value'];
 
     $expectedResultsBreakdown = [
       'amount' => 0,
@@ -231,9 +241,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-11-13',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
 
@@ -243,9 +253,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-11-14',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -255,9 +265,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-11-15',
       'amount' => 0.5,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['1/2 AM']['id'],
-        'value' => $this->leaveRequestDayTypes['1/2 AM']['value'],
-        'label' => $this->leaveRequestDayTypes['1/2 AM']['label']
+        'id' => $this->leaveRequestDayTypes['half_day_am']['id'],
+        'value' => $this->leaveRequestDayTypes['half_day_am']['value'],
+        'label' => $this->leaveRequestDayTypes['half_day_am']['label']
       ]
     ];
 
@@ -295,8 +305,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-11-14');
     $toDate = new DateTime('2016-11-15');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
+    $toType = $this->leaveRequestDayTypes['all_day']['value'];
 
     $expectedResultsBreakdown = [
       'amount' => 0,
@@ -309,9 +319,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-11-14',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Public Holiday']['id'],
-        'value' => $this->leaveRequestDayTypes['Public Holiday']['value'],
-        'label' => $this->leaveRequestDayTypes['Public Holiday']['label']
+        'id' => $this->leaveRequestDayTypes['public_holiday']['id'],
+        'value' => $this->leaveRequestDayTypes['public_holiday']['value'],
+        'label' => $this->leaveRequestDayTypes['public_holiday']['label']
       ]
     ];
 
@@ -321,9 +331,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-11-15',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -352,8 +362,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-07-31');
     $toDate = new DateTime('2016-08-15');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['1/2 AM']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
+    $toType = $this->leaveRequestDayTypes['half_day_am']['value'];
 
     $expectedResultsBreakdown = [
       'amount' => 0,
@@ -365,9 +375,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-07-31',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
 
@@ -378,9 +388,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-01',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
 
@@ -390,9 +400,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-02',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -401,9 +411,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-03',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
 
@@ -413,9 +423,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-04',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -424,9 +434,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-05',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
 
@@ -434,9 +444,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-06',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
 
@@ -444,9 +454,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-07',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
 
@@ -460,9 +470,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-08',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -471,9 +481,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-09',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
     // Wednesday is a working day on the first week
@@ -482,9 +492,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-10',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
     // Thursday is not a working day on the first week
@@ -492,9 +502,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-11',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
 
@@ -504,9 +514,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-12',
       'amount' => 1.0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['All Day']['id'],
-        'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => $this->leaveRequestDayTypes['All Day']['label']
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
       ]
     ];
 
@@ -515,9 +525,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-13',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
 
@@ -525,9 +535,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-14',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
-        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
       ]
     ];
     // Hit sunday again, so we are now on the fourth week since the start date.
@@ -538,9 +548,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'date' => '2016-08-15',
       'amount' => 0,
       'type' => [
-        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
-        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+        'id' => $this->leaveRequestDayTypes['non_working_day']['id'],
+        'value' => $this->leaveRequestDayTypes['non_working_day']['value'],
+        'label' => $this->leaveRequestDayTypes['non_working_day']['label']
       ]
     ];
     $expectedResultsBreakdown['amount'] *= -1;
@@ -663,9 +673,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value']
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value']
     ]);
   }
 
@@ -707,14 +717,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
   }
 
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage Leave Request days cannot be greater than maximum consecutive days for absence type
-   */
   public function testNumberOfDaysOfLeaveRequestShouldNotBeGreaterMaxConsecutiveLeaveDaysForAbsenceType() {
     $absenceType = AbsenceTypeFabricator::fabricate([
       'max_consecutive_leave_days' => 2
     ]);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'Only a maximum 2 days leave can be taken in one request. Please modify days of this request'
+    );
 
     LeaveRequest::create([
       'type_id' => $absenceType->id,
@@ -736,12 +747,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_NO
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -754,7 +765,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'id' => $leaveRequest->id,
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -771,12 +782,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('-1 day'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -789,7 +800,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'id' => $leaveRequest->id,
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Cancelled'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
       'from_date' => CRM_Utils_Date::processDate('-1 day'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
@@ -1009,6 +1020,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testFindOverlappingLeaveRequestsFilteredBySpecificStatusesAndPublicHolidayCondition() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
     $contactID = 1;
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = '2016-11-11';
@@ -1022,11 +1037,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate3 = new DateTime('2016-11-12');
     $toDate3 = new DateTime('2016-11-15');
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => $fromDate1->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate1->format('YmdHis'),
@@ -1036,7 +1051,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['More Information Requested'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
       'from_date' => $fromDate2->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
@@ -1046,7 +1061,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate3->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate3->format('YmdHis'),
@@ -1056,23 +1071,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
 
     //The start date and end date has dates in leave request dates for leaveRequest1, leaveRequest2
-    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Requested'
+    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Required'
     //therefore only one overlapping Leave Request is expected
     $startDate = '2016-11-02';
     $endDate = '2016-11-15';
-    $filterStatus = [$leaveRequestStatuses['More Information Requested']];
+    $filterStatus = [$leaveRequestStatuses['more_information_required']];
     $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, $filterStatus);
     $this->assertCount(1, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest2->id, $overlappingRequests[0]->id);
 
     //The start date and end date has dates in leave request dates for leaveRequest1, leaveRequest2,
-    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Requested' and 'Waiting Approval'
+    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Required' and 'Awaiting Approval'
     //and overlapping public holiday leave requests is not excluded.
     //However two leave request is expected because, Public holiday leave requests have status 'Admin Approved' by default
     $startDate = '2016-11-01';
     $endDate = '2016-11-16';
-    $filterStatus = [$leaveRequestStatuses['More Information Requested'], $leaveRequestStatuses['Waiting Approval']];
+    $filterStatus = [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['awaiting_approval']];
     $overlappingRequests2 = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, $filterStatus, false);
     $this->assertCount(2, $overlappingRequests2);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
@@ -1084,7 +1099,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage This Leave request has dates that overlaps with an existing leave request
+   * @expectedExceptionMessage This leave request overlaps with another request. Please modify dates of this request
    */
   public function testALeaveRequestShouldNotBeCreatedWhenThereAreOverlappingLeaveRequests() {
     $contactID = 1;
@@ -1099,11 +1114,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => $fromDate1->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate1->format('YmdHis'),
@@ -1113,7 +1128,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate2->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
@@ -1145,6 +1160,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2016-01-01']
+    );
 
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'type_id' => $this->absenceType->id,
@@ -1190,6 +1210,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2016-01-01']
+    );
+
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
@@ -1204,12 +1229,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'pattern_id' => $workPattern->id
     ]);
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Rejected'],
+      'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate2->format('YmdHis'),
       'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
@@ -1232,10 +1257,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($leaveRequest->from_date, $fromDate->format('YmdHis'));
   }
 
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage Balance change for the leave request cannot be greater than the remaining balance of the period
-   */
   public function testLeaveRequestCannotBeCreatedWhenBalanceChangeGreaterThanPeriodEntitlementBalanceChangeWhenAllowOveruseFalse() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -1253,7 +1274,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'period_id' => $period->id
     ]);
 
-    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
+    $entitlementBalanceChange = 3;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
     $periodStartDate = date('2016-01-01');
 
     HRJobContractFabricator::fabricate(
@@ -1269,11 +1291,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-11-14');
     $toDate = new DateTime('2016-11-17');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
+    $toType = $this->leaveRequestDayTypes['all_day']['value'];
 
-    //four working days which will create a balance change of 4
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'There are only '. $entitlementBalanceChange. ' days leave available. This request cannot be made or approved'
+    );
 
+    //four working days which will create a balance change of 4 and is greater than entitlement balance
     LeaveRequest::create([
       'type_id' => $absenceType->id,
       'contact_id' => $periodEntitlement->contact_id,
@@ -1319,8 +1345,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-11-14');
     $toDate = new DateTime('2016-11-17');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
+    $toType = $this->leaveRequestDayTypes['all_day']['value'];
 
     //four working days which will create a balance change of 4
     $leaveRequest = LeaveRequest::create([
@@ -1369,8 +1395,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //both days are on weekends
     $fromDate = new DateTime('2016-11-12');
     $toDate = new DateTime('2016-11-13');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
-    $toType = $this->leaveRequestDayTypes['All Day']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
+    $toType = $this->leaveRequestDayTypes['all_day']['value'];
 
     LeaveRequest::create([
       'type_id' => $periodEntitlement->type_id,
@@ -1420,7 +1446,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     //there's a public holiday on the leave request day
     $fromDate = new DateTime('2016-11-16');
-    $fromType = $this->leaveRequestDayTypes['All Day']['value'];
+    $fromType = $this->leaveRequestDayTypes['all_day']['value'];
     $date = $fromDate->format('YmdHis');
 
     LeaveRequest::create([
@@ -1445,9 +1471,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => 'çfdklajfewiojçdasojfdsa'. microtime()
     ]);
   }
@@ -1462,9 +1488,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
   }
@@ -1479,9 +1505,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
@@ -1497,9 +1523,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ]);
@@ -1515,9 +1541,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_to_accrue' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1533,9 +1559,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_expiry_date' => CRM_Utils_Date::processDate('2015-11-12'),
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1551,9 +1577,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ]);
   }
@@ -1568,9 +1594,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'sickness_reason' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1586,9 +1612,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'sickness_required_documents' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -1610,9 +1636,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
@@ -1637,18 +1663,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage The Leave request dates must not have dates in more than one contract period
+   * @expectedExceptionMessage This leave request is after your contract end date. Please modify dates of this request
    */
-  public function testLeaveRequestCanNotBeCreatedWhenTheDatesOverlapMoreThanOneContract() {
+  public function testLeaveRequestCanNotBeCreatedWhenTheDatesOverlapTwoContractsWithALapseBetweenTheContracts() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
@@ -1661,11 +1687,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 30);
-    $periodStartDate1 = date('2016-01-01');
-    $periodEndDate1 = date('2016-06-30');
+    $periodStartDate1 = '2016-01-01';
+    $periodEndDate1 = '2016-06-30';
 
-    $periodStartDate2 = date('2016-07-01');
-    $periodEndDate2 = date('2016-12-31');
+    $periodStartDate2 = '2016-07-02';
+    $periodEndDate2 = '2016-07-31';
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $periodEntitlement->contact_id],
@@ -1689,17 +1715,139 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'pattern_id' => $workPattern->id
     ]);
 
-    //The from date and to date overlaps the two job contracts
+    //The from date and to date overlaps the two job contracts with a lapse of 1 day without any contract between
+    //the contract dates.
     LeaveRequest::create([
       'type_id' => $periodEntitlement->type_id,
       'contact_id' => $periodEntitlement->contact_id,
       'status_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('2016-06-25'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
-      'to_date' => CRM_Utils_Date::processDate('2016-07-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date' => CRM_Utils_Date::processDate('2016-06-29'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2016-07-03'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage This leave request is after your contract end date. Please modify dates of this request
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenTheDatesOverlapMoreThanTwoContractsWithALapseBetweenTheContracts() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 30);
+    $periodStartDate1 = '2016-06-01';
+    $periodEndDate1 = '2016-06-08';
+
+    $periodStartDate2 = '2016-06-09';
+    $periodEndDate2 = '2016-06-12';
+
+    $periodStartDate3 = '2016-06-14';
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      [
+        'period_start_date' => $periodStartDate1,
+        'period_end_date' => $periodEndDate1
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      [
+        'period_start_date' => $periodStartDate2,
+        'period_end_date' => $periodEndDate2
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate3]
+    );
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $periodEntitlement->contact_id,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    //The from date and to date overlaps the three job contracts with a lapse of
+    // 1 day without any contract between the last two contracts
+    LeaveRequest::create([
+      'type_id' => $periodEntitlement->type_id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-06-07'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2016-06-16'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  public function testLeaveRequestCanBeCreatedWhenTheDatesOverlapTwoContractsWithNoLapseBetweenTheContracts() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 30);
+    $periodStartDate1 = '2016-01-01';
+    $periodEndDate1 = '2016-06-30';
+
+    $periodStartDate2 = '2016-07-01';
+    $periodEndDate2 = '2016-07-31';
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      [
+        'period_start_date' => $periodStartDate1,
+        'period_end_date' => $periodEndDate1
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      [
+        'period_start_date' => $periodStartDate2,
+        'period_end_date' => $periodEndDate2
+      ]
+    );
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $periodEntitlement->contact_id,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $leaveRequest = LeaveRequest::create([
+      'type_id' => $periodEntitlement->type_id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-06-29'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => CRKM_Utils_Date::processDate('2016-07-03'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+
+    $this->assertNotNull($leaveRequest->id);
   }
 
   /**
@@ -1718,9 +1866,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'sickness_reason' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ]);
@@ -1742,9 +1890,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1,
       'toil_to_accrue' => 10,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1755,7 +1903,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage The TOIL to accrue amount is not valid
    */
-  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilButToilToAccruedItNotAValidAmount() {
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilToAccrueIsNotAValidAmount() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
@@ -1767,9 +1915,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1000,
       'toil_to_accrue' => 10,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1778,7 +1926,68 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage You cannot request TOIL for past days
+   * @expectedExceptionMessage The TOIL to accrue amount is not valid
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilToAccrueIsNotNumeric() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
+    ]);
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_accruals_request' => true]);
+
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'toil_duration' => 1000,
+      'toil_to_accrue' => "4 days",
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The TOIL to accrue amount is not valid
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilToAccrueIsAValidAmountButNotNumeric() {
+   //create an option value that is non numeric for toil amount option group
+    $toilAmount = '10 Days';
+    $result = civicrm_api3('OptionValue', 'create',[
+      'option_group_id' => 'hrleaveandabsences_toil_amounts',
+      'value' => $toilAmount,
+      'label' => 'Ten Days',
+    ]);
+
+    //check that option value was successfully created
+    $this->assertNotNull($result['id']);
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
+    ]);
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_accruals_request' => true]);
+
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-11-12'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2015-11-13'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'toil_duration' => 1000,
+      'toil_to_accrue' => $toilAmount,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage You may only request TOIL for overtime to be worked in the future. Please modify the date of this request
    */
   public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndDatesAreInThePastAndAbsenceTypeDoesNotAllow() {
     AbsencePeriodFabricator::fabricate([
@@ -1796,67 +2005,65 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('-2 days'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('-1 day'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_duration' => 1,
       'toil_to_accrue' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
   }
 
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type
-   */
   public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilToAccrueIsGreaterThanTheMaximumAllowed() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('today'),
       'end_date'   => CRM_Utils_Date::processDate('+100 days'),
     ]);
 
+    $maxLeaveAccrual = 1;
     $absenceType = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => true,
-      'max_leave_accrual' => 1,
+      'max_leave_accrual' => $maxLeaveAccrual,
     ]);
 
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual . ' days. Please modify the dates of this request'
+    );
     LeaveRequest::create([
       'type_id' => $absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_to_accrue' => 2,
       'toil_duration' => 120,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
   }
 
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type
-   */
   public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilAmountPlusApprovedToilForPeriodIsGreaterThanMaximumAllowed() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
       'end_date'   => CRM_Utils_Date::processDate('+10 days'),
     ]);
 
+    $maxLeaveAccrual = 4;
     $absenceType = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => true,
-      'max_leave_accrual' => 4,
+      'max_leave_accrual' => $maxLeaveAccrual,
     ]);
 
     $contactID  = 1;
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     //Approved TOIL for period is 3
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('-6 days'),
       'to_date' => CRM_Utils_Date::processDate('-5 days'),
       'toil_to_accrue' => 3,
@@ -1865,15 +2072,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual . ' days. Please modify the dates of this request'
+    );
+
     //Total TOIL for period = 3 + 2 which is greater than 4 (the allowed maximum)
     LeaveRequest::create([
       'type_id' => $absenceType->id,
       'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['Approved'],
+      'status_id' => $leaveRequestStatuses['approved'],
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_to_accrue' => 2,
       'toil_duration' => 120,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1897,9 +2109,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 3,
       'from_date' => date('YmdHis'),
-      'from_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => date('YmdHis'),
-      'to_date_type' => $this->leaveRequestDayTypes['All Day']['value'],
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'toil_to_accrue' => 3,
       'toil_duration' => 300,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
@@ -1908,16 +2120,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
 
     // decrease the max leave accrual
+    $maxLeaveAccrual = 1;
     AbsenceType::create([
       'id' => $absenceType->id,
-      'max_leave_accrual' => 1,
+      'max_leave_accrual' => $maxLeaveAccrual,
       'allow_accruals_request' => true,
       'color' => '#000000'
     ]);
 
     $this->setExpectedException(
       CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException::class,
-      'The TOIL amount plus all approved TOIL for current period is greater than the maximum for this Absence Type'
+      'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual . ' days. Please modify the dates of this request'
     );
 
     // update the TOIL request status
@@ -2150,5 +2363,441 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       $this->assertNotEmpty($email['body']);
       $this->assertNotEmpty($email['headers']);
     }
+  }
+
+  public function testToilCanBeAccruedWhenTheCurrentBalanceForPeriodEntitlementIsZero() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $periodEntitlement->contact_id,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $this->assertEquals(0, $periodEntitlement->getBalance());
+
+    $leaveRequest = LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('today'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date_type' => 1,
+      'toil_to_accrue' => 3,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $this->assertNotNull($leaveRequest->id);
+  }
+
+  public function testToilCanBeAccruedWhenTheToilRequestHasNoWorkingDay() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $periodEntitlement->contact_id,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $this->assertEquals(0, $periodEntitlement->getBalance());
+
+    $toilRequest = LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('saturday'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('sunday'),
+      'to_date_type' => 1,
+      'toil_to_accrue' => 2.5,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $this->assertNotNull($toilRequest->id);
+  }
+
+  public function testToilToAccrueAmountIsSavedCorrectlyWhenAmountToAccrueIsAFloatingNumber() {
+    $toilToAccrueAmounts = [1.5, 1.8, 2.5];
+    foreach ($toilToAccrueAmounts as $toilToAccrueAmount) {
+      LeaveRequestFabricator::fabricateWithoutValidation([
+        'contact_id' => 1,
+        'type_id' => 1,
+        'toil_to_accrue'=> $toilToAccrueAmount,
+        'from_date' => CRM_Utils_Date::processDate('yesterday'),
+        'to_date' => CRM_Utils_Date::processDate('today'),
+        'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+      ]);
+    }
+
+    $toilAccrued = new LeaveRequest();
+    $toilAccrued->request_type = LeaveRequest::REQUEST_TYPE_TOIL;
+    $toilAccrued->find();
+    $this->assertEquals(3, $toilAccrued->N);
+
+    $toilAmounts = [];
+    while($toilAccrued->fetch()){
+      $toilAmounts[] = $toilAccrued->toil_to_accrue;
+    }
+
+    //check that the toil accrued amount was saved in the db correctly
+    sort($toilAmounts);
+    $this->assertEquals($toilAmounts, $toilToAccrueAmounts);
+  }
+
+  public function testUpdatingToilThrowsExceptionWhenUpdatingApprovedToilWithAToilAmountGreaterThanWhatWasInitiallyApprovedAndTotalToilToBeAccruedIsGreaterThanMaximumForTheAbsenceType() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+15 days'),
+    ]);
+
+    $maxLeaveAccrual = 4;
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => $maxLeaveAccrual
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'toil_to_accrue'=> 2,
+      'from_date' => CRM_Utils_Date::processDate('monday'),
+      'to_date' => CRM_Utils_Date::processDate('monday'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_duration' => 60
+    ];
+
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $params['from_date'] = CRM_Utils_Date::processDate('friday');
+    $params['to_date'] = CRM_Utils_Date::processDate('friday');
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4
+    $this->assertEquals(4, $periodEntitlement->getBalance());
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual . ' days. Please modify the dates of this request'
+    );
+
+    //User tries to update the second TOIL with a toil_to_accrue value of 3. Initial value for this TOIL is 2
+    //max leave accrual for this absence type is 4.
+    //Total toil to be accrued if update goes through = 2(first TOIL) + 3 (Second TOIL) = 5
+    //since 5 > 4(max lave accrual), an exception is thrown.
+    $params['id'] = $toilRequest2->id;
+    $params['toil_to_accrue'] = 3;
+    LeaveRequestFabricator::fabricate($params);
+  }
+
+  public function testToilCanBeAccruedWhenUpdatingApprovedToilWithAToilAmountGreaterThanWhatWasInitiallyApprovedAndTotalToilToBeAccruedIsNotGreaterThanMaximumForTheAbsenceType() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+15 days'),
+    ]);
+
+    $contactID = 1;
+    $periodStartDate = new DateTime('-2 days');
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $periodStartDate->format('Y-m-d')]
+    );
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 5
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'toil_to_accrue'=> 2,
+      'from_date' => CRM_Utils_Date::processDate('monday'),
+      'to_date' => CRM_Utils_Date::processDate('monday'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_duration' => 60
+    ];
+
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('friday');
+    $params['to_date'] = CRM_Utils_Date::processDate('friday');
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4
+    $this->assertEquals(4, $periodEntitlement->getBalance());
+
+    $params['id'] = $toilRequest2->id;
+    $params['toil_to_accrue'] = 3;
+    $toilRequest = LeaveRequestFabricator::fabricate($params, true);
+
+    //User tries to update the second TOIL with a toil_to_accrue value of 3. Initial value for this TOIL is 2
+    //max leave accrual for this absence type is 5.
+    //Total toil to be accrued if update goes through = 2(first TOIL) + 3 (Second TOIL) = 5
+    //Update goes through since total projected TOIl is not greater than max leave accrual.
+    $this->assertEquals(5, $periodEntitlement->getBalance());
+  }
+
+  public function testToilCanBeAccruedWhenUpdatingApprovedToilWithAToilAmountLesserThanWhatWasInitiallyApprovedAndTotalToilToBeAccruedIsNotGreaterThanMaximumForTheAbsenceType() {
+    $contactID = 1;
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+15 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 5
+    ]);
+
+    $periodStartDate = new DateTime('-2 days');
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $periodStartDate->format('Y-m-d')]
+    );
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $period->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'toil_to_accrue'=> 2,
+      'from_date' => CRM_Utils_Date::processDate('monday'),
+      'to_date' => CRM_Utils_Date::processDate('monday'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_duration' => 60
+    ];
+
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('friday');
+    $params['to_date'] = CRM_Utils_Date::processDate('friday');
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4
+    $this->assertEquals(4, $periodEntitlement->getBalance());
+
+    $params['id'] = $toilRequest2->id;
+    $params['toil_to_accrue'] = 1;
+    $toilRequest = LeaveRequestFabricator::fabricate($params, true);
+
+    //User tries to update the second TOIL with a toil_to_accrue value of 1. Initial value for this TOIL is 2
+    //max leave accrual for this absence type is 5.
+    //Total toil to be accrued if update goes through = 2(first TOIL) + 1 (Second TOIL) = 3
+    //Update goes through since total projected TOIl is not greater than max leave accrual.
+    $this->assertEquals(3, $periodEntitlement->getBalance());
+  }
+
+  public function testToilCanBeAccruedWhenUpdatingApprovedToilWithAToilAmountSameAsWhatWasInitiallyApprovedAndTotalToilToBeAccruedIsNotGreaterThanMaximumForTheAbsenceType() {
+    $contactID = 1;
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+15 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 5
+    ]);
+
+    $periodStartDate = new DateTime('-5 days');
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $periodStartDate->format('Y-m-d')]
+    );
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $period->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'toil_to_accrue'=> 2,
+      'from_date' => CRM_Utils_Date::processDate('monday'),
+      'to_date' => CRM_Utils_Date::processDate('monday'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_duration' => 60
+    ];
+
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('friday');
+    $params['to_date'] = CRM_Utils_Date::processDate('friday');
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4
+    $this->assertEquals(4, $periodEntitlement->getBalance());
+
+    $params['id'] = $toilRequest2->id;
+    $params['status_id'] = 3;
+    $toilRequest = LeaveRequestFabricator::fabricate($params, true);
+
+    //User tries to update the second TOIL without changing the toil_to_accrue value. Initial value for this TOIL is 2
+    //max leave accrual for this absence type is 5.
+    //Total toil to be accrued remains unchanged if update goes through = 2(first TOIL) + 1 (Second TOIL) = 4
+    //Update goes through since total projected TOIl is not greater than max leave accrual.
+    //getBalance is 2 because it is the sum of approved Balance changes for a period. Since the status of the Second TOIL
+    //has been changed to 3(Awaiting approval) it is no longer counted in getBalance.
+    $this->assertEquals(2, $periodEntitlement->getBalance());
+  }
+
+  public function testUpdatingToilThrowsExceptionWhenUpdatingApprovedToilWithDatesNotInSamePeriodAsPreviouslyApprovedToilAndTotalToilAccruedIsGreaterThanMaximumForThePeriodContainingTheDates() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-01-30'),
+    ]);
+
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-02-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-02-28'),
+    ]);
+
+    $maxLeaveAccrual = 5;
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => $maxLeaveAccrual,
+      'allow_accrue_in_the_past' => 1
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period1->id
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period2->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'toil_to_accrue'=> 2,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-06'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-06'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_duration' => 60
+    ];
+
+    $toilRequest1Period1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-07');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-07');
+    $toilRequest2Period1 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-02-11');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-02-11');
+    $toilRequest1Period2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-02-12');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-02-12');
+    $toilRequest2Period2 = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4 for PeriodEntitlement 1
+    $this->assertEquals(4, $periodEntitlement1->getBalance());
+
+    //two TOIL requests created and total accrued TOIL is 2 + 2 = 4 for PeriodEntitlement 2
+    $this->assertEquals(4, $periodEntitlement2->getBalance());
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual . ' days. Please modify the dates of this request'
+    );
+
+    //User tries to update the TOIL accrued in Period 2 with dates in Period 1.
+    //If there was a bug, since the TOIL is approved, its value is supposed to be deducted from the Total TOIl for
+    //period 1 during the validation and then most likely the TOIL would be accrued for Period 1.
+    //
+    //Exception is thrown because Max leave accrual is 5 and total TOIL already accrued for period 1 is 4
+    //So the code is seeing this TOIL as a new TOIL to be accrued for this period not as an Approved TOIL to be updated which is correct.
+    //4(already accrued) + 2(to be accrued)  = 6 and is greater than max leave accrual for Period 1.
+    $params['id'] = $toilRequest2Period2->id;
+    $params['toil_to_accrue'] = 2;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-06');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-06');
+    LeaveRequestFabricator::fabricate($params, true);
   }
 }

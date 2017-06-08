@@ -11,6 +11,10 @@ use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest
@@ -43,6 +47,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   }
 
   public function testCanCreateAPublicHolidayLeaveRequestForASingleContact() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('first day of this year'),
+      'end_date' => CRM_Utils_Date::processDate('last day of this year')
+    ]);
+
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
     $periodEntitlement->contact_id = 2;
     $periodEntitlement->type_id = $this->absenceType->id;
@@ -56,6 +65,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   }
 
   public function testItDoesNotCreateALeaveRequestIfTheresIsAlreadyALeaveRequestForTheGivenPublicHolidayAndContact() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('first day of this year'),
+      'end_date' => CRM_Utils_Date::processDate('last day of this year')
+    ]);
+
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
     $periodEntitlement->contact_id = 2;
     $periodEntitlement->type_id = $this->absenceType->id;
@@ -74,6 +88,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   }
 
   public function testItUpdatesTheBalanceChangeForOverlappingLeaveRequestDayToZero() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
     $contactID = 2;
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -179,7 +197,12 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
 
-  public function testItCreatesLeaveRequestsForAllPublicHolidaysInTheFutureOverlappingTheContractDates() {
+  public function testItCreatesLeaveRequestsForAllPublicHolidaysOverlappingTheContractDates() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('yesterday'),
+      'end_date' => CRM_Utils_Date::processDate('+300 days')
+    ]);
+
     $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
 
     $contract = HRJobContractFabricator::fabricate([
@@ -216,13 +239,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
 
     $this->creationLogic->createAllForContract($contract['id']);
 
-    // The balance should be -2 because only two leave requests were created:
-    // The one for +5 days and the other one for + 47 days.
-    // The holiday for "yesterday" overlaps the contract, but it is in the past,
-    // so nothing will be created. The holiday for "+101 days" is in the future,
-    // but it doesn't overlap the contract dates and no leave request will be
-    // created for it as well
-    $this->assertEquals(-2, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    // The balance should be -3 because three leave requests were created:
+    // The one for +5 days, one for + 47 days and the one for yesterday
+    // The holiday for "+101 days" is in the future, but it doesn't overlap the contract dates and
+    // and no leave request will be created for it as well
+    $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
 
   public function testItCreatesLeaveRequestsForAllPublicHolidaysInTheFutureOverlappingAContractWithNoEndDate() {
@@ -400,10 +421,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   }
 
   private function countNumberOfPublicHolidayBalanceChanges() {
-    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $bao = new LeaveBalanceChange();
-    $bao->type_id = $balanceChangeTypes['Public Holiday'];
+    $bao->type_id = $balanceChangeTypes['public_holiday'];
     $bao->source_type = LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY;
 
     return $bao->count();
@@ -415,5 +436,313 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $bao->from_date = $date;
 
     return $bao->count();
+  }
+
+  public function testCreateLeaveRequestsForAllPublicHolidaysInTheFutureForSelectedContacts() {
+    $contact = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    $date = new DateTime('+5 days');
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => $date->format('Ymd')
+    ]);
+
+    $this->creationLogic->createForAllInTheFuture([$contact['id']]);
+
+    $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
+    $this->assertEquals(0, $this->countNumberOfLeaveRequests($contact2['id'], $date->format('Ymd')));
+  }
+
+  public function testCreateLeaveRequestsForAllPublicHolidaysInTheFutureForWorkPatternContacts() {
+    $contact = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    $workPattern1 = WorkPatternFabricator::fabricate();
+    $workPattern2 = WorkPatternFabricator::fabricate();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-10'),
+    ]);
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact2['id'],
+      'pattern_id' => $workPattern2->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-15'),
+    ]);
+
+    $date = new DateTime('+5 days');
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => $date->format('Ymd')
+    ]);
+
+    $this->creationLogic->createAllInFutureForWorkPatternContacts($workPattern1->id);
+    //Public Holiday Leave Requests will not be created for contact2 because contact2 is using
+    //work pattern2
+    $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
+    $this->assertEquals(0, $this->countNumberOfLeaveRequests($contact2['id'], $date->format('Ymd')));
+  }
+
+  public function testCreateLeaveRequestsForAllPublicHolidaysInTheFutureForDefaultWorkPattern() {
+    $contact = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    $workPattern1 = WorkPatternFabricator::fabricate(['is_default' => 1]);
+    $workPattern2 = WorkPatternFabricator::fabricate();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern2->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-10'),
+    ]);
+
+    $date = new DateTime('+5 days');
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => $date->format('Ymd')
+    ]);
+
+    $this->creationLogic->createAllInFutureForWorkPatternContacts($workPattern1->id);
+
+    //Public Holiday Leave Requests are created for both contacts
+    $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
+    $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact2['id'], $date->format('Ymd')));
+  }
+
+  public function testExpiredBalanceChangeIsRecalculatedWhenCreatingPublicHolidayWithPastDatesForSingleContact() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-06-01'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod->id,
+      'type_id' => $this->absenceType->id,
+    ]);
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = CRM_Utils_Date::processDate('2016-11-03');
+
+    $publicHoliday2 = new PublicHoliday();
+    $publicHoliday2->date = CRM_Utils_Date::processDate('2016-11-06');
+
+    $publicHoliday3 = new PublicHoliday();
+    $publicHoliday3->date = CRM_Utils_Date::processDate('next monday');
+
+    $expiryDate = new DateTime('2016-11-04');
+    $balanceChange = $this->createExpiredBroughtForwardBalanceChange(
+      $periodEntitlement->id,
+      5,
+      5,
+     $expiryDate
+    );
+
+    $this->creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday);
+    $this->creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday2);
+    $this->creationLogic->createForContact($periodEntitlement->contact_id, $publicHoliday3);
+
+    $expiredBalanceChange = LeaveBalanceChange::findById($balanceChange->id);
+
+    //The public holiday date (2016-11-03) is before the date the balance change expired so one will be deducted
+    //from $balanceChange remaining 4 left after recalculation.
+    //Public Holiday2 is in past but the date is not before an already expired balance change
+    //Public Holiday3 is in the future, so it does not affect the recalculation
+    $this->assertEquals(-4, $expiredBalanceChange->amount);
+  }
+
+  public function testExpiredBalanceChangeIsRecalculatedForAllContactsWhenCreatingPublicHolidayWithPastDates() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-06-01'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact1['id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => $this->absenceType->id,
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact2['id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => $this->absenceType->id,
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('2016-06-01')]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('2016-06-01')]
+    );
+
+    $expiryDate = new DateTime('2016-11-04');
+    $balanceChange1 = $this->createExpiredBroughtForwardBalanceChange(
+      $periodEntitlement1->id,
+      3,
+      3,
+      $expiryDate
+    );
+
+    $balanceChange2 = $this->createExpiredBroughtForwardBalanceChange(
+      $periodEntitlement2->id,
+      5,
+      5,
+      $expiryDate
+    );
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = CRM_Utils_Date::processDate('2016-11-03');
+
+    $publicHoliday2 = new PublicHoliday();
+    $publicHoliday2->date = CRM_Utils_Date::processDate('2016-11-06');
+
+    $publicHoliday3 = new PublicHoliday();
+    $publicHoliday3->date = CRM_Utils_Date::processDate('next monday');
+
+    $this->creationLogic->createForAllContacts($publicHoliday);
+    $this->creationLogic->createForAllContacts($publicHoliday2);
+    $this->creationLogic->createForAllContacts($publicHoliday3);
+
+    $expiredBalanceChange1 = LeaveBalanceChange::findById($balanceChange1->id);
+    $expiredBalanceChange2 = LeaveBalanceChange::findById($balanceChange2->id);
+
+    //The public holiday date (2016-11-03) is before the date the balance change expired so one will be deducted
+    //from $balanceChange1 and also from $balanceChange2
+    //Public Holiday2 is in past but the date is not before an already expired balance change
+    //Public Holiday3 is in the future, so it does not affect the recalculation
+    $this->assertEquals(-2, $expiredBalanceChange1->amount);
+    $this->assertEquals(-4, $expiredBalanceChange2->amount);
+  }
+
+  public function testExpiredBalanceChangeIsRecalculatedWhenCreatingPublicHolidayWithPastDatesForAContract() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-06-01'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contact1 = ContactFabricator::fabricate();
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact1['id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => $this->absenceType->id,
+    ]);
+
+    $contract1 = HRJobContractFabricator::fabricate([
+      'contact_id' => $contact1['id']
+    ],
+    [
+      'period_start_date' => CRM_Utils_Date::processDate('2016-06-01'),
+    ]);
+
+    $expiryDate = new DateTime('2016-11-04');
+    $balanceChange1 = $this->createExpiredBroughtForwardBalanceChange(
+      $periodEntitlement1->id,
+      3,
+      3,
+      $expiryDate
+    );
+
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' =>  CRM_Utils_Date::processDate('2016-11-03')
+    ]);
+
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' =>  CRM_Utils_Date::processDate('2016-11-06')
+    ]);
+
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' =>  CRM_Utils_Date::processDate('next monday')
+    ]);
+
+    $this->creationLogic->createAllForContract($contract1['id']);
+
+    $expiredBalanceChange1 = LeaveBalanceChange::findById($balanceChange1->id);
+    //The public holiday date (2016-11-03) is before the date the balance change expired so one will be deducted
+    //from $balanceChange1
+    //Public Holiday2 is in past but the date is not before an already expired balance change
+    //Public Holiday3 is in the future, so it does not affect the recalculation
+    $this->assertEquals(-2, $expiredBalanceChange1->amount);
+  }
+
+  public function testCreateForAllContactsDoesNotCreatePublicHolidayLeaveRequestsWhenNoAbsenceTypeWithMustTakePublicHolidayAsLeaveRequestExist() {
+    //We need to delete any absence type already created
+    $tableName = AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 0]);
+
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('5 days ago')]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('tomorrow')]
+    );
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = date('Y-m-d', strtotime('+5 days'));
+
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+
+    $this->creationLogic->createForAllContacts($publicHoliday);
+
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
   }
 }

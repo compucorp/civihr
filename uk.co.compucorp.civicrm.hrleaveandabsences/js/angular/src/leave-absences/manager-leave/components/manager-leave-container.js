@@ -8,14 +8,15 @@ define([
     templateUrl: ['settings', function (settings) {
       return settings.pathTpl + 'components/manager-leave-container.html';
     }],
-    controllerAs: 'managerLeave',
-    controller: ['$log', function ($log) {
-      console.log('CRM id of the currently logged in user: ', this.contactId);
+    controller: ['$log', '$rootScope', function ($log, $rootScope) {
       $log.debug('Component: manager-leave-container');
+
+      $rootScope.role = 'manager';
 
       var vm = Object.create(this);
 
       return vm;
-    }]
+    }],
+    controllerAs: 'managerLeave'
   });
 });

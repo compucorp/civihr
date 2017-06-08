@@ -1,3 +1,6 @@
+/* eslint-env amd, jasmine */
+/* global CRM, inject */
+
 (function (CRM) {
   define([
     'common/angular',
@@ -15,13 +18,13 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/manager-leave/app'
-  ], function (angular, _, moment, absencePeriodData, optionGroupMock, leaveRequestData, publicHolidayData, workPatternData) {
+  ], function (angular, _, moment, absencePeriodData, optionGroupMock, leaveRequestData, publicHolidayData, workPatternMocked) {
     'use strict';
 
     describe('managerLeaveCalendar', function () {
       var $compile, $q, $log, $rootScope, component, controller, $provide,
         OptionGroup, OptionGroupAPIMock, ContactAPIMock, AbsencePeriod,
-        Contact, sharedSettings, LeaveRequest, CalendarInstance, Calendar;
+        Contact, LeaveRequest, WorkPatternAPI;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -35,14 +38,13 @@
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
 
-      beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
+      beforeEach(inject(['api.contact.mock', function (_ContactAPIMock_) {
         ContactAPIMock = _ContactAPIMock_;
-        sharedSettings = _sharedSettings_;
       }]));
 
       beforeEach(inject(function (
         _$compile_, _$q_, _$log_, _$rootScope_, _OptionGroup_, _OptionGroupAPIMock_,
-        _AbsencePeriod_, _Contact_, _LeaveRequest_, _CalendarInstance_, _Calendar_) {
+        _AbsencePeriod_, _Contact_, _LeaveRequest_, _WorkPatternAPI_) {
         $compile = _$compile_;
         $q = _$q_;
         $log = _$log_;
@@ -50,10 +52,9 @@
         AbsencePeriod = _AbsencePeriod_;
         Contact = _Contact_;
         LeaveRequest = _LeaveRequest_;
-        Calendar = _Calendar_;
-        CalendarInstance = _CalendarInstance_;
         OptionGroup = _OptionGroup_;
         OptionGroupAPIMock = _OptionGroupAPIMock_;
+        WorkPatternAPI = _WorkPatternAPI_;
 
         spyOn($log, 'debug');
 
@@ -75,11 +76,37 @@
 
         spyOn(AbsencePeriod, 'all').and.callFake(function () {
           var data = absencePeriodData.all().values;
-          //Set 2016 as current period, because Calendar loads data only for the current period initially,
-          //and MockedData has 2016 dates
+          // Set 2016 as current period, because Calendar loads data only for the current period initially,
+          // and MockedData has 2016 dates
           data[0].current = true;
 
           return $q.resolve(data);
+        });
+
+        /**
+         * This is unfortunately a hack to make sure that
+         * all mocked contacts have a mocked calendar
+         *
+         * It takes the mocked WorkPattern.getcalendar response and expands it
+         * by making copies of the first mocked calendar and assigning it to
+         * each mocked contacts.
+         *
+         * The ideal solution would be to decouple the mocked data from the
+         * `api.contact.mock` (common/mocks/services/api/contact-mock) and put it
+         * in a separate file, so that mocks/data/work-pattern-data can inject it
+         * and dynamically generate the data by looping through all mocked contacts
+         */
+        spyOn(WorkPatternAPI, 'getCalendar').and.callFake(function () {
+          var mockedGetCalendarResponse = _.clone(workPatternMocked.getCalendar);
+          var singleMockedCalendarTemplate = mockedGetCalendarResponse.values[0];
+
+          return $q.resolve(_.assign(mockedGetCalendarResponse, {
+            values: ContactAPIMock.mockedContacts().list.map(function (contact) {
+              return _.assign(_.clone(singleMockedCalendarTemplate), {
+                contact_id: contact.id
+              });
+            })
+          }));
         });
 
         compileComponent();
@@ -122,7 +149,7 @@
           expect(controller.levelTypes).toEqual(optionGroupMock.getCollection('hrjc_level_type'));
         });
 
-        describe('contacts', function() {
+        describe('contacts', function () {
           it('contacts managed by logged in user have loaded', function () {
             expect(controller.managedContacts.length).not.toBe(0);
           });
@@ -131,7 +158,6 @@
             expect(controller.filteredContacts).not.toBe(0);
           });
         });
-
 
         it('calendar have loaded for each contact', function () {
           _.each(controller.managedContacts, function (contact) {
@@ -194,41 +220,40 @@
         });
       });
 
-      describe('filterContacts', function() {
-        beforeEach(function() {
+      describe('filterContacts', function () {
+        beforeEach(function () {
           controller.filteredContacts = ContactAPIMock.mockedContacts().list;
         });
 
-        describe('when contacts with leaves filter is false', function() {
+        describe('when contacts with leaves filter is false', function () {
           var returnValue;
 
-          beforeEach(function() {
+          beforeEach(function () {
             controller.filters.contacts_with_leaves = false;
             returnValue = controller.filterContacts();
           });
 
-          it('does not filter the contacts', function() {
+          it('does not filter the contacts', function () {
             expect(returnValue).toEqual(controller.filteredContacts);
           });
         });
 
-        describe('when contacts with leaves filter is true', function() {
+        describe('when contacts with leaves filter is true', function () {
           var returnValue,
             anyLeaveRequest;
 
-          beforeEach(function() {
+          beforeEach(function () {
             controller.filters.contacts_with_leaves = true;
             anyLeaveRequest = leaveRequestData.all().values[0];
             returnValue = controller.filterContacts();
           });
 
-          it('filters the contacts which have a leave request', function() {
+          it('filters the contacts which have a leave request', function () {
             expect(!!_.find(returnValue, function (contact) {
-              return contact.id == anyLeaveRequest.contact_id;
+              return contact.id === anyLeaveRequest.contact_id;
             })).toBe(true);
           });
         });
-
       });
 
       describe('refresh', function () {
@@ -287,7 +312,7 @@
 
           it('is set', function () {
             _.each(controller.managedContacts, function (contact) {
-              //any date
+              // any date
               dateObj = contact.calendarData[0].data[0];
               expect(dateObj.UI.isPublicHoliday).toBe(true);
             });
@@ -300,15 +325,15 @@
             leaveRequest;
 
           beforeEach(function () {
-            workPattern = workPatternData.daysData();
+            workPattern = workPatternMocked.getCalendar;
             leaveRequest = leaveRequestData.singleDataSuccess().values[0];
-            workPattern.values[0].date = leaveRequest.from_date;
+            workPattern.values[0].calendar[0].date = leaveRequest.from_date;
           });
 
           describe('when leave request is not approved', function () {
             beforeEach(function () {
               var status = optionGroupMock.specificObject(
-                'hrleaveandabsences_leave_request_status', 'name', 'waiting_approval');
+                'hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval');
 
               leaveRequest.contact_id = '203';
               leaveRequest.status_id = status.value;
@@ -325,7 +350,7 @@
 
             it('styles are fetched', function () {
               var color = _.find(controller.absenceTypes, function (absenceType) {
-                return absenceType.id == leaveRequest.type_id;
+                return absenceType.id === leaveRequest.type_id;
               }).color;
 
               _.each(controller.managedContacts, function (contact) {
@@ -338,8 +363,8 @@
             });
           });
 
-          describe('when leave request is for half day am', function() {
-            beforeEach(function() {
+          describe('when leave request is for half day am', function () {
+            beforeEach(function () {
               var halfDayAMValue = optionGroupMock.specificObject(
                 'hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am').value;
 
@@ -347,13 +372,13 @@
               commonSetup();
             });
 
-            it('AM flag is set', function() {
+            it('AM flag is set', function () {
               expect(dateObj.UI.isAM).toBe(true);
             });
           });
 
-          describe('when leave request is for half day pm', function() {
-            beforeEach(function() {
+          describe('when leave request is for half day pm', function () {
+            beforeEach(function () {
               var halfDayPMValue = optionGroupMock.specificObject(
                 'hrleaveandabsences_leave_request_day_type', 'name', 'half_day_pm').value;
 
@@ -361,27 +386,23 @@
               commonSetup();
             });
 
-            it('PM flag is set', function() {
+            it('PM flag is set', function () {
               expect(dateObj.UI.isPM).toBe(true);
             });
           });
 
-          describe('when balance change is positive', function() {
-            beforeEach(function() {
+          describe('when balance change is positive', function () {
+            beforeEach(function () {
               leaveRequest.balance_change = 2;
               commonSetup();
             });
 
-            it('AccruedTOIL flag is set', function() {
+            it('AccruedTOIL flag is set', function () {
               expect(dateObj.UI.isAccruedTOIL).toBe(true);
             });
           });
 
-          function commonSetup() {
-            spyOn(Calendar, 'get').and.callFake(function () {
-              return $q.resolve(CalendarInstance.init(workPattern.values));
-            });
-
+          function commonSetup () {
             spyOn(LeaveRequest, 'all').and.callFake(function () {
               return $q.resolve({
                 list: [leaveRequest]
@@ -394,7 +415,7 @@
         });
       });
 
-      function compileComponent() {
+      function compileComponent () {
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;
 
@@ -405,12 +426,12 @@
         controller = component.controller('managerLeaveCalendar');
       }
 
-      function getDate(contact, dateStr) {
+      function getDate (contact, dateStr) {
         var date;
 
         _.each(contact.calendarData, function (month) {
           _.each(month.data, function (dateObj) {
-            if (dateObj.date == dateStr) {
+            if (dateObj.date === dateStr) {
               date = dateObj;
             }
           });
@@ -419,17 +440,17 @@
         return date;
       }
 
-      function getDateByType(dayType) {
-        return workPatternData.daysData().values.find(function (data) {
+      function getDateByType (dayType) {
+        return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
           return data.type.name === dayType;
         });
       }
 
-      function getDateFromCalendar(contact, dayType) {
+      function getDateFromCalendar (contact, dayType) {
         var date;
         _.each(contact.calendarData, function (month) {
           _.each(month.data, function (dateObj) {
-            if(dateObj.date == getDateByType(dayType).date) {
+            if (dateObj.date === getDateByType(dayType).date) {
               date = dateObj;
             }
           });

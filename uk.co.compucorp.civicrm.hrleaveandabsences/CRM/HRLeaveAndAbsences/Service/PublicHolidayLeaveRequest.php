@@ -37,7 +37,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
   }
 
   /**
-   * Updates all the Leave Requests for Public Holidays in the future between
+   * Updates all the Leave Requests for Public Holidays between
    * the start and end dates of the given contract.
    *
    * @param int $contractID
@@ -45,7 +45,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion::deleteAllForContract()
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation::createAllForContract()
    */
-  public function updateAllInTheFutureForContract($contractID) {
+  public function updateAllForContract($contractID) {
     $this->deletionLogic->deleteAllForContract($contractID);
     $this->creationLogic->createAllForContract($contractID);
   }
@@ -68,6 +68,21 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    */
   public function deleteForAllContacts(PublicHoliday $publicHoliday) {
     $this->deletionLogic->deleteForAllContacts($publicHoliday);
+  }
+
+  /**
+   * Updates all the Leave Requests for Public Holidays in the future for the
+   * contacts using given WorkPattern. If it is the default Work Pattern, It updates for all
+   * contacts.
+   *
+   * @param int $workPatternID
+   *
+   * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion::deleteAllInTheFutureForWorkPatternContacts()
+   * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation::createAllInFutureForWorkPatternContacts()
+   */
+  public function updateAllInTheFutureForWorkPatternContacts($workPatternID) {
+    $this->deletionLogic->deleteAllInTheFutureForWorkPatternContacts($workPatternID);
+    $this->creationLogic->createAllInFutureForWorkPatternContacts($workPatternID);
   }
 
 }

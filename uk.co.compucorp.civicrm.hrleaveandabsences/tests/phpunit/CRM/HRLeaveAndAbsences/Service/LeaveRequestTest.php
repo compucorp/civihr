@@ -52,9 +52,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $this->leaveContact,
       'status_id' => 3,
       'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
-      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
-      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ], false);
 
@@ -83,9 +83,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $this->leaveContact,
       'status_id' => 3,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
-      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
 
@@ -161,11 +161,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->setExpectedException(
       'RuntimeException', "You can't change the Leave Request status from ".
-      $this->getDefaultParams()['status_id']. " to {$this->leaveRequestStatuses['Waiting Approval']['id']}"
+      $this->getDefaultParams()['status_id']. " to {$this->leaveRequestStatuses['awaiting_approval']['id']}"
     );
 
     $params['id'] = $leaveRequest->id;
-    $params['status_id'] = $this->leaveRequestStatuses['Waiting Approval']['id'];
+    $params['status_id'] = $this->leaveRequestStatuses['awaiting_approval']['id'];
 
     $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($params, false);
   }
@@ -246,9 +246,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedException RuntimeException
    * @expectedExceptionMessage You are not allowed to change the request dates
    */
-  public function testCreateThrowsAnExceptionWhenLeaveManagerUpdatesDatesForAClosedSicknessRequest($status) {
+  public function testCreateThrowsAnExceptionWhenLeaveContactUpdatesDatesForAClosedSicknessRequest($status) {
     $params = $this->getDefaultParams([
-      'contact_id' => 5,
       'status_id' => $status,
       'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
     ]);
@@ -259,29 +258,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
     $params['id'] = $leaveRequest->id;
 
-    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
-  }
-
-  /**
-   * @dataProvider closedLeaveRequestStatusesDataProvider
-   *
-   * @expectedException RuntimeException
-   * @expectedExceptionMessage You are not allowed to change the request dates
-   */
-  public function testCreateThrowsAnExceptionWhenAdminUpdatesDatesForAClosedSicknessRequest($status) {
-    $params = $this->getDefaultParams([
-      'contact_id' => 5,
-      'status_id' => $status,
-      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
-    ]);
-
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
-
-    $toDate = new DateTime($params['to_date']);
-    $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
-    $params['id'] = $leaveRequest->id;
-
-    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+    $this->getLeaveRequestService()->create($params, false);
   }
 
   /**
@@ -383,9 +360,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $this->leaveContact,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
-      'from_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'from_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
-      'to_date_type' => $this->getLeaveRequestDayTypes()['All Day']['value'],
+      'to_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
     return array_merge($defaultParams, $params);

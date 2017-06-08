@@ -403,7 +403,7 @@ function civicrm_api3_leave_request_isvalid($params) {
     CRM_HRLeaveAndAbsences_BAO_LeaveRequest::validateParams($params);
   }
   catch (CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException $e) {
-    $result[$e->getField()] = [$e->getExceptionCode()];
+    $result[$e->getField()] = [ts($e->getMessage())];
   }
 
   $results =  civicrm_api3_create_success($result);

@@ -137,9 +137,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
   }
 
   /**
-   * @dataProvider openLeaveRequestStatusesDataProvider
+   * @dataProvider leaveRequestStatusesDataProvider
    */
-  public function testCanChangeDatesForReturnsTrueForSicknessRequestTypeWhenCurrentUserIsLeaveManagerOrAdminAndTheLeaveRequestIsOpen($status) {
+  public function testCanChangeDatesForReturnsTrueForSicknessRequestTypeWhenCurrentUserIsLeaveManagerOrAdminForAllStatuses($status) {
     $contactID = 2;
     $managerRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
     $adminRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
@@ -149,41 +149,24 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     );
 
     $this->assertTrue(
-      $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_SICKNESS)
-    );
-  }
-
-  /**
-   * @dataProvider closedLeaveRequestStatusesDataProvider
-   */
-  public function testCanChangeDatesForReturnsFalseForSicknessRequestTypeWhenCurrentUserIsLeaveManagerOrAdminAndTheLeaveRequestIsClosed($status) {
-    $contactID = 2;
-    $managerRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
-    $adminRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
-
-    $this->assertFalse(
-      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_SICKNESS)
-    );
-
-    $this->assertFalse(
       $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_SICKNESS)
     );
   }
 
   public function testCanChangeAbsenceTypeForReturnsTrueWhenCurrentUserIsLeaveContactAndStatusPassedIsInAllowedStatuses() {
-    //When user is leave request contact and status is 'More information Requested'
+    //When user is leave request contact and status is 'More information Required'
     $this->assertTrue(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $this->leaveContact,
-        $this->leaveRequestStatuses['More Information Requested']['id']
+        $this->leaveRequestStatuses['more_information_required']['id']
       )
     );
 
-    //When user is leave request contact and status is 'Waiting Approval'
+    //When user is leave request contact and status is 'Awaiting Approval'
     $this->assertTrue(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $this->leaveContact,
-        $this->leaveRequestStatuses['Waiting Approval']['id']
+        $this->leaveRequestStatuses['awaiting_approval']['id']
       )
     );
   }
@@ -193,7 +176,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertFalse(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $this->leaveContact,
-        $this->leaveRequestStatuses['Approved']['id']
+        $this->leaveRequestStatuses['approved']['id']
       )
     );
 
@@ -201,7 +184,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertFalse(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $this->leaveContact,
-        $this->leaveRequestStatuses['Admin Approved']['id']
+        $this->leaveRequestStatuses['admin_approved']['id']
       )
     );
   }
@@ -251,12 +234,12 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $leaveRequestStatuses =  $this->getLeaveRequestStatuses();
 
     return [
-      [$leaveRequestStatuses['More Information Requested']['id']],
-      [$leaveRequestStatuses['Waiting Approval']['id']],
-      [$leaveRequestStatuses['Cancelled']['id']],
-      [$leaveRequestStatuses['Rejected']['id']],
-      [$leaveRequestStatuses['Admin Approved']['id']],
-      [$leaveRequestStatuses['Approved']['id']],
+      [$leaveRequestStatuses['more_information_required']['id']],
+      [$leaveRequestStatuses['awaiting_approval']['id']],
+      [$leaveRequestStatuses['cancelled']['id']],
+      [$leaveRequestStatuses['rejected']['id']],
+      [$leaveRequestStatuses['admin_approved']['id']],
+      [$leaveRequestStatuses['approved']['id']],
     ];
   }
 }

@@ -1,40 +1,44 @@
+/* eslint-env amd, jasmine */
 define([
+  'common/lodash',
+  'common/moment',
   'mocks/data/leave-request-data',
   'mocks/data/sickness-leave-request-data',
   'mocks/data/toil-leave-request-data',
   'mocks/data/comments-data',
-  'common/moment',
   'mocks/helpers/helper',
   'mocks/data/absence-type-data',
   'mocks/data/option-group-mock-data',
   'leave-absences/shared/apis/leave-request-api',
-  'leave-absences/shared/modules/shared-settings',
-], function (mockData, sicknessMockData, toilMockData, commentsData, moment, helper, absenceTypeData, optionGroupMock) {
+  'leave-absences/shared/modules/shared-settings'
+], function (_, moment, mockData, sicknessMockData, toilMockData, commentsData, helper, absenceTypeData, optionGroupMock) {
   'use strict';
 
   describe('LeaveRequestAPI', function () {
-    var LeaveRequestAPI, $httpBackend, $rootScope, $q, $log, sharedSettings,
+    var LeaveRequestAPI, $httpBackend, $rootScope, $q, sharedSettings,
       promise, requestData, errorMessage;
 
     beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
 
-    beforeEach(inject(['LeaveRequestAPI', '$httpBackend', '$rootScope', '$q', '$log', 'shared-settings',
-      function (_LeaveRequestAPI_, _$httpBackend_, _$rootScope_, _$q_, _$log_, _sharedSettings_) {
+    beforeEach(inject(['LeaveRequestAPI', '$httpBackend', '$rootScope', '$q', 'shared-settings',
+      function (_LeaveRequestAPI_, _$httpBackend_, _$rootScope_, _$q_, _sharedSettings_) {
         LeaveRequestAPI = _LeaveRequestAPI_;
         $httpBackend = _$httpBackend_;
         $rootScope = _$rootScope_;
         sharedSettings = _sharedSettings_;
         $q = _$q_;
-        $log = _$log_;
 
         interceptHTTP();
       }
     ]));
 
     describe('all()', function () {
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'getAll').and.callThrough();
+      });
+
       describe('leave request', function () {
         beforeEach(function () {
-          spyOn(LeaveRequestAPI, 'getAll').and.callThrough();
           promise = LeaveRequestAPI.all();
         });
 
@@ -53,6 +57,25 @@ define([
           });
         });
       });
+      describe('leave request', function () {
+        beforeEach(function () {
+          promise = LeaveRequestAPI.all({ contact_id: { IN: [] } });
+        });
+
+        afterEach(function () {
+          $rootScope.$digest();
+        });
+
+        it('does not call the API', function () {
+          expect(LeaveRequestAPI.getAll).not.toHaveBeenCalled();
+        });
+
+        it('returns empty data structure', function () {
+          promise.then(function (response) {
+            expect(response).toEqual({ list: [], total: 0, allIds: [] });
+          });
+        });
+      });
     });
 
     describe('balanceChangeByAbsenceType()', function () {
@@ -66,7 +89,7 @@ define([
             $rootScope.$apply();
           });
 
-          function commonExpect(data) {
+          function commonExpect (data) {
             expect(data).toBe('contact_id and period_id are mandatory');
           }
 
@@ -89,12 +112,12 @@ define([
           it('status and publicHoliday has default values if falsy values has been passed', function () {
             LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String));
 
-            expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', {
+            expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
               contact_id: jasmine.any(String),
               period_id: jasmine.any(String),
               statuses: null,
               public_holiday: false
-            }, false);
+            }), false);
           });
 
           it('sends as `public_holiday` the original value if truthy value had been passed', function () {
@@ -110,8 +133,8 @@ define([
 
             expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
               statuses: {
-                "IN": jasmine.any(Array)
-              },
+                'IN': jasmine.any(Array)
+              }
             }), false);
           });
         });
@@ -122,31 +145,6 @@ define([
           });
 
           $httpBackend.flush();
-        });
-      });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendGET').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.balanceChangeByAbsenceType(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
-          });
         });
       });
     });
@@ -173,7 +171,7 @@ define([
 
         it('returns expected data keys', function () {
           promise.then(function (result) {
-            //returns an object(associative array) and not an array
+            // returns an object(associative array) and not an array
             var breakdown = result.breakdown[0];
             var breakdownType = breakdown.type;
 
@@ -219,31 +217,6 @@ define([
             promise.catch(function (result) {
               expect(result).toBe(errorMessage);
             });
-          });
-        });
-      });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendGET').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.calculateBalanceChange(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
           });
         });
       });
@@ -329,31 +302,6 @@ define([
           });
         });
       });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.create(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
-          });
-        });
-      });
     });
 
     describe('isValid()', function () {
@@ -385,8 +333,8 @@ define([
         describe('when called with invalid data', function () {
           beforeEach(function () {
             requestData = helper.createRandomSicknessRequest();
-            spyOn(LeaveRequestAPI, 'isValid').and.callFake(function (params) {
-              return $q.reject(mockData.getNotIsValid());
+            spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function (params) {
+              return $q.resolve(mockData.getNotIsValid());
             });
             promise = LeaveRequestAPI.isValid(requestData);
           });
@@ -395,35 +343,12 @@ define([
             $rootScope.$apply();
           });
 
-          it('returns validation errors', function () {
+          it('rejects promise with validation errors', function () {
+            var errors = _(mockData.getNotIsValid().values).map().flatten().value();
+
             promise.catch(function (result) {
-              expect(result.count).toEqual(1);
+              expect(result).toEqual(errors);
             });
-          });
-        });
-      });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = helper.createRandomLeaveRequest();
-          promise = LeaveRequestAPI.isValid(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
           });
         });
       });
@@ -462,13 +387,13 @@ define([
         describe('when id is not set', function () {
           beforeEach(function () {
             errorMessage = 'id is mandatory field';
-            //remove id
+            // remove id
             delete updatedRequestData.id;
             promise = LeaveRequestAPI.update(updatedRequestData);
           });
 
           afterEach(function () {
-            //resolves to local promise hence no need to flush http call
+            // resolves to local promise hence no need to flush http call
             $rootScope.$apply();
           });
 
@@ -479,68 +404,13 @@ define([
           });
         });
       });
-
-      describe('with error from server', function () {
-        var error;
-
-        beforeEach(function () {
-          error = mockData.singleDataError();
-
-          spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function () {
-            return $q.resolve(error);
-          });
-
-          requestData = mockData.all().values[0];
-          promise = LeaveRequestAPI.update(requestData);
-        });
-
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns error message', function () {
-          promise.catch(function (result) {
-            expect(result).toEqual(error.error_message);
-          });
-        });
-      });
-    });
-
-    describe('isManagedBy()', function () {
-      var leaveRequestID = '101',
-        contactID = '102';
-
-      beforeEach(function () {
-        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
-        promise = LeaveRequestAPI.isManagedBy(leaveRequestID, contactID);
-      });
-
-      afterEach(function () {
-        $httpBackend.flush();
-      });
-
-      it('calls endpoint with leaveRequestID and contactID', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
-            'isManagedBy', jasmine.objectContaining({
-              leave_request_id: leaveRequestID,
-              contact_id: contactID
-            }));
-        });
-      });
-
-      it('returns data', function () {
-        promise.then(function (result) {
-          expect(result).toEqual(mockData.isManagedBy().values);
-        });
-      })
     });
 
     describe('getComments()', function () {
-      var leaveRequestID = '101',
-        params = {
-          key: 'value'
-        };
+      var leaveRequestID = '101';
+      var params = {
+        key: 'value'
+      };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
@@ -568,11 +438,11 @@ define([
     });
 
     describe('saveComment()', function () {
-      var commentObject = commentsData.getComments().values[0],
-        leaveRequestID = '102',
-        params = {
-          key: 'value'
-        };
+      var commentObject = commentsData.getComments().values[0];
+      var leaveRequestID = '102';
+      var params = {
+        key: 'value'
+      };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
@@ -586,12 +456,12 @@ define([
       it('calls endpoint with leaveRequestID, text and contact_id', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
-            'addcomment', _.assign(params, {
+            'addcomment', jasmine.objectContaining(_.assign(params, {
               leave_request_id: leaveRequestID,
               text: commentObject.text,
               contact_id: commentObject.contact_id,
               created_at: commentObject.created_at
-            }));
+            })));
         });
       });
 
@@ -599,14 +469,14 @@ define([
         promise.then(function (result) {
           expect(result).toEqual(mockData.addComment().values);
         });
-      })
+      });
     });
 
     describe('deleteComment()', function () {
-      var commentID = '101',
-        params = {
-          key: 'value'
-        };
+      var commentID = '101';
+      var params = {
+        key: 'value'
+      };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
@@ -633,11 +503,11 @@ define([
       });
     });
 
-    describe('getAttachments', function() {
-      var leaveRequestID = '101',
-        params = {
-          key: 'value'
-        };
+    describe('getAttachments', function () {
+      var leaveRequestID = '101';
+      var params = {
+        key: 'value'
+      };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
@@ -648,7 +518,7 @@ define([
         $httpBackend.flush();
       });
 
-      it('calls the endpoint with leave request id', function() {
+      it('calls the endpoint with leave request id', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest',
             'getattachments', jasmine.objectContaining(_.assign(params, {
@@ -657,19 +527,19 @@ define([
         });
       });
 
-      it('returns attachment data', function() {
+      it('returns attachment data', function () {
         promise.then(function (result) {
           expect(result).toEqual(mockData.getAttachments().values);
         });
       });
     });
 
-    describe('deleteAttachment', function() {
-      var leaveRequestID = '101',
-        attachmentID = '10',
-        params = {
-          key: 'value'
-        };
+    describe('deleteAttachment', function () {
+      var leaveRequestID = '101';
+      var attachmentID = '10';
+      var params = {
+        key: 'value'
+      };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
@@ -680,7 +550,7 @@ define([
         $httpBackend.flush();
       });
 
-      it('calls the endpoints with leave request id and attachment id', function() {
+      it('calls the endpoints with leave request id and attachment id', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
             'deleteattachment', jasmine.objectContaining(_.assign(params, {
@@ -690,7 +560,7 @@ define([
         });
       });
 
-      it('returns success data', function() {
+      it('returns success data', function () {
         promise.then(function (result) {
           expect(result).toEqual(mockData.deleteAttachment().values);
         });
@@ -700,35 +570,32 @@ define([
     /**
      * Intercept HTTP calls to be handled by httpBackend
      **/
-    function interceptHTTP() {
-      //Intercept backend calls for LeaveRequest.all
-      $httpBackend.whenGET(/action\=getFull&entity\=LeaveRequest/)
+    function interceptHTTP () {
+      // Intercept backend calls for LeaveRequest.all
+      $httpBackend.whenGET(/action=getFull&entity=LeaveRequest/)
         .respond(mockData.all());
 
-      //Intercept backend calls for LeaveRequest.balanceChangeByAbsenceType
-      $httpBackend.whenGET(/action\=getbalancechangebyabsencetype&entity\=LeaveRequest/)
+      // Intercept backend calls for LeaveRequest.balanceChangeByAbsenceType
+      $httpBackend.whenGET(/action=getbalancechangebyabsencetype&entity=LeaveRequest/)
         .respond(mockData.balanceChangeByAbsenceType());
 
-      //Intercept backend calls for LeaveRequest.getComments
-      $httpBackend.whenGET(/action\=getcomment&entity\=LeaveRequest/)
+      // Intercept backend calls for LeaveRequest.getComments
+      $httpBackend.whenGET(/action=getcomment&entity=LeaveRequest/)
         .respond(mockData.getComments());
 
-      //Intercept backend calls for LeaveRequest.getAttachments
-      $httpBackend.whenGET(/action\=getattachments&entity\=LeaveRequest/)
+      // Intercept backend calls for LeaveRequest.getAttachments
+      $httpBackend.whenGET(/action=getattachments&entity=LeaveRequest/)
         .respond(mockData.getAttachments());
 
-      //Intercept backend calls for LeaveRequest.create in POST
+      // Intercept backend calls for LeaveRequest.create in POST
       $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)
         .respond(function (method, url, data, headers, params) {
-
           if (helper.isEntityActionInPost(data, 'LeaveRequest', 'create')) {
             return [201, mockData.all()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'calculatebalancechange')) {
             return [200, mockData.calculateBalanceChange()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isValid')) {
             return [200, mockData.getisValid()];
-          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
-            return [200, mockData.isManagedBy()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'deletecomment')) {
             return [200, mockData.deleteComment()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'addcomment')) {

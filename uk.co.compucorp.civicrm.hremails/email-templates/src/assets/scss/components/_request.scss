@@ -1,3 +1,13 @@
+.request {
+
+  &-sickness {
+
+    .request-documents {
+      @include margin(10px, top);
+    }
+  }
+}
+
 .request-attachment {
 
   &-name {
@@ -15,12 +25,17 @@
 
 
 .request-comment {
-  padding: $callout-padding;
+
+  &-body {
+    padding: $callout-padding;
+    padding-top: 0;
+  }
 
   &-header {
-    @include margin(10px, bottom);
     color: $gray-darker;
     font-weight: 600;
+    padding: $callout-padding;
+    padding-bottom: $callout-padding/2;
   }
 }
 
@@ -34,30 +49,85 @@
 
 .request-data {
 
-  dl {
-    @include margin(0);
+  &-key {
+
+    div,
+    span {
+      color: $gray-darker;
+      font-weight: 600;
+    }
+
+    // Mobile only: remove vertical margin between the key and the value
+    @media only screen and (max-width: #{$global-breakpoint}) {
+      padding-bottom: 0 !important;
+    }
   }
 
-  dt {
+  .row {
+
+    // Mobile / Desktop: Remove bottom margin on the last row
+    &:last-child {
+
+      .columns {
+        padding-bottom: 0 !important;
+      }
+    }
+
+    // Desktop only: reduce the vergical margin between rows
+    @media only screen and (min-width: #{$global-breakpoint + 1}) {
+
+      .columns {
+        padding-bottom: 10px !important;
+      }
+    }
+  }
+}
+
+.request-data-toil {
+
+  div,
+  span {
+    padding: 10px 0;
+
+    // trick necessary for Outlook, otherwise the div doesn't get
+    // rendered with the padding
+    border: 1px solid $callout-background;
+  }
+
+  .request-data-value {
+
+    span {
+      border-color: $medium-gray;
+      display: inline-block;
+      text-align: center;
+      width: 100px;
+    }
+  }
+}
+
+
+.request-documents {
+
+  .request-document {
+    @include margin(10px, bottom);
+  }
+
+  .request-document-required {
+    width: 25px;
+  }
+}
+
+.request-document {
+
+  &-required {
+    @include margin(5px, right);
+
+    [type="checkbox"] {
+      @include margin(0);
+    }
+  }
+
+  &-title {
     color: $gray-darker;
-    float: left;
-    font-weight: 600;
-    width: 150px;
-  }
-
-  dd {
-    @include margin(0, left);
-
-    &:not(:last-child) {
-      @include margin(10px, bottom);
-    }
-  }
-
-  @media only screen and (max-width: #{$global-breakpoint}) {
-
-    dt {
-      float: none !important;
-      width: auto !important;
-    }
   }
 }

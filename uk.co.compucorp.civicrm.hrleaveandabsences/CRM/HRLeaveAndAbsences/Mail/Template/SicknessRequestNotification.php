@@ -34,7 +34,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotification extends
    */
   public function getTemplateParameters(LeaveRequest $leaveRequest) {
     $templateParameters = [];
-    $templateParameters['sicknessReasons'] = $this->getSicknessReasons();
+    $templateParameters['sicknessReason'] = $this->getSicknessReasonLabel($leaveRequest->sickness_reason);
     if ($leaveRequest->sickness_required_documents) {
       $templateParameters['sicknessRequiredDocuments'] = $this->getSicknessRequiredDocuments();
       $templateParameters['leaveRequiredDocuments'] = explode(',', $leaveRequest->sickness_required_documents);
@@ -42,19 +42,6 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotification extends
     $templateParameters = array_merge(parent::getTemplateParameters($leaveRequest), $templateParameters);
 
     return $templateParameters;
-  }
-
-  /**
-   * Returns the array of the option values for the LeaveRequest sickness_reason field.
-   *
-   * @return array
-   */
-  private function getSicknessReasons() {
-    if (is_null($this->sicknessReasons)) {
-      $this->sicknessReasons = LeaveRequest::buildOptions('sickness_reason');
-    }
-
-    return $this->sicknessReasons;
   }
 
   /**
@@ -77,5 +64,20 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotification extends
     }
 
     return $this->sicknessRequiredDocuments;
+  }
+
+  /**
+   * Returns the label for the LeaveRequest sickness_reason option value.
+   *
+   * @param int $sicknessReason
+   *
+   * @return string
+   */
+  private function getSicknessReasonLabel($sicknessReason) {
+    if (is_null($this->sicknessReasons)) {
+      $this->sicknessReasons = LeaveRequest::buildOptions('sickness_reason');
+    }
+
+    return $this->sicknessReasons[$sicknessReason];
   }
 }

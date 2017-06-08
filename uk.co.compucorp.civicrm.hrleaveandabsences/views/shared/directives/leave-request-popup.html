@@ -6,24 +6,23 @@
   <h4 class="modal-title">
     <span ng-show="$ctrl.isLeaveType('leave')">Leave Request</span>
     <span ng-show="$ctrl.isLeaveType('sickness')">Sick Absence</span>
-    <span ng-show="$ctrl.isLeaveType('toil')">Accure TOIL for additional work</span>
+    <span ng-show="$ctrl.isLeaveType('toil')">Accrue TOIL for additional work</span>
   </h4>
 </div>
 <crm-loading show="!$ctrl.loading.absenceTypes">
   <div
-    ng-show="$ctrl.isRole('manager')"
+    ng-show="$ctrl.isRole('manager') && !$ctrl.isMode('create')"
     class="row chr_leave-request-modal__user-info">
     <span class="col-xs-6">{{$ctrl.contactName}}</span>
-    <span class="col-xs-6">{{::$ctrl.statusBeforeEdit.label}}</span>
+    <span class="col-xs-6">{{::$ctrl.getStatusFromValue($ctrl.request.status_id).label}}</span>
   </div>
   <!-- ng-show is required in model as it was not showing the list of managees for ui-select-choices-->
   <div class="modal-body chr_leave-request-modal__form">
-    <div ng-show="$ctrl.directiveOptions.forStaff">
+    <div ng-show="$ctrl.isRole('manager')">
       <ui-select
         autofocus
         ng-model="$ctrl.request.contact_id"
         ng-change="$ctrl.initAfterContactSelection()"
-        theme="civihr-ui-select"
         ng-required="true">
         <ui-select-match placeholder="Search Staff Member" allow-clear>
           <span ng-bind="$select.selected.display_name"></span>
@@ -34,17 +33,23 @@
       </ui-select>
     </div>
     <div
-      ng-class="{'chr_disabled': !$ctrl.request.contact_id}"
+      ng-class="{'chr_disabled': (!$ctrl.request.contact_id || $ctrl.absenceTypes.length === 0 || $ctrl.postContactSelection)}"
       ng-show="!$ctrl.loading.absenceTypes">
       <div class="row">
         <div class="col-xs-12">
           <div class="chr_custom-select chr_custom-select--full">
             <select
-              ng-disabled="$ctrl.isMode('view') || $ctrl.isRole('manager')"
+              ng-hide="$ctrl.absenceTypes.length === 0"
+              ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))"
               name="absenceTypeSelect"
               ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes"
               ng-model="$ctrl.request.type_id"
               ng-change="$ctrl.updateBalance()"></select>
+            <select
+              ng-show="$ctrl.absenceTypes.length === 0"
+              disabled="disabled">
+              <option>You don't have any leave entitlement</option>
+            </select>
           </div>
         </div>
       </div>
@@ -60,7 +65,12 @@
               <crm-loading show="!$ctrl.loading.showBalanceChange">
                 <div ng-show="$ctrl.uiOptions.showBalance">
                   <hr/>
-                  <div class="row chr_leave-request-modal__form-group">
+                  <div
+                    class="row chr_leave-request-modal__form-group"
+                    ng-if="$ctrl.isRole('manager')
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.awaitingApproval)
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.moreInformationRequired)
+                      || !$ctrl.request.status_id">
                     <div class="col-xs-4">Opening Balance</div>
                     <div class="col-xs-8">{{$ctrl.balance.opening}}</div>
                   </div>
@@ -118,7 +128,13 @@
                       </tfoot>
                     </table>
                   </div>
-                  <div class="row" ng-class="{'text-danger': $ctrl.balance.closing < 0}">
+                  <div
+                    class="row"
+                    ng-class="{'text-danger': $ctrl.balance.closing < 0}"
+                    ng-if="$ctrl.isRole('manager')
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.awaitingApproval)
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.moreInformationRequired)
+                      || !$ctrl.request.status_id">
                     <div class="col-xs-4">Closing Balance</div>
                     <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
                   </div>
@@ -209,40 +225,38 @@
             </uib-tab>
             <uib-tab heading="Files">
               <div>
-                <ul class="chr_leave-request-files_list container-fluid">
-                  <li ng-repeat="file in $ctrl.request.files">
-                    <span ng-if="!file.toBeDeleted">
-                      <div class="chr_leave-request-files_meta">
-                        <span class="chr_leave-request-files_author">{{$ctrl.getCommentorName(file.contact_id)}}</span>
-                        <span>-</span>
-                        <span class="chr_leave-request-files_date">{{$ctrl.formatDateTime(file.upload_date)}}</span>
+                <ul class="chr_leave-request-files_list container-fluid" ng-if="$ctrl.getFilesCount() > 0">
+                  <li ng-repeat="file in $ctrl.request.files | filter: {toBeDeleted: '!'}">{{file.toBeDeleted}}
+                    <div class="chr_leave-request-files_meta">
+                      <span class="chr_leave-request-files_author">{{$ctrl.getCommentorName(file.contact_id)}}</span>
+                      <span>-</span>
+                      <span class="chr_leave-request-files_date">{{$ctrl.formatDateTime(file.upload_date)}}</span>
+                    </div>
+                    <div class="row">
+                      <div class="chr_leave-request-files_icon text-primary col-xs-8">
+                        <i
+                          class="fa fa-file-o"
+                          ng-class="{
+                            'fa fa-file-pdf-o': file.mime_type === 'application/pdf',
+                            'fa fa-file-image-o': file.mime_type === 'image/png' || file.mime_type === 'image/jpeg' || file.mime_type === 'image/gif',
+                            'fa fa-file-excel-o': file.mime_type === 'application/excel',
+                            'fa fa-file-word-o': file.mime_type === 'application/msword'
+                            }"
+                          aria-hidden="true"></i>
+                        <span>{{file.name}}</span>
                       </div>
-                      <div class="row">
-                        <div class="chr_leave-request-files_icon text-primary col-xs-8">
-                          <i
-                            class="fa fa-file-o"
-                            ng-class="{
-                              'fa fa-file-pdf-o': file.mime_type == 'application/pdf',
-                              'fa fa-file-image-o': file.mime_type == 'image/png' || file.mime_type == 'image/jpeg' || file.mime_type == 'image/gif',
-                              'fa fa-file-excel-o': file.mime_type == 'application/excel',
-                              'fa fa-file-word-o': file.mime_type == 'application/msword'
-                              }"
-                            aria-hidden="true"></i>
-                          <span>{{file.name}}</span>
-                        </div>
-                        <div
-                          ng-show="$ctrl.removeAttachmentVisibility(file)"
-                          class="chr_leave-request-files_delete text-danger col-xs-4">
-                          <i class="fa fa-trash-o" aria-hidden="true"></i>
-                          <span
-                            class="btn btn-link"
-                            ng-disabled="$ctrl.isMode('view')"
-                            ng-click="$ctrl.request.deleteAttachment(file)">
-                            Remove</span>
-                        </div>
+                      <div
+                        ng-show="$ctrl.removeAttachmentVisibility(file)"
+                        class="chr_leave-request-files_delete text-danger col-xs-4">
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        <span
+                          class="btn btn-link"
+                          ng-disabled="$ctrl.isMode('view')"
+                          ng-click="$ctrl.request.deleteAttachment(file)">
+                          Remove</span>
                       </div>
-                      <hr/>
-                    </span>
+                    </div>
+                    <hr/>
                   </li>
                   <span ng-if="$ctrl.request.fileUploader" ng-disabled="$ctrl.isMode('view')">
                     <li ng-repeat="file in $ctrl.request.fileUploader.queue">
@@ -280,28 +294,34 @@
                   </span>
                 </ul>
               </div>
-              <div
-                nv-file-drop
-                uploader="$ctrl.request.fileUploader"
-                class="chr_leave-request-files_upload"
-                ng-disabled="$ctrl.isMode('view')"
-                ng-if="$ctrl.request.fileUploader">
-                <div class="chr_leave-request-files_upload_action row text-center">
-                  Drag and drop file here
+              <div class="chr_leave-request-files_upload"
+                ng-class="{'chr_disabled': !$ctrl.canUploadMore() || $ctrl.isMode('view')}">
+                <div
+                  nv-file-drop
+                  uploader="$ctrl.request.fileUploader"
+                  ng-disabled="!$ctrl.request.fileUploader">
+                  <div class="chr_leave-request-files_upload_action row text-center">
+                    Drag and drop file here
+                  </div>
+                  <div class="chr_leave-request-files_upload_action row text-center">
+                    or
+                  </div>
+                  <div class="chr_leave-request-files_upload_action row text-center">
+                    <label class="btn btn-primary btn-file">
+                      Browse
+                      <input
+                        type="file"
+                        nv-file-select
+                        uploader="$ctrl.request.fileUploader"
+                        class="hidden">
+                    </label>
+                  </div>
                 </div>
-                <div class="chr_leave-request-files_upload_action row text-center">
-                  or
+                <div class="chr_leave-request-files_upload_action row text-warning" ng-if="$ctrl.canUploadMore()">
+                  You can upload up to 10 files. The supported file extensions are {{ $ctrl.supportedFileTypes.join(', ') }}.
                 </div>
-                <div class="chr_leave-request-files_upload_action row text-center">
-                  <label class="btn btn-primary btn-file">
-                    Browse
-                    <input
-                      type="file"
-                      nv-file-select
-                      ng-disabled="$ctrl.isMode('view')"
-                      uploader="$ctrl.request.fileUploader"
-                      style="display:none;">
-                  </label>
+                <div class="chr_leave-request-files_upload_action row text-warning text-center" ng-if="!($ctrl.canUploadMore())">
+                  You have reached the limit of 10 uploaded files.
                 </div>
               </div>
             </uib-tab>
@@ -309,7 +329,7 @@
         </div>
       </div>
       <div
-        ng-show="$ctrl.isRole('manager') || $ctrl.directiveOptions.forStaff"
+        ng-show="$ctrl.isRole('manager')"
         class="row chr_leave-request-modal__response">
         <div class="col-xs-12 form-horizontal">
           <div class="form-group">
@@ -320,7 +340,7 @@
                 <select
                   name="statusSelect"
                   ng-options="status.value as status.label for status in $ctrl.getStatuses()"
-                  ng-model="$ctrl.request.status_id">
+                  ng-model="$ctrl.newStatusOnSave">
                   <option value="">- select -</option>
                 </select>
               </div>
@@ -349,24 +369,27 @@
     </div>
   </div>
   <div
-    ng-if="$ctrl.error"
+    ng-if="$ctrl.errors.length"
     uib-alert
     type="danger"
     close="$ctrl.closeAlert()"
-    dismiss-on-timeout="5000">{{$ctrl.error}}
+    dismiss-on-timeout="5000">
+    <div ng-repeat="errMsg in $ctrl.errors track by $index">{{errMsg}}</div>
   </div>
-  <div class="modal-footer">
-    <button
-      type="button"
-      class="btn btn-primary pull-left"
-      ng-click="$ctrl.cancel()">
-      Back
-    </button>
-    <button
-      type="submit"
-      class="btn btn-primary"
-      ng-disabled="!$ctrl.canSubmit()"
-      ng-click="$ctrl.submit()">Save
-    </button>
-  </div>
+  <crm-loading show="!$ctrl.submitting">
+    <div class="modal-footer chr_leave-request-modal__footer">
+      <button
+        type="button"
+        class="btn btn-primary pull-left"
+        ng-click="$ctrl.cancel()">
+        Back
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        ng-disabled="!$ctrl.canSubmit() || $ctrl.submitting"
+        ng-click="$ctrl.submit()">Save
+      </button>
+    </div>
+  </crm-loading>
 </crm-loading>

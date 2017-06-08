@@ -7,6 +7,8 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
@@ -34,6 +36,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   public function createForAllContacts(PublicHoliday $publicHoliday) {
     $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
 
+    if(!$absenceType) {
+      return;
+    }
+
     $contracts = $this->jobContractService->getContractsForPeriod(
       new DateTime($publicHoliday->date),
       new DateTime($publicHoliday->date)
@@ -50,8 +56,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    *
    * For each contract overlapping one Public Holiday, a Leave Request will be
    * created for the contract's contact and the public holiday date.
+   *
+   * @param array $contactID
+   *  If not empty, Public Holiday Leave Requests are created for only these contacts
    */
-  public function createForAllInTheFuture() {
+  public function createForAllInTheFuture(array $contactID = []) {
     $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
 
     if(!$absenceType) {
@@ -63,7 +72,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
     $contracts = $this->jobContractService->getContractsForPeriod(
       new DateTime(),
-      new DateTime($lastPublicHoliday->date)
+      new DateTime($lastPublicHoliday->date),
+      $contactID
     );
 
     foreach($contracts as $contract) {
@@ -76,8 +86,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   }
 
   /**
-   * Creates Public Holiday Leave Requests for all Public Holidays in the
-   * Future overlapping the start and end dates of the given contract
+   * Creates Public Holiday Leave Requests for all Public Holidays
+   * overlapping the start and end dates of the given contract
    *
    * @param int $contractID
    */
@@ -94,9 +104,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     );
 
     foreach($publicHolidays as $publicHoliday) {
-      if(strtotime($publicHoliday->date) >= strtotime('today')) {
-        $this->createForContact($contract['contact_id'], $publicHoliday);
-      }
+      $this->createForContact($contract['contact_id'], $publicHoliday);
     }
   }
 
@@ -136,6 +144,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
     $leaveRequest = $this->createLeaveRequest($contactID, $absenceType, $publicHoliday);
     $this->createLeaveBalanceChangeRecord($leaveRequest);
+    $this->recalculateExpiredBalanceChange($leaveRequest);
   }
 
   /**
@@ -149,17 +158,17 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    */
   private function createLeaveRequest($contactID, AbsenceType $absenceType, PublicHoliday $publicHoliday) {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
-    $leaveRequestDayTypes = array_flip(LeaveRequest::buildOptions('from_date_type'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $leaveRequestDayTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
 
     return LeaveRequest::create([
       'contact_id'     => $contactID,
       'type_id'        => $absenceType->id,
-      'status_id'      => $leaveRequestStatuses['Admin Approved'],
+      'status_id'      => $leaveRequestStatuses['admin_approved'],
       'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
-      'from_date_type' => $leaveRequestDayTypes['All Day'],
+      'from_date_type' => $leaveRequestDayTypes['all_day'],
       'to_date'        => CRM_Utils_Date::processDate($publicHoliday->date),
-      'to_date_type'   => $leaveRequestDayTypes['All Day'],
+      'to_date_type'   => $leaveRequestDayTypes['all_day'],
       'request_type'   => LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY
     ], false);
   }
@@ -176,7 +185,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    */
   private function createLeaveBalanceChangeRecord(LeaveRequest $leaveRequest) {
-    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
     $dates = $leaveRequest->getDates();
     foreach($dates as $date) {
@@ -187,7 +196,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
       LeaveBalanceChange::create([
         'source_id'   => $date->id,
         'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
-        'type_id'     => $leaveBalanceChangeTypes['Public Holiday'],
+        'type_id'     => $leaveBalanceChangeTypes['public_holiday'],
         'amount'      => $amount
       ]);
     }
@@ -233,4 +242,40 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     return $startDate <= $publicHolidayDate && (!$endDate || $endDate >= $publicHolidayDate);
   }
 
+  /**
+   * Creates Public Holiday Leave Requests for all Public Holidays in the
+   * Future for the contacts using the given workPatternID. If it is the default Work Pattern
+   * the Leave Requests are created for all contacts.
+   *
+   * @param int $workPatternID
+   */
+  public function createAllInFutureForWorkPatternContacts($workPatternID) {
+    $workPattern = WorkPattern::findById($workPatternID);
+    $contacts = [];
+
+    if (!$workPattern->is_default) {
+      $contacts = ContactWorkPattern::getContactsUsingWorkPatternFromDate(
+        new DateTime(),
+        $workPatternID
+      );
+    }
+
+    $this->createForAllInTheFuture($contacts);
+  }
+
+  /**
+   * Recalculates expired Balance changes for the contact of a Public Holiday leave request
+   * with past dates and having expired LeaveBalanceChanges that expired on or after
+   * the LeaveRequest past date.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   */
+  private function recalculateExpiredBalanceChange(LeaveRequest $leaveRequest) {
+    $today = new DateTime();
+    $leaveRequestDate = new DateTime($leaveRequest->from_date);
+
+    if($leaveRequestDate < $today) {
+      $this->leaveBalanceChangeService->recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
+    }
+  }
 }

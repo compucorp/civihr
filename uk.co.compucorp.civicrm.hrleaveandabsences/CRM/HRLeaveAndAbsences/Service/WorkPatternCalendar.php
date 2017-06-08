@@ -173,7 +173,8 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
   private function getContractsWithAdjustedDatesForPeriod() {
     $contracts = $this->jobContractService->getContractsForPeriod(
       new DateTime($this->absencePeriod->start_date),
-      new DateTime($this->absencePeriod->end_date)
+      new DateTime($this->absencePeriod->end_date),
+      [$this->contactID]
     );
 
     foreach($contracts as $i => $contract) {

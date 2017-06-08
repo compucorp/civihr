@@ -76,16 +76,16 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix {
     $leaveRequestStatuses = self::getLeaveRequestStatuses();
     $matrix = [];
 
-    $matrix[$leaveRequestStatuses['waiting_approval']] = [
-      $leaveRequestStatuses['waiting_approval'],
+    $matrix[$leaveRequestStatuses['awaiting_approval']] = [
+      $leaveRequestStatuses['awaiting_approval'],
       $leaveRequestStatuses['cancelled']
     ];
 
-    $matrix[$leaveRequestStatuses['more_information_requested']] = $matrix[$leaveRequestStatuses['waiting_approval']];
+    $matrix[$leaveRequestStatuses['more_information_required']] = $matrix[$leaveRequestStatuses['awaiting_approval']];
 
     $matrix[$leaveRequestStatuses['approved']] = [$leaveRequestStatuses['cancelled']];
 
-    $matrix[NULL] = [$leaveRequestStatuses['waiting_approval']];
+    $matrix[NULL] = [$leaveRequestStatuses['awaiting_approval']];
 
     return $matrix;
   }
@@ -102,25 +102,25 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix {
     $leaveRequestStatuses = self::getLeaveRequestStatuses();
     $matrix = [];
 
-    $matrix[$leaveRequestStatuses['waiting_approval']] = [
-      $leaveRequestStatuses['more_information_requested'],
+    $matrix[$leaveRequestStatuses['awaiting_approval']] = [
+      $leaveRequestStatuses['more_information_required'],
       $leaveRequestStatuses['rejected'],
       $leaveRequestStatuses['approved'],
       $leaveRequestStatuses['cancelled']
     ];
 
-    $matrix[$leaveRequestStatuses['more_information_requested']] = $matrix[$leaveRequestStatuses['waiting_approval']];
+    $matrix[$leaveRequestStatuses['more_information_required']] = $matrix[$leaveRequestStatuses['awaiting_approval']];
 
-    $matrix[$leaveRequestStatuses['rejected']] = $matrix[$leaveRequestStatuses['waiting_approval']];
+    $matrix[$leaveRequestStatuses['rejected']] = $matrix[$leaveRequestStatuses['awaiting_approval']];
 
-    $matrix[$leaveRequestStatuses['approved']] = $matrix[$leaveRequestStatuses['waiting_approval']];
+    $matrix[$leaveRequestStatuses['approved']] = $matrix[$leaveRequestStatuses['awaiting_approval']];
 
     $matrix[$leaveRequestStatuses['cancelled']] = array_merge(
-      $matrix[$leaveRequestStatuses['waiting_approval']],
-      [$leaveRequestStatuses['waiting_approval']]
+      $matrix[$leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['awaiting_approval']]
     );
 
-    $matrix[NULL] = [$leaveRequestStatuses['more_information_requested'], $leaveRequestStatuses['approved']];
+    $matrix[NULL] = [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['approved']];
 
     return $matrix;
   }
@@ -151,9 +151,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix {
 
     if ($currentUserID == $leaveRequestContactID) {
       $statusMatrix = $this->getStaffStatusMatrix();
-    }
-
-    if ($this->shouldUseManagerMatrixForCurrentUser($leaveRequestContactID)) {
+    } elseif ($this->shouldUseManagerMatrixForCurrentUser($leaveRequestContactID)) {
       $statusMatrix = $this->getManagerStatusMatrix();
     }
 

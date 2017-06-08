@@ -1,22 +1,23 @@
+/* eslint-env amd */
 define([
+  'common/lodash',
   'leave-absences/shared/modules/models-instances',
   'common/models/option-group',
   'common/models/instances/instance',
-  'common/services/file-upload',
-], function (instances) {
+  'common/services/file-upload'
+], function (_, instances) {
   'use strict';
 
   instances.factory('LeaveRequestInstance', ['$q', 'OptionGroup', 'FileUpload',
     'shared-settings', 'ModelInstance', 'LeaveRequestAPI',
     function ($q, OptionGroup, FileUpload, sharedSettings, ModelInstance, LeaveRequestAPI) {
-
       /**
        * Update status ID
        *
        * @param {string} status - name of the option value
        * @return {Promise} Resolved with {Object} - Error Data in case of error
        */
-      function changeLeaveStatus(status) {
+      function changeLeaveStatus (status) {
         return getOptionIDByName(status)
           .then(function (statusId) {
             this.status_id = statusId.value;
@@ -30,7 +31,7 @@ define([
        * @param {string} statusName - name of the option value
        * @return {Promise} Resolved with {Boolean}
        */
-      function checkLeaveStatus(statusName) {
+      function checkLeaveStatus (statusName) {
         return getOptionIDByName(statusName)
           .then(function (statusObj) {
             return this.status_id === statusObj.value;
@@ -43,7 +44,7 @@ define([
        *
        * @return {Promise}
        */
-      function deleteAttachments() {
+      function deleteAttachments () {
         var promises = [];
 
         _.forEach(this.files, function (file) {
@@ -61,13 +62,13 @@ define([
        * @param {string} name - name of the option value
        * @return {Promise} Resolved with {Object} - Specific leave request
        */
-      function getOptionIDByName(name) {
+      function getOptionIDByName (name) {
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
           .then(function (data) {
             return data.find(function (statusObj) {
               return statusObj.name === name;
-            })
-          })
+            });
+          });
       }
 
       /**
@@ -75,14 +76,14 @@ define([
        *
        * @return {Promise}
        */
-      function saveAndDeleteComments() {
-        var promises = [],
-          self = this;
+      function saveAndDeleteComments () {
+        var promises = [];
+        var self = this;
 
-        //Save comments which dont have an ID
+        // Save comments which dont have an ID
         self.comments.map(function (comment, index) {
           if (!comment.comment_id) {
-            //IIFE is created to keep actual value of 'index' when promise is resolved
+            // IIFE is created to keep actual value of 'index' when promise is resolved
             (function (index) {
               promises.push(LeaveRequestAPI.saveComment(self.id, comment)
                 .then(function (commentData) {
@@ -102,7 +103,7 @@ define([
        *
        * @return {Promise}
        */
-      function uploadAttachments() {
+      function uploadAttachments () {
         if (this.fileUploader.queue && this.fileUploader.queue.length > 0) {
           return this.fileUploader.uploadAll({ entityID: this.id });
         } else {
@@ -123,12 +124,13 @@ define([
             comments: [],
             files: [],
             request_type: 'leave',
-            //FileUpload.uploader has uploader property which was causing circular reference issue
-            //hence renamed this uploader to fileUploader
+            // FileUpload.uploader has uploader property which was causing circular reference issue
+            // hence renamed this uploader to fileUploader
             fileUploader: FileUpload.uploader({
               entityTable: 'civicrm_hrleaveandabsences_leave_request',
               crmAttachmentToken: sharedSettings.attachmentToken,
-              queueLimit: 5
+              queueLimit: sharedSettings.fileUploader.queueLimit,
+              allowedMimeTypes: sharedSettings.fileUploader.allowedMimeTypes
             })
           };
         },
@@ -137,28 +139,28 @@ define([
          * Cancel a leave request
          */
         cancel: function () {
-          return changeLeaveStatus.call(this, 'cancelled');
+          return changeLeaveStatus.call(this, sharedSettings.statusNames.cancelled);
         },
 
         /**
          * Approve a leave request
          */
         approve: function () {
-          return changeLeaveStatus.call(this, 'approved');
+          return changeLeaveStatus.call(this, sharedSettings.statusNames.approved);
         },
 
         /**
          * Reject a leave request
          */
         reject: function () {
-          return changeLeaveStatus.call(this, 'rejected');
+          return changeLeaveStatus.call(this, sharedSettings.statusNames.rejected);
         },
 
         /**
          * Sends a leave request back as more information is required
          */
         sendBack: function () {
-          return changeLeaveStatus.call(this, 'more_information_requested');
+          return changeLeaveStatus.call(this, sharedSettings.statusNames.moreInformationRequired);
         },
 
         /**
@@ -213,7 +215,7 @@ define([
          * @param {Object} commentObj - comment object
          */
         deleteComment: function (commentObj) {
-          //If its an already saved comment, mark a toBeDeleted flag
+          // If its an already saved comment, mark a toBeDeleted flag
           if (commentObj.comment_id) {
             commentObj.toBeDeleted = true;
             return;
@@ -251,7 +253,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isApproved: function () {
-          return checkLeaveStatus.call(this, 'approved');
+          return checkLeaveStatus.call(this, sharedSettings.statusNames.approved);
         },
 
         /**
@@ -260,7 +262,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isAwaitingApproval: function () {
-          return checkLeaveStatus.call(this, 'waiting_approval');
+          return checkLeaveStatus.call(this, sharedSettings.statusNames.awaitingApproval);
         },
 
         /**
@@ -269,7 +271,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isCancelled: function () {
-          return checkLeaveStatus.call(this, 'cancelled');
+          return checkLeaveStatus.call(this, sharedSettings.statusNames.cancelled);
         },
 
         /**
@@ -278,7 +280,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isRejected: function () {
-          return checkLeaveStatus.call(this, 'rejected');
+          return checkLeaveStatus.call(this, sharedSettings.statusNames.rejected);
         },
 
         /**
@@ -287,7 +289,7 @@ define([
          * @return {Promise} resolved with {Boolean}
          */
         isSentBack: function () {
-          return checkLeaveStatus.call(this, 'more_information_requested');
+          return checkLeaveStatus.call(this, sharedSettings.statusNames.moreInformationRequired);
         },
 
         /**
@@ -304,33 +306,6 @@ define([
           }
 
           return $q.resolve();
-        },
-
-        /**
-         * Check the role of a given contact in relationship to the leave request.
-         *
-         * @param {Object} contact - contact object
-         *
-         * @return {Promise} resolves with an {String} - owner/manager/none
-         */
-        roleOf: function (contact) {
-          var deferred = $q.defer();
-
-          if (this.contact_id == contact.id) {
-            deferred.resolve('owner');
-          } else {
-            LeaveRequestAPI.isManagedBy(this.id, contact.id)
-              .then(function (response) {
-                //TODO Implement check for Admin in MS5
-                if (!!response) {
-                  deferred.resolve('manager');
-                } else {
-                  deferred.resolve('none');
-                }
-              });
-          }
-
-          return deferred.promise;
         },
 
         /**

@@ -22,7 +22,7 @@
 
     describe('SicknessRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller,
-        $provide, sharedSettings, AbsenceTypeAPI, SicknessRequestInstance,
+        $provide, AbsenceTypeAPI, SicknessRequestInstance,
         date2016 = '01/12/2016';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
@@ -154,7 +154,7 @@
           });
 
           it('is successful', function () {
-            expect($ctrl.error).toBeNull();
+            expect($ctrl.errors.length).toBe(0);
             expect($ctrl.request.id).toBeDefined();
           });
 
@@ -177,7 +177,7 @@
 
             describe('and absence type does not allow overuse', function () {
               it('does not save and sets error', function () {
-                expect($ctrl.error).toBeDefined();
+                expect($ctrl.errors).toBeDefined();
               });
             });
           });
@@ -193,7 +193,7 @@
           sicknessRequest.sickness_required_documents = '1,2';
 
           var directiveOptions = {
-            contactId: sicknessRequest.contact_id, //owner's contact id
+            contactId: sicknessRequest.contact_id, //staff's contact id
             leaveRequest: sicknessRequest
           };
 
