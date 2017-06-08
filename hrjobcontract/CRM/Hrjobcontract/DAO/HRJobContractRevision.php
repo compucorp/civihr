@@ -230,6 +230,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'export' => true,
           'import' => true,
           'FKClassName' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+          'FKKeyColumn' => 'jobcontract_revision_id',
           'headerPattern' => '/^details\s?revision\s?id/i',
         ) ,
         'health_revision_id' => array(
@@ -240,6 +241,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'export' => true,
           'import' => true,
           'FKClassName' => 'CRM_Hrjobcontract_DAO_HRJobHealth',
+          'FKKeyColumn' => 'jobcontract_revision_id',
           'headerPattern' => '/^health\s?revision\s?id/i',
         ) ,
         'hour_revision_id' => array(
@@ -250,6 +252,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'export' => true,
           'import' => true,
           'FKClassName' => 'CRM_Hrjobcontract_DAO_HRJobHour',
+          'FKKeyColumn' => 'jobcontract_revision_id',
           'headerPattern' => '/^hour\s?revision\s?id/i',
         ) ,
         'leave_revision_id' => array(
@@ -260,6 +263,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'export' => true,
           'import' => true,
           'FKClassName' => 'CRM_Hrjobcontract_DAO_HRJobLeave',
+          'FKKeyColumn' => 'jobcontract_revision_id',
           'headerPattern' => '/^leave\s?revision\s?id/i',
         ) ,
         'pay_revision_id' => array(
@@ -270,6 +274,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'export' => true,
           'import' => true,
           'FKClassName' => 'CRM_Hrjobcontract_DAO_HRJobPay',
+          'FKKeyColumn' => 'jobcontract_revision_id',
           'headerPattern' => '/^pay\s?revision\s?id/i',
         ) ,
         'pension_revision_id' => array(
@@ -280,6 +285,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'export' => true,
           'import' => true,
           'FKClassName' => 'CRM_Hrjobcontract_DAO_HRJobPension',
+          'FKKeyColumn' => 'jobcontract_revision_id',
           'headerPattern' => '/^pension\s?revision\s?id/i',
         ) ,
         'role_revision_id' => array(
@@ -290,6 +296,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'export' => true,
           'import' => true,
           'FKClassName' => 'CRM_Hrjobcontract_DAO_HRJobRole',
+          'FKKeyColumn' => 'jobcontract_revision_id',
           'headerPattern' => '/^role\s?revision\s?id/i',
         ) ,
         'deleted' => array(
