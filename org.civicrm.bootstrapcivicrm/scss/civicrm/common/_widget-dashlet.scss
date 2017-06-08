@@ -6,8 +6,7 @@
     padding: 17px 10px;
 
     h3 {
-      font-family: $font-family-base;
-      font-size: $font-size-h2;
+      font: $crm-font-weight-h4 $font-size-h2 $font-family-base;
     }
 
     .fa-caret-down:before {
@@ -18,6 +17,10 @@
       content: $fa-caret-right;
     }
   }
+}
+
+#crm-container .widget .widget-wrapper {
+  border-radius: $border-radius-base;
 }
 
 #crm-container .widget .widget-content {
