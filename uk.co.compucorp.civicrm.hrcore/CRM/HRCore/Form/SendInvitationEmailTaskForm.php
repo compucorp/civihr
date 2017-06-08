@@ -5,17 +5,11 @@ use CRM_HRCore_Form_AbstractDrupalInteractionTaskForm as AbstractDrupalInteracti
 class CRM_HRCore_Form_SendInvitationEmailTaskForm extends AbstractDrupalInteractionTaskForm {
 
   /**
-   * @var bool
-   */
-  protected $resend = FALSE;
-
-  /**
    * Build the form object.
    */
   public function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Send Invitation Email'));
     $this->addDefaultButtons(ts('Create Records'));
-    $this->add('advcheckbox', 'resendEmail', ts('Resend?'));
   }
 
   /**
@@ -32,9 +26,8 @@ class CRM_HRCore_Form_SendInvitationEmailTaskForm extends AbstractDrupalInteract
    * Process the form after the input has been submitted and validated.
    */
   public function postProcess() {
-    $this->resend = (bool) $this->getElementValue('resendEmail');
-    // todo select contactToSendMailTo depending on onboarding status
     $toBeSent = $this->getContactsToSendMailTo();
+
     foreach ($toBeSent as $contact) {
       $id = $contact['id'];
       $email = $contact['email'];

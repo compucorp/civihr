@@ -33,20 +33,6 @@
     <br/>
   {/if}
 
-  <div class="crm-block crm-form-block" style="padding: 20px 10px">
-    <div class="checkbox">
-      {$form.resendEmail.html}
-      {$form.resendEmail.label}
-      <br/>
-      <h4 class = "description">
-          {ts}
-            Invitation emails will be resent to users who have already
-            received one if this is checked.
-          {/ts}
-        </h4>
-    </div>
-  </div>
-
   <div class="spacer"></div>
 
   <div class="crm-block crm-form-block">
