@@ -2,15 +2,15 @@ define([
   'common/lodash',
   'leave-absences/shared/modules/controllers',
   'leave-absences/shared/controllers/request-ctrl',
-  'leave-absences/shared/models/instances/toil-request-instance',
+  'leave-absences/shared/models/instances/toil-request-instance'
 ], function (_, controllers) {
   controllers.controller('ToilRequestCtrl', [
     '$controller', '$log', '$q', '$uibModalInstance', 'api.optionGroup', 'AbsenceType', 'directiveOptions', 'TOILRequestInstance',
     function ($controller, $log, $q, $modalInstance, OptionGroup, AbsenceType, directiveOptions, TOILRequestInstance) {
       $log.debug('ToilRequestCtrl');
 
-      var parentRequestCtrl = $controller('RequestCtrl'),
-        vm = Object.create(parentRequestCtrl);
+      var parentRequestCtrl = $controller('RequestCtrl');
+      var vm = Object.create(parentRequestCtrl);
 
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
@@ -31,7 +31,7 @@ define([
           vm.loading.showBalanceChange = true;
           vm._setDateAndTypes();
           vm.balance.change.amount = +vm.request.toil_to_accrue;
-          vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
+          vm._calculateOpeningAndClosingBalance();
           vm.uiOptions.showBalance = true;
           vm.request.to_date_type = vm.request.from_date_type = '1';
           vm.loading.showBalanceChange = false;
@@ -51,7 +51,7 @@ define([
           return $q.reject(vm.errors);
         }
 
-        //If manager has already altered then it will directly show that date.
+        // If manager has already altered then it will directly show that date.
         if (vm.request.toil_expiry_date) {
           return $q.resolve(vm.request.toil_expiry_date);
         }
@@ -85,7 +85,7 @@ define([
 
         return vm._checkAndSetAbsencePeriod(date)
           .then(function () {
-            var isInCurrentPeriod = oldPeriodId == vm.period.id;
+            var isInCurrentPeriod = oldPeriodId === vm.period.id;
 
             if (!isInCurrentPeriod) {
               if (vm.uiOptions.multipleDays) {
@@ -127,14 +127,14 @@ define([
         var attributes = vm._initRequestAttributes();
 
         vm.request = TOILRequestInstance.init(attributes);
-        //toil request does not have date type but leave request requires it for validation, hence setting it to All Day's value which is 1
+        // toil request does not have date type but leave request requires it for validation, hence setting it to All Day's value which is 1
         vm.request.to_date_type = vm.request.from_date_type = '1';
       };
 
       /**
        * Initializes the controller on loading the dialog
        */
-      (function initController() {
+      (function initController () {
         vm.loading.absenceTypes = true;
 
         vm._init()
@@ -153,7 +153,7 @@ define([
        *
        * @return {Promise}
        */
-      function loadToilAmounts() {
+      function loadToilAmounts () {
         return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts')
           .then(function (amounts) {
             vm.toilAmounts = _.indexBy(amounts, 'value');
@@ -163,7 +163,7 @@ define([
       /**
        * Initialize expiryDate on UI from server's toil_expiry_date
        */
-      function initExpiryDate() {
+      function initExpiryDate () {
         if (vm.isRole('manager')) {
           vm.uiOptions.expiryDate = vm._convertDateFormatFromServer(vm.request.toil_expiry_date);
         }

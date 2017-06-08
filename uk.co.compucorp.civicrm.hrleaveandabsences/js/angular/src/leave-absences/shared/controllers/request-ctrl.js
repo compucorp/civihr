@@ -138,8 +138,7 @@ define([
        */
       this.changeInNoOfDays = function () {
         this._reset();
-        // reinitialize opening balance
-        setInitialAbsenceTypes.call(this);
+        this._calculateOpeningAndClosingBalance();
       };
 
       /**
@@ -178,7 +177,7 @@ define([
           .then(function (balanceChange) {
             if (balanceChange) {
               self.balance.change = balanceChange;
-              self.calculateClosingBalanceChange();
+              self._calculateOpeningAndClosingBalance();
               rePaginate.call(self);
             }
             self.loading.showBalanceChange = false;
@@ -187,9 +186,10 @@ define([
       };
 
       /**
-       * Calculates and updates closing balance
+       * Calculates and updates opening and closing balances
        */
-      this.calculateClosingBalanceChange = function () {
+      this._calculateOpeningAndClosingBalance = function () {
+        this.balance.opening = this.selectedAbsenceType.remainder;
         // the change is negative so adding it will actually subtract it
         this.balance.closing = this.balance.opening + this.balance.change.amount;
       };
@@ -716,6 +716,7 @@ define([
             }
 
             self.postContactSelection = false;
+            return self.calculateBalanceChange();
           })
           .catch(function (error) {
             if (error !== NO_ENTITLEMENT_ERROR) {
@@ -947,10 +948,6 @@ define([
           // Either View or Edit Mode
           this.selectedAbsenceType = getSelectedAbsenceType.call(this);
         }
-
-        // Init the `balance` object based on the first absence type
-        this.balance.opening = this.selectedAbsenceType.remainder;
-        this.calculateClosingBalanceChange();
       }
 
       /**
