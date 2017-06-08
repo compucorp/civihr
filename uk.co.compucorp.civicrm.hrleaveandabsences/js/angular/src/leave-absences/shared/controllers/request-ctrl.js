@@ -151,13 +151,6 @@ define([
       };
 
       /**
-       * Closes the error alerts if any
-       */
-      this.closeAlert = function () {
-        this.errors = [];
-      };
-
-      /**
        * Calculate change in balance, it updates local balance variables.
        *
        * @return {Promise} empty promise if all required params are not set otherwise promise from server
@@ -183,15 +176,6 @@ define([
             self.loading.showBalanceChange = false;
           })
           .catch(handleError.bind(self));
-      };
-
-      /**
-       * Calculates and updates opening and closing balances
-       */
-      this._calculateOpeningAndClosingBalance = function () {
-        this.balance.opening = this.selectedAbsenceType.remainder;
-        // the change is negative so adding it will actually subtract it
-        this.balance.closing = this.balance.opening + this.balance.change.amount;
       };
 
       /**
@@ -224,6 +208,13 @@ define([
        */
       this.canUploadMore = function () {
         return this.getFilesCount() < sharedSettings.fileUploader.queueLimit;
+      };
+
+      /**
+      * Closes the error alerts if any
+      */
+      this.closeAlert = function () {
+        this.errors = [];
       };
 
       /**
@@ -271,6 +262,81 @@ define([
         return this.request.comments.filter(function (comment) {
           return !comment.toBeDeleted;
         });
+      };
+
+      /**
+       * Flattens statuses from object to array of objects. This is used to
+       * populate the dropdown with array of statuses.
+       * Also it checks if given status is available to manager. If manager applies leave
+       * on behalf of staff then cancelled is also removed from her list of available statuses.
+       *
+       * @return {Array}
+       */
+      this.getStatuses = function () {
+        return _.reject(this.requestStatuses, function (status) {
+          var canRemoveStatus = (status.name === sharedSettings.statusNames.adminApproved || status.name === sharedSettings.statusNames.awaitingApproval);
+
+          return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
+        }.bind(this));
+      };
+
+      /**
+       * Gets status object for given status value
+       *
+       * @param {String} value - value of the status
+       * @return {Object} option group of type status or undefined if not found
+       */
+      this.getStatusFromValue = function (value) {
+        return _.find(this.requestStatuses, function (status) {
+          return status.value === value;
+        });
+      };
+
+      /**
+       * Initializes after contact is selected either directly or by manager
+       *
+       * @return {Promise}
+       */
+      this.initAfterContactSelection = function () {
+        var self = this;
+        self.postContactSelection = true;
+
+        // when manager deselects contact it is called without a selected contact_id
+        if (!self.request.contact_id) {
+          return $q.reject('The contact id was not set');
+        }
+
+        return $q.all([
+          self._loadAbsenceTypes(),
+          self._loadCalendar()
+        ])
+          .then(function () {
+            return loadDayTypes.call(self);
+          })
+          .then(function () {
+            return initDates.call(self);
+          })
+          .then(function () {
+            setInitialAbsenceTypes.call(self);
+            initStatus.call(self);
+            initContact.call(self);
+
+            if (self.isMode('edit')) {
+              initialLeaveRequestAttributes = angular.copy(self.request.attributes());
+
+              if (self.request.from_date === self.request.to_date) {
+                self.uiOptions.multipleDays = false;
+              }
+            }
+
+            self.postContactSelection = false;
+            return self.calculateBalanceChange();
+          })
+          .catch(function (error) {
+            if (error !== NO_ENTITLEMENT_ERROR) {
+              return $q.reject(error);
+            }
+          });
       };
 
       /**
@@ -449,33 +515,12 @@ define([
       };
 
       /**
-       * Initialize request attributes based on directive
-       *
-       * @return {Object} attributes
+       * Calculates and updates opening and closing balances
        */
-      this._initRequestAttributes = function () {
-        var attributes = {};
-
-        // if set indicates self leaverequest is either being managed or edited
-        if (this.directiveOptions.leaveRequest) {
-          // _.deepClone or angular.copy were not uploading files correctly
-          attributes = this.directiveOptions.leaveRequest.attributes();
-        } else if (!this.isRole('manager')) {
-          attributes = { contact_id: this.directiveOptions.contactId };
-        }
-
-        return attributes;
-      };
-
-      /**
-       * Resets data in dates, types, balance.
-       */
-      this._reset = function () {
-        this.uiOptions.toDate = this.uiOptions.fromDate;
-        this.request.to_date_type = this.request.from_date_type;
-        this.request.to_date = this.request.from_date;
-
-        this.calculateBalanceChange();
+      this._calculateOpeningAndClosingBalance = function () {
+        this.balance.opening = this.selectedAbsenceType.remainder;
+        // the change is negative so adding it will actually subtract it
+        this.balance.closing = this.balance.opening + this.balance.change.amount;
       };
 
       /**
@@ -520,31 +565,61 @@ define([
       };
 
       /**
-       * Flattens statuses from object to array of objects. This is used to
-       * populate the dropdown with array of statuses.
-       * Also it checks if given status is available to manager. If manager applies leave
-       * on behalf of staff then cancelled is also removed from her list of available statuses.
+       * Initializes the controller on loading the dialog
        *
-       * @return {Array}
+       * @return {Promise}
        */
-      this.getStatuses = function () {
-        return _.reject(this.requestStatuses, function (status) {
-          var canRemoveStatus = (status.name === sharedSettings.statusNames.adminApproved || status.name === sharedSettings.statusNames.awaitingApproval);
+      this._init = function () {
+        var self = this;
 
-          return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
-        }.bind(this));
+        this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
+        role = this.directiveOptions.userRole || 'staff';
+        this._initRequest();
+
+        return loadStatuses.call(self)
+          .then(function () {
+            initOpenMode.call(self);
+
+            return self.isRole('manager') && loadManagees.call(self);
+          })
+          .then(function () {
+            return loadAbsencePeriods.call(self);
+          })
+          .then(function () {
+            initAbsencePeriod.call(self);
+            self._setMinMaxDate();
+
+            return $q.all([
+              loadCommentsAndContactNames.call(self),
+              self.request.loadAttachments()
+            ]);
+          })
+          .then(function () {
+            // The additional check here prevents error being displayed on startup when no contact is selected
+            if (self.request.contact_id) {
+              return self.initAfterContactSelection();
+            }
+          })
+          .catch(handleError.bind(self));
       };
 
       /**
-       * Gets status object for given status value
+       * Initialize request attributes based on directive
        *
-       * @param {String} value - value of the status
-       * @return {Object} option group of type status or undefined if not found
+       * @return {Object} attributes
        */
-      this.getStatusFromValue = function (value) {
-        return _.find(this.requestStatuses, function (status) {
-          return status.value === value;
-        });
+      this._initRequestAttributes = function () {
+        var attributes = {};
+
+        // if set indicates self leaverequest is either being managed or edited
+        if (this.directiveOptions.leaveRequest) {
+          // _.deepClone or angular.copy were not uploading files correctly
+          attributes = this.directiveOptions.leaveRequest.attributes();
+        } else if (!this.isRole('manager')) {
+          attributes = { contact_id: this.directiveOptions.contactId };
+        }
+
+        return attributes;
       };
 
       /**
@@ -583,6 +658,17 @@ define([
 
             return setAbsenceTypesFromEntitlements.call(self, absenceTypesAndIds);
           });
+      };
+
+      /**
+       * Resets data in dates, types, balance.
+       */
+      this._reset = function () {
+        this.uiOptions.toDate = this.uiOptions.fromDate;
+        this.request.to_date_type = this.request.from_date_type;
+        this.request.to_date = this.request.from_date;
+
+        this.calculateBalanceChange();
       };
 
       /**
@@ -640,92 +726,6 @@ define([
       };
 
       /**
-       * Initializes the controller on loading the dialog
-       *
-       * @return {Promise}
-       */
-      this._init = function () {
-        var self = this;
-
-        this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
-        role = this.directiveOptions.userRole || 'staff';
-        this._initRequest();
-
-        return loadStatuses.call(self)
-          .then(function () {
-            initOpenMode.call(self);
-
-            return self.isRole('manager') && loadManagees.call(self);
-          })
-          .then(function () {
-            return loadAbsencePeriods.call(self);
-          })
-          .then(function () {
-            initAbsencePeriod.call(self);
-            self._setMinMaxDate();
-
-            return $q.all([
-              loadCommentsAndContactNames.call(self),
-              self.request.loadAttachments()
-            ]);
-          })
-          .then(function () {
-            // The additional check here prevents error being displayed on startup when no contact is selected
-            if (self.request.contact_id) {
-              return self.initAfterContactSelection();
-            }
-          })
-          .catch(handleError.bind(self));
-      };
-
-      /**
-       * Initializes after contact is selected either directly or by manager
-       *
-       * @return {Promise}
-       */
-      this.initAfterContactSelection = function () {
-        var self = this;
-        self.postContactSelection = true;
-
-        // when manager deselects contact it is called without a selected contact_id
-        if (!self.request.contact_id) {
-          return $q.reject('The contact id was not set');
-        }
-
-        return $q.all([
-          self._loadAbsenceTypes(),
-          self._loadCalendar()
-        ])
-          .then(function () {
-            return loadDayTypes.call(self);
-          })
-          .then(function () {
-            return initDates.call(self);
-          })
-          .then(function () {
-            setInitialAbsenceTypes.call(self);
-            initStatus.call(self);
-            initContact.call(self);
-
-            if (self.isMode('edit')) {
-              initialLeaveRequestAttributes = angular.copy(self.request.attributes());
-
-              if (self.request.from_date === self.request.to_date) {
-                self.uiOptions.multipleDays = false;
-              }
-            }
-
-            self.postContactSelection = false;
-            return self.calculateBalanceChange();
-          })
-          .catch(function (error) {
-            if (error !== NO_ENTITLEMENT_ERROR) {
-              return $q.reject(error);
-            }
-          });
-      };
-
-      /**
        * Checks if all params are set to calculate balance
        *
        * @param {Boolean} true if all present else false
@@ -733,18 +733,6 @@ define([
       function canCalculateChange () {
         return !!this.request.from_date && !!this.request.to_date &&
           !!this.request.from_date_type && !!this.request.to_date_type;
-      }
-
-      /**
-       * Validates and creates the leave request
-       *
-       * @returns {Promise}
-       */
-      function createRequest () {
-        return this.request.create()
-          .then(function () {
-            postSubmit.call(this, 'LeaveRequest::new');
-          }.bind(this));
       }
 
       /**
@@ -761,25 +749,15 @@ define([
       }
 
       /**
-       * Maps absence types to be more compatible for UI selection
+       * Validates and creates the leave request
        *
-       * @param {Array} absenceTypes
-       * @param {Object} entitlements
-       * @return {Array} of filtered absence types for given entitlements
+       * @returns {Promise}
        */
-      function mapAbsenceTypesWithBalance (absenceTypes, entitlements) {
-        return entitlements.map(function (entitlementItem) {
-          var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
-            return absenceTypeItem.id === entitlementItem.type_id;
-          });
-
-          return {
-            id: entitlementItem.type_id,
-            title: absenceType.title + ' ( ' + entitlementItem.remainder.current + ' ) ',
-            remainder: entitlementItem.remainder.current,
-            allow_overuse: absenceType.allow_overuse
-          };
-        });
+      function createRequest () {
+        return this.request.create()
+          .then(function () {
+            postSubmit.call(this, 'LeaveRequest::new');
+          }.bind(this));
       }
 
       /**
@@ -937,20 +915,6 @@ define([
       }
 
       /**
-       * Set initial values to absence types when opening the popup
-       */
-      function setInitialAbsenceTypes () {
-        if (this.isMode('create')) {
-          // Assign the first absence type to the leave request
-          this.selectedAbsenceType = this.absenceTypes[0];
-          this.request.type_id = this.selectedAbsenceType.id;
-        } else {
-          // Either View or Edit Mode
-          this.selectedAbsenceType = getSelectedAbsenceType.call(this);
-        }
-      }
-
-      /**
        * Initialize from and to dates and day types.
        * It will also set the day types.
        *
@@ -1092,6 +1056,28 @@ define([
       }
 
       /**
+       * Maps absence types to be more compatible for UI selection
+       *
+       * @param {Array} absenceTypes
+       * @param {Object} entitlements
+       * @return {Array} of filtered absence types for given entitlements
+       */
+      function mapAbsenceTypesWithBalance (absenceTypes, entitlements) {
+        return entitlements.map(function (entitlementItem) {
+          var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
+            return absenceTypeItem.id === entitlementItem.type_id;
+          });
+
+          return {
+            id: entitlementItem.type_id,
+            title: absenceType.title + ' ( ' + entitlementItem.remainder.current + ' ) ',
+            remainder: entitlementItem.remainder.current,
+            allow_overuse: absenceType.allow_overuse
+          };
+        });
+      }
+
+      /**
        * Called after successful submission of leave request
        *
        * @param {String} eventName name of the event to emit
@@ -1110,6 +1096,20 @@ define([
         this.pagination.totalItems = this.balance.change.breakdown.length;
         this.pagination.filteredbreakdown = this.balance.change.breakdown;
         this.pagination.pageChanged();
+      }
+
+      /**
+       * Set initial values to absence types when opening the popup
+       */
+      function setInitialAbsenceTypes () {
+        if (this.isMode('create')) {
+          // Assign the first absence type to the leave request
+          this.selectedAbsenceType = this.absenceTypes[0];
+          this.request.type_id = this.selectedAbsenceType.id;
+        } else {
+          // Either View or Edit Mode
+          this.selectedAbsenceType = getSelectedAbsenceType.call(this);
+        }
       }
 
       /**
