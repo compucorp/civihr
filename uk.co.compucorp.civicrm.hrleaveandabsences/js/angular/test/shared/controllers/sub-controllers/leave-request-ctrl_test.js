@@ -1211,6 +1211,16 @@
             expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', $ctrl.request);
           });
         });
+
+        describe('when the popup is closed', function () {
+          beforeEach(function () {
+            $ctrl.closeAlert();
+          });
+
+          it('flushes any current errors', function () {
+            expect($ctrl.errors).toEqual([]);
+          });
+        });
       });
 
       describe('manager raises absence request on behalf of staff', function () {
