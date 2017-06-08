@@ -77,11 +77,14 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
       $this->exportCSV();
     }
 
+    $session = CRM_Core_Session::singleton();
+
     $this->addButtons($this->getAvailableButtons());
     $this->assign('period', $this->absencePeriod);
     $this->assign('contactsIDs', $this->getContactsIDsFromRequest());
     $this->assign('calculations', $this->calculations);
     $this->assign('enabledAbsenceTypes', $this->getEnabledAbsenceTypes());
+    $this->assign('returnUrl', $session->get('ManageEntitlementsReturnUrl'));
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/crm/vendor/inputmask.min.js');
