@@ -133,7 +133,6 @@
           describe('before date is selected', function () {
             beforeEach(function () {
               $scope.$digest();
-              $scope.$digest();
             });
 
             it('has leave type set to leave', function () {
@@ -205,8 +204,8 @@
               });
 
               it('does not have from/to dates set', function () {
-                expect($ctrl.request.from_date).not.toBeDefined();
-                expect($ctrl.request.to_date).not.toBeDefined();
+                expect($ctrl.request.from_date).toBeNull();
+                expect($ctrl.request.to_date).toBeNull();
               });
             });
 
@@ -483,8 +482,10 @@
             });
 
             it('resets balance and types', function () {
-              expect($ctrl.balance.closing).toEqual(0);
+              // we expect balance change to be 0 because "from" and "to" dates are equal in a single day mode
               expect($ctrl.balance.change.amount).toEqual(0);
+              // if balance change amount is 0 we expect closing balance be equal to opening balance
+              expect($ctrl.balance.closing).toEqual($ctrl.balance.opening);
             });
 
             it('shows no balance', function () {
@@ -1208,6 +1209,16 @@
 
           it('sends update event', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', $ctrl.request);
+          });
+        });
+
+        describe('when the popup is closed', function () {
+          beforeEach(function () {
+            $ctrl.closeAlert();
+          });
+
+          it('flushes any current errors', function () {
+            expect($ctrl.errors).toEqual([]);
           });
         });
       });
