@@ -8,7 +8,7 @@
       attachmentToken: CRM.vars.leaveAndAbsences.attachmentToken,
       debug: CRM.debug,
       managerPathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/manager-leave/',
-      pathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/',
+      sharedPathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/',
       serverDateFormat: 'YYYY-MM-DD',
       serverDateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
       drupalPermissions: {

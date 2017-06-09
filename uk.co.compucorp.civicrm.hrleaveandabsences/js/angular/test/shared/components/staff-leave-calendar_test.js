@@ -23,7 +23,7 @@
   ], function (angular, moment, _, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData, workPatternMocked, leaveRequestData) {
     'use strict';
 
-    describe('myLeaveCalendar', function () {
+    describe('sharedLeaveCalendar', function () {
       var $compile, $log, $q, $rootScope, component, controller, $provide,
         AbsencePeriod, AbsenceType, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
 
@@ -64,8 +64,8 @@
 
           spyOn(AbsencePeriod, 'all').and.callFake(function () {
             var data = absencePeriodData.all().values;
-          // Set 2016 as current period, because Calendar loads data only for the current period initially,
-          // and MockedData has 2016 dates
+            // Set 2016 as current period, because Calendar loads data only for the current period initially,
+            // and MockedData has 2016 dates
             data[0].current = true;
 
             return $q.resolve(data);
@@ -359,11 +359,11 @@
         var $scope = $rootScope.$new();
         var contactId = CRM.vars.leaveAndAbsences.contactId;
 
-        component = angular.element('<my-leave-calendar contact-id="' + contactId + '"></my-leave-calendar>');
+        component = angular.element('<staff-leave-calendar contact-id="' + contactId + '"></staff-leave-calendar>');
         $compile(component)($scope);
         $scope.$digest();
 
-        controller = component.controller('myLeaveCalendar');
+        controller = component.controller('staffLeaveCalendar');
       }
 
       function getDate (dateStr) {

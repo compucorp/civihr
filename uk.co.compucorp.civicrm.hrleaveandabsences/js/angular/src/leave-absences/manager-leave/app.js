@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/angular',
   'common/angularBootstrap',
@@ -30,12 +32,12 @@ define([
     'manager-leave.config',
     'manager-leave.components',
     'leave-absences.directives',
-    'leave-absences.models',
+    'leave-absences.models'
   ])
   .run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
     $log.debug('app.run');
 
-    $rootScope.pathTpl = sharedSettings.pathTpl;
+    $rootScope.sharedPathTpl = sharedSettings.sharedPathTpl;
     $rootScope.settings = settings;
   }]);
 

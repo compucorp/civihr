@@ -58,10 +58,10 @@
         <div class="col-xs-12">
           <uib-tabset class="chr_leave-request-modal__tab">
             <uib-tab heading="Details">
-              <ng-include src="pathTpl + 'request-modal/details/leave.html'"></ng-include>
+              <ng-include src="sharedPathTpl + 'request-modal/details/leave.html'"></ng-include>
               <ng-include
                 ng-show="$ctrl.isLeaveType('toil')"
-                src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
+                src="sharedPathTpl + 'request-modal/details/toil.html'"></ng-include>
               <crm-loading show="!$ctrl.loading.showBalanceChange">
                 <div ng-show="$ctrl.uiOptions.showBalance">
                   <hr/>
@@ -175,7 +175,7 @@
               </div>
               <ng-include
                 ng-show="$ctrl.isLeaveType('sickness')"
-                src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
+                src="sharedPathTpl + 'request-modal/details/sickness.html'"></ng-include>
             </uib-tab>
             <uib-tab heading="Comments">
               <div
