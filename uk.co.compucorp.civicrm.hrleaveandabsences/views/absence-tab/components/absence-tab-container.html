@@ -22,16 +22,16 @@
     type="pills"
     custom-header-class="nav-pills-horizontal nav-pills-horizontal-default">
     <uib-tab heading="Report">
-      <absence-tab-report></absence-tab-report>
+      <absence-tab-report ng-if="active === 0" ></absence-tab-report>
     </uib-tab>
     <uib-tab heading="Calendar">
-      <absence-tab-calendar></absence-tab-calendar>
+      <staff-leave-calendar ng-if="active === 1" contact-id="$root.settings.contactId"></staff-leave-calendar>
     </uib-tab>
     <uib-tab heading="Entitlements">
-      <absence-tab-entitlements></absence-tab-entitlements>
+      <absence-tab-entitlements ng-if="active === 2" ></absence-tab-entitlements>
     </uib-tab>
     <uib-tab heading="Work Patterns">
-      <absence-tab-work-patterns></absence-tab-work-patterns>
+      <absence-tab-work-patterns ng-if="active === 3" ></absence-tab-work-patterns>
     </uib-tab>
   </uib-tabset>
 </div>
