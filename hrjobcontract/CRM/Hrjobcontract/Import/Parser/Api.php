@@ -847,6 +847,10 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       if (!empty($hourLocation))  {
         $this->_params['HRJobHour-hours_unit'] = $hourLocation['periodicity'];
 
+        if ($hourType['name'] == 'Full_Time') {
+          $this->_params['HRJobHour-hours_amount'] = $params['HRJobHour-hours_amount'] = $hourLocation['standard_hours'];
+        }
+
         // calculate FTE Numerator/Denominator Equivalence
         if (isset($params['HRJobHour-hours_amount']) 
           && $params['HRJobHour-hours_amount'] != '' 
@@ -854,9 +858,11 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         ) {
           $inputHourAmount = round(floatval($params['HRJobHour-hours_amount']), 2);
           $actualHourAmount = round(floatval($hourLocation['standard_hours']), 2);
-          $fteNoRound = $inputHourAmount/$actualHourAmount;
+
           $fte = round($inputHourAmount/$actualHourAmount, 2);
+          $fteNoRound = $inputHourAmount/$actualHourAmount;
           list ($num, $denom) = $this->float2rat($fteNoRound);
+
           $this->_params['HRJobHour-fte_num'] = $num;
           $this->_params['HRJobHour-fte_denom'] = $denom;
           $this->_params['HRJobHour-hours_fte'] = $fte;

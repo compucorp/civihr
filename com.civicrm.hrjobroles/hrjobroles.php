@@ -131,22 +131,26 @@ function hrjobroles_civicrm_navigationMenu( &$params ) {
 }
 
 /**
- * @param $tabs
- * @param $contactID
- * Create a custom tab for civicrm contact which will implement custom drupal callback function
- * this tab should appear after job contracts tab directly
- * and since contact summary tab weight is
- * -190 we chose this to be -180
- * to give some room for other extensions to place
- * their tabs between these two.
+ * Implementation of hook_civicrm_tabset.
+ *
+ * Create a custom tab for civicrm contact which will implement custom drupal
+ * callback function this tab should appear after job contracts tab directly
+ * and since contact summary tab weight is -190 we chose this to be -180
+ * to give some room for other extensions to place their tabs between these two.
+ *
+ * @param string $tabsetName
+ * @param array &$tabs
+ * @param array $context
  */
-function hrjobroles_civicrm_tabs(&$tabs, $contactID) {
-
-    $url = CRM_Utils_System::url('civicrm/job-roles/' . $contactID);
+function hrjobroles_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName === 'civicrm/contact/view') {
+    $url = CRM_Utils_System::url('civicrm/job-roles/' . $context['contact_id']);
     $tabs[] = array( 'id' => 'hrjobroles',
-        'url' => $url,
-        'title' => 'Job Roles',
-        'weight' => -180 );
+      'url' => $url,
+      'title' => 'Job Roles',
+      'weight' => -180,
+    );
+  }
 }
 
 /**

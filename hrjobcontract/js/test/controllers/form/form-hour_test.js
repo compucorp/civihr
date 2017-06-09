@@ -25,7 +25,7 @@ define([
           expect($scope.entity.hour.hours_amount).toBe('40.00');
 
         });
-        
+
         it('should not change the hours_amount if it had been set', function() {
           expect($scope.entity.hour.hours_amount).toBe('');
 
@@ -63,21 +63,21 @@ define([
             'id':'1',
             'location': 'Head office',
             'standard_hours': '40.00',
-            'periodicity': 'Week',
+            'pay_frequency': 'Week',
             'is_active': '1'
           },
           {
             'id':'2',
             'location': 'Other office',
             'standard_hours': '8.00',
-            'periodicity': 'Day',
+            'pay_frequency': 'Day',
             'is_active': '1'
           },
           {
             'id':'3',
             'location': 'Small office',
             'standard_hours': '36.00',
-            'periodicity': 'Week',
+            'pay_frequency': 'Week',
             'is_active': '1'
           }
         ]

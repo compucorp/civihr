@@ -6,7 +6,6 @@
 class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
   public function install() {
-
     // $this->executeCustomDataFile('xml/customdata.xml');
     $this->executeSqlFile('sql/install.sql');
     $this->upgradeBundle();
@@ -75,7 +74,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     else
     {
-        //$insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1, pay_grade = %2, currency = %3, amount = %4, periodicity = %5';
         $insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1';
         CRM_Core_DAO::executeQuery($insertPayScaleQuery, $selectPayScaleParams, false);
 
@@ -158,67 +156,33 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS civicrm_hrhours_location");
     CRM_Core_DAO::executeQuery("
-        CREATE TABLE IF NOT EXISTS `civicrm_hrhours_location` (
+      CREATE TABLE IF NOT EXISTS `civicrm_hrhours_location` (
         `id` int(10) unsigned NOT NULL,
-          `location` varchar(63) DEFAULT NULL,
-          `standard_hours` int(4) DEFAULT NULL,
-          `periodicity` varchar(63) DEFAULT NULL,
-          `is_active` tinyint(4) DEFAULT '1'
-        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
-      ");
-      CRM_Core_DAO::executeQuery("
-        INSERT INTO `civicrm_hrhours_location` (`id`, `location`, `standard_hours`, `periodicity`, `is_active`) VALUES
-        (1, 'Head office', 40, 'Week', 1),
-        (2, 'Other office', 8, 'Day', 1),
-        (3, 'Small office', 36, 'Week', 1)
-      ");
+        `location` varchar(63) DEFAULT NULL,
+        `standard_hours` int(4) DEFAULT NULL,
+        `periodicity` varchar(63) DEFAULT NULL,
+        `is_active` tinyint(4) DEFAULT '1'
+      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+    ");
+    CRM_Core_DAO::executeQuery("
+      INSERT INTO `civicrm_hrhours_location` (`id`, `location`, `standard_hours`, `periodicity`, `is_active`) 
+      VALUES (1, 'Head office', 40, 'Week', 1)
+    ");
 
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_revision_change_reason', 'id', 'name');
     if (!$optionGroupID) {
-        $params = array(
-          'name' => 'hrjc_revision_change_reason',
-          'title' => 'Job Contract Revision Change Reason',
-          'is_active' => 1,
-          'is_reserved' => 1,
-        );
-        civicrm_api3('OptionGroup', 'create', $params);
-        $optionsValue = array(
-            1 => 'Reason 1',
-            2 => 'Reason 2',
-            3 => 'Reason 3',
-        );
-        foreach ($optionsValue as $key => $value) {
-          $opValueParams = array(
-            'option_group_id' => 'hrjc_revision_change_reason',
-            'name' => $value,
-            'label' => $value,
-            'value' => $key,
-          );
-          civicrm_api3('OptionValue', 'create', $opValueParams);
-        }
+      $params = array(
+        'name' => 'hrjc_revision_change_reason',
+        'title' => 'Job Contract Revision Change Reason',
+        'is_active' => 1,
+        'is_reserved' => 1,
+      );
+      civicrm_api3('OptionGroup', 'create', $params);
     }
 
     CRM_Core_DAO::executeQuery("
         ALTER TABLE `civicrm_hrjobcontract_pay` ADD `annual_benefits` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL AFTER `pay_is_auto_est`, ADD `annual_deductions` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL AFTER `annual_benefits`
     ");
-
-    CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS civicrm_hrhours_location");
-      CRM_Core_DAO::executeQuery("
-        CREATE TABLE IF NOT EXISTS `civicrm_hrhours_location` (
-        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-          `location` varchar(63) DEFAULT NULL,
-          `standard_hours` int(4) DEFAULT NULL,
-          `periodicity` varchar(63) DEFAULT NULL,
-          `is_active` tinyint(4) DEFAULT '1',
-          PRIMARY KEY(id)
-        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
-      ");
-      CRM_Core_DAO::executeQuery("
-        INSERT INTO `civicrm_hrhours_location` (`id`, `location`, `standard_hours`, `periodicity`, `is_active`) VALUES
-        (1, 'Head office', 40, 'Week', 1),
-        (2, 'Other office', 8, 'Day', 1),
-        (3, 'Small office', 36, 'Week', 1)
-      ");
 
     // pay_cycle:
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_pay_cycle', 'id', 'name');
@@ -544,6 +508,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1026();
     $this->upgrade_1027();
     $this->upgrade_1028();
+    $this->upgrade_1029();
+    $this->upgrade_1030();
+    $this->upgrade_1032();
   }
 
   function upgrade_1001() {
@@ -957,12 +924,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     if (empty($data)) {
       CRM_Core_DAO::executeQuery("
-        INSERT INTO `civicrm_hrpay_scale` (`pay_scale`, `pay_grade`, `currency`, `amount`, `periodicity`, `is_active`) VALUES
-        ('US', 'Senior', 'USD', 38000, 'Year', 1),
-        ('US', 'Junior', 'USD', 24000, 'Year', 1),
-        ('UK', 'Senior', 'GBP', 35000, 'Year', 1),
-        ('UK', 'Junior', 'GBP', 22000, 'Year', 1),
-        ('Not Applicable', NULL, NULL, NULL, NULL, 1)
+        INSERT INTO `civicrm_hrpay_scale` (`pay_scale`, `pay_grade`, `currency`, `amount`, `periodicity`, `is_active`) 
+        VALUES ('Not Applicable', NULL, NULL, NULL, NULL, 1)
     ");
     }
 
@@ -1100,6 +1063,84 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->alterPensionsTable($pensionsTableName);
 
     return true;
+  }
+
+  /**
+   * Upgrader to :
+   *
+   * - Remove unused pay scales except 'Not Applicable'
+   * - Remove unused Hour Locations except 'Head Office'
+   * - Remove Duplicated 'Employee - Permanent' Contract Type
+   * - Add 'Fixed Term' Contract Type
+   * - Sort contract types alphabetically
+   * - Add 'Retirement' contract end reason
+   * - Add new contract change reason options
+   *
+   * @return TRUE
+   */
+  public function upgrade_1029() {
+    $this->up1029_removeDuplicateContractType();
+
+    $optionValues = [
+      'hrjc_contract_type' => ['Fixed Term'],
+      'hrjc_contract_end_reason' => ['Retirement'],
+      'hrjc_revision_change_reason' => ['Promotion', 'Increment', 'Disciplinary'],
+    ];
+
+    foreach ($optionValues as $optionGroup => $values) {
+      $this->addOptionValues($optionGroup, $values);
+    }
+
+    $this->up1029_sortContractTypes();
+
+    return true;
+  }
+
+  /**
+   * Makes Hour Location id field autonumeric and adds id as a primary key.
+   */
+  public function upgrade_1030() {
+    try {
+      CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` ADD PRIMARY KEY (`id`)');
+      CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrhours_location` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT');
+    } catch (PEAR_Exception $e) {
+      $isDuplicatePrimaryKeyException = stripos($e->getCause()->userinfo, 'nativecode=1068');
+      if ($isDuplicatePrimaryKeyException === false) {
+        throw new Exception($e->getMessage() . ' - ' . $e->getCause()->userinfo);
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Concats data in pay_grade field to pay_scale fieldand removes pay_grade
+   * field from datbase.
+   */
+  public function upgrade_1031() {
+    $query = "
+      UPDATE civicrm_hrpay_scale
+      SET pay_scale = CONCAT(pay_scale, ' - ', pay_grade)
+      WHERE pay_scale NOT LIKE 'Not Applicable'
+    ";
+    CRM_Core_DAO::executeQuery($query);
+
+    $dropQuery = 'ALTER TABLE `civicrm_hrpay_scale` DROP `pay_grade`';
+    CRM_Core_DAO::executeQuery($dropQuery);
+
+    return TRUE;
+  }
+
+  /**
+   * Rename the 'periodicity' column
+   *
+   * @return bool
+   */
+  public function upgrade_1032() {
+    $query = "ALTER TABLE civicrm_hrpay_scale CHANGE periodicity pay_frequency VARCHAR(63)";
+    CRM_Core_DAO::executeQuery($query);
+
+    return TRUE;
   }
 
   /**
@@ -1278,7 +1319,83 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
   }
 
-  function decToFraction($fte) {
+  /**
+   * Removes duplicates for 'Employee - Permanent' contract type.
+   */
+  private function up1029_removeDuplicateContractType() {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'sequential' => 1,
+      'option_group_id' => 'hrjc_contract_type',
+      'value' => 'Employee - Permanent',
+    ]);
+
+    // We only delete if we find two ore more "Employee - Permanent" values
+    if ($result['count'] > 1) {
+
+      // Starts at $i = 1 to skip first value
+      for ($i = 1; $i < $result['count']; $i++) {
+        civicrm_api3('OptionValue', 'delete', [
+          'id' => $result['values'][$i]['id'],
+        ]);
+      }
+    }
+  }
+
+  /**
+   * Sorts contract types alphabetically
+   */
+   private function up1029_sortContractTypes() {
+    // fetch all contract types sorted alphabetically ( by their labels )
+    // hence ['sort' => 'label asc']
+    $prefixes = civicrm_api3('OptionValue', 'get', [
+      'sequential' => 1,
+      'return' => ['id'],
+      'option_group_id' => 'hrjc_contract_type',
+      'options' => ['limit' => 0, 'sort' => 'label asc']
+    ]);
+
+    // update options weight
+    $weight = 1;
+    if (!empty($prefixes['values'])) {
+      foreach($prefixes['values'] as $prefix) {
+        civicrm_api3('OptionValue', 'create', [
+          'id' => $prefix['id'],
+          'weight' => $weight++
+        ]);
+      }
+    }
+  }
+
+  /**
+   * Creates a set of option values
+   *
+   * @param string $groupName
+   *   Option group name
+   * @param array $optionsToAdd
+   *   option values to add to the option group
+   */
+  private function addOptionValues($groupName, $optionsToAdd) {
+    foreach ($optionsToAdd as $option) {
+      $optionValue = civicrm_api3('OptionValue', 'get',[
+        'sequential' => 1,
+        'return' => ['id'],
+        'option_group_id' => $groupName,
+        'name' => $option,
+        'options' => ['limit' => 1]
+      ]);
+
+      // create the option value only if it is not exist
+      if (empty($optionValue['id'])) {
+        civicrm_api3('OptionValue', 'create',[
+          'option_group_id' => $groupName,
+          'name' => $option,
+          'label' => $option,
+        ]);
+      }
+    }
+  }
+
+  private function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
     $array = array();
     if (!empty($fteDecimalPart[1])) {
@@ -1319,7 +1436,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
   }
 
-  function commonDivisor($a,$b) {
+  private function commonDivisor($a,$b) {
     return ($a % $b) ? CRM_Hrjobcontract_Upgrader::commonDivisor($b,$a % $b) : $b;
   }
 

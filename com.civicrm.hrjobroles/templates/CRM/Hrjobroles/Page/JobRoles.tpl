@@ -1,13 +1,10 @@
-{assign var="module" value="hrjobroles" }
-{assign var="prefix" value="hrjobroles-" }
-
-<div id="{$module}" >
+<section id="bootstrap-theme" data-job-roles>
   <div class="container" ng-view></div>
-</div>
+</section>
 {literal}
 <script type="text/javascript">
-  document.addEventListener('hrjobrolesReady', function (){
-    angular.bootstrap(document.getElementById('hrjobroles'), ['hrjobroles']);
+  document.addEventListener('hrjobrolesReady', function () {
+    angular.bootstrap(document.querySelector('[data-job-roles]'), ['hrjobroles']);
   });
 </script>
 {/literal}

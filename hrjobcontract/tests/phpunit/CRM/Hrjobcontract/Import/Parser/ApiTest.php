@@ -4,6 +4,8 @@ use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRHoursLocation as HRHoursLocationFabicator;
+use CRM_Hrjobcontract_Test_Fabricator_HRPayScale as HRPayScaleFabricator;
 
 /**
  * Class CRM_Hrjobcontract_Import_Parser_ApiTest
@@ -15,6 +17,8 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   public $_contractTypeID;
   private $_defaultImportData = [];
   private $_insurancePlanTypes = [];
+  private $_hoursLocation = [];
+  private $_payScale = [];
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
@@ -30,6 +34,8 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
 
     $this->_contractTypeID = $this->createTestContractType();
     $this->createInsurancePlanTypes();
+    $this->createHoursLocation();
+    $this->createPayScale();
 
     $this->_defaultImportData = [
       'HRJobDetails-title' => 'Test Contract Title',
@@ -45,6 +51,21 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-notice_unit' => 'day',
       'HRJobDetails-funding_notes' => 'sample',
     ];
+  }
+
+  function createPayScale() {
+    $this->_payScale = HRPayScaleFabricator::fabricate();
+    $this->_payScale['importLabel'] = $this->_payScale['pay_scale'] . ' - '
+      . $this->_payScale['currency'] . ' '
+      . $this->_payScale['amount'] . ' per ' . $this->_payScale['pay_frequency']
+    ;
+  }
+
+  function createHoursLocation() {
+    $this->_hoursLocation = HRHoursLocationFabicator::fabricate(['standard_hours' => '36.00']);
+    $this->_hoursLocation['importLabel'] = $this->_hoursLocation['location']
+      . ' - ' . $this->_hoursLocation['standard_hours']
+      .  ' hours per ' . $this->_hoursLocation['periodicity'];
   }
 
   function tearDown() {
@@ -162,7 +183,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
-      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobHour-location_standard_hours' => $this->_hoursLocation['importLabel'],
       'HRJobHour-hours_type' => 'part time',
       'HRJobHour-hours_amount' => '25',
     );
@@ -187,7 +208,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
-      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobHour-location_standard_hours' => $this->_hoursLocation['importLabel'],
       'HRJobHour-hours_type' => 'part time',
       'HRJobHour-hours_amount' => '25.52',
     );
@@ -202,7 +223,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   public function testFTEFieldsAreSetToZeroWhenImportingCasualHoursType() {
     $contact1 = ContactFabricator::fabricate();
     $casualContract = $this->buildContractInfo([
-      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobHour-location_standard_hours' => $this->_hoursLocation['importLabel'],
       'HRJobContract-contact_id' => $contact1['id'],
       'HRJobHour-hours_type' => 'Casual',
       'HRJobHour-hours_amount' => '16'
@@ -217,13 +238,13 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   public function testFTEFieldsAreSetToZeroWhenImportingEmptyHoursAmount() {
     $contact2 = ContactFabricator::fabricate();
     $emptyHoursContract = $this->buildContractInfo([
-      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobHour-location_standard_hours' => $this->_hoursLocation['importLabel'],
       'HRJobContract-contact_id' => $contact2['id'],
       'HRJobHour-hours_type' => 'part time',
       'HRJobHour-hours_amount' => ''
     ]);
     $importEmptyContractResponse = $this->runImport($emptyHoursContract);
-    $this->assertEquals(CRM_Import_Parser::VALID, $importEmptyContractResponse);    
+    $this->assertEquals(CRM_Import_Parser::VALID, $importEmptyContractResponse);
 
     $expected = ['fte_num' => 0, 'fte_denom' => 0, 'hours_fte' => 0];
     $this->validateHourAutoFields($contact2['id'], $expected);
@@ -233,7 +254,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $contact3 = ContactFabricator::fabricate();
     $importResponse = $this->runImport([
       'HRJobContract-contact_id' => $contact3['id'],
-      'HRJobDetails-contract_type' => $this->_contractTypeID,      
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-title' => 'Test Contract Title',
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-period_start_date' => '2016-01-01'
@@ -244,13 +265,34 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateHourAutoFields($contact3['id'], $expected);
   }
 
+  public function testActualHoursIsDeducedForFullTimeHoursType() {
+    $contact1 = ContactFabricator::fabricate();
+    $contract = $this->buildContractInfo([
+      'HRJobHour-location_standard_hours' => $this->_hoursLocation['importLabel'],
+      'HRJobContract-contact_id' => $contact1['id'],
+      'HRJobHour-hours_type' => 'Full Time',
+      'HRJobHour-hours_amount' => '16'
+    ]);
+
+    $importResponse = $this->runImport($contract);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
+    $expected = [
+      'fte_num' => 1,
+      'fte_denom' => 1,
+      'hours_fte' => 1,
+      'hours_amount' => $this->_hoursLocation['standard_hours']
+    ];
+    $this->validateHourAutoFields($contact1['id'], $expected);
+  }
+
   /**
    * Merges parmeter array given with default import data for contracts. Given
    * parameters override values of default import data array.
-   * 
+   *
    * @param array $params
    *   Parameters to be set to array
-   * 
+   *
    * @return array
    *   Result of merging given array with default import data array
    */
@@ -274,7 +316,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
       'HRJobPay-is_paid' => 'Yes',
-      'HRJobPay-pay_scale' => 'US - Senior - USD 38000.00 per Year',
+      'HRJobPay-pay_scale' => $this->_payScale['importLabel'],
       'HRJobPay-pay_currency' => 'USD',
       'HRJobPay-pay_amount' => '35000',
       'HRJobPay-pay_unit' => 'year',
@@ -302,7 +344,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
       'HRJobPay-is_paid' => 'Yes',
-      'HRJobPay-pay_scale' => 'US - Senior - USD 38000.00 per Year',
+      'HRJobPay-pay_scale' => $this->_payScale['importLabel'],
       'HRJobPay-pay_currency' => 'USD',
       'HRJobPay-pay_amount' => '35000',
       'HRJobPay-pay_unit' => 'year',
@@ -373,7 +415,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $importResponse = $this->runImport($params);
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
-  
+
   function testPensionImport() {
     $contact2Params = array(
       'first_name' => 'John_9',
@@ -620,8 +662,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $revisionID = $result['details_revision_id'];
     $this->callAPISuccessGetSingle('HRJobDetails', array('jobcontract_revision_id'=>$revisionID));
     $result = $this->callAPISuccessGetSingle('HRJobHour', array('jobcontract_revision_id'=>$revisionID));
+
     foreach($expected as $key => $value)  {
-      $this->assertEquals($value, $result[$key]);
+      $this->assertEquals($value, $result[$key], "Failed asserting {$result[$key]} matches expected $value for field $key");
     }
   }
 

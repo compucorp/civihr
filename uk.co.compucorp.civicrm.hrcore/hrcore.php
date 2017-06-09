@@ -114,7 +114,7 @@ function hrcore_civicrm_caseTypes(&$caseTypes) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
 function hrcore_civicrm_angularModules(&$angularModules) {
-_hrcore_civix_civicrm_angularModules($angularModules);
+  _hrcore_civix_civicrm_angularModules($angularModules);
 }
 
 /**
@@ -124,4 +124,13 @@ _hrcore_civix_civicrm_angularModules($angularModules);
  */
 function hrcore_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _hrcore_civix_civicrm_alterSettingsFolders($metaDataFolders);
+}
+
+/**
+ * Implements hook_civicrm_apiWrappers
+ */
+function hrcore_civicrm_apiWrappers(&$wrappers, $apiRequest) {
+  if ($apiRequest['action'] === 'get') {
+    $wrappers[] = new CRM_HRCore_APIWrapper_DefaultLimitRemover();
+  }
 }

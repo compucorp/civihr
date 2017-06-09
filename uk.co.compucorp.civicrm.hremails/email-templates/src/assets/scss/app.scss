@@ -1,11 +1,13 @@
 @import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/overrides/variables";
 @import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/variables";
 
+@import "mixins/buttons";
 @import "mixins/margin";
 
 @import 'settings';
 @import 'base';
 @import 'foundation-emails';
 
+@import 'components/buttons';
 @import 'components/callout';
 @import 'components/email';

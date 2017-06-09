@@ -165,29 +165,34 @@ function hrqual_civicrm_managed(&$entities) {
 }
 
 /**
- * Implementation of hook_civicrm_tabs
+ * Implementation of hook_civicrm_tabset.
+ *
+ * @param string $tabsetName
+ * @param array &$tabs
+ * @param array $context
  */
-function hrqual_civicrm_tabs(&$tabs, $contactID) {
-  $cgid = hrqual_getCustomGroupId();
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrqual', 'css/hrqual.css');
-  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrqual', 'js/hrqual.js');
+function hrqual_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName === 'civicrm/contact/view') {
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrqual', 'css/hrqual.css');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrqual', 'js/hrqual.js');
 
-  $optionGroups = CRM_Core_OptionGroup::values('category_of_skill_20130510015438');
-  foreach ($optionGroups as $name => $optionGroup) {
-    $options = array_values(CRM_Core_OptionGroup::values($name));
-    $val[$optionGroup] = $options;
-    unset($options);
+    $optionGroups = CRM_Core_OptionGroup::values('category_of_skill_20130510015438');
+    foreach ($optionGroups as $name => $optionGroup) {
+      $options = array_values(CRM_Core_OptionGroup::values($name));
+      $val[$optionGroup] = $options;
+      unset($options);
+    }
+
+    $cfId1 = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Name_of_Skill', 'id', 'name');
+    $cfId2 = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Category_of_Skill', 'id', 'name');
+    CRM_Core_Resources::singleton()->addSetting(array(
+      'hrqual' => array(
+        'name' => $cfId1,
+        'category' => $cfId2,
+        'optionGroups' => $val,
+      ),
+    ));
   }
-
-  $cfId1 = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Name_of_Skill', 'id', 'name');
-  $cfId2 = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Category_of_Skill', 'id', 'name');
-  CRM_Core_Resources::singleton()->addSetting(array(
-    'hrqual' => array(
-      'name' => $cfId1,
-      'category' => $cfId2,
-      'optionGroups' => $val,
-    ),
-  ));
 }
 
 function hrqual_getCustomGroupId() {

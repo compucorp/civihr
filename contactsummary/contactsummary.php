@@ -134,20 +134,25 @@ function contactsummary_civicrm_pageRun($page) {
 }
 
 /**
- * Implementation of hook_civicrm_tabs
- * we set the weight for this tab to -200 since
- * the summary ( personal details ) tab weight is hardcoded
- * to 0 and cannot be changed and this tab has to appear before
- * it , also we chose a large number like 200 to give
- * a large room for other extensions to set its tabs
- * between this tab and ( personal details tab ) without altering
- * other tabs weights.
+ * Implementation of hook_civicrm_tabset.
+ *
+ * We set the weight for this tab to -200 since the summary (personal details)
+ * tab weight is hardcoded to 0 and cannot be changed and this tab has to appear
+ * before it , also we chose a large number like 200 to give a large room for
+ * other extensions to set its tabs between this tab and (personal details tab)
+ * without altering other tabs weights.
+ *
+ * @param string $tabsetName
+ * @param array &$tabs
+ * @param array $context
  */
-function contactsummary_civicrm_tabs(&$tabs) {
-  $tabs[] = Array(
-    'id'     => 'contactsummary',
-    'url'    => CRM_Utils_System::url('civicrm/contact-summary'),
-    'title'  => ts('Contact Summary'),
-    'weight' => -200
-  );
+function contactsummary_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName === 'civicrm/contact/view') {
+    $tabs[] = Array(
+      'id'     => 'contactsummary',
+      'url'    => CRM_Utils_System::url('civicrm/contact-summary'),
+      'title'  => ts('Contact Summary'),
+      'weight' => -200,
+    );
+  }
 }
