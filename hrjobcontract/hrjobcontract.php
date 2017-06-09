@@ -271,20 +271,25 @@ function hrjobcontract_civicrm_buildForm($formName, &$form) {
 
 
 /**
- * Implementation of hook_civicrm_tabs
- * this tab should appear after contact summary tab directly
- * and since contact summary tab weight is
- * -200 we chose this to be -190
- * to give some room for other extensions to place
- * their tabs between these two.
+ * Implementation of hook_civicrm_tabset.
+ *
+ * This tab should appear after contact summary tab directly and since
+ * contact summary tab weight is -200 we chose this to be -190 to give some
+ * room for other extensions to place their tabs between these two.
+ *
+ * @param string $tabsetName
+ * @param array &$tabs
+ * @param array $context
  */
-function hrjobcontract_civicrm_tabs(&$tabs, $contactId) {
-  $tabs[] = Array(
-    'id'        => 'hrjobcontract',
-    'url'       => CRM_Utils_System::url('civicrm/contact/view/hrjobcontract', array('cid' => $contactId)),
-    'title'     => ts('Job Contract'),
-    'weight'    => -190
-  );
+function hrjobcontract_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName === 'civicrm/contact/view') {
+    $tabs[] = Array(
+      'id'        => 'hrjobcontract',
+      'url'       => CRM_Utils_System::url('civicrm/contact/view/hrjobcontract', array('cid' => $context['contact_id'])),
+      'title'     => ts('Job Contract'),
+      'weight'    => -190,
+    );
+  }
 }
 
 /**
