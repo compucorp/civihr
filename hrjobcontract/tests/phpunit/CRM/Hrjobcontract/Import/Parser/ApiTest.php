@@ -265,6 +265,27 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateHourAutoFields($contact3['id'], $expected);
   }
 
+  public function testActualHoursIsDeducedForFullTimeHoursType() {
+    $contact1 = ContactFabricator::fabricate();
+    $contract = $this->buildContractInfo([
+      'HRJobHour-location_standard_hours' => $this->_hoursLocation['importLabel'],
+      'HRJobContract-contact_id' => $contact1['id'],
+      'HRJobHour-hours_type' => 'Full Time',
+      'HRJobHour-hours_amount' => '16'
+    ]);
+
+    $importResponse = $this->runImport($contract);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
+    $expected = [
+      'fte_num' => 1,
+      'fte_denom' => 1,
+      'hours_fte' => 1,
+      'hours_amount' => $this->_hoursLocation['standard_hours']
+    ];
+    $this->validateHourAutoFields($contact1['id'], $expected);
+  }
+
   /**
    * Merges parmeter array given with default import data for contracts. Given
    * parameters override values of default import data array.
@@ -641,8 +662,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $revisionID = $result['details_revision_id'];
     $this->callAPISuccessGetSingle('HRJobDetails', array('jobcontract_revision_id'=>$revisionID));
     $result = $this->callAPISuccessGetSingle('HRJobHour', array('jobcontract_revision_id'=>$revisionID));
+
     foreach($expected as $key => $value)  {
-      $this->assertEquals($value, $result[$key]);
+      $this->assertEquals($value, $result[$key], "Failed asserting {$result[$key]} matches expected $value for field $key");
     }
   }
 
