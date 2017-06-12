@@ -1842,7 +1842,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-06-29'),
       'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
-      'to_date' => CRKM_Utils_Date::processDate('2016-07-03'),
+      'to_date' => CRM_Utils_Date::processDate('2016-07-03'),
       'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
