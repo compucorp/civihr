@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 (function (CRM) {
   define([
     'common/angular'
@@ -10,10 +11,18 @@
       pathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/',
       serverDateFormat: 'YYYY-MM-DD',
       serverDateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
+      drupalPermissions: {
+        admin: {
+          access: 'CiviHRLeaveAndAbsences: Access Leave and Absences',
+          administer: 'CiviHRLeaveAndAbsences: Administer Leave and Absences'
+        },
+        ssp: {
+          access: 'CiviHRLeaveAndAbsences: Access Leave and Absences in SSP',
+          manage: 'CiviHRLeaveAndAbsences: Manage Leave and Absences in SSP'
+        }
+      },
       fileUploader: {
-        // TODO for now set the limit to 10 files until a better solution is found to configure it
         queueLimit: 10,
-        // set the mime types which are allowed to be uploaded as attachments
         allowedMimeTypes: {
           'txt': 'plain',
           'png': 'png',
@@ -29,7 +38,6 @@
           'pptx': 'vnd.openxmlformats-officedocument.presentationml.presentation'
         }
       },
-      // TODO move all strings to a separate file otherwise this settings files will become a string repository
       statusNames: {
         approved: 'approved',
         adminApproved: 'admin_approved',
