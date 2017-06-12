@@ -1,0 +1,72 @@
+/**
+ * Custom select dropdown style
+ *
+ */
+ .chr_custom-select {
+  background: #ffffff;
+  color: #767B8E;
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+  vertical-align: top;
+
+  > select {
+    background: transparent;
+    border: 1px solid $crm-color-neutral;
+    height: #{$crm-customselect-height}px;
+    padding: 6px #{$crm-customselect-padding-right}px 6px 12px;
+    position: relative;
+    width: 100%;
+    z-index: 2;
+
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
+
+    &::-ms-expand {
+      display: none;
+    }
+  }
+
+  &:after {
+    @include dropdown-arrow();
+  }
+
+  .ie9 & {
+
+    > select {
+      padding-right: 10px;
+    }
+
+    &:after {
+      display: none;
+    }
+  }
+}
+
+.chr_custom-select--full {
+  display: block;
+  width: auto;
+}
+
+.chr_custom-select--transparent {
+  background: transparent;
+
+  option {
+    background: #ffffff;
+  }
+}
+
+.has-feedback {
+
+  .chr_custom-select {
+
+    > select {
+      padding-right: #{$crm-customselect-padding-right}px;
+
+      + .form-control-feedback {
+        right: #{$crm-customselect-caret-width - 5}px !important;
+      }
+    }
+  }
+}
