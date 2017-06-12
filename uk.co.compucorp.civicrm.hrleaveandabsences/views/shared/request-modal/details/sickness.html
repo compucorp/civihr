@@ -4,7 +4,7 @@
     <div class="form-group">
       <label class="col-xs-4 control-label">Reason<i class="fa fa-asterisk"></i></label>
       <div class="col-xs-8">
-        <div class="chr_custom-select chr_custom-select--full">
+        <div class="crm_custom-select crm_custom-select--full">
           <select
             name="reason"
             ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isLeaveType('sickness'))"
@@ -12,6 +12,7 @@
             ng-model="$ctrl.request.sickness_reason">
             <option value="">- select -</option>
           </select>
+          <span class="crm_custom-select__arrow"></span>
         </div>
       </div>
     </div>

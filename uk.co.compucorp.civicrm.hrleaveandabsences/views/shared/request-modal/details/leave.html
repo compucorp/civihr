@@ -52,7 +52,7 @@
         <crm-loading
           show="!$ctrl.loading.fromDayTypes"
           class="chr_leave-request-modal__small_spinner">
-          <div class="chr_custom-select chr_custom-select--full">
+          <div class="crm_custom-select crm_custom-select--full">
             <select
               name="fromDayTypeSelect"
               ng-disabled="$ctrl.isMode('view') || $ctrl.requestFromDayTypes.length === 1 ||
@@ -64,6 +64,8 @@
                 ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))" value="">Select</option>
               dayType{{dayType}}
             </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
           </crm-loading>
         </div>
       </div>
@@ -101,7 +103,7 @@
         <crm-loading
           show="!$ctrl.loading.toDayTypes"
           class="chr_leave-request-modal__small_spinner">
-          <div class="chr_custom-select chr_custom-select--full">
+          <div class="crm_custom-select crm_custom-select--full">
             <select
               name="toDayTypeSelect"
               ng-disabled="$ctrl.isMode('view') ||
@@ -113,6 +115,7 @@
               ng-change="$ctrl.calculateBalanceChange()">
               <option value="">Select</option>
             </select>
+            <span class="crm_custom-select__arrow"></span>
           </div>
         </crm-loading>
       </div>

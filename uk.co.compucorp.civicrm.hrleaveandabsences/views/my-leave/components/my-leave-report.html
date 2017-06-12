@@ -6,12 +6,13 @@
           <div class="col-sm-9">
           </div>
           <div class="col-sm-3">
-            <div class="chr_custom-select chr_custom-select--full">
+            <div class="crm_custom-select crm_custom-select--full">
               <select
                 ng-options="period as report.labelPeriod(period) for period in report.absencePeriods track by period.id"
                 ng-model="report.selectedPeriod"
                 ng-change="report.refresh()">
               </select>
+              <span class="crm_custom-select__arrow"></span>
             </div>
           </div>
         </div>

@@ -37,7 +37,7 @@
       ng-show="!$ctrl.loading.absenceTypes">
       <div class="row">
         <div class="col-xs-12">
-          <div class="chr_custom-select chr_custom-select--full">
+          <div class="crm_custom-select crm_custom-select--full">
             <select
               ng-hide="$ctrl.absenceTypes.length === 0"
               ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))"
@@ -50,6 +50,7 @@
               disabled="disabled">
               <option>You don't have any leave entitlement</option>
             </select>
+            <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
       </div>
@@ -336,13 +337,14 @@
             <label class="col-xs-4 control-label">Set status to:<i class="fa fa-asterisk"></i>
             </label>
             <div class="col-xs-8">
-              <div class="chr_custom-select chr_custom-select--full">
+              <div class="crm_custom-select crm_custom-select--full">
                 <select
                   name="statusSelect"
                   ng-options="status.value as status.label for status in $ctrl.getStatuses()"
                   ng-model="$ctrl.newStatusOnSave">
                   <option value="">- select -</option>
                 </select>
+                <span class="crm_custom-select__arrow"></span>
               </div>
             </div>
           </div>
