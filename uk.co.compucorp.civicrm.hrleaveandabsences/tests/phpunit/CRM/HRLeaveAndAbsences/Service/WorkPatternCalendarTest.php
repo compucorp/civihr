@@ -396,4 +396,170 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     //Year 2016 is a leap year, so there are 366 days.
     $this->assertCount(366, $calendarDates);
   }
+
+  public function testGetReturnsResultsForContactWithoutAContractAndFillsTheContactWorkPatternPeriodLapsesWithTheDefaultWorkPattern() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-03-03'),
+      'end_date' => CRM_Utils_Date::processDate('2016-03-09'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    $workPattern1 = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $this->contact['id'],
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-03-07'),
+    ]);
+
+    //A contract is fabricated for the contract with start date as 2016-03-03 and end date as 2016-03-09
+    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    $calendarDates = $calendar->get();
+
+    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+
+    $this->assertCount(7, $calendarDates);
+
+    //Since the work pattern for the contact becomes effective on 2016-03-07, default work pattern
+    //will be used to determine the day type before then.
+    $this->assertEquals('2016-03-03', $calendarDates[0]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[0]['type']);
+    $this->assertEquals('2016-03-04', $calendarDates[1]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[1]['type']);
+    $this->assertEquals('2016-03-05', $calendarDates[2]['date']);
+    $this->assertEquals($workDayTypes['weekend'], $calendarDates[2]['type']);
+    $this->assertEquals('2016-03-06', $calendarDates[3]['date']);
+    $this->assertEquals($workDayTypes['weekend'], $calendarDates[3]['type']);
+
+    //The contact work pattern starts being effective on 2016-03-07, a monday
+    $this->assertEquals('2016-03-07', $calendarDates[4]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[4]['type']);
+    $this->assertEquals('2016-03-08', $calendarDates[5]['date']);
+    $this->assertEquals($workDayTypes['non_working_day'], $calendarDates[5]['type']);
+    $this->assertEquals('2016-03-09', $calendarDates[6]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[6]['type']);
+  }
+
+  public function testGetReturnsResultsForContactWithoutAContractAndUsingTheDefaultWorkPatternOnly() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-03-03'),
+      'end_date' => CRM_Utils_Date::processDate('2016-03-06'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    //A contract is fabricated for the contract with start date as 2016-03-03 and end date as 2016-03-06
+    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    $calendarDates = $calendar->get();
+
+    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+
+    $this->assertCount(4, $calendarDates);
+
+    //Default work pattern is used to determine the day type
+    $this->assertEquals('2016-03-03', $calendarDates[0]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[0]['type']);
+    $this->assertEquals('2016-03-04', $calendarDates[1]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[1]['type']);
+    $this->assertEquals('2016-03-05', $calendarDates[2]['date']);
+    $this->assertEquals($workDayTypes['weekend'], $calendarDates[2]['type']);
+    $this->assertEquals('2016-03-06', $calendarDates[3]['date']);
+    $this->assertEquals($workDayTypes['weekend'], $calendarDates[3]['type']);
+  }
+
+  public function testGetReturnsResultsForContactWithContractsAndFillsThePeriodLapsesUsingTheDefaultWorkPattern() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-01-31'),
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->contact['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-01-10'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->contact['id']],
+      [
+        'period_start_date' => '2016-01-18',
+        'period_end_date' => '2016-01-31'
+      ]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    $workPattern1 = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $this->contact['id'],
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-04'),
+      'effective_end_date' => CRM_Utils_Date::processDate('2016-01-10'),
+    ]);
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $this->contact['id'],
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-18'),
+      'effective_end_date' => CRM_Utils_Date::processDate('2016-01-24'),
+    ]);
+
+    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    $calendarDates = $calendar->get();
+    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $this->assertCount(31, $calendarDates);
+
+    // There is no Work Pattern between the period 2016-01-01 to 2016-01-03 although a contract exists
+    //The default work pattern will be used for these dates
+    $this->assertEquals('2016-01-01', $calendarDates[0]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[0]['type']);
+    $this->assertEquals('2016-01-02', $calendarDates[1]['date']);
+    $this->assertEquals($workDayTypes['weekend'], $calendarDates[1]['type']);
+    $this->assertEquals('2016-01-03', $calendarDates[2]['date']);
+    $this->assertEquals($workDayTypes['weekend'], $calendarDates[2]['type']);
+
+    // The period 2016-01-04 to 2016-01-10 will use the contact work pattern, also a valid contract exist
+    // within this period.
+    $this->assertEquals('2016-01-04', $calendarDates[3]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[0]['type']);
+    $this->assertEquals('2016-01-05', $calendarDates[4]['date']);
+    $this->assertEquals($workDayTypes['non_working_day'], $calendarDates[4]['type']);
+    $this->assertEquals('2016-01-10', $calendarDates[9]['date']);
+    $this->assertEquals($workDayTypes['weekend'], $calendarDates[9]['type']);
+
+    // The period 2016-01-11 to 2016-01-17 will use the default work pattern, a contract does not exist
+    // within this period.
+    $this->assertEquals('2016-01-11', $calendarDates[10]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[10]['type']);
+    $this->assertEquals('2016-01-12', $calendarDates[11]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[11]['type']);
+    $this->assertEquals('2016-01-13', $calendarDates[12]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[12]['type']);
+    $this->assertEquals('2016-01-17', $calendarDates[16]['date']);
+    $this->assertEquals($workDayTypes['weekend'], $calendarDates[16]['type']);
+
+    // The period 2016-01-18 to 2016-01-24 will use the contact work pattern, also a valid contract exist
+    // within this period.
+    $this->assertEquals('2016-01-18', $calendarDates[17]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[17]['type']);
+    $this->assertEquals('2016-01-19', $calendarDates[18]['date']);
+    $this->assertEquals($workDayTypes['non_working_day'], $calendarDates[18]['type']);
+    $this->assertEquals('2016-01-20', $calendarDates[19]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[19]['type']);
+    $this->assertEquals('2016-01-21', $calendarDates[20]['date']);
+    $this->assertEquals($workDayTypes['non_working_day'], $calendarDates[20]['type']);
+
+    // The period 2016-01-25 to 2016-01-31 will use the default work pattern, a contract does not exist
+    // within this period.
+    $this->assertEquals('2016-01-25', $calendarDates[24]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[24]['type']);
+    $this->assertEquals('2016-01-26', $calendarDates[25]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[25]['type']);
+    $this->assertEquals('2016-01-27', $calendarDates[26]['date']);
+    $this->assertEquals($workDayTypes['working_day'], $calendarDates[26]['type']);
+    $this->assertEquals('2016-01-31', $calendarDates[30]['date']);
+    $this->assertEquals($workDayTypes['weekend'], $calendarDates[30]['type']);
+  }
 }
