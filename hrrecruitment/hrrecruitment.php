@@ -784,15 +784,19 @@ function hrrecruitment_civicrm_pageRun( &$page ) {
 }
 
 /**
- * Implementation of hook_civicrm_tabs
+ * Implementation of hook_civicrm_tabset.
  *
- * @return void
+ * @param string $tabsetName
+ * @param array &$tabs
+ * @param array $context
  */
-function hrrecruitment_civicrm_tabs( &$tabs, $contactID ) {
-  $cases = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($contactID, FALSE, 'Application');
-  foreach ($tabs as $key=>$val) {
-    if ($val['title'] == 'Assignments') {
-      $tabs[$key]['count'] = $tabs[$key]['count']-count($cases);
+function hrrecruitment_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName === 'civicrm/contact/view') {
+    $cases = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($context['contact_id'], FALSE, 'Application');
+    foreach ($tabs as $key => $val) {
+      if ($val['title'] == 'Assignments') {
+        $tabs[$key]['count'] = $tabs[$key]['count'] - count($cases);
+      }
     }
   }
 }

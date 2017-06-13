@@ -71,7 +71,7 @@ define([
                     var payScaleGrade = $filter('getObjById')(utilsPayScaleGrade, entityPay.pay_scale);
                     entityPay.pay_amount = payScaleGrade.amount || defaults.pay_amount;
                     entityPay.pay_currency = payScaleGrade.currency || defaults.pay_currency;
-                    entityPay.pay_unit = payScaleGrade.periodicity || defaults.pay_unit;
+                    entityPay.pay_unit = payScaleGrade.pay_frequency || defaults.pay_unit;
                 }
             };
 

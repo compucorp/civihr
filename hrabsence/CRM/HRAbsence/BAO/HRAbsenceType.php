@@ -81,9 +81,11 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
    *
    * @param array $activityTypes
    * @param array $params
-   * @param boolean $isDebit 'true' for 'debit' and 'false' for 'credit'
+   * @param boolean $isDebit 
+   *   'true' for 'debit' and 'false' for 'credit'
    *
-   * @return array Created Activity Type as array
+   * @return array 
+   *   Created Activity Type as array
    */
   private static function createActivityType($activityTypes, $params, $isDebit) {
     $weight = count($activityTypes["values"]);

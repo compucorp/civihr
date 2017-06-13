@@ -38,20 +38,18 @@
         <table cellpadding="0" cellspacing="0" border="0">
            <thead class="sticky">
             <th>{ts}Pay Scale{/ts}</th>
-            <th>{ts}Pay Grade{/ts}</th>
             <th>{ts}Currency{/ts}</th>
             <th>{ts}Amount{/ts}</th>
-            <th>{ts}Periodicity{/ts}</th>
+            <th>{ts}Pay Frequency{/ts}</th>
             <th>{ts}Enabled?{/ts}</th>
             <th></th>
           </thead>
          {foreach from=$rows item=row}
         <tr id="HRPayScale-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"} {$row.class}{if $row.is_active neq 1} disabled{/if}">
           <td class="crm-editable" data-field="title">{$row.pay_scale}</td>
-          <td>{$row.pay_grade}</td>
           <td>{$row.currency}</td>
           <td>{$row.amount}</td>
-          <td>{$row.periodicity}</td>
+          <td>{$row.pay_frequency}</td>
           <td id="row_{$row.id}_status">{if $row.is_active eq 1} {ts}Yes{/ts} {else} {ts}No{/ts} {/if}</td>
           <td>{$row.action|replace:'xx':$row.id}</td>
         </tr>
@@ -66,9 +64,6 @@
         {/if}
     </div>
   </div>
-  <script type="text/javascript">
-    CRM.$('.crm-editable').crmEditable();
-  </script>
 {else}
     <div class="messages status no-popup">
         <div class="icon inform-icon"></div>
