@@ -412,7 +412,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       'effective_date' => CRM_Utils_Date::processDate('2016-03-07'),
     ]);
 
-    //A contract is fabricated for the contract with start date as 2016-03-03 and end date as 2016-03-09
+    //A contract is fabricated for the period between 2016-03-03 and 2016-03-09
     $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
     $calendarDates = $calendar->get();
 
@@ -448,7 +448,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
 
-    //A contract is fabricated for the contract with start date as 2016-03-03 and end date as 2016-03-06
+    //A contract is fabricated period between 2016-03-03 and 2016-03-06
     $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
     $calendarDates = $calendar->get();
 
