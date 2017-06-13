@@ -15,13 +15,13 @@ define([
 
     describe('drupal permissions', function () {
       it('contains the list of the SSP permissions', function () {
-        expect(sharedSettings.drupalPermissions.admin.access).toBeDefined();
-        expect(sharedSettings.drupalPermissions.admin.administer).toBeDefined();
+        expect(sharedSettings.permissions.admin.access).toBeDefined();
+        expect(sharedSettings.permissions.admin.administer).toBeDefined();
       });
 
       it('contains the list of the admin permissions', function () {
-        expect(sharedSettings.drupalPermissions.ssp.access).toBeDefined();
-        expect(sharedSettings.drupalPermissions.ssp.manage).toBeDefined();
+        expect(sharedSettings.permissions.ssp.access).toBeDefined();
+        expect(sharedSettings.permissions.ssp.manage).toBeDefined();
       });
     });
 
