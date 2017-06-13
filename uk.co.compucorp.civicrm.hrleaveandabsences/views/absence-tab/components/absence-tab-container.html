@@ -1,37 +1,39 @@
 <div class="absence-tab-page">
-  <div class="btn-group">
-    <button type="button" class="btn btn-info">create new</button>
-    <button
-      type="button"
-      class="btn btn-info dropdown-toggle"
-      data-toggle="dropdown">
-      <span class="caret"></span>
-      <span class="sr-only">Toggle Dropdown</span>
-    </button>
-    <ul class="dropdown-menu" role="menu">
-      <li>
-        <a href="#">Record staff sickness</a>
-      </li>
-      <li>
-        <a href="#">Record staff overtime</a>
-      </li>
-    </ul>
+  <div class="container">
+    <div class="btn-group">
+      <button type="button" class="btn btn-info">create new</button>
+      <button
+        type="button"
+        class="btn btn-info dropdown-toggle"
+        data-toggle="dropdown">
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li>
+          <a href="#">Record staff sickness</a>
+        </li>
+        <li>
+          <a href="#">Record staff overtime</a>
+        </li>
+      </ul>
+    </div>
+    <uib-tabset
+      active="active"
+      type="pills"
+      custom-header-class="nav-pills-horizontal nav-pills-horizontal-default">
+      <uib-tab heading="Report">
+        <absence-tab-report ng-if="active === 0" ></absence-tab-report>
+      </uib-tab>
+      <uib-tab heading="Calendar">
+        <staff-leave-calendar ng-if="active === 1" contact-id="$root.settings.contactId"></staff-leave-calendar>
+      </uib-tab>
+      <uib-tab heading="Entitlements">
+        <absence-tab-entitlements ng-if="active === 2" ></absence-tab-entitlements>
+      </uib-tab>
+      <uib-tab heading="Work Patterns">
+        <absence-tab-work-patterns ng-if="active === 3" ></absence-tab-work-patterns>
+      </uib-tab>
+    </uib-tabset>
   </div>
-  <uib-tabset
-    active="active"
-    type="pills"
-    custom-header-class="nav-pills-horizontal nav-pills-horizontal-default">
-    <uib-tab heading="Report">
-      <absence-tab-report ng-if="active === 0" ></absence-tab-report>
-    </uib-tab>
-    <uib-tab heading="Calendar">
-      <staff-leave-calendar ng-if="active === 1" contact-id="$root.settings.contactId"></staff-leave-calendar>
-    </uib-tab>
-    <uib-tab heading="Entitlements">
-      <absence-tab-entitlements ng-if="active === 2" ></absence-tab-entitlements>
-    </uib-tab>
-    <uib-tab heading="Work Patterns">
-      <absence-tab-work-patterns ng-if="active === 3" ></absence-tab-work-patterns>
-    </uib-tab>
-  </uib-tabset>
 </div>
