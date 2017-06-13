@@ -18,21 +18,17 @@ define([
       $httpBackend.whenGET(/views.*/).respond({});
     }));
 
-    afterEach(function() {
+    afterEach(function () {
       $httpBackend.flush();
       $rootScope.$apply();
     });
 
-    describe('when calling getOne()', function () {
-      it('makes http call', function () {
-        $httpBackend.expectGET(/action=get&entity=HRJobContract/);
-      });
-
+    describe('getOne()', function () {
       it("defines getOne() function", function () {
         expect(ContractHourService.getOne).toBeDefined();
       });
 
-      it('calls getOne fuction and return expected values', function () {
+      it('calls getOne() to return expected contract hour data', function () {
         ContractHourService.getOne({jobcontract_revision_id: 68}).then(function (result) {
           expect(result.location_standard_hours).toEqual(MockContract.contractHour.values[0].location_standard_hours);
         });

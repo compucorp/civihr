@@ -1,7 +1,7 @@
 define([
   'mocks/data/contract',
   'job-contract/app'
-], function(MockContract) {
+], function (MockContract) {
   'use strict';
 
   describe('ContractPensionService', function () {
@@ -24,16 +24,12 @@ define([
       $rootScope.$apply();
     });
 
-    describe('when calling getOne()', function () {
-      it('makes http call', function () {
-        $httpBackend.expectGET(/action=get&entity=HRJobContract/);
-      });
-
+    describe('getOne()', function () {
       it("defines getOne() function", function () {
         expect(ContractPensionService.getOne).toBeDefined();
       });
 
-      it('calls getOne fuction and return expected values', function () {
+      it('calls getOne() and return expected contract pension data', function () {
         ContractPensionService.getOne({jobcontract_revision_id: 68}).then(function (result) {
           expect(result.id).toEqual(MockContract.contractPension.values.id);
           expect(result.jobcontract_revision_id).toEqual(MockContract.contractPension.values.jobcontract_revision_id);

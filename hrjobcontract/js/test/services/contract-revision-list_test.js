@@ -6,7 +6,7 @@ define([
   'use strict';
 
   describe('ContractRevisionList', function () {
-    var $rootScope, $httpBackend, ContractRevisionList;
+    var $rootScope, $httpBackend, ContractRevisionList, promise;
 
     beforeEach(module('hrjc'));
 
@@ -22,24 +22,17 @@ define([
       $httpBackend.whenGET(/views.*/).respond({});
     }));
 
-    describe('when calling fetchRevisions()', function () {
-
-      var promise;
-
-      beforeEach(function() {
+    describe('fetchRevisions()', function () {
+      beforeEach(function () {
         promise = ContractRevisionList.fetchRevisions(MockContract.contractRevisionData.values[0].id);
       });
 
-      afterEach(function() {
+      afterEach(function () {
         $httpBackend.flush();
         $rootScope.$apply();
       });
 
-      it('makes http call', function () {
-        $httpBackend.expectGET(/rest&action=get&entity=HRJobContractRevision/);
-      });
-
-      it('returns revisionList for a contract', function () {
+      it('returns revision list for a given contract', function () {
         promise.then(function (result) {
           expect(result.revisionList.length).toEqual(1);
           expect(result.revisionList[0].created_date).toBe(MockContract.contractRevisionData.values[0].created_date);
@@ -48,7 +41,7 @@ define([
         });
       });
 
-      it('returns revisionDataList for a contract', function () {
+      it('returns revision data list for a contract', function () {
         promise.then(function (result) {
           expect(result.revisionDataList.length).toBe(1);
           expect(result.revisionDataList[0].revisionEntityIdObj.created_date).toBe(MockContract.contractRevisionData.values[0].created_date);

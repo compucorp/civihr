@@ -1,7 +1,7 @@
 define([
   'mocks/data/contract',
   'job-contract/app'
-], function(MockContract) {
+], function (MockContract) {
   'use strict';
 
   describe('ContractLeaveService', function() {
@@ -19,21 +19,17 @@ define([
       $httpBackend.whenGET(/views.*/).respond({});
     }));
 
-    afterEach(function() {
+    afterEach(function () {
       $httpBackend.flush();
       $rootScope.$apply();
     });
 
-    describe('when calling getOne()', function () {
-      it('makes http call', function () {
-        $httpBackend.expectGET(/action=get&entity=HRJobContract/);
-      });
-
+    describe('getOne()', function () {
       it("defines getOne() function", function () {
         expect(ContractLeaveService.getOne).toBeDefined();
       });
 
-      it('calls getOne fuction and return expected values', function () {
+      it('calls getOne() and returns expected leave types ids', function () {
         ContractLeaveService.getOne({jobcontract_revision_id: 68}).then(function (result) {
           expect(result[0].leave_type).toBe('1');
           expect(result[1].leave_type).toBe('2');

@@ -23,16 +23,12 @@ define([
       $rootScope.$apply();
     });
 
-    describe('when calling getOne()', function () {
-      it('makes http call', function () {
-        $httpBackend.expectGET(/action=get&entity=HRJobContract/);
-      });
-
+    describe('getOne()', function () {
       it("defines getOne() function", function () {
         expect(ContractDetailsService.getOne).toBeDefined();
       });
 
-      it('calls getOne fuction and return expected values', function () {
+      it('calls getOne() to get expected contract data', function () {
         ContractDetailsService.getOne({jobcontract_revision_id: 68}).then(function (result) {
           expect(result.position).toEqual(MockContract.contract.values[0].position);
         });
