@@ -1,23 +1,24 @@
 /* eslint-env amd */
+
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/my-leave/modules/components',
+  'leave-absences/shared/modules/components',
   'leave-absences/shared/controllers/calendar-ctrl'
 ], function (_, moment, components) {
-  components.component('myLeaveCalendar', {
+  components.component('staffLeaveCalendar', {
     bindings: {
       contactId: '<'
     },
-    templateUrl: ['settings', function (settings) {
-      return settings.pathTpl + 'components/my-leave-calendar.html';
+    templateUrl: ['shared-settings', function (sharedSettings) {
+      return sharedSettings.sharedPathTpl + 'components/staff-leave-calendar.html';
     }],
     controllerAs: 'calendar',
     controller: ['$controller', '$log', '$rootScope', 'Calendar', controller]
   });
 
   function controller ($controller, $log, $rootScope, Calendar) {
-    $log.debug('Component: my-leave-calendar');
+    $log.debug('Component: staff-leave-calendar');
 
     var parentCtrl = $controller('CalendarCtrl');
     var vm = Object.create(parentCtrl);

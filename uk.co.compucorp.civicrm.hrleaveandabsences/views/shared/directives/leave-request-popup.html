@@ -37,7 +37,7 @@
       ng-show="!$ctrl.loading.absenceTypes">
       <div class="row">
         <div class="col-xs-12">
-          <div class="chr_custom-select chr_custom-select--full">
+          <div class="crm_custom-select crm_custom-select--full">
             <select
               ng-hide="$ctrl.absenceTypes.length === 0"
               ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))"
@@ -50,6 +50,7 @@
               disabled="disabled">
               <option>You don't have any leave entitlement</option>
             </select>
+            <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
       </div>
@@ -58,10 +59,10 @@
         <div class="col-xs-12">
           <uib-tabset class="chr_leave-request-modal__tab">
             <uib-tab heading="Details">
-              <ng-include src="pathTpl + 'request-modal/details/leave.html'"></ng-include>
+              <ng-include src="sharedPathTpl + 'request-modal/details/leave.html'"></ng-include>
               <ng-include
                 ng-show="$ctrl.isLeaveType('toil')"
-                src="pathTpl + 'request-modal/details/toil.html'"></ng-include>
+                src="sharedPathTpl + 'request-modal/details/toil.html'"></ng-include>
               <crm-loading show="!$ctrl.loading.showBalanceChange">
                 <div ng-show="$ctrl.uiOptions.showBalance">
                   <hr/>
@@ -175,7 +176,7 @@
               </div>
               <ng-include
                 ng-show="$ctrl.isLeaveType('sickness')"
-                src="pathTpl + 'request-modal/details/sickness.html'"></ng-include>
+                src="sharedPathTpl + 'request-modal/details/sickness.html'"></ng-include>
             </uib-tab>
             <uib-tab heading="Comments">
               <div
@@ -336,13 +337,14 @@
             <label class="col-xs-4 control-label">Set status to:<i class="fa fa-asterisk"></i>
             </label>
             <div class="col-xs-8">
-              <div class="chr_custom-select chr_custom-select--full">
+              <div class="crm_custom-select crm_custom-select--full">
                 <select
                   name="statusSelect"
                   ng-options="status.value as status.label for status in $ctrl.getStatuses()"
                   ng-model="$ctrl.newStatusOnSave">
                   <option value="">- select -</option>
                 </select>
+                <span class="crm_custom-select__arrow"></span>
               </div>
             </div>
           </div>

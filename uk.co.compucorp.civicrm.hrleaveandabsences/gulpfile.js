@@ -1,5 +1,6 @@
+var civicrmScssRoot = require('civicrm-scssroot')();
 var gulp = require('gulp');
-var gulpSequence = require('gulp-sequence')
+var gulpSequence = require('gulp-sequence');
 var clean = require('gulp-clean');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
@@ -9,11 +10,6 @@ var karma = require('karma');
 var exec = require('child_process').exec;
 var path = require('path');
 var fs = require('fs');
-var postcss = require('gulp-postcss');
-var postcssPrefix = require('postcss-prefix-selector');
-var transformSelectors = require("gulp-transform-selectors");
-
-var bootstrapNamespace = '#bootstrap-theme';
 
 gulp.task('requirejs', function (cb) {
   gulpSequence('requirejs:optimizer', 'requirejs:rename', 'requirejs:clean')(cb);
@@ -25,8 +21,8 @@ gulp.task('requirejs:clean', function () {
     'js/angular/dist/build.txt',
     'js/angular/dist/*.js',
     '!js/angular/dist/*.min.js'
-  ], { read: false })
-  .pipe(clean());
+  ], {read: false})
+    .pipe(clean());
 });
 
 gulp.task('requirejs:optimizer', function (done) {
@@ -38,31 +34,39 @@ gulp.task('requirejs:optimizer', function (done) {
 
 gulp.task('requirejs:rename', function () {
   return gulp.src('js/angular/dist/*.js')
-    .pipe(rename(function (path) { path.basename += '.min'; }))
+    .pipe(rename(function (path) {
+      path.basename += '.min';
+    }))
     .pipe(gulp.dest('js/angular/dist'));
 });
 
-gulp.task('sass', function () {
+gulp.task('sass', ['sass:sync'], function () {
   return gulp.src('scss/*.scss')
     .pipe(bulk())
-    .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
-    .pipe(postcss([postcssPrefix({
-      prefix: bootstrapNamespace + ' ',
-      exclude: [/^html/, /^body/, /\.ta-hidden-input/]
-    })]))
-    .pipe(transformSelectors(namespaceRootElements, { splitOnCommas: true }))
+    .pipe(sass({
+      outputStyle: 'compressed',
+      includePaths: civicrmScssRoot.getPath()
+    }).on('error', sass.logError))
     .pipe(gulp.dest('css/'));
+});
+
+gulp.task('sass:sync', function () {
+  civicrmScssRoot.updateSync();
 });
 
 gulp.task('watch', function () {
   gulp.watch('scss/**/*.scss', ['sass']);
   gulp.watch('js/angular/src/**/*.js', ['requirejs']).on('change', function (file) {
-    try { test.for(file.path); } catch (ex) { test.all(); };
+    try {
+      test.for(file.path);
+    } catch (ex) {
+      test.all();
+    }
   });
   gulp.watch(['js/angular/test/**/*.js', '!js/angular/test/mocks/**/*.js', '!js/angular/test/test-main.js'])
     .on('change', function (file) {
       test.single(file.path);
-  });
+    });
 });
 
 gulp.task('test', function (done) {
@@ -70,24 +74,6 @@ gulp.task('test', function (done) {
 });
 
 gulp.task('default', ['requirejs', 'sass', 'test', 'watch']);
-
-/**
- * Apply the namespace on html and body elements
- *
- * @param  {string} selector the current selector to be transformed
- * @return string
- */
-function namespaceRootElements(selector) {
-  var regex = /^(body|html)/;
-
-  if (regex.test(selector)) {
-    selector = selector.replace(regex, function (match) {
-      return match + bootstrapNamespace;
-    }) + ",\n" + selector.replace(regex, bootstrapNamespace);
-  }
-
-  return selector;
-}
 
 var test = (function () {
 
@@ -148,7 +134,7 @@ var test = (function () {
      * @param {string} testFile - The full path of a test file
      */
     single: function (testFile) {
-      var configFile = 'karma.' + path.basename(testFile, path.extname(testFile))  + '.conf.temp.js';
+      var configFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
       gulp.src(__dirname + '/js/angular/karma.conf.js')
         .pipe(replace('*_test.js', path.basename(testFile)))
@@ -156,7 +142,7 @@ var test = (function () {
         .pipe(gulp.dest(__dirname + '/js/angular'))
         .on('end', function () {
           runServer(configFile, function () {
-            gulp.src(__dirname + '/js/angular/' + configFile, { read: false }).pipe(clean());
+            gulp.src(__dirname + '/js/angular/' + configFile, {read: false}).pipe(clean());
           });
         });
     }

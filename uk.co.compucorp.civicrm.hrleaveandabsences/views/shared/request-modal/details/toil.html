@@ -3,7 +3,7 @@
     <div class="row">
       <label class="col-xs-4 control-label">Duration</label>
       <div class="col-xs-4 chr_leave-request-modal__input-shift-left">
-        <div class="chr_custom-select chr_custom-select--full">
+        <div class="crm_custom-select crm_custom-select--full">
           <select name="hours" ng-model="$ctrl.request.toilDurationHours"
             ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))"
             ng-change="$ctrl.request.updateDuration()">
@@ -21,10 +21,11 @@
             <option value="11">11h</option>
             <option value="12">12h</option>
           </select>
+          <span class="crm_custom-select__arrow"></span>
         </div>
       </div>
       <div class="col-xs-4">
-        <div class="chr_custom-select chr_custom-select--full">
+        <div class="crm_custom-select crm_custom-select--full">
           <select name="minutes" ng-model="$ctrl.request.toilDurationMinutes"
             ng-change="$ctrl.request.updateDuration()"
             ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))">
@@ -41,6 +42,7 @@
             <option value="50">50m</option>
             <option value="55">55m</option>
           </select>
+          <span class="crm_custom-select__arrow"></span>
         </div>
       </div>
     </div>
@@ -50,7 +52,7 @@
     <div class="row">
       <div class="col-xs-12"><p>TOIL to be Accrued:</p></div>
       <div class="col-xs-12">
-        <div class="chr_custom-select chr_custom-select--full">
+        <div class="crm_custom-select crm_custom-select--full">
           <select
             name="toilAmount"
             ng-disabled="$ctrl.isMode('view')"
@@ -59,6 +61,7 @@
             ng-change="$ctrl.calculateBalanceChange()">
             <option value="">- select -</option>
           </select>
+          <span class="crm_custom-select__arrow"></span>
         </div>
       </div>
     </div>

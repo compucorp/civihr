@@ -13,37 +13,41 @@
             </ui-select-choices>
           </ui-select>
         </div>
-        <div class="chr_custom-select">
+        <div class="crm_custom-select">
           <select
             ng-options="region.label for region in calendar.regions track by region.id"
             ng-model="calendar.filters.region"
             ng-change="calendar.refresh()">
             <option value="">Region</option>
           </select>
+          <span class="crm_custom-select__arrow"></span>
         </div>
-        <div class="chr_custom-select">
+        <div class="crm_custom-select">
           <select
             ng-options="department.label for department in calendar.departments track by department.id"
             ng-model="calendar.filters.department"
             ng-change="calendar.refresh()">
             <option value="">Department</option>
           </select>
+          <span class="crm_custom-select__arrow"></span>
         </div>
-        <div class="chr_custom-select">
+        <div class="crm_custom-select">
           <select
             ng-options="levelType.value for levelType in calendar.levelTypes track by levelType.id"
             ng-model="calendar.filters.level_type"
             ng-change="calendar.refresh()">
             <option value="">Level Type</option>
           </select>
+          <span class="crm_custom-select__arrow"></span>
         </div>
-        <div class="chr_custom-select">
+        <div class="crm_custom-select">
           <select
             ng-options="location.label for location in calendar.locations track by location.id"
             ng-model="calendar.filters.location"
             ng-change="calendar.refresh()">
             <option value="">Locations</option>
           </select>
+          <span class="crm_custom-select__arrow"></span>
         </div>
         <div class="checkbox">
           <label>
@@ -67,12 +71,13 @@
             </ui-select>
           </div>
           <div class="col-sm-offset-1 col-sm-3">
-            <div class="chr_custom-select chr_custom-select--full">
+            <div class="crm_custom-select crm_custom-select--full">
               <select
                 ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
                 ng-model="calendar.selectedPeriod"
                 ng-change="calendar.changeSelectedPeriod()">
               </select>
+              <span class="crm_custom-select__arrow"></span>
             </div>
           </div>
         </div>

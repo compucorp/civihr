@@ -15,12 +15,13 @@
             </ui-select>
           </div>
           <div class="col-sm-offset-1 col-sm-3">
-            <div class="chr_custom-select chr_custom-select--full">
+            <div class="crm_custom-select crm_custom-select--full">
               <select
                 ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
                 ng-model="calendar.selectedPeriod"
                 ng-change="calendar.changeSelectedPeriod()">
               </select>
+              <span class="crm_custom-select__arrow"></span>
             </div>
           </div>
         </div>
@@ -32,7 +33,7 @@
              ng-repeat="month in calendar.months track by $index">
       <ng-include
         ng-hide="(calendar.selectedMonths.length !== 0 && calendar.selectedMonths.indexOf(calendar.monthLabels[month.month]) === -1)"
-        src="$root.settings.pathTpl + 'components/my-leave-calendar-month.html'"></ng-include>
+        src="$root.sharedPathTpl + 'components/staff-leave-calendar-month.html'"></ng-include>
     </section>
 
     <section class="panel panel-default" ng-class="{ 'is-collapsed': calendar.legendCollapsed }">

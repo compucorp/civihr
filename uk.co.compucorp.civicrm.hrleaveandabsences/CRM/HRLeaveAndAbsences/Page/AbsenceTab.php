@@ -16,7 +16,8 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceTab extends  CRM_Core_Page {
           'vars' => array(
             'leaveAndAbsences' => array(
               'baseURL' => CRM_Core_Resources::singleton()->getUrl('uk.co.compucorp.civicrm.hrleaveandabsences'),
-              'contactId' => CRM_Utils_Request::retrieve('cid', 'Integer')
+              'contactId' => CRM_Utils_Request::retrieve('cid', 'Integer'),
+              'attachmentToken' => CRM_Core_Page_AJAX_Attachment::createToken()
             )
           )
         );
