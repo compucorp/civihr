@@ -30,6 +30,12 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    */
   private $workPatternCache;
 
+  /**
+   * @var \CRM_HRLeaveAndAbsences_BAO_WorkPattern
+   *   The default WorkPattern
+   */
+  private $defaultWorkPattern;
+
   public function __construct($contactID, AbsencePeriod $absencePeriod, JobContractService $jobContractService) {
     $this->contactID = $contactID;
     $this->absencePeriod = $absencePeriod;
@@ -383,7 +389,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    * @return array
    */
   private function fabricateDefaultWorkPatternPeriod(DateTime $startDate, DateTime $endDate, DateTime $effectiveDate = null) {
-    $workPattern = WorkPattern::getDefault();
+    $workPattern = $this->getDefaultWorkPattern();
     $workPatternPeriod = [
       'pattern_id' => (int)$workPattern->id,
       'effective_date' => $effectiveDate ? $effectiveDate : $startDate,
@@ -440,5 +446,18 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    */
   private function fillContractsLapses($contracts) {
     return $this->fabricateForLapses($contracts, 'fabricateContractPeriod');
+  }
+
+  /**
+   * Returns the default WorkPattern
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPattern
+   */
+  private function getDefaultWorkPattern() {
+    if(!$this->defaultWorkPattern) {
+      $this->defaultWorkPattern = WorkPattern::getDefault();
+    }
+
+    return $this->defaultWorkPattern;
   }
 }
