@@ -11,14 +11,14 @@
       sharedPathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/',
       serverDateFormat: 'YYYY-MM-DD',
       serverDateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
-      drupalPermissions: {
+      permissions: {
         admin: {
-          access: 'CiviHRLeaveAndAbsences: Access Leave and Absences',
-          administer: 'CiviHRLeaveAndAbsences: Administer Leave and Absences'
+          access: 'access leave and absences',
+          administer: 'administer leave and absences'
         },
         ssp: {
-          access: 'CiviHRLeaveAndAbsences: Access Leave and Absences in SSP',
-          manage: 'CiviHRLeaveAndAbsences: Manage Leave and Absences in SSP'
+          access: 'access leave and absences in ssp',
+          manage: 'manage leave and absences in ssp'
         }
       },
       fileUploader: {
