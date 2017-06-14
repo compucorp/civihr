@@ -1,15 +1,18 @@
+/* globals inject */
+/* eslint-env amd, jasmine */
+
 define([
   'mocks/data/contract-revision',
   'mocks/data/insurance-plan-types',
   'job-contract/app'
-], function(ContractMock, InsuranceMock) {
+], function (ContractMock, InsuranceMock) {
   'use strict';
 
-  describe('ContractHealthService', function() {
+  describe('ContractHealthService', function () {
     var $httpBackend, promise, $rootScope, ContractHealthService;
 
     beforeEach(module('hrjc'));
-    beforeEach(inject(function(_ContractHealthService_, _$httpBackend_, _$rootScope_) {
+    beforeEach(inject(function (_ContractHealthService_, _$httpBackend_, _$rootScope_) {
       ContractHealthService = _ContractHealthService_;
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
@@ -28,11 +31,7 @@ define([
     });
 
     describe('getOne()', function () {
-      it('makes http call', function () {
-        $httpBackend.expectGET(/action=get&entity=HRJobContract/);
-      });
-
-      it('returns expected values', function () {
+      it('returns job cotract revision id', function () {
         ContractHealthService.getOne({
           jobcontract_revision_id: 68
         }).then(function(result) {
@@ -48,7 +47,7 @@ define([
           promise = ContractHealthService.getOptions("hrjobcontract_health_health_plan_type", true);
         });
 
-        it('returns expected values', function () {
+        it('returns insurance plan types list', function () {
           promise.then(function (healthInsurancePlanTypes) {
             expect(healthInsurancePlanTypes[0]["value"]).toEqual(InsuranceMock.insurancePlanTypes.values[0]["value"]);
             expect(healthInsurancePlanTypes[1]["value"]).toEqual(InsuranceMock.insurancePlanTypes.values[1]["value"]);
@@ -61,7 +60,7 @@ define([
           promise = ContractHealthService.getOptions("hrjobcontract_health_life_insurance_plan_type", true);
         });
 
-        it('returns expected values', function () {
+        it('returns life insurance plan types list', function () {
           promise.then(function (lifeInsurancePlanTypes) {
             expect(lifeInsurancePlanTypes[0]["value"]).toEqual(InsuranceMock.insurancePlanTypes.values[0]["value"]);
             expect(lifeInsurancePlanTypes[1]["value"]).toEqual(InsuranceMock.insurancePlanTypes.values[1]["value"]);
@@ -69,12 +68,12 @@ define([
         });
       });
 
-      describe('when not calling the api', function () {
+      describe('when called api with empty insurance type', function () {
         beforeEach(function () {
           promise = ContractHealthService.getOptions("", false);
         });
 
-        it('returns empty result', function () {
+        it('returns empty list insurance plan types', function () {
           promise.then(function (result) {
             expect(result).toEqual(Object({}));
           });
