@@ -13,8 +13,16 @@
       content: $fa-caret-down;
     }
 
+    .fa-caret-right:before {
+      content: $fa-caret-right;
+    }
+
     .fa-caret-right {
       content: $fa-caret-right;
+    }
+
+    .crm-i {
+      line-height: 1.6em;
     }
   }
 }
