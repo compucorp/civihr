@@ -30,6 +30,12 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    */
   private $workPatternCache;
 
+  /**
+   * @var \CRM_HRLeaveAndAbsences_BAO_WorkPattern
+   *   The default WorkPattern
+   */
+  private $defaultWorkPattern;
+
   public function __construct($contactID, AbsencePeriod $absencePeriod, JobContractService $jobContractService) {
     $this->contactID = $contactID;
     $this->absencePeriod = $absencePeriod;
@@ -72,10 +78,12 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    * of during which dates this pattern was active during that period.
    *
    * This method take into account the contact's contracts during the period,
-   * and the returned dates are adjusted to match the contracts dates. That is,
-   * even if a contact has an effective work pattern for a given date, the
-   * method won't include that pattern unless the contact also has a contract
-   * during that date.
+   * and the returned dates are adjusted to match the contracts dates.
+   *
+   * For cases where there are time lapses between the Work Pattern Periods, These
+   * lapses are filled using the default Work Pattern. Also lapses between the start
+   * of the Absence period and the first Work pattern period, between the last Work Pattern
+   * period and the Absence period end date are filled using the default Work Pattern.
    *
    * @return array
    *   An array of Work Patterns, organized according to the dates of the
@@ -88,56 +96,30 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    *   - period_end_date: The end date for this work pattern on the period
    *     @see calculateWorkPatternPeriodEndDate
    *
-   *   Given that gaps between contracts might exist and a single work pattern
-   *   might cover more than one contract, the returned array might include more
-   *   than one entry for the same work pattern (one for each contract covered
-   *   by that work pattern), but with different dates.
+   *   Given that a single work pattern might cover more than one contract,
+   *   the returned array might include more than one entry for the same work pattern
+   *   (one for each contract covered by that work pattern), but with different dates.
    */
   private function getWorkPatternsPeriods() {
     $workPatterns = [];
     $contracts = $this->getContractsWithAdjustedDatesForPeriod();
 
     foreach($contracts as $contract) {
-      $contractStartDate = new DateTime($contract['period_start_date']);
-      $contractEndDate = new DateTime($contract['period_end_date']);
-      $contractOriginalStartDate = new DateTime($contract['original_start_date']);
-
       $contactWorkPatterns = ContactWorkPattern::getAllForPeriod(
         $this->contactID,
-        $contractStartDate,
-        $contractEndDate
+        $contract['period_start_date'],
+        $contract['period_end_date']
       );
 
       // If there's no work pattern for this contract, we use the default one
       // for its whole period
       if(empty($contactWorkPatterns)) {
-        $workPattern = WorkPattern::getDefault();
-        $workPatterns[] = [
-          'pattern_id' => (int)$workPattern->id,
-          'effective_date' => $contractOriginalStartDate,
-          'period_start_date' => $contractStartDate,
-          'period_end_date' => $contractEndDate
-        ];
-
+        $this->fabricateDefaultWorkPatternPeriod(
+          $contract['period_start_date'],
+          $contract['period_end_date'],
+          $contract['original_start_date']
+        );
         continue;
-      }
-
-      // If the first returned work pattern starts being effective after the
-      // contract start date, it means that, for some time, that contract's
-      // contact didn't have any work pattern assigned. In this case, we have to
-      // use the default work pattern for this period
-      $firstWorkPattern = reset($contactWorkPatterns);
-      $firstWorkPatternEffectiveDate = new DateTime($firstWorkPattern->effective_date);
-
-      if($firstWorkPatternEffectiveDate > $contractStartDate) {
-        $workPattern = WorkPattern::getDefault();
-
-        $workPatterns[] = [
-          'pattern_id' => (int)$workPattern->id,
-          'effective_date' => $contractStartDate,
-          'period_start_date' => $contractStartDate,
-          'period_end_date' => $firstWorkPatternEffectiveDate->modify('-1 day')
-        ];
       }
 
       foreach($contactWorkPatterns as $contactWorkPattern) {
@@ -154,12 +136,21 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
       }
     }
 
+    $workPatterns = $this->fillWorkPatternPeriodsLapses($workPatterns);
+
     return $workPatterns;
   }
 
   /**
    * Returns all the contracts for this calendar's contact during the calendar's
    * Absence Period.
+   * Because we want all the calendar dates to be returned irrespective of whether the
+   * contact has a contract within the absence period or not, Lapses between the contracts
+   * are filled with fabricated contract dates. Also lapses between the first contract period and
+   * the Absence period start date, the last contract period and the Absence period and date
+   * are filled with fabricated contract dates.
+   * For a contact without a contract at all within the period, A contract is fabricated using the
+   * Absence Period start and end dates.
    *
    * The dates of the contracts will be adjusted to be contained on absence
    * period dates. That is:
@@ -189,12 +180,14 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
 
       // We need the original date in order to calculate the effective date for
       // the work patterns, so we keep it here in this "fake" field
-      $contract['original_start_date'] = $contract['period_start_date'];
-      $contract['period_start_date'] = $startDate;
-      $contract['period_end_date'] = $endDate;
+      $contract['original_start_date'] = new DateTime($contract['period_start_date']);
+      $contract['period_start_date'] = new DateTime($startDate);
+      $contract['period_end_date'] = new DateTime($endDate);
 
       $contracts[$i] = $contract;
     }
+
+    $contracts = $this->fillContractsLapses($contracts);
 
     return $contracts;
   }
@@ -236,7 +229,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    */
   private function calculateWorkPatternEffectiveDateForContract(ContactWorkPattern $contactWorkPattern, $contract) {
     $patternEffectiveDate = new DateTime($contactWorkPattern->effective_date);
-    $contractOriginalStartDate = new DateTime($contract['original_start_date']);
+    $contractOriginalStartDate = $contract['original_start_date'];
 
     if ($patternEffectiveDate < $contractOriginalStartDate) {
       $patternStartDate = clone $contractOriginalStartDate;
@@ -272,7 +265,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    */
   private function calculateWorkPatternPeriodStartDate(ContactWorkPattern $contactWorkPattern, $contract) {
     $patternEffectiveDate = new DateTime($contactWorkPattern->effective_date);
-    $contractStartDate = new DateTime($contract['period_start_date']);
+    $contractStartDate = $contract['period_start_date'];
 
     if($patternEffectiveDate < $contractStartDate) {
       $patternEffectiveDate = clone $contractStartDate;
@@ -300,7 +293,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    * @return \DateTime
    */
   private function calculateWorkPatternPeriodEndDate(ContactWorkPattern $contactWorkPattern, $contract) {
-    $contractEndDate = new DateTime($contract['period_end_date']);
+    $contractEndDate = $contract['period_end_date'];
 
     $patternEffectiveEndDate = NULL;
     if ($contactWorkPattern->effective_end_date) {
@@ -314,4 +307,192 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
     return $patternEffectiveEndDate;
   }
 
+  /**
+   * This method fills the dates lapses between the items in the array passed in using
+   * the fabricateMethod.
+   * It also fills lapses between the absence period
+   * start date and the first item in the array and the also between the last item
+   * and the absence period end date using the fabricate method provided.
+   *
+   * The array passed in could be Work Pattern periods or Contracts.
+   *
+   * @param array $toFabricateFor
+   *   e.g
+   *   [
+   *     '1' => [
+   *       'period_start_date' => '2016-01-01',
+   *       'period_end_date' => '2016-01-10'
+   *     ],
+   *     '2 => [
+   *       'period_start_date' => '2016-01-15',
+   *       'period_end_date' => '2016-01-31'
+   *     ]
+   *   ]
+   * @param string $fabricateMethod
+   *
+   * @return array
+   *   An array with the no date lapses in between.
+   *   Using the example array in the toFabricateFor param,
+   *   the following array will be returned given that there are no lapses between
+   *   the items in the array and the Absence Period start and end dates.
+   *   [
+   *     '1' => [
+   *       'period_start_date' => '2016-01-01',
+   *       'period_end_date' => '2016-01-10'
+   *     ],
+   *     '2 => [
+   *       'period_start_date' => '2016-01-11',
+   *       'period_end_date' => '2016-01-14'
+   *     ]
+   *    '3 => [
+   *       'period_start_date' => '2016-01-15',
+   *       'period_end_date' => '2016-01-31'
+   *     ]
+   *   ]
+   *
+   */
+  private function fabricateForLapses($toFabricateFor, $fabricateMethod) {
+    $fabricated = [];
+
+    if(!method_exists($this, $fabricateMethod)){
+      return $toFabricateFor;
+    }
+    $absencePeriodEndDate = new DateTime($this->absencePeriod->end_date);
+    $absencePeriodStartDate = new DateTime($this->absencePeriod->start_date);
+
+    if(!$toFabricateFor) {
+      $fabricated[] = $this->$fabricateMethod($absencePeriodStartDate, $absencePeriodEndDate);
+      return $fabricated;
+    }
+
+    $firstToFabricateFor = reset($toFabricateFor);
+
+    //fabricate for lapse between beginning of absence period and first $toFabricateFor
+    $firstToFabricateForStartDate = clone $firstToFabricateFor['period_start_date'];
+    if ($firstToFabricateForStartDate > $absencePeriodStartDate) {
+      $fabricated[] = $this->$fabricateMethod($absencePeriodStartDate, $firstToFabricateForStartDate->modify('-1 day'));
+    }
+
+    $toCompare = $firstToFabricateFor;
+    $fabricated[] = $toCompare;
+
+    //fabricate for lapses in between toFabricateFor periods
+    while($next = next($toFabricateFor)) {
+      $fromDate = clone $toCompare['period_end_date'];
+      $toDate = clone $next['period_start_date'];
+      $intervalInDays = $this->getDateIntervalInDays($fromDate, $toDate);
+
+      if($intervalInDays > 1) {
+        $fabricated[] = $this->$fabricateMethod($fromDate->modify('+1 day'), $toDate->modify('-1 day'));
+      }
+      $fabricated[] = $next;
+      $toCompare = $next;
+    }
+
+    $lastToFabricateFor = end($toFabricateFor);
+
+    //fabricate for lapse between last toFabricateFor and end of absence period
+    $lastToFabricateForEndDate = clone $lastToFabricateFor['period_end_date'];
+    if ($lastToFabricateForEndDate < $absencePeriodEndDate) {
+      $fabricated[] = $this->$fabricateMethod($lastToFabricateForEndDate->modify('+1 day'), $absencePeriodEndDate);
+    }
+
+    return $fabricated;
+  }
+
+  /**
+   * Returns the interval in days between the from and to dates.
+   *
+   * @param \DateTime $fromDate
+   * @param \DateTime $toDate
+   *
+   * @return int
+   */
+  private function getDateIntervalInDays(DateTime $fromDate, DateTime $toDate) {
+    $interval = $toDate->diff($fromDate);
+    return (int) $interval->format('%a');
+  }
+
+  /**
+   * This method fabricates a work pattern period using the default work pattern
+   * and the dates passed in.
+   *
+   * @param \DateTime $startDate
+   * @param \DateTime $endDate
+   * @param \DateTime|null $effectiveDate
+   *
+   * @return array
+   */
+  private function fabricateDefaultWorkPatternPeriod(DateTime $startDate, DateTime $endDate, DateTime $effectiveDate = null) {
+    $workPattern = $this->getDefaultWorkPattern();
+    $workPatternPeriod = [
+      'pattern_id' => (int)$workPattern->id,
+      'effective_date' => $effectiveDate ? $effectiveDate : $startDate,
+      'period_start_date' => $startDate,
+      'period_end_date' => $endDate,
+    ];
+
+    return $workPatternPeriod;
+  }
+
+  /**
+   * Fabricates a contract period using the start date and end date range passed in.
+   *
+   * @param \DateTime $startDate
+   * @param \DateTime $endDate
+   *
+   * @return array
+   */
+  private function fabricateContractPeriod(DateTime $startDate, DateTime $endDate) {
+    $contract = [
+      'original_start_date' => $startDate,
+      'period_start_date' => $startDate,
+      'period_end_date' => $endDate,
+    ];
+
+    return $contract;
+  }
+
+  /**
+   * Fills the lapses between the Work Pattern periods with the default work pattern period
+   * It also fills lapses between the absence period
+   * start date and the first work pattern period and the also between the last work pattern
+   * period and the absence period end date using the default work pattern.
+   *
+   * @param array $workPatternPeriods
+   *
+   * @return array
+   *   An array of Work pattern periods with no lapses in between.
+   */
+  private function fillWorkPatternPeriodsLapses($workPatternPeriods) {
+    return $this->fabricateForLapses($workPatternPeriods, 'fabricateDefaultWorkPatternPeriod');
+  }
+
+  /**
+   * Fills the lapses between the contract dates with fabricated contract dates.
+   * It also fills lapses between the absence period
+   * start date and the first work contract and the also between the last contract
+   * and the absence period end date.
+   *
+   * @param array $contracts
+   *
+   * @return array
+   *  An array of contracts with no lapses in between
+   */
+  private function fillContractsLapses($contracts) {
+    return $this->fabricateForLapses($contracts, 'fabricateContractPeriod');
+  }
+
+  /**
+   * Returns the default WorkPattern
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPattern
+   */
+  private function getDefaultWorkPattern() {
+    if(!$this->defaultWorkPattern) {
+      $this->defaultWorkPattern = WorkPattern::getDefault();
+    }
+
+    return $this->defaultWorkPattern;
+  }
 }

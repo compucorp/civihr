@@ -60,16 +60,6 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
     ]);
   }
 
-  public function testGetCalendarShouldReturnEmptyIfTheGivenContactDoesntExists() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
-      'end_date'   => CRM_Utils_Date::processDate('2015-01-19'),
-    ]);
-
-    $result = civicrm_api3('WorkPattern', 'getCalendar', ['contact_id' => 321, 'period_id' => $absencePeriod->id]);
-    $this->assertEmpty($result['values'][0]['calendar']);
-  }
-
   /**
    * Just an small test to make sure it can call the service and return the dates
    */
@@ -80,7 +70,7 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
     // 15 days absence period
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
-      'end_date'   => CRM_Utils_Date::processDate('2015-01-19'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-08'),
     ]);
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
