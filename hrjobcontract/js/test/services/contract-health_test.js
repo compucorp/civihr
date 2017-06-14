@@ -31,7 +31,7 @@ define([
     });
 
     describe('getOne()', function () {
-      it('returns job cotract revision id', function () {
+      it('returns job contract revision id', function () {
         ContractHealthService.getOne({
           jobcontract_revision_id: 68
         }).then(function(result) {
