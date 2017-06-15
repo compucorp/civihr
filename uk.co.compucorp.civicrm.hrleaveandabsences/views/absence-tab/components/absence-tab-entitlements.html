@@ -2,49 +2,31 @@
   <div class="panel-heading">
     <h3 class="panel-title">Contract Entitlements</h3>
   </div>
-  <div class="table-responsive">
+  <div class="table-responsive" ng-show="entitlements.contracts !== null && entitlements.contracts.length > 0">
     <table class="table">
       <thead>
         <tr>
           <th style="width:140px">Position</th>
           <th>Start Date</th>
           <th>End Date</th>
-          <th>Sick</th>
-          <th>Vacation</th>
-          <th>Marernity</th>
-          <th>Paternity</th>
-          <th>TOIL</th>
-          <th>TOIL (Credit)</th>
-          <th>Other</th>
+          <th ng-repeat="absenceType in entitlements.absenceTypes">{{absenceType.title}}</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Developer</td>
-          <td>01/01/2015</td>
-          <td>01/01/2016</td>
-          <td>20</td>
-          <td>30</td>
-          <td>40</td>
-          <td>20</td>
-          <td>30</td>
-          <td>40</td>
-          <td>20</td>
-        </tr>
-        <tr>
-          <td>Manager</td>
-          <td>01/01/2015</td>
-          <td></td>
-          <td>20</td>
-          <td>30</td>
-          <td>40</td>
-          <td>20</td>
-          <td>30</td>
-          <td>40</td>
-          <td>20</td>
+        <tr ng-repeat="contract in entitlements.contracts">
+          <td>{{contract.position}}</td>
+          <td>{{contract.start_date}}</td>
+          <td>{{contract.end_date}}</td>
+          <td ng-repeat="absence in contract.absences">{{absence.amount}}</td>
         </tr>
       </tbody>
     </table>
+  </div>
+  <div class="panel-body" ng-show="entitlements.contracts !== null && entitlements.contracts.length === 0">
+    None found.
+  </div>
+  <div class="panel-body" ng-show="entitlements.contracts === null">
+    <crm-loading></crm-loading>
   </div>
 </div>
 
