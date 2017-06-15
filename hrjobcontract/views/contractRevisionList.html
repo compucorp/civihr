@@ -150,7 +150,7 @@
       <tr ng-repeat="revision in revisionDataListPage">
         <td ng-hide="!display.effectiveDate">{{(revision.revisionEntityIdObj.effective_date | date: 'yyyy/MM/dd') || '-'}}</td>
         <td ng-hide="!display.position">{{revision.details.position || '-'}}</td>
-        <td ng-hide="!display.payScale">{{revision.pay.pay_scale ? (((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_scale') || '-') + ' ' + ((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_grade') || '' )) : '-'}}</td>
+        <td ng-hide="!display.payScale">{{revision.pay.pay_scale ? (((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_scale') || '-')) : '-'}}</td>
         <td ng-hide="!display.totalSalary">{{revision.pay.pay_annualized_est || '-'}} {{options.pay.pay_currency[revision.pay.pay_currency]}}</td>
         <td ng-hide="!display.hours">{{options.hour.hours_type[revision.hour.hours_type] || '-'}}</td>
         <td ng-hide="!display.placeOfWork">{{options.details.location[revision.details.location] || '-'}}</td>

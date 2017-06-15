@@ -1,4 +1,4 @@
-pay_scale,pay_grade,currency,amount,periodicity
+pay_scale,pay_grade,currency,amount,pay_frequency
 E1,CXO,GBP,80000,Year
 E2,Head of Department,GBP,70000,Year
 E3,Manager,GBP,60000,Year

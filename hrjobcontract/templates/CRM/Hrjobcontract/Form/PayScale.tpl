@@ -34,20 +34,12 @@
         <td class="html-adjust">{$form.pay_scale.html}</td>
       </tr>
       <tr>
-        <td class="label">{$form.pay_grade.label}</td>
-        <td class="html-adjust">{$form.pay_grade.html}</td>
-      </tr>
-      <tr>
-        <td class="label">{$form.currency.label}</td>
-        <td class="html-adjust">{$form.currency.html}</td>
-      </tr>
-      <tr>
         <td class="label">{$form.amount.label}</td>
-        <td class="html-adjust">{$form.amount.html}</td>
+        <td class="html-adjust">{$form.currency.html} {$form.amount.html}</td>
       </tr>
       <tr>
-        <td class="label">{$form.periodicity.label}</td>
-        <td class="html-adjust">{$form.periodicity.html}</td>
+        <td class="label">{$form.pay_frequency.label}</td>
+        <td class="html-adjust">{$form.pay_frequency.html}</td>
       </tr>
       <tr>
         <td class="label">{$form.is_active.label}</td>

@@ -121,10 +121,16 @@ function hrident_civicrm_managed(&$entities) {
 }
 
 /**
- * Implementation of hook_civicrm_tabs
+ * Implementation of hook_civicrm_tabset.
+ *
+ * @param string $tabsetName
+ * @param array &$tabs
+ * @param array $context
  */
-function hrident_civicrm_tabs(&$tabs, $contactID) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrident', 'css/hrident.css');
+function hrident_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName === 'civicrm/contact/view') {
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrident', 'css/hrident.css');
+  }
 }
 
 function hrident_getCustomGroupId() {
