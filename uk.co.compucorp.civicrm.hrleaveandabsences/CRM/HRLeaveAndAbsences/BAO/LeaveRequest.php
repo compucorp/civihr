@@ -11,6 +11,7 @@ use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException as InvalidLeaveRequestException;
 use \CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
@@ -404,16 +405,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function validateLeaveDatesDoesNotOverlapContractsWithLapses($params) {
     $fromDate = new DateTime($params['from_date']);
     $toDate = new DateTime($params['to_date']);
+    $contractsOverlappingToAndFromDates = JobContract::getContractsWithDetailsInPeriod(
+      $fromDate->format('Y-m-d'), $toDate->format('Y-m-d'),
+      $params['contact_id']
+    );
 
-    $contractsOverlappingToAndFromDates = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
-      'contact_id' => $params['contact_id'],
-      'start_date' => $fromDate->format('Y-m-d'),
-      'end_date' => $toDate->format('Y-m-d'),
-    ]);
-
-    if ($contractsOverlappingToAndFromDates['count'] > 1) {
-      $contractToCompare = reset($contractsOverlappingToAndFromDates['values']);
-      while($nextContract = next($contractsOverlappingToAndFromDates['values'])) {
+    if (count($contractsOverlappingToAndFromDates) > 1) {
+      $contractToCompare = reset($contractsOverlappingToAndFromDates);
+      while($nextContract = next($contractsOverlappingToAndFromDates)) {
         $intervalInDays = self::getDateIntervalInDays(
           new DateTime($contractToCompare['period_end_date']),
           new DateTime($nextContract['period_start_date'])
