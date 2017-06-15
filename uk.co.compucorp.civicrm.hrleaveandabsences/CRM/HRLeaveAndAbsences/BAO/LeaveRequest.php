@@ -81,8 +81,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params);
     self::validateAbsencePeriod($params);
     self::validateNoOverlappingLeaveRequests($params);
-    self::validateWorkingDay($params);
-    self::validateBalanceChange($params);
+    self::validateWorkingDayAndBalanceChange($params);
     self::validateLeaveDatesDoesNotOverlapContractsWithLapses($params);
   }
 
@@ -437,17 +436,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   /**
    * This method checks and ensures that the balance change for the leave request is
    * not greater than the remaining balance of the period if the Request’s AbsenceType
-   * do not allow overuse.
+   * do not allow overuse. It also validates that the leave request to be created has at least one day,
+   * The logic is based on the fact that if there's no working day for a leave request
+   * the returned balance change will be Zero.
    *
    * @param array $params
    *   The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateBalanceChange($params) {
+  private static function validateWorkingDayAndBalanceChange($params) {
     //TOIL accrual is independent of Current Balance.
     if($params['request_type'] == self::REQUEST_TYPE_TOIL) {
       return;
+    }
+
+    $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
+    if ($leaveRequestBalance == 0) {
+      throw new InvalidLeaveRequestException(
+        'Leave Request must have at least one working day to be created',
+        'leave_request_doesnt_have_working_day',
+        'from_date'
+      );
     }
 
     $toDate = new DateTime($params['to_date']);
@@ -457,7 +467,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $leavePeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact($params['contact_id'], $period->id, $params['type_id']);
     $currentBalance = $leavePeriodEntitlement->getBalance();
-    $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
 
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
       throw new InvalidLeaveRequestException(
@@ -492,32 +501,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     );
 
     return abs($leaveRequestBalance['amount']);
-  }
-
-  /**
-   * This method validates that the leave request to be created has at least one day
-   * The logic is based on the fact that if there's no working day for a leave request
-   * the returned balance change will be Zero.
-   *
-   * @param array $params
-   *  The params array received by the create method
-   *
-   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   */
-  private static function validateWorkingDay($params) {
-    //TOIL accrual is independent of Working days.
-    if($params['request_type'] == self::REQUEST_TYPE_TOIL) {
-      return;
-    }
-
-    $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
-    if ($leaveRequestBalance == 0) {
-      throw new InvalidLeaveRequestException(
-        'Leave Request must have at least one working day to be created',
-        'leave_request_doesnt_have_working_day',
-        'from_date'
-      );
-    }
   }
 
   /**
