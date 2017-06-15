@@ -6,7 +6,6 @@ define([
   'common/services/pub-sub',
   'common/services/file-upload',
   'common/services/pub-sub',
-  'common/services/check-perm',
   'common/services/check-permissions'
 ], function () {
 
