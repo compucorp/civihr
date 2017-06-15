@@ -42,7 +42,7 @@ abstract class CRM_HRCore_Form_AbstractDrupalInteractionTaskForm extends CRM_Con
     $emailParams = [
       'contact_id' => '$value.id',
       'return' => ['email'],
-      'is_primary' => 1,
+      'is_primary' => 1
     ];
     $ufMatchParams = [
       'contact_id' => '$value.id',
@@ -51,9 +51,8 @@ abstract class CRM_HRCore_Form_AbstractDrupalInteractionTaskForm extends CRM_Con
     $params = [
       'return' => ['display_name'],
       'id' => ['IN' => $this->_contactIds],
-      'options' => ['limit' => 0],
       'api.Email.getsingle' => $emailParams,
-      'api.UFMatch.getsingle' => $ufMatchParams,
+      'api.UFMatch.getsingle' => $ufMatchParams
     ];
     $contactDetails = civicrm_api3('Contact', 'get', $params);
     $contactDetails = ArrayHelper::value('values', $contactDetails);
@@ -93,11 +92,11 @@ abstract class CRM_HRCore_Form_AbstractDrupalInteractionTaskForm extends CRM_Con
    * @return array
    */
   protected function getContactsWithoutAttribute($property) {
-    $checker = function ($contactDetail) use ($property) {
+    $attributesFilter = function ($contactDetail) use ($property) {
       return empty($contactDetail[$property]);
     };
 
-    return array_filter($this->contactDetails, $checker);
+    return array_filter($this->contactDetails, $attributesFilter);
   }
 
 }
