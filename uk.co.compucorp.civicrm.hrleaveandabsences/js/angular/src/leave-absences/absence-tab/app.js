@@ -4,6 +4,7 @@ define([
   'common/angular',
   'common/angularBootstrap',
   'common/modules/directives',
+  'leave-absences/shared/models/absence-type-model',
   'leave-absences/absence-tab/modules/config',
   'leave-absences/absence-tab/components/absence-tab-container',
   'leave-absences/absence-tab/components/absence-tab-report',
