@@ -2796,8 +2796,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //4(already accrued) + 2(to be accrued)  = 6 and is greater than max leave accrual for Period 1.
     $params['id'] = $toilRequest2Period2->id;
     $params['toil_to_accrue'] = 2;
-    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-06');
-    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-06');
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-08');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-08');
     LeaveRequestFabricator::fabricate($params, true);
   }
 }

@@ -74,15 +74,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateRequestType($params);
     self::validateTOILFieldsBasedOnRequestType($params);
     self::validateSicknessFieldsBasedOnRequestType($params);
-    self::validateAbsenceTypeIsActiveAndValid($params);
-    self::validateTOILRequest($params);
     self::validateStartDateNotGreaterThanEndDate($params);
-    self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params);
-    self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params);
-    self::validateAbsencePeriod($params);
     self::validateNoOverlappingLeaveRequests($params);
-    self::validateWorkingDayAndBalanceChange($params);
     self::validateLeaveDatesDoesNotOverlapContractsWithLapses($params);
+
+    list($absenceType, $absencePeriod) = self::loadCommonObjects($params);
+    self::validateAbsenceTypeIsActiveAndValid($params, $absenceType);
+    self::validateTOILRequest($params, $absenceType, $absencePeriod);
+    self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params, $absenceType);
+    self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params, $absenceType);
+    self::validateAbsencePeriod($params, $absencePeriod);
+    self::validateWorkingDayAndBalanceChange($params, $absenceType, $absencePeriod);
+
   }
 
   /**
@@ -198,17 +201,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * Runs all the validations specific for TOIL Requests
    *
    * @param array $params
+   * @param AbsenceType $absenceType
+   * @param AbsencePeriod $absencePeriod
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateTOILRequest($params) {
+  private static function validateTOILRequest($params, $absenceType, $absencePeriod) {
     if($params['request_type'] !== self::REQUEST_TYPE_TOIL) {
       return;
     }
 
     self::validateTOILToAccrueIsAValidOptionValue($params);
-    self::validateTOILPastDays($params);
-    self::validateTOILToAccruedAmountIsValid($params);
+    self::validateTOILPastDays($params, $absenceType);
+    self::validateTOILToAccruedAmountIsValid($params, $absenceType, $absencePeriod);
   }
 
   /**
@@ -237,12 +242,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param array $params
    *   The params array received by the create method
+   * @param AbsenceType $absenceType
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateTOILPastDays($params) {
-    $absenceType = AbsenceType::findById($params['type_id']);
-
+  private static function validateTOILPastDays($params, $absenceType) {
     $fromDate = new DateTime($params['from_date']);
     $toDate = new DateTime($params['to_date']);
     $todayDate = new DateTime('today');
@@ -263,22 +267,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param array $params
    *   The params array received by the create method
+   * @param AbsenceType $absenceType
+   * @param AbsencePeriod $absencePeriod
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateTOILToAccruedAmountIsValid($params) {
-    $absenceType = AbsenceType::findById($params['type_id']);
+  private static function validateTOILToAccruedAmountIsValid($params, $absenceType, $absencePeriod) {
     $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual !== 0;
     $oldToilRequest = '';
 
     if (!empty($params['id'])) {
       $oldToilRequest = self::findById($params['id']);
     }
-    $periodContainingToilDates = AbsencePeriod::getPeriodContainingDates(
-      new DateTime($params['from_date']),
-      new DateTime($params['to_date'])
-    );
 
+    $periodContainingToilDates = $absencePeriod;
     $totalApprovedToilForPeriod = self::getTotalApprovedToilForPeriod(
       $periodContainingToilDates,
       $params['contact_id'],
@@ -374,17 +376,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param array $params
    *   The params array received by the create method
+   * @param AbsencePeriod $absencePeriod
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateAbsencePeriod($params) {
-    $toDate = new DateTime($params['to_date']);
-    $fromDate = new DateTime($params['from_date']);
-    $period = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
-
+  private static function validateAbsencePeriod($params, $absencePeriod) {
     //this condition means that no absence period was found that contains both the start and end date
     //either there was an overlap or the absence period does not simply exist.
-    if (!$period) {
+    if (!$absencePeriod) {
       throw new InvalidLeaveRequestException(
         'The Leave request dates are not contained within a valid absence period',
         'leave_request_not_within_absence_period',
@@ -442,10 +441,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param array $params
    *   The params array received by the create method
+   * @param AbsenceType $absenceType
+   * @param AbsencePeriod $period
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateWorkingDayAndBalanceChange($params) {
+  private static function validateWorkingDayAndBalanceChange($params, $absenceType, $period) {
     //TOIL accrual is independent of Current Balance.
     if($params['request_type'] == self::REQUEST_TYPE_TOIL) {
       return;
@@ -459,11 +460,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         'from_date'
       );
     }
-
-    $toDate = new DateTime($params['to_date']);
-    $fromDate = new DateTime($params['from_date']);
-    $absenceType = AbsenceType::findById($params['type_id']);
-    $period = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
 
     $leavePeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact($params['contact_id'], $period->id, $params['type_id']);
     $currentBalance = $leavePeriodEntitlement->getBalance();
@@ -575,11 +571,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param array $params
    *   The params array received by the create method
+   * @param AbsenceType $absenceType
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params) {
-    $absenceType = AbsenceType::findById($params['type_id']);
+  private static function validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params, $absenceType) {
     $fromDate = new DateTime($params['from_date']);
     $toDate = new DateTime($params['to_date']);
 
@@ -605,16 +601,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param array $params
    *   The params array received by the create method
+   * @param AbsenceType $absenceType
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params) {
+  private static function validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params, $absenceType) {
     $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
     $leaveRequestIsForCurrentUser = CRM_Core_Session::getLoggedInContactID() == $params['contact_id'];
     $isACancellationRequest = ($params['status_id'] == $leaveRequestStatuses['cancelled']);
 
     if($leaveRequestIsForCurrentUser && $isACancellationRequest) {
-      $absenceType = AbsenceType::findById($params['type_id']);
       $today = new DateTime('today');
       $fromDate = new DateTime($params['from_date']);
 
@@ -644,12 +640,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param array $params
    *   The params array received by the create method
+   * @param AbsenceType $absenceType
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateAbsenceTypeIsActiveAndValid($params) {
-    $absenceType = AbsenceType::findById($params['type_id']);
-
+  private static function validateAbsenceTypeIsActiveAndValid($params, $absenceType) {
     if (!$absenceType->is_active) {
       throw new InvalidLeaveRequestException(
         'Absence Type is not active',
@@ -1105,5 +1100,21 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function getDateIntervalInDays(DateTime $fromDate, DateTime $toDate) {
     $interval = $toDate->diff($fromDate);
     return (int) $interval->format("%a");
+  }
+
+  /**
+   * Returns the objects commonly used in some of the validation functions.
+   *
+   * @param array $params
+   *
+   * @return array
+   */
+  private static function loadCommonObjects($params) {
+    $toDate = new DateTime($params['to_date']);
+    $fromDate = new DateTime($params['from_date']);
+    $absenceType = AbsenceType::findById($params['type_id']);
+    $period = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
+
+    return [$absenceType, $period];
   }
 }
