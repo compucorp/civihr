@@ -1,18 +1,19 @@
-//intercepts paths for real APIs and returns mock data
+/* eslint-env amd */
+
+// intercepts paths for real APIs and returns mock data
 define([
   'common/lodash',
   'mocks/module',
   'mocks/data/leave-request-data',
   'mocks/data/comments-data',
   'mocks/data/sickness-leave-request-data',
-  'common/angularMocks',
+  'common/angularMocks'
 ], function (_, mocks, mockData, commentsMock, sicknessMockData) {
   'use strict';
 
   mocks.factory('LeaveRequestAPIMock', [
     '$q',
     function ($q) {
-
       return {
         all: function (filters, pagination, sort, params, cache) {
           return $q(function (resolve, reject) {
@@ -50,7 +51,6 @@ define([
             if (!params.contact_id || !params.from_date) {
               reject('contact_id, from_date and from_date_type in params are mandatory');
             }
-
 
             if (params.request_type === 'sick') {
               resolve(sicknessMockData.all().values[0]);
