@@ -439,6 +439,12 @@ define([
       "version": 3,
       "count": 0,
       "values": []
+    },
+    delete: {
+      "is_error": 0,
+      "version": 3,
+      "count": 1,
+      "values": true
     }
   };
 
@@ -489,6 +495,9 @@ define([
     },
     deleteAttachment: function () {
       return mockData.deleteAttachment;
+    },
+    delete: function () {
+      return mockData.delete;
     }
   };
 });

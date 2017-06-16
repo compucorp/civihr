@@ -59,6 +59,9 @@ define([
             }
           });
         },
+        delete: function (id) {
+          return $q.resolve(mockData.delete());
+        },
         update: function (params) {
           return $q(function (resolve, reject) {
             var newAttributes;
