@@ -227,14 +227,12 @@ define([
         },
 
         /**
-         * Delete a leave request
+         * Deletes the leave request
          *
-         * @return {Promise} Resolved with {Object} Deleted Leave request
+         * @return {Promise}
          */
         delete: function () {
-          this.is_deleted = true;
-
-          return LeaveRequestAPI.update(this.toAPI());
+          return LeaveRequestAPI.delete(this.id);
         },
 
         /**

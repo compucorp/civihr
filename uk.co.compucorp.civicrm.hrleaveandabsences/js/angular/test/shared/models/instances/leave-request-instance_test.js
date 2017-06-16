@@ -762,15 +762,14 @@ define([
 
     describe('delete', function () {
       beforeEach(function () {
-        LeaveRequestInstance.delete();
+        spyOn(LeaveRequestAPI, 'delete');
+
+        instance = LeaveRequestInstance.init({ id: '123' });
+        instance.delete();
       });
 
-      it('sets the flag to delete on request', function () {
-        expect(LeaveRequestInstance.is_deleted).toBeTruthy();
-      });
-
-      it('calls update API', function () {
-        expect(LeaveRequestAPI.update).toHaveBeenCalledWith(jasmine.objectContaining({ is_deleted: true }));
+      it('calls the api delete endpoint, passing its own id', function () {
+        expect(LeaveRequestAPI.delete).toHaveBeenCalledWith(instance.id);
       });
     });
   });
