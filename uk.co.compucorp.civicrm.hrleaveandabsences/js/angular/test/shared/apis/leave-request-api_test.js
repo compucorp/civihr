@@ -304,6 +304,26 @@ define([
       });
     });
 
+    describe('delete()', function () {
+      var idToDelete = '123';
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendGET');
+        LeaveRequestAPI.delete(idToDelete);
+      });
+
+      it('calls the LeaveRequest.delete endpoint', function () {
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[0]).toBe('LeaveRequest');
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[1]).toBe('delete');
+      });
+
+      it('passes the leave request id to the endpoint', function () {
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[2]).toEqual({
+          id: idToDelete
+        });
+      });
+    });
+
     describe('isValid()', function () {
       describe('without error from server', function () {
         describe('when called with valid data', function () {

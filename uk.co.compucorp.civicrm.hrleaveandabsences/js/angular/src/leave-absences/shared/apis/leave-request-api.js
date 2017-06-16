@@ -132,6 +132,16 @@ define([
         },
 
         /**
+         * Calls the `delete` endpoint with the given leave request id
+         *
+         * @param  {int/string} id
+         * @return {Promise}
+         */
+        delete: function (id) {
+          return this.sendGET('LeaveRequest', 'delete', { id: id });
+        },
+
+        /**
          * Calls the deletecomment backend API.
          *
          * @param {String} leaveRequestID - leave request ID
