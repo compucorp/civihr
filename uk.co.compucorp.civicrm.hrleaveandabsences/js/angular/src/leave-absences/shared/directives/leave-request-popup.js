@@ -49,6 +49,7 @@ define([
               animation: scope.animationsEnabled,
               controller: controller,
               controllerAs: '$ctrl',
+              windowClass: 'chr_leave-request-modal',
               resolve: {
                 directiveOptions: function () {
                   return {
