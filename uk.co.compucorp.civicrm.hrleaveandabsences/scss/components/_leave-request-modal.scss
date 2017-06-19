@@ -1,0 +1,104 @@
+$row-margin-bottom: 15px;
+
+.chr_leave-request-modal__chevron {
+  font-size: 0.6em;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.chr_leave-request-modal__comments {
+  height: 230px;
+  margin-bottom: 20px;
+  overflow: auto;
+}
+
+.chr_leave-request-modal__comments_empty {
+  margin-bottom: 20px;
+}
+
+.chr_leave-request-modal__footer {
+  margin: 0;
+}
+
+.chr_leave-request-modal__form {
+
+  .ui-select-container {
+    margin-bottom: 20px;
+
+    // TEMP: without opacity: 1 the dropdown is not visible
+    ul {
+      opacity: 1 !important;
+    }
+
+    &:not(.ui-select-multiple) input {
+      /*the width was getting set to 503px in element itself thus causing the input box to reduce*/
+      width: 100% !important;
+    }
+  }
+}
+
+.chr_leave-request-modal__form-group,
+.chr_leave-request-modal__required-documents > div {
+  margin-bottom: $row-margin-bottom;
+}
+
+.chr_leave-request-modal__response {
+  padding: 20px 20px 0;
+
+  label {
+    font-size: $crm-font-size-large;
+    margin-top: -3px;
+  }
+
+  .chr_wysiwyg {
+    margin-top: 15px;
+  }
+}
+
+.chr_leave-request-modal__required-documents input {
+  margin-right: 5px;
+}
+
+.chr_leave-request-modal__small_spinner {
+
+  > div.chr_spinner {
+    min-height: initial;
+    margin-top: 18px;
+  }
+}
+
+.chr_leave-request-modal__tab {
+  /*
+  * This is a TEMP fix to fit the text of input controls like date picker within input box
+  * It is hardcoded to 13px for now.
+  */
+  input[uib-datepicker-popup] {
+    font-size: 13px;
+  }
+}
+
+.chr_leave-request-modal__table {
+  margin-bottom: $row-margin-bottom !important;
+  border: 1px solid $crm-table-heading-border-color;
+}
+
+.chr_leave-request-modal__user-info {
+  padding: 20px;
+  font-size: $crm-font-size-large;
+
+  > span {
+    &:nth-child(1) {
+      color: $gray-darker;
+    }
+
+    &:nth-child(2) {
+      border-left: 1px solid $gray-light;
+      color: $gray;
+    }
+  }
+}
+
+.chr_leave-request-modal__span-expiry {
+  margin-top: 7px;
+  display: inline-block;
+}

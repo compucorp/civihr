@@ -9,8 +9,8 @@ define([
 ], function (_, directives) {
   'use strict';
 
-  directives.directive('leaveRequestPopup', ['$log', '$uibModal', 'shared-settings', 'DateFormat',
-    function ($log, $modal, settings, DateFormat) {
+  directives.directive('leaveRequestPopup', ['$log', '$rootElement', '$uibModal', 'shared-settings', 'DateFormat',
+    function ($log, $rootElement, $modal, settings, DateFormat) {
       $log.debug('leaveRequestPopup');
 
       /**
@@ -44,6 +44,7 @@ define([
 
           element.on('click', function (event) {
             $modal.open({
+              appendTo: $rootElement.children().eq(0),
               templateUrl: settings.sharedPathTpl + 'directives/leave-request-popup.html',
               animation: scope.animationsEnabled,
               controller: controller,
