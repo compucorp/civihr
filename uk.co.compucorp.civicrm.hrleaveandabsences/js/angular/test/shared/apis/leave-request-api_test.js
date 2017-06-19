@@ -1,4 +1,5 @@
 /* eslint-env amd, jasmine */
+
 define([
   'common/lodash',
   'common/moment',
@@ -15,29 +16,30 @@ define([
   'use strict';
 
   describe('LeaveRequestAPI', function () {
-    var LeaveRequestAPI, $httpBackend, $rootScope, $q, sharedSettings,
-      promise, requestData, errorMessage;
+    var LeaveRequestAPI, $httpBackend, $rootScope, $q, promise;
 
     beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
-
-    beforeEach(inject(['LeaveRequestAPI', '$httpBackend', '$rootScope', '$q', 'shared-settings',
-      function (_LeaveRequestAPI_, _$httpBackend_, _$rootScope_, _$q_, _sharedSettings_) {
-        LeaveRequestAPI = _LeaveRequestAPI_;
+    beforeEach(inject(['$httpBackend', '$q', '$rootScope', 'LeaveRequestAPI',
+      function (_$httpBackend_, _$q_, _$rootScope_, _LeaveRequestAPI_) {
         $httpBackend = _$httpBackend_;
-        $rootScope = _$rootScope_;
-        sharedSettings = _sharedSettings_;
         $q = _$q_;
+        $rootScope = _$rootScope_;
+        LeaveRequestAPI = _LeaveRequestAPI_;
 
         interceptHTTP();
       }
     ]));
 
+    afterEach(function () {
+      $rootScope.$digest();
+    });
+
     describe('all()', function () {
       beforeEach(function () {
-        spyOn(LeaveRequestAPI, 'getAll').and.callThrough();
+        spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
       });
 
-      describe('leave request', function () {
+      describe('with a standard default request', function () {
         beforeEach(function () {
           promise = LeaveRequestAPI.all();
         });
@@ -46,9 +48,9 @@ define([
           $httpBackend.flush();
         });
 
-        it('calls the getAll() method', function () {
-          expect(LeaveRequestAPI.getAll.calls.mostRecent().args[0]).toBe('LeaveRequest');
-          expect(LeaveRequestAPI.getAll.calls.mostRecent().args[5]).toBe('getFull');
+        it('calls the LeaveRequest.getFull endpoint', function () {
+          expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[0]).toBe('LeaveRequest');
+          expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[1]).toBe('getFull');
         });
 
         it('returns all the data', function () {
@@ -57,20 +59,17 @@ define([
           });
         });
       });
-      describe('leave request', function () {
+
+      describe('when the request has an empty list of contact to use as filter', function () {
         beforeEach(function () {
           promise = LeaveRequestAPI.all({ contact_id: { IN: [] } });
         });
 
-        afterEach(function () {
-          $rootScope.$digest();
-        });
-
         it('does not call the API', function () {
-          expect(LeaveRequestAPI.getAll).not.toHaveBeenCalled();
+          expect(LeaveRequestAPI.sendGET).not.toHaveBeenCalled();
         });
 
-        it('returns empty data structure', function () {
+        it('returns directly an empty list', function () {
           promise.then(function (response) {
             expect(response).toEqual({ list: [], total: 0, allIds: [] });
           });
@@ -79,20 +78,62 @@ define([
     });
 
     describe('balanceChangeByAbsenceType()', function () {
-      describe('without errors from server ', function () {
+      describe('without errors from server', function () {
         beforeEach(function () {
           spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
         });
 
-        describe('error handling', function () {
-          afterEach(function () {
-            $rootScope.$apply();
+        describe('basic tests', function () {
+          var statuses = [jasmine.any(String), jasmine.any(String), jasmine.any(String)];
+
+          beforeEach(function () {
+            promise = LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String), statuses, true);
           });
 
-          function commonExpect (data) {
-            expect(data).toBe('contact_id and period_id are mandatory');
-          }
+          afterEach(function () {
+            $httpBackend.flush();
+          });
 
+          it('calls the LeaveRequest.getbalancechangebyabsencetype endpoint', function () {
+            promise.then(function () {
+              expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[0]).toBe('LeaveRequest');
+              expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[1]).toBe('getbalancechangebyabsencetype');
+            });
+          });
+
+          it('sends as `statuses` an "IN" parameter', function () {
+            expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
+              statuses: { 'IN': statuses }
+            }));
+          });
+
+          it('returns the api data as is', function () {
+            promise.then(function (response) {
+              expect(response).toEqual(mockData.balanceChangeByAbsenceType().values);
+            });
+          });
+        });
+
+        describe('default values', function () {
+          afterEach(function () {
+            $httpBackend.flush();
+          });
+
+          describe('when passing falsy values for status and publicHolidays', function () {
+            beforeEach(function () {
+              LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String));
+            });
+
+            it('assigns default values to them', function () {
+              expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
+                statuses: null,
+                public_holiday: false
+              }));
+            });
+          });
+        });
+
+        describe('error handling', function () {
           it('throws error if contact_id is blank', function () {
             LeaveRequestAPI.balanceChangeByAbsenceType(null, jasmine.any(String))
               .catch(commonExpect);
@@ -102,131 +143,60 @@ define([
             LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), null)
               .catch(commonExpect);
           });
-        });
 
-        describe('default values', function () {
-          afterEach(function () {
-            $httpBackend.flush();
-          });
-
-          it('status and publicHoliday has default values if falsy values has been passed', function () {
-            LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String));
-
-            expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
-              contact_id: jasmine.any(String),
-              period_id: jasmine.any(String),
-              statuses: null,
-              public_holiday: false
-            }), false);
-          });
-
-          it('sends as `public_holiday` the original value if truthy value had been passed', function () {
-            LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String), jasmine.any(Array), true);
-
-            expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
-              public_holiday: true
-            }), false);
-          });
-
-          it('sends as `statuses` an "IN" list if the original value is an array', function () {
-            LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String), jasmine.any(Array), jasmine.any(Boolean));
-
-            expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getbalancechangebyabsencetype', jasmine.objectContaining({
-              statuses: {
-                'IN': jasmine.any(Array)
-              }
-            }), false);
-          });
-        });
-
-        it('contains expected data', function () {
-          LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String), jasmine.any(Array), true).then(function (response) {
-            expect(response).toEqual(mockData.balanceChangeByAbsenceType().values);
-          });
-
-          $httpBackend.flush();
+          function commonExpect (data) {
+            expect(data).toBe('contact_id and period_id are mandatory');
+          }
         });
       });
     });
 
     describe('calculateBalanceChange()', function () {
-      describe('without error from server', function () {
+      describe('basic tests', function () {
         beforeEach(function () {
-          requestData = helper.createRandomLeaveRequest();
           spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
-          promise = LeaveRequestAPI.calculateBalanceChange(requestData);
+          promise = LeaveRequestAPI.calculateBalanceChange(helper.createRandomLeaveRequest());
         });
 
         afterEach(function () {
           $httpBackend.flush();
         });
 
-        it('calls endpoint', function () {
-          promise.then(function (result) {
-            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalled();
-            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith(jasmine.any(String),
-              jasmine.any(String), jasmine.any(Object));
+        it('calls the LeaveRequest.calculatebalancechange endpoint', function () {
+          promise.then(function () {
+            expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[0]).toBe('LeaveRequest');
+            expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[1]).toBe('calculatebalancechange');
           });
         });
 
-        it('returns expected data keys', function () {
-          promise.then(function (result) {
-            // returns an object(associative array) and not an array
-            var breakdown = result.breakdown[0];
-            var breakdownType = breakdown.type;
-
-            expect(result.amount).toBeDefined();
-            expect(result.breakdown).toBeDefined();
-            expect(breakdown.date).toBeDefined();
-            expect(breakdown.amount).toBeDefined();
-            expect(breakdown.type).toBeDefined();
-            expect(breakdownType.id).toBeDefined();
-            expect(breakdownType.value).toBeDefined();
-            expect(breakdownType.label).toBeDefined();
+        it('returns the api data as is', function () {
+          promise.then(function (response) {
+            expect(response).toEqual(mockData.calculateBalanceChange().values);
           });
         });
+      });
 
-        it('returns expected values', function () {
-          promise.then(function (result) {
-            var breakdown = result.breakdown[0];
-            var breakdownType = breakdown.type;
-
-            expect(result.amount).toEqual(jasmine.any(Number));
-            expect(result.breakdown).toEqual(jasmine.any(Object));
-            expect(breakdown.amount).toEqual(jasmine.any(Number));
-            expect(moment(breakdown.date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
-            expect(breakdown.type).toEqual(jasmine.any(Object));
-            expect(breakdownType.id).toEqual(jasmine.any(Number));
-            expect(breakdownType.value).toEqual(jasmine.any(Number));
-            expect(absenceTypeData.getAllAbsenceTypesTitles()).toContain(breakdownType.label);
-          });
+      describe('error handling', function () {
+        beforeEach(function () {
+          promise = LeaveRequestAPI.calculateBalanceChange({});
         });
 
-        describe('when mandatory field is missing', function () {
-          beforeEach(function () {
-            errorMessage = 'contact_id, from_date and from_date_type in params are mandatory';
-            requestData = {};
-            promise = LeaveRequestAPI.calculateBalanceChange(requestData);
-          });
-
-          afterEach(function () {
-            $rootScope.$apply();
-          });
-
-          it('throws an error', function () {
-            promise.catch(function (result) {
-              expect(result).toBe(errorMessage);
-            });
+        it('throws an error if contact_id, from_date, or from_date_type are missing', function () {
+          promise.catch(function (result) {
+            expect(result).toBe('contact_id, from_date and from_date_type in params are mandatory');
           });
         });
       });
     });
 
     describe('create()', function () {
-      describe('without error from server', function () {
+      var requestData;
+
+      describe('basic tests', function () {
         beforeEach(function () {
-          requestData = helper.createRandomLeaveRequest();
           spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+
+          requestData = helper.createRandomLeaveRequest();
           promise = LeaveRequestAPI.create(requestData);
         });
 
@@ -234,172 +204,149 @@ define([
           $httpBackend.flush();
         });
 
-        it('calls endpoint', function () {
+        it('calls the LeaveRequest.create endpoint', function () {
           promise.then(function () {
             expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest', 'create', requestData);
           });
         });
+      });
 
-        it('returns expected keys', function () {
-          promise.then(function (result) {
-            expect(result.id).toBeDefined();
-            expect(result.type_id).toBeDefined();
-            expect(result.contact_id).toBeDefined();
-            expect(result.status_id).toBeDefined();
-            expect(result.from_date).toBeDefined();
-            expect(moment(result.from_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
-            expect(result.from_date_type).toBeDefined();
-          });
-        });
-
-        it('returns expected values', function () {
-          promise.then(function (result) {
-            expect(result.id).toEqual(jasmine.any(String));
-            expect(result.type_id).toBeDefined();
-            expect(absenceTypeData.getAllAbsenceTypesIds()).toContain(result.type_id);
-            expect(result.contact_id).toEqual(jasmine.any(String));
-            expect(optionGroupMock.getAllRequestStatusesValues()).toContain(result.status_id);
-            expect(moment(result.from_date, sharedSettings.serverDateFormat, true).isValid()).toBe(true);
-            expect(optionGroupMock.getAllRequestDayValues()).toContain(result.from_date_type);
-          });
-        });
-
-        describe('with mandatory field missing', function () {
+      describe('error handling', function () {
+        describe('when one of the mandatory fields are missing', function () {
           beforeEach(function () {
-            errorMessage = 'contact_id, from_date, status_id and from_date_type params are mandatory';
             requestData = helper.createRandomLeaveRequest();
             delete requestData.contact_id;
+
             promise = LeaveRequestAPI.create(requestData);
           });
 
-          afterEach(function () {
-            $rootScope.$apply();
-          });
-
-          it('returns error', function () {
+          it('rejects the promise', function () {
             promise.catch(function (result) {
-              expect(result).toBe(errorMessage);
+              expect(result).toBe('contact_id, from_date, status_id and from_date_type params are mandatory');
             });
           });
         });
 
-        describe('missing to date type value, given to date', function () {
+        describe('when the "to date" is present, but "to date type" is not', function () {
           beforeEach(function () {
-            errorMessage = 'to_date_type is mandatory';
             requestData = helper.createRandomLeaveRequest();
             delete requestData.to_date_type;
+
             promise = LeaveRequestAPI.create(requestData);
           });
 
-          afterEach(function () {
-            $rootScope.$apply();
-          });
-
-          it('returns error', function () {
+          it('rejects the promise', function () {
             promise.catch(function (result) {
-              expect(result).toBe(errorMessage);
+              expect(result).toBe('to_date_type is mandatory');
             });
           });
+        });
+      });
+    });
+
+    describe('delete()', function () {
+      var idToDelete = '123';
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendGET');
+        LeaveRequestAPI.delete(idToDelete);
+      });
+
+      it('calls the LeaveRequest.delete endpoint', function () {
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[0]).toBe('LeaveRequest');
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[1]).toBe('delete');
+      });
+
+      it('passes the leave request id to the endpoint', function () {
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[2]).toEqual({
+          id: idToDelete
         });
       });
     });
 
     describe('isValid()', function () {
-      describe('without error from server', function () {
-        describe('when called with valid data', function () {
-          beforeEach(function () {
-            requestData = helper.createRandomSicknessRequest();
-            spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
-            promise = LeaveRequestAPI.isValid(requestData);
-          });
-
-          afterEach(function () {
-            $httpBackend.flush();
-          });
-
-          it('calls endpoint', function () {
-            promise.then(function () {
-              expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest', 'isValid', requestData);
-            });
-          });
-
-          it('returns no errors', function () {
-            promise.then(function (result) {
-              expect(result).toEqual([]);
-            });
-          });
-        });
-
-        describe('when called with invalid data', function () {
-          beforeEach(function () {
-            requestData = helper.createRandomSicknessRequest();
-            spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function (params) {
-              return $q.resolve(mockData.getNotIsValid());
-            });
-            promise = LeaveRequestAPI.isValid(requestData);
-          });
-
-          afterEach(function () {
-            $rootScope.$apply();
-          });
-
-          it('rejects promise with validation errors', function () {
-            var errors = _(mockData.getNotIsValid().values).map().flatten().value();
-
-            promise.catch(function (result) {
-              expect(result).toEqual(errors);
-            });
-          });
-        });
-      });
-    });
-
-    describe('update()', function () {
-      describe('without error from server', function () {
-        var updatedRequestData = {};
+      describe('basic tests', function () {
+        var requestData;
 
         beforeEach(function () {
-          var changedStatusId = {
-            status_id: mockData.all().values[5].status_id
-          };
-          requestData = mockData.all().values[0];
-          requestData = _.assign(updatedRequestData, requestData, changedStatusId);
           spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
-          promise = LeaveRequestAPI.update(updatedRequestData);
+
+          requestData = helper.createRandomSicknessRequest();
+          promise = LeaveRequestAPI.isValid(requestData);
         });
 
         afterEach(function () {
           $httpBackend.flush();
         });
 
-        it('calls endpoint', function () {
+        it('calls the LeaveRequest.isValid endpoint', function () {
+          promise.then(function () {
+            expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest', 'isValid', requestData);
+          });
+        });
+      });
+
+      describe('when the leave request is not valid', function () {
+        beforeEach(function () {
+          spyOn(LeaveRequestAPI, 'sendPOST').and.callFake(function (params) {
+            return $q.resolve(mockData.getNotIsValid());
+          });
+          promise = LeaveRequestAPI.isValid(helper.createRandomSicknessRequest());
+        });
+
+        it('rejects the promise with a flatten list of validation errors', function () {
+          var errors = _(mockData.getNotIsValid().values).map().flatten().value();
+
+          promise.catch(function (result) {
+            expect(result).toEqual(errors);
+          });
+        });
+      });
+    });
+
+    describe('update()', function () {
+      var requestData;
+
+      beforeEach(function () {
+        // temp fix, if we use the mock data directly we end up
+        // changing the original object and subsequent tests relying on it
+        // will fail
+        requestData = _.assign({}, mockData.all().values[0]);
+      });
+
+      describe('basic tests', function () {
+        beforeEach(function () {
+          spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+          promise = LeaveRequestAPI.update(requestData);
+        });
+
+        afterEach(function () {
+          $httpBackend.flush();
+        });
+
+        it('calls the LeaveRequest.create endpoint', function () {
           promise.then(function () {
             expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest', 'create', requestData);
           });
         });
 
-        it('returns updated leave request', function () {
+        it('returns the updated leave request', function () {
           promise.then(function (result) {
             expect(result.id).toBeDefined();
           });
         });
+      });
 
-        describe('when id is not set', function () {
+      describe('error handling', function () {
+        describe('when the leave request id is not set', function () {
           beforeEach(function () {
-            errorMessage = 'id is mandatory field';
-            // remove id
-            delete updatedRequestData.id;
-            promise = LeaveRequestAPI.update(updatedRequestData);
+            delete requestData.id;
+            promise = LeaveRequestAPI.update(requestData);
           });
 
-          afterEach(function () {
-            // resolves to local promise hence no need to flush http call
-            $rootScope.$apply();
-          });
-
-          it('returns error', function () {
+          it('rejects the promise', function () {
             promise.catch(function (result) {
-              expect(result).toBe(errorMessage);
+              expect(result).toBe('id is mandatory field');
             });
           });
         });
@@ -407,30 +354,30 @@ define([
     });
 
     describe('getComments()', function () {
-      var leaveRequestID = '101';
-      var params = {
-        key: 'value'
-      };
+      var leaveRequestId = '101';
+      var params = { key: 'value' };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
-        promise = LeaveRequestAPI.getComments(leaveRequestID, params);
+        promise = LeaveRequestAPI.getComments(leaveRequestId, params);
       });
 
       afterEach(function () {
         $httpBackend.flush();
       });
 
-      it('calls endpoint with leaveRequestID', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest',
-            'getcomment', jasmine.objectContaining(_.assign(params, {
-              leave_request_id: leaveRequestID
-            })), false);
-        });
+      it('calls the LeaveRequest.getcomment endpoint', function () {
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[0]).toBe('LeaveRequest');
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[1]).toBe('getcomment');
       });
 
-      it('returns data', function () {
+      it('passes to the endpoint the leave request id merged with the other params', function () {
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[2]).toEqual(_.assign({}, params, {
+          leave_request_id: leaveRequestId
+        }));
+      });
+
+      it('returns the api data as is', function () {
         promise.then(function (result) {
           expect(result).toEqual(mockData.getComments().values);
         });
@@ -440,9 +387,7 @@ define([
     describe('saveComment()', function () {
       var commentObject = commentsData.getComments().values[0];
       var leaveRequestID = '102';
-      var params = {
-        key: 'value'
-      };
+      var params = { key: 'value' };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
@@ -453,19 +398,21 @@ define([
         $httpBackend.flush();
       });
 
-      it('calls endpoint with leaveRequestID, text and contact_id', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
-            'addcomment', jasmine.objectContaining(_.assign(params, {
-              leave_request_id: leaveRequestID,
-              text: commentObject.text,
-              contact_id: commentObject.contact_id,
-              created_at: commentObject.created_at
-            })));
-        });
+      it('calls the LeaveRequest.addcomment endpoint', function () {
+        expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[0]).toBe('LeaveRequest');
+        expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[1]).toBe('addcomment');
       });
 
-      it('returns data', function () {
+      it('passes to the endpoint the leave request id and the comment data mixed with the other params', function () {
+        expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[2]).toEqual(_.assign({}, params, {
+          leave_request_id: leaveRequestID,
+          text: commentObject.text,
+          contact_id: commentObject.contact_id,
+          created_at: commentObject.created_at
+        }));
+      });
+
+      it('returns the api data as is', function () {
         promise.then(function (result) {
           expect(result).toEqual(mockData.addComment().values);
         });
@@ -474,9 +421,7 @@ define([
 
     describe('deleteComment()', function () {
       var commentID = '101';
-      var params = {
-        key: 'value'
-      };
+      var params = { key: 'value' };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
@@ -487,16 +432,18 @@ define([
         $httpBackend.flush();
       });
 
-      it('calls endpoint with comment_id', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
-            'deletecomment', jasmine.objectContaining(_.assign(params, {
-              comment_id: commentID
-            })));
-        });
+      it('calls the LeaveRequest.deletecomment endpoint', function () {
+        expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[0]).toBe('LeaveRequest');
+        expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[1]).toBe('deletecomment');
       });
 
-      it('returns data', function () {
+      it('passes to the endpoint the comment id mixed with the other params', function () {
+        expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[2]).toEqual(_.assign({}, params, {
+          comment_id: commentID
+        }));
+      });
+
+      it('returns the data as is', function () {
         promise.then(function (result) {
           expect(result).toEqual(mockData.deleteComment().values);
         });
@@ -505,9 +452,7 @@ define([
 
     describe('getAttachments', function () {
       var leaveRequestID = '101';
-      var params = {
-        key: 'value'
-      };
+      var params = { key: 'value' };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
@@ -518,16 +463,18 @@ define([
         $httpBackend.flush();
       });
 
-      it('calls the endpoint with leave request id', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest',
-            'getattachments', jasmine.objectContaining(_.assign(params, {
-              leave_request_id: leaveRequestID
-            })), false);
-        });
+      it('calls the LeaveRequest.getattachments endpoint', function () {
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[0]).toBe('LeaveRequest');
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[1]).toBe('getattachments');
       });
 
-      it('returns attachment data', function () {
+      it('passes to the endpoint the leave request id mixed with the other params', function () {
+        expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[2]).toEqual(_.assign({}, params, {
+          leave_request_id: leaveRequestID
+        }));
+      });
+
+      it('returns the api data as is', function () {
         promise.then(function (result) {
           expect(result).toEqual(mockData.getAttachments().values);
         });
@@ -537,9 +484,7 @@ define([
     describe('deleteAttachment', function () {
       var leaveRequestID = '101';
       var attachmentID = '10';
-      var params = {
-        key: 'value'
-      };
+      var params = { key: 'value' };
 
       beforeEach(function () {
         spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
@@ -550,17 +495,19 @@ define([
         $httpBackend.flush();
       });
 
-      it('calls the endpoints with leave request id and attachment id', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
-            'deleteattachment', jasmine.objectContaining(_.assign(params, {
-              leave_request_id: leaveRequestID,
-              attachment_id: attachmentID
-            })));
-        });
+      it('calls the LeaveRequest.deleteattachment endpoint', function () {
+        expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[0]).toBe('LeaveRequest');
+        expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[1]).toBe('deleteattachment');
       });
 
-      it('returns success data', function () {
+      it('passes to the endpoint the leave request id and attachment id mixed with the other params', function () {
+        expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[2]).toEqual(_.assign({}, params, {
+          leave_request_id: leaveRequestID,
+          attachment_id: attachmentID
+        }));
+      });
+
+      it('returns the api data as is', function () {
         promise.then(function (result) {
           expect(result).toEqual(mockData.deleteAttachment().values);
         });
@@ -569,7 +516,7 @@ define([
 
     /**
      * Intercept HTTP calls to be handled by httpBackend
-     **/
+     */
     function interceptHTTP () {
       // Intercept backend calls for LeaveRequest.all
       $httpBackend.whenGET(/action=getFull&entity=LeaveRequest/)

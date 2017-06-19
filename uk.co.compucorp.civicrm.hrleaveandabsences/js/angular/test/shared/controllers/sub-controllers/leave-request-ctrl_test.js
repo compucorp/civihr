@@ -1015,7 +1015,7 @@
 
           describe('with comments', function () {
             beforeEach(function () {
-              var leaveRequest = LeaveRequestInstance.init(mockData.findBy('id', 17));
+              var leaveRequest = LeaveRequestInstance.init(mockData.findBy('id', '17'));
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: leaveRequest.contact_id, // staff's contact id

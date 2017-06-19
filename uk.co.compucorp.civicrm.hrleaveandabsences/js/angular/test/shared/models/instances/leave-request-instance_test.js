@@ -1,4 +1,5 @@
 /* eslint-env amd, jasmine */
+
 define([
   'common/lodash',
   'mocks/data/leave-request-data',
@@ -13,16 +14,8 @@ define([
   'use strict';
 
   describe('LeaveRequestInstance', function () {
-    var $provide,
-      LeaveRequestInstance,
-      LeaveRequestAPI,
-      $q,
-      OptionGroup,
-      $rootScope,
-      instance,
-      requestData,
-      expectedError,
-      sharedSettings;
+    var $provide, LeaveRequestInstance, LeaveRequestAPI, $q, OptionGroup,
+      $rootScope, instance, sharedSettings;
 
     beforeEach(module('leave-absences.models', 'leave-absences.models.instances',
       'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
@@ -31,18 +24,16 @@ define([
       }));
 
     beforeEach(inject(function (_LeaveRequestAPIMock_, _FileUploaderMock_) {
-      // LeaveRequestAPI is internally used by Model and hence need to be mocked
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
       $provide.value('FileUploader', _FileUploaderMock_);
     }));
 
-    beforeEach(inject([
-      'LeaveRequestInstance',
-      'LeaveRequestAPI',
-      '$rootScope',
-      '$q',
-      'shared-settings',
-      'OptionGroup',
+    afterEach(function () {
+      $rootScope.$apply();
+    });
+
+    beforeEach(inject(['LeaveRequestInstance', 'LeaveRequestAPI', '$rootScope',
+      '$q', 'shared-settings', 'OptionGroup',
       function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _sharedSettings_, _OptionGroup_) {
         LeaveRequestInstance = _LeaveRequestInstance_.init({}, false);
         LeaveRequestAPI = _LeaveRequestAPI_;
@@ -63,441 +54,393 @@ define([
     ]));
 
     describe('default values', function () {
-      it('comments are empty', function () {
-        expect(LeaveRequestInstance.comments.length).toBe(0);
+      var instance;
+
+      beforeEach(function () {
+        instance = LeaveRequestInstance.init({});
       });
 
-      it('initializes request type', function () {
-        expect(LeaveRequestInstance.request_type).toEqual('leave');
+      it('has an empty list of comments', function () {
+        expect(instance.comments.length).toBe(0);
       });
 
-      it('does set uploader', function () {
-        expect(LeaveRequestInstance.fileUploader).toBeDefined();
+      it('sets the request type to "leave"', function () {
+        expect(instance.request_type).toEqual('leave');
+      });
+
+      it('sets the file uploader', function () {
+        expect(instance.fileUploader).toBeDefined();
       });
     });
 
     describe('status change methods', function () {
-      var optionGroupDeferred,
-        leaveRequestDeferred,
-        mockOptionValue,
-        mockUpdateResponse,
-        promise;
+      var instance, promise;
 
-      afterEach(function () {
-        $rootScope.$apply();
-      });
+      describe('cancel()', function () {
+        beforeEach(function () {
+          commonSetup(sharedSettings.statusNames.cancelled, 'cancel');
+        });
 
-      describe('cancel', function () {
-        describe('success', function () {
-          beforeEach(function () {
-            commonSetup(sharedSettings.statusNames.cancelled, 'cancel', leaveRequestMockData.singleDataSuccess());
+        it('fetches the hrleaveandabsences_leave_request_status Option Values', function () {
+          expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+        });
+
+        it('internally calls the update() method', function () {
+          promise.then(function () {
+            expect(instance.update).toHaveBeenCalled();
           });
+        });
 
-          it('updates the status_id of the instance', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
-            });
-          });
-
-          it('OptionGroup.valuesOf gets called', function () {
-            promise.then(function () {
-              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-            });
-          });
-
-          it('LeaveRequestInstance.update gets called', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.update).toHaveBeenCalled();
-              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
-            });
+        it('updates the status_id of the instance', function () {
+          promise.then(function () {
+            expect(instance.status_id).toBe(getStatusIdByName(sharedSettings.statusNames.cancelled));
           });
         });
       });
 
-      describe('approve', function () {
-        describe('success', function () {
-          beforeEach(function () {
-            commonSetup('approved', 'approve', leaveRequestMockData.singleDataSuccess());
-          });
+      describe('approve()', function () {
+        beforeEach(function () {
+          commonSetup(sharedSettings.statusNames.approved, 'approve');
+        });
 
-          it('updates the status_id of the instance', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
-            });
+        it('fetches the hrleaveandabsences_leave_request_status Option Values', function () {
+          promise.then(function () {
+            expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
           });
+        });
 
-          it('OptionGroup.valuesOf gets called', function () {
-            promise.then(function () {
-              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-            });
+        it('updates the status_id of the instance', function () {
+          promise.then(function () {
+            expect(instance.status_id).toBe(getStatusIdByName(sharedSettings.statusNames.approved));
           });
+        });
 
-          it('LeaveRequestInstance.update gets called', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.update).toHaveBeenCalled();
-              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
-            });
+        it('internally calls the update() method', function () {
+          promise.then(function () {
+            expect(instance.update).toHaveBeenCalled();
           });
         });
       });
 
-      describe('reject', function () {
-        describe('success', function () {
-          beforeEach(function () {
-            commonSetup('rejected', 'reject', leaveRequestMockData.singleDataSuccess());
-          });
+      describe('reject()', function () {
+        beforeEach(function () {
+          commonSetup(sharedSettings.statusNames.rejected, 'reject');
+        });
 
-          it('updates the status_id of the instance', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
-            });
+        it('fetches the hrleaveandabsences_leave_request_status Option Values', function () {
+          promise.then(function () {
+            expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
           });
+        });
 
-          it('OptionGroup.valuesOf gets called', function () {
-            promise.then(function () {
-              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-            });
+        it('internally calls the update() method', function () {
+          promise.then(function () {
+            expect(instance.update).toHaveBeenCalled();
           });
+        });
 
-          it('LeaveRequestInstance.update gets called', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.update).toHaveBeenCalled();
-              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
-            });
+        it('updates the status_id of the instance', function () {
+          promise.then(function () {
+            expect(instance.status_id).toBe(getStatusIdByName(sharedSettings.statusNames.rejected));
           });
         });
       });
 
-      describe('sendBack', function () {
-        describe('success', function () {
-          beforeEach(function () {
-            commonSetup(sharedSettings.statusNames.moreInformationRequired, 'sendBack', leaveRequestMockData.singleDataSuccess());
-          });
+      describe('sendBack()', function () {
+        beforeEach(function () {
+          commonSetup(sharedSettings.statusNames.moreInformationRequired, 'sendBack');
+        });
 
-          it('updates the status_id of the instance', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.status_id).toBe(mockUpdateResponse.values[0].status_id);
-            });
+        it('fetches the hrleaveandabsences_leave_request_status Option Values', function () {
+          promise.then(function () {
+            expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
           });
+        });
 
-          it('OptionGroup.valuesOf gets called', function () {
-            promise.then(function () {
-              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-            });
+        it('internally calls the update() method', function () {
+          promise.then(function () {
+            expect(instance.update).toHaveBeenCalled();
           });
+        });
 
-          it('LeaveRequestInstance.update gets called', function () {
-            promise.then(function () {
-              expect(LeaveRequestInstance.update).toHaveBeenCalled();
-              expect(LeaveRequestInstance.status_id).toEqual(mockOptionValue[0].value);
-            });
+        it('updates the status_id of the instance', function () {
+          promise.then(function () {
+            expect(instance.status_id).toBe(getStatusIdByName(sharedSettings.statusNames.moreInformationRequired));
           });
         });
       });
 
-      function commonSetup (statusName, methodName, returnData) {
-        optionGroupDeferred = $q.defer();
-        leaveRequestDeferred = $q.defer();
-        mockOptionValue = [{
-          name: statusName,
-          value: '1'
-        }];
-        mockUpdateResponse = returnData;
+      function commonSetup (statusName, methodName) {
+        spyOn(OptionGroup, 'valuesOf').and.returnValue($q.resolve([{
+          name: statusName, value: getStatusIdByName(statusName)
+        }]));
 
-        spyOn(OptionGroup, 'valuesOf').and.returnValue(optionGroupDeferred.promise);
-        spyOn(LeaveRequestInstance, 'update').and.returnValue(leaveRequestDeferred.promise);
+        instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+        promise = instance[methodName]();
+      }
 
-        optionGroupDeferred.resolve(mockOptionValue);
-        leaveRequestDeferred.resolve(mockUpdateResponse);
-
-        promise = LeaveRequestInstance[methodName]();
-        LeaveRequestInstance.status_id = jasmine.any(String);
+      function getStatusIdByName (statusName) {
+        return optionGroupMockData.getCollection('hrleaveandabsences_leave_request_status').find(function (option) {
+          return option.name === statusName;
+        }).value;
       }
     });
 
     describe('update()', function () {
-      var promise;
-      var toAPIReturnValue = {
-        key: jasmine.any(String)
-      };
+      var promise, instance;
 
       beforeEach(function () {
-        var defer = $q.defer();
-        LeaveRequestAPI.update.and.returnValue(defer.promise);
-        defer.resolve(jasmine.any(Object));
-        spyOn(LeaveRequestInstance, 'toAPI').and.returnValue(toAPIReturnValue);
-        LeaveRequestInstance.comments = commentsData.getCommentsWithMixedIDs().values;
+        instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+        instance.comments = commentsData.getCommentsWithMixedIDs().values;
+        instance.comments.push(_.assign(commentsData.getComments().values[0], { toBeDeleted: true }));
+        instance.fileUploader.queue = [{ 'key': 2 }];
 
-        var commentToBeDeleted = commentsData.getComments().values[0];
-        commentToBeDeleted.toBeDeleted = true;
-        LeaveRequestInstance.comments.push(commentToBeDeleted);
+        LeaveRequestAPI.update.and.returnValue($q.resolve());
+        spyOn(instance, 'toAPI');
+        spyOn(instance.fileUploader, 'uploadAll').and.callThrough();
 
-        promise = LeaveRequestInstance.update();
+        promise = instance.update();
       });
 
-      afterEach(function () {
-        $rootScope.$apply();
-      });
-
-      it('calls update api method with the return value of toAPI method', function () {
+      it('prepares the attributes to be sent to the api', function () {
         promise.then(function () {
-          expect(LeaveRequestAPI.update).toHaveBeenCalledWith(toAPIReturnValue);
+          expect(instance.toAPI).toHaveBeenCalled();
         });
       });
 
-      it('calls toAPI method', function () {
+      it('sends the update request', function () {
         promise.then(function () {
-          expect(LeaveRequestInstance.toAPI).toHaveBeenCalled();
+          expect(LeaveRequestAPI.update).toHaveBeenCalledWith(instance.toAPI());
         });
       });
 
-      it('calls API to save the newly created comments only', function () {
-        promise.then(function () {
-          commentsData.getCommentsWithMixedIDs().values.map(function (comment) {
-            if (!comment.comment_id) {
-              expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(LeaveRequestInstance.id, comment);
-            }
+      describe('after the update is done', function () {
+        describe('comments', function () {
+          it('saves only the newly created comments', function () {
+            promise.then(function () {
+              commentsData.getCommentsWithMixedIDs().values.map(function (comment) {
+                if (comment.comment_id) {
+                  expect(LeaveRequestAPI.saveComment).not.toHaveBeenCalledWith(instance.id, comment);
+                } else {
+                  expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(instance.id, comment);
+                }
+              });
+            });
+          });
+
+          it('deletes the comments marked for deletion', function () {
+            promise.then(function () {
+              instance.comments.map(function (comment) {
+                if (comment.toBeDeleted) {
+                  expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
+                } else {
+                  expect(LeaveRequestAPI.deleteComment).not.toHaveBeenCalledWith(comment.comment_id);
+                }
+              });
+            });
           });
         });
-      });
 
-      it('calls API to delete the comments marked for deletion', function () {
-        promise.then(function () {
-          LeaveRequestInstance.comments.map(function (comment) {
-            if (comment.toBeDeleted) {
-              expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
-            }
+        describe('attachments', function () {
+          it('uploads file with entity id', function () {
+            promise.then(function () {
+              expect(instance.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
+            });
           });
         });
       });
     });
 
     describe('create()', function () {
-      var instanceCreate;
+      var promise;
 
       beforeEach(function () {
-        requestData = helper.createRandomLeaveRequest();
-        instance = LeaveRequestInstance.init(requestData);
+        instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+        instance.fileUploader.queue = [{ 'key': 2 }];
         instance.comments = commentsData.getCommentsWithMixedIDs().values;
+        instance.comments.push((function () {
+          return _.assign({}, commentsData.getComments().values[0], { toBeDeleted: true });
+        }()));
 
-        var commentToBeDeleted = commentsData.getComments().values[0];
-        commentToBeDeleted.toBeDeleted = true;
-        instance.comments.push(commentToBeDeleted);
+        spyOn(instance.fileUploader, 'uploadAll').and.callThrough();
 
-        instanceCreate = instance.create();
+        promise = instance.create();
       });
 
-      afterEach(function () {
-        // to excute the promise force an digest
-        $rootScope.$apply();
-      });
-
-      it('calls equivalent API method', function () {
-        instanceCreate.then(function () {
+      it('calls the equivalent API method', function () {
+        promise.then(function () {
           expect(LeaveRequestAPI.create).toHaveBeenCalled();
         });
       });
 
-      it('id is appended to instance', function () {
+      it('adds the id property to the instance', function () {
         expect(instance.id).not.toBeDefined();
-        instanceCreate.then(function () {
+
+        promise.then(function () {
           expect(instance.id).toBeDefined();
           expect(instance.id).toEqual(jasmine.any(String));
         });
       });
 
-      it('calls API to save the newly created comments only', function () {
-        instanceCreate.then(function () {
-          commentsData.getCommentsWithMixedIDs().values.map(function (comment) {
-            if (!comment.comment_id) {
-              expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(instance.id, comment);
-            }
+      describe('after the creation is done', function () {
+        describe('comments', function () {
+          it('saves only the newly created comments', function () {
+            promise.then(function () {
+              commentsData.getCommentsWithMixedIDs().values.map(function (comment) {
+                if (comment.comment_id) {
+                  expect(LeaveRequestAPI.saveComment).not.toHaveBeenCalledWith(instance.id, comment);
+                } else {
+                  expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(instance.id, comment);
+                }
+              });
+            });
+          });
+
+          it('deletes the comments marked for deletion', function () {
+            promise.then(function () {
+              instance.comments.map(function (comment) {
+                if (comment.toBeDeleted) {
+                  expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
+                } else {
+                  expect(LeaveRequestAPI.deleteComment).not.toHaveBeenCalledWith(comment.comment_id);
+                }
+              });
+            });
+          });
+        });
+
+        describe('attachments', function () {
+          it('uploads the attachments with and entity id', function () {
+            promise.then(function () {
+              expect(instance.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
+            });
           });
         });
       });
 
-      it('calls API to delete the comments marked for deletion', function () {
-        instanceCreate.then(function () {
-          instance.comments.map(function (comment) {
-            if (comment.toBeDeleted) {
-              expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(comment.comment_id);
-            }
+      describe('error handling', function () {
+        describe('when one mandatory filed is missing', function () {
+          beforeEach(function () {
+            delete instance.contact_id;
+            promise = instance.create();
           });
-        });
-      });
 
-      describe('when one mandatory filed is missing', function () {
-        beforeEach(function () {
-          expectedError = 'contact_id, from_date and from_date_type in params are mandatory';
-          delete instance.contact_id;
-          instanceCreate = instance.create();
-        });
-
-        afterEach(function () {
-          // to excute the promise force an digest
-          $rootScope.$apply();
-        });
-
-        it('fails to create instance', function () {
-          instanceCreate.catch(function (error) {
-            expect(error).toBe(expectedError);
+          it('fails to create instance', function () {
+            promise.catch(function (error) {
+              expect(error).toBe('contact_id, from_date and from_date_type in params are mandatory');
+            });
           });
         });
       });
     });
 
     describe('loadComments()', function () {
-      var promise;
+      var instance, promise;
 
       beforeEach(function () {
-        LeaveRequestInstance.id = '12';
-        promise = LeaveRequestInstance.loadComments();
-      });
+        instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+        instance.id = 18;
 
-      afterEach(function () {
-        $rootScope.$digest();
+        spyOn(instance, 'loadComments').and.callThrough();
+
+        promise = instance.loadComments();
       });
 
       it('calls API with leave request ID', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.getComments).toHaveBeenCalledWith(LeaveRequestInstance.id);
-        });
+        expect(LeaveRequestAPI.getComments).toHaveBeenCalledWith(instance.id);
       });
 
-      it('the returned comments from API are saved', function () {
+      it('stores internally the comments returned by the API', function () {
         promise.then(function () {
-          expect(LeaveRequestInstance.comments).toEqual(commentsData.getComments().values);
+          expect(instance.comments).toEqual(commentsData.getComments().values);
         });
       });
     });
 
     describe('isValid()', function () {
-      var instanceValid;
+      var instance;
 
       beforeEach(function () {
-        requestData = {
-          contact_id: '123'
-        };
-        instance = LeaveRequestInstance.init(requestData);
-        instanceValid = instance.isValid();
-      });
-
-      afterEach(function () {
-        // to excute the promise force an digest
-        $rootScope.$apply();
+        instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+        instance.isValid();
       });
 
       it('calls equivalent API method', function () {
-        instanceValid.then(function () {
-          expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
-        });
-      });
-
-      describe('when leave request is valid', function () {
-        it('returns no error', function () {
-          instanceValid.then(function (result) {
-            expect(result).toEqual([]);
-          });
-        });
-
-        describe('when valid data not present', function () {
-          beforeEach(function () {
-            delete instance.contact_id;
-            instanceValid = instance.isValid();
-          });
-
-          afterEach(function () {
-            // to excute the promise force an digest
-            $rootScope.$apply();
-          });
-
-          it('returns array of errors', function () {
-            instanceValid.catch(function (result) {
-              expect(Object.keys(result).length).toBeGreaterThan(0);
-            });
-          });
-        });
+        expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
       });
     });
 
     describe('check status methods', function () {
-      var promise;
+      var instance;
 
       beforeEach(function () {
         spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
           return $q.resolve(optionGroupMockData.getCollection('hrleaveandabsences_leave_request_status'));
         });
+
+        instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
       });
 
-      afterEach(function () {
-        $rootScope.$apply();
-      });
-
-      describe('isApproved', function () {
-        describe('status is approved', function () {
+      describe('isApproved()', function () {
+        describe('when the request is approved', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
-            promise = LeaveRequestInstance.isApproved();
+            instance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
           });
 
           it('returns true', function () {
-            promise.then(function (data) {
+            instance.isApproved().then(function (data) {
               expect(data).toBe(true);
             });
           });
         });
 
-        describe('status is not approved', function () {
+        describe('when the request is not approved', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
-            promise = LeaveRequestInstance.isApproved();
+            instance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
           });
 
           it('returns false', function () {
-            promise.then(function (data) {
+            instance.isApproved().then(function (data) {
               expect(data).toBe(false);
             });
           });
         });
       });
 
-      describe('isAwaitingApproval', function () {
-        describe('status is awaiting_approval', function () {
+      describe('isAwaitingApproval()', function () {
+        describe('when the request is awaiting approval', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.awaitingApproval);
-            promise = LeaveRequestInstance.isAwaitingApproval();
+            instance.status_id = getStatusIdByName(sharedSettings.statusNames.awaitingApproval);
           });
 
           it('returns true', function () {
-            promise.then(function (data) {
+            instance.isAwaitingApproval().then(function (data) {
               expect(data).toBe(true);
             });
           });
         });
 
-        describe('status is not awaiting_approval', function () {
+        describe('when the request is not awaiting approval', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
-            promise = LeaveRequestInstance.isAwaitingApproval();
+            instance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
           });
 
           it('returns false', function () {
-            promise.then(function (data) {
+            instance.isAwaitingApproval().then(function (data) {
               expect(data).toBe(false);
             });
           });
         });
       });
 
-      describe('isCancelled', function () {
-        describe('status is cancelled', function () {
+      describe('isCancelled()', function () {
+        describe('when the request is cancelled', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
-            promise = LeaveRequestInstance.isCancelled();
+            instance.status_id = getStatusIdByName(sharedSettings.statusNames.cancelled);
           });
 
           it('returns true', function () {
-            promise.then(function (data) {
+            instance.isCancelled().then(function (data) {
               expect(data).toBe(true);
             });
           });
@@ -505,68 +448,63 @@ define([
 
         describe('status is not cancelled', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
-            promise = LeaveRequestInstance.isCancelled();
+            instance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
           });
 
           it('returns false', function () {
-            promise.then(function (data) {
+            instance.isCancelled().then(function (data) {
               expect(data).toBe(false);
             });
           });
         });
       });
 
-      describe('isRejected', function () {
-        describe('status is rejected', function () {
+      describe('isRejected()', function () {
+        describe('when the request is rejected', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.rejected);
-            promise = LeaveRequestInstance.isRejected();
+            instance.status_id = getStatusIdByName(sharedSettings.statusNames.rejected);
           });
 
           it('returns true', function () {
-            promise.then(function (data) {
+            instance.isRejected().then(function (data) {
               expect(data).toBe(true);
             });
           });
         });
 
-        describe('status is not rejected', function () {
+        describe('when the request is not rejected', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
-            promise = LeaveRequestInstance.isRejected();
+            instance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
           });
 
           it('returns false', function () {
-            promise.then(function (data) {
+            instance.isRejected().then(function (data) {
               expect(data).toBe(false);
             });
           });
         });
       });
 
-      describe('isSentBack', function () {
-        describe('status is more_information_required', function () {
+      describe('isSentBack()', function () {
+        describe('when the request is sent back for more information', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.moreInformationRequired);
-            promise = LeaveRequestInstance.isSentBack();
+            instance.status_id = getStatusIdByName(sharedSettings.statusNames.moreInformationRequired);
           });
 
           it('returns true', function () {
-            promise.then(function (data) {
+            instance.isSentBack().then(function (data) {
               expect(data).toBe(true);
             });
           });
         });
 
-        describe('status is not more_information_required', function () {
+        describe('when the request is not sent back for more information', function () {
           beforeEach(function () {
-            LeaveRequestInstance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
-            promise = LeaveRequestInstance.isSentBack();
+            instance.status_id = getStatusIdByName(sharedSettings.statusNames.approved);
           });
 
           it('returns false', function () {
-            promise.then(function (data) {
+            instance.isSentBack().then(function (data) {
               expect(data).toBe(false);
             });
           });
@@ -580,22 +518,20 @@ define([
       }
     });
 
-    // Testing the customization of toAPIFilter via toAPI, as the former
-    // is just an implementation detail, exposed so it can be customized
     describe('toAPI()', function () {
-      var leaveRequest, toAPIData;
+      var instance;
 
       beforeEach(function () {
-        leaveRequest = LeaveRequestInstance.init(leaveRequestMockData.all().values[1], true);
-        leaveRequest.balance_change = _.random(-10, -5);
-        leaveRequest.dates = jasmine.any(Array);
+        instance = LeaveRequestInstance.init(leaveRequestMockData.all().values[1], true);
 
-        toAPIData = leaveRequest.toAPI();
+        // adding some custom properties
+        instance.balance_change = _.random(-10, -5);
+        instance.dates = jasmine.any(Array);
       });
 
       it('filters out custom properties on leave request instance', function () {
-        expect(Object.keys(toAPIData)).toEqual(_.without(
-          Object.keys(leaveRequest.attributes()),
+        expect(Object.keys(instance.toAPI())).toEqual(_.without(
+          Object.keys(instance.attributes()),
           'balance_change',
           'dates',
           'comments',
@@ -605,119 +541,61 @@ define([
       });
     });
 
-    describe('uploading files', function () {
-      var promise;
-
-      beforeEach(function () {
-        requestData = helper.createRandomLeaveRequest();
-        instance = LeaveRequestInstance.init(requestData);
-        spyOn(instance.fileUploader, 'uploadAll').and.callThrough();
-        instance.fileUploader.queue = [{ 'key': 2 }];
-      });
-
-      afterEach(function () {
-        $rootScope.$apply();
-      });
-
-      describe('on create()', function () {
-        beforeEach(function () {
-          promise = instance.create();
-        });
-
-        it('uploads file with entity id', function () {
-          promise.then(function () {
-            expect(instance.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
-          });
-        });
-      });
-
-      describe('on update()', function () {
-        beforeEach(function () {
-          instance.id = '12';
-          promise = instance.update();
-        });
-
-        it('uploads file with entity id', function () {
-          promise.then(function () {
-            expect(instance.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
-          });
-        });
-      });
-    });
-
     describe('attachments', function () {
-      var attachments, numberOfFiles, promise;
-      var testId = '63';
+      var attachments, instance, promise;
 
       beforeEach(function () {
-        LeaveRequestInstance.id = '12';
-        attachments = leaveRequestMockData.getAttachments().values;
-        numberOfFiles = attachments.length;
-        promise = LeaveRequestInstance.loadAttachments();
-      });
+        instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+        instance.id = '12';
 
-      afterEach(function () {
-        $rootScope.$apply();
+        attachments = leaveRequestMockData.getAttachments().values;
+        promise = instance.loadAttachments();
       });
 
       describe('loadAttachments()', function () {
-        it('initializes files array', function () {
+        it('fetches its own attachments', function () {
+          expect(LeaveRequestAPI.getAttachments).toHaveBeenCalledWith(instance.id);
+        });
+
+        it('stores the attachments internally', function () {
           promise.then(function () {
-            expect(LeaveRequestInstance.files.length).toEqual(numberOfFiles);
+            expect(instance.files.length).toEqual(attachments.length);
           });
         });
       });
 
       describe('deleteAttachment()', function () {
         beforeEach(function () {
-          promise.then(function () {
-            LeaveRequestInstance.deleteAttachment(attachments[0]);
-          });
+          $rootScope.$apply();
+          instance.deleteAttachment(attachments[0]);
         });
 
-        it('sets flag toBeDeleted', function () {
-          promise.then(function () {
-            _.each(LeaveRequestInstance.files, function (file) {
-              if (file.attachment_id === testId) {
-                expect(file.toBeDeleted).toBeTruthy();
-              } else {
-                expect(file.toBeDeleted).toBeFalsy();
-              }
-            });
+        it('flags the given attachment to be deleted', function () {
+          instance.files.forEach(function (file) {
+            if (file.attachment_id === attachments[0].attachment_id) {
+              expect(file.toBeDeleted).toBe(true);
+            } else {
+              expect(file.toBeDeleted).toBeFalsy();
+            }
           });
         });
       });
 
-      describe('deleteAttachments', function () {
+      describe('deleting attachments on upload', function () {
         var deletePromise;
 
         beforeEach(function () {
-          LeaveRequestInstance.id = '12';
-
           deletePromise = promise.then(function () {
-            LeaveRequestInstance.deleteAttachment(attachments[0]);
-            return LeaveRequestInstance.update();
+            instance.deleteAttachment(attachments[0]);
+            return instance.update();
           });
         });
 
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('returns expected number of promises', function () {
+        it('sends the cancellation request to the API for each file marked to be deleted', function () {
           deletePromise.then(function (resolvedPromises) {
-            var result = resolvedPromises[2];
-            expect(result.length).toEqual(1);
-          });
-        });
-
-        it('calls corresponding API end point', function () {
-          deletePromise.then(function (resolvedPromises) {
-            var result = resolvedPromises[2];
-            expect(result.length).toEqual(1);
-            _.each(LeaveRequestInstance.files, function (file) {
+            _.each(instance.files, function (file) {
               if (file.toBeDeleted) {
-                expect(LeaveRequestAPI.deleteAttachment).toHaveBeenCalled();
+                expect(LeaveRequestAPI.deleteAttachment).toHaveBeenCalledWith(instance.id, file.attachment_id);
               }
             });
           });
@@ -726,51 +604,48 @@ define([
     });
 
     describe('deleteComment()', function () {
-      describe('when comment_id is not present', function () {
+      var instance;
+      var comment = { created_at: '2017-06-14 12:15:18', text: 'test comment' };
+
+      beforeEach(function () {
+        instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+      });
+
+      describe('when the comment is not yet stored in the DB', function () {
         beforeEach(function () {
-          var commentObject = {
-            created_at: '2017-06-14 12:15:18',
-            text: 'test comment'
-          };
-          LeaveRequestInstance.comments = [commentObject];
-          LeaveRequestInstance.deleteComment(commentObject);
+          instance.comments = [comment];
+          instance.deleteComment(comment);
         });
 
-        it('removes the comment', function () {
-          expect(LeaveRequestInstance.comments.length).toBe(0);
+        it('removes the comment directly', function () {
+          expect(instance.comments.length).toBe(0);
         });
       });
 
-      describe('when comment_id is  present', function () {
-        var commentObject;
-
+      describe('when the comment is already stored in the DB', function () {
         beforeEach(function () {
-          commentObject = {
-            created_at: '2017-06-14 12:15:18',
-            comment_id: '1',
-            text: 'test comment'
-          };
-          LeaveRequestInstance.comments = [commentObject];
-          LeaveRequestInstance.deleteComment(commentObject);
+          comment.comment_id = '1';
+
+          instance.comments = [comment];
+          instance.deleteComment(comment);
         });
 
         it('marks the comment for deletion', function () {
-          expect(commentObject.toBeDeleted).toBe(true);
+          expect(comment.toBeDeleted).toBe(true);
         });
       });
     });
 
-    describe('delete', function () {
+    describe('delete()', function () {
       beforeEach(function () {
-        LeaveRequestInstance.delete();
+        spyOn(LeaveRequestAPI, 'delete');
+
+        instance = LeaveRequestInstance.init({ id: '123' });
+        instance.delete();
       });
 
-      it('sets the flag to delete on request', function () {
-        expect(LeaveRequestInstance.is_deleted).toBeTruthy();
-      });
-
-      it('calls update API', function () {
-        expect(LeaveRequestAPI.update).toHaveBeenCalledWith(jasmine.objectContaining({ is_deleted: true }));
+      it('calls the api delete endpoint, passing its own id', function () {
+        expect(LeaveRequestAPI.delete).toHaveBeenCalledWith(instance.id);
       });
     });
   });
