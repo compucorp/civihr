@@ -11,8 +11,17 @@ define([
     return {
       all: function (params) {
         return $q(function (resolve, reject) {
-          resolve(mockData.all().values);
+          resolve(mockData.all().values.map(storeDetails));
         });
+      },
+
+      /**
+       * Returns mocked contracts
+       *
+       * @return {object}
+       */
+      mockedContracts: function () {
+        return mockData.all().values.map(storeDetails);
       },
 
       /**
@@ -24,5 +33,21 @@ define([
         }.bind(this));
       }
     };
+
+    /**
+     * Contracts data will have key 'api.HRJobContract.getfulldetails'
+     * which is normalized with a friendlier 'details' key
+     *
+     * @param  {Object} contract
+     * @return {Object}
+     */
+    function storeDetails (contract) {
+      var clone = _.clone(contract);
+
+      clone.info = clone['api.HRJobContract.getfulldetails'];
+      delete clone['api.HRJobContract.getfulldetails'];
+
+      return clone;
+    }
   }]);
 });

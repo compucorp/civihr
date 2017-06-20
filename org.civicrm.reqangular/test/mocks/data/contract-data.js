@@ -52,12 +52,8 @@ define([
             'pay_currency': null,
             'pay_annualized_est': null,
             'pay_is_auto_est': '0',
-            'annual_benefits': [
-
-            ],
-            'annual_deductions': [
-
-            ],
+            'annual_benefits': [],
+            'annual_deductions': [],
             'pay_cycle': null,
             'pay_per_cycle_gross': null,
             'pay_per_cycle_net': null,
@@ -155,12 +151,8 @@ define([
             'pay_currency': null,
             'pay_annualized_est': null,
             'pay_is_auto_est': '0',
-            'annual_benefits': [
-
-            ],
-            'annual_deductions': [
-
-            ],
+            'annual_benefits': [],
+            'annual_deductions': [],
             'pay_cycle': null,
             'pay_per_cycle_gross': null,
             'pay_per_cycle_net': null,
@@ -258,12 +250,8 @@ define([
             'pay_currency': null,
             'pay_annualized_est': null,
             'pay_is_auto_est': '0',
-            'annual_benefits': [
-
-            ],
-            'annual_deductions': [
-
-            ],
+            'annual_benefits': [],
+            'annual_deductions': [],
             'pay_cycle': null,
             'pay_per_cycle_gross': null,
             'pay_per_cycle_net': null,

@@ -1,12 +1,11 @@
 /* eslint-env amd */
 
 define([
-  'common/lodash',
   'common/modules/models',
   'common/models/model',
   'common/models/instances/contract-instance',
   'common/services/api/contract'
-], function (_, models) {
+], function (models) {
   'use strict';
 
   models.factory('Contract', [
