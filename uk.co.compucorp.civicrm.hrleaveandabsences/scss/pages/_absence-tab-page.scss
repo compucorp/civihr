@@ -2,6 +2,10 @@
 
   .btn-group {
     margin-bottom: 20px;
+
+    > .btn {
+      border-color: transparent !important;
+    }
   }
 
   .tab-pane {

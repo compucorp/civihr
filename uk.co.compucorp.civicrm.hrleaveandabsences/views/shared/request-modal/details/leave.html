@@ -24,8 +24,7 @@
 <div class="row">
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
-      <label class="col-xs-4 control-label">From Date<i class="fa fa-asterisk"></i>
-      </label>
+      <label class="col-xs-4 control-label required-mark">From Date</label>
       <div class="col-xs-4">
         <div class="input-group">
           <input
@@ -39,12 +38,11 @@
             ng-readonly="true"
             ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
             ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from')"/>
-          <span class="input-group-btn">
-            <button
-              ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
-              type="button"
-              class="btn btn-default fa fa-calendar"
-              ng-click="$ctrl.uiOptions.date.from.show = true"></button>
+          <span
+            class="input-group-addon pointer"
+            ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
+            ng-click="$ctrl.uiOptions.date.from.show = true">
+            <i class="fa fa-calendar"></i>
           </span>
         </div>
       </div>
@@ -75,8 +73,7 @@
 <div class="row" ng-hide="!$ctrl.uiOptions.multipleDays">
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
-      <label class="col-xs-4 control-label">To Date<i class="fa fa-asterisk"></i>
-      </label>
+      <label class="col-xs-4 control-label required-mark">To Date</label>
       <div class="col-xs-4">
         <div class="input-group">
           <input
@@ -90,12 +87,11 @@
             ng-readonly="true"
             ng-disabled="$ctrl.isMode('view') || !$ctrl.request.from_date || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
             ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to')"/>
-          <span class="input-group-btn">
-            <button
-              type="button"
-              class="btn btn-default fa fa-calendar"
-              ng-disabled="$ctrl.isMode('view') || !$ctrl.request.from_date || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
-              ng-click="$ctrl.uiOptions.date.to.show = $ctrl.request.from_date ? true : false"></button>
+          <span
+            class="input-group-addon pointer"
+            ng-disabled="$ctrl.isMode('view') || !$ctrl.request.from_date || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
+            ng-click="$ctrl.uiOptions.date.to.show = $ctrl.request.from_date ? true : false">
+            <i class="fa fa-calendar"></i>
           </span>
         </div>
       </div>
