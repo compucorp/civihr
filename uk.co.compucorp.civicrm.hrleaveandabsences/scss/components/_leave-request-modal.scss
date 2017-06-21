@@ -50,7 +50,7 @@ $row-margin-bottom: 15px;
   padding: 20px 20px 0;
 
   label {
-    font-size: $crm-font-size-large;
+    font-size: $font-size-large;
     margin-top: -3px;
   }
 
@@ -88,7 +88,7 @@ $row-margin-bottom: 15px;
 
 .chr_leave-request-modal__user-info {
   padding: 20px;
-  font-size: $crm-font-size-large;
+  font-size: $font-size-large;
 
   > span {
     &:nth-child(1) {

@@ -1,0 +1,14 @@
+{
+  "scenarios": [
+    {
+      "label": "Current Month: Admin Leave Calendar",
+      "url": "civicrm/contact/view?reset=1&cid=204&selectedChild=absence#/",
+      "onReadyScript": "admin-leave-absences/leave-absence-calendar_current-month-visible"
+    },
+    {
+      "label": "All Months: Admin Leave Calendar",
+      "url": "civicrm/contact/view?reset=1&cid=204&selectedChild=absence#/",
+      "onReadyScript": "admin-leave-absences/leave-absence-calendar_all-months-visible"
+    }
+  ]
+}
