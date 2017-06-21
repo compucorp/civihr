@@ -1,5 +1,7 @@
+import _        from 'lodash'
 import gulp     from 'gulp';
 import plugins  from 'gulp-load-plugins';
+import tap      from 'gulp-tap';
 import browser  from 'browser-sync';
 import rimraf   from 'rimraf';
 import panini   from 'panini';
@@ -135,7 +137,14 @@ function inliner(css) {
       removeLinkTags: false
     })
     .pipe($.replace, '<!-- <style> -->', `<style>${mqCss}</style>`)
-    .pipe($.replace, '<link rel="stylesheet" type="text/css" href="css/app.css">', '');
+    .pipe($.replace, '<link rel="stylesheet" type="text/css" href="css/app.css">', '')
+    .pipe(tap, function (file) {
+      // CiviCRM uses Smarty to process emails, so additional steps
+      // to get the templates production-ready need to be added
+      if (_.endsWith(file.path, '.civicrm.html')) {
+        file.contents = wrapStyleForSmarty(file.contents.toString());
+      }
+    });
 
   return pipe();
 }
@@ -234,4 +243,18 @@ function zip() {
   });
 
   return merge(moveTasks);
+}
+
+/**
+ * Wrap the content of the <style> tag in the Smarty {literal} tags
+ *
+ * @param  {string} fileContents
+ * @return {Buffer}
+ */
+function wrapStyleForSmarty(fileContents) {
+  return Buffer.from((function () {
+    return fileContents
+      .replace('<style>', '<style>{literal}')
+      .replace('</style>', '{/literal}</style>');
+  }()));
 }

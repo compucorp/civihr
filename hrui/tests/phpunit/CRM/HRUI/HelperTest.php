@@ -2,6 +2,8 @@
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
+use Civi\Test\CiviEnvBuilder;
+use CRM_HRCore_Test_Fabricator_Contact as ContactMaker;
 
 /**
  * Class CRM_HRUI_HelperTest
@@ -12,39 +14,58 @@ class CRM_HRUI_HelperTest extends \PHPUnit_Framework_TestCase implements Headles
 
   use HRUITrait;
 
+  protected $requiredExtensions = [
+    'uk.co.compucorp.civicrm.hrcore', // required for fabricator
+    'org.civicrm.hrident', // creates the Identity custom group required by hrcase
+    'uk.co.compucorp.civicrm.tasksassignments', // if not enabled will try to redirect
+    'org.civicrm.hrcase' // creates the line manager relationship type
+  ];
+
+  /**
+   * @return CiviEnvBuilder
+   */
   public function setUpHeadless() {
-    // hrcase create ( Line Manager is ) relationship type which is need for the tests
     return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
-      ->install('org.civicrm.hrident')
-      ->install('uk.co.compucorp.civicrm.tasksassignments')
+      ->install($this->requiredExtensions)
       ->installMe(__DIR__)
-      ->install('org.civicrm.hrcase')
       ->apply();
   }
 
+  /**
+   * Checks that the CRM_HRUI_Helper returns all line managers
+   */
   public function testGetLineManagersList() {
-    $contactParamsA = array("first_name" => "chrollo", "last_name" => "lucilfer");
-    $contactParamsB = array("first_name" => "hisoka", "last_name" => "morou");
-    $contactA = $this->createContact($contactParamsA);
-    $contactB = $this->createContact($contactParamsB)
-    ;
-    $this->createRelationship($contactA, $contactB, 'Line Manager is');
+    $relationshipType = 'Line Manager is';
 
+    $contactA = $this->createContact('chrollo', 'lucilfer');
+    $contactB = $this->createContact('hisoka', 'morou');
+    $contactC = $this->createContact('illumi', 'zoldyck');
+
+    $this->createRelationship($contactA, $contactB, $relationshipType);
     $managers = CRM_HRUI_Helper::getLineManagersList($contactA);
+
     $this->assertContains('hisoka morou', $managers);
     $this->assertEquals(1, count($managers));
 
-    // add another line manager
-    $contactParamsC = array("first_name" => "illumi", "last_name" => "zoldyck");
-    $contactC = $this->createContact($contactParamsC);
-
-    $this->createRelationship($contactA, $contactC, 'Line Manager is');
-
+    $this->createRelationship($contactA, $contactC, $relationshipType);
     $managers = CRM_HRUI_Helper::getLineManagersList($contactA);
+
     $this->assertContains('illumi zoldyck', $managers);
     $this->assertContains('hisoka morou', $managers);
     $this->assertCount(2, $managers);
+  }
+
+  /**
+   * @param string $firstName
+   * @param string $lastName
+   *
+   * @return int
+   */
+  private function createContact($firstName, $lastName) {
+    return ContactMaker::fabricate([
+      'first_name' => $firstName,
+      'last_name' => $lastName
+    ])['id'];
   }
 
 }

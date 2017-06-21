@@ -4,14 +4,13 @@ class CRM_Hrjobcontract_Test_Fabricator_HRPayScale {
 
   private static $defaultParams = [
     'pay_scale' => 'test scale',
-    'pay_grade' => 'test grade',
     'currency' => "USD",
     'amount' => "35000.00",
-    'periodicity' => "Year",
+    'pay_frequency' => "Year",
     'sequential'   => 1
   ];
 
-  public static function fabricate($params =[]) {
+  public static function fabricate($params = []) {
     $params = array_merge(self::$defaultParams, $params);
 
     $result = civicrm_api3(
@@ -22,4 +21,5 @@ class CRM_Hrjobcontract_Test_Fabricator_HRPayScale {
 
     return array_shift($result['values']);
   }
+
 }

@@ -437,34 +437,41 @@ function hrabsence_civicrm_apiWrappers(&$wrappers, $apiRequest) {
 }
 
 /**
- * Implementation of hook_civicrm_tabs
- * this tab should appear after summary (personal details) tab directly
- * and since personal details tab weight is
- * hardcoded to 0 we chose this to be 10
- * to give some room for other extensions to place
- * their tabs between these two.
+ * Implementation of hook_civicrm_tabset.
+ *
+ * This tab should appear after summary (personal details) tab directly
+ * and since personal details tab weight is hardcoded to 0 we chose this
+ * to be 10 to give some room for other extensions to place their tabs between
+ * these two.
+ *
+ * @param string $tabsetName
+ * @param array &$tabs
+ * @param array $context
  */
-function hrabsence_civicrm_tabs(&$tabs, $contactID) {
-  $contactType = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'contact_type', 'id');
-  if (!($contactType == 'Individual' && CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'viewWidget'))) {
-    return;
+function hrabsence_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName === 'civicrm/contact/view') {
+    $contactID = $context['contact_id'];
+    $contactType = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'contact_type', 'id');
+    if (!($contactType == 'Individual' && CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'viewWidget'))) {
+      return;
+    }
+    $absence = civicrm_api3('Activity', 'getabsences', array('target_contact_id' => $contactID));
+    $absenceDuration = 0;
+    foreach ($absence['values'] as $k => $v) {
+      $absenceDuration += CRM_HRAbsence_BAO_HRAbsenceType::getAbsenceDuration($v['id']);
+    }
+    CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources($contactID);
+    $tabs[] = array(
+      'id'    => 'absenceTab',
+      'url'   =>  CRM_Utils_System::url( 'civicrm/absences', array(
+        'cid' => $contactID,
+        'snippet' => 1,
+      )),
+      'count' => $absenceDuration / (8 * 60),
+      'title' => ts('Absences'),
+      'weight' => 10,
+    );
   }
-  $absence = civicrm_api3('Activity', 'getabsences', array('target_contact_id' => $contactID));
-  $absenceDuration = 0;
-  foreach ($absence['values'] as $k => $v) {
-    $absenceDuration += CRM_HRAbsence_BAO_HRAbsenceType::getAbsenceDuration($v['id']);
-  }
-  CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources($contactID);
-  $tabs[] = array(
-    'id'    => 'absenceTab',
-    'url'   =>  CRM_Utils_System::url( 'civicrm/absences', array(
-      'cid' => $contactID,
-      'snippet' => 1,
-    )),
-    'count' => $absenceDuration/(8*60),
-    'title' => ts('Absences'),
-    'weight' => 10
-  );
 }
 
 /**
