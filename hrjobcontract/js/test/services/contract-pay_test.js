@@ -1,7 +1,10 @@
+/* globals inject */
+/* eslint-env amd, jasmine */
+
 define([
   'mocks/data/contract',
   'job-contract/app'
-], function(MockContract) {
+], function (MockContract) {
   'use strict';
 
   describe('ContractPayService', function () {
@@ -23,17 +26,13 @@ define([
       $rootScope.$apply();
     });
 
-    describe('when calling getOne()', function () {
-      it('makes http call', function () {
-        $httpBackend.expectGET(/action=get&entity=HRJobContract/);
-      });
-
+    describe('getOne()', function () {
       it("defines getOne() function", function () {
         expect(ContractPayService.getOne).toBeDefined();
       });
 
-      it('calls getOne functions and returns expected values', function () {
-        ContractPayService.getOne({jobcontract_revision_id: 68}).then(function (result) {
+      it('calls getOne() and returns expected contract payment data', function () {
+        ContractPayService.getOne({ jobcontract_revision_id: 68 }).then(function (result) {
           expect(result.pay_amount).toEqual(MockContract.contractPayment.values[0].pay_amount);
         });
       });
