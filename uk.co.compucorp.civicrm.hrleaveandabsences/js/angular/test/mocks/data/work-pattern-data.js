@@ -66,6 +66,54 @@ define(function () {
           ]
         }
       ]
+    },
+    getAllWorkPattern: {
+      'is_error': 0,
+      'version': 3,
+      'count': 1,
+      'id': 1,
+      'values': [
+        {
+          'id': '1',
+          'label': 'Default 5 day week (London)',
+          'description': 'A standard 37.5 week',
+          'is_default': '1',
+          'is_active': '1',
+          'weight': '1'
+        }
+      ]
+    },
+    workPatternsOf: {
+      'is_error': 0,
+      'version': 3,
+      'count': 1,
+      'id': 1,
+      'values': [
+        {
+          'id': '1',
+          'contact_id': '204',
+          'pattern_id': '1',
+          'effective_date': '2017-06-22',
+          'effective_end_date': '2018-06-22',
+          'change_reason': '1',
+          'api.WorkPattern.get': {
+            'is_error': 0,
+            'version': 3,
+            'count': 1,
+            'id': 1,
+            'values': [
+              {
+                'id': '1',
+                'label': 'Default 5 day week (London)',
+                'description': 'A standard 37.5 week',
+                'is_default': '1',
+                'is_active': '1',
+                'weight': '1'
+              }
+            ]
+          }
+        }
+      ]
     }
   };
 });
