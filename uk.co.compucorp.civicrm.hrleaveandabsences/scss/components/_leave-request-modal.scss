@@ -6,8 +6,8 @@ $row-margin-bottom: 15px;
 
 .chr_leave-request-modal__chevron {
   font-size: 0.6em;
-  vertical-align: middle;
   margin-right: 5px;
+  vertical-align: middle;
 }
 
 .chr_leave-request-modal__comments {
@@ -66,8 +66,8 @@ $row-margin-bottom: 15px;
 .chr_leave-request-modal__small_spinner {
 
   > div.chr_spinner {
-    min-height: initial;
     margin-top: 18px;
+    min-height: initial;
   }
 }
 
@@ -82,13 +82,13 @@ $row-margin-bottom: 15px;
 }
 
 .chr_leave-request-modal__table {
-  margin-bottom: $row-margin-bottom !important;
   border: 1px solid $crm-table-heading-border-color;
+  margin-bottom: $row-margin-bottom !important;
 }
 
 .chr_leave-request-modal__user-info {
-  padding: 20px;
   font-size: $font-size-large;
+  padding: 20px;
 
   > span {
     &:nth-child(1) {
@@ -103,6 +103,6 @@ $row-margin-bottom: 15px;
 }
 
 .chr_leave-request-modal__span-expiry {
-  margin-top: 7px;
   display: inline-block;
+  margin-top: 7px;
 }
