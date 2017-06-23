@@ -9,16 +9,46 @@ define([
   'use strict';
 
   describe('WorkPatternAPI', function () {
-    var WorkPatternAPI, $httpBackend;
+    var $q, WorkPatternAPI, $httpBackend;
 
     beforeEach(module('leave-absences.apis'));
-    beforeEach(inject(function (_WorkPatternAPI_, _$httpBackend_) {
+    beforeEach(inject(function (_$q_, _WorkPatternAPI_, _$httpBackend_) {
+      $q = _$q_;
       WorkPatternAPI = _WorkPatternAPI_;
       $httpBackend = _$httpBackend_;
     }));
 
-    afterEach(function () {
-      $httpBackend.flush();
+    describe('assignWorkPattern()', function () {
+      var contactId = '204';
+      var workPatternID = '1';
+      var effectiveDate = '02/01/2017';
+      var effectiveEndDate = '02/01/2018';
+      var changeReason = '2';
+      var additionalFilters = { foo: 'foo', bar: 'bar' };
+
+      beforeEach(function () {
+        spyOn(WorkPatternAPI, 'sendGET').and.returnValue($q.resolve({ values: [] }));
+        WorkPatternAPI.assignWorkPattern(contactId, workPatternID, effectiveDate, effectiveEndDate, changeReason, additionalFilters);
+      });
+
+      it('sends a GET request to the api', function () {
+        expect(WorkPatternAPI.sendGET).toHaveBeenCalled();
+      });
+
+      it('calls the api with the correct entity and action', function () {
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[0]).toBe('ContactWorkPattern');
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[1]).toBe('create');
+      });
+
+      it('passes all the parameters to the api', function () {
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[2]).toEqual(_.assign(additionalFilters, {
+          contact_id: contactId,
+          pattern_id: workPatternID,
+          effective_date: effectiveDate,
+          effective_end_date: effectiveEndDate,
+          change_reason: changeReason
+        }));
+      });
     });
 
     describe('getCalendar()', function () {
@@ -30,6 +60,10 @@ define([
       beforeEach(function () {
         $httpBackend.whenGET(/action=getcalendar&entity=WorkPattern/).respond(workPatternMocked.getCalendar);
         spyOn(WorkPatternAPI, 'sendGET').and.callThrough();
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
       });
 
       describe('basic tests', function () {
@@ -81,6 +115,95 @@ define([
           }));
         });
       });
+    });
+
+    describe('get()', function () {
+      var getWorkPatternPromise;
+      var additionalFilters = { foo: 'foo', bar: 'bar' };
+
+      beforeEach(function () {
+        $httpBackend.whenGET(/action=get&entity=WorkPattern/).respond(workPatternMocked.getAllWorkPattern);
+        spyOn(WorkPatternAPI, 'sendGET').and.callThrough();
+        getWorkPatternPromise = WorkPatternAPI.get(additionalFilters);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('sends a GET request to the api', function () {
+        expect(WorkPatternAPI.sendGET).toHaveBeenCalled();
+      });
+
+      it('calls the api with the correct entity and action', function () {
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[0]).toBe('WorkPattern');
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[1]).toBe('get');
+      });
+
+      it('returns the work pattern data', function () {
+        getWorkPatternPromise.then(function (response) {
+          expect(response).toEqual(workPatternMocked.getAllWorkPattern.values);
+        });
+      });
+    });
+
+    describe('workPatternsOf()', function () {
+      var getWorkPatternPromise;
+      var contactId = '204';
+      var additionalFilters = { foo: 'foo', bar: 'bar' };
+
+      beforeEach(function () {
+        $httpBackend.whenGET(/action=get&entity=ContactWorkPattern/).respond(workPatternMocked.workPatternsOf);
+        spyOn(WorkPatternAPI, 'sendGET').and.callThrough();
+        getWorkPatternPromise = WorkPatternAPI.workPatternsOf(contactId, additionalFilters);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('sends a GET request to the api', function () {
+        expect(WorkPatternAPI.sendGET).toHaveBeenCalled();
+      });
+
+      it('calls the api with the correct entity and action', function () {
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[0]).toBe('ContactWorkPattern');
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[1]).toBe('get');
+      });
+
+      it('returns the work pattern data', function () {
+        getWorkPatternPromise.then(function (response) {
+          expect(response).toEqual(workPatternMocked.workPatternsOf.values.map(storeWorkPattern));
+        });
+      });
+
+      it('passes contact id to the api', function () {
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
+          contact_id: contactId
+        }));
+      });
+
+      it('chains call to WorkPattern API', function () {
+        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
+          'api.WorkPattern.get': { 'contact_id': '$value.contact_id' }
+        }));
+      });
+
+      /**
+       * ContactWorkPatterns data will have key 'api.WorkPattern.get'
+       * which is normalized with a friendlier 'workPatterns' key
+       *
+       * @param  {Object} workPattern
+       * @return {Object}
+       */
+      function storeWorkPattern (workPattern) {
+        var clone = _.clone(workPattern);
+
+        clone['workPatterns'] = clone['api.WorkPattern.get']['values'];
+        delete clone['api.WorkPattern.get'];
+
+        return clone;
+      }
     });
   });
 });

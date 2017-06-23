@@ -13,7 +13,43 @@ define([
     return api.extend({
 
       /**
-       * This method returns the calendar for the given contact(s) and period,
+       * Assigns a work pattern to a contact
+       *
+       * @param {string} contactId
+       * @param {string} workPatternID
+       * @param {string} effectiveDate
+       * @param {string} effectiveEndDate
+       * @param {string} changeReason
+       * @param {object} params - additional parameters
+       * @return {Promise} Resolved with {Array} All Work Patterns
+       */
+      assignWorkPattern: function (contactId, workPatternID, effectiveDate, effectiveEndDate, changeReason, params) {
+        return this.sendGET('ContactWorkPattern', 'create', _.assign({}, params, {
+          contact_id: contactId,
+          pattern_id: workPatternID,
+          effective_date: effectiveDate,
+          effective_end_date: effectiveEndDate,
+          change_reason: changeReason
+        })).then(function (data) {
+          return data.values;
+        });
+      },
+
+      /**
+       * Returns all the work patterns
+       *
+       * @param {object} params additional parameters
+       * @return {Promise} Resolved with {Array} All Work Patterns
+       */
+      get: function (params) {
+        return this.sendGET('WorkPattern', 'get', params || {})
+          .then(function (data) {
+            return data.values;
+          });
+      },
+
+      /**
+       * Returns the calendar for the given contact(s) and period,
        * as a list of days and their type
        *
        * @param {string/int/Array} contactId can be also an array for multiple contacts
@@ -28,7 +64,41 @@ define([
           contact_id: _.isArray(contactId) ? { 'IN': contactId } : contactId,
           period_id: periodId
         }));
+      },
+
+      /**
+       * Returns all the work patterns of a specific contact
+       *
+       * @param {string} contactId
+       * @param {object} params - additional parameters
+       * @return {Promise} Resolved with {Array} All Work Patterns of the contact
+       */
+      workPatternsOf: function (contactId, params) {
+        return this.sendGET('ContactWorkPattern', 'get', _.assign({}, params, {
+          contact_id: contactId,
+          'api.WorkPattern.get': { 'contact_id': '$value.contact_id' }
+        })).then(function (data) {
+          data = data.values;
+
+          return data.map(storeWorkPattern);
+        });
       }
     });
+
+    /**
+     * ContactWorkPatterns data will have key 'api.WorkPattern.get'
+     * which is normalized with a friendlier 'workPatterns' key
+     *
+     * @param  {Object} workPattern
+     * @return {Object}
+     */
+    function storeWorkPattern (workPattern) {
+      var clone = _.clone(workPattern);
+
+      clone['workPatterns'] = clone['api.WorkPattern.get']['values'];
+      delete clone['api.WorkPattern.get'];
+
+      return clone;
+    }
   }]);
 });
