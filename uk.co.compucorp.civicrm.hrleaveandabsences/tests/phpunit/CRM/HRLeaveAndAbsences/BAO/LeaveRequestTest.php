@@ -1312,6 +1312,48 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
   }
 
+  public function testLeaveRequestWithHalfDaysCanBeCreatedWhenBalanceChangeIsEqualToTheRemainingBalanceWhenAbsenceTypeDoesntAllowOveruse() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 1.5);
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $periodEntitlement->contact_id,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    //two working days, but the second day is half, so the balance change
+    //will be 1.5, exactly the same as the remaining balance (which, since we
+    //don't have any other deductions, it's the same as the entitlement)
+    $leaveRequest = LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-11-14'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => CRM_Utils_Date::processDate('2016-11-15'),
+      'to_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+    $this->assertNotNull($leaveRequest->id);
+  }
+
   public function testLeaveRequestCanBeCreatedWhenBalanceChangeGreaterThanPeriodBalanceChangeAndAbsenceTypeAllowOveruseTrue() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),

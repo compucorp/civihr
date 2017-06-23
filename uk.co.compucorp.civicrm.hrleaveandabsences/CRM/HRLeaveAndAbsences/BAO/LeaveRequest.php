@@ -482,17 +482,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @return float
    */
   private static function calculateBalanceChangeFromCreateParams($params) {
-    $leaveRequestOptionsValue = self::getLeaveRequestDayTypeOptionsGroupByValue();
-
-    $fromDateType = $leaveRequestOptionsValue[$params['from_date_type']];
-    $toDateType = $leaveRequestOptionsValue[$params['to_date_type']];
-
     $leaveRequestBalance = self::calculateBalanceChange(
       $params['contact_id'],
       new DateTime($params['from_date']),
-      $fromDateType,
+      $params['from_date_type'],
       new DateTime($params['to_date']),
-      $toDateType
+      $params['to_date_type']
     );
 
     return abs($leaveRequestBalance['amount']);
@@ -928,38 +923,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = $date->format('Y-m-d');
     return self::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
-  }
-
-  /**
-   * Returns LeaveRequest Day Type Options in a nested array format
-   * with the day_type_id key as the array key and details about the day_type_id as the value
-   *
-   * @return array
-   *   [
-   *     '1' => [
-   *     'id' => 1,
-   *     'value' => '1',
-   *     'name' => 'all_day'
-   *     ],
-   *     '2 => [
-   *     'id' => 2,
-   *     'value' => '2',
-   *     'name' => 'half_day_am',
-   *     ]
-   *   ]
-   */
-  private static function getLeaveRequestDayTypeOptionsGroupByValue() {
-    $leaveRequestDayTypeOptionsGroup = [];
-    $leaveRequestDayTypeOptions = self::buildOptions('from_date_type');
-    foreach($leaveRequestDayTypeOptions  as $key => $label) {
-      $name = CRM_Core_Pseudoconstant::getName(self::class, 'from_date_type', $key);
-      $leaveRequestDayTypeOptionsGroup[$key] = [
-        'id' => $key,
-        'value' => $key,
-        'name' => $name
-      ];
-    }
-    return $leaveRequestDayTypeOptionsGroup;
   }
 
   /**
