@@ -17,7 +17,8 @@ define([
       return Model.extend({
 
         /**
-         *  Calls the assignWorkPattern() method of the WorkPattern API
+         * Assigns the given work pattern to the given contact id, also sets
+         * effective date, effective end date and change reason
          *
          * @param {string} contactId
          * @param {string} workPatternID
@@ -34,21 +35,17 @@ define([
         /**
          * Return the default work pattern
          *
-         * @param  {Object} params
          * @return {Promise}
          */
-        default: function (params) {
-          return workPatternAPI.get(_.assign({}, params, {
-            default: true
-          }))
+        default: function () {
+          return workPatternAPI.get({ default: true })
             .then(function (defaultWorkPattern) {
               return instance.init(defaultWorkPattern[0], true);
             });
         },
 
         /**
-         * Calls the workPatternsOf() method of the WorkPattern API, and returns an
-         * WorkPatternInstance for each workPattern.
+         * Returns the work patterns of the contact with the given id
          *
          * @param {string} contactId
          * @param {object} params - additional parameters

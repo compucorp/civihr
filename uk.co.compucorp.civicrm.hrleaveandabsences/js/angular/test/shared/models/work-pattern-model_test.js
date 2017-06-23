@@ -30,95 +30,92 @@ define([
       spyOn(WorkPatternAPI, 'assignWorkPattern').and.callThrough();
     }));
 
+    afterEach(function () {
+      $rootScope.$apply();
+    });
+
     it('has expected interface', function () {
       expect(Object.keys(WorkPattern)).toEqual(['assignWorkPattern', 'default', 'workPatternsOf']);
     });
 
-    describe('basic tests', function () {
-      afterEach(function () {
-        $rootScope.$apply();
+    describe('default()', function () {
+      var promise;
+
+      beforeEach(function () {
+        promise = WorkPattern.default();
       });
 
-      describe('default()', function () {
-        var promise;
-        var additionalParams = { foo: 'bar' };
-
-        beforeEach(function () {
-          promise = WorkPattern.default(additionalParams);
-        });
-
-        it('calls equivalent API method', function () {
-          promise.then(function () {
-            expect(WorkPatternAPI.get).toHaveBeenCalled();
-          });
-        });
-
-        it('adds "default: true" to the passed paramters', function () {
-          expect(WorkPatternAPI.get.calls.mostRecent().args[0]).toEqual(_.assign({}, additionalParams, {
-            default: true
-          }));
-        });
-
-        it('returns model instance', function () {
-          promise.then(function (response) {
-            expect(response.init).toEqual(jasmine.any(Function));
-          });
+      it('calls equivalent API method', function () {
+        promise.then(function () {
+          expect(WorkPatternAPI.get).toHaveBeenCalled();
         });
       });
 
-      describe('workPatternsOf()', function () {
-        var promise;
-        var contactId = '204';
-        var additionalParams = { foo: 'bar' };
-
-        beforeEach(function () {
-          promise = WorkPattern.workPatternsOf(contactId, additionalParams);
-        });
-
-        it('calls equivalent API method', function () {
-          promise.then(function () {
-            expect(WorkPatternAPI.workPatternsOf).toHaveBeenCalled();
-          });
-        });
-
-        it('passes all parameters to the API', function () {
-          expect(WorkPatternAPI.workPatternsOf.calls.mostRecent().args[0]).toEqual(contactId);
-          expect(WorkPatternAPI.workPatternsOf.calls.mostRecent().args[1]).toEqual(additionalParams);
-        });
-
-        it('returns model instances', function () {
-          promise.then(function (response) {
-            expect(response.every(function (modelInstance) {
-              return 'init' in modelInstance;
-            })).toBe(true);
-          });
+      it('sends "default: true" parameters to the API', function () {
+        expect(WorkPatternAPI.get.calls.mostRecent().args[0]).toEqual({
+          default: true
         });
       });
 
-      describe('assignWorkPattern()', function () {
-        var contactId = '204';
-        var workPatternID = '1';
-        var effectiveDate = '10/4/2017';
-        var effectiveEndDate = '10/4/2018';
-        var changeReason = '1';
-        var additionalParams = { foo: 'bar' };
-
-        beforeEach(function () {
-          WorkPattern.assignWorkPattern(contactId, workPatternID, effectiveDate, effectiveEndDate, changeReason, additionalParams);
+      it('returns model instance', function () {
+        promise.then(function (response) {
+          expect(response.init).toEqual(jasmine.any(Function));
         });
+      });
+    });
 
-        it('calls equivalent API method', function () {
-          expect(WorkPatternAPI.assignWorkPattern).toHaveBeenCalled();
-        });
+    describe('workPatternsOf()', function () {
+      var promise;
+      var contactId = '204';
+      var additionalParams = {foo: 'bar'};
 
-        it('passes all parameters to the API', function () {
-          expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[0]).toEqual(contactId);
-          expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[1]).toEqual(workPatternID);
-          expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[2]).toEqual(effectiveDate);
-          expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[3]).toEqual(effectiveEndDate);
-          expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[4]).toEqual(changeReason);
-          expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[5]).toEqual(additionalParams);
+      beforeEach(function () {
+        promise = WorkPattern.workPatternsOf(contactId, additionalParams);
+      });
+
+      it('calls equivalent API method', function () {
+        promise.then(function () {
+          expect(WorkPatternAPI.workPatternsOf).toHaveBeenCalled();
         });
+      });
+
+      it('passes all parameters to the API', function () {
+        expect(WorkPatternAPI.workPatternsOf.calls.mostRecent().args[0]).toEqual(contactId);
+        expect(WorkPatternAPI.workPatternsOf.calls.mostRecent().args[1]).toEqual(additionalParams);
+      });
+
+      it('returns model instances', function () {
+        promise.then(function (response) {
+          expect(response.every(function (modelInstance) {
+            return 'init' in modelInstance;
+          })).toBe(true);
+        });
+      });
+    });
+
+    describe('assignWorkPattern()', function () {
+      var contactId = '204';
+      var workPatternID = '1';
+      var effectiveDate = '10/4/2017';
+      var effectiveEndDate = '10/4/2018';
+      var changeReason = '1';
+      var additionalParams = {foo: 'bar'};
+
+      beforeEach(function () {
+        WorkPattern.assignWorkPattern(contactId, workPatternID, effectiveDate, effectiveEndDate, changeReason, additionalParams);
+      });
+
+      it('calls equivalent API method', function () {
+        expect(WorkPatternAPI.assignWorkPattern).toHaveBeenCalled();
+      });
+
+      it('passes all parameters to the API', function () {
+        expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[0]).toEqual(contactId);
+        expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[1]).toEqual(workPatternID);
+        expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[2]).toEqual(effectiveDate);
+        expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[3]).toEqual(effectiveEndDate);
+        expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[4]).toEqual(changeReason);
+        expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[5]).toEqual(additionalParams);
       });
     });
   });
