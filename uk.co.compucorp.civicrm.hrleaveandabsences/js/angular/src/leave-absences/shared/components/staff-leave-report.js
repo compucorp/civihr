@@ -4,12 +4,12 @@ define([
   'common/moment',
   'leave-absences/shared/modules/components'
 ], function (_, moment, components) {
-  components.component('leaveReport', {
+  components.component('staffLeaveReport', {
     bindings: {
       contactId: '<'
     },
     templateUrl: ['shared-settings', function (settings) {
-      return settings.sharedPathTpl + 'components/leave-report.html';
+      return settings.sharedPathTpl + 'components/staff-leave-report.html';
     }],
     controllerAs: 'report',
     controller: [
@@ -19,7 +19,7 @@ define([
   });
 
   function controller ($log, $q, $rootScope, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HRSettings, sharedSettings) {
-    $log.debug('Component: leave-report');
+    $log.debug('Component: staff-leave-report');
 
     var vm = Object.create(this);
 

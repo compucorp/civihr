@@ -32,7 +32,7 @@
             })
             .state('my-leave.report', {
               url: '/report',
-              template: '<leave-report contact-id="myleave.contactId"></leave-report>'
+              template: '<staff-leave-report contact-id="myleave.contactId"></staff-leave-report>'
             })
             .state('my-leave.calendar', {
               url: '/calendar',

@@ -20,7 +20,7 @@
   ], function (angular, _, moment, helper, absencePeriodData, absenceTypeData, entitlementMock, leaveRequestMock, optionGroupMock) {
     'use strict';
 
-    describe('myLeaveReport', function () {
+    describe('staffLeaveReport', function () {
       var contactId = CRM.vars.leaveAndAbsences.contactId;
       var $compile, $q, $log, $provide, $rootScope, component, controller;
       var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, dialog, sharedSettings;
@@ -964,11 +964,11 @@
       function compileComponent () {
         var $scope = $rootScope.$new();
 
-        component = angular.element('<leave-report contact-id="' + contactId + '"></leave-report>');
+        component = angular.element('<staff-leave-report contact-id="' + contactId + '"></staff-leave-report>');
         $compile(component)($scope);
         $scope.$digest();
 
-        controller = component.controller('leaveReport');
+        controller = component.controller('staffLeaveReport');
       }
 
       /**
