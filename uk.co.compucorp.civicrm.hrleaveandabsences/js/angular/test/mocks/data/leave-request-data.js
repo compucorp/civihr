@@ -354,7 +354,7 @@ define([
           'type': {
             'id': 2,
             'value': 2,
-            'label': '1/2 AM'
+            'label': 'Half-day AM'
           }
         }]
       }
