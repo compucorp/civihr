@@ -27,6 +27,12 @@ define([
     'textAngular',
     'common.angularDate',
     'common.directives',
+    /*
+     * @TODO Because the app requires Contact, which requires Group,
+     * which requires api.group.mock and api.group-contact.mock,
+     * we need to include 'common.mocks' in the production app.
+     * This needs to be refactored.
+     */
     'common.mocks',
     'absence-tab.config',
     'absence-tab.components',

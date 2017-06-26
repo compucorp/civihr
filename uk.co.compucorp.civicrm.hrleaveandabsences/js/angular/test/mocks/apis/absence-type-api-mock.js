@@ -1,7 +1,9 @@
+/* eslint-env amd, jasmine */
+
 define([
   'mocks/module',
   'mocks/data/absence-type-data',
-  'common/angularMocks',
+  'common/angularMocks'
 ], function (mocks, mockData) {
   'use strict';
 
@@ -17,6 +19,6 @@ define([
           resolve(mockData.calculateToilExpiryDate().values.expiry_date);
         });
       }
-    }
+    };
   }]);
 });

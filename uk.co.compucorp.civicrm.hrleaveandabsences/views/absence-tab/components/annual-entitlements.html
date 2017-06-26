@@ -2,8 +2,8 @@
   <div class="panel-heading">
     <h3 class="panel-title">Annual Entitlements</h3>
   </div>
-  <crm-loading show="entitlements.loaded.absencePeriods">
-    <div class="table-responsive" ng-show="entitlements.loaded.absencePeriods && entitlements.absencePeriods.length > 0">
+  <crm-loading show="!entitlements.loading.absencePeriods">
+    <div class="table-responsive" ng-show="entitlements.absencePeriods.length > 0">
       <table class="table">
         <thead>
           <tr>
@@ -14,22 +14,22 @@
         </thead>
         <tbody>
           <tr ng-repeat="absencePeriod in entitlements.absencePeriods">
-            <td>{{absencePeriod.period}} <i class="fa fa-clock-o text-primary" aria-hidden="true"></i></td>
-            <td ng-repeat="absence in absencePeriod.absences">
-              {{absence.amount}}
+            <td>{{absencePeriod.period}}</td>
+            <td ng-repeat="entitlement in absencePeriod.entitlements">
+              {{entitlement.amount}}
               <i
-                class="fa fa-exclamation-circle text-danger chr_annual-entitlements__button-icon"
-                ng-if="absence.comment"
-                ng-click="entitlements.showComment(absence.comment)"
+                class="fa fa-exclamation-circle text-danger pointer"
+                ng-if="entitlement.comment"
+                ng-click="entitlements.showComment(entitlement.comment)"
                 aria-hidden="true">
               </i>
             </td>
-            <td><a href="/civicrm/admin/leaveandabsences/periods/manage_entitlements?cid={{entitlements.contactId}}&returnUrl=%2Fcivicrm%2Fcontact%2Fview%3Fcid%3D{{entitlements.contactId}}%26selectedChild%3Dabsence">Edit Entitlements</a></td>
+            <td><a ng-href="{{entitlements.editEntitlementsPageUrl}}">Edit Entitlements</a></td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div class="panel-body" ng-show="entitlements.loaded.absencePeriods && entitlements.absencePeriods.length === 0">
+    <div class="panel-body" ng-show="entitlements.absencePeriods.length === 0">
       None found.
     </div>
   </crm-loading>
