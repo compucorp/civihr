@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 (function (CRM) {
   define([
     'common/angular',
@@ -7,7 +9,7 @@
     'use strict';
 
     describe('absenceTabContainer', function () {
-      var $compile, $httpBackend, $log, $rootScope, component, controller;
+      var $compile, $httpBackend, $log, $rootScope, component;
 
       beforeEach(module('leave-absences.templates', 'absence-tab'));
       beforeEach(inject(function (_$compile_, _$httpBackend_, _$log_, _$rootScope_) {
@@ -28,14 +30,14 @@
         expect($log.debug).toHaveBeenCalled();
       });
 
-      function compileComponent() {
+      function compileComponent () {
         var $scope = $rootScope.$new();
 
         component = angular.element('<absence-tab-container></absence-tab-container>');
         $compile(component)($scope);
         $scope.$digest();
 
-        controller = component.controller('absenceTabContainer');
+        component.controller('absenceTabContainer');
       }
     });
   });
