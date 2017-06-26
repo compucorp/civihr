@@ -11,7 +11,7 @@ define([
   'leave-absences/shared/ui-router',
   'leave-absences/my-leave/modules/config',
   'leave-absences/my-leave/components/my-leave-container',
-  'leave-absences/my-leave/components/my-leave-report',
+  'leave-absences/my-leave/components/leave-report',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/components/staff-leave-calendar',

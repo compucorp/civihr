@@ -964,11 +964,11 @@
       function compileComponent () {
         var $scope = $rootScope.$new();
 
-        component = angular.element('<my-leave-report contact-id="' + contactId + '"></my-leave-report>');
+        component = angular.element('<leave-report contact-id="' + contactId + '"></leave-report>');
         $compile(component)($scope);
         $scope.$digest();
 
-        controller = component.controller('myLeaveReport');
+        controller = component.controller('leaveReport');
       }
 
       /**
