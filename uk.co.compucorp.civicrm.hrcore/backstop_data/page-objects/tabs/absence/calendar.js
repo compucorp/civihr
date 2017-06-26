@@ -7,7 +7,7 @@ module.exports = (function () {
      */
     waitForReady: function () {
       var casper = this.casper;
-      casper.click('[heading="Calendar"] > a');
+      casper.click('[data-tabname="calendar"] > a');
       sspMyLeaveCalendar.waitForReady.call(this);
     }
   });

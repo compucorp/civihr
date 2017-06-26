@@ -4,7 +4,7 @@
   </button>
 </div>
 
-<crm-loading show="!workpatterns.loading">
+<crm-loading show="!workpatterns.loading.workPattern">
   <table ng-show="workpatterns.defaultWorkPattern" class="table table-transparent">
     <thead>
     <tr>
@@ -17,12 +17,14 @@
     </tr>
     </tbody>
   </table>
-  <table ng-show="!workpatterns.defaultWorkPattern" class="table table-clean">
+  <table ng-show="!workpatterns.defaultWorkPattern" class="table table-clean chr_absence-work-pattern__custom-work-pattern">
     <thead>
     <tr>
       <th>
         Custom Work Patterns
-        <span class="glyphicon glyphicon-cog text-primary" aria-hidden="true"></span>
+        <a class="chr_absence-work-pattern__work-pattern-listing" ng-href="{{workpatterns.linkToWorkPatternListingPage}}">
+          <span class="glyphicon glyphicon-cog text-primary" aria-hidden="true"></span>
+        </a>
       </th>
       <th>Effective Date</th>
       <th>Reason For Change</th>
@@ -31,10 +33,10 @@
     </thead>
     <tbody>
     <tr ng-repeat="pattern in workpatterns.customWorkpattern">
-      <td style="width: 40%;">{{pattern.workPattern.label}} - {{pattern.workPattern.description}}</td>
-      <td style="width: 15%;">{{pattern.effective_date}}</td>
-      <td style="width: 35%;">{{pattern.change_reason}}</td>
-      <td style="width: 10%;" class="text-center">
+      <td>{{pattern.workPattern.label}} - {{pattern.workPattern.description}}</td>
+      <td>{{pattern.effective_date}}</td>
+      <td>{{pattern.change_reason_label}}</td>
+      <td class="text-center">
         <a href="#" class="text-danger" ng-click="workpatterns.deleteWorkPattern(pattern.id)">
           <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
         </a>

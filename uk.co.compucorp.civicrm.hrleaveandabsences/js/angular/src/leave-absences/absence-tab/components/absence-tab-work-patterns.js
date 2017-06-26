@@ -2,8 +2,9 @@
 
 define([
   'common/lodash',
+  'common/moment',
   'leave-absences/absence-tab/modules/components'
-], function (_, components) {
+], function (_, moment, components) {
   components.component('absenceTabWorkPatterns', {
     bindings: {
       contactId: '<'
@@ -13,11 +14,11 @@ define([
     }],
     controllerAs: 'workpatterns',
     controller: [
-      '$log', '$q', '$rootElement', '$uibModal', 'dialog',
+      '$log', '$q', '$rootElement', '$uibModal', 'dialog', 'DateFormat', 'HR_settings',
       'settings', 'OptionGroup', 'WorkPattern', controller]
   });
 
-  function controller ($log, $q, $rootElement, $uibModal, dialog, settings, OptionGroup, WorkPattern) {
+  function controller ($log, $q, $rootElement, $uibModal, dialog, DateFormat, HRSettings, settings, OptionGroup, WorkPattern) {
     $log.debug('Component: absence-tab-work-patterns');
 
     var changeReasons = [];
@@ -25,10 +26,16 @@ define([
 
     vm.customWorkpattern = [];
     vm.defaultWorkPattern = null;
-    vm.loading = true;
+    vm.linkToWorkPatternListingPage = getWorkPatternListingPageURL();
+    vm.loading = {
+      workPattern: true
+    };
 
     (function init () {
-      refresh(loadJobContractRevisionChangeReasons());
+      refresh([
+        loadJobContractRevisionChangeReasons(),
+        DateFormat.getDateFormat()
+      ]);
     })();
 
     /**
@@ -51,7 +58,8 @@ define([
       });
     };
 
-    // TODO -This is temporary to open the modal, test cases are pending
+    // @TODO -This is temporary to open the modal, test cases are pending
+    // Will be fixed in PCHR-2016
     vm.openModal = function () {
       $uibModal.open({
         appendTo: $rootElement.children().eq(0),
@@ -111,28 +119,46 @@ define([
         allPromises = allPromises.concat(promise);
       }
 
-      vm.loading = true;
+      vm.loading.workPattern = true;
       return $q.all(allPromises)
         .then(function () {
           setCustomWorkPatternProperties();
         })
         .finally(function () {
-          vm.loading = false;
+          vm.loading.workPattern = false;
         });
     }
 
     /**
-     * Sets the change reason label to the custom work patterns
+     * Sets the change reason label, and formats effective date to the custom work patterns
      */
     function setCustomWorkPatternProperties () {
       var changeReason;
+      var dateFormat = HRSettings.DATE_FORMAT.toUpperCase();
 
       vm.customWorkpattern = vm.customWorkpattern.map(function (workPattern) {
         changeReason = changeReasons[workPattern.change_reason];
         workPattern.change_reason_label = changeReason ? changeReason.label : '';
 
+        workPattern.effective_date = workPattern.effective_date
+          ? moment(workPattern.effective_date).format(dateFormat) : '';
+
         return workPattern;
       });
+    }
+
+    /**
+     * Returns the URL to the Work Pattern Listing Page.
+     *
+     * The given contact ID is added to the URL, as the cid parameter.
+     *
+     * @return {string}
+     */
+    function getWorkPatternListingPageURL () {
+      var path = 'civicrm/admin/leaveandabsences/work_patterns';
+      var returnPath = 'civicrm/contact/view';
+      var returnUrl = CRM.url(returnPath, { cid: vm.contactId, selectedChild: 'absence' });
+      return CRM.url(path, { cid: vm.contactId, returnUrl: returnUrl });
     }
 
     return vm;

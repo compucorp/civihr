@@ -12,7 +12,7 @@
     'use strict';
 
     describe('absenceTabWorkPatterns', function () {
-      var $compile, $log, $q, $rootScope, $provide, component, controller,
+      var $compile, $log, $q, $rootScope, $provide, component, controller, contactId,
         OptionGroup, dialog, WorkPattern;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'absence-tab', function (_$provide_) {
@@ -74,6 +74,12 @@
             expect(controller.defaultWorkPattern).toEqual(defaultWorkPattern);
           });
         });
+
+        it('sets link to work pattern listing page', function () {
+          expect(controller.linkToWorkPatternListingPage).toBe('/index.php?q=civicrm/admin/leaveandabsences/' +
+            'work_patterns&cid=' + contactId + '&returnUrl=%2Findex.php%3Fq%3Dcivicrm%2Fcontact%2Fview%26cid%3D202%26' +
+            'selectedChild%3Dabsence');
+        });
       });
 
       describe('deleteWorkPattern()', function () {
@@ -112,7 +118,7 @@
 
       function compileComponent () {
         var $scope = $rootScope.$new();
-        var contactId = CRM.vars.leaveAndAbsences.contactId;
+        contactId = CRM.vars.leaveAndAbsences.contactId;
 
         component = angular.element('<absence-tab-work-patterns contact-id="' + contactId + '"></absence-tab-work-patterns>');
         $compile(component)($scope);

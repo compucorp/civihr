@@ -45,7 +45,7 @@ define([
         },
 
         /**
-         * Un assign a work pattern by the given contact work pattern ID
+         * Unassign a work pattern by the given contact work pattern ID
          *
          * @param {string} contactWorkPatternID
          * @return {Promise}
