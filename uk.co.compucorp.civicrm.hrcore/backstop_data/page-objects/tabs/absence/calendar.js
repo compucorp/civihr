@@ -1,7 +1,6 @@
-var sspMyLeaveCalendar = require('./ssp-leave-absences-my-leave-calendar');
+var sspMyLeaveCalendar = require('./../../ssp-leave-absences-my-leave-calendar');
 
 module.exports = (function () {
-
   return sspMyLeaveCalendar.extend({
     /**
      * Wait for the page to be ready

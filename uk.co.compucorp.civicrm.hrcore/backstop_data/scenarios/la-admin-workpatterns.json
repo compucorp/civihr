@@ -1,0 +1,9 @@
+{
+  "scenarios": [
+    {
+      "label": "Contact Absence / Work Patterns",
+      "url": "civicrm/contact/view?reset=1&cid=204&selectedChild=absence#/",
+      "onReadyScript": "contact-summary/absence/tab-workpatterns"
+    }
+  ]
+}
