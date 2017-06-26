@@ -23,7 +23,7 @@ define([
     }, {
       'id': '1114',
       'option_group_id': '142',
-      'label': '1/2 AM',
+      'label': 'Half-day AM',
       'value': '2',
       'name': 'half_day_am',
       'is_default': '0',
@@ -34,7 +34,7 @@ define([
     }, {
       'id': '1115',
       'option_group_id': '142',
-      'label': '1/2 PM',
+      'label': 'Half-day PM',
       'value': '3',
       'name': 'half_day_pm',
       'is_default': '0',
