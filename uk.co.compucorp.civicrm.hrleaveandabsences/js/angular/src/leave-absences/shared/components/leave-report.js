@@ -2,14 +2,14 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/my-leave/modules/components'
+  'leave-absences/shared/modules/components'
 ], function (_, moment, components) {
   components.component('leaveReport', {
     bindings: {
       contactId: '<'
     },
-    templateUrl: ['settings', function (settings) {
-      return settings.pathTpl + 'components/leave-report.html';
+    templateUrl: ['shared-settings', function (settings) {
+      return settings.sharedPathTpl + 'components/leave-report.html';
     }],
     controllerAs: 'report',
     controller: [
