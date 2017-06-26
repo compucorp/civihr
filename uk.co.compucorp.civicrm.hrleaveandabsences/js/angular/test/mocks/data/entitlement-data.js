@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'mocks/data/absence-period-data',
@@ -88,6 +90,9 @@ define([
             'type_id': absenceType.id,
             'contact_id': '202',
             'overridden': '0',
+            'comment': 'Test comment',
+            'comment_author_id': '202',
+            'comment_date': '2017-06-21 14:28:46',
             'api.LeavePeriodEntitlement.getentitlement': {
               'is_error': 0,
               'version': 3,

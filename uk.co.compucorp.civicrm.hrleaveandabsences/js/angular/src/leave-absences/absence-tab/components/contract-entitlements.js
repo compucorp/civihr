@@ -20,12 +20,11 @@ define([
   function controller ($log, $q, HRSettings, AbsenceType, Contract, DateFormat) {
     $log.debug('Component: contract-entitlements');
 
-    var vm = {};
+    var vm = Object.create(this);
 
     vm.absenceTypes = [];
-    vm.contactId = this.contactId;
     vm.contracts = [];
-    vm.loaded = { contracts: false };
+    vm.loading = { contracts: true };
 
     (function init () {
       return $q.all([
@@ -34,6 +33,9 @@ define([
       ])
       .then(function () {
         return loadContracts();
+      })
+      .finally(function () {
+        vm.loading.contracts = false;
       });
     })();
 
@@ -56,8 +58,8 @@ define([
      */
     function loadAbsenceTypes () {
       return AbsenceType.all()
-        .then(function (absenceTypes) {
-          vm.absenceTypes = absenceTypes;
+        .then(function (data) {
+          vm.absenceTypes = data;
         });
     }
 
@@ -101,7 +103,6 @@ define([
           'absences': absences
         };
       });
-      vm.loaded.contracts = true;
     }
 
     return vm;

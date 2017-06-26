@@ -6,41 +6,40 @@ define([
   'common/angularMocks',
   'leave-absences/shared/config',
   'leave-absences/absence-tab/app',
+  'common/mocks/services/api/contact-mock',
   'common/mocks/services/api/contract-mock',
   'mocks/apis/absence-type-api-mock',
+  'mocks/apis/absence-period-api-mock',
+  'mocks/apis/entitlement-api-mock',
   'leave-absences/shared/modules/shared-settings'
 ], function (moment, angular) {
   'use strict';
 
   describe('absenceTabEntitlements', function () {
-    var $compile, $log, $rootScope, $q, component, controller, Contract,
-      ContractAPIMock, AbsenceType, AbsenceTypeAPIMock;
+    var $compile, $log, $rootScope, component, controller, $provide;
 
-    beforeEach(module('leave-absences.templates', 'absence-tab',
-                      'common.mocks', 'leave-absences.mocks'
-    ));
+    beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
+      $provide = _$provide_;
+    }));
 
-    beforeEach(inject(['api.contract.mock', 'AbsenceTypeAPIMock', function (_ContractAPIMock_, _AbsenceTypeAPIMock_) {
-      ContractAPIMock = _ContractAPIMock_;
-      AbsenceTypeAPIMock = _AbsenceTypeAPIMock_;
-    }]));
+    beforeEach(inject(function (AbsenceTypeAPIMock, AbsencePeriodAPIMock, EntitlementAPIMock) {
+      $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+      $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
+      $provide.value('EntitlementAPI', EntitlementAPIMock);
+    }));
 
-    beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$q_, _Contract_, _AbsenceType_) {
+    beforeEach(inject(['api.contract.mock', 'api.contact.mock',
+      function (_ContractAPIMock_, _ContactAPIMock_) {
+        $provide.value('api.contract', _ContractAPIMock_);
+        $provide.value('api.contact', _ContactAPIMock_);
+      }]));
+
+    beforeEach(inject(function (_$compile_, _$log_, _$rootScope_) {
       $compile = _$compile_;
       $log = _$log_;
       $rootScope = _$rootScope_;
-      $q = _$q_;
-
-      Contract = _Contract_;
-      AbsenceType = _AbsenceType_;
 
       spyOn($log, 'debug');
-      spyOn(AbsenceType, 'all').and.callFake(function () {
-        return $q.resolve(AbsenceTypeAPIMock.all());
-      });
-      spyOn(Contract, 'all').and.callFake(function () {
-        return $q.resolve(ContractAPIMock.all());
-      });
 
       compileComponent();
     }));
