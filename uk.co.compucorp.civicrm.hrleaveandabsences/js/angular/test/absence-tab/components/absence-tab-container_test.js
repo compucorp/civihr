@@ -7,16 +7,20 @@
     'use strict';
 
     describe('absenceTabContainer', function () {
-      var $compile, $log, $rootScope, component, controller;
+      var $compile, $httpBackend, $log, $rootScope, component, controller;
 
       beforeEach(module('leave-absences.templates', 'absence-tab'));
-      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_) {
+      beforeEach(inject(function (_$compile_, _$httpBackend_, _$log_, _$rootScope_) {
         $compile = _$compile_;
+        $httpBackend = _$httpBackend_;
         $log = _$log_;
         $rootScope = _$rootScope_;
 
-        spyOn($log, 'debug');
+        // Catch any request created by the component belonging to
+        // first tab enabled by default
+        $httpBackend.whenGET(/./).respond(true);
 
+        spyOn($log, 'debug');
         compileComponent();
       }));
 

@@ -23,7 +23,7 @@
       type="pills"
       custom-header-class="nav-pills-horizontal nav-pills-horizontal-default">
       <uib-tab heading="Report">
-        <absence-tab-report ng-if="active === 0" ></absence-tab-report>
+        <staff-leave-report ng-if="active === 0" contact-id="$root.settings.contactId"></staff-leave-report>
       </uib-tab>
       <uib-tab heading="Calendar">
         <staff-leave-calendar ng-if="active === 1" contact-id="$root.settings.contactId"></staff-leave-calendar>
