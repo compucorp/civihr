@@ -28,6 +28,7 @@ define([
       spyOn(WorkPatternAPI, 'get').and.callThrough();
       spyOn(WorkPatternAPI, 'workPatternsOf').and.callThrough();
       spyOn(WorkPatternAPI, 'assignWorkPattern').and.callThrough();
+      spyOn(WorkPatternAPI, 'unassignWorkPattern').and.callThrough();
     }));
 
     afterEach(function () {
@@ -35,7 +36,7 @@ define([
     });
 
     it('has expected interface', function () {
-      expect(Object.keys(WorkPattern)).toEqual(['assignWorkPattern', 'default', 'workPatternsOf']);
+      expect(Object.keys(WorkPattern)).toEqual(['assignWorkPattern', 'default', 'unassignWorkPattern', 'workPatternsOf']);
     });
 
     describe('default()', function () {
@@ -68,9 +69,10 @@ define([
       var promise;
       var contactId = '204';
       var additionalParams = {foo: 'bar'};
+      var cache = false;
 
       beforeEach(function () {
-        promise = WorkPattern.workPatternsOf(contactId, additionalParams);
+        promise = WorkPattern.workPatternsOf(contactId, additionalParams, cache);
       });
 
       it('calls equivalent API method', function () {
@@ -82,6 +84,7 @@ define([
       it('passes all parameters to the API', function () {
         expect(WorkPatternAPI.workPatternsOf.calls.mostRecent().args[0]).toEqual(contactId);
         expect(WorkPatternAPI.workPatternsOf.calls.mostRecent().args[1]).toEqual(additionalParams);
+        expect(WorkPatternAPI.workPatternsOf.calls.mostRecent().args[2]).toEqual(cache);
       });
 
       it('returns model instances', function () {
@@ -116,6 +119,22 @@ define([
         expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[3]).toEqual(effectiveEndDate);
         expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[4]).toEqual(changeReason);
         expect(WorkPatternAPI.assignWorkPattern.calls.mostRecent().args[5]).toEqual(additionalParams);
+      });
+    });
+
+    describe('unassignWorkPattern()', function () {
+      var contactWorkPatternID = '2';
+
+      beforeEach(function () {
+        WorkPattern.unassignWorkPattern(contactWorkPatternID);
+      });
+
+      it('calls equivalent API method', function () {
+        expect(WorkPatternAPI.unassignWorkPattern).toHaveBeenCalled();
+      });
+
+      it('passes all parameters to the API', function () {
+        expect(WorkPatternAPI.unassignWorkPattern.calls.mostRecent().args[0]).toEqual(contactWorkPatternID);
       });
     });
   });

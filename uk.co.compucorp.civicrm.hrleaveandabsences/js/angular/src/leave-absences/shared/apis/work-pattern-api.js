@@ -21,7 +21,7 @@ define([
        * @param {string} effectiveEndDate
        * @param {string} changeReason
        * @param {object} params - additional parameters
-       * @return {Promise} Resolved with {Array} All Work Patterns
+       * @return {Promise}
        */
       assignWorkPattern: function (contactId, workPatternID, effectiveDate, effectiveEndDate, changeReason, params) {
         return this.sendGET('ContactWorkPattern', 'create', _.assign({}, params, {
@@ -67,17 +67,30 @@ define([
       },
 
       /**
+       * Un assign a work pattern by the given contact work pattern ID
+       *
+       * @param {string} contactWorkPatternID
+       * @return {Promise}
+       */
+      unassignWorkPattern: function (contactWorkPatternID) {
+        return this.sendPOST('ContactWorkPattern', 'delete', {
+          id: contactWorkPatternID
+        });
+      },
+
+      /**
        * Returns all the work patterns of a specific contact
        *
        * @param {string} contactId
        * @param {object} params - additional parameters
+       * @param {boolean} cache
        * @return {Promise} Resolved with {Array} All Work Patterns of the contact
        */
-      workPatternsOf: function (contactId, params) {
+      workPatternsOf: function (contactId, params, cache) {
         return this.sendGET('ContactWorkPattern', 'get', _.assign({}, params, {
           contact_id: contactId,
           'api.WorkPattern.get': { 'contact_id': '$value.contact_id' }
-        })).then(function (data) {
+        }), cache).then(function (data) {
           data = data.values;
 
           return data.map(storeWorkPattern);
@@ -95,7 +108,7 @@ define([
     function storeWorkPattern (workPattern) {
       var clone = _.clone(workPattern);
 
-      clone['workPatterns'] = clone['api.WorkPattern.get']['values'];
+      clone['workPattern'] = clone['api.WorkPattern.get']['values'][0];
       delete clone['api.WorkPattern.get'];
 
       return clone;

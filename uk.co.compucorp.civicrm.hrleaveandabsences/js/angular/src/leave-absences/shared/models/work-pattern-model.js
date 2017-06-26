@@ -45,14 +45,25 @@ define([
         },
 
         /**
+         * Un assign a work pattern by the given contact work pattern ID
+         *
+         * @param {string} contactWorkPatternID
+         * @return {Promise}
+         */
+        unassignWorkPattern: function (contactWorkPatternID) {
+          return workPatternAPI.unassignWorkPattern(contactWorkPatternID);
+        },
+
+        /**
          * Returns the work patterns of the contact with the given id
          *
          * @param {string} contactId
          * @param {object} params - additional parameters
+         * @param {boolean} cache
          * @return {Promise}
          */
-        workPatternsOf: function (contactId, params) {
-          return workPatternAPI.workPatternsOf(contactId, params)
+        workPatternsOf: function (contactId, params, cache) {
+          return workPatternAPI.workPatternsOf(contactId, params, cache)
             .then(function (workPatterns) {
               return workPatterns.map(function (workPattern) {
                 return instance.init(workPattern, true);
