@@ -1,0 +1,91 @@
+.chr_leave-report {
+
+  table,
+  .table {
+    @include table-first-row-border();
+
+    margin-bottom: 0;
+
+    > thead {
+
+      > tr {
+
+        // The headings have a different background, different color, and
+        // different padding than the normal cells
+        > th {
+          background: $crm-table-heading-bg;
+          border-bottom: 0;
+          color: $gray-darker;
+          padding: $chr-table-heading-padding;
+          text-transform: capitalize;
+        }
+      }
+    }
+
+    > tbody {
+
+      > tr:first-child > td {
+        border-color: $table-border-color !important;
+      }
+    }
+
+    > tfoot {
+
+      > tr {
+        background: $crm-table-heading-bg;
+      }
+    }
+  }
+}
+
+.chr_leave-report__label {
+  color: $gray-darker;
+  font-weight: 700;
+
+  > .fa {
+    margin-right: 5px;
+  }
+}
+
+.chr_leave-report__label--toggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+
+.chr_leave-report__heading {
+
+  .chr_leave-report__export-button {
+    line-height: 2.4;
+  }
+}
+
+
+.chr_leave-report__table {
+
+  // Fix for a rendering bug in firefox and chrome, where the background
+  // is painted over the cell borders
+  table {
+    border-collapse: separate;
+  }
+}
+
+.chr_leave-report__table__heading--action {
+  width: 3.5%;
+}
+
+.chr_leave-report__table__heading--label {
+  width: 24.57%;
+}
+
+.chr_leave-report__table__heading--dates {
+  width: 15.8%;
+}
+
+.chr_leave-report__table__heading--status {
+  width: 16%;
+}
+
+.chr_leave-report__table__heading--type {
+  width: 7.46%;
+}

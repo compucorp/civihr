@@ -1,0 +1,106 @@
+// The condensed version does not have highlighted heading
+.table-condensed {
+
+  > thead {
+
+    > tr {
+
+      > th {
+        background: $table-bg !important;
+        padding: $chr-table-condensed-cell-padding;
+      }
+    }
+  }
+}
+
+
+// The mixed condensed version keeps the same features of the standard table
+// but the horizontal padding is the same as the one for the condensed version
+.table-condensed-mixed {
+  $padding-condensed-x: nth($chr-table-condensed-cell-padding, 2);
+
+  > thead,
+  > tbody {
+
+    > tr {
+
+      > th,
+      > td {
+        padding-left: $padding-condensed-x;
+        padding-right: $padding-condensed-x;
+      }
+    }
+  }
+}
+
+// Both condensed variations maintain the standard padding
+// for the leftmost and rightmost cells
+.table-condensed,
+.table-condensed-mixed {
+  $padding-y: nth($table-cell-padding, 1);
+  $padding-x: nth($table-cell-padding, 2);
+
+  > tbody,
+  > thead {
+
+    > tr {
+
+      > td,
+      > th {
+
+        &:first-child {
+          padding-left: $padding-x;
+        }
+
+        &:last-child {
+          padding-right: $padding-x;
+        }
+      }
+    }
+  }
+}
+
+
+// A table nested and indented in another table's <td>
+.table-nested {
+  @include table-nested-shadow('top');
+  @include table-nested-shadow('bottom');
+
+  overflow-y: hidden;
+  position: relative;
+
+  > table,
+  > .table {
+    background-color: $table-bg;
+
+    > tbody,
+    > thead {
+
+      > tr {
+
+        > td,
+        > th {
+
+          &:first-child {
+            @include table-nested-indent('left');
+          }
+
+          &:last-child {
+            @include table-nested-indent('right');
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: $screen-xs-max) {
+    &.table-responsive {
+      border: 0;
+      margin-bottom: 0;
+    }
+  }
+}
+
+.table-nested-cell {
+  padding: 0 !important;
+}
