@@ -24,7 +24,7 @@ define([
        * @return {Promise}
        */
       assignWorkPattern: function (contactId, workPatternID, effectiveDate, effectiveEndDate, changeReason, params) {
-        return this.sendGET('ContactWorkPattern', 'create', _.assign({}, params, {
+        return this.sendPOST('ContactWorkPattern', 'create', _.assign({}, params, {
           contact_id: contactId,
           pattern_id: workPatternID,
           effective_date: effectiveDate,

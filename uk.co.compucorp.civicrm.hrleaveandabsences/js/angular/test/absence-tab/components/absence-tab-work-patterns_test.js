@@ -12,7 +12,7 @@
     'use strict';
 
     describe('absenceTabWorkPatterns', function () {
-      var $compile, $log, $q, $rootScope, $provide, component, controller, contactId,
+      var $compile, $log, $q, $rootScope, $uibModal, $provide, component, controller, contactId,
         OptionGroup, dialog, WorkPattern;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'absence-tab', function (_$provide_) {
@@ -22,11 +22,12 @@
       beforeEach(inject(function (WorkPatternAPIMock) {
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
-      beforeEach(inject(function (_$compile_, _$log_, _$q_, _$rootScope_, _dialog_, _OptionGroup_, _WorkPattern_) {
+      beforeEach(inject(function (_$compile_, _$log_, _$q_, _$rootScope_, _$uibModal_, _dialog_, _OptionGroup_, _WorkPattern_) {
         $compile = _$compile_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
+        $uibModal = _$uibModal_;
         OptionGroup = _OptionGroup_;
         dialog = _dialog_;
 
@@ -113,6 +114,17 @@
           it('Contact work pattern is un assigned', function () {
             expect(WorkPattern.unassignWorkPattern).toHaveBeenCalledWith(contactWorkPatternID);
           });
+        });
+      });
+
+      describe('openModal()', function () {
+        beforeEach(function () {
+          spyOn($uibModal, 'open');
+          controller.openModal();
+        });
+
+        it('opens the custom work pattern modal', function () {
+          expect($uibModal.open).toHaveBeenCalled();
         });
       });
 

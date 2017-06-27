@@ -3,7 +3,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/absence-tab/modules/components'
+  'leave-absences/absence-tab/modules/components',
+  'leave-absences/absence-tab/components/absence-tab-custom-work-pattern-modal'
 ], function (_, moment, components) {
   components.component('absenceTabWorkPatterns', {
     bindings: {
@@ -14,11 +15,13 @@ define([
     }],
     controllerAs: 'workpatterns',
     controller: [
-      '$log', '$q', '$rootElement', '$uibModal', 'dialog', 'DateFormat', 'HR_settings',
-      'settings', 'OptionGroup', 'WorkPattern', controller]
+      '$log', '$q', '$rootElement', '$rootScope', '$uibModal', 'dialog', 'DateFormat', 'HR_settings',
+      'OptionGroup', 'WorkPattern', controller]
   });
 
-  function controller ($log, $q, $rootElement, $uibModal, dialog, DateFormat, HRSettings, settings, OptionGroup, WorkPattern) {
+  function controller (
+    $log, $q, $rootElement, $rootScope, $uibModal, dialog, DateFormat, HRSettings,
+    OptionGroup, WorkPattern) {
     $log.debug('Component: absence-tab-work-patterns');
 
     var changeReasons = [];
@@ -36,6 +39,10 @@ define([
         loadJobContractRevisionChangeReasons(),
         DateFormat.getDateFormat()
       ]);
+
+      $rootScope.$on('CustomWorkPattern::Added', function () {
+        refresh();
+      });
     })();
 
     /**
@@ -58,12 +65,17 @@ define([
       });
     };
 
-    // @TODO -This is temporary to open the modal, test cases are pending
-    // Will be fixed in PCHR-2016
+    /**
+     * Opens the Custom Work Pattern Modal
+     */
     vm.openModal = function () {
       $uibModal.open({
         appendTo: $rootElement.children().eq(0),
-        templateUrl: settings.pathTpl + 'components/absence-tab-custom-work-pattern-modal.html'
+        template: '<absence-tab-custom-work-pattern-modal dismiss="$ctrl.dismiss()" contact-id="' + vm.contactId + '"/>',
+        controller: [ '$uibModalInstance', function ($modalInstance) {
+          this.dismiss = $modalInstance.dismiss;
+        }],
+        controllerAs: '$ctrl'
       });
     };
 
@@ -144,6 +156,10 @@ define([
           ? moment(workPattern.effective_date).format(dateFormat) : '';
 
         return workPattern;
+      });
+
+      vm.customWorkpattern = _.sortBy(vm.customWorkpattern, function (customWorkpattern) {
+        return -moment(customWorkpattern.effective_date, dateFormat).valueOf();
       });
     }
 
