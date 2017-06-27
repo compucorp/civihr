@@ -19,6 +19,39 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
   }
 
+  /**
+   * @expectedException \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
+   * @expectedExceptionMessage The contact_id field should not be empty
+   */
+  public function testItCannotBeCreatedWithoutAContactID() {
+    ContactWorkPattern::create([
+      'pattern_id' => 1,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+  }
+
+  /**
+   * @expectedException \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
+   * @expectedExceptionMessage The pattern_id field should not be empty
+   */
+  public function testItCannotBeCreatedWithoutAPatternID() {
+    ContactWorkPattern::create([
+      'contact_id' => 1,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+  }
+
+  /**
+   * @expectedException \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
+   * @expectedExceptionMessage The effective_date field should not be empty
+   */
+  public function testItCannotBeCreatedWithoutAnEffectiveDate() {
+    ContactWorkPattern::create([
+      'contact_id' => 1,
+      'pattern_id' => 1,
+    ]);
+  }
+
   public function testThereCannotBeTwoWorkPatternsForTheSameEmployeeWithTheSameEffectiveDate() {
     $workPattern1 = WorkPatternFabricator::fabricate();
     $workPattern2 = WorkPatternFabricator::fabricate();

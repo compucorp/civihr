@@ -52,7 +52,31 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
    */
   private static function validateParams($params) {
+    self::validateMandatory($params);
     self::validateUniquePerContactAndEffectiveDate($params);
+  }
+
+  /**
+   * A method for validating the mandatory fields in the params
+   * passed to the ContactWorkPattern create method
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
+   */
+  private static function validateMandatory($params) {
+    $mandatoryFields = [
+      'contact_id',
+      'effective_date',
+      'pattern_id',
+    ];
+
+    foreach($mandatoryFields as $field) {
+      if (empty($params[$field])) {
+        throw new InvalidContactWorkPatternException("The {$field} field should not be empty");
+      }
+    }
   }
 
   /**
