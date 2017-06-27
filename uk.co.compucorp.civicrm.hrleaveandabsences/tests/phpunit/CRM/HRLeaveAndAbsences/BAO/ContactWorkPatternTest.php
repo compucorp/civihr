@@ -53,21 +53,18 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
   }
 
   public function testThereCannotBeTwoWorkPatternsForTheSameEmployeeWithTheSameEffectiveDate() {
-    $workPattern1 = WorkPatternFabricator::fabricate();
-    $workPattern2 = WorkPatternFabricator::fabricate();
-
     $effectiveDate = CRM_Utils_Date::processDate('2016-01-01');
 
     ContactWorkPattern::create([
       'contact_id' => 2,
-      'pattern_id' => $workPattern1->id,
+      'pattern_id' => 1,
       'effective_date' => $effectiveDate,
     ]);
 
     try {
       ContactWorkPattern::create([
         'contact_id' => 2,
-        'pattern_id' => $workPattern2->id,
+        'pattern_id' => 2,
         'effective_date' => $effectiveDate,
       ]);
     } catch(InvalidContactWorkPatternException $e) {
@@ -103,11 +100,9 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
   }
 
   public function testTheEffectiveEndDateShouldBeAutomaticallyUpdatedWhenANewWorkPatternIsLinkedToAnEmployee() {
-    $workPattern1 = WorkPatternFabricator::fabricate();
-
     $contactWorkPattern1 = ContactWorkPattern::create([
       'contact_id' => 2,
-      'pattern_id' => $workPattern1->id,
+      'pattern_id' => 1,
       'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
     ]);
 
@@ -116,7 +111,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
 
     $contactWorkPattern2 = ContactWorkPattern::create([
       'contact_id' => 2,
-      'pattern_id' => $workPattern1->id,
+      'pattern_id' => 1,
       'effective_date' => CRM_Utils_Date::processDate('2016-04-02'),
     ]);
 
