@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 define([
   'common/angular',
   'leave-absences/shared/modules/controllers',
@@ -34,6 +35,7 @@ define([
       this.absencePeriods = [];
       this.absenceTypes = [];
       this.calendar = {};
+      this.canManage = null;
       this.contactName = null;
       this.errors = [];
       this.managedContacts = [];
@@ -183,7 +185,7 @@ define([
         }
 
         // check if manager has changed status
-        if (this.isRole('manager') && this.requestStatuses) {
+        if (this.canManage && this.requestStatuses) {
           // awaiting_approval will not be available in this.requestStatuses if manager has changed selection
           canSubmit = canSubmit && !!this.getStatusFromValue(this.newStatusOnSave);
         }
@@ -296,7 +298,7 @@ define([
         return _.reject(this.requestStatuses, function (status) {
           var canRemoveStatus = (status.name === sharedSettings.statusNames.adminApproved || status.name === sharedSettings.statusNames.awaitingApproval);
 
-          return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
+          return this.canManage ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
         }.bind(this));
       };
 
@@ -428,7 +430,7 @@ define([
        * @return {Boolean}
        */
       this.removeCommentVisibility = function (comment) {
-        return !comment.comment_id || this.isRole('manager');
+        return !comment.comment_id || this.canManage;
       };
 
       /**
@@ -438,7 +440,7 @@ define([
        * @return {Boolean}
        */
       this.removeAttachmentVisibility = function (attachment) {
-        return !attachment.attachment_id || this.isRole('manager');
+        return !attachment.attachment_id || this.canManage;
       };
 
       /**
@@ -594,13 +596,20 @@ define([
 
         this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
         role = this.directiveOptions.userRole || 'staff';
+        this.canManage = this.isRole('manager') || this.isRole('admin');
         this._initRequest();
 
         return loadStatuses.call(self)
           .then(function () {
             initOpenMode.call(self);
 
-            return self.isRole('manager') && loadManagees.call(self);
+            if (self.isRole('manager')) {
+              return loadManagees.call(self);
+            } else if (self.isRole('admin')) {
+              return loadManagee.call(self);
+            } else {
+              return false;
+            }
           })
           .then(function () {
             return loadAbsencePeriods.call(self);
@@ -615,6 +624,9 @@ define([
             ]);
           })
           .then(function () {
+            if (self.directiveOptions.selectedContactId) {
+              self.request.contact_id = self.directiveOptions.selectedContactId;
+            }
             // The additional check here prevents error being displayed on startup when no contact is selected
             if (self.request.contact_id) {
               return self.initAfterContactSelection();
@@ -635,7 +647,7 @@ define([
         if (this.directiveOptions.leaveRequest) {
           // _.deepClone or angular.copy were not uploading files correctly
           attributes = this.directiveOptions.leaveRequest.attributes();
-        } else if (!this.isRole('manager')) {
+        } else if (!this.canManage) {
           attributes = { contact_id: this.directiveOptions.contactId };
         }
 
@@ -763,7 +775,7 @@ define([
       function changeStatusBeforeSave () {
         if (this.isRole('staff')) {
           this.request.status_id = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
-        } else if (this.isRole('manager')) {
+        } else if (this.canManage) {
           this.request.status_id = this.newStatusOnSave || this.request.status_id;
         }
       }
@@ -900,7 +912,7 @@ define([
           _.omit(initialLeaveRequestAttributes, 'fileUploader'),
           _.omit(this.request.attributes(), 'fileUploader')
         ) || this.request.fileUploader.queue.length !== 0 ||
-          (this.isRole('manager') && this.newStatusOnSave);
+          (this.canManage && this.newStatusOnSave);
       }
 
       /**
@@ -963,7 +975,7 @@ define([
        * Initialize status
        */
       function initStatus () {
-        if (this.isMode('create') && this.isRole('manager')) {
+        if (this.isMode('create') && this.canManage) {
           this.newStatusOnSave = this.requestStatuses[sharedSettings.statusNames.approved].value;
         }
       }
@@ -974,7 +986,7 @@ define([
        * {Promise}
        */
       function initContact () {
-        if (this.isRole('manager')) {
+        if (this.canManage) {
           return Contact.find(this.request.contact_id)
             .then(function (contact) {
               this.contactName = contact.display_name;
@@ -982,6 +994,18 @@ define([
         }
 
         return $q.resolve();
+      }
+
+      /**
+       * Loads just one pre-selected managee
+       *
+       * @return {Promise}
+       */
+      function loadManagee () {
+        return Contact.find(this.directiveOptions.selectedContactId)
+          .then(function (contact) {
+            this.managedContacts = [contact];
+          }.bind(this));
       }
 
       /**
@@ -1182,7 +1206,7 @@ define([
       function updateRequest () {
         return this.request.update()
           .then(function () {
-            if (this.isRole('manager')) {
+            if (this.canManage) {
               postSubmit.call(this, 'LeaveRequest::updatedByManager');
             } else if (this.isRole('staff')) {
               postSubmit.call(this, 'LeaveRequest::edit');

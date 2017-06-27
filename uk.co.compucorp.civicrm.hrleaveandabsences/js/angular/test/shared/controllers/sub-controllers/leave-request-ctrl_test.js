@@ -1,4 +1,5 @@
 /* eslint-env amd, jasmine */
+
 (function (CRM) {
   define([
     'common/lodash',
@@ -388,10 +389,13 @@
             spyOn($ctrl, 'isRole');
           });
 
-          describe('when comment id is missing and role is not manager', function () {
+          describe('when comment id is missing and role is neither manager nor admin', function () {
             beforeEach(function () {
               comment.comment_id = null;
+
               $ctrl.isRole.and.returnValue(false);
+              $ctrl._init();
+
               returnValue = $ctrl.removeCommentVisibility(comment);
             });
 
@@ -400,10 +404,13 @@
             });
           });
 
-          describe('when comment id is not missing and role is not manager', function () {
+          describe('when comment id is not missing and role is neither manager nor admin', function () {
             beforeEach(function () {
               comment.comment_id = jasmine.any(String);
+
               $ctrl.isRole.and.returnValue(false);
+              $ctrl._init();
+
               returnValue = $ctrl.removeCommentVisibility(comment);
             });
 
@@ -412,10 +419,13 @@
             });
           });
 
-          describe('when comment id is not missing and role is manager', function () {
+          describe('when comment id is not missing and role is either manager or admin', function () {
             beforeEach(function () {
               comment.comment_id = jasmine.any(String);
+
               $ctrl.isRole.and.returnValue(true);
+              $ctrl._init();
+
               returnValue = $ctrl.removeCommentVisibility(comment);
             });
 
@@ -424,10 +434,13 @@
             });
           });
 
-          describe('when comment id is missing and role is manager', function () {
+          describe('when comment id is missing and role is either manager or admin', function () {
             beforeEach(function () {
               comment.comment_id = null;
+
               $ctrl.isRole.and.returnValue(true);
+              $ctrl._init();
+
               returnValue = $ctrl.removeCommentVisibility(comment);
             });
 
@@ -1305,6 +1318,39 @@
             promise.catch(function (err) {
               expect(err).toEqual('The contact id was not set');
             });
+          });
+        });
+      });
+
+      describe('admin opens leave request popup', function () {
+        var selectedContactId = 208;
+        var adminId = 206;
+
+        beforeEach(function () {
+          var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+          var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+          leaveRequest.contact_id = adminId.toString();
+
+          initTestController({
+            contactId: adminId,
+            leaveRequest: leaveRequest,
+            userRole: 'admin',
+            selectedContactId: selectedContactId
+          });
+        });
+
+        describe('on initialization', function () {
+          it('has admin role', function () {
+            expect($ctrl.isRole('admin')).toBeTruthy();
+          });
+
+          it('has pre-selected contact id', function () {
+            expect($ctrl.request.contact_id).toEqual(selectedContactId);
+          });
+
+          it('loads exactly one contact', function () {
+            expect($ctrl.managedContacts.length).toEqual(1);
           });
         });
       });

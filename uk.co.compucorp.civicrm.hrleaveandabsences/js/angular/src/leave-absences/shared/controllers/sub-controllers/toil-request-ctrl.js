@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/lodash',
   'leave-absences/shared/modules/controllers',
@@ -164,7 +166,7 @@ define([
        * Initialize expiryDate on UI from server's toil_expiry_date
        */
       function initExpiryDate () {
-        if (vm.isRole('manager')) {
+        if (vm.canManage) {
           vm.uiOptions.expiryDate = vm._convertDateFormatFromServer(vm.request.toil_expiry_date);
         }
       }
