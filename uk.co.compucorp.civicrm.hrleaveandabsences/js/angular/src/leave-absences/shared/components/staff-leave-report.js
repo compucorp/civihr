@@ -13,12 +13,13 @@ define([
     }],
     controllerAs: 'report',
     controller: [
-      '$log', '$q', '$rootScope', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest',
-      'OptionGroup', 'dialog', 'HR_settings', 'shared-settings', controller
+      '$log', '$q', '$rootScope', 'checkPermissions', 'AbsencePeriod', 'AbsenceType',
+      'Entitlement', 'LeaveRequest', 'OptionGroup', 'dialog', 'HR_settings',
+      'shared-settings', controller
     ]
   });
 
-  function controller ($log, $q, $rootScope, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HRSettings, sharedSettings) {
+  function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
 
     var vm = Object.create(this);
@@ -156,11 +157,19 @@ define([
 
     // Init block
     (function init () {
-      $q.all([
-        loadStatuses(),
-        loadAbsenceTypes(),
-        loadAbsencePeriods()
-      ])
+      checkPermissions(sharedSettings.permissions.admin.administer)
+      .then(function (isAdmin) {
+        isAdmin && _.forEach(actionMatrix, function (matrix) {
+          matrix.push('delete');
+        });
+      })
+      .then(function () {
+        return $q.all([
+          loadStatuses(),
+          loadAbsenceTypes(),
+          loadAbsencePeriods()
+        ]);
+      })
       .then(function () {
         vm.loading.page = false;
       })

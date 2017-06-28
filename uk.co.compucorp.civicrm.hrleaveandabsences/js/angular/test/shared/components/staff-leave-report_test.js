@@ -22,25 +22,14 @@
 
     describe('staffLeaveReport', function () {
       var contactId = CRM.vars.leaveAndAbsences.contactId;
+      var isUserAdmin = false;
+
       var $compile, $q, $log, $provide, $rootScope, component, controller;
-      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, dialog, sharedSettings;
+      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, dialog, sharedSettings, checkPermissions;
 
       beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
         $provide = _$provide_;
       }));
-
-      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock) {
-        $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
-        $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
-        $provide.value('EntitlementAPI', EntitlementAPIMock);
-        $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
-      }));
-
-      beforeEach(inject(['shared-settings', 'HR_settingsMock', function (_sharedSettings_, HRSettingsMock) {
-        sharedSettings = _sharedSettings_;
-        $provide.value('HR_settings', HRSettingsMock);
-        HRSettings = HRSettingsMock;
-      }]));
 
       beforeEach(inject(function (_$compile_, _$q_, _$log_, _$rootScope_) {
         $compile = _$compile_;
@@ -50,6 +39,20 @@
 
         spyOn($log, 'debug');
       }));
+
+      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock) {
+        $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
+        $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+        $provide.value('EntitlementAPI', EntitlementAPIMock);
+        $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
+        $provide.value('checkPermissions', function () { return $q.resolve(isUserAdmin); });
+      }));
+
+      beforeEach(inject(['shared-settings', 'HR_settingsMock', function (_sharedSettings_, HRSettingsMock) {
+        sharedSettings = _sharedSettings_;
+        $provide.value('HR_settings', HRSettingsMock);
+        HRSettings = HRSettingsMock;
+      }]));
 
       beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _dialog_) {
         AbsencePeriod = _AbsencePeriod_;
@@ -678,6 +681,26 @@
 
           it('shows the "view" action', function () {
             expect(actionMatrix).toEqual(['view']);
+          });
+        });
+
+        describe('when the user is an L&A admin', function () {
+          beforeEach(function () {
+            isUserAdmin = true;
+
+            compileComponent();
+            $rootScope.$digest();
+          });
+
+          it('is allowed to delete a leave request in any status', function () {
+            expect([
+              sharedSettings.statusNames.awaitingApproval,
+              sharedSettings.statusNames.moreInformationRequired,
+              sharedSettings.statusNames.approved,
+              sharedSettings.statusNames.rejected
+            ].every(function (status) {
+              return ~getActionMatrixForStatus(status).indexOf('delete');
+            })).toBe(true);
           });
         });
 
