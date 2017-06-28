@@ -29,18 +29,16 @@ function hrcore_civicrm_searchTasks($objectName, &$tasks) {
   $isContact = $objectName === 'contact';
   $canCreateUsers = CRM_Core_Permission::check('create users');
 
-  if (!$isContact || !$canCreateUsers) {
-    return;
+  if ($isContact && $canCreateUsers) {
+    $tasks[] = [
+      'title'  => ts('Create User Record'),
+      'class'  => CRM_HRCore_Form_CreateUserRecordTaskForm::class,
+    ];
+    $tasks[] = [
+      'title'  => ts('Send Invitation Email'),
+      'class'  => CRM_HRCore_Form_SendInvitationEmailTaskForm::class,
+    ];
   }
-
-  $tasks[] = [
-    'title'  => ts('Create User Record'),
-    'class'  => CRM_HRCore_Form_CreateUserRecordTaskForm::class,
-  ];
-  $tasks[] = [
-    'title'  => ts('Send Invitation Email'),
-    'class'  => CRM_HRCore_Form_SendInvitationEmailTaskForm::class,
-  ];
 }
 
 /**
