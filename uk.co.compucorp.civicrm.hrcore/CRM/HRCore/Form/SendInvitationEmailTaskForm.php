@@ -9,7 +9,7 @@ class CRM_HRCore_Form_SendInvitationEmailTaskForm extends AbstractDrupalInteract
    */
   public function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Send Invitation Email'));
-    $this->addDefaultButtons(ts('Create Records'));
+    $this->addDefaultButtons(ts('Send'));
   }
 
   /**
