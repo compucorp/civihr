@@ -7,7 +7,7 @@ use CRM_HRCore_SearchTask_SearchTaskAdderInterface as SearchTaskAdderInterface;
 class CRM_HRCore_SearchTask_ContactFormSearchTaskAdder implements SearchTaskAdderInterface {
 
   /**
-   * @param $tasks
+   * @inheritdoc
    */
   public static function add(&$tasks) {
     $tasks[] = [
@@ -21,9 +21,7 @@ class CRM_HRCore_SearchTask_ContactFormSearchTaskAdder implements SearchTaskAdde
   }
 
   /**
-   * @param $objectName
-   *
-   * @return bool
+   * @inheritdoc
    */
   public static function shouldAdd($objectName) {
     $isContact = $objectName === 'contact';
