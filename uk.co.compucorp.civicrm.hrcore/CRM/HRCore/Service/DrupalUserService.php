@@ -67,7 +67,7 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
-   * @param $name
+   * @param string $name
    *
    * @return bool
    */
@@ -76,7 +76,7 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
-   * @param $email
+   * @param string $email
    *
    * @return bool
    */
