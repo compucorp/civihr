@@ -22,16 +22,17 @@ define([
   function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
 
-    var vm = Object.create(this);
-
     var actionMatrix = {};
-    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['edit', 'cancel'];
-    actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['respond', 'cancel'];
-    actionMatrix[sharedSettings.statusNames.approved] = ['view', 'cancel'];
-    actionMatrix[sharedSettings.statusNames.cancelled] = ['view'];
-    actionMatrix[sharedSettings.statusNames.rejected] = ['view'];
-    var requestSort = 'from_date DESC';
+    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['edit', 'cancel', 'delete'];
+    actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['respond', 'cancel', 'delete'];
+    actionMatrix[sharedSettings.statusNames.approved] = ['view', 'cancel', 'delete'];
+    actionMatrix[sharedSettings.statusNames.cancelled] = ['view', 'delete'];
+    actionMatrix[sharedSettings.statusNames.rejected] = ['view', 'delete'];
 
+    var requestSort = 'from_date DESC';
+    var role = 'staff';
+
+    var vm = Object.create(this);
     vm.absencePeriods = [];
     vm.absenceTypes = {};
     vm.absenceTypesFiltered = {};
@@ -53,7 +54,7 @@ define([
 
     /**
      * Returns the available actions, based on the current status
-     * of the given leave request and of additional logic
+     * of the given leave request and on additional logic
      *
      * @param  {LeaveRequestInstance} leaveRequest
      * @return {Array}
@@ -62,9 +63,8 @@ define([
       var statusKey = vm.leaveRequestStatuses[leaveRequest.status_id].name;
       var actions = statusKey ? actionMatrix[statusKey] : [];
 
-      if (!canLeaveRequestBeCancelled(leaveRequest)) {
-        actions = _.without(actions, 'cancel');
-      }
+      actions = !canLeaveRequestBeCancelled(leaveRequest) ? _.without(actions, 'cancel') : actions;
+      actions = role !== 'admin' ? _.without(actions, 'delete') : actions;
 
       return actions;
     };
@@ -155,9 +155,7 @@ define([
     (function init () {
       checkPermissions(sharedSettings.permissions.admin.administer)
       .then(function (isAdmin) {
-        isAdmin && _.forEach(actionMatrix, function (matrix) {
-          matrix.push('delete');
-        });
+        role = isAdmin ? 'admin' : role;
       })
       .then(function () {
         return $q.all([
