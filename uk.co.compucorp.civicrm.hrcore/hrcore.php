@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference as Reference;
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
+use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
 
 /**
  * Implements hook_civicrm_config().
@@ -26,18 +27,8 @@ function hrcore_civicrm_config(&$config) {
  * @param array $tasks
  */
 function hrcore_civicrm_searchTasks($objectName, &$tasks) {
-  $isContact = $objectName === 'contact';
-  $canCreateUsers = CRM_Core_Permission::check('create users');
-
-  if ($isContact && $canCreateUsers) {
-    $tasks[] = [
-      'title'  => ts('Create User Record'),
-      'class'  => CRM_HRCore_Form_CreateUserRecordTaskForm::class,
-    ];
-    $tasks[] = [
-      'title'  => ts('Send Invitation Email'),
-      'class'  => CRM_HRCore_Form_SendInvitationEmailTaskForm::class,
-    ];
+  if (ContactFormSearchTaskAdder::shouldAdd($objectName)) {
+    ContactFormSearchTaskAdder::add($tasks);
   }
 }
 
