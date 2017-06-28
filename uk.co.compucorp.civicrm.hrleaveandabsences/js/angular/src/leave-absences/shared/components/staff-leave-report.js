@@ -66,43 +66,37 @@ define([
 
     /**
      * Performs an action on a given leave request
-     * TODO: refactor when adding more actions
+     * NOTE: For now it only supports the similar "cancel" and "delete" actions
      *
      * @param {LeaveRequestInstance} leaveRequest
      * @param {string} action
      */
     vm.action = function (leaveRequest, action) {
-      if (action === 'cancel') {
-        dialog.open({
-          title: 'Confirm Cancellation?',
-          copyCancel: 'Cancel',
-          copyConfirm: 'Confirm',
-          classConfirm: 'btn-danger',
-          msg: 'This cannot be undone',
-          onConfirm: function () {
-            return leaveRequest.cancel();
-          }
-        })
-        .then(function (response) {
-          !!response && cancelRequest(leaveRequest);
-        });
+      if (!~['cancel', 'delete'].indexOf(action)) {
+        return;
       }
 
-      if (action === 'delete') {
-        dialog.open({
-          title: 'Confirm Deletion?',
-          copyCancel: 'Cancel',
-          copyConfirm: 'Confirm',
-          classConfirm: 'btn-danger',
-          msg: 'Are you sure you want to delete this leave record? This cannot be undone',
-          onConfirm: function () {
-            return leaveRequest.delete();
+      dialog.open({
+        title: 'Confirm ' + (action === 'cancel' ? 'Cancellation' : 'Deletion') + '?',
+        copyCancel: 'Cancel',
+        copyConfirm: 'Confirm',
+        classConfirm: 'btn-danger',
+        msg: 'Are you sure you want to ' + action + ' this leave record? This cannot be undone',
+        onConfirm: function () {
+          return leaveRequest[action]();
+        }
+      })
+      .then(function (response) {
+        if (response) {
+          removeLeaveRequestFromItsSection(leaveRequest);
+
+          // Moves the cancelled leave request to the "other" section
+          // (if the section has already cached data)
+          if (action === 'cancel') {
+            vm.sections.other.data.length && vm.sections.other.data.push(leaveRequest);
           }
-        })
-        .then(function (response) {
-          !!response && deleteRequest(leaveRequest);
-        });
-      }
+        }
+      });
     };
 
     /**
@@ -215,74 +209,6 @@ define([
       return section.loadFn().then(function () {
         section.loading = false;
       });
-    }
-
-    /**
-     * Triggers the cancellation action, then removes the cancelled
-     * leave request from either the "approved", or "pending" sections (the only
-     * sections where a leave request can be cancelled), and moves it to the
-     * "other" section (if it has already cached data)
-     *
-     * It also updates the balance change and remainder data registered on the
-     * absence type that the leave request belongs to, so that the numbers add up
-     *
-     * @param  {LeaveRequestInstance} leaveRequest
-     */
-    function cancelRequest (leaveRequest) {
-      var sectionBelonged;
-      var sectionsAllowed = ['approved', 'pending'];
-
-      $q.resolve()
-        .then(function () {
-          sectionsAllowed.forEach(function (sectionName) {
-            var removed = _.remove(vm.sections[sectionName].data, function (dataEntry) {
-              return dataEntry.id === leaveRequest.id;
-            });
-
-            removed.length && (sectionBelonged = sectionName);
-          });
-        })
-        .then(function () {
-          vm.sections.other.data.length && vm.sections.other.data.push(leaveRequest);
-        })
-        .then(function () {
-          var absenceType = vm.absenceTypes[leaveRequest.type_id];
-          var remainderType = (sectionBelonged === 'pending') ? 'future' : 'current';
-
-          absenceType.balanceChanges[sectionBelonged] -= leaveRequest.balance_change;
-          absenceType.remainder[remainderType] -= leaveRequest.balance_change;
-        });
-    }
-
-    /**
-     * Deletes the given leave request from the section it belonged to
-     *
-     * It also updates the balance change and remainder data registered on the
-     * absence type that the leave request belonged to, so that the numbers add up
-     *
-     * @param  {LeaveRequestInstance} leaveRequest
-     */
-    function deleteRequest (leaveRequest) {
-      var sectionBelonged;
-      var sectionsAllowed = ['approved', 'pending', 'other'];
-
-      $q.resolve()
-        .then(function () {
-          sectionsAllowed.forEach(function (sectionName) {
-            var removed = _.remove(vm.sections[sectionName].data, function (dataEntry) {
-              return dataEntry.id === leaveRequest.id;
-            });
-
-            removed.length && (sectionBelonged = sectionName);
-          });
-        })
-        .then(function () {
-          var absenceType = vm.absenceTypes[leaveRequest.type_id];
-          var remainderType = (sectionBelonged === 'pending') ? 'future' : 'current';
-
-          absenceType.balanceChanges[sectionBelonged] -= leaveRequest.balance_change;
-          absenceType.remainder[remainderType] -= leaveRequest.balance_change;
-        });
     }
 
     /**
@@ -597,6 +523,45 @@ define([
       $rootScope.$on('LeaveRequest::edit', function () {
         vm.refresh();
       });
+    }
+
+    /**
+     * Removes the given leave request from the section it currently belongs to
+     * (only the "approved", "pending", and "other" sections support request removal)
+     *
+     * If the leave request belonged to either the "approved" or "pending" section,
+     * then the numbers of the section will be recalculated
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {Promise}
+     */
+    function removeLeaveRequestFromItsSection (leaveRequest) {
+      var sectionBelonged;
+
+      ['approved', 'pending', 'other'].forEach(function (sectionName) {
+        _.remove(vm.sections[sectionName].data, function (dataEntry) {
+          return dataEntry.id === leaveRequest.id;
+        }).length && (sectionBelonged = sectionName);
+      });
+
+      if (sectionBelonged !== 'other') {
+        updateSectionNumbersWithLeaveRequestBalanceChange(leaveRequest, sectionBelonged);
+      }
+    }
+
+    /**
+     * Recalculates the section's balance change and remainder numbers with the
+     * given leave request's balance change
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     * @param {string} section
+     */
+    function updateSectionNumbersWithLeaveRequestBalanceChange (leaveRequest, section) {
+      var absenceType = vm.absenceTypes[leaveRequest.type_id];
+      var remainderType = (section === 'pending') ? 'future' : 'current';
+
+      absenceType.balanceChanges[section] -= leaveRequest.balance_change;
+      absenceType.remainder[remainderType] -= leaveRequest.balance_change;
     }
 
     /**
