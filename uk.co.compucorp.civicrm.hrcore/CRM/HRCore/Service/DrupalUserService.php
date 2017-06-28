@@ -67,6 +67,24 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
+   * @param string $name
+   *
+   * @return bool
+   */
+  public function isValidUsername($name) {
+    return empty(user_validate_name($name));
+  }
+
+  /**
+   * @param string $email
+   *
+   * @return bool
+   */
+  public function isValidEmail($email) {
+    return empty(user_validate_mail($email));
+  }
+
+  /**
    * @param int $contactID
    * @param string $type
    */
