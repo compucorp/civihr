@@ -14,14 +14,18 @@
     <br/>
   {/if}
 
-  {if !empty($contactsWithoutEmail) }
+  {if !empty($invalidEmailContacts) }
     <p>
-      {ts}An email is required to create the account.{/ts}
+      {ts}
+        Some contacts have invalid emails. Contacts must have a primary e-mail,
+        and it cannot contain punctuation except for periods, hyphens,
+        apostrophes and underscores.
+      {/ts}
     </p>
     <p>
-      {ts 1=$contactsWithoutEmail|@count}%1 contact(s) do not have an email set:{/ts}
+      {ts 1=$invalidEmailContacts|@count}%1 contact(s) have invalid emails:{/ts}
     </p>
-    {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsWithoutEmail}
+    {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$invalidEmailContacts}
     <br/>
   {/if}
 
