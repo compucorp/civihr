@@ -23,7 +23,8 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
   private $testContact;
 
   public function setUp() {
-    $this->testContact = ContactFabricator::fabricate();
+    CRM_Utils_API_ReloadOption::singleton();
+    $this->loadRequiredData();
     $this->registerCurrentLoggedInContactInSession($this->testContact['id']);
     $this->cleanup();
   }
@@ -66,6 +67,20 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $user = user_load_by_mail($this->testEmail);
     if ($user) {
       user_delete($user->uid);
+    }
+  }
+
+  private function loadRequiredData() {
+    $this->testContact = ContactFabricator::fabricate();
+    $requiredActivityTypes = ['Create User Account', 'Send Onboarding Email'];
+
+    civicrm_api3('OptionGroup', 'create', ['name' => 'activity_type']);
+
+    foreach ($requiredActivityTypes as $activityType) {
+      civicrm_api3('OptionValue', 'create', [
+        'name' => $activityType,
+        'option_group_id' => 'activity_type'
+      ]);
     }
   }
 
