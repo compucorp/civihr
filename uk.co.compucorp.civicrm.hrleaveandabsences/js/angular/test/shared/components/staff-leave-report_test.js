@@ -690,6 +690,53 @@
           });
         });
 
+        describe('"cancel" action', function () {
+          describe('when the absence type of the leave request does not allow to cancel', function () {
+            beforeEach(function () {
+              leaveRequestData.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '1').id;
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+            });
+
+            it('does not show the "cancel" action', function () {
+              expect(actionMatrix).not.toContain('cancel');
+            });
+          });
+
+          describe('when the absence type of the leave request allows to cancel only before the start date', function () {
+            beforeEach(function () {
+              leaveRequestData.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '3').id;
+            });
+
+            describe('when from date is less than today', function () {
+              beforeEach(function () {
+                var baseDate = moment(leaveRequestData.from_date);
+                var dateAfterFromDate = baseDate.add(10, 'days').toDate();
+                jasmine.clock().mockDate(dateAfterFromDate);
+
+                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+              });
+
+              it('does not show the "cancel" action', function () {
+                expect(actionMatrix).not.toContain('cancel');
+              });
+            });
+
+            describe('when from date is more than today', function () {
+              beforeEach(function () {
+                var baseDate = moment(leaveRequestData.from_date);
+                var dateBeforeFromDate = baseDate.subtract(10, 'days').toDate();
+                jasmine.clock().mockDate(dateBeforeFromDate);
+
+                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+              });
+
+              it('shows the "cancel" action', function () {
+                expect(actionMatrix).toContain('cancel');
+              });
+            });
+          });
+        });
+
         describe('"delete" action', function () {
           var allStatuses;
 
@@ -734,7 +781,7 @@
          * @return {Array}
          */
         function getActionMatrixForStatus (statusName) {
-          leaveRequestData.status_id = valueOfRequestStatus(statusName)
+          leaveRequestData.status_id = valueOfRequestStatus(statusName);
 
           return controller.actionsFor(LeaveRequestInstance.init(leaveRequestData, true));
         }
@@ -1024,64 +1071,6 @@
 
           it('does not remove the leave request from its section', function () {
             expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(true);
-          });
-        });
-      });
-
-      describe('canCancel', function () {
-        var leaveRequest;
-
-        beforeEach(function () {
-          leaveRequest = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
-        });
-
-        describe('when absence type does not allow to cancel', function () {
-          beforeEach(function () {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '1').id;
-          });
-
-          it('does not allow user to cancel request', function () {
-            expect(controller.canCancel(leaveRequest)).toBe(false);
-          });
-        });
-
-        describe('when absence type does allow to cancel', function () {
-          beforeEach(function () {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '2').id;
-          });
-
-          it('does allow user to cancel request', function () {
-            expect(controller.canCancel(leaveRequest)).toBe(true);
-          });
-        });
-
-        describe('when absence type does allow cancellation in advance of start date', function () {
-          beforeEach(function () {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '3').id;
-          });
-
-          describe('when from date is less than today', function () {
-            beforeEach(function () {
-              var baseDate = moment(leaveRequest.from_date);
-              var dateAfterFromDate = baseDate.add(10, 'days').toDate();
-              jasmine.clock().mockDate(dateAfterFromDate);
-            });
-
-            it('does not allow user to cancel request', function () {
-              expect(controller.canCancel(leaveRequest)).toBe(false);
-            });
-          });
-
-          describe('when from date is more than today', function () {
-            beforeEach(function () {
-              var baseDate = moment(leaveRequest.from_date);
-              var dateBeforeFromDate = baseDate.subtract(10, 'days').toDate();
-              jasmine.clock().mockDate(dateBeforeFromDate);
-            });
-
-            it('does allow user to cancel request', function () {
-              expect(controller.canCancel(leaveRequest)).toBe(true);
-            });
           });
         });
       });

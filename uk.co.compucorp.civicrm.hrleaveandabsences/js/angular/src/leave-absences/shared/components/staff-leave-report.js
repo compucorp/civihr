@@ -53,15 +53,20 @@ define([
 
     /**
      * Returns the available actions, based on the current status
-     * of the given leave request
+     * of the given leave request and of additional logic
      *
      * @param  {LeaveRequestInstance} leaveRequest
      * @return {Array}
      */
     vm.actionsFor = function (leaveRequest) {
       var statusKey = vm.leaveRequestStatuses[leaveRequest.status_id].name;
+      var actions = statusKey ? actionMatrix[statusKey] : [];
 
-      return statusKey ? actionMatrix[statusKey] : [];
+      if (!canLeaveRequestBeCancelled(leaveRequest)) {
+        actions = _.without(actions, 'cancel');
+      }
+
+      return actions;
     };
 
     /**
@@ -97,25 +102,6 @@ define([
           }
         }
       });
-    };
-
-    /**
-     * Checks if user is allowed to cancel leave request. It is based on following constants
-     * const REQUEST_CANCELATION_NO = 1;
-     * const REQUEST_CANCELATION_ALWAYS = 2;
-     * const REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE = 3;
-     *
-     * @param  {Object} request
-     * @return {Boolean}
-     */
-    vm.canCancel = function (request) {
-      var allowRequestCancelation = vm.absenceTypes[request.type_id].allow_request_cancelation;
-
-      if (allowRequestCancelation === '3') {
-        return moment().isBefore(request.from_date);
-      }
-
-      return allowRequestCancelation === '2';
     };
 
     /**
@@ -222,6 +208,27 @@ define([
         .forEach(function (section) {
           section.data = [];
         });
+    }
+
+    /**
+     * Checks if the given leave request can be cancelled
+     *
+     * Based on following constants
+     * REQUEST_CANCELATION_NO = 1;
+     * REQUEST_CANCELATION_ALWAYS = 2;
+     * REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE = 3;
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {Boolean}
+     */
+    function canLeaveRequestBeCancelled (leaveRequest) {
+      var allowValue = vm.absenceTypes[leaveRequest.type_id].allow_request_cancelation;
+
+      if (allowValue === '3') {
+        return moment().isBefore(leaveRequest.from_date);
+      }
+
+      return allowValue === '2';
     }
 
     /**
