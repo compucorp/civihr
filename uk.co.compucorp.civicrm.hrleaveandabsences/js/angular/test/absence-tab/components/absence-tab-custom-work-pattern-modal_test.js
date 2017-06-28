@@ -44,11 +44,11 @@
       });
 
       describe('init()', function () {
-        it('Loads change reasons', function () {
+        it('loads change reasons', function () {
           expect(controller.changeReasons).toEqual(optionGroupMock.getCollection('hrjc_revision_change_reason'));
         });
 
-        it('Loads work patterns', function () {
+        it('loads work patterns', function () {
           expect(controller.workPatterns).toEqual(workPatternData.getAllWorkPattern.values);
         });
       });
@@ -59,7 +59,7 @@
           controller.closeModal();
         });
 
-        it('Work pattern modal is closed', function () {
+        it('closes the modal', function () {
           expect(controller.dismiss).toHaveBeenCalledWith({ $value: 'cancel' });
         });
       });
@@ -69,7 +69,7 @@
           controller.closeAlert();
         });
 
-        it('Error message is reset', function () {
+        it('error message is reset', function () {
           expect(controller.errorMessage).toBe('');
         });
       });
@@ -95,7 +95,7 @@
             promise = controller.save();
           });
 
-          it('Work pattern is assigned', function () {
+          it('work pattern is assigned', function () {
             expect(WorkPatternAPI.assignWorkPattern).toHaveBeenCalledWith(
               controller.contactId,
               controller.selected.workPattern.id,
@@ -104,13 +104,13 @@
               controller.selected.changeReason);
           });
 
-          it('Broadcasts an event', function () {
+          it('broadcasts an event', function () {
             promise.then(function () {
               expect($rootScope.$broadcast).toHaveBeenCalledWith('CustomWorkPattern::Added');
             });
           });
 
-          it('Modal is closed', function () {
+          it('modal is closed', function () {
             promise.then(function () {
               expect(controller.closeModal).toHaveBeenCalled();
             });
@@ -125,7 +125,7 @@
             promise = controller.save();
           });
 
-          it('Error message is shown on UI', function () {
+          it('error message is shown on UI', function () {
             promise.then(function () {
               expect(controller.errorMessage).toBe(errorMessage);
             });

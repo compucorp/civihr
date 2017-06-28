@@ -48,11 +48,11 @@
       describe('init()', function () {
         describe('when custom Work patterns are present', function () {
           it('Loads custom Work patterns', function () {
-            expect(controller.customWorkpattern.length).toEqual(workPatternData.workPatternsOf.values.length);
+            expect(controller.customWorkPatterns.length).toEqual(workPatternData.workPatternsOf.values.length);
           });
 
           it('Assign correct change reason label', function () {
-            _.each(controller.customWorkpattern, function (customWorkpattern) {
+            _.each(controller.customWorkPatterns, function (customWorkpattern) {
               var changeReasonLabel = optionGroupMock.getCollection('hrjc_revision_change_reason').find(function (reason) {
                 return customWorkpattern.change_reason === reason.value;
               }).label;

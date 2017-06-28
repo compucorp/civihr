@@ -72,8 +72,8 @@ define([
      */
     vm.save = function () {
       var serverFormattedEffectiveDate = moment(vm.selected.effectiveDate).format(sharedSettings.serverDateFormat);
-
       vm.saveInProgress = true;
+
       return WorkPatternAPI.assignWorkPattern(
         vm.contactId, vm.selected.workPattern.id, serverFormattedEffectiveDate, null, vm.selected.changeReason)
         .then(function () {

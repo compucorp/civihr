@@ -19,15 +19,13 @@ define([
       'OptionGroup', 'WorkPattern', controller]
   });
 
-  function controller (
-    $log, $q, $rootElement, $rootScope, $uibModal, dialog, DateFormat, HRSettings,
-    OptionGroup, WorkPattern) {
+  function controller ($log, $q, $rootElement, $rootScope, $uibModal, dialog, DateFormat, HRSettings, OptionGroup, WorkPattern) {
     $log.debug('Component: absence-tab-work-patterns');
 
     var changeReasons = [];
     var vm = Object.create(this);
 
-    vm.customWorkpattern = [];
+    vm.customWorkPatterns = [];
     vm.defaultWorkPattern = null;
     vm.linkToWorkPatternListingPage = getWorkPatternListingPageURL();
     vm.loading = {
@@ -72,7 +70,7 @@ define([
       $uibModal.open({
         appendTo: $rootElement.children().eq(0),
         template: '<absence-tab-custom-work-pattern-modal dismiss="$ctrl.dismiss()" contact-id="' + vm.contactId + '"/>',
-        controller: [ '$uibModalInstance', function ($modalInstance) {
+        controller: ['$uibModalInstance', function ($modalInstance) {
           this.dismiss = $modalInstance.dismiss;
         }],
         controllerAs: '$ctrl'
@@ -89,7 +87,7 @@ define([
       return WorkPattern.workPatternsOf(vm.contactId, {}, false)
         .then(function (workPatterns) {
           if (workPatterns.length > 0) {
-            vm.customWorkpattern = workPatterns;
+            vm.customWorkPatterns = workPatterns;
           } else {
             return getDefaultWorkPattern();
           }
@@ -148,19 +146,20 @@ define([
       var changeReason;
       var dateFormat = HRSettings.DATE_FORMAT.toUpperCase();
 
-      vm.customWorkpattern = vm.customWorkpattern.map(function (workPattern) {
-        changeReason = changeReasons[workPattern.change_reason];
-        workPattern.change_reason_label = changeReason ? changeReason.label : '';
+      vm.customWorkPatterns = _(vm.customWorkPatterns)
+        .map(function (workPattern) {
+          changeReason = changeReasons[workPattern.change_reason];
+          workPattern.change_reason_label = changeReason ? changeReason.label : '';
 
-        workPattern.effective_date = workPattern.effective_date
-          ? moment(workPattern.effective_date).format(dateFormat) : '';
+          workPattern.effective_date = workPattern.effective_date
+            ? moment(workPattern.effective_date).format(dateFormat) : '';
 
-        return workPattern;
-      });
-
-      vm.customWorkpattern = _.sortBy(vm.customWorkpattern, function (customWorkpattern) {
-        return -moment(customWorkpattern.effective_date, dateFormat).valueOf();
-      });
+          return workPattern;
+        })
+        .sortBy(function (customWorkpattern) {
+          return -moment(customWorkpattern.effective_date, dateFormat).valueOf();
+        })
+        .value();
     }
 
     /**
@@ -174,6 +173,7 @@ define([
       var path = 'civicrm/admin/leaveandabsences/work_patterns';
       var returnPath = 'civicrm/contact/view';
       var returnUrl = CRM.url(returnPath, { cid: vm.contactId, selectedChild: 'absence' });
+
       return CRM.url(path, { cid: vm.contactId, returnUrl: returnUrl });
     }
 
