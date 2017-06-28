@@ -2,9 +2,8 @@
 
 use CRM_HRCore_Form_CreateUserRecordTaskForm as CreateUserRecordTaskForm;
 use CRM_HRCore_Form_SendInvitationEmailTaskForm as SendInvitationEmailTaskForm;
-use CRM_HRCore_SearchTask_SearchTaskAdderInterface as SearchTaskAdderInterface;
 
-class CRM_HRCore_SearchTask_ContactFormSearchTaskAdder implements SearchTaskAdderInterface {
+class CRM_HRCore_SearchTask_ContactFormSearchTaskAdder {
 
   /**
    * @inheritdoc
