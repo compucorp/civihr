@@ -787,6 +787,22 @@
         }
       });
 
+      describe('when a new leave request is created', function () {
+        beforeEach(function () {
+          spyOn(controller, 'refresh').and.callThrough();
+          $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+          openSection('pending');
+        });
+
+        it('refreshes the report', function () {
+          expect(controller.refresh).toHaveBeenCalled();
+        });
+
+        it('gets data from the server, does not use the cache', function () {
+          expect(LeaveRequest.all.calls.mostRecent().args[4]).toEqual(false);
+        });
+      });
+
       describe('when cancelling a leave request', function () {
         var leaveRequest1, leaveRequest2, leaveRequest3;
 
@@ -936,22 +952,6 @@
 
           it('does not remove the leave request from the current section', function () {
             expect(controller.sections.pending.data).toContain(leaveRequest1);
-          });
-        });
-
-        describe('when new leave request is created', function () {
-          beforeEach(function () {
-            spyOn(controller, 'refresh').and.callThrough();
-            $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
-            openSection('pending');
-          });
-
-          it('refreshes the report', function () {
-            expect(controller.refresh).toHaveBeenCalled();
-          });
-
-          it('gets data from the server, does not use cache', function () {
-            expect(LeaveRequest.all.calls.mostRecent().args[4]).toEqual(false);
           });
         });
       });
