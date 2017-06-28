@@ -138,7 +138,7 @@ define([
          * @return {Promise}
          */
         delete: function (id) {
-          return this.sendGET('LeaveRequest', 'delete', { id: id });
+          return this.sendPOST('LeaveRequest', 'delete', { id: id });
         },
 
         /**
