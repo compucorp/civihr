@@ -23,8 +23,7 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
   private $testContact;
 
   public function setUp() {
-    CRM_Utils_API_ReloadOption::singleton();
-    $this->loadRequiredData();
+    $this->createUserAndActivities();
     $this->registerCurrentLoggedInContactInSession($this->testContact['id']);
     $this->cleanup();
   }
@@ -70,7 +69,7 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
     }
   }
 
-  private function loadRequiredData() {
+  private function createUserAndActivities() {
     $this->testContact = ContactFabricator::fabricate();
     $requiredActivityTypes = ['Create User Account', 'Send Onboarding Email'];
 
