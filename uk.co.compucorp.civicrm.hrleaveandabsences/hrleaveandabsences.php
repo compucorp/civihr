@@ -427,6 +427,20 @@ function hrleaveandabsences_civicrm_validateForm($formName, &$fields, &$files, &
   }
 }
 
+/**
+ * Implementation of hook_civicrm_pageRun
+ */
+function hrleaveandabsences_civicrm_pageRun(&$page) {
+  if ($page instanceof CRM_HRLeaveAndAbsences_Page_AbsenceTab) {
+    CRM_Core_Resources::singleton()->addPermissions([
+      'access leave and absences',
+      'administer leave and absences',
+      'access leave and absences in ssp',
+      'manage leave and absences in ssp',
+    ]);
+  }
+}
+
 //----------------------------------------------------------------------------//
 //                               Helper Functions                             //
 //----------------------------------------------------------------------------//
