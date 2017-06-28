@@ -74,7 +74,11 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $this->testContact = ContactFabricator::fabricate();
     $requiredActivityTypes = ['Create User Account', 'Send Onboarding Email'];
 
-    civicrm_api3('OptionGroup', 'create', ['name' => 'activity_type']);
+    $optionGroupParams = ['name' => 'activity_type'];
+    $optionGroup = civicrm_api3('OptionGroup', 'get', $optionGroupParams);
+    if (0 == $optionGroup['count']) {
+      civicrm_api3('OptionGroup', 'create', $optionGroupParams);
+    }
 
     foreach ($requiredActivityTypes as $activityType) {
       civicrm_api3('OptionValue', 'create', [
