@@ -75,7 +75,7 @@ define([
 
       vm.saveInProgress = true;
       return WorkPatternAPI.assignWorkPattern(
-        vm.contactId, vm.selected.workPattern, serverFormattedEffectiveDate, null, vm.selected.changeReason)
+        vm.contactId, vm.selected.workPattern.id, serverFormattedEffectiveDate, null, vm.selected.changeReason)
         .then(function () {
           $rootScope.$broadcast('CustomWorkPattern::Added');
           vm.closeModal();

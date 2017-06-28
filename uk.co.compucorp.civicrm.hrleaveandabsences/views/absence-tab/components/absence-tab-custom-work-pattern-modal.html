@@ -34,7 +34,7 @@
             <div class="col-sm-8">
               <div class="crm_custom-select crm_custom-select--full">
                 <select
-                  ng-options="workPatterns.id as workPatterns.label for workPatterns in workPatternModal.workPatterns"
+                  ng-options="workPatterns.label for workPatterns in workPatternModal.workPatterns"
                   ng-model="workPatternModal.selected.workPattern"
                   ng-change="workPatternModal.refresh()">
                   <option value="">- select -</option>

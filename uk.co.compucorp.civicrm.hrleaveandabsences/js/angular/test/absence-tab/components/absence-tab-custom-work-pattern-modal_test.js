@@ -78,7 +78,7 @@
         var promise;
 
         beforeEach(function () {
-          controller.selected.workPattern = '2';
+          controller.selected.workPattern = { id: '2' };
           controller.selected.changeReason = '3';
           controller.selected.effectiveDate = '2017-06-15';
           spyOn($rootScope, '$broadcast');
@@ -98,7 +98,7 @@
           it('Work pattern is assigned', function () {
             expect(WorkPatternAPI.assignWorkPattern).toHaveBeenCalledWith(
               controller.contactId,
-              controller.selected.workPattern,
+              controller.selected.workPattern.id,
               controller.selected.effectiveDate,
               null,
               controller.selected.changeReason);

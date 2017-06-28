@@ -4,6 +4,11 @@
       "label": "Contact Absence / Work Patterns",
       "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence#/",
       "onReadyScript": "contact-summary/absence/tab-workpatterns"
+    },
+    {
+      "label": "Contact Absence / Custom Work Patterns Modal",
+      "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence#/",
+      "onReadyScript": "contact-summary/absence/tab-workpatterns-modal"
     }
   ]
 }
