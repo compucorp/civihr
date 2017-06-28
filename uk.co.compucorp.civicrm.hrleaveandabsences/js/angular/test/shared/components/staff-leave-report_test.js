@@ -632,7 +632,13 @@
       });
 
       describe('action matrix for a leave request', function () {
-        var actionMatrix;
+        var actionMatrix, leaveRequestData;
+
+        beforeEach(function () {
+          leaveRequestData = _.assign(leaveRequestMock.all().values[0], {
+            type_id: absenceTypeData.findByKeyValue('allow_request_cancelation', '2').id
+          });
+        });
 
         describe('status: awaiting approval', function () {
           beforeEach(function () {
@@ -684,23 +690,39 @@
           });
         });
 
-        describe('when the user is an L&A admin', function () {
+        describe('"delete" action', function () {
+          var allStatuses;
+
           beforeEach(function () {
-            isUserAdmin = true;
-
-            compileComponent();
-            $rootScope.$digest();
-          });
-
-          it('is allowed to delete a leave request in any status', function () {
-            expect([
+            allStatuses = [
               sharedSettings.statusNames.awaitingApproval,
               sharedSettings.statusNames.moreInformationRequired,
               sharedSettings.statusNames.approved,
               sharedSettings.statusNames.rejected
-            ].every(function (status) {
-              return ~getActionMatrixForStatus(status).indexOf('delete');
-            })).toBe(true);
+            ];
+          });
+
+          describe('when the user is not a L&A admin', function () {
+            it('does not show the "delete" action"', function () {
+              expect(allStatuses.every(function (status) {
+                return ~getActionMatrixForStatus(status).indexOf('delete');
+              })).toBe(false);
+            });
+          });
+
+          describe('when the user is an L&A admin', function () {
+            beforeEach(function () {
+              isUserAdmin = true;
+
+              compileComponent();
+              $rootScope.$digest();
+            });
+
+            it('is allowed to delete a leave request in any status', function () {
+              expect(allStatuses.every(function (status) {
+                return ~getActionMatrixForStatus(status).indexOf('delete');
+              })).toBe(true);
+            });
           });
         });
 
@@ -712,9 +734,9 @@
          * @return {Array}
          */
         function getActionMatrixForStatus (statusName) {
-          return controller.actionsFor(LeaveRequestInstance.init({
-            status_id: valueOfRequestStatus(statusName)
-          }));
+          leaveRequestData.status_id = valueOfRequestStatus(statusName)
+
+          return controller.actionsFor(LeaveRequestInstance.init(leaveRequestData, true));
         }
       });
 
