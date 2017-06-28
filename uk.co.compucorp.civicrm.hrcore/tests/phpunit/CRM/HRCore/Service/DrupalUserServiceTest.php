@@ -25,7 +25,6 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
   public function setUp() {
     $this->testContact = ContactFabricator::fabricate();
     $this->registerCurrentLoggedInContactInSession($this->testContact['id']);
-    $this->cleanup();
   }
 
   public function tearDown() {
