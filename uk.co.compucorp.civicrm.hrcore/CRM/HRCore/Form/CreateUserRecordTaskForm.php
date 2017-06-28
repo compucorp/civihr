@@ -28,7 +28,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
     $haveNoAccount = $this->getContactsWithoutAttribute('uf_id');
     $haveAccount = array_diff_key($this->contactDetails, $haveNoAccount);
 
-    $this->assign('contactsWithoutEmail', $this->getContactsWithoutAttribute('email'));
+    $this->assign('invalidEmailContacts', $this->getContactsWithInvalidEmail());
     $this->assign('contactsWithAccount', $haveAccount);
     $this->assign('contactsForCreation', $this->getValidContactsForCreation());
     $this->assign('emailConflictContact', $this->getEmailConflictContacts());
@@ -58,7 +58,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
    * @return array
    */
   private function getValidContactsForCreation() {
-    $missingEmail = $this->getContactsWithoutAttribute('email');
+    $missingEmail = $this->getContactsWithInvalidEmail();
     $haveNoAccount = $this->getContactsWithoutAttribute('uf_id');
     $emailConflict = $this->getEmailConflictContacts();
 
@@ -118,6 +118,24 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
     }
 
     return $badContacts;
+  }
+
+  /**
+   * @return array
+   */
+  private function getContactsWithInvalidEmail() {
+    $invalid = [];
+
+    foreach ($this->contactDetails as $contactID => $contact) {
+      $email = $contact['email'];
+      if (!$this->drupalUserService->isValidEmail($email)
+        || !$this->drupalUserService->isValidUsername($email)
+      ) {
+        $invalid[$contactID] = $contact;
+      }
+    }
+
+    return $invalid;
   }
 
 }
