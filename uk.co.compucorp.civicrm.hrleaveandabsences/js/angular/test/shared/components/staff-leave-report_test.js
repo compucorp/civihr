@@ -25,7 +25,7 @@
       var isUserAdmin = false;
 
       var $compile, $q, $log, $provide, $rootScope, component, controller;
-      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, dialog, sharedSettings, checkPermissions;
+      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, dialog, sharedSettings;
 
       beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
         $provide = _$provide_;
@@ -885,31 +885,125 @@
             expect(LeaveRequest.all.calls.mostRecent().args[4]).toEqual(false);
           });
         });
+      });
 
-        /**
-         * Spyes on dialog.open() method and resolves it with the given value
-         *
-         * @param {any} value
-         */
-        function resolveDialogWith (value) {
-          var spy;
+      describe('when deleting a leave request', function () {
+        var leaveRequest1, leaveRequest2, leaveRequest3;
 
-          if (typeof dialog.open.calls !== 'undefined') {
-            spy = dialog.open;
-          } else {
-            spy = spyOn(dialog, 'open');
-          }
+        beforeEach(function () {
+          leaveRequest1 = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
+          leaveRequest2 = LeaveRequestInstance.init(leaveRequestMock.all().values[1], true);
+          leaveRequest3 = LeaveRequestInstance.init(leaveRequestMock.all().values[2], true);
 
-          spy.and.callFake(function (options) {
-            return $q.resolve()
-              .then(function () {
-                return options.onConfirm && value ? options.onConfirm() : null;
-              })
-              .then(function () {
-                return value;
-              });
+          spyOn(leaveRequest1, 'delete').and.returnValue($q.resolve());
+        });
+
+        describe('dialog', function () {
+          beforeEach(function () {
+            resolveDialogWith(null);
+
+            controller.action(leaveRequest1, 'delete');
+            $rootScope.$digest();
           });
-        }
+
+          it('shows a confirmation dialog', function () {
+            expect(dialog.open).toHaveBeenCalled();
+          });
+        });
+
+        describe('when the user confirms', function () {
+          beforeEach(function () {
+            resolveDialogWith(true);
+          });
+
+          describe('basic tests', function () {
+            var newBalanceChange, oldList, oldBalanceChange;
+
+            beforeEach(function () {
+              oldList = controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+              oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+
+              controller.action(leaveRequest1, 'delete');
+              $rootScope.$digest();
+
+              newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+            });
+
+            it('sends the deletion request', function () {
+              expect(leaveRequest1.delete).toHaveBeenCalled();
+            });
+
+            it('removes the leave request from its section', function () {
+              expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(false);
+            });
+
+            it('removes the leave request without creating a new array', function () {
+              expect(controller.sections.pending.data).toBe(oldList);
+            });
+
+            it('updates the balance changes for the section the leave request was in', function () {
+              expect(newBalanceChange).not.toBe(oldBalanceChange);
+              expect(newBalanceChange).toBe(oldBalanceChange - leaveRequest1.balance_change);
+            });
+          });
+
+          describe('when the leave request was already approved', function () {
+            var oldRemainder, newRemainder;
+
+            beforeEach(function () {
+              controller.sections.approved.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+              oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
+
+              controller.action(leaveRequest1, 'delete');
+              $rootScope.$digest();
+
+              newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
+            });
+
+            it('updates the current remainder of the entitlement of the absence type the leave request was for', function () {
+              expect(newRemainder).not.toBe(oldRemainder);
+              expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
+            });
+          });
+
+          describe('when the leave request was still open', function () {
+            var oldRemainder, newRemainder;
+
+            beforeEach(function () {
+              controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+              oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
+
+              controller.action(leaveRequest1, 'delete');
+              $rootScope.$digest();
+
+              newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
+            });
+
+            it('updates the future remainder of the entitlement of the absence type the leave request was for', function () {
+              expect(newRemainder).not.toBe(oldRemainder);
+              expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
+            });
+          });
+        });
+
+        describe('when the user does not confirm', function () {
+          beforeEach(function () {
+            resolveDialogWith(false);
+
+            controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+
+            controller.action(leaveRequest1, 'delete');
+            $rootScope.$digest();
+          });
+
+          it('does not send the deletion request', function () {
+            expect(leaveRequest1.delete).not.toHaveBeenCalled();
+          });
+
+          it('does not remove the leave request from its section', function () {
+            expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(true);
+          });
+        });
       });
 
       describe('canCancel', function () {
@@ -1004,6 +1098,31 @@
 
         controller.toggleSection(section);
         digest && $rootScope.$digest();
+      }
+
+      /**
+       * Spyes on dialog.open() method and resolves it with the given value
+       *
+       * @param {any} value
+       */
+      function resolveDialogWith (value) {
+        var spy;
+
+        if (typeof dialog.open.calls !== 'undefined') {
+          spy = dialog.open;
+        } else {
+          spy = spyOn(dialog, 'open');
+        }
+
+        spy.and.callFake(function (options) {
+          return $q.resolve()
+            .then(function () {
+              return options.onConfirm && value ? options.onConfirm() : null;
+            })
+            .then(function () {
+              return value;
+            });
+        });
       }
     });
   });

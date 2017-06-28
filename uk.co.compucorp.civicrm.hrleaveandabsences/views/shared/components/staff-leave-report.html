@@ -219,7 +219,11 @@
                                       ng-click="report.action(request, action)">
                                       {{action}}
                                     </a>
-                                    <a ng-if="action !== 'cancel'" href
+                                    <a ng-if="action === 'delete'" href
+                                      ng-click="report.action(request, action)">
+                                      {{action}}
+                                    </a>
+                                    <a ng-if="action !== 'cancel' && action !== 'delete'" href
                                       leave-request-popup leave-request="request"
                                       contact-id="report.contactId" user-role="{{$root.role}}">
                                       {{action}}
@@ -388,8 +392,12 @@
                                   <a ng-if="action === 'cancel' && report.canCancel(request)" href
                                     ng-click="report.action(request, action)">
                                     {{action}}
-                                    </a>
-                                  <a ng-if="action !== 'cancel'" href
+                                  </a>
+                                  <a ng-if="action === 'delete'" href
+                                    ng-click="report.action(request, action)">
+                                    {{action}}
+                                  </a>
+                                  <a ng-if="action !== 'cancel' && action !== 'delete'" href
                                     leave-request-popup leave-request="request"
                                     contact-id="report.contactId" user-role="{{$root.role}}">
                                     {{action}}
@@ -482,7 +490,11 @@
                               </a>
                               <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                 <li ng-repeat="action in report.actionsFor(request)">
-                                  <a href
+                                  <a ng-if="action === 'delete'" href
+                                    ng-click="report.action(request, action)">
+                                    {{action}}
+                                  </a>
+                                  <a ng-if="action !== 'cancel' && action !== 'delete'" href
                                     leave-request-popup leave-request="request"
                                     contact-id="report.contactId" user-role="{{$root.role}}">
                                     {{action}}

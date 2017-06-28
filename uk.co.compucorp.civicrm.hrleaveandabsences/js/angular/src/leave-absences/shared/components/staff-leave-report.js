@@ -87,6 +87,22 @@ define([
           !!response && cancelRequest(leaveRequest);
         });
       }
+
+      if (action === 'delete') {
+        dialog.open({
+          title: 'Confirm Deletion?',
+          copyCancel: 'Cancel',
+          copyConfirm: 'Confirm',
+          classConfirm: 'btn-danger',
+          msg: 'Are you sure you want to delete this leave record? This cannot be undone',
+          onConfirm: function () {
+            return leaveRequest.delete();
+          }
+        })
+        .then(function (response) {
+          !!response && deleteRequest(leaveRequest);
+        });
+      }
     };
 
     /**
@@ -228,6 +244,37 @@ define([
         })
         .then(function () {
           vm.sections.other.data.length && vm.sections.other.data.push(leaveRequest);
+        })
+        .then(function () {
+          var absenceType = vm.absenceTypes[leaveRequest.type_id];
+          var remainderType = (sectionBelonged === 'pending') ? 'future' : 'current';
+
+          absenceType.balanceChanges[sectionBelonged] -= leaveRequest.balance_change;
+          absenceType.remainder[remainderType] -= leaveRequest.balance_change;
+        });
+    }
+
+    /**
+     * Deletes the given leave request from the section it belonged to
+     *
+     * It also updates the balance change and remainder data registered on the
+     * absence type that the leave request belonged to, so that the numbers add up
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     */
+    function deleteRequest (leaveRequest) {
+      var sectionBelonged;
+      var sectionsAllowed = ['approved', 'pending', 'other'];
+
+      $q.resolve()
+        .then(function () {
+          sectionsAllowed.forEach(function (sectionName) {
+            var removed = _.remove(vm.sections[sectionName].data, function (dataEntry) {
+              return dataEntry.id === leaveRequest.id;
+            });
+
+            removed.length && (sectionBelonged = sectionName);
+          });
         })
         .then(function () {
           var absenceType = vm.absenceTypes[leaveRequest.type_id];
