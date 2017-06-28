@@ -27,21 +27,21 @@ define([
       var additionalFilters = { foo: 'foo', bar: 'bar' };
 
       beforeEach(function () {
-        spyOn(WorkPatternAPI, 'sendGET').and.returnValue($q.resolve({ values: [] }));
+        spyOn(WorkPatternAPI, 'sendPOST').and.returnValue($q.resolve({ values: [] }));
         WorkPatternAPI.assignWorkPattern(contactId, workPatternID, effectiveDate, effectiveEndDate, changeReason, additionalFilters);
       });
 
       it('sends a GET request to the api', function () {
-        expect(WorkPatternAPI.sendGET).toHaveBeenCalled();
+        expect(WorkPatternAPI.sendPOST).toHaveBeenCalled();
       });
 
       it('calls the api with the correct entity and action', function () {
-        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[0]).toBe('ContactWorkPattern');
-        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[1]).toBe('create');
+        expect(WorkPatternAPI.sendPOST.calls.mostRecent().args[0]).toBe('ContactWorkPattern');
+        expect(WorkPatternAPI.sendPOST.calls.mostRecent().args[1]).toBe('create');
       });
 
       it('passes all the parameters to the api', function () {
-        expect(WorkPatternAPI.sendGET.calls.mostRecent().args[2]).toEqual(_.assign(additionalFilters, {
+        expect(WorkPatternAPI.sendPOST.calls.mostRecent().args[2]).toEqual(_.assign(additionalFilters, {
           contact_id: contactId,
           pattern_id: workPatternID,
           effective_date: effectiveDate,

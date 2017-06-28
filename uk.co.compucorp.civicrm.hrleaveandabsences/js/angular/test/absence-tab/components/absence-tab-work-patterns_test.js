@@ -12,7 +12,7 @@
     'use strict';
 
     describe('absenceTabWorkPatterns', function () {
-      var $compile, $log, $q, $rootScope, $provide, component, controller, contactId,
+      var $compile, $log, $q, $rootScope, $uibModal, $provide, component, controller, contactId,
         OptionGroup, dialog, WorkPattern;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'absence-tab', function (_$provide_) {
@@ -22,11 +22,12 @@
       beforeEach(inject(function (WorkPatternAPIMock) {
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
-      beforeEach(inject(function (_$compile_, _$log_, _$q_, _$rootScope_, _dialog_, _OptionGroup_, _WorkPattern_) {
+      beforeEach(inject(function (_$compile_, _$log_, _$q_, _$rootScope_, _$uibModal_, _dialog_, _OptionGroup_, _WorkPattern_) {
         $compile = _$compile_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
+        $uibModal = _$uibModal_;
         OptionGroup = _OptionGroup_;
         dialog = _dialog_;
 
@@ -47,11 +48,11 @@
       describe('init()', function () {
         describe('when custom Work patterns are present', function () {
           it('Loads custom Work patterns', function () {
-            expect(controller.customWorkpattern.length).toEqual(workPatternData.workPatternsOf.values.length);
+            expect(controller.customWorkPatterns.length).toEqual(workPatternData.workPatternsOf.values.length);
           });
 
           it('Assign correct change reason label', function () {
-            _.each(controller.customWorkpattern, function (customWorkpattern) {
+            _.each(controller.customWorkPatterns, function (customWorkpattern) {
               var changeReasonLabel = optionGroupMock.getCollection('hrjc_revision_change_reason').find(function (reason) {
                 return customWorkpattern.change_reason === reason.value;
               }).label;
@@ -113,6 +114,17 @@
           it('Contact work pattern is un assigned', function () {
             expect(WorkPattern.unassignWorkPattern).toHaveBeenCalledWith(contactWorkPatternID);
           });
+        });
+      });
+
+      describe('openModal()', function () {
+        beforeEach(function () {
+          spyOn($uibModal, 'open');
+          controller.openModal();
+        });
+
+        it('opens the custom work pattern modal', function () {
+          expect($uibModal.open).toHaveBeenCalled();
         });
       });
 

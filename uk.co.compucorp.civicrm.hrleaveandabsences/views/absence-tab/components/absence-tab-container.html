@@ -26,13 +26,13 @@
         <absence-tab-report ng-if="active === 0" data-tabname="report"></absence-tab-report>
       </uib-tab>
       <uib-tab heading="Calendar" data-tabname="calendar">
-        <staff-leave-calendar ng-if="active === 1" contact-id="$root.settings.contactId" data-tabname="calendar"></staff-leave-calendar>
+        <staff-leave-calendar ng-if="active === 1" contact-id="$root.settings.contactId"></staff-leave-calendar>
       </uib-tab>
       <uib-tab heading="Entitlements" data-tabname="entitlements">
-        <absence-tab-entitlements ng-if="active === 2" contact-id="$root.settings.contactId" data-tabname="entitlements"></absence-tab-entitlements>
+        <absence-tab-entitlements ng-if="active === 2" contact-id="$root.settings.contactId"></absence-tab-entitlements>
       </uib-tab>
-      <uib-tab heading="Work Patterns" data-tabname="workpattenrs">
-        <absence-tab-work-patterns ng-if="active === 3" data-tabname="workpatterns"></absence-tab-work-patterns>
+      <uib-tab heading="Work Patterns" data-tabname="workpatterns">
+        <absence-tab-work-patterns ng-if="active === 3" contact-id="$root.settings.contactId"></absence-tab-work-patterns>
       </uib-tab>
     </uib-tabset>
   </div>
