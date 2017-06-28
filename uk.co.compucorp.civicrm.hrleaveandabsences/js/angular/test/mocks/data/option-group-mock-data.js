@@ -23,7 +23,7 @@ define([
     }, {
       'id': '1114',
       'option_group_id': '142',
-      'label': '1/2 AM',
+      'label': 'Half-day AM',
       'value': '2',
       'name': 'half_day_am',
       'is_default': '0',
@@ -34,7 +34,7 @@ define([
     }, {
       'id': '1115',
       'option_group_id': '142',
-      'label': '1/2 PM',
+      'label': 'Half-day PM',
       'value': '3',
       'name': 'half_day_pm',
       'is_default': '0',
@@ -762,7 +762,44 @@ define([
       'is_reserved': '1',
       'is_active': '1'
     }
-    ]
+    ],
+    hrjc_revision_change_reason: [{
+      'id': '938',
+      'option_group_id': '110',
+      'label': 'Promotion',
+      'value': '1',
+      'name': 'Promotion',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '1',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '939',
+      'option_group_id': '110',
+      'label': 'Increment',
+      'value': '2',
+      'name': 'Increment',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '2',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '940',
+      'option_group_id': '110',
+      'label': 'Disciplinary',
+      'value': '3',
+      'name': 'Disciplinary',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '3',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }]
   };
 
   return {

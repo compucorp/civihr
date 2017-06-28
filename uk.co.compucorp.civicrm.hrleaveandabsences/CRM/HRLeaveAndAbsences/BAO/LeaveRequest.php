@@ -892,7 +892,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *     '2 => [
    *       'id' => 2,
    *       'value' => '2',
-   *       'label' => '1/2 AM'
+   *       'label' => 'Half-day AM'
    *     ]
    *   ]
    */

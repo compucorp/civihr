@@ -14,30 +14,31 @@ define([
   'use strict';
 
   describe('contactEntitlements', function () {
-    var $compile, $log, $rootScope, controller, Contract,
-      ContractAPIMock, AbsenceType, AbsenceTypeAPIMock, HRSettingsMock;
+    var contactId = 202;
+    var $compile, $log, $rootScope, controller, $provide,
+      ContractAPIMock, HRSettingsMock;
 
-    beforeEach(module('leave-absences.templates', 'absence-tab',
-                      'common.mocks', 'leave-absences.mocks'
-    ));
+    beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
+      $provide = _$provide_;
+    }));
 
-    beforeEach(inject(['api.contract.mock', 'AbsenceTypeAPIMock', 'HR_settings', function (_ContractAPIMock_, _AbsenceTypeAPIMock_, _HRSettingsMock_) {
+    beforeEach(inject(function (AbsenceTypeAPIMock) {
+      $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+    }));
+
+    beforeEach(inject(['api.contract.mock', 'HR_settings', function (_ContractAPIMock_, _HRSettingsMock_) {
+      $provide.value('api.contract', _ContractAPIMock_);
+
       ContractAPIMock = _ContractAPIMock_;
-      AbsenceTypeAPIMock = _AbsenceTypeAPIMock_;
       HRSettingsMock = _HRSettingsMock_;
     }]));
 
-    beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _Contract_, _AbsenceType_) {
+    beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _Contract_) {
       $compile = _$compile_;
       $log = _$log_;
       $rootScope = _$rootScope_;
 
-      Contract = _Contract_;
-      AbsenceType = _AbsenceType_;
-
       spyOn($log, 'debug');
-      spyOn(AbsenceType, 'all').and.callFake(AbsenceTypeAPIMock.all);
-      spyOn(Contract, 'all').and.callFake(ContractAPIMock.all);
 
       compileComponent();
     }));
@@ -47,7 +48,7 @@ define([
     });
 
     it('has a contact to load for', function () {
-      expect(controller.contactId).toBeDefined();
+      expect(controller.contactId).toEqual(contactId);
     });
 
     it('has loaded contracts', function () {
@@ -97,7 +98,6 @@ define([
      */
     function compileComponent () {
       var $scope = $rootScope.$new();
-      var contactId = '202';
       var component = angular.element('<contract-entitlements contact-id="' + contactId + '"></contract-entitlements>');
 
       $compile(component)($scope);

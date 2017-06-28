@@ -2,8 +2,8 @@
   <div class="panel-heading">
     <h3 class="panel-title">Contract Entitlements</h3>
   </div>
-  <crm-loading show="entitlements.loaded.contracts">
-    <div class="table-responsive" ng-show="entitlements.loaded.contracts && entitlements.contracts.length > 0">
+  <crm-loading show="!entitlements.loading.contracts">
+    <div class="table-responsive" ng-show="entitlements.contracts.length > 0">
       <table class="table">
         <thead>
           <tr>
@@ -23,7 +23,7 @@
         </tbody>
       </table>
     </div>
-    <div class="panel-body" ng-show="entitlements.loaded.contracts && entitlements.contracts.length === 0">
+    <div class="panel-body" ng-show="entitlements.contracts.length === 0">
       None found.
     </div>
   </crm-loading>

@@ -6,6 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException as InvalidContactWorkPatternException;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest
@@ -18,39 +19,90 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
   }
 
-  public function testThereCannotBeTwoWorkPatternsForTheSameEmployeeWithTheSameEffectiveDate() {
-    $workPattern1 = WorkPatternFabricator::fabricate();
-    $workPattern2 = WorkPatternFabricator::fabricate();
+  /**
+   * @expectedException \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
+   * @expectedExceptionMessage The contact_id field should not be empty
+   */
+  public function testItCannotBeCreatedWithoutAContactID() {
+    ContactWorkPattern::create([
+      'pattern_id' => 1,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+  }
 
+  /**
+   * @expectedException \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
+   * @expectedExceptionMessage The pattern_id field should not be empty
+   */
+  public function testItCannotBeCreatedWithoutAPatternID() {
+    ContactWorkPattern::create([
+      'contact_id' => 1,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+  }
+
+  /**
+   * @expectedException \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
+   * @expectedExceptionMessage The effective_date field should not be empty
+   */
+  public function testItCannotBeCreatedWithoutAnEffectiveDate() {
+    ContactWorkPattern::create([
+      'contact_id' => 1,
+      'pattern_id' => 1,
+    ]);
+  }
+
+  public function testThereCannotBeTwoWorkPatternsForTheSameEmployeeWithTheSameEffectiveDate() {
     $effectiveDate = CRM_Utils_Date::processDate('2016-01-01');
 
     ContactWorkPattern::create([
       'contact_id' => 2,
-      'pattern_id' => $workPattern1->id,
+      'pattern_id' => 1,
       'effective_date' => $effectiveDate,
     ]);
 
     try {
       ContactWorkPattern::create([
         'contact_id' => 2,
-        'pattern_id' => $workPattern2->id,
+        'pattern_id' => 2,
         'effective_date' => $effectiveDate,
       ]);
-    } catch(PEAR_Exception $e) {
-      $this->assertEquals('DB Error: already exists', $e->getMessage());
+    } catch(InvalidContactWorkPatternException $e) {
+      $this->assertEquals('This contact already have a Work Pattern with this effective date', $e->getMessage());
 
       return;
     }
 
-    $this->fail('Expected an DB error, but the contact work patternx was created successfully');
+    $this->fail('Expected a DB error, but the contact work pattern was created successfully');
+  }
+
+  public function testItCanBeUpdatedWithoutChangingTheContactIdAndTheEffectiveDate() {
+    $effectiveDate = CRM_Utils_Date::processDate('2016-01-01');
+
+    $contactWorkPattern = ContactWorkPattern::create([
+      'contact_id' => 2,
+      'pattern_id' => 1,
+      'effective_date' => $effectiveDate,
+    ]);
+
+    // Update the pattern_id, but contact_id and effective_date are still the same
+    $newPatternID = 2;
+    ContactWorkPattern::create([
+      'id' => $contactWorkPattern->id,
+      'contact_id' => 2,
+      'pattern_id' => $newPatternID,
+      'effective_date' => $effectiveDate,
+    ]);
+
+    $contactWorkPattern = ContactWorkPattern::findById($contactWorkPattern->id);
+    $this->assertNotNull($contactWorkPattern->id);
+    $this->assertEquals($newPatternID, $contactWorkPattern->pattern_id);
   }
 
   public function testTheEffectiveEndDateShouldBeAutomaticallyUpdatedWhenANewWorkPatternIsLinkedToAnEmployee() {
-    $workPattern1 = WorkPatternFabricator::fabricate();
-
     $contactWorkPattern1 = ContactWorkPattern::create([
       'contact_id' => 2,
-      'pattern_id' => $workPattern1->id,
+      'pattern_id' => 1,
       'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
     ]);
 
@@ -59,7 +111,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
 
     $contactWorkPattern2 = ContactWorkPattern::create([
       'contact_id' => 2,
-      'pattern_id' => $workPattern1->id,
+      'pattern_id' => 1,
       'effective_date' => CRM_Utils_Date::processDate('2016-04-02'),
     ]);
 

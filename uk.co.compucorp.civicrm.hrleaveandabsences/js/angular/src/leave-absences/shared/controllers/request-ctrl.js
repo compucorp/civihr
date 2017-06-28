@@ -762,7 +762,7 @@ define([
 
       /**
        * This method will be used on the view to return a list of available
-       * leave request day types (All day, 1/2 AM, 1/2 PM, Non working day,
+       * leave request day types (All day, Half-day AM, Half-day PM, Non working day,
        * Weekend, Public holiday) for the given date (which is the date
        * selected by the user via datepicker)
        *
@@ -794,7 +794,7 @@ define([
               inCalendarList = getDayTypesFromDate.call(this, date, listToReturn);
 
               if (!inCalendarList.length) {
-                // 'All day', '1/2 AM', and '1/2 PM' options
+                // 'All day', 'Half-day AM', and 'Half-day PM' options
                 listToReturn = listToReturn.filter(function (dayType) {
                   return dayType.name === 'all_day' || dayType.name === 'half_day_am' || dayType.name === 'half_day_pm';
                 });

@@ -1,0 +1,10 @@
+$chr-annual-entitlements-period-column-width: 130px;
+$chr-annual-entitlements-edit-entitlements-column-width: 150px;
+
+.chr_annual-entitlements__period {
+  width: $chr-annual-entitlements-period-column-width;
+}
+
+.chr_annual-entitlements__edit-entitlements {
+  width: $chr-annual-entitlements-edit-entitlements-column-width;
+}
