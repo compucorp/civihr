@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\Reference as Reference;
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
+use CRM_HRCore_SearchTask_SearchTaskAdderInterface as SearchTaskAdderInterface;
 
 /**
  * Implements hook_civicrm_config().
@@ -27,8 +28,15 @@ function hrcore_civicrm_config(&$config) {
  * @param array $tasks
  */
 function hrcore_civicrm_searchTasks($objectName, &$tasks) {
-  if (ContactFormSearchTaskAdder::shouldAdd($objectName)) {
-    ContactFormSearchTaskAdder::add($tasks);
+  $taskAdders = [
+    ContactFormSearchTaskAdder::class
+  ];
+
+  /** @var SearchTaskAdderInterface $adder */
+  foreach ($taskAdders as $adder) {
+    if ($adder::shouldAdd($objectName)) {
+      $adder::add($tasks);
+    }
   }
 }
 
