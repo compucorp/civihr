@@ -24,6 +24,11 @@ $row-margin-bottom: 15px;
   margin: 0;
 }
 
+.chr_leave-request-modal__delete {
+  margin-left: 15px;
+  margin-top: 8px;
+}
+
 .chr_leave-request-modal__form {
 
   .ui-select-container {
@@ -105,4 +110,23 @@ $row-margin-bottom: 15px;
 .chr_leave-request-modal__span-expiry {
   display: inline-block;
   margin-top: 7px;
+}
+
+/*
+ * This is a temporary patch which fixes CSS in the modal
+ * @TODO remove this patch when Shoreditch theme is migrated to SSP
+ */
+.chr_leave-request-modal {
+  .btn.ui-select-toggle {
+    padding: 4px 10px !important;
+    text-transform: none !important;
+  }
+
+  .form-group {
+    overflow: inherit !important;
+  }
+
+  .alert {
+    margin-bottom: 0 !important;
+  }
 }

@@ -1,4 +1,5 @@
 /* eslint-env amd, jasmine */
+
 (function (CRM) {
   define([
     'common/lodash',
@@ -6,7 +7,7 @@
     'mocks/data/option-group-mock-data',
     'mocks/data/leave-request-data',
     'mocks/helpers/helper',
-    'common/angularMocks',
+    'common/modules/dialog',
     'leave-absences/shared/config',
     'common/mocks/services/hr-settings-mock',
     'common/mocks/services/file-uploader-mock',
@@ -24,7 +25,7 @@
     'use strict';
 
     describe('LeaveRequestCtrl', function () {
-      var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, $controller,
+      var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
         Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI, parentRequestCtrl;
       var date2016 = '01/12/2016';
@@ -33,16 +34,16 @@
       var dateServer2017 = '2017-02-02';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
-        'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
+        'leave-absences.mocks', 'common.mocks', 'common.dialog', 'leave-absences.settings',
         function (_$provide_, $exceptionHandlerProvider) {
           $provide = _$provide_;
           // this will consume all throw
           $exceptionHandlerProvider.mode('log');
         }));
 
-      beforeEach(inject(function (_AbsencePeriodAPIMock_,
-                                  _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
-                                  _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
+      beforeEach(inject(function (
+        _AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
+        _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_) {
         $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
         $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
         $provide.value('EntitlementAPI', _EntitlementAPIMock_);
@@ -59,13 +60,14 @@
         sharedSettings = _sharedSettings_;
       }]));
 
-      beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_,
+      beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_, _dialog_,
         _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
         _LeaveRequestInstance_, _LeaveRequestAPI_, _WorkPatternAPI_) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
         $q = _$q_;
+        dialog = _dialog_;
 
         Contact = _Contact_;
         EntitlementAPI = _EntitlementAPI_;
@@ -387,10 +389,13 @@
             spyOn($ctrl, 'isRole');
           });
 
-          describe('when comment id is missing and role is not manager', function () {
+          describe('when comment id is missing and role is neither manager nor admin', function () {
             beforeEach(function () {
               comment.comment_id = null;
+
               $ctrl.isRole.and.returnValue(false);
+              $ctrl._init();
+
               returnValue = $ctrl.removeCommentVisibility(comment);
             });
 
@@ -399,10 +404,13 @@
             });
           });
 
-          describe('when comment id is not missing and role is not manager', function () {
+          describe('when comment id is not missing and role is neither manager nor admin', function () {
             beforeEach(function () {
               comment.comment_id = jasmine.any(String);
+
               $ctrl.isRole.and.returnValue(false);
+              $ctrl._init();
+
               returnValue = $ctrl.removeCommentVisibility(comment);
             });
 
@@ -411,10 +419,13 @@
             });
           });
 
-          describe('when comment id is not missing and role is manager', function () {
+          describe('when comment id is not missing and role is either manager or admin', function () {
             beforeEach(function () {
               comment.comment_id = jasmine.any(String);
+
               $ctrl.isRole.and.returnValue(true);
+              $ctrl._init();
+
               returnValue = $ctrl.removeCommentVisibility(comment);
             });
 
@@ -423,10 +434,13 @@
             });
           });
 
-          describe('when comment id is missing and role is manager', function () {
+          describe('when comment id is missing and role is either manager or admin', function () {
             beforeEach(function () {
               comment.comment_id = null;
+
               $ctrl.isRole.and.returnValue(true);
+              $ctrl._init();
+
               returnValue = $ctrl.removeCommentVisibility(comment);
             });
 
@@ -438,7 +452,7 @@
 
         describe('when user cancels dialog (clicks X), or back button', function () {
           beforeEach(function () {
-            $ctrl.cancel();
+            $ctrl.dismissModal();
           });
 
           it('closes model', function () {
@@ -1308,6 +1322,39 @@
         });
       });
 
+      describe('admin opens leave request popup', function () {
+        var selectedContactId = 208;
+        var adminId = 206;
+
+        beforeEach(function () {
+          var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+          var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+          leaveRequest.contact_id = adminId.toString();
+
+          initTestController({
+            contactId: adminId,
+            leaveRequest: leaveRequest,
+            userRole: 'admin',
+            selectedContactId: selectedContactId
+          });
+        });
+
+        describe('on initialization', function () {
+          it('has admin role', function () {
+            expect($ctrl.isRole('admin')).toBeTruthy();
+          });
+
+          it('has pre-selected contact id', function () {
+            expect($ctrl.request.contact_id).toEqual(selectedContactId);
+          });
+
+          it('loads exactly one contact', function () {
+            expect($ctrl.managedContacts.length).toEqual(1);
+          });
+        });
+      });
+
       describe('when role parameter is not passed to the controller', function () {
         beforeEach(function () {
           var leaveRequest = LeaveRequestInstance.init();
@@ -1322,6 +1369,54 @@
 
         it('defaults to staff role', function () {
           expect($ctrl.isRole('staff')).toBe(true);
+        });
+      });
+
+      describe('deleteLeaveRequest()', function () {
+        var confirmFunction;
+
+        beforeEach(function () {
+          spyOn(dialog, 'open').and.callFake(function (params) {
+            confirmFunction = params.onConfirm;
+          });
+          initTestController({ contactId: CRM.vars.leaveAndAbsences.contactId });
+          $ctrl.deleteLeaveRequest();
+        });
+
+        it('confirms before deleting the leave request', function () {
+          expect(dialog.open).toHaveBeenCalled();
+        });
+
+        describe('when deletion is confirmed', function () {
+          var promise;
+
+          beforeEach(function () {
+            spyOn($ctrl, 'dismissModal');
+            spyOn($rootScope, '$emit');
+            $ctrl.directiveOptions.leaveRequest = jasmine.createSpyObj(['delete']);
+            $ctrl.directiveOptions.leaveRequest.delete.and.returnValue($q.resolve([]));
+            promise = confirmFunction();
+          });
+
+          afterEach(function () {
+            $rootScope.$apply();
+          });
+
+          it('deletes the leave request', function () {
+            expect($ctrl.directiveOptions.leaveRequest.delete).toHaveBeenCalled();
+          });
+
+          it('closes the leave modal', function () {
+            promise.then(function () {
+              expect($ctrl.dismissModal).toHaveBeenCalled();
+            });
+          });
+
+          it('publishes a delete event', function () {
+            promise.then(function () {
+              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::deleted', $ctrl.directiveOptions.leaveRequest);
+            });
+          });
         });
       });
 

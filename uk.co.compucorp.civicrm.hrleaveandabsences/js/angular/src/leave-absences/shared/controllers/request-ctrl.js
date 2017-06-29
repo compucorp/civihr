@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 define([
   'common/angular',
   'leave-absences/shared/modules/controllers',
@@ -17,10 +18,10 @@ define([
   'use strict';
 
   controllers.controller('RequestCtrl', [
-    '$log', '$q', '$rootScope', 'Contact', 'AbsencePeriod', 'AbsenceType',
+    '$log', '$q', '$rootScope', 'Contact', 'dialog', 'AbsencePeriod', 'AbsenceType',
     'api.optionGroup', 'Calendar', 'Entitlement', 'HR_settings',
     'LeaveRequest', 'PublicHoliday', 'shared-settings',
-    function ($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType,
+    function ($log, $q, $rootScope, Contact, dialog, AbsencePeriod, AbsenceType,
       OptionGroup, Calendar, Entitlement, HRSettings,
       LeaveRequest, PublicHoliday, sharedSettings
     ) {
@@ -34,6 +35,7 @@ define([
       this.absencePeriods = [];
       this.absenceTypes = [];
       this.calendar = {};
+      this.canManage = false; // this flag is set on initialisation of the controller
       this.contactName = null;
       this.errors = [];
       this.managedContacts = [];
@@ -142,15 +144,6 @@ define([
       };
 
       /**
-       * When user cancels the model dialog
-       */
-      this.cancel = function () {
-        this.$modalInstance.dismiss({
-          $value: 'cancel'
-        });
-      };
-
-      /**
        * Calculate change in balance, it updates local balance variables.
        *
        * @return {Promise} empty promise if all required params are not set otherwise promise from server
@@ -192,10 +185,13 @@ define([
         }
 
         // check if manager has changed status
-        if (this.isRole('manager') && this.requestStatuses) {
+        if (this.canManage && this.requestStatuses) {
           // awaiting_approval will not be available in this.requestStatuses if manager has changed selection
           canSubmit = canSubmit && !!this.getStatusFromValue(this.newStatusOnSave);
         }
+
+        // check if the selected date period is in absence period
+        canSubmit = canSubmit && !!this.period.id;
 
         return canSubmit && !this.isMode('view');
       };
@@ -215,6 +211,35 @@ define([
       */
       this.closeAlert = function () {
         this.errors = [];
+      };
+
+      /**
+       * Deletes the leave request
+       */
+      this.deleteLeaveRequest = function () {
+        dialog.open({
+          title: 'Confirm Deletion?',
+          copyCancel: 'Cancel',
+          copyConfirm: 'Confirm',
+          classConfirm: 'btn-danger',
+          msg: 'This cannot be undone',
+          onConfirm: function () {
+            return this.directiveOptions.leaveRequest.delete()
+              .then(function () {
+                this.dismissModal();
+                $rootScope.$emit('LeaveRequest::deleted', this.directiveOptions.leaveRequest);
+              }.bind(this));
+          }.bind(this)
+        });
+      };
+
+      /**
+       * Close the modal
+       */
+      this.dismissModal = function () {
+        this.$modalInstance.dismiss({
+          $value: 'cancel'
+        });
       };
 
       /**
@@ -276,7 +301,7 @@ define([
         return _.reject(this.requestStatuses, function (status) {
           var canRemoveStatus = (status.name === sharedSettings.statusNames.adminApproved || status.name === sharedSettings.statusNames.awaitingApproval);
 
-          return this.isRole('manager') ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
+          return this.canManage ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
         }.bind(this));
       };
 
@@ -408,7 +433,7 @@ define([
        * @return {Boolean}
        */
       this.removeCommentVisibility = function (comment) {
-        return !comment.comment_id || this.isRole('manager');
+        return !comment.comment_id || this.canManage;
       };
 
       /**
@@ -418,7 +443,7 @@ define([
        * @return {Boolean}
        */
       this.removeAttachmentVisibility = function (attachment) {
-        return !attachment.attachment_id || this.isRole('manager');
+        return !attachment.attachment_id || this.canManage;
       };
 
       /**
@@ -492,12 +517,15 @@ define([
             return filterLeaveRequestDayTypes.call(self, date, dayType);
           })
           .then(function () {
-            self.loading[dayType + 'DayTypes'] = false;
-
             return self.updateBalance();
           })
           .catch(function (error) {
             self.errors = [error];
+
+            self._setDateAndTypes();
+          })
+          .finally(function () {
+            self.loading[dayType + 'DayTypes'] = false;
           });
       };
 
@@ -537,7 +565,9 @@ define([
         });
 
         if (!this.period) {
+          this.period = {};
           // inform user if absence period is not found
+          this.loading['fromDayTypes'] = false;
           return $q.reject('Please change date as it is not in any absence period');
         }
 
@@ -573,14 +603,14 @@ define([
         var self = this;
 
         this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
-        role = this.directiveOptions.userRole || 'staff';
+        initRoles.call(self);
         this._initRequest();
 
         return loadStatuses.call(self)
           .then(function () {
             initOpenMode.call(self);
 
-            return self.isRole('manager') && loadManagees.call(self);
+            return self.canManage && loadManagees.call(self);
           })
           .then(function () {
             return loadAbsencePeriods.call(self);
@@ -595,6 +625,9 @@ define([
             ]);
           })
           .then(function () {
+            if (self.directiveOptions.selectedContactId) {
+              self.request.contact_id = self.directiveOptions.selectedContactId;
+            }
             // The additional check here prevents error being displayed on startup when no contact is selected
             if (self.request.contact_id) {
               return self.initAfterContactSelection();
@@ -615,7 +648,7 @@ define([
         if (this.directiveOptions.leaveRequest) {
           // _.deepClone or angular.copy were not uploading files correctly
           attributes = this.directiveOptions.leaveRequest.attributes();
-        } else if (!this.isRole('manager')) {
+        } else if (!this.canManage) {
           attributes = { contact_id: this.directiveOptions.contactId };
         }
 
@@ -691,13 +724,14 @@ define([
         this._setDates();
 
         if (this.uiOptions.multipleDays) {
-          this.uiOptions.showBalance = !!this.request.to_date && !!this.request.from_date;
+          this.uiOptions.showBalance = !!this.request.from_date && !!this.request.from_date_type &&
+            !!this.request.to_date && !!this.request.to_date_type && !!this.period.id;
         } else {
           if (this.uiOptions.fromDate) {
             this.request.to_date_type = this.request.from_date_type;
           }
 
-          this.uiOptions.showBalance = !!this.request.from_date;
+          this.uiOptions.showBalance = !!this.request.from_date && !!this.request.from_date_type && !!this.period.id;
         }
       };
 
@@ -743,7 +777,7 @@ define([
       function changeStatusBeforeSave () {
         if (this.isRole('staff')) {
           this.request.status_id = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
-        } else if (this.isRole('manager')) {
+        } else if (this.canManage) {
           this.request.status_id = this.newStatusOnSave || this.request.status_id;
         }
       }
@@ -880,7 +914,7 @@ define([
           _.omit(initialLeaveRequestAttributes, 'fileUploader'),
           _.omit(this.request.attributes(), 'fileUploader')
         ) || this.request.fileUploader.queue.length !== 0 ||
-          (this.isRole('manager') && this.newStatusOnSave);
+          (this.canManage && this.newStatusOnSave);
       }
 
       /**
@@ -940,10 +974,18 @@ define([
       }
 
       /**
+       * Initialize roles
+       */
+      function initRoles () {
+        role = this.directiveOptions.userRole || 'staff';
+        this.canManage = this.isRole('manager') || this.isRole('admin');
+      }
+
+      /**
        * Initialize status
        */
       function initStatus () {
-        if (this.isMode('create') && this.isRole('manager')) {
+        if (this.isMode('create') && this.canManage) {
           this.newStatusOnSave = this.requestStatuses[sharedSettings.statusNames.approved].value;
         }
       }
@@ -954,7 +996,7 @@ define([
        * {Promise}
        */
       function initContact () {
-        if (this.isRole('manager')) {
+        if (this.canManage) {
           return Contact.find(this.request.contact_id)
             .then(function (contact) {
               this.contactName = contact.display_name;
@@ -970,13 +1012,20 @@ define([
        * @return {Promise}
        */
       function loadManagees () {
-        return Contact.find(this.directiveOptions.contactId)
-          .then(function (contact) {
-            return contact.leaveManagees();
-          })
-          .then(function (contacts) {
-            this.managedContacts = contacts;
-          }.bind(this));
+        if (this.directiveOptions.selectedContactId) {
+          return Contact.find(this.directiveOptions.selectedContactId)
+            .then(function (contact) {
+              this.managedContacts = [contact];
+            }.bind(this));
+        } else {
+          return Contact.find(this.directiveOptions.contactId)
+            .then(function (contact) {
+              return contact.leaveManagees();
+            })
+            .then(function (contacts) {
+              this.managedContacts = contacts;
+            }.bind(this));
+        }
       }
 
       /**
@@ -1164,7 +1213,7 @@ define([
           .then(function () {
             if (this.isRole('manager')) {
               postSubmit.call(this, 'LeaveRequest::updatedByManager');
-            } else if (this.isRole('staff')) {
+            } else if (this.isRole('staff') || this.isRole('admin')) {
               postSubmit.call(this, 'LeaveRequest::edit');
             }
           }.bind(this));

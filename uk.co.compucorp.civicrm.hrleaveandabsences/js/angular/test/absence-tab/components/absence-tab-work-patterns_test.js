@@ -96,7 +96,7 @@
 
         it('opens dialog box to confirm deletion', function () {
           expect(dialog.open).toHaveBeenCalledWith(jasmine.objectContaining({
-            title: 'Confirm Cancellation?',
+            title: 'Confirm Deletion?',
             copyCancel: 'Cancel',
             copyConfirm: 'Confirm',
             classConfirm: 'btn-danger',

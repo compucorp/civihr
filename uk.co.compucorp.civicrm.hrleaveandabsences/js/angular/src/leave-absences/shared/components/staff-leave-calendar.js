@@ -22,6 +22,7 @@ define([
 
     var parentCtrl = $controller('CalendarCtrl');
     var vm = Object.create(parentCtrl);
+    var calendarData;
 
     /**
      * Returns the calendar information for a specific month
@@ -85,7 +86,8 @@ define([
     vm._loadCalendar = function () {
       return Calendar.get(vm.contactId, vm.selectedPeriod.id)
         .then(function (calendar) {
-          vm._setCalendarProps(calendar);
+          calendarData = calendar;
+          vm._setCalendarProps(calendarData);
         });
     };
 
@@ -137,7 +139,22 @@ define([
 
       $rootScope.$on('LeaveRequest::new', vm.refresh);
       $rootScope.$on('LeaveRequest::edit', vm.refresh);
+      $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest);
     })();
+
+    /**
+     * Event handler for Delete event of Leave Request
+     *
+     * @param  {object} event
+     * @param  {object} leaveRequest
+     */
+    function deleteLeaveRequest (event, leaveRequest) {
+      vm.leaveRequests = _.omit(vm.leaveRequests, function (leaveRequestObj) {
+        return leaveRequestObj.id === leaveRequest.id;
+      });
+      vm._resetMonths();
+      vm._setCalendarProps(calendarData);
+    }
 
     return vm;
   }

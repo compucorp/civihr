@@ -1,7 +1,14 @@
 <div class="absence-tab-page">
   <div class="container">
     <div class="btn-group">
-      <button type="button" class="btn btn-info">create new</button>
+      <button 
+        type="button" 
+        class="btn btn-info" 
+        leave-request-popup leave-type="leave" 
+        contact-id="absence.contactId" 
+        user-role="{{$root.role}}" 
+        selected-contact-id="$root.settings.contactId">Record New Absence
+      </button>
       <button
         type="button"
         class="btn btn-info dropdown-toggle"
@@ -9,12 +16,22 @@
         <span class="caret"></span>
         <span class="sr-only">Toggle Dropdown</span>
       </button>
-      <ul class="dropdown-menu" role="menu">
+      <ul class="dropdown-menu" uib-dropdown-menu>
         <li>
-          <a href="#">Record staff sickness</a>
+          <a
+            leave-request-popup user-role="{{$root.role}}"
+            contact-id="contactId" leave-type="sickness"
+            selected-contact-id="$root.settings.contactId"
+            href="#">Record Sickness
+          </a>
         </li>
         <li>
-          <a href="#">Record staff overtime</a>
+          <a
+            leave-request-popup user-role="{{$root.role}}"
+            contact-id="contactId" leave-type="toil"
+            selected-contact-id="$root.settings.contactId"
+            href="#">Record Overtime
+          </a>
         </li>
       </ul>
     </div>
