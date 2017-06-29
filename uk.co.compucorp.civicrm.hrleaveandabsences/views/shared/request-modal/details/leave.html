@@ -37,6 +37,7 @@
             is-open="$ctrl.uiOptions.date.from.show"
             ng-readonly="true"
             ng-disabled="!$ctrl.isRole('admin') && ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness')))"
+            ng-click="$ctrl.uiOptions.date.from.show = true"
             ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from')"/>
           <span
             class="input-group-addon pointer"
@@ -88,6 +89,7 @@
             ng-readonly="true"
             ng-disabled="!$ctrl.isRole('admin') &&
               ($ctrl.isMode('view') || !$ctrl.request.from_date || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness')))"
+            ng-click="$ctrl.uiOptions.date.to.show = true"
             ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to')"/>
           <span
             class="input-group-addon pointer"

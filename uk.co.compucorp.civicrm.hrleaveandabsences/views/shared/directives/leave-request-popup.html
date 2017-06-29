@@ -162,6 +162,7 @@
                           datepicker-options="$ctrl.uiOptions.date.expiry.options"
                           show-button-bar="false"
                           ng-model="$ctrl.uiOptions.expiryDate"
+                          ng-click="$ctrl.uiOptions.date.expiry.show = true"
                           ng-change="$ctrl.updateExpiryDate()"
                           is-open="$ctrl.uiOptions.date.expiry.show"/>
                         <span
