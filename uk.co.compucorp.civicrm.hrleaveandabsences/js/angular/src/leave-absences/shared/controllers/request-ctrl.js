@@ -231,7 +231,9 @@ define([
             this.directiveOptions.leaveRequest.delete()
               .then(function () {
                 this.cancel();
-                $rootScope.$emit('LeaveRequest::deleted');
+                $rootScope.$emit('LeaveRequest::deleted', {
+                  id: this.directiveOptions.leaveRequest.id
+                });
               }.bind(this));
           }.bind(this)
         });
