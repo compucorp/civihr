@@ -178,13 +178,6 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
             ],
           'filters' =>
             [
-              'activity_type_id' =>
-                [
-                  'title' => ts('Absence Type'),
-                  'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-                  'options' => $this->absenceActivityType,
-                  'no_display' => TRUE,
-                ],
               'status_id' =>
                 [
                   'title' => ts('Status'),
@@ -355,9 +348,11 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
   }
 
   function where($recordType = NULL) {
+    $IN  = 'IN('. implode(', ', array_keys($this->absenceActivityType)) .')';
     $this->_where = " WHERE {$this->_aliases['civicrm_activity']}.is_test = 0 AND
                                 {$this->_aliases['civicrm_activity']}.is_deleted = 0 AND
-                                {$this->_aliases['civicrm_activity']}.is_current_revision = 1";
+                                {$this->_aliases['civicrm_activity']}.is_current_revision = 1 AND
+                                {$this->_aliases['civicrm_activity']}.activity_type_id $IN";
 
     $clauses = array();
     foreach ($this->_columns as $tableName => $table) {
