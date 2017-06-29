@@ -183,6 +183,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
                   'title' => ts('Absence Type'),
                   'operatorType' => CRM_Report_Form::OP_MULTISELECT,
                   'options' => $this->absenceActivityType,
+                  'no_display' => TRUE,
                 ],
               'status_id' =>
                 [

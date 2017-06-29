@@ -31,7 +31,7 @@ return [
       'label' => 'CiviHR Absence Dates Report',
       'description' => 'HR Report showing absence dates for each individual. ',
       'class_name' => 'CRM_HRReport_Form_Activity_HRAbsenceDates',
-      'report_url' => 'civihr/absencedates',
+      'report_url' => 'civihr/absence/dates',
       'grouping' => 'Absence',
       'component' => '',
     ],
@@ -44,7 +44,7 @@ return [
       'version' => 3,
       'title'   => 'CiviHR Absence Dates Report',
       'description' => 'HR Report showing absence dates for each individual. ',
-      'report_id'   => 'civihr/absencedates',
+      'report_id'   => 'civihr/absence/dates',
       'form_values' => serialize(
         [
           'addToDashboard' => 1,
