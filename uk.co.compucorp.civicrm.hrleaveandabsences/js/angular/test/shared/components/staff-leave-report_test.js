@@ -694,16 +694,34 @@
           describe('when the absence type of the leave request does not allow to cancel', function () {
             beforeEach(function () {
               leaveRequestData.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '1').id;
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
             });
 
-            it('does not show the "cancel" action', function () {
-              expect(actionMatrix).not.toContain('cancel');
+            describe('when the user is not a L&A admin', function () {
+              beforeEach(function () {
+                setRoleToAdmin(false);
+                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+              });
+
+              it('does not show the "cancel" action', function () {
+                expect(actionMatrix).not.toContain('cancel');
+              });
+            });
+
+            describe('when the user is a L&A admin', function () {
+              beforeEach(function () {
+                setRoleToAdmin(true);
+                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+              });
+
+              it('shows the "cancel" action', function () {
+                expect(actionMatrix).toContain('cancel');
+              });
             });
           });
 
           describe('when the absence type of the leave request allows to cancel only before the start date', function () {
             beforeEach(function () {
+              setRoleToAdmin(false);
               leaveRequestData.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '3').id;
             });
 
@@ -716,8 +734,26 @@
                 actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
               });
 
-              it('does not show the "cancel" action', function () {
-                expect(actionMatrix).not.toContain('cancel');
+              describe('when the user is not a L&A admin', function () {
+                beforeEach(function () {
+                  setRoleToAdmin(false);
+                  actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+                });
+
+                it('does not show the "cancel" action', function () {
+                  expect(actionMatrix).not.toContain('cancel');
+                });
+              });
+
+              describe('when the user is a L&A admin', function () {
+                beforeEach(function () {
+                  setRoleToAdmin(true);
+                  actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+                });
+
+                it('shows the "cancel" action', function () {
+                  expect(actionMatrix).toContain('cancel');
+                });
               });
             });
 
@@ -727,6 +763,7 @@
                 var dateBeforeFromDate = baseDate.subtract(10, 'days').toDate();
                 jasmine.clock().mockDate(dateBeforeFromDate);
 
+                setRoleToAdmin(false);
                 actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
               });
 
@@ -759,10 +796,7 @@
 
           describe('when the user is an L&A admin', function () {
             beforeEach(function () {
-              isUserAdmin = true;
-
-              compileComponent();
-              $rootScope.$digest();
+              setRoleToAdmin(true);
             });
 
             it('is allowed to delete a leave request in any status', function () {
@@ -772,6 +806,18 @@
             });
           });
         });
+
+        /**
+         * Sets (or not) the user's role as admin depending on the value passed
+         *
+         * @param {Boolean} isAdmin
+         */
+        function setRoleToAdmin (isAdmin) {
+          isUserAdmin = !!isAdmin;
+
+          compileComponent();
+          $rootScope.$digest();
+        }
 
         /**
          * Calls the controller method that returns the action matrix for

@@ -222,6 +222,10 @@ define([
     function canLeaveRequestBeCancelled (leaveRequest) {
       var allowValue = vm.absenceTypes[leaveRequest.type_id].allow_request_cancelation;
 
+      if (role === 'admin') {
+        return true;
+      }
+
       if (allowValue === '3') {
         return moment().isBefore(leaveRequest.from_date);
       }
