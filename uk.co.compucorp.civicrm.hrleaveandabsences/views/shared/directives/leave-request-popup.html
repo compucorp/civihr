@@ -386,6 +386,12 @@
         ng-click="$ctrl.cancel()">
         Back
       </button>
+      <a
+        class="text-danger pull-left pointer chr_leave-request-modal__delete"
+        ng-if="$ctrl.isRole('admin') && $ctrl.directiveOptions.leaveRequest"
+        ng-click="$ctrl.deleteLeaveRequest()">
+        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+      </a>
       <button
         type="submit"
         class="btn btn-primary"

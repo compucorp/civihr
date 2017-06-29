@@ -17,10 +17,10 @@ define([
   'use strict';
 
   controllers.controller('RequestCtrl', [
-    '$log', '$q', '$rootScope', 'Contact', 'AbsencePeriod', 'AbsenceType',
+    '$log', '$q', '$rootScope', 'Contact', 'dialog', 'AbsencePeriod', 'AbsenceType',
     'api.optionGroup', 'Calendar', 'Entitlement', 'HR_settings',
     'LeaveRequest', 'PublicHoliday', 'shared-settings',
-    function ($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType,
+    function ($log, $q, $rootScope, Contact, dialog, AbsencePeriod, AbsenceType,
       OptionGroup, Calendar, Entitlement, HRSettings,
       LeaveRequest, PublicHoliday, sharedSettings
     ) {
@@ -215,6 +215,26 @@ define([
       */
       this.closeAlert = function () {
         this.errors = [];
+      };
+
+      /**
+       * Deletes the leave request
+       */
+      this.deleteLeaveRequest = function () {
+        dialog.open({
+          title: 'Confirm Deletion?',
+          copyCancel: 'Cancel',
+          copyConfirm: 'Confirm',
+          classConfirm: 'btn-danger',
+          msg: 'This cannot be undone',
+          onConfirm: function () {
+            this.directiveOptions.leaveRequest.delete()
+              .then(function () {
+                this.cancel();
+                $rootScope.$emit('LeaveRequest::deleted');
+              }.bind(this));
+          }.bind(this)
+        });
       };
 
       /**

@@ -1,9 +1,11 @@
+/* eslint-env amd, jasmine */
+
 (function (CRM) {
   define([
     'common/lodash',
     'mocks/data/option-group-mock-data',
     'mocks/data/leave-request-data',
-    'common/angularMocks',
+    'common/modules/dialog',
     'leave-absences/shared/config',
     'common/mocks/services/hr-settings-mock',
     'common/mocks/services/file-uploader-mock',
@@ -16,22 +18,26 @@
     'mocks/apis/public-holiday-api-mock',
     'common/mocks/services/api/contact-mock',
     'leave-absences/shared/controllers/sub-controllers/sick-request-ctrl',
-    'leave-absences/shared/modules/shared-settings',
+    'leave-absences/shared/modules/shared-settings'
   ], function (_, optionGroupMock, mockData) {
     'use strict';
 
     describe('SicknessRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller,
-        $provide, AbsenceTypeAPI, SicknessRequestInstance,
-        date2016 = '01/12/2016';
+        $provide, AbsenceTypeAPI, SicknessRequestInstance;
+      var date2016 = '01/12/2016';
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
-        'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
+        'leave-absences.mocks', 'common.mocks', 'common.dialog', 'leave-absences.settings',
         function (_$provide_) {
           $provide = _$provide_;
         }));
 
-      beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_,
+      beforeEach(inject(['HR_settingsMock', function (HRSettingsMock) {
+        $provide.value('HR_settings', HRSettingsMock);
+      }]));
+
+      beforeEach(inject(function (_AbsencePeriodAPIMock_,
         _AbsenceTypeAPIMock_, _EntitlementAPIMock_, _WorkPatternAPIMock_,
         _LeaveRequestAPIMock_, _OptionGroupAPIMock_, _PublicHolidayAPIMock_,
         _FileUploaderMock_) {
@@ -39,7 +45,6 @@
         $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
         $provide.value('EntitlementAPI', _EntitlementAPIMock_);
         $provide.value('WorkPatternAPI', _WorkPatternAPIMock_);
-        $provide.value('HR_settings', _HR_settingsMock_);
         $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
         $provide.value('api.optionGroup', _OptionGroupAPIMock_);
         $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
@@ -48,7 +53,6 @@
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_,
         _AbsenceTypeAPI_, _SicknessRequestInstance_) {
-
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
@@ -70,14 +74,14 @@
           };
 
           initTestController(directiveOptions);
-          parentRequestCtrl = $controller('RequestCtrl')
+          parentRequestCtrl = $controller('RequestCtrl');
         });
 
         it('is called', function () {
           expect($log.debug).toHaveBeenCalled();
         });
 
-        it('inherited from request controller', function(){
+        it('inherited from request controller', function () {
           expect($ctrl instanceof parentRequestCtrl.constructor).toBe(true);
         });
 
@@ -102,7 +106,7 @@
         it('gets absence types with true sick param', function () {
           expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
             is_sick: true
-          })
+          });
         });
 
         it('cannot submit request', function () {
@@ -134,7 +138,7 @@
           beforeEach(function () {
             spyOn($rootScope, '$emit');
             setTestDates(date2016, date2016);
-            //entitlements are randomly generated so resetting them to positive here
+            // entitlements are randomly generated so resetting them to positive here
             $ctrl.balance.closing = 1;
             setReason();
             $ctrl.submit();
@@ -169,7 +173,7 @@
           describe('when balance change is negative', function () {
             beforeEach(function () {
               setTestDates(date2016, date2016);
-              //entitlements are randomly generated so resetting them to negative here
+              // entitlements are randomly generated so resetting them to negative here
               $ctrl.balance.closing = -1;
               $ctrl.submit();
               $scope.$digest();
@@ -185,7 +189,7 @@
       });
 
       describe('open sickness request in edit mode', function () {
-        var sicknessRequest, absenceType;
+        var sicknessRequest;
 
         beforeEach(function () {
           sicknessRequest = SicknessRequestInstance.init(mockData.findBy('request_type', 'sickness'));
@@ -193,7 +197,7 @@
           sicknessRequest.sickness_required_documents = '1,2';
 
           var directiveOptions = {
-            contactId: sicknessRequest.contact_id, //staff's contact id
+            contactId: sicknessRequest.contact_id, // staff's contact id
             leaveRequest: sicknessRequest
           };
 
@@ -204,14 +208,15 @@
           expect($ctrl.uiOptions.showBalance).toBeTruthy();
         });
 
-        describe('initializes required documents', function() {
-          var testDocumentId = '1', failDocumentId = '3';
+        describe('initializes required documents', function () {
+          var testDocumentId = '1';
+          var failDocumentId = '3';
 
-          it('checks checkbox', function() {
+          it('checks checkbox', function () {
             expect($ctrl.isChecked(testDocumentId)).toBeTruthy();
           });
 
-          it('does not check checkbox', function() {
+          it('does not check checkbox', function () {
             expect($ctrl.isChecked(failDocumentId)).toBeFalsy();
           });
         });
@@ -221,7 +226,7 @@
        *
        * @param leave request
        */
-      function initTestController(directiveOptions) {
+      function initTestController (directiveOptions) {
         $scope = $rootScope.$new();
 
         $ctrl = $controller('SicknessRequestCtrl', {
@@ -238,7 +243,7 @@
        * @param {String} from date set if passed
        * @param {String} to date set if passed
        */
-      function setTestDates(from, to) {
+      function setTestDates (from, to) {
         if (from) {
           $ctrl.uiOptions.fromDate = new Date(from);
           $ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from');
@@ -255,7 +260,7 @@
       /**
       * Sets reason on request
       **/
-      function setReason() {
+      function setReason () {
         var reason = optionGroupMock.specificObject('hrleaveandabsences_sickness_reason', 'name', 'appointment');
         $ctrl.request.sickness_reason = reason.value;
       }

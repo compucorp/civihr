@@ -137,6 +137,7 @@ define([
 
       $rootScope.$on('LeaveRequest::new', vm.refresh);
       $rootScope.$on('LeaveRequest::edit', vm.refresh);
+      $rootScope.$on('LeaveRequest::deleted', vm.refresh);
     })();
 
     return vm;

@@ -49,7 +49,7 @@ define([
      */
     vm.deleteWorkPattern = function (contactWorkPatternID) {
       dialog.open({
-        title: 'Confirm Cancellation?',
+        title: 'Confirm Deletion?',
         copyCancel: 'Cancel',
         copyConfirm: 'Confirm',
         classConfirm: 'btn-danger',
