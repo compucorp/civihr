@@ -1,7 +1,12 @@
 .chr_leave-report {
 
   .dropdown-toggle {
+    color: $gray-darker;
     padding: 0 10px;
+
+    &:hover {
+      background: #e6e6e6;
+    }
   }
 }
 
