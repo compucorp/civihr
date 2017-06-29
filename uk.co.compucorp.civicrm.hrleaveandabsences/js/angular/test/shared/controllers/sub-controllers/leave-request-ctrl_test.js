@@ -439,7 +439,7 @@
 
         describe('when user cancels dialog (clicks X), or back button', function () {
           beforeEach(function () {
-            $ctrl.cancel();
+            $ctrl.dismissModal();
           });
 
           it('closes model', function () {
@@ -1342,14 +1342,34 @@
         });
 
         describe('when deletion is confirmed', function () {
+          var promise;
+
           beforeEach(function () {
+            spyOn($ctrl, 'dismissModal');
+            spyOn($rootScope, '$emit');
             $ctrl.directiveOptions.leaveRequest = jasmine.createSpyObj(['delete']);
             $ctrl.directiveOptions.leaveRequest.delete.and.returnValue($q.resolve([]));
-            confirmFunction();
+            promise = confirmFunction();
           });
 
-          it('Deletes the leave request', function () {
+          afterEach(function () {
+            $rootScope.$apply();
+          });
+
+          it('deletes the leave request', function () {
             expect($ctrl.directiveOptions.leaveRequest.delete).toHaveBeenCalled();
+          });
+
+          it('closes the leave modal', function () {
+            promise.then(function () {
+              expect($ctrl.dismissModal).toHaveBeenCalled();
+            });
+          });
+
+          it('publishes a delete event', function () {
+            promise.then(function () {
+              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::deleted', $ctrl.directiveOptions.leaveRequest);
+            });
           });
         });
       });

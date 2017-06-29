@@ -146,11 +146,11 @@ define([
      * Event handler for Delete event of Leave Request
      *
      * @param  {object} event
-     * @param  {object} data
+     * @param  {object} leaveRequest
      */
-    function deleteLeaveRequest (event, data) {
-      vm.leaveRequests = _.omit(vm.leaveRequests, function (leaveRequest) {
-        return leaveRequest.id === data.id;
+    function deleteLeaveRequest (event, leaveRequest) {
+      vm.leaveRequests = _.omit(vm.leaveRequests, function (leaveRequestObj) {
+        return leaveRequestObj.id === leaveRequest.id;
       });
       vm._resetMonths();
       vm._setCalendarProps(calendarData);

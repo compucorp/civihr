@@ -142,15 +142,6 @@ define([
       };
 
       /**
-       * When user cancels the model dialog
-       */
-      this.cancel = function () {
-        this.$modalInstance.dismiss({
-          $value: 'cancel'
-        });
-      };
-
-      /**
        * Calculate change in balance, it updates local balance variables.
        *
        * @return {Promise} empty promise if all required params are not set otherwise promise from server
@@ -228,14 +219,21 @@ define([
           classConfirm: 'btn-danger',
           msg: 'This cannot be undone',
           onConfirm: function () {
-            this.directiveOptions.leaveRequest.delete()
+            return this.directiveOptions.leaveRequest.delete()
               .then(function () {
-                this.cancel();
-                $rootScope.$emit('LeaveRequest::deleted', {
-                  id: this.directiveOptions.leaveRequest.id
-                });
+                this.dismissModal();
+                $rootScope.$emit('LeaveRequest::deleted', this.directiveOptions.leaveRequest);
               }.bind(this));
           }.bind(this)
+        });
+      };
+
+      /**
+       * Close the modal
+       */
+      this.dismissModal = function () {
+        this.$modalInstance.dismiss({
+          $value: 'cancel'
         });
       };
 
