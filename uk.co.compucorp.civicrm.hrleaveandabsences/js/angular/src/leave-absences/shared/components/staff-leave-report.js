@@ -106,15 +106,7 @@ define([
         }
       })
       .then(function (response) {
-        if (response) {
-          removeLeaveRequestFromItsSection(leaveRequest);
-
-          // Moves the cancelled leave request to the "other" section
-          // (if the section has already cached data)
-          if (action === 'cancel') {
-            vm.sections.other.data.length && vm.sections.other.data.push(leaveRequest);
-          }
-        }
+        !!response && removeLeaveRequestFromItsSection(leaveRequest, action === 'cancel');
       });
     };
 
@@ -546,6 +538,10 @@ define([
       $rootScope.$on('LeaveRequest::edit', function () {
         vm.refresh();
       });
+
+      $rootScope.$on('LeaveRequest::deleted', function (event, leaveRequest) {
+        removeLeaveRequestFromItsSection(leaveRequest);
+      });
     }
 
     /**
@@ -556,9 +552,11 @@ define([
      * then the numbers of the section will be recalculated
      *
      * @param  {LeaveRequestInstance} leaveRequest
+     * @param  {Boolean} moveToOther If true, it moves the leave request to
+     *         the "other" section (if the section has already cached data)
      * @return {Promise}
      */
-    function removeLeaveRequestFromItsSection (leaveRequest) {
+    function removeLeaveRequestFromItsSection (leaveRequest, moveToOther) {
       var sectionBelonged;
 
       ['approved', 'pending', 'other'].forEach(function (sectionName) {
@@ -569,6 +567,10 @@ define([
 
       if (sectionBelonged !== 'other') {
         updateSectionNumbersWithLeaveRequestBalanceChange(leaveRequest, sectionBelonged);
+
+        if (moveToOther && vm.sections.other.data.length) {
+          vm.sections.other.data.push(leaveRequest);
+        }
       }
     }
 
