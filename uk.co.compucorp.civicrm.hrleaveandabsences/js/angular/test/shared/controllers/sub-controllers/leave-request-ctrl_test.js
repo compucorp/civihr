@@ -1322,8 +1322,7 @@
         });
       });
 
-      describe('admin opens leave request popup', function () {
-        var selectedContactId = 208;
+      describe('admin opens leave request popup in edit mode', function () {
         var adminId = 206;
 
         beforeEach(function () {
@@ -1335,12 +1334,44 @@
           initTestController({
             contactId: adminId,
             leaveRequest: leaveRequest,
+            userRole: 'admin'
+          });
+        });
+
+        describe('on initialization', function () {
+          it('is in edit mode', function () {
+            expect($ctrl.isMode('edit')).toBeTruthy();
+          });
+
+          it('has admin role', function () {
+            expect($ctrl.isRole('admin')).toBeTruthy();
+          });
+
+          it('does not load contacts', function () {
+            expect($ctrl.managedContacts.length).toEqual(0);
+          });
+        });
+      });
+
+      describe('admin opens leave request popup in create mode', function () {
+        var selectedContactId = 208;
+        var adminId = 206;
+
+        beforeEach(function () {
+          $ctrl.request.contact_id = adminId.toString();
+
+          initTestController({
+            contactId: adminId,
             userRole: 'admin',
             selectedContactId: selectedContactId
           });
         });
 
         describe('on initialization', function () {
+          it('is in create mode', function () {
+            expect($ctrl.isMode('create')).toBeTruthy();
+          });
+
           it('has admin role', function () {
             expect($ctrl.isRole('admin')).toBeTruthy();
           });

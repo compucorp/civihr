@@ -610,7 +610,7 @@ define([
           .then(function () {
             initOpenMode.call(self);
 
-            return self.canManage && loadManagees.call(self);
+            return self.canManage && !self.isMode('edit') && loadManagees.call(self);
           })
           .then(function () {
             return loadAbsencePeriods.call(self);
@@ -1012,10 +1012,6 @@ define([
        * @return {Promise}
        */
       function loadManagees () {
-        if (this.isMode('edit')) {
-          return;
-        }
-
         if (this.directiveOptions.selectedContactId) {
           return Contact.find(this.directiveOptions.selectedContactId)
             .then(function (contact) {
