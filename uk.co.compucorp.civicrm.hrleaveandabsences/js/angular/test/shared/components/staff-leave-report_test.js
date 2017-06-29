@@ -641,52 +641,122 @@
         });
 
         describe('status: awaiting approval', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+          describe('when the user is not a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+            });
+
+            it('shows the "edit" and "cancel" actions', function () {
+              expect(actionMatrix).toEqual(['edit', 'cancel']);
+            });
           });
 
-          it('shows the "edit" and "cancel" actions', function () {
-            expect(actionMatrix).toEqual(['edit', 'cancel']);
+          describe('when the user is a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(true);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+            });
+
+            it('shows the "edit", "cancel" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['edit', 'cancel', 'delete']);
+            });
           });
         });
 
         describe('status: more information required', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
+          describe('when the user is not a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
+            });
+
+            it('shows the "respond" and "cancel" actions', function () {
+              expect(actionMatrix).toEqual(['respond', 'cancel']);
+            });
           });
 
-          it('shows the "respond" and "cancel" actions', function () {
-            expect(actionMatrix).toEqual(['respond', 'cancel']);
+          describe('when the user is a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(true);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
+            });
+
+            it('shows the "respond", "cancel" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['respond', 'cancel', 'delete']);
+            });
           });
         });
 
         describe('status: approved', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
+          describe('when the user is not a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
+            });
+
+            it('shows the "cancel" and the "view" actions', function () {
+              expect(actionMatrix).toEqual(['view', 'cancel']);
+            });
           });
 
-          it('shows the "cancel" and the "view" action', function () {
-            expect(actionMatrix).toEqual(['view', 'cancel']);
+          describe('when the user is a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(true);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
+            });
+
+            it('shows the "cancel", "view" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['view', 'cancel', 'delete']);
+            });
           });
         });
 
         describe('status: cancelled', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
+          describe('when the user is not a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
+            });
+
+            it('shows the "view" action', function () {
+              expect(actionMatrix).toEqual(['view']);
+            });
           });
 
-          it('shows the "view" action', function () {
-            expect(actionMatrix).toEqual(['view']);
+          describe('when the user is a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(true);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
+            });
+
+            it('shows the "view" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['view', 'delete']);
+            });
           });
         });
 
         describe('status: rejected', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
+          describe('when the user is not a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
+            });
+
+            it('shows the "view" action', function () {
+              expect(actionMatrix).toEqual(['view']);
+            });
           });
 
-          it('shows the "view" action', function () {
-            expect(actionMatrix).toEqual(['view']);
+          describe('when the user is a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(true);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
+            });
+
+            it('shows the "view" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['view', 'delete']);
+            });
           });
         });
 
@@ -770,39 +840,6 @@
               it('shows the "cancel" action', function () {
                 expect(actionMatrix).toContain('cancel');
               });
-            });
-          });
-        });
-
-        describe('"delete" action', function () {
-          var allStatuses;
-
-          beforeEach(function () {
-            allStatuses = [
-              sharedSettings.statusNames.awaitingApproval,
-              sharedSettings.statusNames.moreInformationRequired,
-              sharedSettings.statusNames.approved,
-              sharedSettings.statusNames.rejected
-            ];
-          });
-
-          describe('when the user is not a L&A admin', function () {
-            it('does not show the "delete" action"', function () {
-              expect(allStatuses.every(function (status) {
-                return ~getActionMatrixForStatus(status).indexOf('delete');
-              })).toBe(false);
-            });
-          });
-
-          describe('when the user is an L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-            });
-
-            it('is allowed to delete a leave request in any status', function () {
-              expect(allStatuses.every(function (status) {
-                return ~getActionMatrixForStatus(status).indexOf('delete');
-              })).toBe(true);
             });
           });
         });
