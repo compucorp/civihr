@@ -348,7 +348,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
   }
 
   function where($recordType = NULL) {
-    $IN  = 'IN('. implode(', ', array_keys($this->absenceActivityType)) .')';
+    $IN = 'IN('. implode(', ', array_keys($this->absenceActivityType)) .')';
     $this->_where = " WHERE {$this->_aliases['civicrm_activity']}.is_test = 0 AND
                                 {$this->_aliases['civicrm_activity']}.is_deleted = 0 AND
                                 {$this->_aliases['civicrm_activity']}.is_current_revision = 1 AND
@@ -593,13 +593,14 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
 
     if (!empty($rows)) {
       $IN  = 'activity_type_id IN('. implode(', ', array_keys($this->activityTypes)) .')';
-      $sql = "SELECT id, source_record_id, activity_type_id FROM civicrm_activity
+      $sql = "SELECT id, source_record_id, activity_type_id, details FROM civicrm_activity
         WHERE source_record_id IS NULL AND $IN";
 
       $data = array();
       $dao= CRM_Core_DAO::executeQuery($sql);
       while ($dao->fetch()) {
         $data[$dao->id]['absence_type_id'] = $dao->activity_type_id;
+        $data[$dao->id]['details'] = $dao->details;
       }
     }
 
@@ -621,6 +622,11 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
         if ($value = $row['civicrm_activity_duration']) {
           $rows[$rowNum]['civicrm_activity_duration'] = $value/480;
         }
+      }
+
+      if (array_key_exists('civicrm_activity_details', $row)) {
+        $value = $row['civicrm_activity_details'];
+        $rows[$rowNum]['civicrm_activity_details'] = $value ? $value : $data[$row['civicrm_activity_source_record_id']]['details'];
       }
 
       if (array_key_exists('civicrm_activity_activity_date_time', $row) && array_key_exists('civicrm_activity_status_id', $row)) {
