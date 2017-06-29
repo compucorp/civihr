@@ -985,7 +985,7 @@ define([
        * Initialize status
        */
       function initStatus () {
-        if (this.isMode('create') && this.canManage) {
+        if (this.isRole('admin') || (this.isMode('create') && this.isRole('manager'))) {
           this.newStatusOnSave = this.requestStatuses[sharedSettings.statusNames.approved].value;
         }
       }

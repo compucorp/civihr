@@ -5,13 +5,13 @@
       <div class="col-xs-8">
         <div class="btn-group btn-group-justified">
           <label
-            ng-disabled="$ctrl.isMode('view') || (!$ctrl.isMode('create') && $ctrl.canManage && !$ctrl.isLeaveType('sickness'))"
+            ng-disabled="!$ctrl.isRole('admin') && ($ctrl.isMode('view') || (!$ctrl.isMode('create') && $ctrl.isRole('manager') && !$ctrl.isLeaveType('sickness')))"
             class="btn active"
             ng-model="$ctrl.uiOptions.multipleDays"
             uib-btn-radio="true"
             ng-change="$ctrl.changeInNoOfDays()">Multiple Days</label>
           <label
-            ng-disabled="$ctrl.isMode('view') || (!$ctrl.isMode('create') && $ctrl.canManage && !$ctrl.isLeaveType('sickness'))"
+            ng-disabled="!$ctrl.isRole('admin') && ($ctrl.isMode('view') || (!$ctrl.isMode('create') && $ctrl.isRole('manager') && !$ctrl.isLeaveType('sickness')))"
             class="btn"
             ng-model="$ctrl.uiOptions.multipleDays"
             uib-btn-radio="false"
@@ -36,11 +36,11 @@
             ng-model="$ctrl.uiOptions.fromDate"
             is-open="$ctrl.uiOptions.date.from.show"
             ng-readonly="true"
-            ng-disabled="$ctrl.isMode('view') || ($ctrl.canManage && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
+            ng-disabled="!$ctrl.isRole('admin') && ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness')))"
             ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from')"/>
           <span
             class="input-group-addon pointer"
-            ng-disabled="$ctrl.isMode('view') || ($ctrl.canManage && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
+            ng-disabled="!$ctrl.isRole('admin') && ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness')))"
             ng-click="$ctrl.uiOptions.date.from.show = true">
             <i class="fa fa-calendar"></i>
           </span>
@@ -53,13 +53,14 @@
           <div class="crm_custom-select crm_custom-select--full">
             <select
               name="fromDayTypeSelect"
-              ng-disabled="$ctrl.isMode('view') ||
-                ($ctrl.canManage && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
+              ng-disabled="!$ctrl.isRole('admin') &&
+                ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness')))"
               ng-options="dayType.value as dayType.label for dayType in $ctrl.requestFromDayTypes"
               ng-model="$ctrl.request.from_date_type"
               ng-change="$ctrl.calculateBalanceChange()">
-              <option ng-disabled="$ctrl.isMode('view') ||
-                ($ctrl.canManage && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))" value="">Select</option>
+              <option ng-disabled="!$ctrl.isRole('admin') &&
+                ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness')))"
+                value="">Select</option>
               dayType{{dayType}}
             </select>
             <span class="crm_custom-select__arrow"></span>
@@ -85,11 +86,13 @@
             ng-model="$ctrl.uiOptions.toDate"
             is-open="$ctrl.uiOptions.date.to.show"
             ng-readonly="true"
-            ng-disabled="$ctrl.isMode('view') || !$ctrl.request.from_date || ($ctrl.canManage && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
+            ng-disabled="!$ctrl.isRole('admin') &&
+              ($ctrl.isMode('view') || !$ctrl.request.from_date || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness')))"
             ng-change="$ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to')"/>
           <span
             class="input-group-addon pointer"
-            ng-disabled="$ctrl.isMode('view') || !$ctrl.request.from_date || ($ctrl.canManage && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
+            ng-disabled="!$ctrl.isRole('admin') &&
+              ($ctrl.isMode('view') || !$ctrl.request.from_date || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness')))"
             ng-click="$ctrl.uiOptions.date.to.show = $ctrl.request.from_date ? true : false">
             <i class="fa fa-calendar"></i>
           </span>
@@ -102,9 +105,8 @@
           <div class="crm_custom-select crm_custom-select--full">
             <select
               name="toDayTypeSelect"
-              ng-disabled="$ctrl.isMode('view') ||
-                !$ctrl.request.from_date ||
-                ($ctrl.canManage && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness'))"
+              ng-disabled="!$ctrl.isRole('admin') &&
+                ($ctrl.isMode('view') || !$ctrl.request.from_date || ($ctrl.isRole('manager') && !$ctrl.isMode('create') && !$ctrl.isLeaveType('sickness')))"
               ng-options="dayType.value as dayType.label for dayType in $ctrl.requestToDayTypes"
               ng-model="$ctrl.request.to_date_type"
               ng-change="$ctrl.calculateBalanceChange()">

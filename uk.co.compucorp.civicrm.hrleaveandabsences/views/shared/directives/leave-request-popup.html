@@ -11,7 +11,7 @@
 </div>
 <crm-loading show="!$ctrl.loading.absenceTypes">
   <div
-    ng-show="$ctrl.canManage && !$ctrl.isMode('create')"
+    ng-show="$ctrl.isRole('admin') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))"
     class="row chr_leave-request-modal__user-info">
     <span class="col-xs-6">{{$ctrl.contactName}}</span>
     <span class="col-xs-6">{{::$ctrl.getStatusFromValue($ctrl.request.status_id).label}}</span>
@@ -23,7 +23,7 @@
         autofocus
         ng-model="$ctrl.request.contact_id"
         ng-change="$ctrl.initAfterContactSelection()"
-        ng-disabled="$ctrl.isRole('admin')"
+        ng-disabled="$ctrl.directiveOptions.selectedContactId"
         ng-required="true">
         <ui-select-match placeholder="Search Staff Member" allow-clear>
           <span ng-bind="$select.selected.display_name"></span>
@@ -41,7 +41,7 @@
           <div class="crm_custom-select crm_custom-select--full">
             <select
               ng-hide="$ctrl.absenceTypes.length === 0"
-              ng-disabled="$ctrl.isMode('view') || ($ctrl.canManage && !$ctrl.isMode('create'))"
+              ng-disabled="!$ctrl.isRole('admin') && ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create')))"
               name="absenceTypeSelect"
               ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes"
               ng-model="$ctrl.request.type_id"
@@ -150,7 +150,7 @@
                     <div class="col-xs-4">
                       <span
                         class="chr_leave-request-modal__span-expiry"
-                        ng-if="!$ctrl.canManage">
+                        ng-if="!$ctrl.isRole('manager')">
                         {{$ctrl.request.toil_expiry_date | date: $ctrl.uiOptions.userDateFormat}}
                       </span>
                       <div ng-if="$ctrl.canManage" class="input-group">
