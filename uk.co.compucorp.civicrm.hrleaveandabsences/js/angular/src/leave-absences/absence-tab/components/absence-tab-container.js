@@ -5,9 +5,6 @@
     'leave-absences/absence-tab/modules/components'
   ], function (components) {
     components.component('absenceTabContainer', {
-      bindings: {
-        contactId: '<'
-      },
       templateUrl: ['settings', function (settings) {
         return settings.pathTpl + 'components/absence-tab-container.html';
       }],
@@ -18,8 +15,7 @@
         $rootScope.role = 'admin';
 
         var vm = Object.create(this);
-
-        vm.adminId = CRM.adminId;
+        vm.contactId = CRM.adminId;
 
         return vm;
       }]

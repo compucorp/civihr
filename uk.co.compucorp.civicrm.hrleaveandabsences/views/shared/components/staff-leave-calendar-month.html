@@ -33,6 +33,7 @@
             <a ng-if="day.leaveRequest"
                user-role="{{$root.role}}"
                contact-id="calendar.contactId"
+               selected-contact-id="$root.settings.contactId"
                leave-request-popup
                leave-request="day.leaveRequest"
                title="Click to open this leave request">

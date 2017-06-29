@@ -35,7 +35,7 @@ define([
       this.absencePeriods = [];
       this.absenceTypes = [];
       this.calendar = {};
-      this.canManage = null;
+      this.canManage = false; // this flag is set on initialisation of the controller
       this.contactName = null;
       this.errors = [];
       this.managedContacts = [];
@@ -189,6 +189,9 @@ define([
           // awaiting_approval will not be available in this.requestStatuses if manager has changed selection
           canSubmit = canSubmit && !!this.getStatusFromValue(this.newStatusOnSave);
         }
+
+        // check if the selected date period is in absence period
+        canSubmit = canSubmit && !!this.period.id;
 
         return canSubmit && !this.isMode('view');
       };
@@ -514,12 +517,15 @@ define([
             return filterLeaveRequestDayTypes.call(self, date, dayType);
           })
           .then(function () {
-            self.loading[dayType + 'DayTypes'] = false;
-
             return self.updateBalance();
           })
           .catch(function (error) {
             self.errors = [error];
+
+            self._setDateAndTypes();
+          })
+          .finally(function () {
+            self.loading[dayType + 'DayTypes'] = false;
           });
       };
 
@@ -559,7 +565,9 @@ define([
         });
 
         if (!this.period) {
+          this.period = {};
           // inform user if absence period is not found
+          this.loading['fromDayTypes'] = false;
           return $q.reject('Please change date as it is not in any absence period');
         }
 
@@ -595,21 +603,14 @@ define([
         var self = this;
 
         this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
-        role = this.directiveOptions.userRole || 'staff';
-        this.canManage = this.isRole('manager') || this.isRole('admin');
+        initRoles.call(self);
         this._initRequest();
 
         return loadStatuses.call(self)
           .then(function () {
             initOpenMode.call(self);
 
-            if (self.isRole('manager')) {
-              return loadManagees.call(self);
-            } else if (self.isRole('admin')) {
-              return loadManagee.call(self);
-            } else {
-              return false;
-            }
+            return self.canManage && loadManagees.call(self);
           })
           .then(function () {
             return loadAbsencePeriods.call(self);
@@ -723,13 +724,14 @@ define([
         this._setDates();
 
         if (this.uiOptions.multipleDays) {
-          this.uiOptions.showBalance = !!this.request.to_date && !!this.request.from_date;
+          this.uiOptions.showBalance = !!this.request.from_date && !!this.request.from_date_type &&
+            !!this.request.to_date && !!this.request.to_date_type && !!this.period.id;
         } else {
           if (this.uiOptions.fromDate) {
             this.request.to_date_type = this.request.from_date_type;
           }
 
-          this.uiOptions.showBalance = !!this.request.from_date;
+          this.uiOptions.showBalance = !!this.request.from_date && !!this.request.from_date_type && !!this.period.id;
         }
       };
 
@@ -972,6 +974,14 @@ define([
       }
 
       /**
+       * Initialize roles
+       */
+      function initRoles () {
+        role = this.directiveOptions.userRole || 'staff';
+        this.canManage = this.isRole('manager') || this.isRole('admin');
+      }
+
+      /**
        * Initialize status
        */
       function initStatus () {
@@ -997,30 +1007,25 @@ define([
       }
 
       /**
-       * Loads just one pre-selected managee
-       *
-       * @return {Promise}
-       */
-      function loadManagee () {
-        return Contact.find(this.directiveOptions.selectedContactId)
-          .then(function (contact) {
-            this.managedContacts = [contact];
-          }.bind(this));
-      }
-
-      /**
        * Loads the managees of currently logged in user
        *
        * @return {Promise}
        */
       function loadManagees () {
-        return Contact.find(this.directiveOptions.contactId)
-          .then(function (contact) {
-            return contact.leaveManagees();
-          })
-          .then(function (contacts) {
-            this.managedContacts = contacts;
-          }.bind(this));
+        if (this.directiveOptions.selectedContactId) {
+          return Contact.find(this.directiveOptions.selectedContactId)
+            .then(function (contact) {
+              this.managedContacts = [contact];
+            }.bind(this));
+        } else {
+          return Contact.find(this.directiveOptions.contactId)
+            .then(function (contact) {
+              return contact.leaveManagees();
+            })
+            .then(function (contacts) {
+              this.managedContacts = contacts;
+            }.bind(this));
+        }
       }
 
       /**
@@ -1206,9 +1211,9 @@ define([
       function updateRequest () {
         return this.request.update()
           .then(function () {
-            if (this.canManage) {
+            if (this.isRole('manager')) {
               postSubmit.call(this, 'LeaveRequest::updatedByManager');
-            } else if (this.isRole('staff')) {
+            } else if (this.isRole('staff') || this.isRole('admin')) {
               postSubmit.call(this, 'LeaveRequest::edit');
             }
           }.bind(this));

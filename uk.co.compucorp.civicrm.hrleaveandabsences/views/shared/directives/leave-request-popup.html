@@ -164,11 +164,11 @@
                           ng-model="$ctrl.uiOptions.expiryDate"
                           ng-change="$ctrl.updateExpiryDate()"
                           is-open="$ctrl.uiOptions.date.expiry.show"/>
-                        <span class="input-group-btn">
-                          <button
-                            type="button"
-                            class="btn btn-default fa fa-calendar"
-                            ng-click="$ctrl.uiOptions.date.expiry.show = true"></button>
+                        <span
+                          class="input-group-addon pointer"
+                          class="btn btn-default fa fa-calendar"
+                          ng-click="$ctrl.uiOptions.date.expiry.show = true">
+                          <i class="fa fa-calendar"></i>
                         </span>
                       </div>
                     </div>
@@ -335,8 +335,7 @@
         class="row chr_leave-request-modal__response">
         <div class="col-xs-12 form-horizontal">
           <div class="form-group">
-            <label class="col-xs-4 control-label required-mark">Set status to:
-            </label>
+            <label class="col-xs-4 control-label required-mark">Set status to:</label>
             <div class="col-xs-8">
               <div class="crm_custom-select crm_custom-select--full">
                 <select
