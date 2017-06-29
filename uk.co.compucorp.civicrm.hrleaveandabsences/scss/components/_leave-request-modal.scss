@@ -129,4 +129,17 @@ $row-margin-bottom: 15px;
   .alert {
     margin-bottom: 0 !important;
   }
+
+  /*
+   * This is needed because date picking inputs must be read-only
+   * as they call calendar instead of manual input,
+   * but default bootstrap theme makes them grey and not attractive to a click.
+   * This is one of exceptions when read-only fields should look like regular inputs.
+   */
+  input[uib-datepicker-popup] {
+    box-shadow: none !important;
+    background-color: inherit !important;
+    color: inherit !important;
+    cursor: pointer !important;
+  }
 }
