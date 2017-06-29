@@ -1012,6 +1012,10 @@ define([
        * @return {Promise}
        */
       function loadManagees () {
+        if (this.isMode('edit')) {
+          return;
+        }
+
         if (this.directiveOptions.selectedContactId) {
           return Contact.find(this.directiveOptions.selectedContactId)
             .then(function (contact) {

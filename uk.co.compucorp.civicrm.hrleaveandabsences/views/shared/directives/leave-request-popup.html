@@ -18,7 +18,7 @@
   </div>
   <!-- ng-show is required in model as it was not showing the list of managees for ui-select-choices-->
   <div class="modal-body chr_leave-request-modal__form">
-    <div ng-show="$ctrl.canManage">
+    <div ng-show="$ctrl.canManage && !$ctrl.isMode('edit')">
       <ui-select
         autofocus
         ng-model="$ctrl.request.contact_id"
