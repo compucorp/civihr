@@ -1,43 +1,3 @@
-.chr_leave-report {
-
-  table,
-  .table {
-    @include table-first-row-border();
-
-    margin-bottom: 0;
-
-    > thead {
-
-      > tr {
-
-        // The headings have a different background, different color, and
-        // different padding than the normal cells
-        > th {
-          background: $crm-table-heading-bg;
-          border-bottom: 0;
-          color: $gray-darker;
-          padding: $chr-table-heading-padding;
-          text-transform: capitalize;
-        }
-      }
-    }
-
-    > tbody {
-
-      > tr:first-child > td {
-        border-color: $table-border-color !important;
-      }
-    }
-
-    > tfoot {
-
-      > tr {
-        background: $crm-table-heading-bg;
-      }
-    }
-  }
-}
-
 .chr_leave-report__label {
   color: $gray-darker;
   font-weight: 700;
@@ -63,10 +23,60 @@
 
 .chr_leave-report__table {
 
-  // Fix for a rendering bug in firefox and chrome, where the background
-  // is painted over the cell borders
-  table {
+  table,
+  .table {
+    @include table-first-row-border();
+
+    margin-bottom: 0;
+    // Fix for a rendering bug in firefox and chrome, where the background
+    // is painted over the cell borders
     border-collapse: separate;
+
+    > thead {
+
+      > tr {
+
+        // The headings have a different background and different color than normal cells
+        > th {
+          background: $crm-table-heading-bg;
+          border-bottom: 0;
+          color: $gray-darker;
+          text-transform: capitalize;
+        }
+      }
+    }
+
+    > tbody {
+
+      > tr:first-child > td {
+        border-color: $table-border-color !important;
+      }
+    }
+
+    > tfoot {
+
+      > tr {
+        background: $crm-table-heading-bg;
+      }
+    }
+  }
+
+  // The outer table's headings have a different padding than normal cells
+  > table,
+  > .table {
+
+    > thead {
+
+      > tr {
+
+        > th {
+          $padding-y: nth($chr-table-heading-padding, 1);
+
+          padding-bottom: $padding-y;
+          padding-top: $padding-y;
+        }
+      }
+    }
   }
 }
 
