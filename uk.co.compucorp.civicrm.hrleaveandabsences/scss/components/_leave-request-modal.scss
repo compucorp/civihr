@@ -111,3 +111,22 @@ $row-margin-bottom: 15px;
   display: inline-block;
   margin-top: 7px;
 }
+
+/*
+ * This is a temporary patch which fixes CSS in the modal
+ * @TODO remove this patch when Shoreditch theme is migrated to SSP
+ */
+.chr_leave-request-modal {
+  .btn.ui-select-toggle {
+    padding: 4px 10px !important;
+    text-transform: none !important;
+  }
+
+  .form-group {
+    overflow: inherit !important;
+  }
+
+  .alert {
+    margin-bottom: 0 !important;
+  }
+}

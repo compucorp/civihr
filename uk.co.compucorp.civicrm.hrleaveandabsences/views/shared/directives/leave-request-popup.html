@@ -11,18 +11,19 @@
 </div>
 <crm-loading show="!$ctrl.loading.absenceTypes">
   <div
-    ng-show="$ctrl.isRole('manager') && !$ctrl.isMode('create')"
+    ng-show="$ctrl.canManage && !$ctrl.isMode('create')"
     class="row chr_leave-request-modal__user-info">
     <span class="col-xs-6">{{$ctrl.contactName}}</span>
     <span class="col-xs-6">{{::$ctrl.getStatusFromValue($ctrl.request.status_id).label}}</span>
   </div>
   <!-- ng-show is required in model as it was not showing the list of managees for ui-select-choices-->
   <div class="modal-body chr_leave-request-modal__form">
-    <div ng-show="$ctrl.isRole('manager')">
+    <div ng-show="$ctrl.canManage">
       <ui-select
         autofocus
         ng-model="$ctrl.request.contact_id"
         ng-change="$ctrl.initAfterContactSelection()"
+        ng-disabled="$ctrl.isRole('admin')"
         ng-required="true">
         <ui-select-match placeholder="Search Staff Member" allow-clear>
           <span ng-bind="$select.selected.display_name"></span>
@@ -40,7 +41,7 @@
           <div class="crm_custom-select crm_custom-select--full">
             <select
               ng-hide="$ctrl.absenceTypes.length === 0"
-              ng-disabled="$ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))"
+              ng-disabled="$ctrl.isMode('view') || ($ctrl.canManage && !$ctrl.isMode('create'))"
               name="absenceTypeSelect"
               ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes"
               ng-model="$ctrl.request.type_id"
@@ -68,7 +69,7 @@
                   <hr/>
                   <div
                     class="row chr_leave-request-modal__form-group"
-                    ng-if="$ctrl.isRole('manager')
+                    ng-if="$ctrl.canManage
                       || $ctrl.isLeaveStatus($ctrl.statusNames.awaitingApproval)
                       || $ctrl.isLeaveStatus($ctrl.statusNames.moreInformationRequired)
                       || !$ctrl.request.status_id">
@@ -132,7 +133,7 @@
                   <div
                     class="row"
                     ng-class="{'text-danger': $ctrl.balance.closing < 0}"
-                    ng-if="$ctrl.isRole('manager')
+                    ng-if="$ctrl.canManage
                       || $ctrl.isLeaveStatus($ctrl.statusNames.awaitingApproval)
                       || $ctrl.isLeaveStatus($ctrl.statusNames.moreInformationRequired)
                       || !$ctrl.request.status_id">
@@ -149,10 +150,10 @@
                     <div class="col-xs-4">
                       <span
                         class="chr_leave-request-modal__span-expiry"
-                        ng-if="!$ctrl.isRole('manager')">
+                        ng-if="!$ctrl.canManage">
                         {{$ctrl.request.toil_expiry_date | date: $ctrl.uiOptions.userDateFormat}}
                       </span>
-                      <div ng-if="$ctrl.isRole('manager')" class="input-group">
+                      <div ng-if="$ctrl.canManage" class="input-group">
                         <input
                           type="text"
                           class="form-control"
@@ -163,11 +164,11 @@
                           ng-model="$ctrl.uiOptions.expiryDate"
                           ng-change="$ctrl.updateExpiryDate()"
                           is-open="$ctrl.uiOptions.date.expiry.show"/>
-                        <span class="input-group-btn">
-                          <button
-                            type="button"
-                            class="btn btn-default fa fa-calendar"
-                            ng-click="$ctrl.uiOptions.date.expiry.show = true"></button>
+                        <span
+                          class="input-group-addon pointer"
+                          class="btn btn-default fa fa-calendar"
+                          ng-click="$ctrl.uiOptions.date.expiry.show = true">
+                          <i class="fa fa-calendar"></i>
                         </span>
                       </div>
                     </div>
@@ -330,12 +331,11 @@
         </div>
       </div>
       <div
-        ng-show="$ctrl.isRole('manager')"
+        ng-show="$ctrl.canManage"
         class="row chr_leave-request-modal__response">
         <div class="col-xs-12 form-horizontal">
           <div class="form-group">
-            <label class="col-xs-4 control-label">Set status to:<i class="fa fa-asterisk"></i>
-            </label>
+            <label class="col-xs-4 control-label required-mark">Set status to:</label>
             <div class="col-xs-8">
               <div class="crm_custom-select crm_custom-select--full">
                 <select
