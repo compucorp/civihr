@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <button type="button" class="close" ng-click="$ctrl.cancel()">
+  <button type="button" class="close" ng-click="$ctrl.dismissModal()">
     <span aria-hidden="true">&times;</span>
     <span class="sr-only">Close</span>
   </button>
@@ -383,9 +383,15 @@
       <button
         type="button"
         class="btn btn-primary pull-left"
-        ng-click="$ctrl.cancel()">
+        ng-click="$ctrl.dismissModal()">
         Back
       </button>
+      <a
+        class="text-danger pull-left pointer chr_leave-request-modal__delete"
+        ng-if="$ctrl.isRole('admin') && $ctrl.directiveOptions.leaveRequest.id"
+        ng-click="$ctrl.deleteLeaveRequest()">
+        <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+      </a>
       <button
         type="submit"
         class="btn btn-primary"

@@ -17,10 +17,10 @@ define([
   'use strict';
 
   controllers.controller('RequestCtrl', [
-    '$log', '$q', '$rootScope', 'Contact', 'AbsencePeriod', 'AbsenceType',
+    '$log', '$q', '$rootScope', 'Contact', 'dialog', 'AbsencePeriod', 'AbsenceType',
     'api.optionGroup', 'Calendar', 'Entitlement', 'HR_settings',
     'LeaveRequest', 'PublicHoliday', 'shared-settings',
-    function ($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType,
+    function ($log, $q, $rootScope, Contact, dialog, AbsencePeriod, AbsenceType,
       OptionGroup, Calendar, Entitlement, HRSettings,
       LeaveRequest, PublicHoliday, sharedSettings
     ) {
@@ -142,15 +142,6 @@ define([
       };
 
       /**
-       * When user cancels the model dialog
-       */
-      this.cancel = function () {
-        this.$modalInstance.dismiss({
-          $value: 'cancel'
-        });
-      };
-
-      /**
        * Calculate change in balance, it updates local balance variables.
        *
        * @return {Promise} empty promise if all required params are not set otherwise promise from server
@@ -215,6 +206,35 @@ define([
       */
       this.closeAlert = function () {
         this.errors = [];
+      };
+
+      /**
+       * Deletes the leave request
+       */
+      this.deleteLeaveRequest = function () {
+        dialog.open({
+          title: 'Confirm Deletion?',
+          copyCancel: 'Cancel',
+          copyConfirm: 'Confirm',
+          classConfirm: 'btn-danger',
+          msg: 'This cannot be undone',
+          onConfirm: function () {
+            return this.directiveOptions.leaveRequest.delete()
+              .then(function () {
+                this.dismissModal();
+                $rootScope.$emit('LeaveRequest::deleted', this.directiveOptions.leaveRequest);
+              }.bind(this));
+          }.bind(this)
+        });
+      };
+
+      /**
+       * Close the modal
+       */
+      this.dismissModal = function () {
+        this.$modalInstance.dismiss({
+          $value: 'cancel'
+        });
       };
 
       /**
