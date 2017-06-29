@@ -63,8 +63,22 @@ define([
       var statusKey = vm.leaveRequestStatuses[leaveRequest.status_id].name;
       var actions = statusKey ? actionMatrix[statusKey] : [];
 
-      actions = !canLeaveRequestBeCancelled(leaveRequest) ? _.without(actions, 'cancel') : actions;
-      actions = role !== 'admin' ? _.without(actions, 'delete') : actions;
+      if (!canLeaveRequestBeCancelled(leaveRequest)) {
+        actions = _.without(actions, 'cancel');
+      }
+
+      // Replace verbs if the role "admin"
+      // TODO: The logic is not really elegant, but the whole "actions" bit
+      // (html + js) should be moved into its own component
+      if (role === 'admin') {
+        if (_.includes(actions, 'edit')) {
+          actions = actions.join(',').replace('edit', 'respond').split(',');
+        } else if (_.includes(actions, 'respond')) {
+          actions = actions.join(',').replace('respond', 'edit').split(',');
+        }
+      } else {
+        actions = _.without(actions, 'delete');
+      }
 
       return actions;
     };

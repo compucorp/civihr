@@ -658,8 +658,8 @@
               actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
             });
 
-            it('shows the "edit", "cancel" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['edit', 'cancel', 'delete']);
+            it('shows the "respond", "cancel" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['respond', 'cancel', 'delete']);
             });
           });
         });
@@ -682,8 +682,8 @@
               actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
             });
 
-            it('shows the "respond", "cancel" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['respond', 'cancel', 'delete']);
+            it('shows the "edit", "cancel" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['edit', 'cancel', 'delete']);
             });
           });
         });
