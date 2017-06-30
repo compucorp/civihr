@@ -1,6 +1,21 @@
 {
   "scenarios": [
     {
+      "label": "Absence / Report",
+      "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
+      "onReadyScript": "contact-summary/absence/tab-report"
+    },
+    {
+      "label": "Absence / Report / Open Section",
+      "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
+      "onReadyScript": "contact-summary/absence/tab-report-open-section"
+    },
+    {
+      "label": "Absence / Report / Actions",
+      "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
+      "onReadyScript": "contact-summary/absence/tab-report-actions"
+    },
+    {
       "label": "Absence / Calendar / Current Month",
       "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
       "onReadyScript": "contact-summary/absence/tab-calendar"
