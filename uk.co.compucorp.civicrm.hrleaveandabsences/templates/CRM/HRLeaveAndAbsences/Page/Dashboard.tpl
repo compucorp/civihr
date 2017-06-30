@@ -14,7 +14,6 @@
       </ul>
     </div>
   </div>
-
   <ul class="nav nav-pills nav-stacked chr_admin-dashboard_side-nav">
     <li class="active"><a href="#">Leave Requests</a></li>
     <li><a href="#">Calendar</a></li>
