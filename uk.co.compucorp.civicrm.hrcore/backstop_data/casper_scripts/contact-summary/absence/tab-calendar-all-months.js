@@ -1,7 +1,10 @@
 'use strict';
 
-var page = require('../../../page-objects/absence-tabs/calendar');
+var absenceTab = require('../../../page-objects/tabs/absence');
 
 module.exports = function (casper) {
-  page.init(casper).showAllMonths();
+  absenceTab.init(casper).openSubTab('calendar')
+    .then(function (calendarTab) {
+      calendarTab.showAllMonths();
+    });
 };

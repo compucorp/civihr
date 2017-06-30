@@ -1,7 +1,7 @@
 'use strict';
 
-var page = require('../../../page-objects/absence-tabs/entitlements');
+var absenceTab = require('../../../page-objects/tabs/absence');
 
 module.exports = function (casper) {
-  page.init(casper).waitForReady();
+  absenceTab.init(casper).openSubTab('entitlements');
 };

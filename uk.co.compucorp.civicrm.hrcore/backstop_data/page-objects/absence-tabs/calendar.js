@@ -1,14 +1,11 @@
+var _ = require('lodash');
+var tab = require('../tabs/tab');
 var sspMyLeaveCalendar = require('../ssp-leave-absences-my-leave-calendar');
 
 module.exports = (function () {
-  return sspMyLeaveCalendar.extend({
-    /**
-     * Wait for the page to be ready
-     */
-    waitForReady: function () {
-      var casper = this.casper;
-      casper.click('[data-tabname="calendar"] > a');
-      sspMyLeaveCalendar.waitForReady.call(this);
-    }
-  });
+  return tab.extend({
+    readySelector: '.chr_leave-calendar__month-body',
+    tabTitle: 'Calendar'
+  })
+  .extend(_.omit(sspMyLeaveCalendar, 'waitForReady'));
 })();

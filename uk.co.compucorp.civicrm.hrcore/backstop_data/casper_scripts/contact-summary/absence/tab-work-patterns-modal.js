@@ -1,7 +1,10 @@
 'use strict';
 
-var page = require('../../../page-objects/absence-tabs/work-patterns');
+var absenceTab = require('../../../page-objects/tabs/absence');
 
 module.exports = function (casper) {
-  page.init(casper).showModal();
+  absenceTab.init(casper).openSubTab('work-patterns')
+    .then(function (workPatternsTab) {
+      workPatternsTab.showModal();
+    });
 };
