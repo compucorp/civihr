@@ -1,4 +1,5 @@
 /* eslint-env amd, jasmine */
+
 (function (CRM) {
   define([
     'common/angular',
@@ -24,15 +25,15 @@
       var contactId = CRM.vars.leaveAndAbsences.contactId;
       var isUserAdmin = false;
 
-      var $compile, $q, $log, $provide, $rootScope, component, controller;
+      var $componentController, $q, $log, $provide, $rootScope, controller;
       var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, dialog, sharedSettings;
 
       beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
         $provide = _$provide_;
       }));
 
-      beforeEach(inject(function (_$compile_, _$q_, _$log_, _$rootScope_) {
-        $compile = _$compile_;
+      beforeEach(inject(function (_$componentController_, _$q_, _$log_, _$rootScope_) {
+        $componentController = _$componentController_;
         $q = _$q_;
         $log = _$log_;
         $rootScope = _$rootScope_;
@@ -54,7 +55,7 @@
         HRSettings = HRSettingsMock;
       }]));
 
-      beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _dialog_) {
+      beforeEach(inject(function ($componentController, _AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _dialog_) {
         AbsencePeriod = _AbsencePeriod_;
         AbsenceType = _AbsenceType_;
         Entitlement = _Entitlement_;
@@ -92,11 +93,6 @@
           expect(Object.values(controller.sections).every(function (section) {
             return section.open === false;
           })).toBe(true);
-        });
-
-        it('contains the expected markup', function () {
-          expect(component.find('.chr_leave-report').length).toBe(1);
-          expect(component.find('.chr_leave-report__table').length).toBe(3);
         });
 
         describe('data loading', function () {
@@ -851,9 +847,7 @@
          */
         function setRoleToAdmin (isAdmin) {
           isUserAdmin = !!isAdmin;
-
           compileComponent();
-          $rootScope.$digest();
         }
 
         /**
@@ -1173,13 +1167,8 @@
       }
 
       function compileComponent () {
-        var $scope = $rootScope.$new();
-
-        component = angular.element('<staff-leave-report contact-id="' + contactId + '"></staff-leave-report>');
-        $compile(component)($scope);
-        $scope.$digest();
-
-        controller = component.controller('staffLeaveReport');
+        controller = $componentController('staffLeaveReport', null, { contactId: contactId });
+        $rootScope.$digest();
       }
 
       /**

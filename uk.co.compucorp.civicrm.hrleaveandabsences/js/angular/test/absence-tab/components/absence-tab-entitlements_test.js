@@ -16,7 +16,7 @@ define([
   'use strict';
 
   describe('absenceTabEntitlements', function () {
-    var $compile, $log, $rootScope, component, controller, $provide;
+    var $componentController, $log, $rootScope, controller, $provide;
 
     beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -34,8 +34,8 @@ define([
         $provide.value('api.contact', _ContactAPIMock_);
       }]));
 
-    beforeEach(inject(function (_$compile_, _$log_, _$rootScope_) {
-      $compile = _$compile_;
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_) {
+      $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
 
@@ -53,14 +53,8 @@ define([
     });
 
     function compileComponent () {
-      var $scope = $rootScope.$new();
-      var contactId = '202';
-
-      component = angular.element('<absence-tab-entitlements contact-id="' + contactId + '"></absence-tab-entitlements>');
-      $compile(component)($scope);
-      $scope.$digest();
-
-      controller = component.controller('absenceTabEntitlements');
+      controller = $componentController('absenceTabEntitlements', null, { contactId: '202' });
+      $rootScope.$digest();
     }
   });
 });

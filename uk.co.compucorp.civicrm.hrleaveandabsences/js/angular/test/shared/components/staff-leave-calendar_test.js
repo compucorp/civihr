@@ -1,5 +1,4 @@
 /* eslint-env amd, jasmine */
-/* global CRM, inject */
 
 (function (CRM) {
   define([
@@ -24,7 +23,7 @@
     'use strict';
 
     describe('sharedLeaveCalendar', function () {
-      var $compile, $log, $q, $rootScope, component, controller, $provide,
+      var $componentController, $log, $q, $rootScope, controller, $provide,
         AbsencePeriod, AbsenceType, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
@@ -32,7 +31,7 @@
       }));
 
       beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, LeaveRequestAPIMock,
-                                  PublicHolidayAPIMock, WorkPatternAPIMock) {
+        PublicHolidayAPIMock, WorkPatternAPIMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
@@ -40,11 +39,11 @@
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
 
-      beforeEach(inject(['$compile', '$log', '$q', '$rootScope', 'AbsencePeriod', 'AbsenceType', 'OptionGroup', 'OptionGroupAPIMock',
+      beforeEach(inject(['$componentController', '$log', '$q', '$rootScope', 'AbsencePeriod', 'AbsenceType', 'OptionGroup', 'OptionGroupAPIMock',
         'Calendar', 'CalendarInstance', 'LeaveRequest', 'shared-settings',
-        function (_$compile_, _$log_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_, _OptionGroup_, _OptionGroupAPIMock_,
-                  _Calendar_, _CalendarInstance_, _LeaveRequest_) {
-          $compile = _$compile_;
+        function (_$componentController_, _$log_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_, _OptionGroup_, _OptionGroupAPIMock_,
+          _Calendar_, _CalendarInstance_, _LeaveRequest_) {
+          $componentController = _$componentController_;
           $log = _$log_;
           $q = _$q_;
           $rootScope = _$rootScope_;
@@ -57,11 +56,9 @@
           OptionGroupAPIMock = _OptionGroupAPIMock_;
 
           spyOn($log, 'debug');
-
           spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
             return OptionGroupAPIMock.valuesOf(name);
           });
-
           spyOn(AbsencePeriod, 'all').and.callFake(function () {
             var data = absencePeriodData.all().values;
             // Set 2016 as current period, because Calendar loads data only for the current period initially,
@@ -72,6 +69,7 @@
           });
           spyOn(AbsenceType, 'all').and.callThrough();
           spyOn(LeaveRequest, 'all').and.callThrough();
+
           compileComponent();
         }]));
 
@@ -356,14 +354,8 @@
       });
 
       function compileComponent () {
-        var $scope = $rootScope.$new();
-        var contactId = CRM.vars.leaveAndAbsences.contactId;
-
-        component = angular.element('<staff-leave-calendar contact-id="' + contactId + '"></staff-leave-calendar>');
-        $compile(component)($scope);
-        $scope.$digest();
-
-        controller = component.controller('staffLeaveCalendar');
+        controller = $componentController('staffLeaveCalendar', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
+        $rootScope.$digest();
       }
 
       function getDate (dateStr) {

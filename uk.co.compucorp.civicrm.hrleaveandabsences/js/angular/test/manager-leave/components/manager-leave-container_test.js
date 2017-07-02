@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 (function (CRM) {
   define([
     'common/angular',
@@ -8,11 +10,11 @@
     'use strict';
 
     describe('managerLeaveContainer', function () {
-      var $compile, $log, $rootScope, component, controller;
+      var $componentController, $log, $rootScope;
 
       beforeEach(module('leave-absences.templates', 'manager-leave'));
-      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_) {
-        $compile = _$compile_;
+      beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_) {
+        $componentController = _$componentController_;
         $log = _$log_;
         $rootScope = _$rootScope_;
         spyOn($log, 'debug');
@@ -24,20 +26,10 @@
         expect($log.debug).toHaveBeenCalled();
       });
 
-      it('is contains the expected markup', function () {
-        expect(component.find('div.manager-leave-page').length).toBe(1);
-      });
-
-      function compileComponent() {
-        var $scope = $rootScope.$new();
-        var contactId = CRM.vars.leaveAndAbsences.contactId;
-
-        component = angular.element('<manager-leave-container contact-id="' + contactId + '"></manager-leave-container>');
-        $compile(component)($scope);
-        $scope.$digest();
-
-        controller = component.controller('managerLeaveContainer');
+      function compileComponent () {
+        $componentController('managerLeaveContainer', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
+        $rootScope.$digest();
       }
     });
-  })
+  });
 })(CRM);

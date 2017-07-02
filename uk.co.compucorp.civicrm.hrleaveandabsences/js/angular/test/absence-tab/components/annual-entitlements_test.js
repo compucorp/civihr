@@ -19,7 +19,7 @@ define([
 
   describe('annualEntitlements', function () {
     var contactId = 202;
-    var $compile, $log, $rootScope, controller, $provide, ContactAPIMock;
+    var $componentController, $log, $rootScope, controller, $provide, ContactAPIMock;
 
     beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -38,8 +38,8 @@ define([
         ContactAPIMock = _ContactAPIMock_;
       }]));
 
-    beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _Contact_, _AbsenceType_, _AbsencePeriod_, _Entitlement_) {
-      $compile = _$compile_;
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _Contact_, _AbsenceType_, _AbsencePeriod_, _Entitlement_) {
+      $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
 
@@ -122,13 +122,8 @@ define([
      * Compiles the controller
      */
     function compileComponent () {
-      var $scope = $rootScope.$new();
-      var component = angular.element('<annual-entitlements contact-id="' + contactId + '"></annual-entitlements>');
-
-      $compile(component)($scope);
-      $scope.$digest();
-
-      controller = component.controller('annualEntitlements');
+      controller = $componentController('annualEntitlements', null, { contactId: contactId });
+      $rootScope.$digest();
     }
 
     /**

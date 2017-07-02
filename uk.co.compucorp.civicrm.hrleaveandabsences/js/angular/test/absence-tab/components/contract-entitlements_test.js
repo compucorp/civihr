@@ -15,7 +15,7 @@ define([
 
   describe('contactEntitlements', function () {
     var contactId = 202;
-    var $compile, $log, $rootScope, controller, $provide,
+    var $componentController, $log, $rootScope, controller, $provide,
       ContractAPIMock, HRSettingsMock;
 
     beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
@@ -33,8 +33,8 @@ define([
       HRSettingsMock = _HRSettingsMock_;
     }]));
 
-    beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _Contract_) {
-      $compile = _$compile_;
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _Contract_) {
+      $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
 
@@ -97,13 +97,8 @@ define([
      * Compiles the controller
      */
     function compileComponent () {
-      var $scope = $rootScope.$new();
-      var component = angular.element('<contract-entitlements contact-id="' + contactId + '"></contract-entitlements>');
-
-      $compile(component)($scope);
-      $scope.$digest();
-
-      controller = component.controller('contractEntitlements');
+      controller = $componentController('contractEntitlements', null, { contactId: contactId });
+      $rootScope.$digest();
     }
 
     /**

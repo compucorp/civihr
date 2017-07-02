@@ -12,7 +12,7 @@
     'use strict';
 
     describe('absenceTabWorkPatterns', function () {
-      var $compile, $log, $q, $rootScope, $provide, component, controller, contactId,
+      var $componentController, $log, $q, $rootScope, $provide, controller,
         OptionGroup, WorkPatternAPI;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'absence-tab', function (_$provide_) {
@@ -22,8 +22,8 @@
       beforeEach(inject(function (WorkPatternAPIMock) {
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
-      beforeEach(inject(function (_$compile_, _$log_, _$q_, _$rootScope_, _OptionGroup_, _WorkPatternAPI_) {
-        $compile = _$compile_;
+      beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _OptionGroup_, _WorkPatternAPI_) {
+        $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
@@ -31,10 +31,10 @@
 
         WorkPatternAPI = _WorkPatternAPI_;
 
+        spyOn($log, 'debug');
         spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
           return $q.resolve(optionGroupMock.getCollection('hrjc_revision_change_reason'));
         });
-        spyOn($log, 'debug');
 
         compileComponent();
       }));
@@ -55,7 +55,6 @@
 
       describe('closeModal()', function () {
         beforeEach(function () {
-          spyOn(controller, 'dismiss');
           controller.closeModal();
         });
 
@@ -134,14 +133,11 @@
       });
 
       function compileComponent () {
-        var $scope = $rootScope.$new();
-        contactId = CRM.vars.leaveAndAbsences.contactId;
-
-        component = angular.element('<absence-tab-custom-work-pattern-modal contact-id="' + contactId + '"></absence-tab-custom-work-pattern-modal>');
-        $compile(component)($scope);
-        $scope.$digest();
-
-        controller = component.controller('absenceTabCustomWorkPatternModal');
+        controller = $componentController('absenceTabCustomWorkPatternModal', null, {
+          contactId: CRM.vars.leaveAndAbsences.contactId,
+          dismiss: jasmine.createSpy('dismiss')
+        });
+        $rootScope.$digest();
       }
     });
   });

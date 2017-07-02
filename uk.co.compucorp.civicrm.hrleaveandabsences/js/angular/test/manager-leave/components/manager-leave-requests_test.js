@@ -18,22 +18,9 @@
     'use strict';
 
     describe('managerLeaveReport', function () {
-      var $compile,
-        $log,
-        $q,
-        $provide,
-        $rootScope,
-        component,
-        controller,
-        OptionGroup,
-        AbsenceType,
-        AbsencePeriod,
-        LeaveRequest,
-        LeaveRequestInstance,
-        Contact,
-        ContactAPIMock,
-        sharedSettings,
-        OptionGroupAPIMock;
+      var $componentController, $log, $q, $provide, $rootScope, controller,
+        OptionGroup, AbsenceType, AbsencePeriod, LeaveRequest, LeaveRequestInstance,
+        Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock;
 
       beforeEach(module('leave-absences.templates', 'manager-leave',
         'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
@@ -53,9 +40,10 @@
       }]));
 
       beforeEach(inject(function (
-        _$compile_, _$log_, _$rootScope_, _$q_, _OptionGroup_, _OptionGroupAPIMock_,
-        _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_, _LeaveRequestInstance_) {
-        $compile = _$compile_;
+        _$componentController_, _$log_, _$rootScope_, _$q_, _OptionGroup_,
+        _OptionGroupAPIMock_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_,
+        _Contact_, _LeaveRequestInstance_) {
+        $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
@@ -70,14 +58,11 @@
 
       beforeEach(function () {
         spyOn($log, 'debug');
-
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
-
         spyOn(Contact, 'leaveManagees').and.callFake(function () {
           return ContactAPIMock.leaveManagees();
         });
-
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
           return OptionGroupAPIMock.valuesOf(name);
         });
@@ -857,14 +842,8 @@
       });
 
       function compileComponent () {
-        var $scope = $rootScope.$new();
-        var contactId = CRM.vars.leaveAndAbsences.contactId;
-
-        component = angular.element('<manager-leave-requests contact-id="' + contactId + '"></manager-leave-requests>');
-        $compile(component)($scope);
-        $scope.$digest();
-
-        controller = component.controller('managerLeaveRequests');
+        controller = $componentController('managerLeaveRequests', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
+        $rootScope.$digest();
       }
     });
   });

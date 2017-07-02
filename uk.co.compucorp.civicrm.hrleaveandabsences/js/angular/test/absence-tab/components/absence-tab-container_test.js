@@ -9,11 +9,11 @@
     'use strict';
 
     describe('absenceTabContainer', function () {
-      var $compile, $log, $rootScope, $templateCache, settings, component;
+      var $componentController, $log, $rootScope, $templateCache, settings;
 
       beforeEach(module('leave-absences.templates', 'absence-tab'));
-      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$templateCache_, _settings_) {
-        $compile = _$compile_;
+      beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _$templateCache_, _settings_) {
+        $componentController = _$componentController_;
         $log = _$log_;
         $rootScope = _$rootScope_;
         $templateCache = _$templateCache_;
@@ -28,15 +28,10 @@
       });
 
       function compileComponent () {
-        var $scope = $rootScope.$new();
-
         disableUibTab();
 
-        component = angular.element('<absence-tab-container></absence-tab-container>');
-        $compile(component)($scope);
-        $scope.$digest();
-
-        component.controller('absenceTabContainer');
+        $componentController('absenceTabContainer');
+        $rootScope.$digest();
       }
 
       /**
