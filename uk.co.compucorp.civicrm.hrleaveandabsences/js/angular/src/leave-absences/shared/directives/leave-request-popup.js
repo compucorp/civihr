@@ -46,7 +46,7 @@ define([
           element.on('click', function (event) {
             $modal.open({
               appendTo: $rootElement.children().eq(0),
-              templateUrl: settings.sharedPathTpl + 'directives/leave-request-popup.html',
+              templateUrl: settings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup.html',
               animation: scope.animationsEnabled,
               controller: controller,
               controllerAs: '$ctrl',
