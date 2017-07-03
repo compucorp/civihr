@@ -1,33 +1,35 @@
-.page-civicrm-leaveandabsences-dashboard {
-  h1.page-title,
-  #branding {
-    display: none !important;
-  }
+@at-root {
+  .page-civicrm-leaveandabsences-dashboard {
+    h1.page-title,
+    #branding {
+      display: none !important;
+    }
 
-  #page {
-    margin: 0;
-    padding: 0;
-  }
-}
-
-.admin-dashboard-page {
-  .crm_page__topbar {
-    height: 65px;
-
-    .dropdown-toggle {
-     margin: 15px 30px 0 0 !important;
-
-      +ul {
-        margin-right: 30px !important;
-      }
+    #page {
+      margin: 0;
+      padding: 0;
     }
   }
 
-  .chr_admin-dashboard_side-nav {
-    overflow: hidden;
+  .admin-dashboard-page {
+    .crm_page__topbar {
+      height: 65px;
 
-    ul {
-      max-width: 230px;
+      .dropdown-toggle {
+        margin: 15px 30px 0 0 !important;
+
+        +ul {
+          margin-right: 30px !important;
+        }
+      }
+    }
+
+    .chr_admin-dashboard_side-nav {
+      overflow: hidden;
+
+      ul {
+        max-width: 230px;
+      }
     }
   }
 }
