@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/manager-leave/modules/components'
 ], function (components) {
@@ -11,6 +13,7 @@ define([
     controller: ['$log', '$rootScope', function ($log, $rootScope) {
       $log.debug('Component: manager-leave-container');
 
+      // TODO use `checkPermissions` service in the individual components instead
       $rootScope.role = 'manager';
 
       var vm = Object.create(this);

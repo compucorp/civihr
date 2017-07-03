@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/my-leave/modules/components'
 ], function (components) {
@@ -12,6 +14,7 @@ define([
     controller: ['$log', '$rootScope', '$scope', '$uibModal', 'settings', function ($log, $rootScope, $scope, $modal, settings) {
       $log.debug('Component: my-leave-container');
 
+      // TODO use `checkPermissions` service in the individual components instead
       $rootScope.role = 'staff';
 
       var vm = {};
@@ -21,15 +24,15 @@ define([
         showDatePickerFrom: false,
         showDatePickerTo: false,
         isChangeExpanded: false,
-        selectedResponse: "1",
+        selectedResponse: '1',
         isAdmin: false
       };
 
       vm.showModal = function () {
         $modal.open({
           templateUrl: settings.pathTpl + 'components/my-leave-request.html',
-          //TODO The controller needs to be moved a separate file when implementing the logic
-          controller: ['leaveRequest', '$uibModalInstance', function(leaveRequest, modalInstance){
+          // TODO The controller needs to be moved a separate file when implementing the logic
+          controller: ['leaveRequest', '$uibModalInstance', function (leaveRequest, modalInstance) {
             var vm = {};
 
             vm.leaveRequest = leaveRequest;
