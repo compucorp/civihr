@@ -155,6 +155,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
                 [
                   'title' => ts('Absence Date'),
                   'required' => TRUE,
+                  'type' => CRM_Utils_Type::T_DATE,
                 ],
               'duration' =>
                 [
@@ -512,7 +513,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
     // 1. fill temp table with target results
     $this->buildACLClause(array('civicrm_contact_target'));
     $this->select('target');
-
+    $this->_columnHeaders = self::alterColumns($this->_columnHeaders);
     $this->assign('columnHeaders', $this->_columnHeaders);
 
     $this->from('target');
@@ -583,6 +584,30 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
     $this->endPostProcess($rows);
   }
 
+  function alterColumns($columnHeaders) {
+    $inserted = FALSE;
+    foreach ($columnHeaders as $key => $value) {
+      if (!$inserted && $key === 'civicrm_activity_status_id') {
+        // Add Special headers
+        $newColumnHeaders['start_date'] = [
+          'type' => CRM_Utils_Type::T_DATE,
+          'title' => 'Start Date',
+        ];
+        $newColumnHeaders['end_date'] = [
+          'type' => CRM_Utils_Type::T_DATE,
+          'title' => 'End Date',
+        ];
+        $newColumnHeaders['total_qty'] = [
+          'title' => 'Total Quantity',
+        ];
+        $inserted = TRUE;
+      }
+
+      $newColumnHeaders[$key] = $value;
+    }
+
+    return $newColumnHeaders;
+  }
 
   function alterDisplay(&$rows) {
     // custom code to alter rows
@@ -592,19 +617,39 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
     }
 
     if (!empty($rows)) {
-      $IN  = 'activity_type_id IN('. implode(', ', array_keys($this->activityTypes)) .')';
+      $IN = 'activity_type_id IN('. implode(', ', array_keys($this->activityTypes)) .')';
       $sql = "SELECT id, source_record_id, activity_type_id, details FROM civicrm_activity
         WHERE source_record_id IS NULL AND $IN";
 
-      $data = array();
-      $dao= CRM_Core_DAO::executeQuery($sql);
+      $data = [];
+      $dao = CRM_Core_DAO::executeQuery($sql);
       while ($dao->fetch()) {
         $data[$dao->id]['absence_type_id'] = $dao->activity_type_id;
         $data[$dao->id]['details'] = $dao->details;
       }
+
+      $IN = 'activity_type_id IN('. implode(', ', array_keys($this->absenceActivityType)) .')';
+      $sql = "SELECT source_record_id, SUM(duration) as total_qty, 
+              MIN(activity_date_time) as start_date, MAX(activity_date_time) as end_date 
+              FROM civicrm_activity
+              WHERE source_record_id IS NOT NULL AND $IN GROUP BY source_record_id";
+
+      $result = [];
+      $dao = CRM_Core_DAO::executeQuery($sql);
+      while ($dao->fetch()) {
+        $result[$dao->source_record_id]['start_date'] = $dao->start_date;
+        $result[$dao->source_record_id]['end_date'] = $dao->end_date;
+        $result[$dao->source_record_id]['total_qty'] = $dao->total_qty;
+      }
     }
 
     foreach ($rows as $rowNum => $row) {
+      if (array_key_exists('civicrm_activity_source_record_id', $row)) {
+        $rows[$rowNum]['start_date'] = $result[$row['civicrm_activity_source_record_id']]['start_date'];
+        $rows[$rowNum]['end_date'] = $result[$row['civicrm_activity_source_record_id']]['end_date'];
+        $rows[$rowNum]['total_qty'] = $result[$row['civicrm_activity_source_record_id']]['total_qty']/480;
+      }
+
       if (array_key_exists('civicrm_activity_activity_type_id', $row)) {
         if ($value = $row['civicrm_activity_activity_type_id']) {
           $activityTypeID = $data[$row['civicrm_activity_source_record_id']]['absence_type_id'];
