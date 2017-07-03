@@ -1,9 +1,16 @@
-@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/overrides/variables";
-@import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/variables";
-@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/mixins/utility";
+@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/mixins/ALL";
+@import "overrides/variables";
+@import "mixins/*";
 
-// @file
-// SASS partials import
-// -----------------------------------------------------------------------------
-@import "pages/**/*";
-@import "components/**/*";
+#bootstrap-theme {
+  @import "overrides/style/*";
+  @import "components/*";
+  @import "pages/*";
+}
+
+// The bootstrap dropdown is attached to the <body> outside of the #bootstrap-theme
+// namespace. Hence unfortunately the styles for the dropdowns need
+// to be available out of the namespace as well
+@import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/mixins/ALL";
+@import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/_dropdowns.scss";
+@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/overrides/style/_dropdowns.scss";

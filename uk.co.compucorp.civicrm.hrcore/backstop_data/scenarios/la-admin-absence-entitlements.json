@@ -1,9 +1,0 @@
-{
-  "scenarios": [
-    {
-      "label": "Contact Absence / Entitlements",
-      "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-entitlements"
-    }
-  ]
-}

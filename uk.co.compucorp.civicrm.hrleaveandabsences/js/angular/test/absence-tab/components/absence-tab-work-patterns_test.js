@@ -12,8 +12,8 @@
     'use strict';
 
     describe('absenceTabWorkPatterns', function () {
-      var $compile, $log, $q, $rootScope, $uibModal, $provide, component, controller, contactId,
-        OptionGroup, dialog, WorkPattern;
+      var $componentController, $log, $q, $rootScope, $uibModal, $provide,
+        controller, contactId, OptionGroup, dialog, WorkPattern;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'absence-tab', function (_$provide_) {
         $provide = _$provide_;
@@ -22,8 +22,8 @@
       beforeEach(inject(function (WorkPatternAPIMock) {
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
-      beforeEach(inject(function (_$compile_, _$log_, _$q_, _$rootScope_, _$uibModal_, _dialog_, _OptionGroup_, _WorkPattern_) {
-        $compile = _$compile_;
+      beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _$uibModal_, _dialog_, _OptionGroup_, _WorkPattern_) {
+        $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
@@ -129,14 +129,10 @@
       });
 
       function compileComponent () {
-        var $scope = $rootScope.$new();
         contactId = CRM.vars.leaveAndAbsences.contactId;
+        controller = $componentController('absenceTabWorkPatterns', null, { contactId: contactId });
 
-        component = angular.element('<absence-tab-work-patterns contact-id="' + contactId + '"></absence-tab-work-patterns>');
-        $compile(component)($scope);
-        $scope.$digest();
-
-        controller = component.controller('absenceTabWorkPatterns');
+        $rootScope.$digest();
       }
     });
   });

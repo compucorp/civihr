@@ -1,4 +1,5 @@
 /* eslint-env amd, jasmine */
+
 (function (CRM) {
   define([
     'common/angular',
@@ -20,13 +21,24 @@
   ], function (angular, _, moment, helper, absencePeriodData, absenceTypeData, entitlementMock, leaveRequestMock, optionGroupMock) {
     'use strict';
 
-    describe('myLeaveReport', function () {
+    describe('staffLeaveReport', function () {
       var contactId = CRM.vars.leaveAndAbsences.contactId;
-      var $compile, $q, $log, $provide, $rootScope, component, controller;
+      var isUserAdmin = false;
+
+      var $componentController, $q, $log, $provide, $rootScope, controller;
       var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, dialog, sharedSettings;
 
       beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
         $provide = _$provide_;
+      }));
+
+      beforeEach(inject(function (_$componentController_, _$q_, _$log_, _$rootScope_) {
+        $componentController = _$componentController_;
+        $q = _$q_;
+        $log = _$log_;
+        $rootScope = _$rootScope_;
+
+        spyOn($log, 'debug');
       }));
 
       beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock) {
@@ -34,6 +46,7 @@
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('EntitlementAPI', EntitlementAPIMock);
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
+        $provide.value('checkPermissions', function () { return $q.resolve(isUserAdmin); });
       }));
 
       beforeEach(inject(['shared-settings', 'HR_settingsMock', function (_sharedSettings_, HRSettingsMock) {
@@ -42,16 +55,7 @@
         HRSettings = HRSettingsMock;
       }]));
 
-      beforeEach(inject(function (_$compile_, _$q_, _$log_, _$rootScope_) {
-        $compile = _$compile_;
-        $q = _$q_;
-        $log = _$log_;
-        $rootScope = _$rootScope_;
-
-        spyOn($log, 'debug');
-      }));
-
-      beforeEach(inject(function (_AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _dialog_) {
+      beforeEach(inject(function ($componentController, _AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _dialog_) {
         AbsencePeriod = _AbsencePeriod_;
         AbsenceType = _AbsenceType_;
         Entitlement = _Entitlement_;
@@ -89,11 +93,6 @@
           expect(Object.values(controller.sections).every(function (section) {
             return section.open === false;
           })).toBe(true);
-        });
-
-        it('contains the expected markup', function () {
-          expect(component.find('.chr_leave-report').length).toBe(1);
-          expect(component.find('.chr_leave-report__table').length).toBe(3);
         });
 
         describe('data loading', function () {
@@ -629,57 +628,227 @@
       });
 
       describe('action matrix for a leave request', function () {
-        var actionMatrix;
+        var actionMatrix, leaveRequestData;
+
+        beforeEach(function () {
+          leaveRequestData = _.assign(leaveRequestMock.all().values[0], {
+            type_id: absenceTypeData.findByKeyValue('allow_request_cancelation', '2').id
+          });
+        });
 
         describe('status: awaiting approval', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+          describe('when the user is not a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+            });
+
+            it('shows the "edit" and "cancel" actions', function () {
+              expect(actionMatrix).toEqual(['edit', 'cancel']);
+            });
           });
 
-          it('shows the "edit" and "cancel" actions', function () {
-            expect(actionMatrix).toEqual(['edit', 'cancel']);
+          describe('when the user is a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(true);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+            });
+
+            it('shows the "respond", "cancel" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['respond', 'cancel', 'delete']);
+            });
           });
         });
 
         describe('status: more information required', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
+          describe('when the user is not a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
+            });
+
+            it('shows the "respond" and "cancel" actions', function () {
+              expect(actionMatrix).toEqual(['respond', 'cancel']);
+            });
           });
 
-          it('shows the "respond" and "cancel" actions', function () {
-            expect(actionMatrix).toEqual(['respond', 'cancel']);
+          describe('when the user is a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(true);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
+            });
+
+            it('shows the "edit", "cancel" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['edit', 'cancel', 'delete']);
+            });
           });
         });
 
         describe('status: approved', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
+          describe('when the user is not a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
+            });
+
+            it('shows the "cancel" and the "view" actions', function () {
+              expect(actionMatrix).toEqual(['view', 'cancel']);
+            });
           });
 
-          it('shows the "cancel" and the "view" action', function () {
-            expect(actionMatrix).toEqual(['view', 'cancel']);
+          describe('when the user is a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(true);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
+            });
+
+            it('shows the "cancel", "view" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['view', 'cancel', 'delete']);
+            });
           });
         });
 
         describe('status: cancelled', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
+          describe('when the user is not a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
+            });
+
+            it('shows the "view" action', function () {
+              expect(actionMatrix).toEqual(['view']);
+            });
           });
 
-          it('shows the "view" action', function () {
-            expect(actionMatrix).toEqual(['view']);
+          describe('when the user is a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(true);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
+            });
+
+            it('shows the "view" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['view', 'delete']);
+            });
           });
         });
 
         describe('status: rejected', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
+          describe('when the user is not a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
+            });
+
+            it('shows the "view" action', function () {
+              expect(actionMatrix).toEqual(['view']);
+            });
           });
 
-          it('shows the "view" action', function () {
-            expect(actionMatrix).toEqual(['view']);
+          describe('when the user is a L&A admin', function () {
+            beforeEach(function () {
+              setRoleToAdmin(true);
+              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
+            });
+
+            it('shows the "view" and "delete" actions', function () {
+              expect(actionMatrix).toEqual(['view', 'delete']);
+            });
           });
         });
+
+        describe('"cancel" action', function () {
+          describe('when the absence type of the leave request does not allow to cancel', function () {
+            beforeEach(function () {
+              leaveRequestData.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '1').id;
+            });
+
+            describe('when the user is not a L&A admin', function () {
+              beforeEach(function () {
+                setRoleToAdmin(false);
+                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+              });
+
+              it('does not show the "cancel" action', function () {
+                expect(actionMatrix).not.toContain('cancel');
+              });
+            });
+
+            describe('when the user is a L&A admin', function () {
+              beforeEach(function () {
+                setRoleToAdmin(true);
+                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+              });
+
+              it('shows the "cancel" action', function () {
+                expect(actionMatrix).toContain('cancel');
+              });
+            });
+          });
+
+          describe('when the absence type of the leave request allows to cancel only before the start date', function () {
+            beforeEach(function () {
+              setRoleToAdmin(false);
+              leaveRequestData.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '3').id;
+            });
+
+            describe('when from date is less than today', function () {
+              beforeEach(function () {
+                var baseDate = moment(leaveRequestData.from_date);
+                var dateAfterFromDate = baseDate.add(10, 'days').toDate();
+                jasmine.clock().mockDate(dateAfterFromDate);
+
+                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+              });
+
+              describe('when the user is not a L&A admin', function () {
+                beforeEach(function () {
+                  setRoleToAdmin(false);
+                  actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+                });
+
+                it('does not show the "cancel" action', function () {
+                  expect(actionMatrix).not.toContain('cancel');
+                });
+              });
+
+              describe('when the user is a L&A admin', function () {
+                beforeEach(function () {
+                  setRoleToAdmin(true);
+                  actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+                });
+
+                it('shows the "cancel" action', function () {
+                  expect(actionMatrix).toContain('cancel');
+                });
+              });
+            });
+
+            describe('when from date is more than today', function () {
+              beforeEach(function () {
+                var baseDate = moment(leaveRequestData.from_date);
+                var dateBeforeFromDate = baseDate.subtract(10, 'days').toDate();
+                jasmine.clock().mockDate(dateBeforeFromDate);
+
+                setRoleToAdmin(false);
+                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
+              });
+
+              it('shows the "cancel" action', function () {
+                expect(actionMatrix).toContain('cancel');
+              });
+            });
+          });
+        });
+
+        /**
+         * Sets (or not) the user's role as admin depending on the value passed
+         *
+         * @param {Boolean} isAdmin
+         */
+        function setRoleToAdmin (isAdmin) {
+          isUserAdmin = !!isAdmin;
+          compileComponent();
+        }
 
         /**
          * Calls the controller method that returns the action matrix for
@@ -689,10 +858,26 @@
          * @return {Array}
          */
         function getActionMatrixForStatus (statusName) {
-          return controller.actionsFor(LeaveRequestInstance.init({
-            status_id: valueOfRequestStatus(statusName)
-          }));
+          leaveRequestData.status_id = valueOfRequestStatus(statusName);
+
+          return controller.actionsFor(LeaveRequestInstance.init(leaveRequestData, true));
         }
+      });
+
+      describe('when a new leave request is created', function () {
+        beforeEach(function () {
+          spyOn(controller, 'refresh').and.callThrough();
+          $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+          openSection('pending');
+        });
+
+        it('refreshes the report', function () {
+          expect(controller.refresh).toHaveBeenCalled();
+        });
+
+        it('gets data from the server, does not use the cache', function () {
+          expect(LeaveRequest.all.calls.mostRecent().args[4]).toEqual(false);
+        });
       });
 
       describe('when cancelling a leave request', function () {
@@ -846,103 +1031,123 @@
             expect(controller.sections.pending.data).toContain(leaveRequest1);
           });
         });
-
-        describe('when new leave request is created', function () {
-          beforeEach(function () {
-            spyOn(controller, 'refresh').and.callThrough();
-            $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
-            openSection('pending');
-          });
-
-          it('refreshes the report', function () {
-            expect(controller.refresh).toHaveBeenCalled();
-          });
-
-          it('gets data from the server, does not use cache', function () {
-            expect(LeaveRequest.all.calls.mostRecent().args[4]).toEqual(false);
-          });
-        });
-
-        /**
-         * Spyes on dialog.open() method and resolves it with the given value
-         *
-         * @param {any} value
-         */
-        function resolveDialogWith (value) {
-          var spy;
-
-          if (typeof dialog.open.calls !== 'undefined') {
-            spy = dialog.open;
-          } else {
-            spy = spyOn(dialog, 'open');
-          }
-
-          spy.and.callFake(function (options) {
-            return $q.resolve()
-              .then(function () {
-                return options.onConfirm && value ? options.onConfirm() : null;
-              })
-              .then(function () {
-                return value;
-              });
-          });
-        }
       });
 
-      describe('canCancel', function () {
-        var leaveRequest;
+      describe('when deleting a leave request', function () {
+        var leaveRequest1, leaveRequest2, leaveRequest3;
 
         beforeEach(function () {
-          leaveRequest = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
+          leaveRequest1 = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
+          leaveRequest2 = LeaveRequestInstance.init(leaveRequestMock.all().values[1], true);
+          leaveRequest3 = LeaveRequestInstance.init(leaveRequestMock.all().values[2], true);
+
+          spyOn(leaveRequest1, 'delete').and.returnValue($q.resolve());
         });
 
-        describe('when absence type does not allow to cancel', function () {
+        describe('dialog', function () {
           beforeEach(function () {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '1').id;
+            resolveDialogWith(null);
+
+            controller.action(leaveRequest1, 'delete');
+            $rootScope.$digest();
           });
 
-          it('does not allow user to cancel request', function () {
-            expect(controller.canCancel(leaveRequest)).toBe(false);
-          });
-        });
-
-        describe('when absence type does allow to cancel', function () {
-          beforeEach(function () {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '2').id;
-          });
-
-          it('does allow user to cancel request', function () {
-            expect(controller.canCancel(leaveRequest)).toBe(true);
+          it('shows a confirmation dialog', function () {
+            expect(dialog.open).toHaveBeenCalled();
           });
         });
 
-        describe('when absence type does allow cancellation in advance of start date', function () {
+        describe('when the user confirms', function () {
           beforeEach(function () {
-            leaveRequest.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '3').id;
+            resolveDialogWith(true);
           });
 
-          describe('when from date is less than today', function () {
+          describe('basic tests', function () {
+            var newBalanceChange, oldList, oldBalanceChange;
+
             beforeEach(function () {
-              var baseDate = moment(leaveRequest.from_date);
-              var dateAfterFromDate = baseDate.add(10, 'days').toDate();
-              jasmine.clock().mockDate(dateAfterFromDate);
+              oldList = controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+              oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+
+              controller.action(leaveRequest1, 'delete');
+              $rootScope.$digest();
+
+              newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
             });
 
-            it('does not allow user to cancel request', function () {
-              expect(controller.canCancel(leaveRequest)).toBe(false);
+            it('sends the deletion request', function () {
+              expect(leaveRequest1.delete).toHaveBeenCalled();
+            });
+
+            it('removes the leave request from its section', function () {
+              expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(false);
+            });
+
+            it('removes the leave request without creating a new array', function () {
+              expect(controller.sections.pending.data).toBe(oldList);
+            });
+
+            it('updates the balance changes for the section the leave request was in', function () {
+              expect(newBalanceChange).not.toBe(oldBalanceChange);
+              expect(newBalanceChange).toBe(oldBalanceChange - leaveRequest1.balance_change);
             });
           });
 
-          describe('when from date is more than today', function () {
+          describe('when the leave request was already approved', function () {
+            var oldRemainder, newRemainder;
+
             beforeEach(function () {
-              var baseDate = moment(leaveRequest.from_date);
-              var dateBeforeFromDate = baseDate.subtract(10, 'days').toDate();
-              jasmine.clock().mockDate(dateBeforeFromDate);
+              controller.sections.approved.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+              oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
+
+              controller.action(leaveRequest1, 'delete');
+              $rootScope.$digest();
+
+              newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
             });
 
-            it('does allow user to cancel request', function () {
-              expect(controller.canCancel(leaveRequest)).toBe(true);
+            it('updates the current remainder of the entitlement of the absence type the leave request was for', function () {
+              expect(newRemainder).not.toBe(oldRemainder);
+              expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
             });
+          });
+
+          describe('when the leave request was still open', function () {
+            var oldRemainder, newRemainder;
+
+            beforeEach(function () {
+              controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+              oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
+
+              controller.action(leaveRequest1, 'delete');
+              $rootScope.$digest();
+
+              newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
+            });
+
+            it('updates the future remainder of the entitlement of the absence type the leave request was for', function () {
+              expect(newRemainder).not.toBe(oldRemainder);
+              expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
+            });
+          });
+        });
+
+        describe('when the user does not confirm', function () {
+          beforeEach(function () {
+            resolveDialogWith(false);
+
+            controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+
+            controller.action(leaveRequest1, 'delete');
+            $rootScope.$digest();
+          });
+
+          it('does not send the deletion request', function () {
+            expect(leaveRequest1.delete).not.toHaveBeenCalled();
+          });
+
+          it('does not remove the leave request from its section', function () {
+            expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(true);
           });
         });
       });
@@ -962,13 +1167,8 @@
       }
 
       function compileComponent () {
-        var $scope = $rootScope.$new();
-
-        component = angular.element('<my-leave-report contact-id="' + contactId + '"></my-leave-report>');
-        $compile(component)($scope);
-        $scope.$digest();
-
-        controller = component.controller('myLeaveReport');
+        controller = $componentController('staffLeaveReport', null, { contactId: contactId });
+        $rootScope.$digest();
       }
 
       /**
@@ -981,6 +1181,31 @@
 
         controller.toggleSection(section);
         digest && $rootScope.$digest();
+      }
+
+      /**
+       * Spyes on dialog.open() method and resolves it with the given value
+       *
+       * @param {any} value
+       */
+      function resolveDialogWith (value) {
+        var spy;
+
+        if (typeof dialog.open.calls !== 'undefined') {
+          spy = dialog.open;
+        } else {
+          spy = spyOn(dialog, 'open');
+        }
+
+        spy.and.callFake(function (options) {
+          return $q.resolve()
+            .then(function () {
+              return options.onConfirm && value ? options.onConfirm() : null;
+            })
+            .then(function () {
+              return value;
+            });
+        });
       }
     });
   });

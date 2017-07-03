@@ -3,5 +3,5 @@
 var absenceTab = require('../../../page-objects/tabs/absence');
 
 module.exports = function (casper) {
-  absenceTab.init(casper).openSubTab('entitlements');
+  absenceTab.init(casper).openSubTab('work-patterns');
 };

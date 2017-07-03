@@ -1,0 +1,97 @@
+/**
+ * Applies rules specific to the border of the first row of a table
+ */
+@mixin table-first-row-border() {
+  // Remove the top border by default for the first row of a table...
+  > tbody {
+
+    > tr:first-child {
+
+      > td {
+        border-top-width: 0;
+      }
+    }
+  }
+
+  // ...but add it back if the table has an heading
+  > thead {
+
+    + tbody {
+
+      > tr:first-child {
+
+        > td {
+          border-top-width: 1px;
+        }
+      }
+    }
+  }
+
+  // The border below the headings should be darker
+  // unless it's a bordered or condensed table
+  &:not(.table-bordered):not(.table-condensed) {
+
+    > tbody {
+
+      > tr:first-child {
+
+        > td {
+          border-color: $crm-table-heading-border-color;
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * An indentation effect for .table-nested simulated by
+ * using a absolutely-positioned pseudo element in the table cell
+ *
+ * Due to the overflowing height, the table container must `overflow: hidden`!
+ *
+ * @param {string} $dir the direction of the indent
+ */
+@mixin table-nested-indent($dir: 'left') {
+  $padding-x: nth($table-cell-padding, 2);
+
+  $padding-dir: if($dir == 'left', 'padding-left', 'padding-right');
+  $pseudo-pos: if($dir == 'left', 'before', 'after');
+
+  #{$padding-dir}: $padding-x + $chr-table-nested-indent-width;
+  position: relative;
+
+  &:#{$pseudo-pos} {
+    background: $chr-table-nested-indent-color;
+    content: '';
+    display: block;
+    height: 110%;
+    #{$dir}: 0;
+    position: absolute;
+    top: 0;
+    width: $chr-table-nested-indent-width;
+    z-index: 2;
+  }
+}
+
+/**
+ * Adds a inset shadow to the top/bottom of a nested table
+ *
+ * @param {string} $pos the position of the shadow
+ */
+@mixin table-nested-shadow($pos: 'top') {
+  $pseudo-pos: if($pos == 'top', 'before', 'after');
+  $offset-y: if($pos == 'top', '6', '-4');
+
+  &:#{$pseudo-pos} {
+    box-shadow: inset 0px #{$offset-y}px 9px -6px rgba(0, 0, 0, 0.2);
+    content: '';
+    display: block;
+    height: 10px;
+    left: 0;
+    position: absolute;
+    #{$pos}: 0;
+    width: 100%;
+    z-index: 10;
+  }
+}

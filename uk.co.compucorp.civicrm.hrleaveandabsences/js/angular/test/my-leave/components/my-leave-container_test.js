@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 (function (CRM) {
   define([
     'common/angular',
@@ -8,11 +10,11 @@
     'use strict';
 
     describe('myLeaveContainer', function () {
-      var $compile, $log, $rootScope, component, controller, $uibModal;
+      var $componentController, $log, $rootScope, controller, $uibModal;
 
       beforeEach(module('leave-absences.templates', 'my-leave'));
-      beforeEach(inject(function (_$compile_, _$log_, _$rootScope_, _$uibModal_) {
-        $compile = _$compile_;
+      beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _$uibModal_) {
+        $componentController = _$componentController_;
         $log = _$log_;
         $rootScope = _$rootScope_;
         $uibModal = _$uibModal_;
@@ -25,12 +27,7 @@
         expect($log.debug).toHaveBeenCalled();
       });
 
-      it('is contains the expected markup', function () {
-        expect(component.find('div.my-leave-page').length).toBe(1);
-      });
-
       describe('leaveRequest', function () {
-
         it('DatePickerFrom is hidden', function () {
           expect(controller.leaveRequest.showDatePickerFrom).toBe(false);
         });
@@ -41,11 +38,10 @@
 
         it('change is not expanded', function () {
           expect(controller.leaveRequest.isChangeExpanded).toBe(false);
-        })
+        });
       });
 
       describe('showModal', function () {
-
         beforeEach(function () {
           spyOn($uibModal, 'open');
           controller.showModal();
@@ -56,16 +52,10 @@
         });
       });
 
-      function compileComponent() {
-        var $scope = $rootScope.$new();
-        var contactId = CRM.vars.leaveAndAbsences.contactId;
-
-        component = angular.element('<my-leave-container contact-id="' + contactId + '"></my-leave-container>');
-        $compile(component)($scope);
-        $scope.$digest();
-
-        controller = component.controller('myLeaveContainer');
+      function compileComponent () {
+        controller = $componentController('myLeaveContainer', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
+        $rootScope.$digest();
       }
     });
-  })
+  });
 })(CRM);

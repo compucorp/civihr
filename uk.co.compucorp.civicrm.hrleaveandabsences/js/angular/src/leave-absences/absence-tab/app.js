@@ -6,6 +6,7 @@ define([
   'common/text-angular',
   'common/modules/dialog',
   'common/modules/directives',
+  'common/services/check-permissions',
   'common/services/angular-date/date-format',
   'leave-absences/absence-tab/modules/config',
   'leave-absences/absence-tab/components/absence-tab-container',
@@ -14,6 +15,7 @@ define([
   'leave-absences/absence-tab/components/absence-tab-work-patterns',
   'leave-absences/absence-tab/components/contract-entitlements',
   'leave-absences/absence-tab/components/annual-entitlements',
+  'leave-absences/shared/components/staff-leave-report',
   'leave-absences/shared/components/staff-leave-calendar',
   'leave-absences/shared/directives/leave-request-popup',
   'leave-absences/shared/models/absence-type-model',
@@ -31,6 +33,7 @@ define([
     'common.angularDate',
     'common.dialog',
     'common.directives',
+    'common.services',
     /*
      * @TODO Because the app requires Contact, which requires Group,
      * which requires api.group.mock and api.group-contact.mock,

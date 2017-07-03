@@ -1,12 +1,12 @@
 <div class="absence-tab-page">
   <div class="container">
     <div class="btn-group">
-      <button 
-        type="button" 
-        class="btn btn-info" 
-        leave-request-popup leave-type="leave" 
-        contact-id="absence.contactId" 
-        user-role="{{$root.role}}" 
+      <button
+        type="button"
+        class="btn btn-info"
+        leave-request-popup leave-type="leave"
+        contact-id="absence.contactId"
+        user-role="{{$root.role}}"
         selected-contact-id="$root.settings.contactId">Record New Absence
       </button>
       <button
@@ -40,7 +40,7 @@
       type="pills"
       custom-header-class="nav-pills-horizontal nav-pills-horizontal-default">
       <uib-tab heading="Report" data-tabname="report">
-        <absence-tab-report ng-if="active === 0" data-tabname="report"></absence-tab-report>
+        <staff-leave-report ng-if="active === 0" contact-id="$root.settings.contactId"></staff-leave-report>
       </uib-tab>
       <uib-tab heading="Calendar" data-tabname="calendar">
         <staff-leave-calendar ng-if="active === 1" contact-id="$root.settings.contactId"></staff-leave-calendar>

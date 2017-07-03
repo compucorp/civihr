@@ -22,7 +22,7 @@
     'use strict';
 
     describe('managerLeaveCalendar', function () {
-      var $compile, $q, $log, $rootScope, component, controller, $provide,
+      var $componentController, $q, $log, $rootScope, controller, $provide,
         OptionGroup, OptionGroupAPIMock, ContactAPIMock, AbsencePeriod,
         Contact, LeaveRequest, WorkPatternAPI;
 
@@ -31,7 +31,7 @@
       }));
 
       beforeEach(inject(function (AbsenceTypeAPIMock, LeaveRequestAPIMock,
-                                  PublicHolidayAPIMock, WorkPatternAPIMock) {
+        PublicHolidayAPIMock, WorkPatternAPIMock) {
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
         $provide.value('PublicHolidayAPI', PublicHolidayAPIMock);
@@ -43,9 +43,10 @@
       }]));
 
       beforeEach(inject(function (
-        _$compile_, _$q_, _$log_, _$rootScope_, _OptionGroup_, _OptionGroupAPIMock_,
-        _AbsencePeriod_, _Contact_, _LeaveRequest_, _WorkPatternAPI_) {
-        $compile = _$compile_;
+        _$componentController_, _$q_, _$log_, _$rootScope_,
+        _OptionGroup_, _OptionGroupAPIMock_, _AbsencePeriod_, _Contact_,
+        _LeaveRequest_, _WorkPatternAPI_) {
+        $componentController = _$componentController_;
         $q = _$q_;
         $log = _$log_;
         $rootScope = _$rootScope_;
@@ -57,15 +58,12 @@
         WorkPatternAPI = _WorkPatternAPI_;
 
         spyOn($log, 'debug');
-
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
           return OptionGroupAPIMock.valuesOf(name);
         });
-
         spyOn(Contact, 'all').and.callFake(function () {
           return $q.resolve(ContactAPIMock.mockedContacts());
         });
-
         spyOn(Contact, 'find').and.callFake(function () {
           var contactInstance = ContactAPIMock.mockedContacts().list[0];
           contactInstance.leaveManagees = jasmine.createSpy('leaveManagees');
@@ -73,7 +71,6 @@
 
           return $q.resolve(contactInstance);
         });
-
         spyOn(AbsencePeriod, 'all').and.callFake(function () {
           var data = absencePeriodData.all().values;
           // Set 2016 as current period, because Calendar loads data only for the current period initially,
@@ -416,14 +413,8 @@
       });
 
       function compileComponent () {
-        var $scope = $rootScope.$new();
-        var contactId = CRM.vars.leaveAndAbsences.contactId;
-
-        component = angular.element('<manager-leave-calendar contact-id="' + contactId + '"></manager-leave-calendar>');
-        $compile(component)($scope);
-        $scope.$digest();
-
-        controller = component.controller('managerLeaveCalendar');
+        controller = $componentController('managerLeaveCalendar', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
+        $rootScope.$digest();
       }
 
       function getDate (contact, dateStr) {

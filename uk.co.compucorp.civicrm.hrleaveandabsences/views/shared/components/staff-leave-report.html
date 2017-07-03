@@ -214,14 +214,17 @@
                                   <i class="fa fa-ellipsis-v"></i>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-                                  <li ng-repeat="action in report.actionsFor(request)">
-                                    <a ng-if="action === 'cancel' && report.canCancel(request)" href
-                                      ng-click="report.action(request, action)">
+                                  <li ng-repeat="action in ::report.actionsFor(request)"
+                                    ng-switch="['edit', 'respond', 'view'].indexOf(action) > -1">
+                                    <a href
+                                      ng-switch-when="true"
+                                      leave-request-popup
+                                      leave-request="request"
+                                      contact-id="report.contactId"
+                                      user-role="{{$root.role}}">
                                       {{action}}
                                     </a>
-                                    <a ng-if="action !== 'cancel'" href
-                                      leave-request-popup leave-request="request"
-                                      contact-id="report.contactId" user-role="{{$root.role}}">
+                                    <a href ng-switch-default ng-click="report.action(request, action)">
                                       {{action}}
                                     </a>
                                   </li>
@@ -384,14 +387,17 @@
                                 <i class="fa fa-ellipsis-v"></i>
                               </a>
                               <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-                                <li ng-repeat="action in report.actionsFor(request)">
-                                  <a ng-if="action === 'cancel' && report.canCancel(request)" href
-                                    ng-click="report.action(request, action)">
+                                <li ng-repeat="action in ::report.actionsFor(request)"
+                                  ng-switch="['edit', 'respond', 'view'].indexOf(action) > -1">
+                                  <a href
+                                    ng-switch-when="true"
+                                    leave-request-popup
+                                    leave-request="request"
+                                    contact-id="report.contactId"
+                                    user-role="{{$root.role}}">
                                     {{action}}
-                                    </a>
-                                  <a ng-if="action !== 'cancel'" href
-                                    leave-request-popup leave-request="request"
-                                    contact-id="report.contactId" user-role="{{$root.role}}">
+                                  </a>
+                                  <a href ng-switch-default ng-click="report.action(request, action)">
                                     {{action}}
                                   </a>
                                 </li>
@@ -481,10 +487,17 @@
                                 <i class="fa fa-ellipsis-v"></i>
                               </a>
                               <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-                                <li ng-repeat="action in report.actionsFor(request)">
+                                <li ng-repeat="action in ::report.actionsFor(request)"
+                                  ng-switch="['edit', 'respond', 'view'].indexOf(action) > -1">
                                   <a href
-                                    leave-request-popup leave-request="request"
-                                    contact-id="report.contactId" user-role="{{$root.role}}">
+                                    ng-switch-when="true"
+                                    leave-request-popup
+                                    leave-request="request"
+                                    contact-id="report.contactId"
+                                    user-role="{{$root.role}}">
+                                    {{action}}
+                                  </a>
+                                  <a href ng-switch-default ng-click="report.action(request, action)">
                                     {{action}}
                                   </a>
                                 </li>

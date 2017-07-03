@@ -12,6 +12,7 @@
       controller: ['$log', '$rootScope', function ($log, $rootScope) {
         $log.debug('Component: absence-tab-container');
 
+        // TODO use `checkPermissions` service in the individual components instead
         $rootScope.role = 'admin';
 
         var vm = Object.create(this);
