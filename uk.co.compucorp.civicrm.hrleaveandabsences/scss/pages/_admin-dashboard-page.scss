@@ -1,39 +1,41 @@
-$chr-admin-dashboard-side-nav-width: 230px;
+@at-root {
+  $chr-admin-dashboard-side-nav-width: 230px;
 
-.page-civicrm-leaveandabsences-dashboard {
-  h1.page-title,
-  #branding {
-    display: none !important;
+  .page-civicrm-leaveandabsences-dashboard {
+    h1.page-title,
+    #branding {
+      display: none !important;
+    }
+
+    #page {
+      margin: 0;
+      padding: 0;
+    }
   }
 
-  #page {
-    margin: 0;
-    padding: 0;
-  }
-}
+  .admin-dashboard-page {
+    .crm_page__topbar {
+      height: 65px;
 
-.admin-dashboard-page {
-  .crm_page__topbar {
-    height: 65px;
+      .dropdown-toggle {
+       margin: 15px 30px 0 0 !important;
 
-    .dropdown-toggle {
-     margin: 15px 30px 0 0 !important;
-
-      +ul {
-        margin-right: 30px !important;
+        +ul {
+          margin-right: 30px !important;
+        }
       }
     }
-  }
 
-  .chr_admin-dashboard_side-nav {
-    overflow: hidden;
+    .chr_admin-dashboard_side-nav {
+      overflow: hidden;
 
-    ul {
-      max-width: $chr-admin-dashboard-side-nav-width;
+      ul {
+        max-width: $chr-admin-dashboard-side-nav-width;
+      }
     }
-  }
 
-  .chr_admin-dashboard_content {
-    width: calc(100% - #{$chr-admin-dashboard-side-nav-width});
+    .chr_admin-dashboard_content {
+      width: calc(100% - #{$chr-admin-dashboard-side-nav-width});
+    }
   }
 }
