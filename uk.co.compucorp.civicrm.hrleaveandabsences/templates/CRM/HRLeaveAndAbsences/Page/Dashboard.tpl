@@ -1,8 +1,8 @@
 {*All these markup should be moved to admin-dashboard-container.html as part of PCHR-2031*}
 <div id="bootstrap-theme" class="admin-dashboard-page">
-  <div class="panel-heading">
+  <div class="crm_page__topbar">
     <div class="btn-group pull-right">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+      <button type="button" class="btn btn-default-outline dropdown-toggle" data-toggle="dropdown">
         <i class="fa fa-plus-circle" aria-hidden="true"></i>
         Record New Absence
       </button>
@@ -14,8 +14,10 @@
       </ul>
     </div>
   </div>
-  <ul class="nav nav-pills nav-stacked chr_admin-dashboard_side-nav">
-    <li class="active"><a href="#">Leave Requests</a></li>
-    <li><a href="#">Calendar</a></li>
-  </ul>
+  <div class="chr_admin-dashboard_side-nav">
+    <ul class="nav nav-pills nav-stacked nav-pills-stacked-sidebar">
+      <li class="active"><a href="#">Leave Requests</a></li>
+      <li><a href="#">Calendar</a></li>
+    </ul>
+  </div>
 </div>
