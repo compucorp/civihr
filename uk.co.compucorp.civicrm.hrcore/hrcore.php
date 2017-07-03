@@ -134,3 +134,23 @@ function hrcore_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     $wrappers[] = new CRM_HRCore_APIWrapper_DefaultLimitRemover();
   }
 }
+
+/**
+ * Implementation of hook_civicrm_pre hook.
+ *
+ * @param string $op
+ * @param string $objectName
+ * @param int $objectId
+ * @param array $params
+ */
+function hrcore_civicrm_pre($op, $objectName, $objectId, &$params) {
+  if ($objectName === 'Address' && ($op === 'edit' || $op === 'create')) {
+    $homeLocation = civicrm_api3('LocationType', 'getsingle', [
+      'name' => 'Home',
+    ]);
+
+    if ($params['location_type_id'] == $homeLocation['id']) {
+      $params['is_primary'] = 1;
+    }
+  }
+}
