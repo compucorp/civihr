@@ -67,16 +67,17 @@ define([
         actions = _.without(actions, 'cancel');
       }
 
-      // Replace verbs if the role "admin"
       // TODO: The logic is not really elegant, but the whole "actions" bit
       // (html + js) should be moved into its own component
       if (role === 'admin') {
+        // The staff's "edit" action is "respond" for admin, and viceversa
         if (_.includes(actions, 'edit')) {
           actions = actions.join(',').replace('edit', 'respond').split(',');
         } else if (_.includes(actions, 'respond')) {
           actions = actions.join(',').replace('respond', 'edit').split(',');
         }
       } else {
+        // A non-admin user does not have access to the "delete" actions
         actions = _.without(actions, 'delete');
       }
 
@@ -202,19 +203,6 @@ define([
     }
 
     /**
-     * Clears the cached data of all the closed sections
-     */
-    function clearClosedSectionsData () {
-      Object.values(vm.sections)
-        .filter(function (section) {
-          return !section.open;
-        })
-        .forEach(function (section) {
-          section.data = [];
-        });
-    }
-
-    /**
      * Checks if the given leave request can be cancelled
      *
      * Based on following constants
@@ -226,17 +214,30 @@ define([
      * @return {Boolean}
      */
     function canLeaveRequestBeCancelled (leaveRequest) {
-      var allowValue = vm.absenceTypes[leaveRequest.type_id].allow_request_cancelation;
+      var allowCancellationValue = vm.absenceTypes[leaveRequest.type_id].allow_request_cancelation;
 
       if (role === 'admin') {
         return true;
       }
 
-      if (allowValue === '3') {
+      if (allowCancellationValue === '3') {
         return moment().isBefore(leaveRequest.from_date);
       }
 
-      return allowValue === '2';
+      return allowCancellationValue === '2';
+    }
+
+    /**
+     * Clears the cached data of all the closed sections
+     */
+    function clearClosedSectionsData () {
+      Object.values(vm.sections)
+        .filter(function (section) {
+          return !section.open;
+        })
+        .forEach(function (section) {
+          section.data = [];
+        });
     }
 
     /**
@@ -560,9 +561,11 @@ define([
       var sectionBelonged;
 
       ['approved', 'pending', 'other'].forEach(function (sectionName) {
-        _.remove(vm.sections[sectionName].data, function (dataEntry) {
+        var sections = _.remove(vm.sections[sectionName].data, function (dataEntry) {
           return dataEntry.id === leaveRequest.id;
-        }).length && (sectionBelonged = sectionName);
+        });
+
+        sections.length && (sectionBelonged = sectionName);
       });
 
       if (sectionBelonged !== 'other') {
