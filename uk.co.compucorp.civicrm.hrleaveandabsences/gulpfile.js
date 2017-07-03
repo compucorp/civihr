@@ -113,26 +113,20 @@ var test = (function () {
      */
     for: function (srcFile) {
       var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
-      var testFileFound = false;
-      var testFileSuffixes = [ '_test.js', '.spec.js' ];
 
-      testFileSuffixes.forEach(function (testFileSuffix) {
+      ['_test.js', '.spec.js'].forEach(function (suffix) {
         var testFile = srcFile
           .replace('src/leave-absences/', 'test/')
-          .replace(srcFileNoExt + '.js', srcFileNoExt + testFileSuffix);
+          .replace(srcFileNoExt + '.js', srcFileNoExt + suffix);
 
         try {
           var stats = fs.statSync(testFile);
 
           stats.isFile() && this.single(testFile);
-
-          testFileFound = true;
-        } catch (ex) {}
+        } catch (ex) {
+          throw ex;
+        }
       });
-
-      if (!testFileFound) {
-        throw new Error('Test file not found');
-      }
     },
 
     /**
