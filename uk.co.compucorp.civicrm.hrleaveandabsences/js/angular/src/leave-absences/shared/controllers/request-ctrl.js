@@ -610,7 +610,7 @@ define([
           .then(function () {
             initOpenMode.call(self);
 
-            return self.canManage && loadManagees.call(self);
+            return self.canManage && !self.isMode('edit') && loadManagees.call(self);
           })
           .then(function () {
             return loadAbsencePeriods.call(self);
@@ -985,7 +985,7 @@ define([
        * Initialize status
        */
       function initStatus () {
-        if (this.isMode('create') && this.canManage) {
+        if (this.isRole('admin') || (this.isMode('create') && this.isRole('manager'))) {
           this.newStatusOnSave = this.requestStatuses[sharedSettings.statusNames.approved].value;
         }
       }
