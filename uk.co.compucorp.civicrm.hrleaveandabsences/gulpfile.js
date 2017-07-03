@@ -76,16 +76,15 @@ gulp.task('test', function (done) {
 gulp.task('default', ['requirejs', 'sass', 'test', 'watch']);
 
 var test = (function () {
-
   /**
    * Runs the karma server which does a single run of the test/s
    *
    * @param {string} configFile - The full path to the karma config file
    * @param {Function} cb - The callback to call when the server closes
    */
-  function runServer(configFile, cb) {
+  function runServer (configFile, cb) {
     new karma.Server({
-      configFile: __dirname + '/js/angular/' + configFile,
+      configFile: path.join(__dirname, 'js/angular', configFile),
       singleRun: true
     }, function () {
       cb && cb();
@@ -104,25 +103,30 @@ var test = (function () {
     /**
      * Runs the tests for a specific source file
      *
-     * Looks for a test file (*_test.js) in `test/`, using the same path
+     * Looks for a test file (*_test.js or *.spec.js) in `test/`, using the same path
      * of the source file in `src/leave-absences/`
      *   i.e. src/leave-absences/models/model.js -> test/models/model_test.js
+     *   or   src/leave-absences/models/model.js -> test/models/model.spec.js
+     *   @TODO test files *_test.js should be renamed to *.spec.js
      *
      * @throw {Error}
      */
     for: function (srcFile) {
       var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
-      var testFile = srcFile
-        .replace('src/leave-absences/', 'test/')
-        .replace(srcFileNoExt + '.js', srcFileNoExt + '_test.js');
 
-      try {
-        var stats = fs.statSync(testFile);
+      ['_test.js', '.spec.js'].forEach(function (suffix) {
+        var testFile = srcFile
+          .replace('src/leave-absences/', 'test/')
+          .replace(srcFileNoExt + '.js', srcFileNoExt + suffix);
 
-        stats.isFile() && this.single(testFile);
-      } catch (ex) {
-        throw ex;
-      }
+        try {
+          var stats = fs.statSync(testFile);
+
+          stats.isFile() && this.single(testFile);
+        } catch (ex) {
+          throw ex;
+        }
+      });
     },
 
     /**
@@ -136,13 +140,14 @@ var test = (function () {
     single: function (testFile) {
       var configFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
-      gulp.src(__dirname + '/js/angular/karma.conf.js')
+      gulp.src(path.join(__dirname, 'js/angular/karma.conf.js'))
         .pipe(replace('*_test.js', path.basename(testFile)))
+        .pipe(replace('*.spec.js', path.basename(testFile)))
         .pipe(rename(configFile))
-        .pipe(gulp.dest(__dirname + '/js/angular'))
+        .pipe(gulp.dest(path.join(__dirname, 'js/angular')))
         .on('end', function () {
           runServer(configFile, function () {
-            gulp.src(__dirname + '/js/angular/' + configFile, {read: false}).pipe(clean());
+            gulp.src(path.join(__dirname, 'js/angular', configFile), {read: false}).pipe(clean());
           });
         });
     }

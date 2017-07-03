@@ -39,8 +39,11 @@ module.exports = function (config) {
       // the mocked components files
       { pattern: extPath + 'js/angular/test/mocks/**/*.js', included: false },
 
-      // the test files
+      // the test files @TODO rename *_test.js files to *.spec.js
       { pattern: extPath + 'js/angular/test/**/*_test.js', included: false },
+
+      // the new test files @NOTE these are not "new" once *_test.js are renamed
+      { pattern: extPath + 'js/angular/test/**/*.spec.js', included: false },
 
       // angular templates
       extPath + 'views/**/*.html',
