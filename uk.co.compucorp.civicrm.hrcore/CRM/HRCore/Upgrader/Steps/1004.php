@@ -29,12 +29,12 @@ trait CRM_HRCore_Upgrader_Steps_1004 {
 
   private function up1004_setAllHomeAddressesAsPrimary() {
     $homeLocation = civicrm_api3('LocationType', 'getsingle', [
-      'name' => "Home",
+      'name' => 'Home',
     ]);
 
     $contactsWithNonPrimaryHomeAddress = civicrm_api3('Address', 'get', [
       'sequential' => 1,
-      'return' => array('contact_id'),
+      'return' => ['contact_id'],
       'location_type_id' => $homeLocation['id'],
       'is_primary' => 0,
     ]);
