@@ -1279,6 +1279,131 @@
         });
       });
 
+      describe('getStatuses', function () {
+        var status = {};
+
+        beforeEach(function () {
+          var collectionName = 'hrleaveandabsences_leave_request_status';
+          var allStatuses = optionGroupMock.getCollection(collectionName);
+
+          status = _.indexBy(allStatuses, 'name');
+
+          initTestController({
+            contactId: CRM.vars.leaveAndAbsences.contactId,
+            userRole: 'admin'
+          });
+
+          $ctrl._init();
+          $ctrl.request = { status_id: null };
+          $ctrl.requestStatuses = status;
+        });
+
+        describe('when request is not defined', function () {
+          beforeEach(function () {
+            delete $ctrl.request;
+          });
+
+          it('returns an empty array', function () {
+            expect($ctrl.getStatuses()).toEqual([]);
+          });
+        });
+
+        describe('when requestStatuses is empty', function () {
+          beforeEach(function () {
+            $ctrl.requestStatuses = {};
+          });
+
+          it('returns an empty array', function () {
+            expect($ctrl.getStatuses()).toEqual([]);
+          });
+        });
+
+        describe('when previous status was not defined', function () {
+          it('returns *More Information Required, Approve* ', function () {
+            expect($ctrl.getStatuses()).toEqual([
+              status.more_information_required,
+              status.approved
+            ]);
+          });
+        });
+
+        describe('when previous status is *Awaiting Approval*', function () {
+          beforeEach(function () {
+            $ctrl.request.status_id = status.awaiting_approval.value;
+          });
+
+          it('returns *More Information Required, Approve, Reject, Cancel*', function () {
+            expect($ctrl.getStatuses()).toEqual([
+              status.more_information_required,
+              status.approved,
+              status.rejected,
+              status.cancelled
+            ]);
+          });
+        });
+
+        describe('when previous status is *More Information Required*', function () {
+          beforeEach(function () {
+            $ctrl.request.status_id = status.more_information_required.value;
+          });
+
+          it('returns *Approve, More Information Required, Reject, Cancel* ', function () {
+            expect($ctrl.getStatuses()).toEqual([
+              status.more_information_required,
+              status.approved,
+              status.rejected,
+              status.cancelled
+            ]);
+          });
+        });
+
+        describe('when previous status is *Rejected*', function () {
+          beforeEach(function () {
+            $ctrl.request.status_id = status.rejected.value;
+          });
+
+          it('returns *Approve, More Information Required, Reject, Cancel*', function () {
+            expect($ctrl.getStatuses()).toEqual([
+              status.more_information_required,
+              status.approved,
+              status.rejected,
+              status.cancelled
+            ]);
+          });
+        });
+
+        describe('when previous status is *Approved*', function () {
+          beforeEach(function () {
+            $ctrl.request.status_id = status.approved.value;
+          });
+
+          it('returns *Approve, More Information Required, Reject, Cancel* ', function () {
+            expect($ctrl.getStatuses()).toEqual([
+              status.more_information_required,
+              status.approved,
+              status.rejected,
+              status.cancelled
+            ]);
+          });
+        });
+
+        describe('when previous status is *Cancelled*', function () {
+          beforeEach(function () {
+            $ctrl.request.status_id = status.cancelled.value;
+          });
+
+          it('returns *Awaiting Approval , Approve, More Information Required, Reject, Cancel* ', function () {
+            expect($ctrl.getStatuses()).toEqual([
+              status.awaiting_approval,
+              status.more_information_required,
+              status.approved,
+              status.rejected,
+              status.cancelled
+            ]);
+          });
+        });
+      });
+
       /**
        * Initialize the controller
        *
