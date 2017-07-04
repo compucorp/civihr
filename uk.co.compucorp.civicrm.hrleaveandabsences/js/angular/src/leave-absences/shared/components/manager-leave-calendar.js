@@ -26,6 +26,7 @@ define([
     var parentCtrl = $controller('CalendarCtrl');
     var vm = Object.create(parentCtrl);
     var isAdmin = false;
+    var calendarData;
 
     /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
      * Calendar data saved temporarily in tempContactData and once all the promises are resolved,
@@ -137,13 +138,14 @@ define([
         return contact.id;
       }), vm.selectedPeriod.id)
       .then(function (calendars) {
+        calendarData = calendars;
         // contacts are stored by index rather than by id, so it's necessary
         // to find the index of each contact by using their id
         var contactIds = tempContactData.map(function (contact) {
           return contact.id;
         });
 
-        calendars.forEach(function (calendar) {
+        calendarData.forEach(function (calendar) {
           var index = contactIds.indexOf(calendar.contact_id);
 
           tempContactData[index].calendarData = vm._setCalendarProps(calendar.contact_id, calendar);
@@ -325,6 +327,27 @@ define([
         });
       });
       $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
+      $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest);
+
+      /**
+       * Event handler for Delete event of Leave Request
+       *
+       * @param  {object} event
+       * @param  {object} leaveRequest
+       */
+      function deleteLeaveRequest (event, leaveRequest) {
+        var contactID = leaveRequest.contact_id;
+        // Find the calendarData for the deleted requests user
+        var calendar = _.find(calendarData, function (calendar) {
+          return calendar.contact_id === contactID;
+        });
+
+        vm.leaveRequests[contactID] = _.omit(vm.leaveRequests[contactID], function (leaveRequestObj) {
+          return leaveRequestObj.id === leaveRequest.id;
+        });
+        vm._resetMonths();
+        vm._setCalendarProps(contactID, calendar);
+      }
     })();
 
     return vm;
