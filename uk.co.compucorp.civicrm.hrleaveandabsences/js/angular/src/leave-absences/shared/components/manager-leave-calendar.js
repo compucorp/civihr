@@ -15,14 +15,17 @@ define([
       return sharedSettings.sharedPathTpl + 'components/manager-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$controller', '$log', '$q', '$rootScope', 'Calendar', 'Contact', 'OptionGroup', controller]
+    controller: [
+      '$controller', '$log', '$q', '$rootScope', 'shared-settings', 'checkPermissions',
+      'Calendar', 'Contact', 'OptionGroup', controller]
   });
 
-  function controller ($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup) {
+  function controller ($controller, $log, $q, $rootScope, sharedSettings, checkPermissions, Calendar, Contact, OptionGroup) {
     $log.debug('Component: manager-leave-calendar');
 
     var parentCtrl = $controller('CalendarCtrl');
     var vm = Object.create(parentCtrl);
+    var isAdmin = false;
 
     /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
      * Calendar data saved temporarily in tempContactData and once all the promises are resolved,
@@ -177,6 +180,14 @@ define([
      * @return {Promise}
      */
     vm._loadManagees = function () {
+      if (isAdmin) {
+        return Contact.all()
+          .then(function (contacts) {
+            vm.managedContacts = contacts.list;
+            vm.filteredContacts = contacts.list;
+          });
+      }
+
       return Contact.find(vm.contactId)
         .then(function (contact) {
           return contact.leaveManagees()
@@ -297,18 +308,22 @@ define([
     };
 
     (function init () {
-      vm._init(function () {
-        return $q.all([
-          vm._loadRegions(),
-          vm._loadDepartments(),
-          vm._loadLocations(),
-          vm._loadLevelTypes()
-        ])
-        .then(function () {
-          return vm._loadManagees();
+      checkPermissions(sharedSettings.permissions.admin.administer)
+      .then(function (_isAdmin_) {
+        isAdmin = _isAdmin_;
+
+        vm._init(function () {
+          return $q.all([
+            vm._loadRegions(),
+            vm._loadDepartments(),
+            vm._loadLocations(),
+            vm._loadLevelTypes()
+          ])
+            .then(function () {
+              return vm._loadManagees();
+            });
         });
       });
-
       $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
     })();
 

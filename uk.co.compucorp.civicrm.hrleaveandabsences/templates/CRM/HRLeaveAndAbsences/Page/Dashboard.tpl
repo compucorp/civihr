@@ -1,4 +1,4 @@
-<div data-leave-absences-admin-dashboard>
+<div id="bootstrap-theme" data-leave-absences-admin-dashboard>
   <admin-dashboard-container></admin-dashboard-container>
 </div>
 {literal}

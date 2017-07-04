@@ -1,6 +1,4 @@
 @at-root {
-  $chr-admin-dashboard-side-nav-width: 230px;
-
   .page-civicrm-leaveandabsences-dashboard {
     h1.page-title,
     #branding {
@@ -28,14 +26,13 @@
 
     .chr_admin-dashboard_side-nav {
       overflow: hidden;
-
-      ul {
-        max-width: $chr-admin-dashboard-side-nav-width;
-      }
+      width: 15%;
+      float: left;
     }
 
     .chr_admin-dashboard_content {
-      width: calc(100% - #{$chr-admin-dashboard-side-nav-width});
+      float: right;
+      width: 84%;
     }
   }
 }
