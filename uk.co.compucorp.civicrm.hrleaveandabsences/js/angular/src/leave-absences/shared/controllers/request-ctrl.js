@@ -28,7 +28,6 @@ define([
       $log.debug('RequestCtrl');
       var absenceTypesAndIds;
       var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
-      var mode = ''; // can be edit, create, view
       var role = '';
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
@@ -39,6 +38,7 @@ define([
       this.contactName = null;
       this.errors = [];
       this.managedContacts = [];
+      this.mode = ''; // can be edit, create, view
       this.newStatusOnSave = null;
       this.period = {};
       this.postContactSelection = false; // flag to track if user is selected for enabling UI
@@ -56,10 +56,6 @@ define([
           amount: 0,
           breakdown: []
         }
-      };
-      this.comment = {
-        text: '',
-        contacts: {}
       };
       this.loading = {
         absenceTypes: true,
@@ -119,19 +115,6 @@ define([
             }
           }
         }
-      };
-
-      /**
-       * Add a comment into comments array, also clears the comments textbox
-       */
-      this.addComment = function () {
-        this.request.comments.push({
-          contact_id: this.directiveOptions.contactId,
-          created_at: moment(new Date()).format(sharedSettings.serverDateTimeFormat),
-          leave_request_id: this.request.id,
-          text: this.comment.text
-        });
-        this.comment.text = '';
       };
 
       /**
@@ -265,31 +248,6 @@ define([
       };
 
       /**
-       * Returns the comment author name
-       * @param {String} contact_id
-       *
-       * @return {String}
-       */
-      this.getCommentorName = function (contactId) {
-        if (contactId === this.directiveOptions.contactId) {
-          return 'Me';
-        } else if (this.comment.contacts[contactId]) {
-          return this.comment.contacts[contactId].display_name;
-        }
-      };
-
-      /**
-       * Returns the comments which are not marked for deletion
-       *
-       * @return {Array}
-       */
-      this.getActiveComments = function () {
-        return this.request.comments.filter(function (comment) {
-          return !comment.toBeDeleted;
-        });
-      };
-
-      /**
        * Flattens statuses from object to array of objects. This is used to
        * populate the dropdown with array of statuses.
        * Also it checks if given status is available to manager. If manager applies leave
@@ -393,7 +351,7 @@ define([
        * @return {Boolean}
        */
       this.isMode = function (modeParam) {
-        return mode === modeParam;
+        return this.mode === modeParam;
       };
 
       /**
@@ -414,26 +372,6 @@ define([
         this.$modalInstance.close({
           $value: this.request
         });
-      };
-
-      /**
-       * Orders comment, used as a angular filter
-       * @param {Object} comment
-       *
-       * @return {Date}
-       */
-      this.orderComment = function (comment) {
-        return moment(comment.created_at, sharedSettings.serverDateTimeFormat);
-      };
-
-      /**
-       * Decides visiblity of remove comment button
-       * @param {Object} comment - comment object
-       *
-       * @return {Boolean}
-       */
-      this.removeCommentVisibility = function (comment) {
-        return !comment.comment_id || this.canManage;
       };
 
       /**
@@ -620,7 +558,6 @@ define([
             self._setMinMaxDate();
 
             return $q.all([
-              loadCommentsAndContactNames.call(self),
               self.request.loadAttachments()
             ]);
           })
@@ -922,7 +859,7 @@ define([
        */
       function initOpenMode () {
         if (this.request.id) {
-          mode = 'edit';
+          this.mode = 'edit';
 
           var viewModeStatuses = [
             this.requestStatuses[sharedSettings.statusNames.approved].value,
@@ -932,10 +869,10 @@ define([
           ];
 
           if (this.isRole('staff') && viewModeStatuses.indexOf(this.request.status_id) > -1) {
-            mode = 'view';
+            this.mode = 'view';
           }
         } else {
-          mode = 'create';
+          this.mode = 'create';
         }
       }
 
@@ -1026,42 +963,6 @@ define([
               this.managedContacts = contacts;
             }.bind(this));
         }
-      }
-
-      /**
-       * Loads the comments for current leave request
-       *
-       * @return {Promise}
-       */
-      function loadCommentsAndContactNames () {
-        return this.request.loadComments()
-          .then(function () {
-            // loadComments sets the comments on request object instead of returning it
-            this.request.comments.length && loadContactNames.call(this);
-          }.bind(this));
-      }
-
-      /**
-       * Loads unique contact names for all the comments
-       *
-       * @return {Promise}
-       */
-      function loadContactNames () {
-        var contactIDs = [];
-
-        _.each(this.request.comments, function (comment) {
-          // Push only unique contactId's which are not same as logged in user
-          if (comment.contact_id !== this.directiveOptions.contactId && contactIDs.indexOf(comment.contact_id) === -1) {
-            contactIDs.push(comment.contact_id);
-          }
-        }.bind(this));
-
-        return Contact.all({
-          id: { IN: contactIDs }
-        }, { page: 1, size: 0 })
-        .then(function (contacts) {
-          this.comment.contacts = _.indexBy(contacts.list, 'contact_id');
-        }.bind(this));
       }
 
       /**
