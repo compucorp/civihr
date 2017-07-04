@@ -25,7 +25,7 @@
       var $componentController, $q, $log, $rootScope, controller, $provide,
         OptionGroup, OptionGroupAPIMock, ContactAPIMock, AbsencePeriod,
         Contact, LeaveRequest, WorkPatternAPI;
-      var isUserAdmin = false;
+      var isAdmin = false; // change this value to true before testing for Admin role
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -37,7 +37,7 @@
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
         $provide.value('PublicHolidayAPI', PublicHolidayAPIMock);
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
-        $provide.value('checkPermissions', function () { return $q.resolve(isUserAdmin); });
+        $provide.value('checkPermissions', function () { return $q.resolve(isAdmin); });
       }));
 
       beforeEach(inject(['api.contact.mock', function (_ContactAPIMock_) {

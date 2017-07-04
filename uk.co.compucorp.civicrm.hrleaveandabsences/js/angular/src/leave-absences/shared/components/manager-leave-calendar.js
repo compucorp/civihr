@@ -25,7 +25,7 @@ define([
 
     var parentCtrl = $controller('CalendarCtrl');
     var vm = Object.create(parentCtrl);
-    var isAdmin = false;
+    var isAdmin = false; // updated on the init function after calling checkPermissions service
     var calendarData;
 
     /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
