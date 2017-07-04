@@ -833,7 +833,7 @@
 
                 beforeEach(function () {
                   setTestDates(date2016);
-                  minDate = moment(new Date(date2016)).add(1, 'd').toDate();
+                  minDate = moment(getUTCDate(date2016)).add(1, 'd').toDate();
                 });
 
                 it('sets min date to from date', function () {
@@ -1475,16 +1475,21 @@
        */
       function setTestDates (from, to) {
         if (from) {
-          $ctrl.uiOptions.fromDate = new Date(from);
+          $ctrl.uiOptions.fromDate = getUTCDate(from);
           $ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from');
           $scope.$digest();
         }
 
         if (to) {
-          $ctrl.uiOptions.toDate = new Date(to);
+          $ctrl.uiOptions.toDate = getUTCDate(to);
           $ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to');
           $scope.$digest();
         }
+      }
+
+      function getUTCDate (date) {
+        var now = new Date(date);
+        return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
       }
     });
   });
