@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/manager-leave/modules/components',
+  'leave-absences/shared/modules/components',
   'leave-absences/shared/controllers/calendar-ctrl',
   'common/models/contact'
 ], function (_, moment, components) {
@@ -11,8 +11,8 @@ define([
     bindings: {
       contactId: '<'
     },
-    templateUrl: ['settings', function (settings) {
-      return settings.pathTpl + 'components/manager-leave-calendar.html';
+    templateUrl: ['shared-settings', function (sharedSettings) {
+      return sharedSettings.sharedPathTpl + 'components/manager-leave-calendar.html';
     }],
     controllerAs: 'calendar',
     controller: ['$controller', '$log', '$q', '$rootScope', 'Calendar', 'Contact', 'OptionGroup', controller]

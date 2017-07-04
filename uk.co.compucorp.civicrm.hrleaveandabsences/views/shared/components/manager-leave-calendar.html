@@ -89,7 +89,7 @@
                ng-repeat="month in calendar.months track by $index">
         <ng-include
           ng-hide="(calendar.selectedMonths.length !== 0 && calendar.selectedMonths.indexOf(calendar.monthLabels[month.month]) === -1)"
-          src="$root.settings.pathTpl + 'components/manager-leave-calendar-month.html'"></ng-include>
+          src="$root.sharedPathTpl + 'components/manager-leave-calendar-month.html'"></ng-include>
       </section>
     </crm-loading>
     <section class="panel panel-default" ng-class="{ 'is-collapsed': calendar.legendCollapsed }">
