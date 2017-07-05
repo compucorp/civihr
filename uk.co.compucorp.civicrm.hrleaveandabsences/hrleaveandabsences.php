@@ -488,6 +488,12 @@ function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminN
       'name' => 'leave_and_absence_general_settings',
       'url' => 'civicrm/admin/leaveandabsences/general_settings',
       'permission' => 'administer leave and absences',
+    ],
+    [
+      'label' => ts('Import Leave/Absence Requests'),
+      'name' => 'leave_and_absence_import',
+      'url' => 'civicrm/admin/leaveandabsences/import',
+      'permission' => 'administer leave and absences',
     ]
   ];
 
