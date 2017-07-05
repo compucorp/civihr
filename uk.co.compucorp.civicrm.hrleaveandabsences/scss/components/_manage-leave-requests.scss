@@ -1,0 +1,76 @@
+.chr_manage_leave_requests {
+  .chr_manage_leave_requests__header {
+    margin: 0;
+    background-color: #f4f7f8;
+
+    .crm_custom-select {
+      margin-right: 20px;
+      padding: 0;
+      width: 250px;
+    }
+
+    .panel-title {
+      margin-top: 5px;
+      display: inline-block;
+    }
+  }
+
+  .chr_manage_leave_requests__filter {
+    margin-top: 6px;
+    display: inline-block;
+
+    .fa {
+      font-size: 0.6em;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+  }
+
+  .chr_manage_leave_requests__sub-header {
+    padding-top: 15px;
+
+    > div {
+      display: inline-block;
+      margin: 0 10px;
+      width: calc(16.4% - 20px);
+      vertical-align: top;
+    }
+  }
+
+  .chr_manage_leave_requests__panel_body {
+    margin: 0;
+    padding: 0;
+
+    [class^="col-"],
+    [class*=" col-"] {
+      padding: 0;
+    }
+
+    a {
+      cursor: pointer;
+    }
+  }
+}
+
+/*
+ * This is a temporary patch which fixes CSS in the component
+ * @TODO remove this patch when Shoreditch theme is migrated to SSP
+ */
+.chr_manage_leave_requests {
+  .btn.ui-select-toggle {
+    padding: 4px 10px !important;
+    text-transform: none !important;
+  }
+
+  .form-group {
+    overflow: inherit !important;
+  }
+
+  .panel {
+    background-image: none !important;
+  }
+
+  .panel-body, .chr_vertical_tabs {
+    background-color: #f4f7f8;
+  }
+}
