@@ -9,11 +9,11 @@ define([
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/components/leave-request-popup-comments-tab',
+  'leave-absences/shared/components/manager-leave-calendar',
   'leave-absences/shared/directives/leave-request-popup',
   'leave-absences/admin-dashboard/modules/config',
   'leave-absences/admin-dashboard/components/admin-dashboard-container',
   'leave-absences/admin-dashboard/components/admin-dashboard-calendar',
-  'leave-absences/shared/components/manager-leave-calendar',
   'leave-absences/admin-dashboard/components/admin-dashboard-requests'
 ], function (angular) {
   angular.module('admin-dashboard', [
