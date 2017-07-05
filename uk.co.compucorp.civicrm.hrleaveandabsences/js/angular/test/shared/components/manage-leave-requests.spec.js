@@ -1,4 +1,6 @@
 /* eslint-env amd, jasmine */
+/* global CRM, inject */
+
 (function (CRM) {
   define([
     'common/angular',
@@ -17,10 +19,11 @@
   ], function (angular, _, optionGroupMock, absencePeriodData, absenceTypeData, leaveRequestData) {
     'use strict';
 
-    describe('managerLeaveReport', function () {
+    describe('manageLeaveRequests', function () {
       var $componentController, $log, $q, $provide, $rootScope, controller,
         OptionGroup, AbsenceType, AbsencePeriod, LeaveRequest, LeaveRequestInstance,
         Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock;
+      var isAdmin = true; // change this value to true before testing for Admin role
 
       beforeEach(module('leave-absences.templates', 'manager-leave',
         'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
@@ -32,6 +35,7 @@
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
+        $provide.value('checkPermissions', function () { return $q.resolve(isAdmin); });
       }));
 
       beforeEach(inject(['api.contact.mock', 'shared-settings', function (_ContactAPIMock_, _sharedSettings_) {
@@ -62,6 +66,9 @@
         spyOn(AbsenceType, 'all').and.callThrough();
         spyOn(Contact, 'leaveManagees').and.callFake(function () {
           return ContactAPIMock.leaveManagees();
+        });
+        spyOn(Contact, 'all').and.callFake(function (filters) {
+          return ContactAPIMock.all(filters);
         });
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
           return OptionGroupAPIMock.valuesOf(name);
@@ -441,11 +448,19 @@
                 controller.refresh();
               });
 
-              it('Contact API gets called with region value', function () {
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  region: mockRegion
-                }));
-              });
+              if (isAdmin) {
+                it('Contact API gets called with region value', function () {
+                  expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    region: mockRegion
+                  }));
+                });
+              } else {
+                it('Contact API gets called with region value', function () {
+                  expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                    region: mockRegion
+                  }));
+                });
+              }
             });
 
             describe('when region filter has no value', function () {
@@ -454,11 +469,19 @@
                 controller.refresh();
               });
 
-              it('Contact API gets called with null', function () {
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  region: null
-                }));
-              });
+              if (isAdmin) {
+                it('Contact API gets called with null', function () {
+                  expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    region: null
+                  }));
+                });
+              } else {
+                it('Contact API gets called with null', function () {
+                  expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                    region: null
+                  }));
+                });
+              }
             });
           });
 
@@ -471,11 +494,19 @@
                 controller.refresh();
               });
 
-              it('Contact API gets called with department value', function () {
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  department: mockDepartment
-                }));
-              });
+              if (isAdmin) {
+                it('Contact API gets called with department value', function () {
+                  expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    department: mockDepartment
+                  }));
+                });
+              } else {
+                it('Contact API gets called with department value', function () {
+                  expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                    department: mockDepartment
+                  }));
+                });
+              }
             });
 
             describe('when department filter has no value', function () {
@@ -484,11 +515,19 @@
                 controller.refresh();
               });
 
-              it('Contact API gets called with null', function () {
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  department: null
-                }));
-              });
+              if (isAdmin) {
+                it('Contact API gets called with null', function () {
+                  expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    department: null
+                  }));
+                });
+              } else {
+                it('Contact API gets called with null', function () {
+                  expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                    department: null
+                  }));
+                });
+              }
             });
           });
 
@@ -501,11 +540,19 @@
                 controller.refresh();
               });
 
-              it('Contact API gets called with location value', function () {
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  location: mockLocation
-                }));
-              });
+              if (isAdmin) {
+                it('Contact API gets called with location value', function () {
+                  expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    location: mockLocation
+                  }));
+                });
+              } else {
+                it('Contact API gets called with location value', function () {
+                  expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                    location: mockLocation
+                  }));
+                });
+              }
             });
 
             describe('when location filter has no value', function () {
@@ -514,11 +561,19 @@
                 controller.refresh();
               });
 
-              it('ContactAPI gets called with null', function () {
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  location: null
-                }));
-              });
+              if (isAdmin) {
+                it('ContactAPI gets called with null', function () {
+                  expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    location: null
+                  }));
+                });
+              } else {
+                it('ContactAPI gets called with null', function () {
+                  expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                    location: null
+                  }));
+                });
+              }
             });
           });
 
@@ -531,11 +586,19 @@
                 controller.refresh();
               });
 
-              it('ContactAPI gets called with level types value', function () {
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  level_type: mockLevelType
-                }));
-              });
+              if (isAdmin) {
+                it('ContactAPI gets called with level types value', function () {
+                  expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    level_type: mockLevelType
+                  }));
+                });
+              } else {
+                it('ContactAPI gets called with level types value', function () {
+                  expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                    level_type: mockLevelType
+                  }));
+                });
+              }
             });
 
             describe('when levelTypes filter has no value', function () {
@@ -544,11 +607,19 @@
                 controller.refresh();
               });
 
-              it('Contact API gets called with null', function () {
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
-                  level_type: null
-                }));
-              });
+              if (isAdmin) {
+                it('Contact API gets called with null', function () {
+                  expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                    level_type: null
+                  }));
+                });
+              } else {
+                it('Contact API gets called with null', function () {
+                  expect(Contact.leaveManagees).toHaveBeenCalledWith(controller.contactId, jasmine.objectContaining({
+                    level_type: null
+                  }));
+                });
+              }
             });
           });
         });
@@ -569,20 +640,22 @@
             $rootScope.$apply();
           });
 
-          describe('managed_by', function () {
-            beforeEach(function () {
-              controller.refresh();
-              defer.resolve(ContactAPIMock.mockedContacts().list);
-            });
+          if (!isAdmin) {
+            describe('managed_by', function () {
+              beforeEach(function () {
+                controller.refresh();
+                defer.resolve(ContactAPIMock.mockedContacts().list);
+              });
 
-            it('fetches only the leave requests managed by the user', function () {
-              promise.then(function () {
-                expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                  managed_by: CRM.vars.leaveAndAbsences.contactId
-                }));
+              it('fetches only the leave requests managed by the user', function () {
+                promise.then(function () {
+                  expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
+                    managed_by: CRM.vars.leaveAndAbsences.contactId
+                  }));
+                });
               });
             });
-          });
+          }
 
           describe('type_id', function () {
             describe('when selected absence types has value', function () {
@@ -684,21 +757,16 @@
             });
 
             describe('when contact is null and filtered users has value', function () {
-              var mockUsers = [{
-                id: '202'
-              }];
-
               beforeEach(function () {
                 controller.filters.leaveRequest.contact_id = null;
                 controller.refresh();
-                defer.resolve(mockUsers);
               });
 
               it('filtered by filtered users', function () {
                 promise.then(function () {
                   expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                     contact_id: {
-                      'IN': [mockUsers[0].id]
+                      'IN': controller.filteredUsers.map(function (contact) { return contact.id; })
                     }
                   }));
                 });
@@ -827,7 +895,7 @@
         });
 
         it('calls related contact API to update', function () {
-          expect(Contact.leaveManagees).toHaveBeenCalled();
+          expect(isAdmin ? Contact.all : Contact.leaveManagees).toHaveBeenCalled();
         });
       });
 
@@ -837,12 +905,12 @@
         });
 
         it('calls related contact API to update', function () {
-          expect(Contact.leaveManagees).toHaveBeenCalled();
+          expect(isAdmin ? Contact.all : Contact.leaveManagees).toHaveBeenCalled();
         });
       });
 
       function compileComponent () {
-        controller = $componentController('managerLeaveRequests', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
+        controller = $componentController('manageLeaveRequests', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
         $rootScope.$digest();
       }
     });
