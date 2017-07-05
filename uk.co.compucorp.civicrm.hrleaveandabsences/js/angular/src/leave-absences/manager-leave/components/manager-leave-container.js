@@ -10,11 +10,8 @@ define([
     templateUrl: ['settings', function (settings) {
       return settings.pathTpl + 'components/manager-leave-container.html';
     }],
-    controller: ['$log', '$rootScope', function ($log, $rootScope) {
+    controller: ['$log', function ($log) {
       $log.debug('Component: manager-leave-container');
-
-      // TODO use `checkPermissions` service in the individual components instead
-      $rootScope.role = 'manager';
 
       var vm = Object.create(this);
 

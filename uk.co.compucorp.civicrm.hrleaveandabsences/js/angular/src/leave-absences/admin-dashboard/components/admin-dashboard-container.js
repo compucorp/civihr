@@ -7,14 +7,12 @@ define([
     templateUrl: ['settings', function (settings) {
       return settings.pathTpl + 'components/admin-dashboard-container.html';
     }],
-    controllerAs: 'vm',
-    controller: ['$log', '$rootScope', controller]
+    controllerAs: 'dashboard',
+    controller: ['$log', controller]
   });
 
-  function controller ($log, $rootScope) {
+  function controller ($log) {
     $log.debug('Component: admin-dashboard-container');
-
-    $rootScope.role = 'admin';
 
     var vm = Object.create(this);
 

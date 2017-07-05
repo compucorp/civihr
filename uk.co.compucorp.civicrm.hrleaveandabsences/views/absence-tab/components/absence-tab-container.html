@@ -6,7 +6,6 @@
         class="btn btn-info"
         leave-request-popup leave-type="leave"
         contact-id="absence.contactId"
-        user-role="{{$root.role}}"
         selected-contact-id="$root.settings.contactId">Record New Absence
       </button>
       <button
@@ -19,7 +18,7 @@
       <ul class="dropdown-menu" uib-dropdown-menu>
         <li>
           <a
-            leave-request-popup user-role="{{$root.role}}"
+            leave-request-popup
             contact-id="contactId" leave-type="sickness"
             selected-contact-id="$root.settings.contactId"
             href="#">Record Sickness
@@ -27,7 +26,7 @@
         </li>
         <li>
           <a
-            leave-request-popup user-role="{{$root.role}}"
+            leave-request-popup
             contact-id="contactId" leave-type="toil"
             selected-contact-id="$root.settings.contactId"
             href="#">Record Overtime
