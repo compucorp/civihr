@@ -24,9 +24,10 @@
     'use strict';
 
     describe('ToilRequestCtrl', function () {
-      var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller,
+      var $log, $q, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller, sharedSettings,
         $provide, Contact, ContactAPIMock, AbsenceTypeAPI, TOILRequestInstance;
       var date2016 = '01/12/2016';
+      var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
         'leave-absences.mocks', 'common.mocks', 'common.dialog', 'leave-absences.settings',
@@ -52,9 +53,23 @@
         $provide.value('FileUploader', _FileUploaderMock_);
       }));
 
-      beforeEach(inject(['api.contact.mock', function (_ContactAPIMock_) {
+      beforeEach(inject(['api.contact.mock', 'shared-settings', '$q', function (_ContactAPIMock_, _sharedSettings_, _$q_) {
         $provide.value('api.contact', _ContactAPIMock_);
         ContactAPIMock = _ContactAPIMock_;
+        sharedSettings = _sharedSettings_;
+        $q = _$q_;
+
+        $provide.value('checkPermissions', function (permission) {
+          var returnValue = false;
+          if (role === 'admin') {
+            returnValue = permission === sharedSettings.permissions.admin.administer;
+          }
+          if (role === 'manager') {
+            returnValue = permission === sharedSettings.permissions.ssp.manage;
+          }
+
+          return $q.resolve(returnValue);
+        });
       }]));
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _Contact_,
@@ -249,10 +264,10 @@
               toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: 203, // manager's contact id
-                leaveRequest: toilRequest,
-                userRole: 'manager'
+                leaveRequest: toilRequest
               };
 
+              role = 'manager';
               initTestController(directiveOptions);
 
               expiryDate = $ctrl._convertDateFormatFromServer($ctrl.request.toil_expiry_date);
