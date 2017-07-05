@@ -112,7 +112,9 @@ var test = (function () {
      * @throw {Error}
      */
     for: function (srcFile) {
+      var self = this;
       var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
+      var testFileFound = false;
 
       ['_test.js', '.spec.js'].forEach(function (suffix) {
         var testFile = srcFile
@@ -122,11 +124,15 @@ var test = (function () {
         try {
           var stats = fs.statSync(testFile);
 
-          stats.isFile() && this.single(testFile);
-        } catch (ex) {
-          throw ex;
-        }
+          stats.isFile() && self.single(testFile);
+
+          testFileFound = true;
+        } catch (ex) {}
       });
+
+      if (!testFileFound) {
+        throw new Error('Test file not found');
+      }
     },
 
     /**
