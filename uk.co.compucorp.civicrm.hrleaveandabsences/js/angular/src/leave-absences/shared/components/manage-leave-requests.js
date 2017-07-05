@@ -1,27 +1,31 @@
 /* eslint-env amd */
+
 define([
   'common/lodash',
-  'leave-absences/manager-leave/modules/components',
+  'leave-absences/shared/modules/components',
   'common/models/contact'
 ], function (_, components) {
-  components.component('managerLeaveRequests', {
+  components.component('manageLeaveRequests', {
     bindings: {
       contactId: '<'
     },
-    templateUrl: ['settings', function (settings) {
-      return settings.pathTpl + 'components/manager-leave-requests.html';
+    templateUrl: ['shared-settings', function (sharedSettings) {
+      return sharedSettings.sharedPathTpl + 'components/manage-leave-requests.html';
     }],
-    controllerAs: 'ctrl',
-    controller: ['$log', '$q', '$rootScope', 'Contact', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
-      'OptionGroup', 'dialog', 'shared-settings', controller]
+    controllerAs: 'vm',
+    controller: [
+      '$controller', '$log', '$q', '$rootScope', 'shared-settings', 'checkPermissions',
+      'Contact', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest', 'OptionGroup',
+      'dialog', controller]
   });
 
-  function controller ($log, $q, $rootScope, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup, dialog, sharedSettings) {
+  function controller ($controller, $log, $q, $rootScope, sharedSettings, checkPermissions, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup, dialog) {
     'use strict';
-    $log.debug('Component: manager-leave-requests');
+    $log.debug('Component: manage-leave-requests');
 
-    var vm = Object.create(this);
+    var vm = this;
     var actionMatrix = {};
+
     actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['respond', 'cancel', 'approve', 'reject'];
     actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['edit', 'cancel'];
     actionMatrix[sharedSettings.statusNames.approved] = ['edit'];
@@ -53,6 +57,7 @@ define([
     vm.isFilterExpanded = false;
     // leaveRequests.table - to handle table data
     // leaveRequests.filter - to handle left nav filter data
+    vm.isAdmin = false; // this property is updated on controller initialization
     vm.leaveRequests = {
       table: {
         list: []
@@ -275,21 +280,26 @@ define([
     };
 
     (function init () {
-      $q.all([
-        loadAbsencePeriods(),
-        loadAbsenceTypes(),
-        loadRegions(),
-        loadDepartments(),
-        loadLocations(),
-        loadLevelTypes(),
-        loadStatuses()
-      ])
-      .then(function () {
-        vm.loading.page = false;
-        loadManageesAndLeaves();
-      });
+      checkPermissions(sharedSettings.permissions.admin.administer)
+      .then(function (isAdmin) {
+        vm.isAdmin = isAdmin;
 
-      registerEvents();
+        $q.all([
+          loadAbsencePeriods(),
+          loadAbsenceTypes(),
+          loadRegions(),
+          loadDepartments(),
+          loadLocations(),
+          loadLevelTypes(),
+          loadStatuses()
+        ])
+        .then(function () {
+          vm.loading.page = false;
+          loadManageesAndLeaves();
+        });
+
+        registerEvents();
+      });
     })();
 
     /**
@@ -343,9 +353,9 @@ define([
     function loadManageesAndLeaves () {
       vm.loading.content = true;
 
-      Contact.leaveManagees(vm.contactId, contactFilters())
+      return (vm.isAdmin ? Contact.all(contactFilters()) : Contact.leaveManagees(vm.contactId, contactFilters()))
         .then(function (users) {
-          vm.filteredUsers = users;
+          vm.filteredUsers = vm.isAdmin ? users.list : users;
 
           return $q.all([
             loadLeaveRequests('table'),
@@ -427,7 +437,7 @@ define([
 
       return {
         contact_id: prepareContactID(),
-        managed_by: vm.contactId,
+        managed_by: vm.isAdmin ? undefined : vm.contactId, // managed_by must be ignored if admin
         status_id: prepareStatusFilter(filterByStatus),
         type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
         from_date: {
@@ -523,7 +533,5 @@ define([
       $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
       $rootScope.$on('LeaveRequest::new', vm.refresh);
     }
-
-    return vm;
   }
 });

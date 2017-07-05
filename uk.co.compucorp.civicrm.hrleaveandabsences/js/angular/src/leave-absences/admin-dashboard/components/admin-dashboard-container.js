@@ -13,9 +13,5 @@ define([
 
   function controller ($log) {
     $log.debug('Component: admin-dashboard-container');
-
-    var vm = Object.create(this);
-
-    return vm;
   }
 });
