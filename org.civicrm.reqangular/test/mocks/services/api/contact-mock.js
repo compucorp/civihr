@@ -15,7 +15,9 @@ define([
         if (filters) {
           list = list.filter(function (contact) {
             return Object.keys(filters).every(function (key) {
-              if (key === 'display_name') {
+              if (filters[key] === null) {
+                return true;
+              } else if (key === 'display_name') {
                 return (new RegExp(filters[key], 'i')).test(contact[key]);
               } else if (filters[key].IN) {
                 return _.includes(filters[key].IN, contact[key]);
