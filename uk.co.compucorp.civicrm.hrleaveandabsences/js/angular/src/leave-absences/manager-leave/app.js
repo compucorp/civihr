@@ -5,15 +5,17 @@ define([
   'common/angularBootstrap',
   'common/text-angular',
   'common/directives/loading',
-  'common/services/angular-date/date-format',
   'common/modules/dialog',
+  'common/services/angular-date/date-format',
+  'common/services/check-permissions',
   'leave-absences/shared/ui-router',
+  'leave-absences/shared/components/leave-request-popup-comments-tab',
   'leave-absences/shared/directives/leave-request-popup',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/manager-leave/modules/config',
   'leave-absences/manager-leave/components/manager-leave-container',
-  'leave-absences/manager-leave/components/manager-leave-calendar',
+  'leave-absences/shared/components/manager-leave-calendar',
   'leave-absences/manager-leave/components/manager-leave-requests'
 ], function (angular) {
   angular.module('manager-leave', [
@@ -31,6 +33,7 @@ define([
     'leave-absences.models',
     'manager-leave.config',
     'manager-leave.components',
+    'leave-absences.components',
     'leave-absences.directives',
     'leave-absences.models'
   ])

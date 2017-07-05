@@ -58,9 +58,12 @@
               </ng-include>
             </uib-tab>
             <uib-tab heading="Comments">
-              <ng-include
-                src="sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-comments-tab.html'">
-              </ng-include>
+              <leave-request-popup-comments-tab
+              request="$ctrl.request"
+              mode="$ctrl.mode"
+              can-manage="$ctrl.canManage"
+              >
+              </leave-request-popup-comments-tab>
             </uib-tab>
             <uib-tab heading="Files">
               <ng-include

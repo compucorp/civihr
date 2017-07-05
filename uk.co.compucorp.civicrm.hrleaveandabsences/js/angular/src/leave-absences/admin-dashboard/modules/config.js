@@ -21,7 +21,7 @@ define([
           })
           .state('calendar', {
             url: '/calendar',
-            template: '<admin-dashboard-calendar></admin-dashboard-calendar>'
+            template: '<manager-leave-calendar contact-id="$root.settings.contactId"></manager-leave-calendar>'
           });
       }
     ]);

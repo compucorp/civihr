@@ -1,0 +1,20 @@
+.chr_manager_calendar__header {
+  padding-top: 15px;
+  background-color: #f4f7f8;
+
+  > div {
+    display: inline-block;
+    margin: 0 10px;
+    width: calc(16.4% - 20px);
+    vertical-align: top;
+  }
+
+  /*
+   * This is a temporary patch which fixes CSS in the ui-select
+   * @TODO remove this patch when Shoreditch theme is migrated to SSP
+   */
+  .btn.ui-select-toggle {
+    padding: 4px 10px !important;
+    text-transform: none !important;
+  }
+}

@@ -118,20 +118,6 @@
         });
 
         describe('when initialized', function () {
-          describe('comments', function () {
-            it('text is empty', function () {
-              expect($ctrl.comment.text).toBe('');
-            });
-
-            it('contacts is not loaded', function () {
-              expect($ctrl.comment.contacts).toEqual({});
-            });
-
-            it('has no files to upload', function () {
-              expect($ctrl.request.fileUploader.queue).toEqual([]);
-            });
-          });
-
           describe('before date is selected', function () {
             beforeEach(function () {
               $scope.$digest();
@@ -309,33 +295,6 @@
           });
         });
 
-        describe('addComment()', function () {
-          beforeEach(function () {
-            $ctrl.request.comments = [];
-            $ctrl.directiveOptions.contactId = '101';
-            $ctrl.comment.text = 'some text';
-            $ctrl.request.id = '102';
-            $ctrl.addComment();
-          });
-
-          it('adds comment to the request', function () {
-            expect($ctrl.request.comments.length).not.toBe(0);
-          });
-
-          it('adds comment with proper values', function () {
-            expect($ctrl.request.comments[0]).toEqual({
-              contact_id: '101',
-              created_at: jasmine.any(String),
-              leave_request_id: '102',
-              text: 'some text'
-            });
-          });
-
-          it('clears the comment text box', function () {
-            expect($ctrl.comment.text).toBe('');
-          });
-        });
-
         describe('formatDateTime()', function () {
           var returnValue;
 
@@ -345,108 +304,6 @@
 
           it('returns date time in user format', function () {
             expect(returnValue).toBe('14/06/2017 12:15');
-          });
-        });
-
-        describe('getCommentorName()', function () {
-          var returnValue;
-
-          describe('when comment author is same as logged in user', function () {
-            beforeEach(function () {
-              $ctrl.directiveOptions.contactId = '101';
-              returnValue = $ctrl.getCommentorName('101');
-            });
-
-            it('returns "Me"', function () {
-              expect(returnValue).toBe('Me');
-            });
-          });
-
-          describe('when comment author is not same as logged in user', function () {
-            var displayName = 'MR X';
-
-            beforeEach(function () {
-              $ctrl.directiveOptions.contactId = '101';
-              $ctrl.comment.contacts = {
-                102: {
-                  display_name: displayName
-                }
-              };
-              returnValue = $ctrl.getCommentorName('102');
-            });
-
-            it('returns name of the comment author', function () {
-              expect(returnValue).toBe(displayName);
-            });
-          });
-        });
-
-        describe('removeCommentVisibility()', function () {
-          var returnValue;
-          var comment = {};
-
-          beforeEach(function () {
-            spyOn($ctrl, 'isRole');
-          });
-
-          describe('when comment id is missing and role is neither manager nor admin', function () {
-            beforeEach(function () {
-              comment.comment_id = null;
-
-              $ctrl.isRole.and.returnValue(false);
-              $ctrl._init();
-
-              returnValue = $ctrl.removeCommentVisibility(comment);
-            });
-
-            it('button should be visible', function () {
-              expect(returnValue).toBe(true);
-            });
-          });
-
-          describe('when comment id is not missing and role is neither manager nor admin', function () {
-            beforeEach(function () {
-              comment.comment_id = jasmine.any(String);
-
-              $ctrl.isRole.and.returnValue(false);
-              $ctrl._init();
-
-              returnValue = $ctrl.removeCommentVisibility(comment);
-            });
-
-            it('button should not be visible', function () {
-              expect(returnValue).toBe(false);
-            });
-          });
-
-          describe('when comment id is not missing and role is either manager or admin', function () {
-            beforeEach(function () {
-              comment.comment_id = jasmine.any(String);
-
-              $ctrl.isRole.and.returnValue(true);
-              $ctrl._init();
-
-              returnValue = $ctrl.removeCommentVisibility(comment);
-            });
-
-            it('button should be visible', function () {
-              expect(returnValue).toBe(true);
-            });
-          });
-
-          describe('when comment id is missing and role is either manager or admin', function () {
-            beforeEach(function () {
-              comment.comment_id = null;
-
-              $ctrl.isRole.and.returnValue(true);
-              $ctrl._init();
-
-              returnValue = $ctrl.removeCommentVisibility(comment);
-            });
-
-            it('button should be visible', function () {
-              expect(returnValue).toBe(true);
-            });
           });
         });
 
@@ -833,7 +690,7 @@
 
                 beforeEach(function () {
                   setTestDates(date2016);
-                  minDate = moment(new Date(date2016)).add(1, 'd').toDate();
+                  minDate = moment(getUTCDate(date2016)).add(1, 'd').toDate();
                 });
 
                 it('sets min date to from date', function () {
@@ -1015,36 +872,16 @@
             describe('user adds comments', function () {
               beforeEach(function () {
                 $ctrl.request.comments = [];
-                $ctrl.directiveOptions.contactId = '101';
-                $ctrl.comment.text = 'some text';
-                $ctrl.request.id = '102';
-                $ctrl.addComment();
+                $ctrl.request.comments.push({
+                  contact_id: '101',
+                  leave_request_id: '102',
+                  text: 'some text'
+                });
               });
 
               it('allows user to submit', function () {
                 expect($ctrl.canSubmit()).toBeTruthy();
               });
-            });
-          });
-
-          describe('with comments', function () {
-            beforeEach(function () {
-              var leaveRequest = LeaveRequestInstance.init(mockData.findBy('id', '17'));
-              leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-              var directiveOptions = {
-                contactId: leaveRequest.contact_id, // staff's contact id
-                leaveRequest: leaveRequest
-              };
-
-              initTestController(directiveOptions);
-            });
-
-            it('loads comments', function () {
-              expect($ctrl.request.comments.length).toBeGreaterThan(0);
-            });
-
-            it('gets commentor contact detail', function () {
-              expect(Contact.all).toHaveBeenCalled();
             });
           });
         });
@@ -1475,16 +1312,21 @@
        */
       function setTestDates (from, to) {
         if (from) {
-          $ctrl.uiOptions.fromDate = new Date(from);
+          $ctrl.uiOptions.fromDate = getUTCDate(from);
           $ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.fromDate, 'from');
           $scope.$digest();
         }
 
         if (to) {
-          $ctrl.uiOptions.toDate = new Date(to);
+          $ctrl.uiOptions.toDate = getUTCDate(to);
           $ctrl.updateAbsencePeriodDatesTypes($ctrl.uiOptions.toDate, 'to');
           $scope.$digest();
         }
+      }
+
+      function getUTCDate (date) {
+        var now = new Date(date);
+        return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
       }
     });
   });

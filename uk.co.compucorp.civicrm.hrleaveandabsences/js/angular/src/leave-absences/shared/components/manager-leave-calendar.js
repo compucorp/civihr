@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/manager-leave/modules/components',
+  'leave-absences/shared/modules/components',
   'leave-absences/shared/controllers/calendar-ctrl',
   'common/models/contact'
 ], function (_, moment, components) {
@@ -11,18 +11,22 @@ define([
     bindings: {
       contactId: '<'
     },
-    templateUrl: ['settings', function (settings) {
-      return settings.pathTpl + 'components/manager-leave-calendar.html';
+    templateUrl: ['shared-settings', function (sharedSettings) {
+      return sharedSettings.sharedPathTpl + 'components/manager-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$controller', '$log', '$q', '$rootScope', 'Calendar', 'Contact', 'OptionGroup', controller]
+    controller: [
+      '$controller', '$log', '$q', '$rootScope', 'shared-settings', 'checkPermissions',
+      'Calendar', 'Contact', 'OptionGroup', controller]
   });
 
-  function controller ($controller, $log, $q, $rootScope, Calendar, Contact, OptionGroup) {
+  function controller ($controller, $log, $q, $rootScope, sharedSettings, checkPermissions, Calendar, Contact, OptionGroup) {
     $log.debug('Component: manager-leave-calendar');
 
     var parentCtrl = $controller('CalendarCtrl');
     var vm = Object.create(parentCtrl);
+    var isAdmin = false; // updated on the init function after calling checkPermissions service
+    var calendarData;
 
     /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
      * Calendar data saved temporarily in tempContactData and once all the promises are resolved,
@@ -134,13 +138,14 @@ define([
         return contact.id;
       }), vm.selectedPeriod.id)
       .then(function (calendars) {
+        calendarData = calendars;
         // contacts are stored by index rather than by id, so it's necessary
         // to find the index of each contact by using their id
         var contactIds = tempContactData.map(function (contact) {
           return contact.id;
         });
 
-        calendars.forEach(function (calendar) {
+        calendarData.forEach(function (calendar) {
           var index = contactIds.indexOf(calendar.contact_id);
 
           tempContactData[index].calendarData = vm._setCalendarProps(calendar.contact_id, calendar);
@@ -177,6 +182,14 @@ define([
      * @return {Promise}
      */
     vm._loadManagees = function () {
+      if (isAdmin) {
+        return Contact.all()
+          .then(function (contacts) {
+            vm.managedContacts = contacts.list;
+            vm.filteredContacts = contacts.list;
+          });
+      }
+
       return Contact.find(vm.contactId)
         .then(function (contact) {
           return contact.leaveManagees()
@@ -297,19 +310,44 @@ define([
     };
 
     (function init () {
-      vm._init(function () {
-        return $q.all([
-          vm._loadRegions(),
-          vm._loadDepartments(),
-          vm._loadLocations(),
-          vm._loadLevelTypes()
-        ])
-        .then(function () {
-          return vm._loadManagees();
+      checkPermissions(sharedSettings.permissions.admin.administer)
+      .then(function (_isAdmin_) {
+        isAdmin = _isAdmin_;
+
+        vm._init(function () {
+          return $q.all([
+            vm._loadRegions(),
+            vm._loadDepartments(),
+            vm._loadLocations(),
+            vm._loadLevelTypes()
+          ])
+            .then(function () {
+              return vm._loadManagees();
+            });
         });
       });
-
       $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
+      $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest);
+
+      /**
+       * Event handler for Delete event of Leave Request
+       *
+       * @param  {object} event
+       * @param  {object} leaveRequest
+       */
+      function deleteLeaveRequest (event, leaveRequest) {
+        var contactID = leaveRequest.contact_id;
+        // Find the calendarData for the deleted requests user
+        var calendar = _.find(calendarData, function (calendar) {
+          return calendar.contact_id === contactID;
+        });
+
+        vm.leaveRequests[contactID] = _.omit(vm.leaveRequests[contactID], function (leaveRequestObj) {
+          return leaveRequestObj.id === leaveRequest.id;
+        });
+        vm._resetMonths();
+        vm._setCalendarProps(contactID, calendar);
+      }
     })();
 
     return vm;
