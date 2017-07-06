@@ -264,7 +264,8 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
     $fields = self::getFields();
 
     foreach($params as $key=>$value) {
-      if (isset($fields[$key]['type']) && $fields[$key]['type'] == CRM_Utils_Type::T_DATE) {
+      $fieldType = empty($fields[$key]['type']) ? null : $fields[$key]['type'];
+      if ($fieldType && $fieldType == CRM_Utils_Type::T_DATE) {
 
         try {
           new DateTime($value);
@@ -273,7 +274,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
         }
       }
 
-      if (isset($fields[$key]['type']) && ($fields[$key]['type'] == CRM_Utils_Type::T_FLOAT || $fields[$key]['type'] == CRM_Utils_Type::T_INT)) {
+      if ($fieldType && ($fieldType == CRM_Utils_Type::T_FLOAT || $fieldType == CRM_Utils_Type::T_INT)) {
         if(!is_numeric($value)) {
           CRM_Contact_Import_Parser_Contact::addToErrorMsg('Invalid value for '.$fields[$key]['title'], $errorMessage);
         }
@@ -291,7 +292,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
    *
    * @return string
    */
-  private function validateOptionValues($params){
+  private function validateOptionValues($params) {
     $errorMessage = NULL;
     $absenceType = $params['absence_type'];
     $absenceStatus = $params['status'];
