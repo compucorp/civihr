@@ -73,7 +73,7 @@ class CRM_HRLeaveAndAbsences_Import_Form_DataSource extends CRM_Import_Form_Data
       'savedMapping',
     ));
 
-    $this->submitFileForMapping('CRM_HRLeaveAndAbsences_Import_Parser_BaseClass');
+    $this->submitFileForMapping('CRM_HRLeaveAndAbsences_Import_Parser_Base');
   }
 
 }

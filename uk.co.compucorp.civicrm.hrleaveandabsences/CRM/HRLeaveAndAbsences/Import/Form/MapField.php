@@ -25,7 +25,7 @@
  +--------------------------------------------------------------------+
  */
 
-use CRM_HRLeaveAndAbsences_Import_Parser_BaseClass as BaseParser;
+use CRM_HRLeaveAndAbsences_Import_Parser_Base as BaseParser;
 /**
  *
  * @package CRM
@@ -404,7 +404,7 @@ class CRM_HRLeaveAndAbsences_Import_Form_MapField extends CRM_Import_Form_MapFie
       $this->set('savedMapping', $saveMappingFields->mapping_id);
     }
 
-    $parser = new CRM_HRLeaveAndAbsences_Import_Parser_BaseClass($mapperKeysMain);
+    $parser = new CRM_HRLeaveAndAbsences_Import_Parser_Base($mapperKeysMain);
     $parser->run($fileName, $seperator, $mapper, $skipColumnHeader,
       CRM_Import_Parser::MODE_PREVIEW
     );

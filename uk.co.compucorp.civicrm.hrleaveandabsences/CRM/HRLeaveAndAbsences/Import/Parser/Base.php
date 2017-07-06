@@ -6,7 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 /**
  * Class to parse activity csv files.
  */
-class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsences_Import_Parser {
+class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_Import_Parser {
 
   use CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait;
 
