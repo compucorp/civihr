@@ -103,35 +103,24 @@ var test = (function () {
     /**
      * Runs the tests for a specific source file
      *
-     * Looks for a test file (*_test.js or *.spec.js) in `test/`, using the same path
+     * Looks for a test file (*.spec.js) in `test/`, using the same path
      * of the source file in `src/leave-absences/`
-     *   i.e. src/leave-absences/models/model.js -> test/models/model_test.js
-     *   or   src/leave-absences/models/model.js -> test/models/model.spec.js
-     *   @TODO test files *_test.js should be renamed to *.spec.js
+     *   i.e. src/leave-absences/models/model.js -> test/models/model.spec.js
      *
      * @throw {Error}
      */
     for: function (srcFile) {
-      var self = this;
       var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
-      var testFileFound = false;
+      var testFile = srcFile
+        .replace('src/leave-absences/', 'test/')
+        .replace(srcFileNoExt + '.js', srcFileNoExt + '.spec.js');
 
-      ['_test.js', '.spec.js'].forEach(function (suffix) {
-        var testFile = srcFile
-          .replace('src/leave-absences/', 'test/')
-          .replace(srcFileNoExt + '.js', srcFileNoExt + suffix);
+      try {
+        var stats = fs.statSync(testFile);
 
-        try {
-          var stats = fs.statSync(testFile);
-
-          stats.isFile() && self.single(testFile);
-
-          testFileFound = true;
-        } catch (ex) {}
-      });
-
-      if (!testFileFound) {
-        throw new Error('Test file not found');
+        stats.isFile() && this.single(testFile);
+      } catch (ex) {
+        throw ex;
       }
     },
 
@@ -147,7 +136,6 @@ var test = (function () {
       var configFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
       gulp.src(path.join(__dirname, 'js/angular/karma.conf.js'))
-        .pipe(replace('*_test.js', path.basename(testFile)))
         .pipe(replace('*.spec.js', path.basename(testFile)))
         .pipe(rename(configFile))
         .pipe(gulp.dest(path.join(__dirname, 'js/angular')))
