@@ -286,11 +286,11 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
     $absenceStatus = $params['status'];
 
     if (!isset($this->absenceStatuses[$absenceStatus])) {
-      CRM_Contact_Import_Parser_Contact::addToErrorMsg('Invalid Absence Status value', $errorMessage);
+      self::addToErrorMsg('Invalid Absence Status value', $errorMessage);
     }
 
     if (!isset($this->absenceTypes[$absenceType])) {
-      CRM_Contact_Import_Parser_Contact::addToErrorMsg('Invalid Absence type value', $errorMessage);
+      self::addToErrorMsg('Invalid Absence type value', $errorMessage);
     }
 
     return $errorMessage;
@@ -319,5 +319,23 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
     }
 
     return $absenceTypes;
+  }
+
+  /**
+   * Build errorMessage by concatenating the error strings passed in.
+   *
+   * @param string $error
+   *   A string containing error.
+   * @param string $errorMessage
+   *   A string containing all the error-fields, where the new errorName is concatenated.
+   *
+   */
+  public static function addToErrorMsg($error, &$errorMessage) {
+    if ($errorMessage) {
+      $errorMessage .= "; $error";
+    }
+    else {
+      $errorMessage = $error;
+    }
   }
 }
