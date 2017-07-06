@@ -32,6 +32,7 @@
       var date2017 = '02/02/2017';
       var date2013 = '02/02/2013';
       var dateServer2017 = '2017-02-02';
+      var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
         'leave-absences.mocks', 'common.mocks', 'common.dialog', 'leave-absences.settings',
@@ -58,6 +59,18 @@
         $provide.value('HR_settings', _HRSettingsMock_);
         ContactAPIMock = _ContactAPIMock_;
         sharedSettings = _sharedSettings_;
+
+        $provide.value('checkPermissions', function (permission) {
+          var returnValue = false;
+          if (role === 'admin') {
+            returnValue = permission === sharedSettings.permissions.admin.administer;
+          }
+          if (role === 'manager') {
+            returnValue = permission === sharedSettings.permissions.ssp.manage;
+          }
+
+          return $q.resolve(returnValue);
+        });
       }]));
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_, _dialog_,
@@ -741,8 +754,7 @@
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: leaveRequest.contact_id, // staff's contact id
-                leaveRequest: leaveRequest,
-                userRole: 'staff'
+                leaveRequest: leaveRequest
               };
 
               initTestController(directiveOptions);
@@ -854,8 +866,7 @@
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
                   contactId: leaveRequest.contact_id, // staff's contact id
-                  leaveRequest: leaveRequest,
-                  userRole: 'staff'
+                  leaveRequest: leaveRequest
                 };
 
                 initTestController(directiveOptions);
@@ -895,8 +906,7 @@
 
             initTestController({
               contactId: leaveRequest.contact_id, // staff's contact id
-              leaveRequest: leaveRequest,
-              userRole: 'staff'
+              leaveRequest: leaveRequest
             });
           });
 
@@ -924,8 +934,7 @@
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             var directiveOptions = {
               contactId: leaveRequest.contact_id, // staff's contact id
-              leaveRequest: leaveRequest,
-              userRole: 'staff'
+              leaveRequest: leaveRequest
             };
 
             initTestController(directiveOptions);
@@ -984,9 +993,9 @@
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
           var directiveOptions = {
             contactId: 203, // manager's contact id
-            leaveRequest: leaveRequest,
-            userRole: 'manager'
+            leaveRequest: leaveRequest
           };
+          role = 'manager';
 
           initTestController(directiveOptions);
         });
@@ -1077,10 +1086,9 @@
       describe('manager raises absence request on behalf of staff', function () {
         beforeEach(function () {
           var directiveOptions = {
-            contactId: 203, // manager's contact id
-            userRole: 'manager'
+            contactId: 203 // manager's contact id
           };
-
+          role = 'manager';
           initTestController(directiveOptions);
         });
 
@@ -1168,10 +1176,10 @@
 
           leaveRequest.contact_id = adminId.toString();
 
+          role = 'admin';
           initTestController({
             contactId: adminId,
-            leaveRequest: leaveRequest,
-            userRole: 'admin'
+            leaveRequest: leaveRequest
           });
         });
 
@@ -1197,9 +1205,9 @@
         beforeEach(function () {
           $ctrl.request.contact_id = adminId.toString();
 
+          role = 'admin';
           initTestController({
             contactId: adminId,
-            userRole: 'admin',
             selectedContactId: selectedContactId
           });
         });
@@ -1220,23 +1228,6 @@
           it('loads exactly one contact', function () {
             expect($ctrl.managedContacts.length).toEqual(1);
           });
-        });
-      });
-
-      describe('when role parameter is not passed to the controller', function () {
-        beforeEach(function () {
-          var leaveRequest = LeaveRequestInstance.init();
-          leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-          var directiveOptions = {
-            contactId: leaveRequest.contact_id, // staff's contact id
-            leaveRequest: leaveRequest
-          };
-
-          initTestController(directiveOptions);
-        });
-
-        it('defaults to staff role', function () {
-          expect($ctrl.isRole('staff')).toBe(true);
         });
       });
 

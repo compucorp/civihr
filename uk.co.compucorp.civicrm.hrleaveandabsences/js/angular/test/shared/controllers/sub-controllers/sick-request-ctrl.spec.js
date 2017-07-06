@@ -23,9 +23,10 @@
     'use strict';
 
     describe('SicknessRequestCtrl', function () {
-      var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller,
+      var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller, sharedSettings, $q,
         $provide, AbsenceTypeAPI, SicknessRequestInstance;
       var date2016 = '01/12/2016';
+      var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
         'leave-absences.mocks', 'common.mocks', 'common.dialog', 'leave-absences.settings',
@@ -33,8 +34,22 @@
           $provide = _$provide_;
         }));
 
-      beforeEach(inject(['HR_settingsMock', function (HRSettingsMock) {
+      beforeEach(inject(['HR_settingsMock', 'shared-settings', '$q', function (HRSettingsMock, _sharedSettings_, _$q_) {
         $provide.value('HR_settings', HRSettingsMock);
+        sharedSettings = _sharedSettings_;
+        $q = _$q_;
+
+        $provide.value('checkPermissions', function (permission) {
+          var returnValue = false;
+          if (role === 'admin') {
+            returnValue = permission === sharedSettings.permissions.admin.administer;
+          }
+          if (role === 'manager') {
+            returnValue = permission === sharedSettings.permissions.ssp.manage;
+          }
+
+          return $q.resolve(returnValue);
+        });
       }]));
 
       beforeEach(inject(function (_AbsencePeriodAPIMock_,

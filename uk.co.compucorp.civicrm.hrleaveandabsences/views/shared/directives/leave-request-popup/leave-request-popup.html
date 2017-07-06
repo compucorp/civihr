@@ -4,7 +4,7 @@
 
 <crm-loading show="!$ctrl.loading.absenceTypes">
   <div
-    ng-show="$ctrl.isRole('admin') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))"
+    ng-show="$ctrl.canManage && !$ctrl.isMode('create')"
     class="row chr_leave-request-modal__user-info">
     <span class="col-xs-6">{{$ctrl.contactName}}</span>
     <span class="col-xs-6">{{::$ctrl.getStatusFromValue($ctrl.request.status_id).label}}</span>

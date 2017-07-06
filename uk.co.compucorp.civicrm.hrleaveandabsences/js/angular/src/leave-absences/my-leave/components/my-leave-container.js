@@ -11,11 +11,8 @@ define([
       return settings.pathTpl + 'components/my-leave-container.html';
     }],
     controllerAs: 'myleave',
-    controller: ['$log', '$rootScope', '$scope', '$uibModal', 'settings', function ($log, $rootScope, $scope, $modal, settings) {
+    controller: ['$log', '$scope', '$uibModal', 'settings', function ($log, $scope, $modal, settings) {
       $log.debug('Component: my-leave-container');
-
-      // TODO use `checkPermissions` service in the individual components instead
-      $rootScope.role = 'staff';
 
       var vm = {};
       vm.leaveRequest = {

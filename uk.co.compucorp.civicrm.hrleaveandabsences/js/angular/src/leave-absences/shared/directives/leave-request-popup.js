@@ -36,7 +36,6 @@ define([
           contactId: '<',
           leaveRequest: '<',
           leaveType: '@',
-          userRole: '@',
           selectedContactId: '<'
         },
         restrict: 'EA',
@@ -56,7 +55,6 @@ define([
                   return {
                     contactId: scope.contactId,
                     leaveRequest: scope.leaveRequest,
-                    userRole: scope.userRole,
                     selectedContactId: scope.selectedContactId
                   };
                 },

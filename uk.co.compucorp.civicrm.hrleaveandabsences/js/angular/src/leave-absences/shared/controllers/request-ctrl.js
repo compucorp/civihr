@@ -19,10 +19,10 @@ define([
 
   controllers.controller('RequestCtrl', [
     '$log', '$q', '$rootScope', 'Contact', 'dialog', 'AbsencePeriod', 'AbsenceType',
-    'api.optionGroup', 'Calendar', 'Entitlement', 'HR_settings',
+    'api.optionGroup', 'checkPermissions', 'Calendar', 'Entitlement', 'HR_settings',
     'LeaveRequest', 'PublicHoliday', 'shared-settings',
     function ($log, $q, $rootScope, Contact, dialog, AbsencePeriod, AbsenceType,
-      OptionGroup, Calendar, Entitlement, HRSettings,
+      OptionGroup, checkPermissions, Calendar, Entitlement, HRSettings,
       LeaveRequest, PublicHoliday, sharedSettings
     ) {
       $log.debug('RequestCtrl');
@@ -538,39 +538,39 @@ define([
        * @return {Promise}
        */
       this._init = function () {
-        var self = this;
-
         this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
-        initRoles.call(self);
-        this._initRequest();
 
-        return loadStatuses.call(self)
+        return initRoles.call(this)
           .then(function () {
-            initOpenMode.call(self);
+            return this._initRequest();
+          }.bind(this))
+          .then(function () {
+            return loadStatuses.call(this);
+          }.bind(this))
+          .then(function () {
+            initOpenMode.call(this);
 
-            return self.canManage && !self.isMode('edit') && loadManagees.call(self);
-          })
+            return this.canManage && !this.isMode('edit') && loadManagees.call(this);
+          }.bind(this))
           .then(function () {
-            return loadAbsencePeriods.call(self);
-          })
+            return loadAbsencePeriods.call(this);
+          }.bind(this))
           .then(function () {
-            initAbsencePeriod.call(self);
-            self._setMinMaxDate();
+            initAbsencePeriod.call(this);
+            this._setMinMaxDate();
 
-            return $q.all([
-              self.request.loadAttachments()
-            ]);
-          })
+            return this.request.loadAttachments();
+          }.bind(this))
           .then(function () {
-            if (self.directiveOptions.selectedContactId) {
-              self.request.contact_id = self.directiveOptions.selectedContactId;
+            if (this.directiveOptions.selectedContactId) {
+              this.request.contact_id = this.directiveOptions.selectedContactId;
             }
             // The additional check here prevents error being displayed on startup when no contact is selected
-            if (self.request.contact_id) {
-              return self.initAfterContactSelection();
+            if (this.request.contact_id) {
+              return this.initAfterContactSelection();
             }
-          })
-          .catch(handleError.bind(self));
+          }.bind(this))
+          .catch(handleError.bind(this));
       };
 
       /**
@@ -914,8 +914,22 @@ define([
        * Initialize roles
        */
       function initRoles () {
-        role = this.directiveOptions.userRole || 'staff';
-        this.canManage = this.isRole('manager') || this.isRole('admin');
+        role = 'staff';
+
+        return checkPermissions(sharedSettings.permissions.admin.administer)
+        .then(function (isAdmin) {
+          role = isAdmin ? 'admin' : role;
+        })
+        .then(function () {
+          // (role === 'staff') means it is not admin so need to check if manager
+          return (role === 'staff') && checkPermissions(sharedSettings.permissions.ssp.manage)
+          .then(function (isManager) {
+            role = isManager ? 'manager' : role;
+          });
+        })
+        .finally(function () {
+          this.canManage = this.isRole('manager') || this.isRole('admin');
+        }.bind(this));
       }
 
       /**
@@ -950,11 +964,20 @@ define([
        */
       function loadManagees () {
         if (this.directiveOptions.selectedContactId) {
+          // When in absence tab, because "loadManagees" is called only in manager mode,
+          // and selectedContactId is not set for Manager Leave in SSP
           return Contact.find(this.directiveOptions.selectedContactId)
             .then(function (contact) {
               this.managedContacts = [contact];
             }.bind(this));
+        } else if (this.isRole('admin')) {
+          // When in Admin Dashboard
+          return Contact.all()
+            .then(function (contacts) {
+              this.managedContacts = contacts.list;
+            }.bind(this));
         } else {
+          // Everywhere else
           return Contact.find(this.directiveOptions.contactId)
             .then(function (contact) {
               return contact.leaveManagees();
