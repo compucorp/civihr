@@ -318,19 +318,17 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
    * @return array
    */
   private function getAbsenceTypes() {
-    $absenceType = new AbsenceType();
-    $absenceType->is_active = 1;
-    $absenceType->find();
+    $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
+    $absenceTypesList = [];
 
-    $absenceTypes = [];
-    while($absenceType->fetch()) {
-      $absenceTypes[$absenceType->title] = $absenceType->id;
+    foreach($absenceTypes as $absenceType) {
+      $absenceTypesList[$absenceType->title] = $absenceType->id;
       if ($absenceType->allow_accruals_request) {
-        $absenceTypes[$absenceType->title. ' (Credit)'] = $absenceType->id;
+        $absenceTypesList[$absenceType->title. ' (Credit)'] = $absenceType->id;
       }
     }
 
-    return $absenceTypes;
+    return $absenceTypesList;
   }
 
   /**
