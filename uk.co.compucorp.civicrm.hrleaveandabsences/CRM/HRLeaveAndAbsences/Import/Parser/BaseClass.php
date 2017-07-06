@@ -147,13 +147,16 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
     $hasBeenImported = isset($this->leaveImportSuccess[$params['absence_id']]);
     $errorWhileImporting = isset($this->leaveImportError[$params['absence_id']]);
 
+    $transaction = new CRM_Core_Transaction();
     if(!$hasBeenImported && !$errorWhileImporting) {
       try{
-        $leaveRequest =  $this->createLeaveRequestFromImportData($params);
+        $leaveRequest = $this->createLeaveRequestFromImportData($params);
+        $this->createLeaveRequestComment($params, $leaveRequest->id);
         $this->leaveImportSuccess[$params['absence_id']] = $leaveRequest->getDates();
       }
       catch(Exception $e) {
         $this->leaveImportError[$params['absence_id']] = $e->getMessage();
+        $transaction->rollback();
       }
     }
 
@@ -163,6 +166,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
     }
 
     $this->createBalanceChangeForLeaveDate($params, $this->leaveImportSuccess[$params['absence_id']]);
+    $transaction->commit();
 
     return CRM_Import_Parser::VALID;
   }

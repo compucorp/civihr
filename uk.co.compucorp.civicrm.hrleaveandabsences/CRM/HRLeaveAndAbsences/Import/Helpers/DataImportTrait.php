@@ -1,7 +1,8 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
-use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange ;
+use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 
 trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
 
@@ -16,6 +17,11 @@ trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
    *   Stores the date_type Leave request Option values.
    */
   private $dayTypes = [];
+
+  /**
+   * @var LeaveRequestCommentService
+   */
+  private $leaveRequestCommentService;
 
   /**
    * Returns the type_id Balance change Option values.
@@ -41,6 +47,19 @@ trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
     }
 
     return $this->dayTypes;
+  }
+
+  /**
+   * Returns the date_type Leave request Option values.
+   *
+   * @return LeaveRequestCommentService
+   */
+  private function getLeaveRequestCommentService() {
+    if (empty($this->leaveRequestCommentService)) {
+      $this->leaveRequestCommentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestComment();
+    }
+
+    return $this->leaveRequestCommentService;
   }
 
   /**
@@ -84,7 +103,8 @@ trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
    * Creates the balance change for the absence date in Params array.
    *
    * @param array $params
-   * @param CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate $leaveDates
+   * @param array $leaveDates
+   *  array of CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate
    */
   private function createBalanceChangeForLeaveDate($params, $leaveDates) {
     $absenceDate = new DateTime($params['absence_date']);
@@ -108,5 +128,28 @@ trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
         ]);
       }
     }
+  }
+
+  /**
+   * Creates the comment for the given leave request ID with information from the
+   * params array.
+   *
+   * @param array $params
+   * @param int $leaveRequestID
+   */
+  private function createLeaveRequestComment($params, $leaveRequestID) {
+    if (empty($params['comments'])) {
+      return;
+    }
+
+    $absenceDate = new DateTime($params['absence_date']);
+    $payload = [
+      'leave_request_id' => $leaveRequestID,
+      'text' => $params['comments'],
+      'contact_id' => $params['contact_id'],
+      'created_at' => $absenceDate->format('YmdHis'),
+    ];
+
+    $this->getLeaveRequestCommentService()->add($payload);
   }
 }
