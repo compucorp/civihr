@@ -117,11 +117,6 @@ $row-margin-bottom: 15px;
  * @TODO remove this patch when Shoreditch theme is migrated to SSP
  */
 .chr_leave-request-modal {
-  .btn.ui-select-toggle {
-    padding: 4px 10px !important;
-    text-transform: none !important;
-  }
-
   .form-group {
     overflow: inherit !important;
   }

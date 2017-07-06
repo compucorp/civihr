@@ -8,13 +8,4 @@
     width: calc(16.4% - 20px);
     vertical-align: top;
   }
-
-  /*
-   * This is a temporary patch which fixes CSS in the ui-select
-   * @TODO remove this patch when Shoreditch theme is migrated to SSP
-   */
-  .btn.ui-select-toggle {
-    padding: 4px 10px !important;
-    text-transform: none !important;
-  }
 }
