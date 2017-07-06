@@ -54,9 +54,6 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
    * The initializer code, called before the processing.
    */
   public function init() {
-    $activityContact = CRM_Activity_BAO_ActivityContact::import();
-    $activityTarget['target_contact_id'] = $activityContact['contact_id'];
-
     $fields = self::getFields();
     $fields = ['' => ['title' => ts('- do not import -')]] + $fields;
     foreach ($fields as $name => $field) {
@@ -73,6 +70,9 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
 
   /**
    * Handle the values in mapField mode.
+   * This function does practically nothing because we don't need to do any validation
+   * during the mapping field phase. However the base parser class calls this method
+   * during MAPFIELD mode and this class needs to implement the method.
    *
    * @param array $values
    *   The array of values belonging to this line.
@@ -124,6 +124,17 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseClass extends CRM_HRLeaveAndAbsen
 
   /**
    * Handle the values in import mode.
+   * Each row represents a Leave request date with an absence_id property
+   * that identifies leave dates belonging to the same parent leave request.
+   * Information such as the start date and end date of the leave request is replicated across all the individual
+   * leave request dates for the leave request.
+   * The Leave request is created from the first individual leave request date encountered;
+   * Comments, Leave Dates for all the leave request dates and balance change
+   * for that particular leave request date is also created.
+   * Balance changes only will be created for subsequent rows of leave request dates for the already created leave request.
+   *
+   * If there is an error while creating the leave request from the first leave request date encountered,
+   * All other leave request dates will not be considered and the error reported is reported for all the leave dates.
    *
    * @param int $onDuplicate
    *   The code for what action to take on duplicates.
