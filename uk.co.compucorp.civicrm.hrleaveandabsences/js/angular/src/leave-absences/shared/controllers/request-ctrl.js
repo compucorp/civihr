@@ -914,16 +914,15 @@ define([
        * Initialize roles
        */
       function initRoles () {
-        var isAdmin;
         role = 'staff';
 
         return checkPermissions(sharedSettings.permissions.admin.administer)
-        .then(function (_isAdmin_) {
-          isAdmin = _isAdmin_;
+        .then(function (isAdmin) {
           role = isAdmin ? 'admin' : role;
         })
         .then(function () {
-          return !isAdmin && checkPermissions(sharedSettings.permissions.ssp.manage)
+          // (role === 'staff') means it is not admin so need to check if manager
+          return (role === 'staff') && checkPermissions(sharedSettings.permissions.ssp.manage)
           .then(function (isManager) {
             role = isManager ? 'manager' : role;
           });

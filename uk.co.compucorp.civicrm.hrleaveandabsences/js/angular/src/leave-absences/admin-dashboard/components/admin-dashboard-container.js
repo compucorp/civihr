@@ -7,7 +7,7 @@ define([
     templateUrl: ['settings', function (settings) {
       return settings.pathTpl + 'components/admin-dashboard-container.html';
     }],
-    controllerAs: 'dashboard',
+    controllerAs: 'vm',
     controller: ['$log', controller]
   });
 
