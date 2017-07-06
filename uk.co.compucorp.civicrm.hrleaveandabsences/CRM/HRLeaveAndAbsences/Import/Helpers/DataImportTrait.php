@@ -62,7 +62,7 @@ trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
    */
   private function getLeaveRequestCommentService() {
     if (empty($this->leaveRequestCommentService)) {
-      $this->leaveRequestCommentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestComment();
+      $this->leaveRequestCommentService = new LeaveRequestCommentService();
     }
 
     return $this->leaveRequestCommentService;
