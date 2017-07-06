@@ -3,6 +3,7 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
 
@@ -22,6 +23,11 @@ trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
    * @var LeaveRequestCommentService
    */
   private $leaveRequestCommentService;
+
+  /**
+   * @var array
+   */
+  private $sicknessAbsenceTypes;
 
   /**
    * Returns the type_id Balance change Option values.
@@ -63,6 +69,29 @@ trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
   }
 
   /**
+   * Returns Absence Types with is_sick as TRUE.
+   *
+   * @return array
+   */
+  private function getSicknessAbsenceTypes() {
+    if (empty($this->sicknessAbsenceTypes)) {
+      $absenceType = new AbsenceType();
+      $absenceType->is_active = 1;
+      $absenceType->find();
+
+      $sicknessAbsenceTypes = [];
+      while($absenceType->fetch()) {
+        if ($absenceType->is_sick) {
+          $sicknessAbsenceTypes[$absenceType->title] = $absenceType->id;
+        }
+      }
+      $this->sicknessAbsenceTypes = $sicknessAbsenceTypes;
+    }
+
+    return $this->sicknessAbsenceTypes;
+  }
+
+  /**
    * Creates a leave request from the params array.
    *
    * @param array $params
@@ -91,7 +120,7 @@ trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
       $payload['toil_duration'] = 60;
     }
 
-    if (strpos($params['absence_type'], 'Sick')) {
+    if (!empty($this->getSicknessAbsenceTypes()[$params['absence_type']])) {
       $payload['request_type'] = LeaveRequest::REQUEST_TYPE_SICKNESS;
       $payload['sickness_reason'] = 1;
     }
