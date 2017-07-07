@@ -187,7 +187,7 @@ define([
 
       it('chains call to WorkPattern API', function () {
         expect(WorkPatternAPI.sendGET.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
-          'api.WorkPattern.get': { 'contact_id': '$value.contact_id' }
+          'api.WorkPattern.get': { 'id': '$value.pattern_id' }
         }));
       });
 

@@ -89,7 +89,7 @@ define([
       workPatternsOf: function (contactId, params, cache) {
         return this.sendGET('ContactWorkPattern', 'get', _.assign({}, params, {
           contact_id: contactId,
-          'api.WorkPattern.get': { 'contact_id': '$value.contact_id' }
+          'api.WorkPattern.get': { 'id': '$value.pattern_id' }
         }), cache).then(function (data) {
           data = data.values;
 

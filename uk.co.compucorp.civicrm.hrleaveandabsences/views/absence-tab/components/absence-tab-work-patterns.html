@@ -5,7 +5,7 @@
 </div>
 
 <crm-loading show="!workpatterns.loading.workPattern">
-  <table ng-show="workpatterns.defaultWorkPattern" class="table table-transparent">
+  <table ng-show="workpatterns.customWorkPatterns.length === 0" class="table table-transparent">
     <thead>
     <tr>
       <th>Default Work Pattern</th>
@@ -17,7 +17,7 @@
     </tr>
     </tbody>
   </table>
-  <table ng-show="!workpatterns.defaultWorkPattern" class="table table-clean chr_absence-work-pattern__custom-work-pattern">
+  <table ng-show="workpatterns.customWorkPatterns.length !== 0" class="table table-clean chr_absence-work-pattern__custom-work-pattern">
     <thead>
     <tr>
       <th>
@@ -37,7 +37,7 @@
       <td>{{pattern.effective_date}}</td>
       <td>{{pattern.change_reason_label}}</td>
       <td class="text-center">
-        <a href="#" class="text-danger" ng-click="workpatterns.deleteWorkPattern(pattern.id)">
+        <a class="text-danger pointer" ng-click="workpatterns.deleteWorkPattern(pattern.id)">
           <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
         </a>
       </td>
