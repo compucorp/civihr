@@ -35,6 +35,7 @@ define([
     (function init () {
       refresh([
         loadJobContractRevisionChangeReasons(),
+        getDefaultWorkPattern(),
         DateFormat.getDateFormat()
       ]);
 
@@ -86,12 +87,7 @@ define([
     function getCustomWorkPatterns () {
       return WorkPattern.workPatternsOf(vm.contactId, {}, false)
         .then(function (workPatterns) {
-          if (workPatterns.length > 0) {
-            vm.defaultWorkPattern = null;
-            vm.customWorkPatterns = workPatterns;
-          } else {
-            return getDefaultWorkPattern();
-          }
+          vm.customWorkPatterns = workPatterns;
         });
     }
 
