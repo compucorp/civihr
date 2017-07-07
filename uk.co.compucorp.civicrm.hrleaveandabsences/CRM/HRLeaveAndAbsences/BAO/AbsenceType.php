@@ -526,6 +526,23 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * Returns a list of all enabled sickness Absence Types
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsenceType[]
+   */
+  public static function getEnabledSicknessAbsenceTypes() {
+    $sicknessAbsenceTypes = [];
+    $absenceTypes = self::getEnabledAbsenceTypes();
+    foreach($absenceTypes as $absenceType) {
+      if ($absenceType->is_sick) {
+        $sicknessAbsenceTypes[] = $absenceType;
+      }
+    }
+
+    return $sicknessAbsenceTypes;
+  }
+
+  /**
    * Returns the AbsenceType where the must_take_public_holiday_as_leave option
    * is set
    *

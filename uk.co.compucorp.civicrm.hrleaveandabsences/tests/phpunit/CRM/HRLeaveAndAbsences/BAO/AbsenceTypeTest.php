@@ -730,4 +730,16 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $date = date('Y-m-d', strtotime('+1 day'));
     $this->assertEquals($leaveRequestDate->date, $date);
   }
+
+  public function testGetEnabledSicknessAbsenceTypes() {
+    $absenceType1 = AbsenceTypeFabricator::fabricate(['is_sick' => 1]);
+    $absenceType2 = AbsenceTypeFabricator::fabricate();
+    $absenceType3 = AbsenceTypeFabricator::fabricate();
+
+    $absenceTypes = AbsenceType::getEnabledSicknessAbsenceTypes();
+    $this->assertCount(1, $absenceTypes);
+
+    $this->assertEquals($absenceType1->id, $absenceTypes[0]->id);
+    $this->assertEquals($absenceType1->title, $absenceTypes[0]->title);
+  }
 }

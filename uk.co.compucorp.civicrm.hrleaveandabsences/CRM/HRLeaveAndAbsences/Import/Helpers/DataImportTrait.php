@@ -75,17 +75,13 @@ trait CRM_HRLeaveAndAbsences_Import_Helpers_DataImportTrait {
    */
   private function getSicknessAbsenceTypes() {
     if (empty($this->sicknessAbsenceTypes)) {
-      $absenceType = new AbsenceType();
-      $absenceType->is_active = 1;
-      $absenceType->find();
+      $sicknessAbsenceTypes = AbsenceType::getEnabledSicknessAbsenceTypes();
+      $sicknessAbsenceTypesList = [];
 
-      $sicknessAbsenceTypes = [];
-      while($absenceType->fetch()) {
-        if ($absenceType->is_sick) {
-          $sicknessAbsenceTypes[$absenceType->title] = $absenceType->id;
-        }
+      foreach($sicknessAbsenceTypes as $sicknessAbsenceType){
+        $sicknessAbsenceTypesList[$sicknessAbsenceType->title] = $sicknessAbsenceType->id;
       }
-      $this->sicknessAbsenceTypes = $sicknessAbsenceTypes;
+      $this->sicknessAbsenceTypes = $sicknessAbsenceTypesList;
     }
 
     return $this->sicknessAbsenceTypes;
