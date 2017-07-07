@@ -25,6 +25,8 @@
  +--------------------------------------------------------------------+
  */
 
+use CRM_HRLeaveAndAbsences_Import_Parser_Base as BaseParser;
+
 /**
  *
  * @package CRM
@@ -118,7 +120,7 @@ class CRM_HRLeaveAndAbsences_Import_Form_Preview extends CRM_Import_Form_Preview
       $mapperKeys[$key] = $mapper[$key][0];
     }
 
-    $parser = new CRM_HRLeaveAndAbsences_Import_Parser_Base($mapperKeys);
+    $parser = new BaseParser($mapperKeys);
 
     $mapFields = $this->get('fields');
 
