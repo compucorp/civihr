@@ -87,6 +87,7 @@ define([
       return WorkPattern.workPatternsOf(vm.contactId, {}, false)
         .then(function (workPatterns) {
           if (workPatterns.length > 0) {
+            vm.defaultWorkPattern = null;
             vm.customWorkPatterns = workPatterns;
           } else {
             return getDefaultWorkPattern();
