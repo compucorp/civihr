@@ -60,6 +60,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
                   'alias' => 'civicrm_contact_source',
                   'dbAlias' => "civicrm_contact_source.id",
                   'default' => TRUE,
+                  'no_display' => TRUE,
                   'required' => TRUE,
                 ],
               'contact_assignee_id' =>
@@ -76,18 +77,17 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
                   'name' => 'id',
                   'alias' => 'civicrm_contact_target',
                   'dbAlias' => "civicrm_contact_target.id",
-                  'no_display' => TRUE,
                   'default' => TRUE,
                   'required' => TRUE,
                 ],
             ],
           'filters' =>
             [
-              'contact_source_id' =>
+              'contact_target_id' =>
                 [
                   'name' => 'id',
-                  'alias' => 'civicrm_contact_source',
-                  'dbAlias' => "civicrm_contact_source.id",
+                  'alias' => 'civicrm_contact_target',
+                  'dbAlias' => "civicrm_contact_target.id",
                   'title' => ts('Contact ID'),
                   'operator' => 'like',
                   'type' => CRM_Report_Form::OP_STRING,
@@ -293,7 +293,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
       $this->_from = "
         FROM civicrm_activity {$this->_aliases['civicrm_activity']}
              INNER JOIN civicrm_activity_contact  {$this->_aliases['civicrm_activity_contact']}
-                    ON {$this->_aliases['civicrm_activity']}.id = {$this->_aliases['civicrm_activity_contact']}.activity_id AND
+                    ON {$this->_aliases['civicrm_activity']}.source_record_id = {$this->_aliases['civicrm_activity_contact']}.activity_id AND
                        {$this->_aliases['civicrm_activity_contact']}.record_type_id = {$targetID}
              INNER JOIN civicrm_contact civicrm_contact_target
                     ON {$this->_aliases['civicrm_activity_contact']}.contact_id = civicrm_contact_target.id
@@ -312,7 +312,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
       $this->_from = "
         FROM civicrm_activity {$this->_aliases['civicrm_activity']}
              INNER JOIN civicrm_activity_contact {$this->_aliases['civicrm_activity_contact']}
-                    ON {$this->_aliases['civicrm_activity']}.id = {$this->_aliases['civicrm_activity_contact']}.activity_id AND
+                    ON {$this->_aliases['civicrm_activity']}.source_record_id = {$this->_aliases['civicrm_activity_contact']}.activity_id AND
                        {$this->_aliases['civicrm_activity_contact']}.record_type_id = {$assigneeID}
              INNER JOIN civicrm_contact civicrm_contact_assignee
                     ON {$this->_aliases['civicrm_activity_contact']}.contact_id = civicrm_contact_assignee.id
@@ -331,7 +331,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
       $this->_from = "
         FROM civicrm_activity {$this->_aliases['civicrm_activity']}
              INNER JOIN civicrm_activity_contact {$this->_aliases['civicrm_activity_contact']}
-                    ON {$this->_aliases['civicrm_activity']}.id = {$this->_aliases['civicrm_activity_contact']}.activity_id AND
+                    ON {$this->_aliases['civicrm_activity']}.source_record_id = {$this->_aliases['civicrm_activity_contact']}.activity_id AND
                        {$this->_aliases['civicrm_activity_contact']}.record_type_id = {$sourceID}
              INNER JOIN civicrm_contact civicrm_contact_source
                     ON {$this->_aliases['civicrm_activity_contact']}.contact_id = civicrm_contact_source.id
@@ -536,30 +536,6 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
     ADD COLUMN civicrm_email_contact_source_email VARCHAR(128)";
     CRM_Core_DAO::executeQuery($tempQuery);
 
-    // 3. fill temp table with assignee results
-    $this->buildACLClause(array('civicrm_contact_assignee'));
-    $this->select('assignee');
-    $this->from('assignee');
-    $this->customDataFrom();
-    $this->where('assignee');
-    $insertCols = implode(',', $this->_selectAliases);
-    $tempQuery  = "INSERT INTO civireport_activity_temp_target ({$insertCols})
-    {$this->_select}
-    {$this->_from} {$this->_where}";
-    CRM_Core_DAO::executeQuery($tempQuery);
-
-    // 4. fill temp table with source results
-    $this->buildACLClause(array('civicrm_contact_source'));
-    $this->select('source');
-    $this->from('source');
-    $this->customDataFrom();
-    $this->where('source');
-    $insertCols = implode(',', $this->_selectAliases);
-    $tempQuery  = "INSERT INTO civireport_activity_temp_target ({$insertCols})
-    {$this->_select}
-    {$this->_from} {$this->_where}";
-    CRM_Core_DAO::executeQuery($tempQuery);
-
     // 5. show final result set from temp table
     $rows = array();
     $this->select('final');
@@ -598,7 +574,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
           'title' => 'End Date',
         ];
         $newColumnHeaders['total_qty'] = [
-          'title' => 'Total Quantity',
+          'title' => 'Total Qty',
         ];
         $inserted = TRUE;
       }
