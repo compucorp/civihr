@@ -134,3 +134,25 @@ function hrcore_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     $wrappers[] = new CRM_HRCore_APIWrapper_DefaultLimitRemover();
   }
 }
+
+/**
+ * Implementation of hook_civicrm_pre hook.
+ *
+ * @param string $op
+ *   Operation being done
+ * @param string $objectName
+ *   Name of the object on which the operation is being done
+ * @param int $objectId
+ *   ID of the record the object instantiates
+ * @param array $params
+ *   Parameter array being used to call the operation
+ */
+function hrcore_civicrm_pre($op, $objectName, $objectId, &$params) {
+  $listeners = [
+    new CRM_HRCore_Hook_Pre_PrimaryAddressSetter(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($op, $objectName, $objectId, $params);
+  }
+}
