@@ -242,7 +242,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
         'name' => 'qty',
         'title' => ts('Qty'),
         'type' => CRM_Utils_Type::T_FLOAT,
-        'headerPattern' => '/Qty/i',
+        'headerPattern' => '/^Qty/i',
       ],
       'start_date' => [
         'name' => 'start_date',
