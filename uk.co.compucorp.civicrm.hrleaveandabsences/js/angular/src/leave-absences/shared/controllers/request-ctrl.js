@@ -27,6 +27,7 @@ define([
     ) {
       $log.debug('RequestCtrl');
       var absenceTypesAndIds;
+      var availableStatusesMatrix = {};
       var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
       var role = '';
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
@@ -248,19 +249,22 @@ define([
       };
 
       /**
-       * Flattens statuses from object to array of objects. This is used to
-       * populate the dropdown with array of statuses.
-       * Also it checks if given status is available to manager. If manager applies leave
-       * on behalf of staff then cancelled is also removed from her list of available statuses.
+       * Returns an array of statuses depending on the previous status value
+       * This is used to populate the dropdown with array of statuses.
        *
        * @return {Array}
        */
-      this.getStatuses = function () {
-        return _.reject(this.requestStatuses, function (status) {
-          var canRemoveStatus = (status.name === sharedSettings.statusNames.adminApproved || status.name === sharedSettings.statusNames.awaitingApproval);
 
-          return this.canManage ? (canRemoveStatus || status.name === 'cancelled') : canRemoveStatus;
-        }.bind(this));
+      this.getStatuses = function () {
+        if (!this.request || angular.equals({}, this.requestStatuses)) {
+          return [];
+        }
+
+        if (!this.request.status_id) {
+          return getAvailableStatusesForStatusName.call(this, 'none');
+        }
+
+        return getAvailableStatusesForCurrentStatus.call(this);
       };
 
       /**
@@ -539,6 +543,7 @@ define([
        */
       this._init = function () {
         this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
+        initAvailableStatusesMatrix.call(this);
 
         return initRoles.call(this)
           .then(function () {
@@ -782,6 +787,30 @@ define([
       }
 
       /**
+       * Helper functions to get available statuses depending on the
+       * current request status value.
+       *
+       * @return {Array}
+       */
+      function getAvailableStatusesForCurrentStatus () {
+        var currentStatus = this.getStatusFromValue(this.request.status_id);
+
+        return getAvailableStatusesForStatusName.call(this, currentStatus.name);
+      }
+
+      /**
+       * Helper function that returns an array of the statuses available
+       * for a specific status name.
+       *
+       * @return {Array}
+       */
+      function getAvailableStatusesForStatusName (statusName) {
+        return _.map(availableStatusesMatrix[statusName], function (status) {
+          return this.requestStatuses[status];
+        }.bind(this));
+      }
+
+      /**
        * Helper function to obtain params for leave request calculateBalanceChange api call
        *
        * @return {Object} containing required keys for leave request
@@ -852,6 +881,30 @@ define([
           _.omit(this.request.attributes(), 'fileUploader')
         ) || this.request.fileUploader.queue.length !== 0 ||
           (this.canManage && this.newStatusOnSave);
+      }
+
+      /**
+       * Initialize available statuses matrix
+       */
+      function initAvailableStatusesMatrix () {
+        var defaultStatuses = [
+          sharedSettings.statusNames.moreInformationRequired,
+          sharedSettings.statusNames.approved,
+          sharedSettings.statusNames.rejected,
+          sharedSettings.statusNames.cancelled
+        ];
+
+        availableStatusesMatrix['none'] = [
+          sharedSettings.statusNames.moreInformationRequired,
+          sharedSettings.statusNames.approved
+        ];
+        availableStatusesMatrix['awaiting_approval'] = defaultStatuses;
+        availableStatusesMatrix['more_information_required'] = defaultStatuses;
+        availableStatusesMatrix['rejected'] = defaultStatuses;
+        availableStatusesMatrix['approved'] = defaultStatuses;
+        availableStatusesMatrix['cancelled'] = [
+          sharedSettings.statusNames.awaitingApproval
+        ].concat(defaultStatuses);
       }
 
       /**
