@@ -200,6 +200,9 @@
                           <tr ng-repeat="request in report.sections.approved.data track by $index">
                             <td class="chr_leave-report__label">
                               {{report.absenceTypes[request.type_id].title}}
+                              <span ng-if="request.toil_expiry_date">
+                                (expires {{request.toil_expiry_date | date:report.dateFormat}})
+                              </span>
                             </td>
                             <td>
                               {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
@@ -372,6 +375,9 @@
                         <tr ng-repeat="request in report.sections.pending.data">
                           <td class="chr_leave-report__label">
                             {{report.absenceTypes[request.type_id].title}}
+                            <span ng-if="request.toil_expiry_date">
+                              (expires {{request.toil_expiry_date | date:report.dateFormat}})
+                            </span>
                           </td>
                           <td>
                             {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
@@ -470,6 +476,9 @@
                         <tr ng-repeat="request in report.sections.other.data track by $index">
                           <td class="chr_leave-report__label">
                             {{report.absenceTypes[request.type_id].title}}
+                            <span ng-if="request.toil_expiry_date">
+                              (expires {{request.toil_expiry_date | date:report.dateFormat}})
+                            </span>
                           </td>
                           <td>
                             {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
