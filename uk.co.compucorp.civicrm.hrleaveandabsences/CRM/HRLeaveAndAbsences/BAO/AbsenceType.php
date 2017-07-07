@@ -531,15 +531,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @return \CRM_HRLeaveAndAbsences_BAO_AbsenceType[]
    */
   public static function getEnabledSicknessAbsenceTypes() {
-    $sicknessAbsenceTypes = [];
-    $absenceTypes = self::getEnabledAbsenceTypes();
-    foreach($absenceTypes as $absenceType) {
-      if ($absenceType->is_sick) {
-        $sicknessAbsenceTypes[] = $absenceType;
-      }
-    }
+    $enabledAbsenceTypes = self::getEnabledAbsenceTypes();
+    return array_filter($enabledAbsenceTypes, function($absenceType) {
+      return $absenceType->is_sick;
+    });
 
-    return $sicknessAbsenceTypes;
+    return $enabledAbsenceTypes;
   }
 
   /**
