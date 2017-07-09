@@ -33,7 +33,7 @@ define([
      * Fetches months from newly selected period and refresh data
      */
     this.changeSelectedPeriod = function () {
-      this._fetchMonthsFromPeriod();
+      fetchMonthsFromPeriod.call(this);
       this.refresh();
     };
 
@@ -78,23 +78,6 @@ define([
      */
     this.labelPeriod = function (period) {
       return period.current ? 'Current Period (' + period.title + ')' : period.title;
-    };
-
-    /**
-     * Fetch all the months from the current period and
-     * save it in vm.months
-     */
-    this._fetchMonthsFromPeriod = function () {
-      var months = [];
-      var startDate = moment(this.selectedPeriod.start_date);
-      var endDate = moment(this.selectedPeriod.end_date);
-
-      while (startDate.isBefore(endDate)) {
-        months.push(this._getMonthSkeleton(startDate));
-        startDate.add(1, 'month');
-      }
-
-      this.months = months;
     };
 
     /**
@@ -164,11 +147,10 @@ define([
       this.selectedMonths = [this.monthLabels[moment().month()]];
 
       $q.all([
-        this._loadAbsencePeriods(),
-        this._loadAbsenceTypes(),
-        this._loadPublicHolidays(),
-        this._loadStatuses(),
-        this._loadDayTypes()
+        loadAbsencePeriods.call(this),
+        loadAbsenceTypes.call(this),
+        loadPublicHolidays.call(this),
+        loadOptionValues()
       ])
       .then(function () {
         return intermediateSteps ? intermediateSteps() : null;
@@ -218,48 +200,6 @@ define([
     };
 
     /**
-     * Loads the absence periods
-     *
-     * @return {Promise}
-     */
-    this._loadAbsencePeriods = function () {
-      return AbsencePeriod.all()
-        .then(function (absencePeriods) {
-          this.absencePeriods = _.sortBy(absencePeriods, 'start_date');
-          this.selectedPeriod = _.find(this.absencePeriods, function (period) {
-            return !!period.current;
-          });
-
-          this._fetchMonthsFromPeriod();
-        }.bind(this));
-    };
-
-    /**
-     * Loads the active absence types
-     *
-     * @return {Promise}
-     */
-    this._loadAbsenceTypes = function () {
-      return AbsenceType.all({
-        is_active: true
-      }).then(function (absenceTypes) {
-        this.absenceTypes = absenceTypes;
-      }.bind(this));
-    };
-
-    /**
-     * Loads the leave request day types
-     *
-     * @return {Promise}
-     */
-    this._loadDayTypes = function () {
-      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
-        .then(function (dayTypesData) {
-          dayTypes = _.indexBy(dayTypesData, 'name');
-        });
-    };
-
-    /**
      * Loads the approved, admin_approved and waiting approval leave requests and calls calendar load function
      *
      * @param {string} contactParamName - contact parameter key name
@@ -290,35 +230,8 @@ define([
         .then(function () {
           intermediateSteps && intermediateSteps();
           this.loading.calendar = false;
-          this._showMonthLoader();
+          showMonthLoader.call(this);
         }.bind(this));
-    };
-
-    /**
-     * Loads all the public holidays
-     *
-     * @return {Promise}
-     */
-    this._loadPublicHolidays = function () {
-      return PublicHoliday.all()
-        .then(function (publicHolidaysData) {
-          // convert to an object with time stamp as key
-          publicHolidays = _.transform(publicHolidaysData, function (result, publicHoliday) {
-            result[this._getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
-          }.bind(this), {});
-        }.bind(this));
-    };
-
-    /**
-     * Loads the status option values
-     *
-     * @return {Promise}
-     */
-    this._loadStatuses = function () {
-      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
-        .then(function (statuses) {
-          leaveRequestStatuses = _.indexBy(statuses, 'value');
-        });
     };
 
     /**
@@ -331,10 +244,101 @@ define([
     };
 
     /**
+     * Fetch all the months from the current period and
+     * save it in vm.months
+     */
+    function fetchMonthsFromPeriod () {
+      var months = [];
+      var startDate = moment(this.selectedPeriod.start_date);
+      var endDate = moment(this.selectedPeriod.end_date);
+
+      while (startDate.isBefore(endDate)) {
+        months.push(this._getMonthSkeleton(startDate));
+        startDate.add(1, 'month');
+      }
+
+      this.months = months;
+    }
+
+    /**
+     * Returns leave status value from name
+     * @param {String} name - name of the leave status
+     * @returns {int/boolean}
+     */
+    function getLeaveStatusValuefromName (name) {
+      var leaveStatus = _.find(leaveRequestStatuses, function (status) {
+        return status.name === name;
+      });
+
+      return leaveStatus ? leaveStatus.value : false;
+    }
+
+    /**
+     * Loads the absence periods
+     *
+     * @return {Promise}
+     */
+    function loadAbsencePeriods () {
+      return AbsencePeriod.all()
+        .then(function (absencePeriods) {
+          this.absencePeriods = _.sortBy(absencePeriods, 'start_date');
+          this.selectedPeriod = _.find(this.absencePeriods, function (period) {
+            return !!period.current;
+          });
+
+          fetchMonthsFromPeriod.call(this);
+        }.bind(this));
+    }
+
+    /**
+     * Loads the active absence types
+     *
+     * @return {Promise}
+     */
+    function loadAbsenceTypes () {
+      return AbsenceType.all({
+        is_active: true
+      }).then(function (absenceTypes) {
+        this.absenceTypes = absenceTypes;
+      }.bind(this));
+    }
+
+    /**
+     * Loads the OptionValues necessary for the controller
+     *
+     * @return {Promise}
+     */
+    function loadOptionValues () {
+      return OptionGroup.valuesOf([
+        'hrleaveandabsences_leave_request_status',
+        'hrleaveandabsences_leave_request_day_type'
+      ])
+      .then(function (data) {
+        leaveRequestStatuses = _.indexBy(data.hrleaveandabsences_leave_request_status, 'value');
+        dayTypes = _.indexBy(data.hrleaveandabsences_leave_request_day_type, 'name');
+      });
+    }
+
+    /**
+     * Loads all the public holidays
+     *
+     * @return {Promise}
+     */
+    function loadPublicHolidays () {
+      return PublicHoliday.all()
+        .then(function (publicHolidaysData) {
+          // convert to an object with time stamp as key
+          publicHolidays = _.transform(publicHolidaysData, function (result, publicHoliday) {
+            result[this._getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
+          }.bind(this), {});
+        }.bind(this));
+    }
+
+    /**
      * Show month loader for all months initially
      * then hide each loader on the interval of an offset value
      */
-    this._showMonthLoader = function () {
+    function showMonthLoader () {
       var monthLoadDelay = 500;
       var offset = 0;
 
@@ -351,21 +355,6 @@ define([
           offset += monthLoadDelay;
         }
       }.bind(this));
-    };
-
-    /**
-     * Returns leave status value from name
-     * @param {String} name - name of the leave status
-     * @returns {int/boolean}
-     */
-    function getLeaveStatusValuefromName (name) {
-      var leaveStatus = _.find(leaveRequestStatuses, function (status) {
-        return status.name === name;
-      });
-
-      return leaveStatus ? leaveStatus.value : false;
     }
-
-    return this;
   }
 });
