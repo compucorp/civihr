@@ -159,7 +159,7 @@ define([
      * @return {Promise}
      */
     vm._loadContacts = function () {
-      return Contact.all(vm._prepareContactFilters(), {page: 1, size: 0}, 'display_name')
+      return Contact.all(vm._prepareContactFilters(), null, 'display_name')
         .then(function (contacts) {
           vm.filteredContacts = contacts.list;
         });

@@ -281,7 +281,7 @@ define([
       };
       params[contactParamName] = this.contactId;
 
-      return LeaveRequest.all(params, {}, null, null, cache)
+      return LeaveRequest.all(params, null, null, null, cache)
         .then(function (leaveRequestsData) {
           this._indexLeaveRequests(leaveRequestsData.list);
 
