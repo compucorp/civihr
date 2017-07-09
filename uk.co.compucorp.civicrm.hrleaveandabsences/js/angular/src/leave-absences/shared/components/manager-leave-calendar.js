@@ -89,10 +89,10 @@ define([
     vm.refresh = function () {
       vm.loading.calendar = true;
       vm._resetMonths();
-      vm._loadContacts()
-        .then(function () {
-          vm._loadLeaveRequestsAndCalendar();
-        });
+
+      loadContacts().then(function () {
+        vm._loadLeaveRequestsAndCalendar();
+      });
     };
 
     /**
@@ -154,18 +154,6 @@ define([
     };
 
     /**
-     * Load all contacts with respect to filters
-     *
-     * @return {Promise}
-     */
-    vm._loadContacts = function () {
-      return Contact.all(vm._prepareContactFilters(), null, 'display_name')
-        .then(function (contacts) {
-          vm.filteredContacts = contacts.list;
-        });
-    };
-
-    /**
      * Loads the leave requests and calendar
      *
      * @return {Promise}
@@ -174,100 +162,6 @@ define([
       return parentCtrl._loadLeaveRequestsAndCalendar.call(vm, 'managed_by', false, function () {
         vm.managedContacts = tempContactData;
       });
-    };
-
-    /**
-     * Loads the managees of currently logged in user
-     *
-     * @return {Promise}
-     */
-    vm._loadManagees = function () {
-      if (isAdmin) {
-        return Contact.all()
-          .then(function (contacts) {
-            vm.managedContacts = contacts.list;
-            vm.filteredContacts = contacts.list;
-          });
-      }
-
-      return Contact.find(vm.contactId)
-        .then(function (contact) {
-          return contact.leaveManagees()
-            .then(function (contacts) {
-              vm.managedContacts = contacts;
-              return vm._loadContacts();
-            });
-        });
-    };
-
-    /**
-     * Loads the regions option values
-     *
-     * @return {Promise}
-     */
-    vm._loadRegions = function () {
-      return OptionGroup.valuesOf('hrjc_region')
-        .then(function (regions) {
-          vm.regions = regions;
-        });
-    };
-
-    /**
-     * Loads the locations option values
-     *
-     * @return {Promise}
-     */
-    vm._loadLocations = function () {
-      return OptionGroup.valuesOf('hrjc_location')
-        .then(function (locations) {
-          vm.locations = locations;
-        });
-    };
-
-    /**
-     * Loads the level types option values
-     *
-     * @return {Promise}
-     */
-    vm._loadLevelTypes = function () {
-      return OptionGroup.valuesOf('hrjc_level_type')
-        .then(function (levels) {
-          vm.levelTypes = levels;
-        });
-    };
-
-    /**
-     * Loads the departments option values
-     *
-     * @return {Promise}
-     */
-    vm._loadDepartments = function () {
-      return OptionGroup.valuesOf('hrjc_department')
-        .then(function (departments) {
-          vm.departments = departments;
-        });
-    };
-
-    /**
-     * Returns the filter object for contacts api
-     *
-     * @return {Object}
-     */
-    vm._prepareContactFilters = function () {
-      var filters = vm.filters;
-
-      return {
-        id: {
-          'IN': vm.filters.contact ? [vm.filters.contact.id]
-            : vm.managedContacts.map(function (contact) {
-              return contact.id;
-            })
-        },
-        department: filters.department ? filters.department.value : null,
-        level_type: filters.level_type ? filters.level_type.value : null,
-        location: filters.location ? filters.location.value : null,
-        region: filters.region ? filters.region.value : null
-      };
     };
 
     /**
@@ -316,39 +210,114 @@ define([
 
         vm._init(function () {
           return $q.all([
-            vm._loadRegions(),
-            vm._loadDepartments(),
-            vm._loadLocations(),
-            vm._loadLevelTypes()
-          ])
-            .then(function () {
-              return vm._loadManagees();
-            });
+            loadOptionValues(),
+            loadManagees()
+          ]);
         });
       });
+
       $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
       $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest);
-
-      /**
-       * Event handler for Delete event of Leave Request
-       *
-       * @param  {object} event
-       * @param  {object} leaveRequest
-       */
-      function deleteLeaveRequest (event, leaveRequest) {
-        var contactID = leaveRequest.contact_id;
-        // Find the calendarData for the deleted requests user
-        var calendar = _.find(calendarData, function (calendar) {
-          return calendar.contact_id === contactID;
-        });
-
-        vm.leaveRequests[contactID] = _.omit(vm.leaveRequests[contactID], function (leaveRequestObj) {
-          return leaveRequestObj.id === leaveRequest.id;
-        });
-        vm._resetMonths();
-        vm._setCalendarProps(contactID, calendar);
-      }
     })();
+
+    /**
+     * Event handler for Delete event of Leave Request
+     *
+     * @param  {object} event
+     * @param  {LeaveRequestInstance} leaveRequest
+     */
+    function deleteLeaveRequest (event, leaveRequest) {
+      var contactID = leaveRequest.contact_id;
+      // Find the calendarData for the deleted requests user
+      var calendar = _.find(calendarData, function (calendar) {
+        return calendar.contact_id === contactID;
+      });
+
+      vm.leaveRequests[contactID] = _.omit(vm.leaveRequests[contactID], function (leaveRequestObj) {
+        return leaveRequestObj.id === leaveRequest.id;
+      });
+      vm._resetMonths();
+      vm._setCalendarProps(contactID, calendar);
+    }
+
+    /**
+     * Load all contacts with respect to filters
+     *
+     * @return {Promise}
+     */
+    function loadContacts () {
+      return Contact.all(prepareContactFilters(), null, 'display_name')
+        .then(function (contacts) {
+          vm.filteredContacts = contacts.list;
+        });
+    }
+
+    /**
+     * Loads the managees of currently logged in user
+     *
+     * @return {Promise}
+     */
+    function loadManagees () {
+      if (isAdmin) {
+        return Contact.all()
+          .then(function (contacts) {
+            vm.managedContacts = contacts.list;
+            vm.filteredContacts = contacts.list;
+          });
+      }
+
+      return Contact.find(vm.contactId)
+        .then(function (contact) {
+          return contact.leaveManagees();
+        })
+        .then(function (contacts) {
+          vm.managedContacts = contacts;
+        })
+        .then(function () {
+          return loadContacts();
+        });
+    }
+
+    /**
+     * Loads the OptionValues necessary for the controller
+     *
+     * @return {Promise}
+     */
+    function loadOptionValues () {
+      return OptionGroup.valuesOf([
+        'hrjc_region',
+        'hrjc_location',
+        'hrjc_level_type',
+        'hrjc_department'
+      ])
+      .then(function (data) {
+        vm.regions = data.hrjc_region;
+        vm.locations = data.hrjc_location;
+        vm.levelTypes = data.hrjc_level_type;
+        vm.departments = data.hrjc_department;
+      });
+    }
+
+    /**
+     * Returns the filter object for contacts api
+     *
+     * @return {Object}
+     */
+    function prepareContactFilters () {
+      return {
+        department: vm.filters.department ? vm.filters.department.value : null,
+        level_type: vm.filters.level_type ? vm.filters.level_type.value : null,
+        location: vm.filters.location ? vm.filters.location.value : null,
+        region: vm.filters.region ? vm.filters.region.value : null,
+        id: {
+          'IN': vm.filters.contact
+            ? [vm.filters.contact.id]
+            : vm.managedContacts.map(function (contact) {
+              return contact.id;
+            })
+        }
+      };
+    }
 
     return vm;
   }
