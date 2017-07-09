@@ -116,7 +116,7 @@
               optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval').value
             ]},
             contact_id: CRM.vars.leaveAndAbsences.contactId
-          }, {}, null, null, false);
+          }, null, null, null, false);
         });
       });
 
