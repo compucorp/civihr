@@ -1,6 +1,11 @@
 /* eslint-env amd */
 
-define(function () {
+define([
+  'common/lodash',
+  'mocks/data/option-group-mock-data'
+], function (_, optionGroupMock) {
+  var dayTypes = optionGroupMock.getCollection('hrleaveandabsences_work_day_type');
+
   return {
     getCalendar: {
       'is_error': 0,
@@ -12,27 +17,31 @@ define(function () {
           'calendar': [
             {
               'date': '2016-01-05',
-              'type': {
-                'value': 2,
-                'name': 'working_day',
-                'label': 'Working day'
-              }
+              'type': dayTypeByName('working_day').value
+            },
+            {
+              'date': '2016-01-06',
+              'type': dayTypeByName('working_day').value
+            },
+            {
+              'date': '2016-01-07',
+              'type': dayTypeByName('working_day').value
             },
             {
               'date': '2016-02-02',
-              'type': {
-                'value': 1,
-                'name': 'non_working_day',
-                'label': 'Non-working day'
-              }
+              'type': dayTypeByName('non_working_day').value
+            },
+            {
+              'date': '2016-02-03',
+              'type': dayTypeByName('non_working_day').value
             },
             {
               'date': '2016-03-03',
-              'type': {
-                'value': 3,
-                'name': 'weekend',
-                'label': 'Weekend'
-              }
+              'type': dayTypeByName('weekend').value
+            },
+            {
+              'date': '2016-03-04',
+              'type': dayTypeByName('weekend').value
             }
           ]
         },
@@ -41,27 +50,15 @@ define(function () {
           'calendar': [
             {
               'date': '2016-01-05',
-              'type': {
-                'value': 3,
-                'name': 'weekend',
-                'label': 'Weekend'
-              }
+              'type': dayTypeByName('weekend').value
             },
             {
               'date': '2016-02-02',
-              'type': {
-                'value': 2,
-                'name': 'working_day',
-                'label': 'Working day'
-              }
+              'type': dayTypeByName('working_day').value
             },
             {
               'date': '2016-03-03',
-              'type': {
-                'value': 1,
-                'name': 'non_working_day',
-                'label': 'Non-working day'
-              }
+              'type': dayTypeByName('non_working_day').value
             }
           ]
         }
@@ -116,4 +113,16 @@ define(function () {
       ]
     }
   };
+
+  /**
+   * Finds a day type Option Value based on its name
+   *
+   * @param  {string} name
+   * @return {object}
+   */
+  function dayTypeByName (name) {
+    return _.find(dayTypes, function (dayType) {
+      return dayType.name === name;
+    });
+  }
 });
