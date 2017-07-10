@@ -145,11 +145,14 @@ define([
           return contact.id;
         });
 
-        calendarData.forEach(function (calendar) {
+        return $q.all(_.map(calendarData, function (calendar) {
           var index = contactIds.indexOf(calendar.contact_id);
 
-          tempContactData[index].calendarData = vm._setCalendarProps(calendar.contact_id, calendar);
-        });
+          return vm._setCalendarProps(calendar.contact_id, calendar)
+            .then(function (calendarProps) {
+              tempContactData[index].calendarData = calendarProps;
+            });
+        }));
       });
     };
 
@@ -173,34 +176,40 @@ define([
      * @return {object}
      */
     vm._setCalendarProps = function (contactID, calendar) {
-      var leaveRequest;
       var monthData = _.map(vm.months, function (month) {
-        return _.extend(_.clone(month), {
-          data: []
+        return _.extend(_.clone(month), { data: [] });
+      });
+
+      return $q.all(_.map(calendar.days, function (dateObj) {
+        return $q.all([
+          calendar.isWeekend(vm._getDateObjectWithFormat(dateObj.date)),
+          calendar.isNonWorkingDay(vm._getDateObjectWithFormat(dateObj.date))
+        ])
+        .then(function (results) {
+          dateObj.UI = {
+            isWeekend: results[0],
+            isNonWorkingDay: results[1],
+            isPublicHoliday: vm.isPublicHoliday(dateObj.date)
+          };
+        })
+        .then(function () {
+          // fetch leave request, first search by contact_id then by date
+          var leaveRequest = vm.leaveRequests[contactID] ? vm.leaveRequests[contactID][dateObj.date] : null;
+
+          if (leaveRequest) {
+            dateObj.UI.styles = vm._getStyles(leaveRequest, dateObj);
+            dateObj.UI.isRequested = vm._isPendingApproval(leaveRequest);
+            dateObj.UI.isAM = vm._isDayType('half_day_am', leaveRequest, dateObj.date);
+            dateObj.UI.isPM = vm._isDayType('half_day_pm', leaveRequest, dateObj.date);
+          }
+        })
+        .then(function () {
+          vm._getMonthObjectByDate(moment(dateObj.date), monthData).data.push(dateObj);
         });
+      }))
+      .then(function () {
+        return monthData;
       });
-
-      _.each(calendar.days, function (dateObj) {
-        // fetch leave request, first search by contact_id then by date
-        leaveRequest = vm.leaveRequests[contactID] ? vm.leaveRequests[contactID][dateObj.date] : null;
-        dateObj.UI = {
-          isWeekend: calendar.isWeekend(vm._getDateObjectWithFormat(dateObj.date)),
-          isNonWorkingDay: calendar.isNonWorkingDay(vm._getDateObjectWithFormat(dateObj.date)),
-          isPublicHoliday: vm.isPublicHoliday(dateObj.date)
-        };
-
-        // set below props only if leaveRequest is found
-        if (leaveRequest) {
-          dateObj.UI.styles = vm._getStyles(leaveRequest, dateObj);
-          dateObj.UI.isRequested = vm._isPendingApproval(leaveRequest);
-          dateObj.UI.isAM = vm._isDayType('half_day_am', leaveRequest, dateObj.date);
-          dateObj.UI.isPM = vm._isDayType('half_day_pm', leaveRequest, dateObj.date);
-        }
-
-        vm._getMonthObjectByDate(moment(dateObj.date), monthData).data.push(dateObj);
-      });
-
-      return monthData;
     };
 
     (function init () {

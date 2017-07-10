@@ -1,11 +1,11 @@
 /* eslint-env amd, jasmine */
-/* global CRM, inject */
 
 (function (CRM) {
   define([
     'common/angular',
     'common/lodash',
     'common/moment',
+    'mocks/helpers/helper',
     'mocks/data/absence-period-data',
     'mocks/data/option-group-mock-data',
     'mocks/data/leave-request-data',
@@ -18,7 +18,7 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/manager-leave/app'
-  ], function (angular, _, moment, absencePeriodData, optionGroupMock, leaveRequestData, publicHolidayData, workPatternMocked) {
+  ], function (angular, _, moment, helper, absencePeriodData, optionGroupMock, leaveRequestData, publicHolidayData, workPatternMocked) {
     'use strict';
 
     describe('managerLeaveCalendar', function () {
@@ -433,17 +433,11 @@
         return date;
       }
 
-      function getDateByType (dayType) {
-        return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
-          return data.type.name === dayType;
-        });
-      }
-
       function getDateFromCalendar (contact, dayType) {
         var date;
         _.each(contact.calendarData, function (month) {
           _.each(month.data, function (dateObj) {
-            if (dateObj.date === getDateByType(dayType).date) {
+            if (dateObj.date === helper.getDate(dayType).date) {
               date = dateObj;
             }
           });
