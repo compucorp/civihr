@@ -535,6 +535,6 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
     $absenceStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
     $oldAbsenceStatusesMap = ['Requested' => $absenceStatuses['Awaiting Approval']];
 
-    return array_merge($absenceStatuses, $oldAbsenceStatusesMap);
+    return array_merge($oldAbsenceStatusesMap, $absenceStatuses);
   }
 }
