@@ -1,9 +1,9 @@
 /* eslint-env amd, jasmine */
-/* global inject */
 
 define([
   'common/lodash',
   'mocks/data/work-pattern-data',
+  'mocks/apis/option-group-api-mock',
   'leave-absences/shared/models/calendar-model'
 ], function (_, workPatternMocked) {
   'use strict';
@@ -11,7 +11,12 @@ define([
   describe('Calendar', function () {
     var $q, $rootScope, Calendar, WorkPatternAPI;
 
-    beforeEach(module('leave-absences.models'));
+    beforeEach(module('leave-absences.models', 'leave-absences.mocks'));
+    beforeEach(inject(function (OptionGroup, OptionGroupAPIMock) {
+      spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
+        return OptionGroupAPIMock.valuesOf(name);
+      });
+    }));
     beforeEach(inject(function (_$q_, _$rootScope_, _Calendar_, _WorkPatternAPI_) {
       $q = _$q_;
       $rootScope = _$rootScope_;
