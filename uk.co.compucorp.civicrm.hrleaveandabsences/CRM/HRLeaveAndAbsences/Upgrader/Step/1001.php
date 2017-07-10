@@ -42,7 +42,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1001 {
 
     $menuItem = [
       'label' => ts('Import Leave/Absence Requests'),
-      'name' => 'leave_and_absence_import',
+      'name' => 'leave_and_absences_import',
       'url' => 'civicrm/admin/leaveandabsences/import',
       'permission' => 'administer leave and absences',
       'parent_id' => $leaveAndAbsenceNavId,
