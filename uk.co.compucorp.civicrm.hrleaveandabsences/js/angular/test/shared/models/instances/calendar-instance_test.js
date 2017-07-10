@@ -1,21 +1,41 @@
 /* eslint-env amd, jasmine */
-/* global inject */
 
 define([
+  'common/lodash',
   'common/moment',
   'mocks/data/work-pattern-data',
-  'leave-absences/shared/models/instances/calendar-instance'
-], function (moment, workPatternMocked) {
+  'mocks/data/option-group-mock-data',
+  'leave-absences/shared/models/instances/calendar-instance',
+  'mocks/apis/option-group-api-mock'
+], function (_, moment, workPatternMocked, optionGroupMocked) {
   'use strict';
 
   describe('CalendarInstance', function () {
-    var instance, mockedCalendar;
+    var $rootScope, OptionGroup, instance, mockedCalendar, promise;
 
-    beforeEach(module('leave-absences.models.instances'));
-    beforeEach(inject(['CalendarInstance', function (CalendarInstance) {
+    beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks'));
+    beforeEach(inject(function (_$rootScope_, _OptionGroup_, OptionGroupAPIMock) {
+      $rootScope = _$rootScope_;
+      OptionGroup = _OptionGroup_;
+
+      spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
+        return OptionGroupAPIMock.valuesOf(name);
+      });
+    }));
+    beforeEach(inject(function (CalendarInstance) {
       mockedCalendar = workPatternMocked.getCalendar.values[0];
       instance = CalendarInstance.init(mockedCalendar);
-    }]));
+    }));
+
+    describe('on injection', function () {
+      it('fetches the list of day types', function () {
+        expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_work_day_type');
+      });
+    });
+
+    afterEach(function () {
+      $rootScope.$digest();
+    });
 
     describe('init()', function () {
       var key, date;
@@ -40,30 +60,119 @@ define([
     });
 
     describe('isWorkingDay()', function () {
-      it('determines if a given date is a working day', function () {
-        expect(instance.isWorkingDay(getDate('working_day'))).toBe(true);
-        expect(instance.isWorkingDay(getDate('non_working_day'))).toBe(false);
+      it('returns a promise', function () {
+        expect(instance.isWorkingDay(jasmine.any(String)).then).toBeDefined();
+      });
+
+      describe('when the day is a working day"', function () {
+        beforeEach(function () {
+          promise = instance.isWorkingDay(dateOfType('working_day'));
+        });
+
+        it('returns true', function () {
+          promise.then(function (result) {
+            expect(result).toBe(true);
+          });
+        });
+      });
+
+      describe('when the day is not a working day', function () {
+        beforeEach(function () {
+          promise = instance.isWorkingDay(dateOfType('weekend'));
+        });
+
+        it('returns false', function () {
+          promise.then(function (result) {
+            expect(result).toBe(false);
+          });
+        });
       });
     });
 
     describe('isNonWorkingDay()', function () {
-      it('determines if a given date is a non working day', function () {
-        expect(instance.isNonWorkingDay(getDate('non_working_day'))).toBe(true);
-        expect(instance.isNonWorkingDay(getDate('working_day'))).toBe(false);
+      it('returns a promise', function () {
+        expect(instance.isNonWorkingDay(jasmine.any(String)).then).toBeDefined();
+      });
+
+      describe('when the day is not a working day', function () {
+        beforeEach(function () {
+          promise = instance.isNonWorkingDay(dateOfType('non_working_day'));
+        });
+
+        it('returns false', function () {
+          promise.then(function (result) {
+            expect(result).toBe(true);
+          });
+        });
+      });
+
+      describe('when the day is a working day', function () {
+        beforeEach(function () {
+          promise = instance.isNonWorkingDay(dateOfType('working_day'));
+        });
+
+        it('returns false', function () {
+          promise.then(function (result) {
+            expect(result).toBe(false);
+          });
+        });
       });
     });
 
     describe('isWeekend()', function () {
-      it('determines if a given date is a weekend', function () {
-        expect(instance.isWeekend(getDate('weekend'))).toBe(true);
-        expect(instance.isWeekend(getDate('working_day'))).toBe(false);
+      it('returns a promise', function () {
+        expect(instance.isWeekend(jasmine.any(String)).then).toBeDefined();
+      });
+
+      describe('when the day is a weekend', function () {
+        beforeEach(function () {
+          promise = instance.isWeekend(dateOfType('weekend'));
+        });
+
+        it('returns false', function () {
+          promise.then(function (result) {
+            expect(result).toBe(true);
+          });
+        });
+      });
+
+      describe('when the day is not a weekend', function () {
+        beforeEach(function () {
+          promise = instance.isWeekend(dateOfType('non_working_day'));
+        });
+
+        it('returns false', function () {
+          promise.then(function (result) {
+            expect(result).toBe(false);
+          });
+        });
       });
     });
 
-    function getDate (dayType) {
-      return moment(Object.values(instance.days).find(function (data) {
-        return data.type.name === dayType;
+    /**
+     * Returns the date of a day in the calendar that matches the given type name
+     *
+     * @param  {string} typeName
+     * @return {string}
+     */
+    function dateOfType (typeName) {
+      return moment(_.find(instance.days, function (day) {
+        return day.type === dayTypeByName(typeName).value;
       }).date);
+    }
+
+    /**
+     * Finds a day type Option Value based on its name
+     *
+     * @param  {string} name
+     * @return {object}
+     */
+    function dayTypeByName (name) {
+      var dayTypes = optionGroupMocked.getCollection('hrleaveandabsences_work_day_type');
+
+      return _.find(dayTypes, function (dayType) {
+        return dayType.name === name;
+      });
     }
   });
 });
