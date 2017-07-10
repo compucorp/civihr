@@ -1,10 +1,11 @@
 /* eslint-env amd */
 
 define([
+  'common/lodash',
   'mocks/data/option-group-mock-data',
   'mocks/data/absence-type-data',
   'mocks/data/work-pattern-data'
-], function (optionGroupMock, absenceTypeData, workPatternMocked) {
+], function (_, optionGroupMock, absenceTypeData, workPatternMocked) {
   return {
     /**
      * Creates a LeaveRequest with random values
@@ -91,9 +92,23 @@ define([
      * @return {string} date
      **/
     getDate: function (dayType) {
-      return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
-        return data.type.name === dayType;
+      return _.find(workPatternMocked.getCalendar.values[0].calendar, function (day) {
+        return day.type === dayTypeByName(dayType).value;
       });
     }
   };
+
+   /**
+    * Finds a day type Option Value based on its name
+    *
+    * @param  {string} name
+    * @return {object}
+    */
+  function dayTypeByName (name) {
+    var dayTypes = optionGroupMock.getCollection('hrleaveandabsences_work_day_type');
+
+    return _.find(dayTypes, function (dayType) {
+      return dayType.name === name;
+    });
+  }
 });
