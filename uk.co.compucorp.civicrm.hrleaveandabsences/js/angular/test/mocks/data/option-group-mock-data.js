@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 define([
   'common/lodash',
   'mocks/module'
@@ -9,6 +10,44 @@ define([
    * Mocked option values, grouped by option group
    */
   var mockedOptionValues = {
+    hrleaveandabsences_work_day_type: [
+      {
+        'id': '1065',
+        'option_group_id': '143',
+        'label': 'No',
+        'value': '1',
+        'name': 'non_working_day',
+        'is_default': '0',
+        'weight': '0',
+        'is_optgroup': '0',
+        'is_reserved': '1',
+        'is_active': '1'
+      },
+      {
+        'id': '1066',
+        'option_group_id': '143',
+        'label': 'Yes',
+        'value': '2',
+        'name': 'working_day',
+        'is_default': '0',
+        'weight': '1',
+        'is_optgroup': '0',
+        'is_reserved': '1',
+        'is_active': '1'
+      },
+      {
+        'id': '1067',
+        'option_group_id': '143',
+        'label': 'Weekend',
+        'value': '3',
+        'name': 'weekend',
+        'is_default': '0',
+        'weight': '2',
+        'is_optgroup': '0',
+        'is_reserved': '1',
+        'is_active': '1'
+      }
+    ],
     hrleaveandabsences_leave_request_day_type: [{
       'id': '1113',
       'option_group_id': '142',
