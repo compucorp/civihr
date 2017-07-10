@@ -87,7 +87,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
 
     $this->setActiveFields($this->_mapperKeys);
     $this->absenceTypes = $this->getAbsenceTypes();
-    $this->absenceStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $this->absenceStatuses = $this->getAbsenceStatuses();
   }
 
   /**
@@ -521,5 +521,20 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
     ];
 
     $this->getLeaveRequestCommentService()->add($payload);
+  }
+
+  /**
+   * Returns a list of the available leave request statuses.
+   * This function also maps the absence statuses from the
+   * old absence extension that has a different name from the one
+   * on the L&A extension to the corresponding L&A status value.
+   *
+   * @return array
+   */
+  private function getAbsenceStatuses() {
+    $absenceStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $oldAbsenceStatusesMap = ['Requested' => $absenceStatuses['Awaiting Approval']];
+
+    return array_merge($absenceStatuses, $oldAbsenceStatusesMap);
   }
 }
