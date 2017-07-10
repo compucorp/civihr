@@ -17,3 +17,11 @@
 .chr_leave-request-files_upload_action {
   padding: 5px;
 }
+
+.chr_leave-request-files_file-name {
+  display: inline-block;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
