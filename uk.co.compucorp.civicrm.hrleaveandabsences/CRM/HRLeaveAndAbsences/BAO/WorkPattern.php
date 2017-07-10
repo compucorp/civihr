@@ -415,7 +415,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
 
   /**
    * Returns a list of dates between the given start and end date (inclusive),
-   * with details about the date type (working day, non-working day, weekend),
+   * with the date type (working day, non-working day, weekend) value,
    * according to this work pattern.
    *
    * In order to do the calculation properly, this method also expects the date
@@ -431,19 +431,11 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    *   [
    *     [
    *       'date' => '2016-01-01',
-   *       'type' => [
-   *         'value' => 2,
-   *         'name' => 'working_day',
-   *         'label' => 'Working Day'
-   *       ]
+   *       'type' => 2
    *     ],
    *     [
    *       'date' => '2016-01-02',
-   *       'type' => [
-   *         'value' => 3,
-   *         'name' => 'weekend',
-   *         'label' => 'Weekend'
-   *       ]
+   *       'type' => 3
    *     ]
    *   ]
    */
@@ -458,11 +450,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
 
       $calendar[] = [
         'date' => $date->format('Y-m-d'),
-        'type' => [
-          'value' => $workDayType,
-          'name' => $workDayTypeNames[$workDayType],
-          'label' => $workDayTypeLabels[$workDayType]
-        ]
+        'type' => $workDayType
       ];
     }
 
