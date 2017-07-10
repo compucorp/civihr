@@ -2,7 +2,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/shared/modules/components'
+  'leave-absences/shared/modules/components',
+  'common/services/pub-sub'
 ], function (_, moment, components) {
   components.component('staffLeaveReport', {
     bindings: {
@@ -13,13 +14,13 @@ define([
     }],
     controllerAs: 'report',
     controller: [
-      '$log', '$q', '$rootScope', 'checkPermissions', 'AbsencePeriod', 'AbsenceType',
+      '$log', '$q', '$rootScope', 'checkPermissions', 'pubSub', 'AbsencePeriod', 'AbsenceType',
       'Entitlement', 'LeaveRequest', 'OptionGroup', 'dialog', 'HR_settings',
       'shared-settings', controller
     ]
   });
 
-  function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HRSettings, sharedSettings) {
+  function controller ($log, $q, $rootScope, checkPermissions, pubSub, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
 
     var actionMatrix = {};
@@ -473,7 +474,7 @@ define([
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         public_holiday: true
-      }, null, requestSort)
+      }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.holidays.data = leaveRequests.list;
       });
@@ -542,6 +543,10 @@ define([
 
       $rootScope.$on('LeaveRequest::deleted', function (event, leaveRequest) {
         removeLeaveRequestFromItsSection(leaveRequest);
+      });
+
+      pubSub.subscribe('contract-refresh', function () {
+        vm.refresh();
       });
     }
 

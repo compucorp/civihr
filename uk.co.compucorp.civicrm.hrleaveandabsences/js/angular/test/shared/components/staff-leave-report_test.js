@@ -445,7 +445,7 @@
           it('fetches all leave requests linked to a public holiday', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               public_holiday: true
-            }), null, jasmine.any(String));
+            }), null, jasmine.any(String), null, false);
           });
 
           it('caches the data', function () {
