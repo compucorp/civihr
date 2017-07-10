@@ -14,10 +14,10 @@ define([
       return sharedSettings.sharedPathTpl + 'components/staff-leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$controller', '$log', '$rootScope', 'Calendar', controller]
+    controller: ['$controller', '$log', '$q', '$rootScope', 'Calendar', controller]
   });
 
-  function controller ($controller, $log, $rootScope, Calendar) {
+  function controller ($controller, $log, $q, $rootScope, Calendar) {
     $log.debug('Component: staff-leave-calendar');
 
     var parentCtrl = $controller('CalendarCtrl');
@@ -87,7 +87,9 @@ define([
       return Calendar.get(vm.contactId, vm.selectedPeriod.id)
         .then(function (calendar) {
           calendarData = calendar;
-          vm._setCalendarProps(calendarData);
+        })
+        .then(function () {
+          return vm._setCalendarProps(calendarData);
         });
     };
 
@@ -103,35 +105,39 @@ define([
     /**
      * Sets UI related properties(isWeekend, isNonWorkingDay etc)
      * to the calendar data
-     *
-     * @param  {object} calendar
      */
-    vm._setCalendarProps = function (calendar) {
-      var leaveRequest;
+    vm._setCalendarProps = function () {
       var monthData = _.clone(vm.months);
 
-      _.each(calendar.days, function (dateObj) {
-        // fetch leave request, search by date
-        leaveRequest = vm.leaveRequests[dateObj.date];
+      return $q.all(_.map(calendarData.days, function (dateObj) {
+        return $q.all([
+          calendarData.isWeekend(vm._getDateObjectWithFormat(dateObj.date)),
+          calendarData.isNonWorkingDay(vm._getDateObjectWithFormat(dateObj.date))
+        ])
+        .then(function (results) {
+          dateObj.UI = {
+            isWeekend: results[0],
+            isNonWorkingDay: results[1],
+            isPublicHoliday: vm.isPublicHoliday(dateObj.date)
+          };
+        })
+        .then(function () {
+          var leaveRequest = vm.leaveRequests[dateObj.date];
 
-        dateObj.UI = {
-          isWeekend: calendar.isWeekend(vm._getDateObjectWithFormat(dateObj.date)),
-          isNonWorkingDay: calendar.isNonWorkingDay(vm._getDateObjectWithFormat(dateObj.date)),
-          isPublicHoliday: vm.isPublicHoliday(dateObj.date)
-        };
-
-        // set below props only if leaveRequest is found
-        if (leaveRequest) {
-          dateObj.UI.styles = vm._getStyles(leaveRequest, dateObj);
-          dateObj.UI.isRequested = vm._isPendingApproval(leaveRequest);
-          dateObj.UI.isAM = vm._isDayType('half_day_am', leaveRequest, dateObj.date);
-          dateObj.UI.isPM = vm._isDayType('half_day_pm', leaveRequest, dateObj.date);
-        }
-
-        vm._getMonthObjectByDate(moment(dateObj.date), monthData).data.push(dateObj);
+          if (leaveRequest) {
+            dateObj.UI.styles = vm._getStyles(leaveRequest, dateObj);
+            dateObj.UI.isRequested = vm._isPendingApproval(leaveRequest);
+            dateObj.UI.isAM = vm._isDayType('half_day_am', leaveRequest, dateObj.date);
+            dateObj.UI.isPM = vm._isDayType('half_day_pm', leaveRequest, dateObj.date);
+          }
+        })
+        .then(function () {
+          vm._getMonthObjectByDate(moment(dateObj.date), monthData).data.push(dateObj);
+        });
+      }))
+      .then(function () {
+        vm.months = monthData;
       });
-
-      vm.months = monthData;
     };
 
     (function init () {
@@ -153,7 +159,7 @@ define([
         return leaveRequestObj.id === leaveRequest.id;
       });
       vm._resetMonths();
-      vm._setCalendarProps(calendarData);
+      vm._setCalendarProps();
     }
 
     return vm;

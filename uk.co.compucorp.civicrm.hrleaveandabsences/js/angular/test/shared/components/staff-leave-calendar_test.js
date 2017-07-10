@@ -5,6 +5,7 @@
     'common/angular',
     'common/moment',
     'common/lodash',
+    'mocks/helpers/helper',
     'mocks/data/absence-period-data',
     'mocks/data/absence-type-data',
     'mocks/data/option-group-mock-data',
@@ -19,12 +20,12 @@
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/my-leave/app'
-  ], function (angular, moment, _, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData, workPatternMocked, leaveRequestData) {
+  ], function (angular, moment, _, helper, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData, workPatternMocked, leaveRequestData) {
     'use strict';
 
     describe('sharedLeaveCalendar', function () {
       var $componentController, $log, $q, $rootScope, controller, $provide,
-        AbsencePeriod, AbsenceType, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
+        AbsencePeriod, AbsenceType, Calendar, CalendarInstance, LeaveRequest;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -39,9 +40,15 @@
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
 
-      beforeEach(inject(['$componentController', '$log', '$q', '$rootScope', 'AbsencePeriod', 'AbsenceType', 'OptionGroup', 'OptionGroupAPIMock',
+      beforeEach(inject(function (OptionGroup, OptionGroupAPIMock) {
+        spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
+          return OptionGroupAPIMock.valuesOf(name);
+        });
+      }));
+
+      beforeEach(inject(['$componentController', '$log', '$q', '$rootScope', 'AbsencePeriod', 'AbsenceType',
         'Calendar', 'CalendarInstance', 'LeaveRequest', 'shared-settings',
-        function (_$componentController_, _$log_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_, _OptionGroup_, _OptionGroupAPIMock_,
+        function (_$componentController_, _$log_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_,
           _Calendar_, _CalendarInstance_, _LeaveRequest_) {
           $componentController = _$componentController_;
           $log = _$log_;
@@ -52,13 +59,8 @@
           LeaveRequest = _LeaveRequest_;
           Calendar = _Calendar_;
           CalendarInstance = _CalendarInstance_;
-          OptionGroup = _OptionGroup_;
-          OptionGroupAPIMock = _OptionGroupAPIMock_;
 
           spyOn($log, 'debug');
-          spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
-            return OptionGroupAPIMock.valuesOf(name);
-          });
           spyOn(AbsencePeriod, 'all').and.callFake(function () {
             var data = absencePeriodData.all().values;
             // Set 2016 as current period, because Calendar loads data only for the current period initially,
@@ -364,17 +366,11 @@
         });
       }
 
-      function getDateByType (dayType) {
-        return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
-          return data.type.name === dayType;
-        });
-      }
-
       function getDateFromCalendar (dayType) {
         var date;
         _.each(controller.months, function (month) {
           _.each(month.data, function (dateObj) {
-            if (dateObj.date === getDateByType(dayType).date) {
+            if (dateObj.date === helper.getDate(dayType).date) {
               date = dateObj;
             }
           });
