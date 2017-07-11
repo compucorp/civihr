@@ -66,9 +66,12 @@
               </leave-request-popup-comments-tab>
             </uib-tab>
             <uib-tab heading="Files">
-              <ng-include
-                src="sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html'">
-              </ng-include>
+              <leave-request-popup-files-tab
+                request="$ctrl.request"
+                mode="$ctrl.mode"
+                can-manage="$ctrl.canManage"
+              >
+              </leave-request-popup-files-tab>
             </uib-tab>
           </uib-tabset>
         </div>

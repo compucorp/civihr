@@ -49,8 +49,6 @@ define([
       this.selectedAbsenceType = {};
       this.statusNames = sharedSettings.statusNames;
       this.submitting = false;
-      this.supportedFileTypes = '';
-      this.today = Date.now();
       this.balance = {
         closing: 0,
         opening: 0,
@@ -88,7 +86,6 @@ define([
         isChangeExpanded: false,
         multipleDays: true,
         userDateFormat: HRSettings.DATE_FORMAT,
-        userDateFormatWithTime: HRSettings.DATE_FORMAT + ' HH:mm',
         showBalance: false,
         date: {
           from: {
@@ -182,16 +179,6 @@ define([
       };
 
       /**
-       * Checks if user can upload more file, it totals the number of already
-       * uploaded files and those which are in queue and compares it to limit.
-       *
-       * @return {Boolean} true is user can upload more else false
-       */
-      this.canUploadMore = function () {
-        return this.getFilesCount() < sharedSettings.fileUploader.queueLimit;
-      };
-
-      /**
       * Closes the error alerts if any
       */
       this.closeAlert = function () {
@@ -225,19 +212,6 @@ define([
         this.$modalInstance.dismiss({
           $value: 'cancel'
         });
-      };
-
-      /**
-       * Calculates the total number of files associated with request.
-       *
-       * @return {Number} of files
-       */
-      this.getFilesCount = function () {
-        var filesWithSoftDelete = _.filter(this.request.files, function (file) {
-          return file.toBeDeleted;
-        });
-
-        return this.request.files.length + this.request.fileUploader.queue.length - filesWithSoftDelete.length;
       };
 
       /**
@@ -377,16 +351,6 @@ define([
         this.$modalInstance.close({
           $value: this.request
         });
-      };
-
-      /**
-       * Decides visiblity of remove attachment button
-       * @param {Object} attachment - attachment object
-       *
-       * @return {Boolean}
-       */
-      this.removeAttachmentVisibility = function (attachment) {
-        return !attachment.attachment_id || this.canManage;
       };
 
       /**
@@ -543,7 +507,6 @@ define([
        * @return {Promise}
        */
       this._init = function () {
-        this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
         initAvailableStatusesMatrix.call(this);
 
         return initRoles.call(this)
@@ -564,8 +527,6 @@ define([
           .then(function () {
             initAbsencePeriod.call(this);
             this._setMinMaxDate();
-
-            return this.request.loadAttachments();
           }.bind(this))
           .then(function () {
             if (this.directiveOptions.selectedContactId) {
