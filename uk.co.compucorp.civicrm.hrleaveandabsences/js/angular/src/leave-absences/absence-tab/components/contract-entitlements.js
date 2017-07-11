@@ -20,7 +20,7 @@ define([
   function controller ($log, $q, HRSettings, AbsenceType, Contract, DateFormat) {
     $log.debug('Component: contract-entitlements');
 
-    var vm = Object.create(this);
+    var vm = this;
 
     vm.absenceTypes = [];
     vm.contracts = [];
@@ -42,7 +42,7 @@ define([
     /**
      * Formats the date according to user settings
      *
-     * @param {object} date
+     * @param {Object} date
      * @return {string}
      */
     function formatDate (date) {
@@ -78,7 +78,7 @@ define([
     /**
      * Processes contracts from data and sets them to a controller
      *
-     * @param {object} contracts
+     * @param {Object} contracts
      */
     function setContractsProps (contracts) {
       vm.contracts = _.sortBy(contracts, function (contract) {
