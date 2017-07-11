@@ -11,12 +11,12 @@ define([
   'leave-absences/shared/ui-router',
   'leave-absences/shared/components/leave-request-popup-comments-tab',
   'leave-absences/shared/directives/leave-request-popup',
+  'leave-absences/shared/components/manage-leave-requests',
+  'leave-absences/shared/components/manager-leave-calendar',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/manager-leave/modules/config',
-  'leave-absences/manager-leave/components/manager-leave-container',
-  'leave-absences/shared/components/manager-leave-calendar',
-  'leave-absences/manager-leave/components/manager-leave-requests'
+  'leave-absences/manager-leave/components/manager-leave-container'
 ], function (angular) {
   angular.module('manager-leave', [
     'ngResource',

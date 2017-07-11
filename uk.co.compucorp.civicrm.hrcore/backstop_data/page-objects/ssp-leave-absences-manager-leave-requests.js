@@ -1,8 +1,9 @@
+/* global Event */
+
 var Promise = require('es6-promise').Promise;
 var page = require('./page');
 
 module.exports = (function () {
-
   return page.extend({
     /**
      * Wait for the page to be ready as it waits for the actions of the first
@@ -27,7 +28,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click('.chr_manager_dashboard__panel_body tr:nth-child('+ (row || 1) +') .dropdown-toggle');
+        casper.click('.chr_manage_leave_requests__panel_body tr:nth-child(' + (row || 1) + ') .dropdown-toggle');
       });
 
       return this;
@@ -40,8 +41,8 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click('.chr_manager_dashboard__filter');
-        casper.waitUntilVisible('.chr_manager_dashboard__sub-header div:nth-child(1)');
+        casper.click('.chr_manage_leave_requests__filter');
+        casper.waitUntilVisible('.chr_manage_leave_requests__sub-header div:nth-child(1)');
       });
 
       return this;
@@ -56,8 +57,8 @@ module.exports = (function () {
 
       casper.then(function () {
         casper.evaluate(function (leaveType) {
-          var element = document.querySelector('.chr_manager_dashboard__header div:nth-child(1) > select');
-          element.selectedIndex = leaveType;//for TOIL option
+          var element = document.querySelector('.chr_manage_leave_requests__header div:nth-child(1) > select');
+          element.selectedIndex = leaveType;// for TOIL option
           element.dispatchEvent(new Event('change'));
         }, leaveType);
       });
@@ -74,8 +75,8 @@ module.exports = (function () {
 
       return new Promise(function (resolve) {
         casper.then(function () {
-          casper.click('body > ul.dropdown-menu:nth-of-type('+ (row || 1) +') li:first-child a');
-          //as there are multiple spinners it takes more time to load up
+          casper.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
+          // as there are multiple spinners it takes more time to load up
           resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
         }.bind(this));
       }.bind(this));
@@ -90,7 +91,7 @@ module.exports = (function () {
 
       return new Promise(function (resolve) {
         casper.then(function () {
-          var selector = '.button-container button:nth-child('+ (leaveType === 'leave' ? 1 : 2) +')';
+          var selector = '.button-container button:nth-child(' + (leaveType === 'leave' ? 1 : 2) + ')';
 
           casper.click(selector);
         });
@@ -98,14 +99,13 @@ module.exports = (function () {
         casper.then(function () {
           if (leaveType === 'sickness') {
             casper.click('.button-container li:nth-child(1) a');
-          }
-          else if (leaveType === 'toil') {
+          } else if (leaveType === 'toil') {
             casper.click('.button-container li:nth-child(2) a');
           }
         });
 
         casper.then(function () {
-          //as there are multiple spinners it takes more time to load up
+          // as there are multiple spinners it takes more time to load up
           resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
         }.bind(this));
       }.bind(this));
