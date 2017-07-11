@@ -12,11 +12,9 @@
       controller: ['$log', function ($log) {
         $log.debug('Component: absence-tab-container');
 
-        var vm = Object.create(this);
+        var vm = this;
         vm.contactId = CRM.adminId;
-
-        return vm;
       }]
     });
   });
-})(CRM, require);
+})(CRM);
