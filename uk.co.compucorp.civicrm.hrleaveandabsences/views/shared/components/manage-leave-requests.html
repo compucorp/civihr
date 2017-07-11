@@ -1,18 +1,20 @@
-<div class="chr_manage_leave_requests">
+<div class="chr_manage_leave_requests" data-role="{{vm.isAdmin ? 'admin' : 'manager'}}">
   <div class="panel panel-default">
     <crm-loading show="!vm.loading.page">
       <div class="panel-heading row chr_manage_leave_requests__header">
-        <span class="panel-title">{{ vm.isAdmin ? "Admin" : "Manager" }} Absence Approval</span>
-        <span class="pull-right">
-          <div class="crm_custom-select">
-            <select
-              ng-options="types.title for types in vm.absenceTypes track by types.id"
-              ng-model="vm.filters.leaveRequest.selectedAbsenceTypes"
-              ng-change="vm.refresh()">
-              <option value="">Leave Type</option>
-            </select>
-            <span class="crm_custom-select__arrow"></span>
+        <span class="panel-title" ng-if="!vm.isAdmin">Manager Absence Approval</span>
+        <span class="chr_manage_leave_requests__assignee_filter">
+          <div class="btn-group" ng-if="vm.isAdmin">
+            <button
+              ng-repeat="filter in vm.filtersByAssignee"
+              type="button"
+              ng-click="vm.refreshWithFilterByAssignee(filter.type)"
+              ng-class="{'active': vm.filters.leaveRequest.assignedTo === filter.type}"
+              class="btn btn-secondary-outline btn-sm">{{filter.label}}
+            </button>
           </div>
+        </span>
+        <span class="chr_manage_leave_requests__period_and_all_filters">
           <div class="crm_custom-select">
             <select
               ng-options="period as vm.labelPeriod(period) for period in vm.absencePeriods track by period.id"
@@ -27,7 +29,18 @@
                ng-class="{ 'fa-chevron-right': !vm.isFilterExpanded, ' fa-chevron-down': vm.isFilterExpanded }">
             </i>
             Filter
+          </span>
         </span>
+        <span class="chr_manage_leave_requests__leave_type_filter">
+          <div class="crm_custom-select">
+            <select
+              ng-options="types.title for types in vm.absenceTypes track by types.id"
+              ng-model="vm.filters.leaveRequest.selectedAbsenceTypes"
+              ng-change="vm.refresh()">
+              <option value="">Leave Type</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
         </span>
       </div>
       <div class="panel-subheading chr_manage_leave_requests__sub-header" ng-show="vm.isFilterExpanded">
@@ -80,15 +93,14 @@
         </div>
         <div class="checkbox">
           <label>
-            <input type="checkbox"
-                   ng-change = "vm.refresh()"
-                   ng-model="vm.filters.leaveRequest.pending_requests"> Pending only
+            <input type="checkbox" ng-change = "vm.refresh()"
+              ng-model="vm.filters.leaveRequest.pending_requests">Pending only
           </label>
         </div>
       </div>
       <crm-loading show="!vm.loading.content">
         <div ng-show="vm.leaveRequests.table.list.length"
-             class="panel-body row chr_manage_leave_requests__panel_body">
+          class="panel-body row chr_manage_leave_requests__panel_body">
           <ul class="col-xs-3 nav nav-pills nav-stacked chr_vertical_tabs">
             <li ng-repeat="status in vm.leaveRequestStatuses track by status.value"
                 ng-hide="vm.filterLeaveRequestByStatus(status).length === 0"
@@ -132,8 +144,7 @@
                           ng-switch-when="-1"
                           href
                           leave-request-popup leave-request="request"
-                          contact-id="vm.contactId"
-                          user-role="{{$root.role}}">
+                          contact-id="vm.contactId">
                           {{action}}
                         </a>
                         <a

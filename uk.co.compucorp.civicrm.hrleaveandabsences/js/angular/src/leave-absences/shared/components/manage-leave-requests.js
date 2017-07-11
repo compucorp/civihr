@@ -14,12 +14,12 @@ define([
     }],
     controllerAs: 'vm',
     controller: [
-      '$controller', '$log', '$q', '$rootScope', 'shared-settings', 'checkPermissions',
+      '$log', '$q', '$rootScope', 'shared-settings', 'checkPermissions',
       'Contact', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest', 'OptionGroup',
       'dialog', controller]
   });
 
-  function controller ($controller, $log, $q, $rootScope, sharedSettings, checkPermissions, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup, dialog) {
+  function controller ($log, $q, $rootScope, sharedSettings, checkPermissions, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup, dialog) {
     'use strict';
     $log.debug('Component: manage-leave-requests');
 
@@ -34,6 +34,9 @@ define([
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
+    vm.filteredUsers = [];
+    vm.isFilterExpanded = false;
+    vm.isAdmin = false; // this property is updated on controller initialization
     vm.leaveRequestStatuses = [{
       name: 'all',
       label: 'All'
@@ -50,14 +53,17 @@ define([
         pending_requests: false,
         contact_id: null,
         selectedPeriod: null,
-        selectedAbsenceTypes: null
+        selectedAbsenceTypes: null,
+        assignedTo: 'all'
       }
     };
-    vm.filteredUsers = [];
-    vm.isFilterExpanded = false;
+    vm.filtersByAssignee = [
+      { type: 'all', label: 'All' },
+      { type: 'unassigned', label: 'Unassigned' },
+      { type: 'me', label: 'Assigned To Me' }
+    ];
     // leaveRequests.table - to handle table data
     // leaveRequests.filter - to handle left nav filter data
-    vm.isAdmin = false; // this property is updated on controller initialization
     vm.leaveRequests = {
       table: {
         list: []
@@ -271,6 +277,16 @@ define([
     };
 
     /**
+     * Refreshes the leave request data and also changes current selected leave status
+     *
+     * @param {string} type - by assignee type to be selected
+     */
+    vm.refreshWithFilterByAssignee = function (type) {
+      vm.filters.leaveRequest.assignedTo = type;
+      vm.refresh();
+    };
+
+    /**
      * Calculates the total number of pages for the pagination
      *
      * @return {number}
@@ -437,7 +453,7 @@ define([
 
       return {
         contact_id: prepareContactID(),
-        managed_by: vm.isAdmin ? undefined : vm.contactId, // managed_by must be ignored if admin
+        managed_by: (vm.isAdmin && filters.assignedTo !== 'me' ? undefined : vm.contactId),
         status_id: prepareStatusFilter(filterByStatus),
         type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
         from_date: {
@@ -445,7 +461,8 @@ define([
         },
         to_date: {
           to: filters.selectedPeriod.end_date
-        }
+        },
+        unassigned: filters.assignedTo === 'unassigned'
       };
     }
 

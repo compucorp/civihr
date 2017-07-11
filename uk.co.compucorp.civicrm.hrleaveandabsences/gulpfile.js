@@ -105,7 +105,7 @@ var test = (function () {
      *
      * Looks for a test file (*.spec.js) in `test/`, using the same path
      * of the source file in `src/leave-absences/`
-     *   i.e. src/leave-absences/models/model.js -> test/models/model.spec.js
+     * i.e. src/leave-absences/models/model.js -> test/models/model.spec.js
      *
      * @throw {Error}
      */
