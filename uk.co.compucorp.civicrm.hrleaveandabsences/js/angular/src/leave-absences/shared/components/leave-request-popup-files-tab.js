@@ -8,14 +8,14 @@ define([
 ], function (_, moment, components) {
   components.component('leaveRequestPopupFilesTab', {
     bindings: {
-      // canManage: '<',
+      canManage: '<',
       mode: '<',
       request: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html';
     }],
-    controllerAs: 'vm',
+    controllerAs: 'filesTab',
     controller: ['$log', 'HR_settings', 'shared-settings', controller]
   });
 
@@ -27,11 +27,6 @@ define([
     vm.today = Date.now();
     vm.userDateFormatWithTime = HRSettings.DATE_FORMAT + ' HH:mm';
     vm.userDateFormat = HRSettings.DATE_FORMAT;
-
-    (function init () {
-      vm.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
-      vm.request.loadAttachments();
-    }());
 
     /**
      * Checks if user can upload more file, it totals the number of already
@@ -88,6 +83,11 @@ define([
     vm.removeAttachmentVisibility = function (attachment) {
       return !attachment.attachment_id || vm.canManage;
     };
+
+    (function init () {
+      vm.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
+      vm.request.loadAttachments();
+    }());
 
     return vm;
   }

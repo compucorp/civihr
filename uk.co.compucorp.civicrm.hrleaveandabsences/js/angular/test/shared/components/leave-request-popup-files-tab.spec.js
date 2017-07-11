@@ -1,5 +1,4 @@
 /* eslint-env amd, jasmine */
-/* global CRM, inject */
 
 define([
   'common/angular',
@@ -30,7 +29,7 @@ define([
       expect($log.debug).toHaveBeenCalled();
     });
 
-    describe('when user uploads files', function () {
+    describe('canUploadMore()', function () {
       describe('when number of files are below allowed limit', function () {
         beforeEach(function () {
           controller.request.files = [1, 2, 3, 4];

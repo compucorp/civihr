@@ -73,8 +73,11 @@ define([
        * @return {Boolean}
        */
       vm.canSubmit = function () {
-        return parentRequestCtrl.canSubmit.call(this) && !!vm.request.toil_duration && !!vm.request.toil_to_accrue &&
-          !!vm.request.from_date && !!vm.request.to_date;
+        return parentRequestCtrl.canSubmit.call(this) &&
+          !!vm.request.toil_duration &&
+          !!vm.request.toil_to_accrue &&
+          !!vm.request.from_date &&
+          !!vm.request.to_date;
       };
 
       /**

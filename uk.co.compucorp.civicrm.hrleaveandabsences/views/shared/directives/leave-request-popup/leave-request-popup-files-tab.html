@@ -1,9 +1,9 @@
 <div>
-  <ul class="chr_leave-request-files_list container-fluid" ng-if="vm.getFilesCount() > 0">
-    <li ng-repeat="file in vm.request.files | filter: {toBeDeleted: '!'}">{{file.toBeDeleted}}
+  <ul class="chr_leave-request-files_list container-fluid" ng-if="filesTab.getFilesCount() > 0">
+    <li ng-repeat="file in filesTab.request.files | filter: {toBeDeleted: '!'}">{{file.toBeDeleted}}
       <div class="chr_leave-request-files_meta">
-        <span class="chr_leave-request-files_author">{{vm.getAuthorName(file.contact_id)}}</span>
-        <span class="chr_leave-request-files_date">{{vm.formatDateTime(file.upload_date)}}</span>
+        <span class="chr_leave-request-files_author">{{filesTab.getAuthorName(file.contact_id)}}</span>
+        <span class="chr_leave-request-files_date">{{filesTab.formatDateTime(file.upload_date)}}</span>
       </div>
       <div class="row">
         <div class="chr_leave-request-files_icon text-primary col-xs-8">
@@ -19,25 +19,25 @@
           <span class="chr_leave-request-files_file-name">{{file.name}}</span>
         </div>
         <div
-          ng-show="vm.removeAttachmentVisibility(file)"
+          ng-show="filesTab.removeAttachmentVisibility(file)"
           class="chr_leave-request-files_delete text-danger col-xs-4">
           <i class="fa fa-trash-o" aria-hidden="true"></i>
           <span
             class="btn btn-link"
-            ng-disabled="vm.isMode('view')"
-            ng-click="vm.request.deleteAttachment(file)">
+            ng-disabled="filesTab.isMode('view')"
+            ng-click="filesTab.request.deleteAttachment(file)">
             Remove
           </span>
         </div>
       </div>
       <hr/>
     </li>
-    <span ng-if="vm.request.fileUploader" ng-disabled="vm.isMode('view')">
-      <li ng-repeat="file in vm.request.fileUploader.queue">
+    <span ng-if="filesTab.request.fileUploader" ng-disabled="filesTab.isMode('view')">
+      <li ng-repeat="file in filesTab.request.fileUploader.queue">
         <div class="chr_leave-request-files_meta">
           <span class="chr_leave-request-files_author">Me</span>
           <span>-</span>
-          <span class="chr_leave-request-files_date">{{vm.today | date: vm.userDateFormatWithTime}}</span>
+          <span class="chr_leave-request-files_date">{{filesTab.today | date: filesTab.userDateFormatWithTime}}</span>
         </div>
         <div class="row">
           <div class="chr_leave-request-files_icon text-primary col-xs-8">
@@ -53,13 +53,13 @@
             <span class="chr_leave-request-files_file-name">{{file.file.name}}</span>
           </div>
           <div
-            ng-show="vm.removeAttachmentVisibility(file)"
+            ng-show="filesTab.removeAttachmentVisibility(file)"
             class="chr_leave-request-files_delete text-danger col-xs-4">
             <i class="fa fa-trash-o" aria-hidden="true"></i>
             <span
               class="btn btn-link"
-              ng-disabled="vm.isMode('view')"
-              ng-click="vm.request.fileUploader.removeFromQueue(file)">
+              ng-disabled="filesTab.isMode('view')"
+              ng-click="filesTab.request.fileUploader.removeFromQueue(file)">
               Remove</span>
           </div>
         </div>
@@ -70,11 +70,11 @@
 </div>
 <div
   class="chr_leave-request-files_upload"
-  ng-class="{'chr_disabled': !vm.canUploadMore() || vm.isMode('view')}">
+  ng-class="{'chr_disabled': !filesTab.canUploadMore() || filesTab.isMode('view')}">
   <div
     nv-file-drop
-    uploader="vm.request.fileUploader"
-    ng-disabled="!vm.request.fileUploader">
+    uploader="filesTab.request.fileUploader"
+    ng-disabled="!filesTab.request.fileUploader">
     <div class="chr_leave-request-files_upload_action row text-center">
       Drag and drop file here
     </div>
@@ -87,15 +87,15 @@
         <input
           type="file"
           nv-file-select
-          uploader="vm.request.fileUploader"
+          uploader="filesTab.request.fileUploader"
           class="hidden">
       </label>
     </div>
   </div>
-  <div class="chr_leave-request-files_upload_action row text-warning" ng-if="vm.canUploadMore()">
-    You can upload up to 10 files. The supported file extensions are {{ vm.supportedFileTypes.join(', ') }}.
+  <div class="chr_leave-request-files_upload_action row text-warning" ng-if="filesTab.canUploadMore()">
+    You can upload up to 10 files. The supported file extensions are {{ filesTab.supportedFileTypes.join(', ') }}.
   </div>
-  <div class="chr_leave-request-files_upload_action row text-warning text-center" ng-if="!(vm.canUploadMore())">
+  <div class="chr_leave-request-files_upload_action row text-warning text-center" ng-if="!(filesTab.canUploadMore())">
     You have reached the limit of 10 uploaded files.
   </div>
 </div>
