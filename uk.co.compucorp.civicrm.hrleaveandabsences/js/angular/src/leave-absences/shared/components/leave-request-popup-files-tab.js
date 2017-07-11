@@ -16,13 +16,12 @@ define([
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html';
     }],
     controllerAs: 'vm',
-    controller: ['$log', 'HR_settings', 'shared-settings', 'Contact', controller]
+    controller: ['$log', 'HR_settings', 'shared-settings', controller]
   });
 
-  function controller ($log, HRSettings, sharedSettings, Contact) {
+  function controller ($log, HRSettings, sharedSettings) {
     $log.debug('Component: leave-request-popup-files-tab');
 
-    var filesContacts = [];
     var vm = Object.create(this);
     vm.supportedFileTypes = '';
     vm.today = Date.now();
@@ -31,10 +30,7 @@ define([
 
     (function init () {
       vm.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
-      vm.request.loadAttachments()
-      .then(function () {
-        loadContactNames();
-      });
+      vm.request.loadAttachments();
     }());
 
     /**
@@ -63,10 +59,10 @@ define([
      * @return {String}
      */
     vm.getAuthorName = function (contactId) {
+      // @TODO Author name cannot be fetched for already uploaded attachments
+      // as the attachment API does not support saving the contact id
       if (contactId === vm.request.contact_id) {
-        return 'Me';
-      } else if (filesContacts[contactId]) {
-        return filesContacts[contactId].display_name;
+        return 'Me -';
       }
     };
 
@@ -92,29 +88,6 @@ define([
     vm.removeAttachmentVisibility = function (attachment) {
       return !attachment.attachment_id || vm.canManage;
     };
-
-    /**
-     * Loads unique contact names for all the comments
-     *
-     * @return {Promise}
-     */
-    function loadContactNames () {
-      var contactIDs = [];
-
-      _.each(vm.request.files, function (file) {
-        // Push only unique contactId's which are not same as logged in user
-        if (file.contact_id !== vm.request.contact_id && contactIDs.indexOf(file.contact_id) === -1) {
-          contactIDs.push(file.contact_id);
-        }
-      });
-
-      return Contact.all({
-        id: { IN: contactIDs }
-      }, { page: 1, size: 0 })
-        .then(function (contacts) {
-          filesContacts = _.indexBy(contacts.list, 'contact_id');
-        });
-    }
 
     return vm;
   }

@@ -3,7 +3,6 @@
     <li ng-repeat="file in vm.request.files | filter: {toBeDeleted: '!'}">{{file.toBeDeleted}}
       <div class="chr_leave-request-files_meta">
         <span class="chr_leave-request-files_author">{{vm.getAuthorName(file.contact_id)}}</span>
-        <span>-</span>
         <span class="chr_leave-request-files_date">{{vm.formatDateTime(file.upload_date)}}</span>
       </div>
       <div class="row">
