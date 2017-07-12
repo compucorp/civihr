@@ -3,6 +3,7 @@
   dir: 'dist',
   wrapShim: true,
   modules: [
+    {name: 'admin-dashboard'},
     {name: 'my-leave'},
     {name: 'manager-leave'},
     {name: 'absence-tab'}
