@@ -16,7 +16,9 @@
               'fa fa-file-word-o': file.mime_type === 'application/msword'
             }"
             aria-hidden="true"></i>
-          <span class="chr_leave-request-files_file-name">{{file.name}}</span>
+          <span class="chr_leave-request-files_file-name">
+            <a href="{{file.url}}" target="_blank">{{file.name}}<a/>
+          </span>
         </div>
         <div
           ng-show="filesTab.removeAttachmentVisibility(file)"
