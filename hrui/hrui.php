@@ -588,9 +588,17 @@ function hrui_civicrm_managed(&$entities) {
   return _hrui_civix_civicrm_managed($entities);
 }
 
+/**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @param Array $params List of menu items
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ */
 function hrui_civicrm_navigationMenu(&$params) {
   _hrui_customImportMenuItems($params);
   _hrui_coreMenuChanges($params);
+  _hrui_createHelpMenu($params);
+  _hrui_createDeveloperMenu($params);
 }
 
 /**
@@ -937,112 +945,72 @@ function _hrui_menuSetActive($isActive) {
   CRM_Core_BAO_Navigation::resetNavigation();
 }
 
-function _getMenuKeyMax($menuArray) {
-  $max = array(max(array_keys($menuArray)));
-  foreach($menuArray as $v) {
-    if (!empty($v['child'])) {
-      $max[] = _getMenuKeyMax($v['child']);
-    }
-  }
-  return max($max);
-}
-
-function civicrm_civicrm_navigationMenu(&$menu) {
-  // Create New Help Menu
-  _createHelpMenu($menu);
-
-  // Create New Developer Menu
-  _createDeveloperMenu($menu);
-}
-
 /**
  * Creates Help Menu in navigation bar
  *
- * @param Array $menu
+ * @param Array $menu List of available menu items
  */
-function _createHelpMenu(&$menu) {
-  $maxKey = _getMenuKeyMax($menu);
+function _hrui_createHelpMenu(&$menu) {
+  _hrui_civix_insert_navigation_menu($menu, '', [
+    'name' => ts('Help'),
+    'permission' => 'access CiviCRM'
+  ]);
 
-  $menu[$maxKey+1] = array(
-    'attributes' => array(
-      'label'      => 'Help',
-      'name'       => 'Help',
-      'url'        => null,
-      'permission' => 'access CiviCRM',
-      'navID'      => $maxKey + 1,
-      'active'     => 1
-    )
-  );
-
-  _hrui_civix_insert_navigation_menu($menu, 'Help', array(
-    'label' => ts('User Guide'),
+  _hrui_civix_insert_navigation_menu($menu, 'Help', [
     'name' => ts('User Guide'),
     'url' => 'http://civihr-documentation.readthedocs.io/en/latest/',
     'permission' => 'access CiviCRM'
-  ));
+  ]);
 
-  _hrui_civix_insert_navigation_menu($menu, 'Help', array(
-    'label' => ts('CiviHR website'),
+  _hrui_civix_insert_navigation_menu($menu, 'Help', [
     'name' => ts('CiviHR website'),
     'url' => 'https://www.civihr.org/',
     'permission' => 'access CiviCRM'
-  ));
+  ]);
 
-  _hrui_civix_insert_navigation_menu($menu, 'Help', array(
-    'label' => ts('Get support'),
+  _hrui_civix_insert_navigation_menu($menu, 'Help', [
     'name' => ts('Get support'),
     'url' => 'https://www.civihr.org/support',
     'permission' => 'access CiviCRM'
-  ));
+  ]);
 }
 
 /**
  * Creates Developer Menu in navigation bar
  *
- * @param Array $menu
+ * @param Array $menu List of available menu items
  */
-function _createDeveloperMenu(&$menu) {
-  $maxKey = _getMenuKeyMax($menu);
+function _hrui_createDeveloperMenu(&$menu) {
+  _hrui_civix_insert_navigation_menu($menu, '', [
+    'name' => ts('Developer'),
+    'permission' => 'access CiviCRM'
+  ]);
 
-  $menu[$maxKey+1] = array(
-    'attributes' => array(
-      'label'      => ts('Developer'),
-      'name'       => ts('Developer'),
-      'url'        => null,
-      'permission' => 'access CiviCRM',
-      'navID'      => $maxKey + 1,
-      'active'     => 1
-    )
-  );
-
-  _hrui_civix_insert_navigation_menu($menu, 'Developer', array(
-    'label' => ts('API Explorer'),
+  _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('API Explorer'),
     'url' => '/civicrm/api',
     'permission' => 'access CiviCRM'
-  ));
+  ]);
 
-  _hrui_civix_insert_navigation_menu($menu, 'Developer', array(
-    'label' => ts('Developer Docs'),
+  _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('Developer Docs'),
     'url' => 'https://civicrm.org/developer-documentation?src=iam',
     'permission' => 'access CiviCRM'
-  ));
+  ]);
 
-  _hrui_civix_insert_navigation_menu($menu, 'Developer', array(
-    'label' => ts('Style Guide'),
+  _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('Style Guide'),
     'url' => 'https://www.civihr.org/support',
     'permission' => 'access CiviCRM'
-  ));
+  ]);
 
-  // Adds sub menu under Style Guide
+  // Adds sub menu under Style Guide menu
   foreach (Civi::service('style_guides')->getAll() as $styleGuide) {
-    _hrui_civix_insert_navigation_menu($menu, 'Developer/Style Guide', array(
+    _hrui_civix_insert_navigation_menu($menu, 'Developer/Style Guide', [
       'label' => $styleGuide['label'],
       'name' => $styleGuide['name'],
       'url' => 'civicrm/styleguide/' . $styleGuide['name'],
       'permission' => 'access CiviCRM',
-    ));
+    ]);
   }
 }
