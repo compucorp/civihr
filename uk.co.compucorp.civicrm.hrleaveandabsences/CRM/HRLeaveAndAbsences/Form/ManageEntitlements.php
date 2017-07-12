@@ -217,8 +217,8 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
   private function getContactsWithContractsInPeriod(AbsencePeriod $absencePeriod, $filter = []) {
     try {
       $contacts = civicrm_api3('HRJobContract', 'getcontactswithcontractsinperiod' , [
-        $absencePeriod->start_date,
-        $absencePeriod->end_date
+        'start_date' => $absencePeriod->start_date,
+        'end_date' => $absencePeriod->end_date
       ])['values'];
 
       if(!empty($filter)) {
