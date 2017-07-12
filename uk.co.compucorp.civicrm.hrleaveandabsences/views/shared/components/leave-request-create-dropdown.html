@@ -1,0 +1,16 @@
+<div class="btn-group" uib-dropdown>
+  <button type="button" class="btn {{vm.btnClass}} dropdown-toggle" uib-dropdown-toggle>
+    <i class="fa fa-plus-circle" aria-hidden="true"></i> Record New Absence
+  </button>
+  <ul class="dropdown-menu" role="menu" uib-dropdown-menu>
+    <li ng-repeat="option in vm.leaveRequestOptions">
+      <a
+        href="#"
+        leave-request-popup leave-type="{{option.type}}"
+        contact-id="vm.contactId"
+        selected-contact-id="vm.selectedContactId">
+        <i class="fa fa-{{option.icon}}" aria-hidden="true"></i> {{option.label}}
+      </a>
+    </li>
+  </ul>
+</div>
