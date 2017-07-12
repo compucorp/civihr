@@ -1,39 +1,10 @@
 <div class="absence-tab-page">
   <div class="container">
-    <div class="btn-group">
-      <button
-        type="button"
-        class="btn btn-info"
-        leave-request-popup leave-type="leave"
-        contact-id="absence.contactId"
-        selected-contact-id="$root.settings.contactId">Record New Absence
-      </button>
-      <button
-        type="button"
-        class="btn btn-info dropdown-toggle"
-        data-toggle="dropdown">
-        <span class="caret"></span>
-        <span class="sr-only">Toggle Dropdown</span>
-      </button>
-      <ul class="dropdown-menu" uib-dropdown-menu>
-        <li>
-          <a
-            leave-request-popup
-            contact-id="contactId" leave-type="sickness"
-            selected-contact-id="$root.settings.contactId"
-            href="#">Record Sickness
-          </a>
-        </li>
-        <li>
-          <a
-            leave-request-popup
-            contact-id="contactId" leave-type="toil"
-            selected-contact-id="$root.settings.contactId"
-            href="#">Record Overtime
-          </a>
-        </li>
-      </ul>
-    </div>
+    <leave-request-create-dropdown
+      btn-class="btn-primary"
+      contact-id="absence.contactId"
+      selected-contact-id="$root.settings.contactId">
+    </leave-request-create-dropdown>
     <uib-tabset
       active="active"
       type="pills"

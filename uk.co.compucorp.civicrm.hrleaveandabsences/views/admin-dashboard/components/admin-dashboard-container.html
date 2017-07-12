@@ -1,36 +1,10 @@
 <div class="admin-dashboard-page">
   <div class="crm_page__topbar">
-    <div class="btn-group pull-right">
-      <button type="button" class="btn btn-default-outline dropdown-toggle" data-toggle="dropdown">
-        <i class="fa fa-plus-circle" aria-hidden="true"></i>
-        Record New Absence
-      </button>
-      <ul class="dropdown-menu" role="menu">
-        <li>
-          <a
-            href="#"
-            leave-request-popup leave-type="toil"
-            contact-id="$root.settings.contactId">
-            <i class="fa fa-calendar-plus-o" aria-hidden="true"></i> Record Staff Overtime
-          </a>
-        </li>
-        <li>
-          <a
-            href="#"
-            leave-request-popup leave-type="sickness"
-            contact-id="$root.settings.contactId">
-            <i class="fa fa-stethoscope" aria-hidden="true"></i> Record Staff Sickness
-          </a>
-        </li>
-        <li>
-          <a
-            href="#"
-            leave-request-popup leave-type="leave"
-            contact-id="$root.settings.contactId">
-            <i class="fa fa-briefcase" aria-hidden="true"></i> Record Staff Leave
-          </a>
-        </li>
-      </ul>
+    <div class="pull-right">
+      <leave-request-create-dropdown
+        btn-class="btn-default-outline"
+        contact-id="$root.settings.contactId">
+      </leave-request-create-dropdown>
     </div>
   </div>
   <div class="chr_admin-dashboard_content pull-right">
