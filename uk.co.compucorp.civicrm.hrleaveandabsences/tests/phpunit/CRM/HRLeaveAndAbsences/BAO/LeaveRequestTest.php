@@ -2549,6 +2549,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'period_id' => $period->id
     ]);
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $period->start_date]
+    );
+
     $params = [
       'type_id' => $absenceType->id,
       'contact_id' => 1,
