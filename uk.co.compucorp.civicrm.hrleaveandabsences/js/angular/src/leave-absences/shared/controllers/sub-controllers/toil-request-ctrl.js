@@ -53,8 +53,8 @@ define([
           return $q.reject(vm.errors);
         }
 
-        // If manager has already altered then it will directly show that date.
-        if (vm.request.toil_expiry_date) {
+        // stops staff from updating expiry date on open requests
+        if (!this.canManage && this.request.id) {
           return $q.resolve(vm.request.toil_expiry_date);
         }
 

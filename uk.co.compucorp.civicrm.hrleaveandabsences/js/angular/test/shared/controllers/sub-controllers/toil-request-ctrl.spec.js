@@ -301,18 +301,43 @@
                 expect($ctrl.request.toil_expiry_date).toEqual(newExpiryDate);
               });
 
-              describe('and staff edits', function () {
+              describe('and staff edits new request', function () {
                 beforeEach(function () {
                   var directiveOptions = {
                     contactId: toilRequest.contact_id, // staff's contact id
                     leaveRequest: $ctrl.request
                   };
+                  role = 'staff';
+                  delete $ctrl.request.id;
 
                   initTestController(directiveOptions);
+                  $ctrl.updateExpiryDate();
+                });
+
+                it('has expired date set by staff', function () {
+                  expect($ctrl.request.toil_expiry_date).toEqual(newExpiryDate);
+                });
+
+                it('has toil amount set by staff', function () {
+                  expect($ctrl.request.toil_to_accrue).toEqual(originalToilToAccrue.value);
+                });
+              });
+
+              describe('and staff edits open request', function () {
+                beforeEach(function () {
+                  var directiveOptions = {
+                    contactId: toilRequest.contact_id, // staff's contact id
+                    leaveRequest: $ctrl.request
+                  };
+                  role = 'staff';
+                  $ctrl.request.toil_expiry_date = oldExpiryDate;
+
+                  initTestController(directiveOptions);
+                  $ctrl.updateExpiryDate();
                 });
 
                 it('has expired date set by manager', function () {
-                  expect($ctrl.request.toil_expiry_date).toEqual(newExpiryDate);
+                  expect($ctrl.request.toil_expiry_date).toEqual(oldExpiryDate);
                 });
 
                 it('has toil amount set by manager', function () {
