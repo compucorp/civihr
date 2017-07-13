@@ -85,7 +85,8 @@
 
         beforeEach(function () {
           var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId
+            contactId: CRM.vars.leaveAndAbsences.contactId,
+            isSelfRecord: true
           };
 
           initTestController(directiveOptions);

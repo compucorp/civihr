@@ -111,7 +111,8 @@
       describe('staff opens request popup', function () {
         beforeEach(inject(function () {
           var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId
+            contactId: CRM.vars.leaveAndAbsences.contactId,
+            isSelfRecord: true
           };
 
           initTestController(directiveOptions);
@@ -754,6 +755,7 @@
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: leaveRequest.contact_id, // staff's contact id
+                isSelfRecord: true,
                 leaveRequest: leaveRequest
               };
 
@@ -845,6 +847,7 @@
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
                   contactId: leaveRequest.contact_id, // staff's contact id
+                  isSelfRecord: true,
                   leaveRequest: leaveRequest
                 };
 
@@ -866,6 +869,7 @@
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
                   contactId: leaveRequest.contact_id, // staff's contact id
+                  isSelfRecord: true,
                   leaveRequest: leaveRequest
                 };
 
@@ -906,6 +910,7 @@
 
             initTestController({
               contactId: leaveRequest.contact_id, // staff's contact id
+              isSelfRecord: true,
               leaveRequest: leaveRequest
             });
           });
@@ -934,6 +939,7 @@
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             var directiveOptions = {
               contactId: leaveRequest.contact_id, // staff's contact id
+              isSelfRecord: true,
               leaveRequest: leaveRequest
             };
 
