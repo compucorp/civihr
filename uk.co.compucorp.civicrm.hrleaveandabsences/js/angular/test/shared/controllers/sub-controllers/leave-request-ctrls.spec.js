@@ -1205,6 +1205,33 @@
       });
 
       describe('admin opens leave request popup in create mode', function () {
+        var adminId = 206;
+
+        beforeEach(function () {
+          $ctrl.request.contact_id = adminId.toString();
+
+          role = 'admin';
+          initTestController({
+            contactId: adminId
+          });
+        });
+
+        describe('on initialization', function () {
+          it('is in create mode', function () {
+            expect($ctrl.isMode('create')).toBeTruthy();
+          });
+
+          it('has admin role', function () {
+            expect($ctrl.isRole('admin')).toBeTruthy();
+          });
+
+          it('does not contain admin in the list of managees', function () {
+            expect(_.find($ctrl.managedContacts, { 'id': adminId })).toBeUndefined();
+          });
+        });
+      });
+
+      describe('admin opens leave request popup in create mode for a pre-selected contact', function () {
         var selectedContactId = 208;
         var adminId = 206;
 

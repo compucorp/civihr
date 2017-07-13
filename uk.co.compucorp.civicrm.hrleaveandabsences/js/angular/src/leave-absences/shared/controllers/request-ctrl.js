@@ -1029,12 +1029,10 @@ define([
           // When in Admin Dashboard
           return Contact.all()
             .then(function (contacts) {
-              var self = this;
-
               this.managedContacts = _.remove(contacts.list, function (contact) {
-                // Removes the manager/admin from the list of managees
-                return contact.id !== self.directiveOptions.contactId;
-              });
+                // Removes the admin from the list of managees
+                return contact.id !== this.directiveOptions.contactId;
+              }.bind(this));
             }.bind(this));
         } else {
           // Everywhere else
