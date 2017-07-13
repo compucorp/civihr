@@ -8,7 +8,8 @@ define([
     bindings: {
       btnClass: '@',
       contactId: '<',
-      selectedContactId: '<'
+      selectedContactId: '<',
+      isSelfRecord: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/leave-request-create-dropdown.html';
