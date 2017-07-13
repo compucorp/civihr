@@ -9,13 +9,12 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1002 {
    */
   public function upgrade_1002() {
     try {
-      $result = civicrm_api3('OptionValue', 'get', [
-        'sequential' => 1,
+      $result = civicrm_api3('OptionValue', 'getcount', [
         'option_group_id' => 'hrleaveandabsences_sickness_reason',
         'name' => 'other',
       ]);
 
-      if ($result['count'] == 0) {
+      if ($result['result'] == 0) {
         civicrm_api3('OptionValue', 'create', [
           'option_group_id' => 'hrleaveandabsences_sickness_reason',
           'name' => 'other',
