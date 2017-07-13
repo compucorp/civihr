@@ -46,8 +46,8 @@ define([
        * @return {Promise}
        */
       vm.calculateToilExpiryDate = function () {
-        // blocks the expiry date from updating if not a manager and
-        // this is an open request.
+        // blocks the expiry date from updating if this is an existing request
+        // and user is not a manager or admin.
         if (!vm.canManage && vm.request.id) {
           return $q.resolve(vm.request.toil_expiry_date);
         }
