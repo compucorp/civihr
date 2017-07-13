@@ -223,7 +223,8 @@
                                       ng-switch-when="true"
                                       leave-request-popup
                                       leave-request="request"
-                                      contact-id="report.contactId">
+                                      contact-id="report.contactId"
+                                      is-self-record="true">
                                       {{action}}
                                     </a>
                                     <a href ng-switch-default ng-click="report.action(request, action)">
@@ -398,7 +399,8 @@
                                     ng-switch-when="true"
                                     leave-request-popup
                                     leave-request="request"
-                                    contact-id="report.contactId">
+                                    contact-id="report.contactId"
+                                    is-self-record="true">
                                     {{action}}
                                   </a>
                                   <a href ng-switch-default ng-click="report.action(request, action)">
@@ -500,7 +502,8 @@
                                     ng-switch-when="true"
                                     leave-request-popup
                                     leave-request="request"
-                                    contact-id="report.contactId">
+                                    contact-id="report.contactId"
+                                    is-self-record="true">
                                     {{action}}
                                   </a>
                                   <a href ng-switch-default ng-click="report.action(request, action)">
