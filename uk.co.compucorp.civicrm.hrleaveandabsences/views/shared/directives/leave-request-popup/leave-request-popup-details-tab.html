@@ -92,10 +92,10 @@
       <div class="col-xs-4">
         <span
           class="chr_leave-request-modal__span-expiry"
-          ng-if="!$ctrl.canManage">
+          ng-if="!$ctrl.canManage || $ctrl.isSelfRecord">
           {{$ctrl.request.toil_expiry_date | date: $ctrl.uiOptions.userDateFormat}}
         </span>
-        <div ng-if="$ctrl.canManage" class="input-group">
+        <div ng-if="$ctrl.canManage && !$ctrl.isSelfRecord" class="input-group">
           <input
             type="text"
             class="form-control"

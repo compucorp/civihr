@@ -36,7 +36,8 @@ define([
           contactId: '<',
           leaveRequest: '<',
           leaveType: '@',
-          selectedContactId: '<'
+          selectedContactId: '<',
+          isSelfRecord: '<'
         },
         restrict: 'EA',
         link: function (scope, element) {
@@ -55,7 +56,8 @@ define([
                   return {
                     contactId: scope.contactId,
                     leaveRequest: scope.leaveRequest,
-                    selectedContactId: scope.selectedContactId
+                    selectedContactId: scope.selectedContactId,
+                    isSelfRecord: scope.isSelfRecord
                   };
                 },
                 // to set HR_settings DateFormat

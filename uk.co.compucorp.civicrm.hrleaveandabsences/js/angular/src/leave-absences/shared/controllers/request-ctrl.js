@@ -38,6 +38,7 @@ define([
       this.canManage = false; // this flag is set on initialisation of the controller
       this.contactName = null;
       this.errors = [];
+      this.isSelfRecord = false; // this flag is set on initialisation of the controller
       this.managedContacts = [];
       this.mode = ''; // can be edit, create, view
       this.newStatusOnSave = null;
@@ -713,11 +714,11 @@ define([
 
       /**
        * Changes status of the leave request before saving it
-       * For staff the status_id should be always set to awaitingApproval before saving
-       * If manager has changed the status through dropdown, assign the same before calling API
+       * When recording for yourself the status_id should be always set to awaitingApproval before saving
+       * If manager or admin have changed the status through dropdown, assign the same before calling API
        */
       function changeStatusBeforeSave () {
-        if (this.isRole('staff')) {
+        if (this.isSelfRecord) {
           this.request.status_id = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
         } else if (this.canManage) {
           this.request.status_id = this.newStatusOnSave || this.request.status_id;
@@ -982,6 +983,7 @@ define([
         })
         .finally(function () {
           this.canManage = this.isRole('manager') || this.isRole('admin');
+          this.isSelfRecord = this.directiveOptions.isSelfRecord;
         }.bind(this));
       }
 
@@ -1027,7 +1029,10 @@ define([
           // When in Admin Dashboard
           return Contact.all()
             .then(function (contacts) {
-              this.managedContacts = contacts.list;
+              this.managedContacts = _.remove(contacts.list, function (contact) {
+                // Removes the admin from the list of managees
+                return contact.id !== this.directiveOptions.contactId;
+              }.bind(this));
             }.bind(this));
         } else {
           // Everywhere else

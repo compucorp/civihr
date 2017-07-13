@@ -111,7 +111,8 @@
       describe('staff opens request popup', function () {
         beforeEach(inject(function () {
           var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId
+            contactId: CRM.vars.leaveAndAbsences.contactId,
+            isSelfRecord: true
           };
 
           initTestController(directiveOptions);
@@ -754,6 +755,7 @@
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               var directiveOptions = {
                 contactId: leaveRequest.contact_id, // staff's contact id
+                isSelfRecord: true,
                 leaveRequest: leaveRequest
               };
 
@@ -845,6 +847,7 @@
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
                   contactId: leaveRequest.contact_id, // staff's contact id
+                  isSelfRecord: true,
                   leaveRequest: leaveRequest
                 };
 
@@ -866,6 +869,7 @@
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
                   contactId: leaveRequest.contact_id, // staff's contact id
+                  isSelfRecord: true,
                   leaveRequest: leaveRequest
                 };
 
@@ -906,6 +910,7 @@
 
             initTestController({
               contactId: leaveRequest.contact_id, // staff's contact id
+              isSelfRecord: true,
               leaveRequest: leaveRequest
             });
           });
@@ -934,6 +939,7 @@
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             var directiveOptions = {
               contactId: leaveRequest.contact_id, // staff's contact id
+              isSelfRecord: true,
               leaveRequest: leaveRequest
             };
 
@@ -1199,6 +1205,33 @@
       });
 
       describe('admin opens leave request popup in create mode', function () {
+        var adminId = 206;
+
+        beforeEach(function () {
+          $ctrl.request.contact_id = adminId.toString();
+
+          role = 'admin';
+          initTestController({
+            contactId: adminId
+          });
+        });
+
+        describe('on initialization', function () {
+          it('is in create mode', function () {
+            expect($ctrl.isMode('create')).toBeTruthy();
+          });
+
+          it('has admin role', function () {
+            expect($ctrl.isRole('admin')).toBeTruthy();
+          });
+
+          it('does not contain admin in the list of managees', function () {
+            expect(_.find($ctrl.managedContacts, { 'id': adminId })).toBeUndefined();
+          });
+        });
+      });
+
+      describe('admin opens leave request popup in create mode for a pre-selected contact', function () {
         var selectedContactId = 208;
         var adminId = 206;
 
