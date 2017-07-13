@@ -1,15 +1,16 @@
+/* eslint-env amd, jasmine */
+
 (function (CRM) {
   define([
     'common/angular',
     'common/angularMocks',
     'leave-absences/shared/config',
-    'leave-absences/shared/directives/leave-request-popup',
+    'leave-absences/shared/directives/leave-request-popup'
   ], function (angular) {
     'use strict';
 
     describe('leaveRequestPopup', function () {
-      var $compile, $log, $rootScope, directive, $uibModal,
-        $controllerScope, $provide, DateFormat;
+      var $compile, $log, $rootScope, directive, $uibModal, $controllerScope;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.directives'));
 
@@ -38,7 +39,7 @@
           expect($uibModal.open).toHaveBeenCalledWith(jasmine.any(Object));
         });
 
-        describe('with all attributes', function() {
+        describe('with all attributes', function () {
           var isolateScope, contactId;
 
           beforeEach(function () {
@@ -46,11 +47,11 @@
             isolateScope = directive.isolateScope();
           });
 
-          it('sets contact id', function() {
-            expect(isolateScope.contactId).toEqual(contactId);
+          it('sets contact id', function () {
+            expect(isolateScope.contactId).toEqual(+contactId);
           });
 
-          it('sets leave request', function() {
+          it('sets leave request', function () {
             expect(isolateScope.leaveRequest).toEqual({'contact-id': contactId});
           });
         });
@@ -59,12 +60,13 @@
       /**
        * Creates and compiles the directive
        */
-      function compileDirective() {
+      function compileDirective () {
         $controllerScope = $rootScope.$new();
-        var contactId = CRM.vars.leaveAndAbsences.contactId, leaveRequest = {'contact-id': contactId};
-        var elementString = "<leave-request-popup contact-id=" +
+        var contactId = CRM.vars.leaveAndAbsences.contactId;
+        var leaveRequest = {'contact-id': contactId};
+        var elementString = '<leave-request-popup contact-id=' +
           contactId + " leave-type='sick' leave-request=" + JSON.stringify(leaveRequest) +
-          "></leave-request-popup>";
+          '></leave-request-popup>';
 
         directive = angular.element(elementString);
         $compile(directive)($controllerScope);
