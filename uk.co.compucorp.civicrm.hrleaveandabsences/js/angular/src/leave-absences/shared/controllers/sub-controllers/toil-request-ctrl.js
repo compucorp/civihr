@@ -42,26 +42,29 @@ define([
 
       /**
        * Calculates toil expiry date.
-       * TODO It will be based on from date for both single and multiple days for now.
        *
        * @return {Promise}
        */
       vm.calculateToilExpiryDate = function () {
-        if (!vm.request.from_date) {
-          vm.errors = ['Please select from date to find expiry date'];
-
-          return $q.reject(vm.errors);
-        }
-
-        // If manager has already altered then it will directly show that date.
-        if (vm.request.toil_expiry_date) {
+        // blocks the expiry date from updating if this is an existing request
+        // and user is not a manager or admin.
+        if (!vm.canManage && vm.request.id) {
           return $q.resolve(vm.request.toil_expiry_date);
         }
 
-        return AbsenceType.calculateToilExpiryDate(vm.request.type_id, vm.request.from_date)
-          .then(function (expiryDate) {
-            vm.request.toil_expiry_date = expiryDate;
-          });
+        return getReferenceDate().catch(function (errors) {
+          if (errors.length) vm.errors = errors;
+          return $q.reject(errors);
+        }).then(function (referenceDate) {
+          return AbsenceType.calculateToilExpiryDate(
+            vm.request.type_id,
+            referenceDate
+          );
+        })
+        .then(function (expiryDate) {
+          vm.request.toil_expiry_date = expiryDate;
+          return expiryDate;
+        });
       };
 
       /**
@@ -72,6 +75,18 @@ define([
       vm.canSubmit = function () {
         return !!vm.request.toil_duration && !!vm.request.toil_to_accrue &&
           !!vm.request.from_date && !!vm.request.to_date;
+      };
+
+      /**
+       * Extends parent method. Fires calculation of expiry date when the
+       * number of days changes and the expiry date can be calculated.
+       */
+      vm.changeInNoOfDays = function () {
+        parentRequestCtrl.changeInNoOfDays.call(this);
+
+        if (canCalculateExpiryDate()) {
+          vm.calculateToilExpiryDate();
+        }
       };
 
       /**
@@ -151,15 +166,58 @@ define([
       })();
 
       /**
-       * Initializes leave request toil amounts
+       * Determines if the expiry date can be calculated based on the
+       * Number Of Days selected and the corresponding date field has value.
+       *
+       * @return {Boolean}
+       */
+      function canCalculateExpiryDate () {
+        return (vm.uiOptions.multipleDays && vm.request.to_date) ||
+          (!vm.uiOptions.multipleDays && vm.request.from_date);
+      }
+
+      /**
+       * Returns a promise with a date that can be used to calculate the expiry
+       * date. This date depends on the Multiple Days or Single Day options.
        *
        * @return {Promise}
        */
-      function loadToilAmounts () {
-        return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts')
-          .then(function (amounts) {
-            vm.toilAmounts = _.indexBy(amounts, 'value');
+      function getReferenceDate () {
+        if (vm.uiOptions.multipleDays) {
+          return getReferenceDateForField({
+            hasErrors: !vm.request.to_date && !vm.request.from_date,
+            label: 'To Date',
+            value: vm.request.to_date
           });
+        } else {
+          return getReferenceDateForField({
+            hasErrors: !vm.request.from_date,
+            label: 'From Date',
+            value: vm.request.from_date
+          });
+        }
+      }
+
+      /**
+       * Returns a reference date using the field object as source.
+       * If the field has errors, it returns an error message.
+       * If the field has no value, it returns an empty message since it still
+       * is in the process of inserting values.
+       * And if everything is ok it returns the field's date value.
+       *
+       * @return {Promise}
+       */
+      function getReferenceDateForField (field) {
+        if (field.hasErrors) {
+          var message = 'Please select ' + field.label + ' to find expiry date';
+          return $q.reject([message]);
+        }
+
+        if (!field.value) {
+          return $q.reject([]);
+        } else {
+          return $q.resolve(field.value);
+        }
       }
 
       /**
@@ -169,6 +227,18 @@ define([
         if (vm.canManage) {
           vm.uiOptions.expiryDate = vm._convertDateFormatFromServer(vm.request.toil_expiry_date);
         }
+      }
+
+      /**
+       * Initializes leave request toil amounts
+       *
+       * @return {Promise}
+       */
+      function loadToilAmounts () {
+        return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts')
+          .then(function (amounts) {
+            vm.toilAmounts = _.indexBy(amounts, 'value');
+          });
       }
 
       return vm;
