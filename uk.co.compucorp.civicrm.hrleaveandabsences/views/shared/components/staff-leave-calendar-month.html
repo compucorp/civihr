@@ -8,15 +8,15 @@
     <table class="table table-bordered chr_leave-calendar">
       <thead>
       <tr class="chr_leave-calendar__days">
-        <th ng-repeat="day in calendar.getMonthData(month)">
+        <th ng-repeat="day in calendar.getMonthData(calendar.contacts[0], month) track by day.date">
           {{calendar.getDayName(day.date)}}
           <div>{{$index + 1}}</div>
         </th>
       </tr>
       </thead>
       <tbody>
-      <tr class="chr_leave-calendar__items">
-        <td ng-repeat="day in calendar.getMonthData(month)">
+      <tr class="chr_leave-calendar__items" ng-repeat="contact in calendar.contacts track by contact.id">
+        <td ng-repeat="day in calendar.getMonthData(contact, month)">
           <div class="chr_leave-calendar__item"
                ng-style="day.UI.styles"
                ng-class="{

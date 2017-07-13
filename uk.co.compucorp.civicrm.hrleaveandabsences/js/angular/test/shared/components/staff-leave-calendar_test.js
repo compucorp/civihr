@@ -12,6 +12,7 @@
     'mocks/data/public-holiday-data',
     'mocks/data/work-pattern-data',
     'mocks/data/leave-request-data',
+    'common/mocks/services/api/contact-mock',
     'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/leave-request-api-mock',
@@ -25,9 +26,9 @@
 
     describe('sharedLeaveCalendar', function () {
       var $componentController, $log, $q, $rootScope, controller, $provide,
-        AbsencePeriod, AbsenceType, Calendar, CalendarInstance, LeaveRequest;
+        ContactAPIMock, AbsencePeriod, AbsenceType, Calendar, CalendarInstance, LeaveRequest;
 
-      beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
+      beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', 'common.mocks', function (_$provide_) {
         $provide = _$provide_;
       }));
 
@@ -39,6 +40,10 @@
         $provide.value('PublicHolidayAPI', PublicHolidayAPIMock);
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
+
+      beforeEach(inject(['api.contact.mock', function (ContactAPIMock) {
+        $provide.value('api.contact', ContactAPIMock)
+      }]));
 
       beforeEach(inject(function (OptionGroup, OptionGroupAPIMock) {
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
@@ -102,12 +107,6 @@
           expect(controller.absenceTypes.length).not.toBe(0);
         });
 
-        it('each month data has loaded', function () {
-          _.each(controller.months, function (month) {
-            expect(Object.keys(month.data.length)).not.toBe(0);
-          });
-        });
-
         it('Leave request API is called with proper parameters', function () {
           expect(LeaveRequest.all).toHaveBeenCalledWith({
             from_date: {from: controller.selectedPeriod.start_date},
@@ -117,7 +116,7 @@
               optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'admin_approved').value,
               optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval').value
             ]},
-            contact_id: CRM.vars.leaveAndAbsences.contactId
+            contact_id: { 'IN' : [CRM.vars.leaveAndAbsences.contactId] }
           }, null, null, null, false);
         });
       });
@@ -260,14 +259,15 @@
         });
 
         describe('refresh', function () {
-          var dateObj,
-            workPattern,
-            leaveRequest;
+          var dateObj, workPattern, leaveRequest;
 
           beforeEach(function () {
-            workPattern = workPatternMocked.getCalendar;
             leaveRequest = leaveRequestData.singleDataSuccess().values[0];
-            workPattern.values[0].calendar[0].date = leaveRequest.from_date;
+
+            workPattern = _.find(workPatternMocked.getCalendar.values, function (workPattern) {
+              return workPattern.contact_id === CRM.vars.leaveAndAbsences.contactId;
+            });
+            workPattern.calendar[0].date = leaveRequest.from_date;
           });
 
           describe('when leave request is not approved', function () {
@@ -278,7 +278,7 @@
               leaveRequest.status_id = status.value;
               leaveRequest.balance_change = -1;
               commonSetup();
-              dateObj = getDate(leaveRequest.from_date);
+              dateObj = getDate(workPattern, leaveRequest.from_date);
             });
 
             it('isRequested flag is true', function () {
@@ -340,7 +340,7 @@
 
           function commonSetup () {
             spyOn(Calendar, 'get').and.callFake(function () {
-              return $q.resolve(CalendarInstance.init(workPattern.values[0]));
+              return $q.resolve([CalendarInstance.init(workPattern)]);
             });
 
             LeaveRequest.all.and.callFake(function () {
@@ -360,16 +360,17 @@
         $rootScope.$digest();
       }
 
-      function getDate (dateStr) {
-        return workPatternMocked.getCalendar.values[0].calendar.find(function (data) {
+      function getDate (workPattern, dateStr) {
+        return workPattern.calendar.find(function (data) {
           return data.date === dateStr;
         });
       }
 
       function getDateFromCalendar (dayType) {
         var date;
-        _.each(controller.months, function (month) {
-          _.each(month.data, function (dateObj) {
+
+        controller.contacts[0].calendarData.forEach(function (month) {
+          month.data.forEach(function (dateObj) {
             if (dateObj.date === helper.getDate(dayType).date) {
               date = dateObj;
             }

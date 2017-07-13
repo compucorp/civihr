@@ -10,23 +10,26 @@ define([
   'use strict';
 
   controllers.controller('CalendarCtrl', ['$q', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
-    'LeaveRequest', 'PublicHoliday', 'OptionGroup', controller]);
+    'LeaveRequest', 'PublicHoliday', 'OptionGroup', 'Calendar', controller]);
 
-  function controller ($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup) {
+  function controller ($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup, Calendar) {
     var dayTypes = [];
     var leaveRequestStatuses = [];
     var publicHolidays = [];
 
     this.absencePeriods = [];
     this.absenceTypes = [];
+    this.calendars = [];
+    this.contacts = [];
+    this.legendCollapsed = true;
     this.leaveRequests = {};
     this.months = [];
     this.monthLabels = moment.monthsShort();
     this.selectedMonths = [];
     this.selectedPeriod = null;
     this.loading = {
-      calendar: false,
-      page: false
+      calendar: true,
+      page: true
     };
 
     /**
@@ -57,7 +60,21 @@ define([
      * @return {string}
      */
     this.getDayName = function (date) {
-      return this._getDateObjectWithFormat(date).format('ddd');
+      return getDateObjectWithFormat(date).format('ddd');
+    };
+
+    /**
+     * Returns the calendar information for a specific month
+     *
+     * @param  {object} monthObj
+     * @return {array}
+     */
+    this.getMonthData = function (contact, monthObj) {
+      var month = _.find(contact.calendarData, function (month) {
+        return (month.month === monthObj.month) && (month.year === monthObj.year);
+      });
+
+      return month ? month.data : [];
     };
 
     /**
@@ -67,7 +84,7 @@ define([
      * @return {boolean}
      */
     this.isPublicHoliday = function (date) {
-      return !!publicHolidays[this._getDateObjectWithFormat(date).valueOf()];
+      return !!publicHolidays[getDateObjectWithFormat(date).valueOf()];
     };
 
     /**
@@ -81,14 +98,102 @@ define([
     };
 
     /**
+     * Refreshes all leave request and calendar data
+     */
+    this.refresh = function () {
+      this.loading.calendar = true;
+
+      $q.all([
+        loadCalendars.call(this),
+        loadLeaveRequests.call(this)
+      ])
+      .then(fillCalendarCellsData.bind(this))
+      .then(function () {
+        this.loading.calendar = false;
+      }.bind(this))
+    };
+
+    /**
+     * Initialize the calendar
+     *
+     * @param {function} intermediateSteps
+     */
+    this._init = function (intermediateSteps) {
+      setDefaultMonths.call(this);
+
+      var pContactsPeriods = loadContactsAndAbsencePeriods.call(this);
+      var pCalendars = pContactsPeriods.then(loadCalendars.bind(this));
+      var pLeaveRequests = $q.all([
+        loadSupporData.call(this),
+        pContactsPeriods
+      ])
+      .then(loadLeaveRequests.bind(this));
+
+      $q.all([
+        pCalendars,
+        pLeaveRequests
+      ])
+      .then(fillCalendarCellsData.bind(this))
+      .then(function () {
+        this.loading.calendar = false;
+      }.bind(this))
+      .then(function () {
+        return intermediateSteps ? intermediateSteps() : null;
+      })
+      .then(function () {
+        showMonthLoader.call(this);
+        this.loading.page = false;
+      }.bind(this))
+    };
+
+    /**
+     * Fetch all the months from the current period and
+     * save it in vm.months
+     */
+    function fetchMonthsFromPeriod () {
+      var months = [];
+      var startDate = moment(this.selectedPeriod.start_date);
+      var endDate = moment(this.selectedPeriod.end_date);
+
+      while (startDate.isBefore(endDate)) {
+        months.push(getMonthSkeleton(startDate));
+        startDate.add(1, 'month');
+      }
+
+      this.months = months;
+    }
+
+    /**
+     * Fills the data of each "cell" of the calendar
+     *
+     * @return {Promise}
+     */
+    function fillCalendarCellsData () {
+      return $q.all(this.calendars.map(setCalendarProps.bind(this)));
+    }
+
+    /**
      * Converts given date to moment object with server format
      *
      * @param {Date/String} date from server
      * @return {Date} Moment date
      */
-    this._getDateObjectWithFormat = function (date) {
+    function getDateObjectWithFormat (date) {
       return moment(date, sharedSettings.serverDateFormat);
-    };
+    }
+
+    /**
+     * Returns leave status value from name
+     * @param {String} name - name of the leave status
+     * @returns {int/boolean}
+     */
+    function getLeaveStatusValuefromName (name) {
+      var leaveStatus = _.find(leaveRequestStatuses, function (status) {
+        return status.name === name;
+      });
+
+      return leaveStatus ? leaveStatus.value : false;
+    }
 
     /**
      * Finds the month which matches with the sent date
@@ -98,11 +203,24 @@ define([
      * @param {array} months
      * @return {object}
      */
-    this._getMonthObjectByDate = function (date, months) {
+    function getMonthObjectByDate (date, months) {
       return _.find(months, function (month) {
         return (month.month === date.month()) && (month.year === date.year());
       });
-    };
+    }
+
+    /**
+     * Returns skeleton for the month object
+     *
+     * @param  {Object} startDate
+     * @return {Object}
+     */
+    function getMonthSkeleton (startDate) {
+      return {
+        month: startDate.month(),
+        year: startDate.year()
+      };
+    }
 
     /**
      * Returns the styles for a specific leaveRequest
@@ -112,7 +230,7 @@ define([
      * @param  {object} dateObj - Date UI object which handles look of a calendar cell
      * @return {object}
      */
-    this._getStyles = function (leaveRequest, dateObj) {
+    function getStyles (leaveRequest, dateObj) {
       var absenceType;
 
       dateObj.leaveRequest = leaveRequest;
@@ -134,36 +252,25 @@ define([
         backgroundColor: absenceType.color,
         borderColor: absenceType.color
       };
-    };
+    }
 
     /**
-     * Initialize the calendar
+     * Index leave requests by contact_id as first level
+     * and date as second level
      *
-     * @param {function} intermediateSteps
+     * @param  {Array} leaveRequests - leave requests array from API
      */
-    this._init = function (intermediateSteps) {
-      this.loading.page = true;
-      // Select current month as default
-      this.selectedMonths = [this.monthLabels[moment().month()]];
+    function indexLeaveRequests (leaveRequests) {
+      this.leaveRequests = {};
 
-      $q.all([
-        loadAbsencePeriods.call(this),
-        loadAbsenceTypes.call(this),
-        loadPublicHolidays.call(this),
-        loadOptionValues()
-      ])
-      .then(function () {
-        return intermediateSteps ? intermediateSteps() : null;
-      })
-      .then(function () {
-        this.legendCollapsed = false;
+      _.each(leaveRequests, function (leaveRequest) {
+        this.leaveRequests[leaveRequest.contact_id] = this.leaveRequests[leaveRequest.contact_id] || {};
 
-        return this._loadLeaveRequestsAndCalendar();
-      }.bind(this))
-      .finally(function () {
-        this.loading.page = false;
+        _.each(leaveRequest.dates, function (leaveRequestDate) {
+          this.leaveRequests[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
+        }.bind(this));
       }.bind(this));
-    };
+    }
 
     /**
      * Returns whether a date is of a specific type
@@ -175,7 +282,7 @@ define([
      *
      * @return {boolean}
      */
-    this._isDayType = function (name, leaveRequest, date) {
+    function isDayType (name, leaveRequest, date) {
       var dayType = dayTypes[name];
 
       if (moment(date).isSame(leaveRequest.from_date)) {
@@ -185,7 +292,7 @@ define([
       if (moment(date).isSame(leaveRequest.to_date)) {
         return dayType.value === leaveRequest.to_date_type;
       }
-    };
+    }
 
     /**
      * Returns whether a leaveRequest is pending approval
@@ -193,84 +300,10 @@ define([
      * @param  {object} leaveRequest
      * @return {boolean}
      */
-    this._isPendingApproval = function (leaveRequest) {
+    function isPendingApproval (leaveRequest) {
       var status = leaveRequestStatuses[leaveRequest.status_id];
 
       return status.name === sharedSettings.statusNames.awaitingApproval;
-    };
-
-    /**
-     * Loads the approved, admin_approved and waiting approval leave requests and calls calendar load function
-     *
-     * @param {string} contactParamName - contact parameter key name
-     * @param {boolean} cache
-     * @param {function} intermediateSteps
-     * @return {Promise}
-     */
-    this._loadLeaveRequestsAndCalendar = function (contactParamName, cache, intermediateSteps) {
-      cache = cache === undefined ? true : cache;
-
-      var params = {
-        from_date: {from: this.selectedPeriod.start_date},
-        to_date: {to: this.selectedPeriod.end_date},
-        status_id: {'IN': [
-          getLeaveStatusValuefromName(sharedSettings.statusNames.approved),
-          getLeaveStatusValuefromName(sharedSettings.statusNames.adminApproved),
-          getLeaveStatusValuefromName(sharedSettings.statusNames.awaitingApproval)
-        ]}
-      };
-      params[contactParamName] = this.contactId;
-
-      return LeaveRequest.all(params, null, null, null, cache)
-        .then(function (leaveRequestsData) {
-          this._indexLeaveRequests(leaveRequestsData.list);
-
-          return this._loadCalendar();
-        }.bind(this))
-        .then(function () {
-          intermediateSteps && intermediateSteps();
-          this.loading.calendar = false;
-          showMonthLoader.call(this);
-        }.bind(this));
-    };
-
-    /**
-     * Reset the months data for before refresh
-     */
-    this._resetMonths = function () {
-      _.each(this.months, function (month) {
-        month.data = [];
-      });
-    };
-
-    /**
-     * Fetch all the months from the current period and
-     * save it in vm.months
-     */
-    function fetchMonthsFromPeriod () {
-      var months = [];
-      var startDate = moment(this.selectedPeriod.start_date);
-      var endDate = moment(this.selectedPeriod.end_date);
-
-      while (startDate.isBefore(endDate)) {
-        months.push(this._getMonthSkeleton(startDate));
-        startDate.add(1, 'month');
-      }
-
-      this.months = months;
-    }
-
-    /**
-     * Returns leave status value from name
-     * @param {String} name - name of the leave status
-     * @returns {int/boolean}
-     */
-    function getLeaveStatusValuefromName (name) {
-      var leaveStatus = _.find(leaveRequestStatuses, function (status) {
-        return status.name === name;
-      });
-
-      return leaveStatus ? leaveStatus.value : false;
     }
 
     /**
@@ -304,6 +337,68 @@ define([
     }
 
     /**
+     * Loads the calendar of each contact, for the currently selected period
+     *
+     * @return {Promise}
+     */
+    function loadCalendars () {
+      return Calendar.get(this.contacts.map(function (contact) {
+        return contact.id;
+      }), this.selectedPeriod.id)
+      .then(function (calendars) {
+        this.calendars = calendars;
+      }.bind(this));
+    }
+
+    /**
+     * Loads the contacts by using the `_.contacts` method in the child controller
+     *
+     * @return {Promise}
+     */
+    function loadContacts () {
+      return this._contacts().then(function (contacts) {
+        this.contacts = contacts;
+      }.bind(this));
+    }
+
+
+    /**
+     * Bundles the loading of the contacts and the absence periods
+     *
+     * @return {Promise}
+     */
+    function loadContactsAndAbsencePeriods () {
+      return $q.all([
+        loadContacts.call(this),
+        loadAbsencePeriods.call(this)
+      ]);
+    }
+
+    /**
+     * Loads the leave requests for the contacts, in the currently selected period,
+     * then indexes the leave requests
+     *
+     * @return {Promise}
+     */
+    function loadLeaveRequests () {
+      return LeaveRequest.all({
+        from_date: { from: this.selectedPeriod.start_date },
+        to_date: { to: this.selectedPeriod.end_date },
+        status_id: {'IN': [
+          getLeaveStatusValuefromName(sharedSettings.statusNames.approved),
+          getLeaveStatusValuefromName(sharedSettings.statusNames.adminApproved),
+          getLeaveStatusValuefromName(sharedSettings.statusNames.awaitingApproval)
+        ]},
+        contact_id: { 'IN': this.contacts.map(function (contact) {
+          return contact.id;
+        })}
+      }, null, null, null, false)
+      .then(function (leaveRequestsData) {
+        indexLeaveRequests.call(this, leaveRequestsData.list);
+      }.bind(this));
+    }
+
+    /**
      * Loads the OptionValues necessary for the controller
      *
      * @return {Promise}
@@ -329,9 +424,79 @@ define([
         .then(function (publicHolidaysData) {
           // convert to an object with time stamp as key
           publicHolidays = _.transform(publicHolidaysData, function (result, publicHoliday) {
-            result[this._getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
-          }.bind(this), {});
+            result[getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
+          }, {});
         }.bind(this));
+    }
+
+    /**
+     * Loads all the additional data that is needed for the calendar to function,
+     * after which it displays the legend
+     *
+     * @return {Promise}
+     */
+    function loadSupporData () {
+      return $q.all([
+        loadAbsenceTypes.call(this),
+        loadPublicHolidays.call(this),
+        loadOptionValues()
+      ])
+      .then(function () {
+        this.legendCollapsed = false;
+      }.bind(this))
+    }
+
+    /**
+     * Chooses the months that are to be selected by default
+     */
+    function setDefaultMonths () {
+      this.selectedMonths = [this.monthLabels[moment().month()]];
+    }
+
+    /**
+     * Sets UI related properties(isWeekend, isNonWorkingDay etc)
+     * to the calendar data
+     */
+    function setCalendarProps (calendar) {
+      var monthData = _.map(this.months, function (month) {
+        return _.extend(_.clone(month), { data: [] });
+      });
+
+      var contact = _.find(this.contacts, function (contact) {
+        return contact.id === calendar.contact_id;
+      });
+      contact.calendarData = [];
+
+      return $q.all(_.map(calendar.days, function (day) {
+        return $q.all([
+          calendar.isWeekend(getDateObjectWithFormat(day.date)),
+          calendar.isNonWorkingDay(getDateObjectWithFormat(day.date))
+        ])
+        .then(function (results) {
+          day.UI = {
+            isWeekend: results[0],
+            isNonWorkingDay: results[1],
+            isPublicHoliday: this.isPublicHoliday(day.date)
+          };
+        }.bind(this))
+        .then(function () {
+          // fetch leave request, first search by contact_id then by date
+          var leaveRequest = this.leaveRequests[calendar.contact_id] ? this.leaveRequests[calendar.contact_id][day.date] : null;
+
+          if (leaveRequest) {
+            day.UI.styles = getStyles.call(this, leaveRequest, day);
+            day.UI.isRequested = isPendingApproval(leaveRequest);
+            day.UI.isAM = isDayType('half_day_am', leaveRequest, day.date);
+            day.UI.isPM = isDayType('half_day_pm', leaveRequest, day.date);
+          }
+        }.bind(this))
+        .then(function () {
+          getMonthObjectByDate(moment(day.date), monthData).data.push(day);
+        })
+        .then(function () {
+          contact.calendarData = monthData;
+        });
+      }.bind(this)));
     }
 
     /**

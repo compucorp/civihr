@@ -26,14 +26,6 @@ define([
     var parentCtrl = $controller('CalendarCtrl');
     var vm = Object.create(parentCtrl);
     var isAdmin = false; // updated on the init function after calling checkPermissions service
-    var calendarData;
-
-    /* In loadCalendar instead of updating vm.managedContacts on completion of each contact's promise.
-     * Calendar data saved temporarily in tempContactData and once all the promises are resolved,
-     * data is transferred to vm.managedContacts.
-     * This is done so that browser paints the UI only once.
-     */
-    var tempContactData = [];
 
     vm.filteredContacts = [];
     vm.managedContacts = [];
@@ -61,155 +53,28 @@ define([
       return vm.filteredContacts;
     };
 
-    /**
-     * Returns the calendar information for a specific month
-     *
-     * @param  {int/string} contactID
-     * @param  {object} monthObj
-     * @return {array}
-     */
-    vm.getMonthData = function (contactID, monthObj) {
-      var month;
-      var contact = _.find(vm.managedContacts, function (contact) {
-        return +contact.id === +contactID;
-      });
-
-      if (contact && contact.calendarData) {
-        month = _.find(contact.calendarData, function (month) {
-          return (month.month === monthObj.month) && (month.year === monthObj.year);
-        });
-
-        return month ? month.data : [];
+    vm._contacts = function () {
+      if (isAdmin) {
+        return Contact.all()
+          .then(function (contacts) {
+            vm.managedContacts = contacts.list;
+            vm.filteredContacts = contacts.list;
+          });
       }
-    };
 
-    /**
-     * Refresh contacts and calendar data
-     */
-    vm.refresh = function () {
-      vm.loading.calendar = true;
-      vm._resetMonths();
-
-      loadContacts().then(function () {
-        vm._loadLeaveRequestsAndCalendar();
-      });
-    };
-
-    /**
-     * Returns skeleton for the month object
-     *
-     * @param  {Object} startDate
-     * @return {Object}
-     */
-    vm._getMonthSkeleton = function (startDate) {
-      return {
-        month: startDate.month(),
-        year: startDate.year()
-      };
-    };
-
-    /**
-     * Index leave requests by contact_id as first level
-     * and date as second level
-     *
-     * @param  {Array} leaveRequests - leave requests array from API
-     */
-    vm._indexLeaveRequests = function (leaveRequests) {
-      vm.leaveRequests = {};
-
-      _.each(leaveRequests, function (leaveRequest) {
-        vm.leaveRequests[leaveRequest.contact_id] = vm.leaveRequests[leaveRequest.contact_id] || {};
-
-        _.each(leaveRequest.dates, function (leaveRequestDate) {
-          vm.leaveRequests[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
-        });
-      });
-    };
-
-    /**
-     * Loads the calendar data for each contact
-     *
-     * @return {Promise}
-     */
-    vm._loadCalendar = function () {
-      tempContactData = _.clone(vm.managedContacts);
-
-      return Calendar.get(vm.managedContacts.map(function (contact) {
-        return contact.id;
-      }), vm.selectedPeriod.id)
-      .then(function (calendars) {
-        calendarData = calendars;
-        // contacts are stored by index rather than by id, so it's necessary
-        // to find the index of each contact by using their id
-        var contactIds = tempContactData.map(function (contact) {
-          return contact.id;
-        });
-
-        return $q.all(_.map(calendarData, function (calendar) {
-          var index = contactIds.indexOf(calendar.contact_id);
-
-          return vm._setCalendarProps(calendar.contact_id, calendar)
-            .then(function (calendarProps) {
-              tempContactData[index].calendarData = calendarProps;
-            });
-        }));
-      });
-    };
-
-    /**
-     * Loads the leave requests and calendar
-     *
-     * @return {Promise}
-     */
-    vm._loadLeaveRequestsAndCalendar = function () {
-      return parentCtrl._loadLeaveRequestsAndCalendar.call(vm, 'managed_by', false, function () {
-        vm.managedContacts = tempContactData;
-      });
-    };
-
-    /**
-     * Sets UI related properties(isWeekend, isNonWorkingDay etc)
-     * to the calendar data
-     *
-     * @param  {int/string} contactID
-     * @param  {object} calendar
-     * @return {object}
-     */
-    vm._setCalendarProps = function (contactID, calendar) {
-      var monthData = _.map(vm.months, function (month) {
-        return _.extend(_.clone(month), { data: [] });
-      });
-
-      return $q.all(_.map(calendar.days, function (dateObj) {
-        return $q.all([
-          calendar.isWeekend(vm._getDateObjectWithFormat(dateObj.date)),
-          calendar.isNonWorkingDay(vm._getDateObjectWithFormat(dateObj.date))
-        ])
-        .then(function (results) {
-          dateObj.UI = {
-            isWeekend: results[0],
-            isNonWorkingDay: results[1],
-            isPublicHoliday: vm.isPublicHoliday(dateObj.date)
-          };
+      return Contact.find(vm.contactId)
+        .then(function (contact) {
+          return contact.leaveManagees();
+        })
+        .then(function (contacts) {
+          vm.managedContacts = contacts;
         })
         .then(function () {
-          // fetch leave request, first search by contact_id then by date
-          var leaveRequest = vm.leaveRequests[contactID] ? vm.leaveRequests[contactID][dateObj.date] : null;
-
-          if (leaveRequest) {
-            dateObj.UI.styles = vm._getStyles(leaveRequest, dateObj);
-            dateObj.UI.isRequested = vm._isPendingApproval(leaveRequest);
-            dateObj.UI.isAM = vm._isDayType('half_day_am', leaveRequest, dateObj.date);
-            dateObj.UI.isPM = vm._isDayType('half_day_pm', leaveRequest, dateObj.date);
-          }
+          return loadContacts();
         })
         .then(function () {
-          vm._getMonthObjectByDate(moment(dateObj.date), monthData).data.push(dateObj);
+          return vm.filteredContacts;
         });
-      }))
-      .then(function () {
-        return monthData;
-      });
     };
 
     (function init () {
@@ -218,10 +83,7 @@ define([
         isAdmin = _isAdmin_;
 
         vm._init(function () {
-          return $q.all([
-            loadOptionValues(),
-            loadManagees()
-          ]);
+          return loadOptionValues();
         });
       });
 
@@ -245,7 +107,6 @@ define([
       vm.leaveRequests[contactID] = _.omit(vm.leaveRequests[contactID], function (leaveRequestObj) {
         return leaveRequestObj.id === leaveRequest.id;
       });
-      vm._resetMonths();
       vm._setCalendarProps(contactID, calendar);
     }
 
@@ -258,32 +119,6 @@ define([
       return Contact.all(prepareContactFilters(), null, 'display_name')
         .then(function (contacts) {
           vm.filteredContacts = contacts.list;
-        });
-    }
-
-    /**
-     * Loads the managees of currently logged in user
-     *
-     * @return {Promise}
-     */
-    function loadManagees () {
-      if (isAdmin) {
-        return Contact.all()
-          .then(function (contacts) {
-            vm.managedContacts = contacts.list;
-            vm.filteredContacts = contacts.list;
-          });
-      }
-
-      return Contact.find(vm.contactId)
-        .then(function (contact) {
-          return contact.leaveManagees();
-        })
-        .then(function (contacts) {
-          vm.managedContacts = contacts;
-        })
-        .then(function () {
-          return loadContacts();
         });
     }
 
