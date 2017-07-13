@@ -2,18 +2,19 @@
 
 define([
   'common/lodash',
-  'mocks/data/option-group-mock-data'
-], function (_, optionGroupMock) {
-  var dayTypes = optionGroupMock.getCollection('hrleaveandabsences_work_day_type');
+  'mocks/data/option-group-mock-data',
+  'common/mocks/data/contact.data'
+], function (_, OptionGroupDataMock, ContactData) {
+  var dayTypes = OptionGroupDataMock.getCollection('hrleaveandabsences_work_day_type');
 
   return {
     getCalendar: {
       'is_error': 0,
       'version': 3,
       'count': 2,
-      'values': [
-        {
-          'contact_id': 1,
+      'values': ContactData.all.values.map(function (contact) {
+        return {
+          'contact_id': contact.id,
           'calendar': [
             {
               'date': '2016-01-05',
@@ -44,25 +45,8 @@ define([
               'type': dayTypeByName('weekend').value
             }
           ]
-        },
-        {
-          'contact_id': 2,
-          'calendar': [
-            {
-              'date': '2016-01-05',
-              'type': dayTypeByName('weekend').value
-            },
-            {
-              'date': '2016-02-02',
-              'type': dayTypeByName('working_day').value
-            },
-            {
-              'date': '2016-03-03',
-              'type': dayTypeByName('non_working_day').value
-            }
-          ]
-        }
-      ]
+        };
+      })
     },
     getAllWorkPattern: {
       'is_error': 0,
