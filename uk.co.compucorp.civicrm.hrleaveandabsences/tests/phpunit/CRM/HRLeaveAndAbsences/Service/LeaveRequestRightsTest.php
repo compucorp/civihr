@@ -170,23 +170,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     );
   }
 
-  /**
-   * @dataProvider leaveRequestStatusesDataProvider
-   */
-  public function testCanChangeDatesForReturnsTrueForSicknessRequestTypeWhenCurrentUserIsLeaveManagerOrAdminForAllStatuses($status) {
-    $contactID = 2;
-    $managerRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
-    $adminRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
-
-    $this->assertTrue(
-      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_SICKNESS)
-    );
-
-    $this->assertTrue(
-      $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_SICKNESS)
-    );
-  }
-
   public function testCanChangeAbsenceTypeForReturnsTrueWhenCurrentUserIsLeaveContactAndStatusPassedIsInAllowedStatuses() {
     //When user is leave request contact and status is 'More information Required'
     $this->assertTrue(
