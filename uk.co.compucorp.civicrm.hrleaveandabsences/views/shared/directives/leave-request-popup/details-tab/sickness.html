@@ -20,7 +20,7 @@
     <div class="form-group chr_leave-request-modal__required-documents">
       <div class="col-xs-12" ng-repeat="document in $ctrl.sicknessDocumentTypes">
         <input
-          ng-disabled="$ctrl.isSelfRecord"
+          ng-disabled="$ctrl.isRole('staff') || $ctrl.isSelfRecord"
           required type="checkbox" value="document.value"
           ng-click="$ctrl.request.toggleDocument(document.value)"
           ng-checked="$ctrl.isChecked(document.value)"
