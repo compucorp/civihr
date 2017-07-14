@@ -1,0 +1,22 @@
+<crm-loading show="!$ctrl.submitting">
+  <div class="modal-footer chr_leave-request-modal__footer">
+    <button
+      type="button"
+      class="btn btn-primary pull-left"
+      ng-click="$ctrl.dismissModal()">
+      Back
+    </button>
+    <a
+      class="text-danger pull-left pointer chr_leave-request-modal__delete"
+      ng-if="$ctrl.isRole('admin') && $ctrl.directiveOptions.leaveRequest.id && !$ctrl.isSelfRecord"
+      ng-click="$ctrl.deleteLeaveRequest()">
+      <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+    </a>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      ng-disabled="!$ctrl.canSubmit() || $ctrl.submitting"
+      ng-click="$ctrl.submit()">Save
+    </button>
+  </div>
+</crm-loading>

@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/my-leave/modules/components'
 ], function (components) {
@@ -9,10 +11,8 @@ define([
       return settings.pathTpl + 'components/my-leave-container.html';
     }],
     controllerAs: 'myleave',
-    controller: ['$log', '$rootScope', '$scope', '$uibModal', 'settings', function ($log, $rootScope, $scope, $modal, settings) {
+    controller: ['$log', '$scope', '$uibModal', 'settings', function ($log, $scope, $modal, settings) {
       $log.debug('Component: my-leave-container');
-
-      $rootScope.role = 'staff';
 
       var vm = {};
       vm.leaveRequest = {
@@ -21,15 +21,15 @@ define([
         showDatePickerFrom: false,
         showDatePickerTo: false,
         isChangeExpanded: false,
-        selectedResponse: "1",
+        selectedResponse: '1',
         isAdmin: false
       };
 
       vm.showModal = function () {
         $modal.open({
           templateUrl: settings.pathTpl + 'components/my-leave-request.html',
-          //TODO The controller needs to be moved a separate file when implementing the logic
-          controller: ['leaveRequest', '$uibModalInstance', function(leaveRequest, modalInstance){
+          // TODO The controller needs to be moved a separate file when implementing the logic
+          controller: ['leaveRequest', '$uibModalInstance', function (leaveRequest, modalInstance) {
             var vm = {};
 
             vm.leaveRequest = leaveRequest;

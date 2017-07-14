@@ -1,0 +1,125 @@
+<ng-include src="sharedPathTpl + 'directives/leave-request-popup/details-tab/common.html'"></ng-include>
+
+<!--Duration, Toil Amount Section - Only For Toil-->
+<ng-include ng-show="$ctrl.isLeaveType('toil')"
+  src="sharedPathTpl + 'directives/leave-request-popup/details-tab/toil.html'"></ng-include>
+
+<crm-loading show="!$ctrl.loading.showBalanceChange">
+  <div ng-show="$ctrl.uiOptions.showBalance">
+    <hr/>
+    <div
+      class="row chr_leave-request-modal__form-group"
+      ng-if="$ctrl.canManage
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.awaitingApproval)
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.moreInformationRequired)
+                      || !$ctrl.request.status_id">
+      <div class="col-xs-4">Opening Balance</div>
+      <div class="col-xs-8">{{$ctrl.balance.opening}}</div>
+    </div>
+    <div
+      ng-show="$ctrl.isLeaveType('toil')"
+      class="row chr_leave-request-modal__form-group text-primary">
+      <div class="col-xs-4">
+        Change
+      </div>
+      <div class="col-xs-8">{{$ctrl.balance.change.amount}}</div>
+    </div>
+    <div ng-hide="$ctrl.isLeaveType('toil')">
+      <div
+        class="row chr_leave-request-modal__form-group text-primary pointer"
+        ng-click="$ctrl.uiOptions.isChangeExpanded = !$ctrl.uiOptions.isChangeExpanded">
+        <div class="col-xs-4">
+          <i
+            class="fa chr_leave-request-modal__chevron"
+            aria-hidden="true"
+            ng-class="{ 'fa-chevron-right': !$ctrl.uiOptions.isChangeExpanded, ' fa-chevron-down': $ctrl.uiOptions.isChangeExpanded }"></i>
+          Change
+        </div>
+        <div class="col-xs-8">{{$ctrl.balance.change.amount}}</div>
+      </div>
+      <table
+        class="table chr_leave-request-modal__table"
+        ng-show="$ctrl.uiOptions.isChangeExpanded">
+        <thead>
+        <tr>
+          <th>Date</th>
+          <th>Selection</th>
+          <th>Amount</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="breakdown in $ctrl.pagination.filteredbreakdown">
+          <td>{{breakdown.date | date:'EEE '+ $ctrl.uiOptions.userDateFormat}}</td>
+          <td>{{breakdown.type.label}}</td>
+          <td>{{breakdown.amount}}</td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+          <td colspan="3" class="text-center">
+            <uib-pagination
+              ng-if="$ctrl.pagination.totalItems"
+              total-items="$ctrl.pagination.totalItems"
+              ng-model="$ctrl.pagination.currentPage"
+              class="pagination"
+              ng-change="$ctrl.pagination.pageChanged()"
+              direction-links="false"
+              items-per-page="$ctrl.pagination.numPerPage"></uib-pagination>
+          </td>
+        </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div
+      class="row"
+      ng-class="{'text-danger': $ctrl.balance.closing < 0}"
+      ng-if="$ctrl.canManage
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.awaitingApproval)
+                      || $ctrl.isLeaveStatus($ctrl.statusNames.moreInformationRequired)
+                      || !$ctrl.request.status_id">
+      <div class="col-xs-4">Closing Balance</div>
+      <div class="col-xs-8">{{$ctrl.balance.closing}}</div>
+    </div>
+  </div>
+</crm-loading>
+
+<!--Expiry Date Section - Only For Toil-->
+<div class="row" ng-show="$ctrl.isLeaveType('toil')">
+  <div class="col-xs-12 form-horizontal">
+    <hr>
+    <div class="form-group">
+      <label class="col-xs-4 control-label">Expiry Date</label>
+      <div class="col-xs-4">
+        <span
+          class="chr_leave-request-modal__span-expiry"
+          ng-if="!$ctrl.canManage || $ctrl.isSelfRecord">
+          {{$ctrl.request.toil_expiry_date | date: $ctrl.uiOptions.userDateFormat}}
+        </span>
+        <div ng-if="$ctrl.canManage && !$ctrl.isSelfRecord" class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            uib-datepicker-popup
+            ng-readonly="true"
+            datepicker-options="$ctrl.uiOptions.date.expiry.options"
+            show-button-bar="false"
+            ng-model="$ctrl.uiOptions.expiryDate"
+            ng-click="$ctrl.uiOptions.date.expiry.show = true"
+            ng-change="$ctrl.updateExpiryDate()"
+            is-open="$ctrl.uiOptions.date.expiry.show"/>
+          <span
+            class="input-group-addon pointer"
+            class="btn btn-default fa fa-calendar"
+            ng-click="$ctrl.uiOptions.date.expiry.show = true">
+            <i class="fa fa-calendar"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Reason Section - Only For Sickness-->
+<ng-include
+  ng-show="$ctrl.isLeaveType('sickness')"
+  src="sharedPathTpl + 'directives/leave-request-popup/details-tab/sickness.html'"></ng-include>

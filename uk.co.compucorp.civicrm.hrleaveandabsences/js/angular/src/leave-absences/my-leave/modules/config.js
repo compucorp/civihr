@@ -1,7 +1,9 @@
+/* eslint-env amd */
+
 (function (CRM) {
   define([
     'common/angular',
-    'leave-absences/my-leave/modules/settings',
+    'leave-absences/my-leave/modules/settings'
   ], function (angular) {
     return angular.module('my-leave.config', ['my-leave.settings'])
       .config([
@@ -10,7 +12,7 @@
           $logProvider.debugEnabled(settings.debug);
 
           $resourceProvider.defaults.stripTrailingSlashes = false;
-          $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+          $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
           $urlRouterProvider.otherwise('/my-leave/report');
           $stateProvider
@@ -30,11 +32,11 @@
             })
             .state('my-leave.report', {
               url: '/report',
-              template: '<my-leave-report contact-id="myleave.contactId"></my-leave-report>'
+              template: '<staff-leave-report contact-id="myleave.contactId"></staff-leave-report>'
             })
             .state('my-leave.calendar', {
               url: '/calendar',
-              template: '<my-leave-calendar contact-id="myleave.contactId"></my-leave-calendar>'
+              template: '<staff-leave-calendar contact-id="myleave.contactId"></staff-leave-calendar>'
             });
         }
       ]);

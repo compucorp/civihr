@@ -1,8 +1,10 @@
+/* eslint-env amd, jasmine */
+
 define([
   'mocks/module',
   'mocks/data/absence-period-data',
   'common/moment',
-  'common/angularMocks',
+  'common/angularMocks'
 ], function (mocks, mockData, moment) {
   'use strict';
 
@@ -12,7 +14,7 @@ define([
         return $q(function (resolve, reject) {
           if (params && 'start_date' in params) {
             var dateFormat = sharedSettings.serverDateFormat;
-            //find if dates are in range else return null
+            // find if dates are in range else return null
             var checkDate = moment(params.start_date['<='], dateFormat);
 
             var mockPeriod = mockData.all().values.filter(function (value) {
@@ -27,6 +29,6 @@ define([
           resolve(mockData.all().values);
         });
       }
-    }
+    };
   }]);
 });

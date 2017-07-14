@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 (function (CRM) {
   define([
     'common/angular'
@@ -7,13 +8,21 @@
       attachmentToken: CRM.vars.leaveAndAbsences.attachmentToken,
       debug: CRM.debug,
       managerPathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/manager-leave/',
-      pathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/',
+      sharedPathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/',
       serverDateFormat: 'YYYY-MM-DD',
       serverDateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
+      permissions: {
+        admin: {
+          access: 'access leave and absences',
+          administer: 'administer leave and absences'
+        },
+        ssp: {
+          access: 'access leave and absences in ssp',
+          manage: 'manage leave and absences in ssp'
+        }
+      },
       fileUploader: {
-        // TODO for now set the limit to 10 files until a better solution is found to configure it
         queueLimit: 10,
-        // set the mime types which are allowed to be uploaded as attachments
         allowedMimeTypes: {
           'txt': 'plain',
           'png': 'png',
@@ -29,7 +38,6 @@
           'pptx': 'vnd.openxmlformats-officedocument.presentationml.presentation'
         }
       },
-      // TODO move all strings to a separate file otherwise this settings files will become a string repository
       statusNames: {
         approved: 'approved',
         adminApproved: 'admin_approved',

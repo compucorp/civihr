@@ -25,7 +25,7 @@
     </OptionValue>
 
     <OptionValue>
-      <label>1/2 AM</label>
+      <label>Half-day AM</label>
       <value>2</value>
       <name>half_day_am</name>
       <is_default>0</is_default>
@@ -37,7 +37,7 @@
     </OptionValue>
 
     <OptionValue>
-      <label>1/2 PM</label>
+      <label>Half-day PM</label>
       <value>3</value>
       <name>half_day_pm</name>
       <is_default>0</is_default>

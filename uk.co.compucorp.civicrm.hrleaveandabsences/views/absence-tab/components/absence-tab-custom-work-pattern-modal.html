@@ -1,0 +1,93 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="workPatternModal.closeModal()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <h2 class="modal-title" id="myModalLabel">Custom Work Pattern</h2>
+</div>
+<crm-loading show="!workPatternModal.loading.content">
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-sm-12">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-4 control-label required-mark">Effective Form Date</label>
+            <div class="col-sm-4">
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  uib-datepicker-popup
+                  show-button-bar="false"
+                  datepicker-options="workPatternModal.uiOptions.effectiveDate.options"
+                  ng-model="workPatternModal.selected.effectiveDate"
+                  is-open="workPatternModal.uiOptions.effectiveDate.show">
+                <span
+                  class="input-group-addon pointer"
+                  ng-click="workPatternModal.uiOptions.effectiveDate.show = true">
+                  <i class="fa fa-calendar"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label required-mark">Work Pattern</label>
+            <div class="col-sm-8">
+              <div class="crm_custom-select crm_custom-select--full">
+                <select
+                  ng-options="workPatterns.label for workPatterns in workPatternModal.workPatterns"
+                  ng-model="workPatternModal.selected.workPattern"
+                  ng-change="workPatternModal.refresh()">
+                  <option value="">- select -</option>
+                </select>
+                <span class="crm_custom-select__arrow"></span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" ng-show="workPatternModal.selected.workPattern.description">
+            <label class="col-sm-12 control-label">Description</label>
+            <div class="col-sm-12">{{workPatternModal.selected.workPattern.description}}</div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Reason for change</label>
+            <div class="col-sm-8">
+              <div class="crm_custom-select crm_custom-select--full">
+                <select
+                  ng-options="changeReasons.value as changeReasons.label for changeReasons in workPatternModal.changeReasons"
+                  ng-model="workPatternModal.selected.changeReason"
+                  ng-change="workPatternModal.refresh()">
+                  <option value="">- select -</option>
+                </select>
+                <span class="crm_custom-select__arrow"></span>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="chr_absence-work-pattern__alert"
+    ng-if="workPatternModal.errorMessage"
+    uib-alert
+    type="danger"
+    close="workPatternModal.closeAlert()"
+    dismiss-on-timeout="5000">
+    <div>{{workPatternModal.errorMessage}}</div>
+  </div>
+
+  <crm-loading show="!workPatternModal.saveInProgress">
+    <div class="modal-footer">
+      <button
+        type="button" class="btn btn-secondary-outline pull-left"
+        data-dismiss="modal" ng-click="workPatternModal.closeModal()">
+        Cancel
+      </button>
+      <button
+        type="button" class="btn btn-primary" ng-click="workPatternModal.save()"
+        ng-disabled="!(workPatternModal.selected.workPattern && workPatternModal.selected.effectiveDate)">
+        Save
+      </button>
+    </div>
+  </crm-loading>
+</crm-loading>

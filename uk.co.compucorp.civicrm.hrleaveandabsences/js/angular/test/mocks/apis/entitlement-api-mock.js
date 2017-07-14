@@ -1,20 +1,21 @@
-//intercepts paths for real APIs and returns mock data
+/* eslint-env amd, jasmine */
+
 define([
+  'common/lodash',
   'mocks/module',
   'mocks/data/entitlement-data',
-  'common/angularMocks',
-], function (mocks, mockData) {
+  'common/angularMocks'
+], function (_, mocks, mockData) {
   'use strict';
 
   mocks.factory('EntitlementAPIMock', ['$q', function ($q) {
-
     /**
      * A copy of part of the implementation of the real API
      *
      * TODO: This definitely should be improved, should be figured out how
      * to remove duplication between real and mocked api
      */
-    function storeRemainder(entitlement) {
+    function storeRemainder (entitlement) {
       var clone = _.clone(entitlement);
       var remainderValues = clone['api.LeavePeriodEntitlement.getremainder']['values'];
 
@@ -33,7 +34,7 @@ define([
      * TODO: This definitely should be improved, should be figured out how
      * to remove duplication between real and mocked api
      */
-    function storeValue(entitlement) {
+    function storeValue (entitlement) {
       var clone = _.clone(entitlement);
       var value = clone['api.LeavePeriodEntitlement.getentitlement'].values[0].entitlement;
 
@@ -59,6 +60,6 @@ define([
           resolve(mockData.breakdown().values);
         });
       }
-    }
+    };
   }]);
 });

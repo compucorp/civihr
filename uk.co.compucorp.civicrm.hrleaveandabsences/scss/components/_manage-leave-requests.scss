@@ -1,0 +1,133 @@
+.chr_manage_leave_requests {
+  &[data-role="admin"] {
+    .chr_manage_leave_requests__header {
+      text-align: center;
+      position: relative;
+    }
+
+    .chr_manage_leave_requests__leave_type_filter {
+      position: absolute;
+      left: 20px;
+    }
+
+    .chr_manage_leave_requests__assignee_filter {
+      margin-left: -10%;
+    }
+
+    .chr_manage_leave_requests__period_and_all_filters {
+      position: absolute;
+      right: 20px;
+    }
+  }
+
+  &[data-role="manager"] {
+    .chr_manage_leave_requests__leave_type_filter,
+    .chr_manage_leave_requests__period_and_all_filters {
+      float: right;
+    }
+  }
+
+  .chr_manage_leave_requests__header {
+    margin: 0;
+    background-color: $chr-panel-header-background;
+
+    .crm_custom-select {
+      margin-right: 20px;
+      padding: 0;
+    }
+
+    .panel-title {
+      margin-top: 5px;
+      display: inline-block;
+    }
+  }
+
+  .chr_manage_leave_requests__filter {
+    margin-top: 5px;
+    display: inline-block;
+
+    .fa {
+      font-size: 0.6em;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+  }
+
+  .chr_manage_leave_requests__sub-header {
+    padding-top: 15px;
+
+    > div {
+      display: inline-block;
+      margin: 0 10px;
+      width: calc(16.4% - 20px);
+      vertical-align: top;
+    }
+  }
+
+  .chr_manage_leave_requests__panel_body {
+    margin: 0;
+    padding: 0;
+
+    [class^="col-"],
+    [class*=" col-"] {
+      padding: 0;
+    }
+
+    a {
+      cursor: pointer;
+    }
+  }
+}
+
+/*
+ * This is a temporary patch which fixes CSS in the component
+ * @TODO remove this patch when Shoreditch theme is migrated to SSP
+ */
+.chr_manage_leave_requests {
+  &[data-role="admin"] {
+    .form-group {
+      overflow: inherit !important;
+    }
+
+    .panel {
+      /*
+       * As per /sites/all/modules/civicrm/css/civicrm.css
+       * ".crm-container .panel" has a style property
+       * "background: transparent url(../i/dropdown-pointer.gif)...",
+       * which looks like a small black triangle on the top of the panel.
+       * This patch removes this triangle.
+       */
+      background-image: none !important;
+    }
+
+    .panel-body, .chr_vertical_tabs {
+      background-color: $chr-panel-header-background;
+    }
+
+    input[type="search"] {
+      width: 100% !important;
+    }
+  }
+
+  .chr_manage_leave_requests__sub-header .checkbox {
+    padding-top: 5px;
+  }
+}
+
+/*
+ * This is a temporary patch which fixes CSS in the component (for SSP only)
+ * @TODO remove this patch when Shoreditch theme is migrated to SSP
+ */
+.page-manager-leave {
+  .chr_manage_leave_requests {
+    .btn-sm {
+      /*
+       * We must use .btn-sm as per Bootstrap Style Guide,
+       * however in this case the font in buttons will be smaller in SSP,
+       * than for other elements.
+       * This patch makes these buttons look consistent with other elements.
+       */
+      font-size: 100% !important;
+    }
+  }
+}

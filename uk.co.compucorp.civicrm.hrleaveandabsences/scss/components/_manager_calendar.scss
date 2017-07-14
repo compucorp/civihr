@@ -1,0 +1,11 @@
+.chr_manager_calendar__header {
+  padding-top: 15px;
+  background-color: $chr-panel-header-background;
+
+  > div {
+    display: inline-block;
+    margin: 0 10px;
+    width: calc(16.4% - 20px);
+    vertical-align: top;
+  }
+}

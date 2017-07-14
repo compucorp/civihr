@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException as InvalidContactWorkPatternException;
 
 class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern {
 
@@ -23,13 +24,15 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
     $instance = new self();
     $instance->copyValues($params);
 
+    self::validateParams($params);
+
     $transaction = new CRM_Core_Transaction();
     try {
       self::endEmployeePreviousWorkPattern($params);
       $instance->save();
       $transaction->commit();
 
-    } catch(Exception $e) {
+    } catch (Exception $e) {
       $transaction->rollback();
       // re-throw the error how it can be handled somewhere else
       throw $e;
@@ -38,6 +41,74 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
+  }
+
+  /**
+   * A method for validating the params passed to the ContactWorkPattern create method
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
+   */
+  private static function validateParams($params) {
+    self::validateMandatory($params);
+    self::validateUniquePerContactAndEffectiveDate($params);
+  }
+
+  /**
+   * A method for validating the mandatory fields in the params
+   * passed to the ContactWorkPattern create method
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
+   */
+  private static function validateMandatory($params) {
+    $mandatoryFields = [
+      'contact_id',
+      'effective_date',
+      'pattern_id',
+    ];
+
+    foreach($mandatoryFields as $field) {
+      if (empty($params[$field])) {
+        throw new InvalidContactWorkPatternException("The {$field} field should not be empty");
+      }
+    }
+  }
+
+  /**
+   * Gets the contact_id and effective_date from the params and validates that
+   * the contact doesn't have another work pattern with the same effective date.
+   *
+   * In case of an update, this method also considers the ID, to make sure the
+   * other work pattern with the same effective date is not itself.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException
+   */
+  private static function validateUniquePerContactAndEffectiveDate($params) {
+    $tableName = self::getTableName();
+    $query = "SELECT id FROM {$tableName} WHERE contact_id = %1 AND effective_date = %2";
+
+    $queryParams = [
+      1 => [$params['contact_id'], 'Integer'],
+      2 => [date('Y-m-d', strtotime($params['effective_date'])), 'String']
+    ];
+
+    if (!empty($params['id'])) {
+      $query .= ' AND id <> %3';
+      $queryParams[3] = [$params['id'], 'Integer'];
+    }
+
+    $result = CRM_Core_DAO::executeQuery($query, $queryParams);
+
+    if ($result->N) {
+      throw new InvalidContactWorkPatternException('This contact already have a Work Pattern with this effective date');
+    }
   }
 
   /**

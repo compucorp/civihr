@@ -40,7 +40,7 @@ module.exports = function (config) {
       { pattern: extPath + 'js/angular/test/mocks/**/*.js', included: false },
 
       // the test files
-      { pattern: extPath + 'js/angular/test/**/*_test.js', included: false },
+      { pattern: extPath + 'js/angular/test/**/*.spec.js', included: false },
 
       // angular templates
       extPath + 'views/**/*.html',
