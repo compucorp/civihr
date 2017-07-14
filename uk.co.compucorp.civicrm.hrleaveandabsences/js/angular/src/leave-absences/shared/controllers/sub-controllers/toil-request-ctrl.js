@@ -14,6 +14,7 @@ define([
       var parentRequestCtrl = $controller('RequestCtrl');
       var vm = Object.create(parentRequestCtrl);
 
+      vm.requestCanExpire = true;
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
       vm.initParams = {
@@ -50,6 +51,13 @@ define([
         // and user is not a manager or admin.
         if (!vm.canManage && vm.request.id) {
           return $q.resolve(vm.request.toil_expiry_date);
+        }
+
+        // skips calculation of expiration date if request never expires
+        // according to admin setting.
+        if (!vm.requestCanExpire) {
+          vm.request.toil_expiry_date = false;
+          return $q.resolve(false);
         }
 
         return getReferenceDate().catch(function (errors) {
@@ -159,6 +167,9 @@ define([
 
         vm._init()
           .then(function () {
+            return initrequestCanExpire();
+          })
+          .then(function () {
             initExpiryDate();
 
             return loadToilAmounts();
@@ -221,6 +232,18 @@ define([
         } else {
           return $q.resolve(field.value);
         }
+      }
+
+      /**
+       * Initialize requestCanExpire according to admin setting
+       * and request type.
+       * @return {Promise}
+       */
+      function initrequestCanExpire () {
+        return AbsenceType.canExpire(vm.request.type_id)
+        .then(function (canExpire) {
+          vm.requestCanExpire = canExpire;
+        });
       }
 
       /**

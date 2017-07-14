@@ -84,7 +84,7 @@
 </crm-loading>
 
 <!--Expiry Date Section - Only For Toil-->
-<div class="row" ng-show="$ctrl.isLeaveType('toil')">
+<div class="row" ng-show="$ctrl.isLeaveType('toil') && $ctrl.requestCanExpire">
   <div class="col-xs-12 form-horizontal">
     <hr>
     <div class="form-group">
