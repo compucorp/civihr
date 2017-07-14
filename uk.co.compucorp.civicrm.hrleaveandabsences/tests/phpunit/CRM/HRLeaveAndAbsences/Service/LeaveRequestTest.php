@@ -186,13 +186,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
   }
 
-  /**
-   * @dataProvider openLeaveRequestStatusesDataProvider
-   */
-  public function testCreateDoesNotThrowAnExceptionWhenAdminUpdatesDatesForAnyOpenRequest($status) {
-    $params = $this->getDefaultParams([
-      'status_id' => $status
-    ]);
+  public function testCreateDoesNotThrowAnExceptionWhenAdminUpdatesDatesForLeaveRequest() {
+    $params = $this->getDefaultParams(['status_id' => 2]);
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
 
@@ -201,6 +196,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['id'] = $leaveRequest->id;
 
     $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+    $this->assertNotNull($leaveRequest->id);
   }
 
   /**
