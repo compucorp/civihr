@@ -3,6 +3,7 @@
 @import "mixins/*";
 
 #bootstrap-theme {
+  @import "base/*";
   @import "overrides/style/*";
   @import "components/*";
   @import "pages/*";
