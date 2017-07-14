@@ -58,6 +58,12 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
   private $sicknessAbsenceTypes;
 
   /**
+   * @var array
+   *   Stores the sickness_reason Leave request Option values.
+   */
+  private $sicknessReasons;
+
+  /**
    * Class constructor.
    *
    * @param array $mapperKeys
@@ -401,6 +407,19 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
   }
 
   /**
+   * Returns the sickness_reason Leave request Option values.
+   *
+   * @return array
+   */
+  private function getSicknessReasons() {
+    if (empty($this->sicknessReasons)) {
+      $this->sicknessReasons = array_flip(LeaveRequest::buildOptions('sickness_reason', 'validate'));
+    }
+
+    return $this->sicknessReasons;
+  }
+
+  /**
    * Returns the date_type Leave request Option values.
    *
    * @return LeaveRequestCommentService
@@ -462,8 +481,9 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
     }
 
     if (!empty($this->getSicknessAbsenceTypes()[$params['absence_type']])) {
+      $sicknessReasons = $this->getSicknessReasons();
       $payload['request_type'] = LeaveRequest::REQUEST_TYPE_SICKNESS;
-      $payload['sickness_reason'] = 1;
+      $payload['sickness_reason'] = $sicknessReasons['other'];
     }
 
     return LeaveRequest::create($payload);
