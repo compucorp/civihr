@@ -187,16 +187,17 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   /**
-   * @expectedException RuntimeException
-   * @expectedExceptionMessage You are not allowed to change the request dates
+   * @dataProvider openLeaveRequestStatusesDataProvider
    */
-  public function testCreateThrowsAnExceptionWhenAdminUpdatesDatesForLeaveRequest() {
-    $contactID = 5;
-    $params = $this->getDefaultParams(['contact_id' => $contactID]);
+  public function testCreateDoesNotThrowAnExceptionWhenAdminUpdatesDatesForAnyOpenRequest($status) {
+    $params = $this->getDefaultParams([
+      'status_id' => $status
+    ]);
+
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
 
-    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-10');
-    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-15');
+    $toDate = new DateTime($params['to_date']);
+    $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
     $params['id'] = $leaveRequest->id;
 
     $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);

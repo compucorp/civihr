@@ -115,7 +115,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
       $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_LEAVE)
     );
 
-    $this->assertFalse(
+    $this->assertTrue(
       $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_LEAVE)
     );
 
@@ -127,7 +127,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
       $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_TOIL)
     );
 
-    $this->assertFalse(
+    $this->assertTrue(
       $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_TOIL)
     );
 

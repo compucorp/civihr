@@ -58,7 +58,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
     $isSicknessRequest = $requestType === LeaveRequest::REQUEST_TYPE_SICKNESS;
     $isOpenLeaveRequest = in_array($statusID, $openStatuses);
 
-    $currentUserCanChangeDates = ($isSicknessRequest && $this->currentUserIsManager($contactID)) ||
+    $currentUserCanChangeDates = ($isSicknessRequest && $this->currentUserIsLeaveManagerOf($contactID)) ||
                                  ($this->currentUserIsLeaveContact($contactID) && $isOpenLeaveRequest) ||
                                   $this->currentUserIsAdmin();
 
@@ -103,14 +103,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
   }
 
   /**
-   * Checks if the current user is a leave manager
+   * Checks if the current user is a leave manager of the contact ID passed in
    *
    * @param int $contactID
    *   The contactID of the leave request
    *
    * @return bool
    */
-  private function currentUserIsManager($contactID) {
+  private function currentUserIsLeaveManagerOf($contactID) {
     return $this->leaveManagerService->currentUserIsLeaveManagerOf($contactID);
   }
 
@@ -123,7 +123,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   private function currentUserIsManagerOrAdmin($contactID) {
-    return $this->currentUserIsManager($contactID) ||
+    return $this->currentUserIsLeaveManagerOf($contactID) ||
            $this->currentUserIsAdmin();
   }
 
