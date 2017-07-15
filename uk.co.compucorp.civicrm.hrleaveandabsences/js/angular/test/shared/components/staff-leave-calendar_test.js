@@ -26,7 +26,7 @@
 
     describe('sharedLeaveCalendar', function () {
       var $componentController, $log, $q, $rootScope, controller, $provide,
-        AbsencePeriod, AbsenceType, LeaveRequest;
+        AbsencePeriod, LeaveRequest, OptionGroup;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', 'common.mocks', function (_$provide_) {
         $provide = _$provide_;
@@ -45,37 +45,36 @@
         $provide.value('api.contact', ContactAPIMock);
       }]));
 
-      beforeEach(inject(function (OptionGroup, OptionGroupAPIMock) {
+      beforeEach(inject(function (_OptionGroup_, OptionGroupAPIMock) {
+        OptionGroup = _OptionGroup_;
+
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
           return OptionGroupAPIMock.valuesOf(name);
         });
       }));
 
-      beforeEach(inject(['$componentController', '$log', '$q', '$rootScope',
-        'AbsencePeriod', 'AbsenceType', 'LeaveRequest', 'shared-settings',
-        function (_$componentController_, _$log_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_) {
-          $componentController = _$componentController_;
-          $log = _$log_;
-          $q = _$q_;
-          $rootScope = _$rootScope_;
-          AbsencePeriod = _AbsencePeriod_;
-          AbsenceType = _AbsenceType_;
-          LeaveRequest = _LeaveRequest_;
+      beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
+        _AbsencePeriod_, _LeaveRequest_) {
+        $componentController = _$componentController_;
+        $log = _$log_;
+        $q = _$q_;
+        $rootScope = _$rootScope_;
+        AbsencePeriod = _AbsencePeriod_;
+        LeaveRequest = _LeaveRequest_;
 
-          spyOn($log, 'debug');
-          spyOn(AbsencePeriod, 'all').and.callFake(function () {
-            var data = absencePeriodData.all().values;
-            // Set 2016 as current period, because Calendar loads data only for the current period initially,
-            // and MockedData has 2016 dates
-            data[0].current = true;
+        spyOn($log, 'debug');
+        spyOn(LeaveRequest, 'all').and.callThrough();
+        spyOn(AbsencePeriod, 'all').and.callFake(function () {
+          var data = absencePeriodData.all().values;
+          // Set 2016 as current period, because Calendar loads data only for the current period initially,
+          // and MockedData has 2016 dates
+          data[0].current = true;
 
-            return $q.resolve(data);
-          });
-          spyOn(AbsenceType, 'all').and.callThrough();
-          spyOn(LeaveRequest, 'all').and.callThrough();
+          return $q.resolve(data);
+        });
 
-          compileComponent();
-        }]));
+        compileComponent();
+      }));
 
       it('is initialized', function () {
         expect($log.debug).toHaveBeenCalled();
@@ -86,8 +85,41 @@
       });
 
       describe('on init', function () {
+        var AbsenceType, Calendar, PublicHoliday;
+
+        beforeEach(inject(function (_AbsenceType_, _Calendar_, _PublicHoliday_) {
+          AbsenceType = _AbsenceType_;
+          Calendar = _Calendar_;
+          PublicHoliday = _PublicHoliday_;
+
+          spyOn(AbsenceType, 'all').and.callThrough();
+          spyOn(Calendar, 'get').and.callThrough();
+          spyOn(PublicHoliday, 'all').and.callThrough();
+
+          compileComponent();
+        }));
+
         it('hides the loader for the whole page', function () {
           expect(controller.loading.page).toBe(false);
+        });
+
+        it('selects the current month', function () {
+          expect(controller.selectedMonths).toEqual([moment().format('MMM')]);
+        });
+
+        it('loads the public holidays', function () {
+          expect(PublicHoliday.all).toHaveBeenCalled();
+        });
+
+        it('loads the OptionValues of the leave request statuses and day types', function () {
+          expect(OptionGroup.valuesOf).toHaveBeenCalledWith([
+            'hrleaveandabsences_leave_request_status',
+            'hrleaveandabsences_leave_request_day_type'
+          ]);
+        });
+
+        it('loads the contacts to display on the calendar', function () {
+          expect(controller.contacts.length).not.toBe(0);
         });
 
         describe('absence periods', function () {
@@ -98,9 +130,24 @@
           it('sorts absence periods by start_date', function () {
             expect(controller.absencePeriods).toEqual(_.sortBy(absencePeriodData.all().values, 'start_date'));
           });
+
+          it('selects the current period', function () {
+            expect(controller.selectedPeriod.current).toBe(true);
+          });
+
+          it('creates the list of months of the selected period', function () {
+            var months = controller.months;
+            var periodStartDate = moment(controller.selectedPeriod.start_date);
+            var periodEndDate = moment(controller.selectedPeriod.end_date);
+
+            expect(months[0].month).toEqual(periodStartDate.month());
+            expect(months[0].year).toEqual(periodStartDate.year());
+            expect(months[months.length - 1].month).toEqual(periodEndDate.month());
+            expect(months[months.length - 1].year).toEqual(periodEndDate.year());
+          });
         });
 
-        describe('asbence types', function () {
+        describe('absence types', function () {
           it('loads the absence types', function () {
             expect(controller.absenceTypes.length).not.toBe(0);
           });
@@ -112,11 +159,33 @@
           });
         });
 
-        describe('leave requests', function () {
+        describe('contacts\' work pattern calendar', function () {
           var callParams;
 
           beforeEach(function () {
-            callParams = LeaveRequest.all.calls.mostRecent().args[0];
+            callParams = Calendar.get.calls.mostRecent().args;
+          });
+
+          it('loads the work pattern calendars', function () {
+            expect(Calendar.get).toHaveBeenCalled();
+          });
+
+          it('loads only the work pattern calendars of the currently loaded contacts', function () {
+            expect(callParams[0]).toEqual(controller.contacts.map(function (contact) {
+              return contact.id;
+            }));
+          });
+
+          it('loads only the work pattern calendars of the currently selected period', function () {
+            expect(callParams[1]).toEqual(controller.selectedPeriod.id);
+          });
+        });
+
+        describe('leave requests', function () {
+          var filters;
+
+          beforeEach(function () {
+            filters = LeaveRequest.all.calls.mostRecent().args[0];
           });
 
           it('loads the leave requests', function () {
@@ -124,14 +193,14 @@
           });
 
           it('loads only the leave requests of the currently selected period', function () {
-            expect(callParams).toEqual(jasmine.objectContaining({
+            expect(filters).toEqual(jasmine.objectContaining({
               from_date: {from: controller.selectedPeriod.start_date},
               to_date: {to: controller.selectedPeriod.end_date}
             }));
           });
 
           it('loads only the approved, admin approved, or awaiting approval leave requests', function () {
-            expect(callParams).toEqual(jasmine.objectContaining({
+            expect(filters).toEqual(jasmine.objectContaining({
               status_id: {'IN': [
                 optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'approved').value,
                 optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'admin_approved').value,
@@ -140,10 +209,30 @@
             }));
           });
 
-          it('loads only the leave requests belonging the the loaded contacts', function () {
-            expect(callParams).toEqual(jasmine.objectContaining({
+          it('loads only the leave requests belonging to the loaded contacts', function () {
+            expect(filters).toEqual(jasmine.objectContaining({
               contact_id: { 'IN': [CRM.vars.leaveAndAbsences.contactId] }
             }));
+          });
+
+          describe('indexing', function () {
+            var leaveRequests;
+
+            beforeEach(function () {
+              leaveRequests = controller.leaveRequests;
+            });
+
+            it('indexes the overall list of leave requests by contact id', function () {
+              expect(Object.keys(leaveRequests)).toEqual(controller.contacts.map(function (contact) {
+                return contact.id;
+              }));
+            });
+
+            it('indexes the leave requests of a specific contact by date', function () {
+              expect(Object.keys(leaveRequests[controller.contacts[0].id]).every(function (key) {
+                return moment(key).isValid();
+              })).toBe(true);
+            });
           });
         });
       });
