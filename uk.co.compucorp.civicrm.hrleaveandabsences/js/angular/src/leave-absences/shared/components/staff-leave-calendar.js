@@ -37,24 +37,7 @@ define([
 
     (function init () {
       vm._init();
-
-      $rootScope.$on('LeaveRequest::new', vm.refresh);
-      $rootScope.$on('LeaveRequest::edit', vm.refresh);
-      $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest);
     })();
-
-    /**
-     * Event handler for Delete event of Leave Request
-     *
-     * @param  {object} event
-     * @param  {object} leaveRequest
-     */
-    function deleteLeaveRequest (event, leaveRequest) {
-      vm.leaveRequests = _.omit(vm.leaveRequests, function (leaveRequestObj) {
-        return leaveRequestObj.id === leaveRequest.id;
-      });
-      vm._setCalendarProps();
-    }
 
     return vm;
   }

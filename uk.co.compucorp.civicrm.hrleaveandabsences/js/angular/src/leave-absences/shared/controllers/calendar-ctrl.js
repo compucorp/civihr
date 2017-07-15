@@ -9,10 +9,11 @@ define([
 ], function (controllers, _, moment) {
   'use strict';
 
-  controllers.controller('CalendarCtrl', ['$q', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
-    'LeaveRequest', 'PublicHoliday', 'OptionGroup', 'Calendar', controller]);
+  controllers.controller('CalendarCtrl', ['$q', '$rootScope', '$timeout',
+    'shared-settings', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
+    'PublicHoliday', 'OptionGroup', 'Calendar', controller]);
 
-  function controller ($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup, Calendar) {
+  function controller ($q, $rootScope, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup, Calendar) {
     var dayTypes = [];
     var leaveRequestStatuses = [];
     var publicHolidays = [];
@@ -110,7 +111,7 @@ define([
       .then(fillCalendarCellsData.bind(this))
       .then(function () {
         this.loading.calendar = false;
-      }.bind(this))
+      }.bind(this));
     };
 
     /**
@@ -119,6 +120,7 @@ define([
      * @param {function} intermediateSteps
      */
     this._init = function (intermediateSteps) {
+      initListeners.call(this);
       setDefaultMonths.call(this);
 
       var pContactsPeriods = loadContactsAndAbsencePeriods.call(this);
@@ -143,8 +145,26 @@ define([
       .then(function () {
         showMonthLoader.call(this);
         this.loading.page = false;
-      }.bind(this))
+      }.bind(this));
     };
+
+    /**
+     * Deletes the given leave request from the list, then
+     * it re-processes the calendar's cell's data
+     *
+     * @param  {object} event
+     * @param  {LeaveRequestInstance} leaveRequest
+     */
+    function deleteLeaveRequest (event, leaveRequest) {
+      this.leaveRequests[leaveRequest.contact_id] = _.omit(
+        this.leaveRequests[leaveRequest.contact_id],
+        function (leaveRequestObj) {
+          return leaveRequestObj.id === leaveRequest.id;
+        }
+      );
+
+      fillCalendarCellsData.call(this);
+    }
 
     /**
      * Fetch all the months from the current period and
@@ -273,6 +293,16 @@ define([
     }
 
     /**
+     * Initializes the event listeners
+     */
+    function initListeners () {
+      $rootScope.$on('LeaveRequest::new', this.refresh.bind(this));
+      $rootScope.$on('LeaveRequest::edit', this.refresh.bind(this));
+      $rootScope.$on('LeaveRequest::updatedByManager', this.refresh.bind(this));
+      $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest.bind(this));
+    }
+
+    /**
      * Returns whether a date is of a specific type
      * half_day_am or half_day_pm
      *
@@ -361,7 +391,6 @@ define([
       }.bind(this));
     }
 
-
     /**
      * Bundles the loading of the contacts and the absence periods
      *
@@ -426,7 +455,7 @@ define([
           publicHolidays = _.transform(publicHolidaysData, function (result, publicHoliday) {
             result[getDateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
           }, {});
-        }.bind(this));
+        });
     }
 
     /**
@@ -443,7 +472,7 @@ define([
       ])
       .then(function () {
         this.legendCollapsed = false;
-      }.bind(this))
+      }.bind(this));
     }
 
     /**

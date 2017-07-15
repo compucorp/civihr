@@ -23,9 +23,8 @@ define([
   function controller ($controller, $log, $q, $rootScope, sharedSettings, checkPermissions, Calendar, Contact, OptionGroup) {
     $log.debug('Component: manager-leave-calendar');
 
-    var parentCtrl = $controller('CalendarCtrl');
-    var vm = Object.create(parentCtrl);
-    var isAdmin = false; // updated on the init function after calling checkPermissions service
+    var isAdmin = false;
+    var vm = Object.create($controller('CalendarCtrl'));
 
     vm.filteredContacts = [];
     vm.managedContacts = [];
@@ -86,29 +85,7 @@ define([
           return loadOptionValues();
         });
       });
-
-      $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
-      $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest);
     })();
-
-    /**
-     * Event handler for Delete event of Leave Request
-     *
-     * @param  {object} event
-     * @param  {LeaveRequestInstance} leaveRequest
-     */
-    function deleteLeaveRequest (event, leaveRequest) {
-      var contactID = leaveRequest.contact_id;
-      // Find the calendarData for the deleted requests user
-      var calendar = _.find(calendarData, function (calendar) {
-        return calendar.contact_id === contactID;
-      });
-
-      vm.leaveRequests[contactID] = _.omit(vm.leaveRequests[contactID], function (leaveRequestObj) {
-        return leaveRequestObj.id === leaveRequest.id;
-      });
-      vm._setCalendarProps(contactID, calendar);
-    }
 
     /**
      * Load all contacts with respect to filters
