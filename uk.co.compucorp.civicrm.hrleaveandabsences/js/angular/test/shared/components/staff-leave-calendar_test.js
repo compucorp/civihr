@@ -26,7 +26,7 @@
 
     describe('sharedLeaveCalendar', function () {
       var $componentController, $log, $q, $rootScope, controller, $provide,
-        ContactAPIMock, AbsencePeriod, AbsenceType, Calendar, CalendarInstance, LeaveRequest;
+        AbsencePeriod, AbsenceType, Calendar, CalendarInstance, LeaveRequest;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', 'common.mocks', function (_$provide_) {
         $provide = _$provide_;
@@ -42,7 +42,7 @@
       }));
 
       beforeEach(inject(['api.contact.mock', function (ContactAPIMock) {
-        $provide.value('api.contact', ContactAPIMock)
+        $provide.value('api.contact', ContactAPIMock);
       }]));
 
       beforeEach(inject(function (OptionGroup, OptionGroupAPIMock) {
@@ -116,7 +116,7 @@
               optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'admin_approved').value,
               optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval').value
             ]},
-            contact_id: { 'IN' : [CRM.vars.leaveAndAbsences.contactId] }
+            contact_id: { 'IN': [CRM.vars.leaveAndAbsences.contactId] }
           }, null, null, null, false);
         });
       });
@@ -262,7 +262,7 @@
           var dateObj, workPattern, leaveRequest;
 
           beforeEach(function () {
-            leaveRequest = leaveRequestData.singleDataSuccess().values[0];
+            leaveRequest = _.clone(leaveRequestData.singleDataSuccess().values[0]);
 
             workPattern = _.find(workPatternMocked.getCalendar.values, function (workPattern) {
               return workPattern.contact_id === CRM.vars.leaveAndAbsences.contactId;

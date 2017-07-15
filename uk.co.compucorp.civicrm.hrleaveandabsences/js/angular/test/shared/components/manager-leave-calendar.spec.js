@@ -325,7 +325,7 @@
 
           beforeEach(function () {
             workPattern = workPatternMocked.getCalendar;
-            leaveRequest = leaveRequestData.singleDataSuccess().values[0];
+            leaveRequest = _.clone(leaveRequestData.singleDataSuccess().values[0]);
             workPattern.values[0].calendar[0].date = leaveRequest.from_date;
           });
 
