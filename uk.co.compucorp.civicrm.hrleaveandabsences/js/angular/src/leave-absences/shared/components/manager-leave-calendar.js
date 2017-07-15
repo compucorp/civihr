@@ -17,10 +17,10 @@ define([
     controllerAs: 'calendar',
     controller: [
       '$controller', '$log', '$q', '$rootScope', 'shared-settings', 'checkPermissions',
-      'Calendar', 'Contact', 'OptionGroup', controller]
+      'Calendar', 'Contact', 'ContactInstance', 'OptionGroup', controller]
   });
 
-  function controller ($controller, $log, $q, $rootScope, sharedSettings, checkPermissions, Calendar, Contact, OptionGroup) {
+  function controller ($controller, $log, $q, $rootScope, sharedSettings, checkPermissions, Calendar, Contact, ContactInstance, OptionGroup) {
     $log.debug('Component: manager-leave-calendar');
 
     var isAdmin = false;
@@ -61,10 +61,8 @@ define([
           });
       }
 
-      return Contact.find(vm.contactId)
-        .then(function (contact) {
-          return contact.leaveManagees();
-        })
+      return ContactInstance.init({ id: vm.contactId })
+        .leaveManagees()
         .then(function (contacts) {
           vm.managedContacts = contacts;
         })

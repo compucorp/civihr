@@ -47,7 +47,7 @@
       beforeEach(inject(function (
         _$componentController_, _$q_, _$log_, _$rootScope_,
         _OptionGroup_, _OptionGroupAPIMock_, _AbsencePeriod_, _Contact_,
-        _LeaveRequest_, _WorkPatternAPI_) {
+        _LeaveRequest_, _WorkPatternAPI_, ContactInstance) {
         $componentController = _$componentController_;
         $q = _$q_;
         $log = _$log_;
@@ -60,18 +60,10 @@
         WorkPatternAPI = _WorkPatternAPI_;
 
         spyOn($log, 'debug');
+        spyOn(Contact, 'all').and.returnValue($q.resolve(ContactAPIMock.mockedContacts()));
+        spyOn(ContactInstance, 'leaveManagees').and.returnValue($q.resolve(ContactAPIMock.leaveManagees()));
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
           return OptionGroupAPIMock.valuesOf(name);
-        });
-        spyOn(Contact, 'all').and.callFake(function () {
-          return $q.resolve(ContactAPIMock.mockedContacts());
-        });
-        spyOn(Contact, 'find').and.callFake(function () {
-          var contactInstance = ContactAPIMock.mockedContacts().list[0];
-          contactInstance.leaveManagees = jasmine.createSpy('leaveManagees');
-          contactInstance.leaveManagees.and.returnValue($q.resolve(ContactAPIMock.leaveManagees()));
-
-          return $q.resolve(contactInstance);
         });
         spyOn(AbsencePeriod, 'all').and.callFake(function () {
           var data = absencePeriodData.all().values;

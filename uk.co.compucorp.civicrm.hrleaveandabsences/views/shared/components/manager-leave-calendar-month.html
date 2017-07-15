@@ -17,7 +17,7 @@
       <tr class="chr_leave-calendar__days">
         <th class="chr_leave-calendar__name">Employee Name</th>
         <!--send any contact id to get the days for a month-->
-        <th ng-repeat="day in calendar.getMonthData(calendar.managedContacts[0], month) track by day.date">
+        <th ng-repeat="day in calendar.getMonthData(calendar.filterContacts()[0], month) track by day.date">
           {{calendar.getDayName(day.date)}}
           <div>{{$index + 1}}</div>
         </th>
