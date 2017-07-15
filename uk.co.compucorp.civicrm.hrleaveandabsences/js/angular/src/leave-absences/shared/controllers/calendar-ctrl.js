@@ -104,14 +104,17 @@ define([
     this.refresh = function () {
       this.loading.calendar = true;
 
-      $q.all([
-        loadCalendars.call(this),
-        loadLeaveRequests.call(this)
-      ])
-      .then(fillCalendarCellsData.bind(this))
-      .then(function () {
-        this.loading.calendar = false;
-      }.bind(this));
+      loadContacts.call(this)
+        .then(function () {
+          return $q.all([
+            loadCalendars.call(this),
+            loadLeaveRequests.call(this)
+          ]);
+        }.bind(this))
+        .then(fillCalendarCellsData.bind(this))
+        .then(function () {
+          this.loading.calendar = false;
+        }.bind(this));
     };
 
     /**
