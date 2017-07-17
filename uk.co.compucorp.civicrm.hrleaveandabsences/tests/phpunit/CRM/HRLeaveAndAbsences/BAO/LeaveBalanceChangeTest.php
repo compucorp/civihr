@@ -490,6 +490,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       new DateTime('+20 days')
     );
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
+    );
+
     $this->createLeaveBalanceChange($entitlement->id, 23.5);
     $this->createBroughtForwardBalanceChange($entitlement->id, 4);
     $this->createPublicHolidayBalanceChange($entitlement->id, 8);
@@ -586,6 +591,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       new DateTime('+20 days')
     );
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
+    );
+
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
 
@@ -643,6 +653,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       new DateTime('+20 days')
     );
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
+    );
+
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
 
@@ -698,6 +713,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       new DateTime('+100 days')
     );
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
+    );
+
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
 
@@ -725,6 +745,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('today'),
       new DateTime('+100 days')
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
     );
 
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
@@ -803,6 +828,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       new DateTime('+100 days')
     );
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
+    );
+
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
 
@@ -833,6 +863,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('today'),
       new DateTime('+100 days')
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
     );
 
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
@@ -871,6 +906,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       new DateTime('+100 days')
     );
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
+    );
+
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
     $this->assertEquals(0, $balance);
 
@@ -901,6 +941,51 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(1, $balance);
   }
 
+  public function testLeaveRequestBalanceForEntitlementDoesNotIncludeBalanceFromLeaveRequestsNotOverlappingContracts() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('-10 days'),
+      new DateTime('+10 days')
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      [
+        'period_start_date' => date('YmdHis', strtotime('-6 days')),
+        'period_end_date' => date('YmdHis', strtotime('-5 days'))
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => date('YmdHis', strtotime('-2 days'))]
+    );
+
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement));
+
+    // Leave Request before the first contract
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $entitlement->type_id,
+      'contact_id' => $entitlement->contact_id,
+      'status_id' => $leaveRequestStatuses['approved'],
+      'from_date' => date('YmdHis', strtotime('-10 days')),
+      'to_date' => date('YmdHis', strtotime('-9 days'))
+    ], true);
+
+    // Leave Request between the 2 contracts
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $entitlement->type_id,
+      'contact_id' => $entitlement->contact_id,
+      'status_id' => $leaveRequestStatuses['more_information_required'],
+      'from_date' => date('YmdHis', strtotime('-4 days')),
+      'to_date' => date('YmdHis', strtotime('-3 days'))
+    ], true);
+
+    // None of the Leave Requests overlap the contracts, so they won't be included
+    // in the sum and the balance will still be 0
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement));
+  }
 
   public function testTheLeaveRequestBreakdownReturnsOnlyTheLeaveBalanceChangesOfTheLeaveRequestDates() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([

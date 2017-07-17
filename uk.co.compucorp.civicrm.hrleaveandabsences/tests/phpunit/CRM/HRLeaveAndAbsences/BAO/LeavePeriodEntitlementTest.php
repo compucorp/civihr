@@ -329,6 +329,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       new DateTime('+8 days')
     );
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
+    );
+
     // None of these will be included in the Leave Request balance
     $this->createLeaveBalanceChange($periodEntitlement->id, 6);
     $this->createBroughtForwardBalanceChange($periodEntitlement->id, 3);
