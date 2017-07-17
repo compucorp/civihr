@@ -215,7 +215,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $overriddenEntitlement,
     $calculationComment
   ) {
-    global $user;
     $absenceTypeID   = $calculation->getAbsenceType()->id;
     $contactID      = $calculation->getContact()['id'];
     $absencePeriodID = $calculation->getAbsencePeriod()->id;
@@ -229,7 +228,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
     if ($calculationComment) {
       $params['comment']            = $calculationComment;
-      $params['comment_author_id']  = $user->uid;
+      $params['comment_author_id']  = CRM_Core_Session::getLoggedInContactID();
       $params['comment_date'] = date('YmdHis');
     }
 
