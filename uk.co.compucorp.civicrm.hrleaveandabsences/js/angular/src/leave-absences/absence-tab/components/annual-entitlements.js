@@ -60,7 +60,7 @@
         var text = comment.message +
           '<br/><br/><strong>Last updated:' +
           '<br/>By: ' + comment.author_name +
-          '<br/>Date: ' + moment(comment.date).format('DD/M/YYYY HH.mm') +
+          '<br/>Date: ' + moment.utc(comment.date).local().format('DD/M/YYYY HH:mm') +
           '</strong>';
 
         CRM.alert(text, 'Calculation comment:', 'error');
