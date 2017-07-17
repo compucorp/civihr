@@ -224,7 +224,7 @@
                                       leave-request-popup
                                       leave-request="request"
                                       contact-id="report.contactId"
-                                      is-self-record="true">
+                                      is-self-record="$root.section == 'my-leave'">
                                       {{action}}
                                     </a>
                                     <a href ng-switch-default ng-click="report.action(request, action)">
@@ -400,7 +400,7 @@
                                     leave-request-popup
                                     leave-request="request"
                                     contact-id="report.contactId"
-                                    is-self-record="true">
+                                    is-self-record="$root.section == 'my-leave'">
                                     {{action}}
                                   </a>
                                   <a href ng-switch-default ng-click="report.action(request, action)">
@@ -503,7 +503,7 @@
                                     leave-request-popup
                                     leave-request="request"
                                     contact-id="report.contactId"
-                                    is-self-record="true">
+                                    is-self-record="$root.section == 'my-leave'">
                                     {{action}}
                                   </a>
                                   <a href ng-switch-default ng-click="report.action(request, action)">
