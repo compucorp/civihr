@@ -11,6 +11,7 @@ define([
   'leave-absences/shared/ui-router',
   'leave-absences/shared/components/leave-request-create-dropdown',
   'leave-absences/shared/components/leave-request-popup-comments-tab',
+  'leave-absences/shared/components/leave-request-popup-files-tab',
   'leave-absences/shared/directives/leave-request-popup',
   'leave-absences/shared/components/manage-leave-requests',
   'leave-absences/shared/components/manager-leave-calendar',
