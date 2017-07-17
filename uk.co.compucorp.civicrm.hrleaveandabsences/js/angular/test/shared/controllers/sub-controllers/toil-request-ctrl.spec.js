@@ -87,7 +87,7 @@
         spyOn(AbsenceTypeAPI, 'all').and.callThrough();
         spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
         spyOn(TOILRequestInstance, 'init').and.callThrough();
-        spyOn(AbsenceType, 'canExpire').and.returnValue($q.resolve(true));
+        spyOn(AbsenceType, 'canExpire').and.callThrough();
         spyOn(Contact, 'all').and.callFake(function () {
           return $q.resolve(ContactAPIMock.mockedContacts());
         });
@@ -373,8 +373,7 @@
             });
 
             it('should not calculate the expiry date field', function () {
-              expect(AbsenceType.calculateToilExpiryDate)
-              .not.toHaveBeenCalled();
+              expect(AbsenceType.calculateToilExpiryDate).not.toHaveBeenCalled();
             });
 
             it('should set expiry date to false', function () {

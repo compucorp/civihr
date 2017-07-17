@@ -44,21 +44,22 @@ define([
 
         /**
          * Determines if the absence type can expire by querying if
-         * the expiration unit and duration are null.
+         * the expiration unit and duration are not null.
          *
          * @param   {string} absenceTypeId
          * @return  {Promise}
          */
         canExpire: function (absenceTypeId) {
           return absenceTypeAPI.all({
-            accrual_expiration_unit: { 'IS NULL': 1 },
-            accrual_expiration_duration: { 'IS NULL': 1 },
+            accrual_expiration_unit: { 'IS NOT NULL': 1 },
+            accrual_expiration_duration: { 'IS NOT NULL': 1 },
             allow_accruals_request: 1,
             id: absenceTypeId,
-            sequential: 1
+            options: { limit: 1 },
+            return: ['id']
           })
           .then(function (results) {
-            return results.length === 0;
+            return results.length > 0;
           });
         }
       });

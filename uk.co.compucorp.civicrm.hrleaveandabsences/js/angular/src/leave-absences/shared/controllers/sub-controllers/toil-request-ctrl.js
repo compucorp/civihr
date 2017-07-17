@@ -47,14 +47,18 @@ define([
        * @return {Promise}
        */
       vm.calculateToilExpiryDate = function () {
-        // blocks the expiry date from updating if this is an existing request
-        // and user is not a manager or admin.
+        /**
+         * blocks the expiry date from updating if this is an existing request
+         * and user is not a manager or admin.
+         */
         if (!vm.canManage && vm.request.id) {
           return $q.resolve(vm.request.toil_expiry_date);
         }
 
-        // skips calculation of expiration date if request never expires
-        // according to admin setting.
+        /**
+         * skips calculation of expiration date if request never expires
+         * according to admin setting.
+         */
         if (!vm.requestCanExpire) {
           vm.request.toil_expiry_date = false;
           return $q.resolve(false);
@@ -167,7 +171,7 @@ define([
 
         vm._init()
           .then(function () {
-            return initrequestCanExpire();
+            return initRequestCanExpire();
           })
           .then(function () {
             initExpiryDate();
@@ -239,7 +243,7 @@ define([
        * and request type.
        * @return {Promise}
        */
-      function initrequestCanExpire () {
+      function initRequestCanExpire () {
         return AbsenceType.canExpire(vm.request.type_id)
         .then(function (canExpire) {
           vm.requestCanExpire = canExpire;

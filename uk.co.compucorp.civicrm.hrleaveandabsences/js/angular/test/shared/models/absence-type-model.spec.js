@@ -89,36 +89,43 @@ define([
 
     describe('canExpire()', function () {
       describe('passing api parameters', function () {
+        var absenceTypeId = 999;
+
         beforeEach(function () {
-          AbsenceType.canExpire(999);
+          AbsenceType.canExpire(absenceTypeId);
         });
 
         it('should pass appropiate filter parameters', function () {
           expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
-            accrual_expiration_unit: { 'IS NULL': 1 },
-            accrual_expiration_duration: { 'IS NULL': 1 },
+            accrual_expiration_unit: { 'IS NOT NULL': 1 },
+            accrual_expiration_duration: { 'IS NOT NULL': 1 },
             allow_accruals_request: 1,
-            id: 999,
-            sequential: 1
+            id: absenceTypeId,
+            options: { limit: 1 },
+            return: ['id']
           });
         });
       });
 
       describe('absence type can expire', function () {
+        var absenceTypeId = 1;
+
         beforeEach(function () {
           AbsenceTypeAPI.all.and.returnValue($q.resolve([]));
         });
 
         it('should return true', function () {
-          AbsenceType.canExpire(1).then(function (expires) {
+          AbsenceType.canExpire(absenceTypeId).then(function (expires) {
             expect(expires).toBe(true);
           });
         });
       });
 
       describe('absence type does not expire', function () {
+        var absenceTypeId = 2;
+
         it('should return false', function () {
-          AbsenceType.canExpire(2).then(function (expires) {
+          AbsenceType.canExpire(absenceTypeId).then(function (expires) {
             expect(expires).toBe(false);
           });
         });
