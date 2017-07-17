@@ -33,7 +33,7 @@
             <a ng-if="day.leaveRequest"
                contact-id="calendar.contactId"
                selected-contact-id="$root.settings.contactId"
-               is-self-record="true"
+               is-self-record="$root.section === 'my-leave'"
                leave-request-popup
                leave-request="day.leaveRequest"
                title="Click to open this leave request">
