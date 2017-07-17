@@ -18,15 +18,14 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
  */
 class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadlessTest {
 
-  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
 
   private $leaveRequestStatuses = [];
 
   public function setUp() {
-    $this->setGlobalUser();
-
     $this->leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     // In order to make tests simpler, we disable the foreign key checks,
@@ -35,11 +34,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
 
     $this->createContract();
-  }
-
-  public function tearDown() {
-    $this->unsetGlobalUser();
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 1;");
   }
 
   /**
@@ -446,11 +440,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testSaveFromEntitlementCalculationCanSaveOverriddenValuesGreaterThanProposedEntitlement() {
-    // This mocks the logged in user so we can test
-    // the LeavePeriodEntitlement creation with a comment
-    global $user;
-    $user = new stdClass();
-    $user->uid = 1;
+    $this->registerCurrentLoggedInContactInSession(1);
 
     $type = new AbsenceType();
     $type->id = 1;
@@ -487,14 +477,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($contact['id'], $periodEntitlement->contact_id);
     $this->assertEquals(1, $periodEntitlement->overridden);
     $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
+
+    $this->unregisterCurrentLoggedInContactFromSession();
   }
 
   public function testSaveFromEntitlementCalculationCanSaveOverriddenValuesLessThanTheProposedEntitlement() {
-    // This mocks the logged in user so we can test
-    // the LeavePeriodEntitlement creation with a comment
-    global $user;
-    $user = new stdClass();
-    $user->uid = 1;
+    $this->registerCurrentLoggedInContactInSession(1);
 
     $type = new AbsenceType();
     $type->id = 1;
@@ -532,7 +520,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals(1, $periodEntitlement->overridden);
     $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
 
-    $user = null;
+    $this->unregisterCurrentLoggedInContactFromSession();
   }
 
   public function testGetStartAndEndDatesShouldReturnAbsencePeriodDateIfContractStartDateIsLessThanThePeriodStartDate() {
@@ -1299,28 +1287,4 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
     LeavePeriodEntitlement::getForLeaveRequest($leaveRequest);
   }
-
-  /**
-   * Some tests on this class use the HRJobDetails API which uses the
-   * HRJobContractRevision API that depends on the the global $user.
-   *
-   * This API expects the global $user to be available, so we create it user
-   * here, with a null uid, which is enough to run the test.
-   */
-  private function setGlobalUser() {
-    global $user;
-
-    $user = new stdClass();
-    $user->uid = null;
-  }
-
-  /**
-   * This basically resets what is done by the setGlobalUser() method
-   */
-  private function unsetGlobalUser() {
-    global $user;
-
-    $user = null;
-  }
-
 }
