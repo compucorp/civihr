@@ -103,12 +103,6 @@
             expect(controller.filteredContacts).not.toBe(0);
           });
         });
-
-        it('calendar have loaded for each contact', function () {
-          _.each(controller.managedContacts, function (contact) {
-            expect(Object.keys(contact.calendarData[0]).length).not.toBe(0);
-          });
-        });
       });
 
       describe('filterContacts', function () {

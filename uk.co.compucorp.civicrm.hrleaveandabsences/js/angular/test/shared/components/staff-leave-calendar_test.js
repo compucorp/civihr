@@ -64,14 +64,11 @@
 
         spyOn($log, 'debug');
         spyOn(LeaveRequest, 'all').and.callThrough();
-        spyOn(AbsencePeriod, 'all').and.callFake(function () {
-          var data = absencePeriodData.all().values;
-          // Set 2016 as current period, because Calendar loads data only for the current period initially,
-          // and MockedData has 2016 dates
-          data[0].current = true;
+        spyOn(AbsencePeriod, 'all');
 
-          return $q.resolve(data);
-        });
+        // Set 2016 as current period, because Calendar loads data only for the current period initially,
+        // and MockedData has 2016 dates
+        amend2016Period({ current: true });
 
         compileComponent();
       }));
@@ -140,9 +137,9 @@
             var periodStartDate = moment(controller.selectedPeriod.start_date);
             var periodEndDate = moment(controller.selectedPeriod.end_date);
 
-            expect(months[0].month).toEqual(periodStartDate.month());
+            expect(months[0].index).toEqual(periodStartDate.month());
             expect(months[0].year).toEqual(periodStartDate.year());
-            expect(months[months.length - 1].month).toEqual(periodEndDate.month());
+            expect(months[months.length - 1].index).toEqual(periodEndDate.month());
             expect(months[months.length - 1].year).toEqual(periodEndDate.year());
           });
         });
@@ -237,140 +234,290 @@
         });
       });
 
-      describe('date properties set by the calendar', function () {
-        var dateObj;
-
-        describe('when the day is a weekend', function () {
-          beforeEach(function () {
-            dateObj = getDateFromCalendar('weekend');
-          });
-
-          it('marks it as such', function () {
-            expect(dateObj.UI.isWeekend).toBe(true);
-          });
-        });
-
-        describe('when the day is a non-working day', function () {
-          beforeEach(function () {
-            dateObj = getDateFromCalendar('non_working_day');
-          });
-
-          it('marks it as such', function () {
-            expect(dateObj.UI.isNonWorkingDay).toBe(true);
-          });
-        });
-
-        describe('when the day is a public holiday', function () {
-          beforeEach(function () {
-            // set this so that every date is marked as public holiday
-            spyOn(controller, 'isPublicHoliday').and.returnValue(true);
-            controller.refresh();
-            $rootScope.$digest();
-            // pick any date
-            dateObj = getDateFromCalendar('non_working_day');
-          });
-
-          it('marks it as such', function () {
-            expect(dateObj.UI.isPublicHoliday).toBe(true);
-          });
-        });
-
-        describe('when the day has a leave request on it', function () {
-          var leaveRequest, workPattern;
+      describe('calendar data structure', function () {
+        describe('month', function () {
+          var july, daysInJuly;
 
           beforeEach(function () {
-            leaveRequest = _.clone(leaveRequestData.singleDataSuccess().values[0]);
-            workPattern = _.find(workPatternMocked.getCalendar.values, function (workPattern) {
-              return workPattern.contact_id === CRM.vars.leaveAndAbsences.contactId;
-            });
-
-            workPattern.calendar[0].date = leaveRequest.from_date;
+            july = controller.months[6];
+            daysInJuly = moment().month(july.index).daysInMonth();
           });
 
-          describe('basic tests', function () {
+          it('contains a flag for the loading status', function () {
+            expect(july.loading).toBeDefined();
+          });
+
+          it('contains the month long name', function () {
+            expect(july.name.long).toBe('July');
+          });
+
+          it('contains the month short name', function () {
+            expect(july.name.short).toBe('Jul');
+          });
+
+          it('contains the month index', function () {
+            expect(july.index).toBe(6);
+          });
+
+          it('contains the year', function () {
+            expect(july.year).toBe(moment(controller.selectedPeriod.start_date).year());
+          });
+
+          it('contains the list of days', function () {
+            expect(july.days.length).toEqual(daysInJuly);
+          });
+
+          describe('when the currently selected period does not start at the beginning of the month', function () {
+            var january, daysInJanuary;
+
             beforeEach(function () {
-              leaveRequest.status_id = optionGroupMock.specificObject(
-                'hrleaveandabsences_leave_request_status', 'name', 'approved'
-              ).value;
-
-              dateObj = commonSetup();
+              amend2016Period({ start_date: '2016-01-20' });
+              compileComponent();
             });
 
-            it('assigns it the colors of its absence type', function () {
-              var absenceTypeColor = _.find(controller.absenceTypes, function (absenceType) {
-                return absenceType.id === leaveRequest.type_id;
-              }).color;
+            beforeEach(function () {
+              january = controller.months[0];
+              daysInJanuary = moment().month(january.index).daysInMonth();
+            });
 
-              expect(dateObj.UI.styles).toEqual({
-                backgroundColor: absenceTypeColor,
-                borderColor: absenceTypeColor
+            it('still contains all the days anyway', function () {
+              expect(january.days.length).toEqual(daysInJanuary);
+            });
+          });
+
+          describe('when the currently selected period does not finish at the end of the month', function () {
+            var december, daysInDecember;
+
+            beforeEach(function () {
+              amend2016Period({ end_date: '2016-12-26' });
+              compileComponent();
+            });
+
+            beforeEach(function () {
+              december = controller.months[11];
+              daysInDecember = moment().month(december.index).daysInMonth();
+            });
+
+            it('still contains all the days anyway', function () {
+              expect(december.days.length).toEqual(daysInDecember);
+            });
+          });
+        });
+
+        describe('day', function () {
+          var twentiethOfJanuary;
+
+          beforeEach(function () {
+            twentiethOfJanuary = controller.months[0].days[19];
+          });
+
+          it('contains the date', function () {
+            expect(twentiethOfJanuary.date).toBe('2016-01-20');
+          });
+
+          it('contains the day index', function () {
+            expect(twentiethOfJanuary.index).toBe('20');
+          });
+
+          it('contains the name of day', function () {
+            expect(twentiethOfJanuary.name).toBe('Wed');
+          });
+
+          it('contains the data specific for each contact in the calendar', function () {
+            expect(twentiethOfJanuary.contactsData).toEqual(jasmine.any(Object));
+          });
+
+          describe('when the day is within the currently selected period', function () {
+            it('is marked as enabled', function () {
+              expect(twentiethOfJanuary.enabled).toBe(true);
+            });
+          });
+
+          describe('when the day is outside the currently selected period', function () {
+            beforeEach(function () {
+              amend2016Period({ start_date: '2016-01-22' });
+              compileComponent();
+
+              twentiethOfJanuary = controller.months[0].days[19];
+            });
+
+            it('is marked as disabled', function () {
+              expect(twentiethOfJanuary.enabled).toBe(false);
+            });
+          });
+        });
+
+        describe('day\'s data specific for each contact', function () {
+          var contactData;
+
+          it('is indexed by contact id', function () {
+            var indexes = Object.keys(getDayWithType('working_day').contactsData);
+
+            expect(indexes).toEqual(controller.contacts.map(function (contact) {
+              return contact.id;
+            }));
+          });
+
+          describe('when the day is a weekend for a contact', function () {
+            beforeEach(function () {
+              contactData = getDayWithType('weekend', true);
+            });
+
+            it('marks it as such', function () {
+              expect(contactData.isWeekend).toBe(true);
+            });
+          });
+
+          describe('when the day is a non-working day for a contact', function () {
+            beforeEach(function () {
+              contactData = getDayWithType('non_working_day', true);
+            });
+
+            it('marks it as such', function () {
+              expect(contactData.isNonWorkingDay).toBe(true);
+            });
+          });
+
+          describe('when the day is a public holiday for a contact', function () {
+            beforeEach(function () {
+              // set this so that every date is marked as public holiday
+              spyOn(controller, 'isPublicHoliday').and.returnValue(true);
+              controller.refresh();
+              $rootScope.$digest();
+              // pick any date
+              contactData = getDayWithType('non_working_day', true);
+            });
+
+            it('marks it as such', function () {
+              expect(contactData.isPublicHoliday).toBe(true);
+            });
+          });
+
+          describe('when the contact has recorded a leave request on the day', function () {
+            var leaveRequest, workPattern;
+
+            beforeEach(function () {
+              leaveRequest = _.clone(leaveRequestData.singleDataSuccess().values[0]);
+              workPattern = _.find(workPatternMocked.getCalendar.values, function (workPattern) {
+                return workPattern.contact_id === CRM.vars.leaveAndAbsences.contactId;
+              });
+
+              workPattern.calendar[0].date = leaveRequest.from_date;
+            });
+
+            describe('basic tests', function () {
+              beforeEach(function () {
+                leaveRequest.status_id = optionGroupMock.specificObject(
+                  'hrleaveandabsences_leave_request_status', 'name', 'approved'
+                ).value;
+
+                contactData = commonSetup();
+              });
+
+              it('contains a reference to the leave request itself', function () {
+                expect(contactData.leaveRequest).toBe(leaveRequest);
+              });
+
+              it('assigns it the colors of its absence type', function () {
+                var absenceTypeColor = _.find(controller.absenceTypes, function (absenceType) {
+                  return absenceType.id === leaveRequest.type_id;
+                }).color;
+
+                expect(contactData.styles).toEqual({
+                  backgroundColor: absenceTypeColor,
+                  borderColor: absenceTypeColor
+                });
               });
             });
+
+            describe('when the leave request is still awaiting approval', function () {
+              beforeEach(function () {
+                leaveRequest.status_id = optionGroupMock.specificObject(
+                  'hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval'
+                ).value;
+
+                contactData = commonSetup();
+              });
+
+              it('marks it as such', function () {
+                expect(contactData.isRequested).toBe(true);
+              });
+            });
+
+            describe('when the leave request is for half day am', function () {
+              beforeEach(function () {
+                leaveRequest.from_date_type = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
+                  return absenceType.name === 'half_day_am';
+                }).value;
+
+                contactData = commonSetup();
+              });
+
+              it('marks it as such', function () {
+                expect(contactData.isAM).toBe(true);
+              });
+            });
+
+            describe('when leave request is for half day pm', function () {
+              beforeEach(function () {
+                leaveRequest.from_date_type = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
+                  return absenceType.name === 'half_day_pm';
+                }).value;
+
+                contactData = commonSetup();
+              });
+
+              it('marks it as such', function () {
+                expect(contactData.isPM).toBe(true);
+              });
+            });
+
+            describe('when the balance change of the leave request is positive', function () {
+              beforeEach(function () {
+                leaveRequest.balance_change = 2;
+
+                contactData = commonSetup();
+              });
+
+              it('marks it as such', function () {
+                expect(contactData.isAccruedTOIL).toBe(true);
+              });
+            });
+
+            function commonSetup () {
+              var day;
+
+              LeaveRequest.all.and.callFake(function () {
+                return $q.resolve({ list: [leaveRequest] });
+              });
+
+              controller.refresh();
+              $rootScope.$digest();
+
+              controller.months.forEach(function (month) {
+                month.days.forEach(function (dayObj) {
+                  if (dayObj.date === leaveRequest.from_date) {
+                    day = dayObj;
+                  }
+                });
+              });
+
+              return day.contactsData[CRM.vars.leaveAndAbsences.contactId];
+            }
           });
 
-          describe('when the leave request is still awaiting approval', function () {
-            beforeEach(function () {
-              leaveRequest.status_id = optionGroupMock.specificObject(
-                'hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval'
-              ).value;
+          function getDayWithType (dayType, returnContactData) {
+            var day;
 
-              dateObj = commonSetup();
+            controller.months.forEach(function (month) {
+              month.days.forEach(function (dayObj) {
+                if (dayObj.date === helper.getDate(dayType).date) {
+                  day = dayObj;
+                }
+              });
             });
 
-            it('marks it as such', function () {
-              expect(dateObj.UI.isRequested).toBe(true);
-            });
-          });
-
-          describe('when the leave request is for half day am', function () {
-            beforeEach(function () {
-              leaveRequest.from_date_type = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
-                return absenceType.name === 'half_day_am';
-              }).value;
-
-              dateObj = commonSetup();
-            });
-
-            it('marks it as such', function () {
-              expect(dateObj.UI.isAM).toBe(true);
-            });
-          });
-
-          describe('when leave request is for half day pm', function () {
-            beforeEach(function () {
-              leaveRequest.from_date_type = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
-                return absenceType.name === 'half_day_pm';
-              }).value;
-
-              dateObj = commonSetup();
-            });
-
-            it('marks it as such', function () {
-              expect(dateObj.UI.isPM).toBe(true);
-            });
-          });
-
-          describe('when the balance change of the leave request is positive', function () {
-            beforeEach(function () {
-              leaveRequest.balance_change = 2;
-
-              dateObj = commonSetup();
-            });
-
-            it('marks it as such', function () {
-              expect(dateObj.UI.isAccruedTOIL).toBe(true);
-            });
-          });
-
-          function commonSetup () {
-            LeaveRequest.all.and.callFake(function () {
-              return $q.resolve({ list: [leaveRequest] });
-            });
-
-            controller.refresh();
-            $rootScope.$digest();
-
-            return getDate(workPattern, leaveRequest.from_date);
+            return returnContactData ? day.contactsData[CRM.vars.leaveAndAbsences.contactId] : day;
           }
         });
       });
@@ -461,29 +608,18 @@
         });
       });
 
+      function amend2016Period (params) {
+        AbsencePeriod.all.and.callFake(function () {
+          var absencePeriods = _.clone(absencePeriodData.all().values);
+          _.assign(absencePeriods[0], params);
+
+          return $q.resolve(absencePeriods);
+        });
+      }
+
       function compileComponent () {
         controller = $componentController('staffLeaveCalendar', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
         $rootScope.$digest();
-      }
-
-      function getDate (workPattern, dateStr) {
-        return workPattern.calendar.find(function (data) {
-          return data.date === dateStr;
-        });
-      }
-
-      function getDateFromCalendar (dayType) {
-        var date;
-
-        controller.contacts[0].calendarData.forEach(function (month) {
-          month.data.forEach(function (dateObj) {
-            if (dateObj.date === helper.getDate(dayType).date) {
-              date = dateObj;
-            }
-          });
-        });
-
-        return date;
       }
     });
   });
