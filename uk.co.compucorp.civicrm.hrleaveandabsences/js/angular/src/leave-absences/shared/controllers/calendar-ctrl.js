@@ -1,12 +1,14 @@
 /* eslint-env amd */
+
 define([
-  'leave-absences/shared/modules/controllers',
+  'common/angular',
   'common/lodash',
   'common/moment',
+  'leave-absences/shared/modules/controllers',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/public-holiday-model'
-], function (controllers, _, moment) {
+], function (angular, _, moment, controllers) {
   'use strict';
 
   controllers.controller('CalendarCtrl', ['$q', '$rootScope', '$timeout',
@@ -99,6 +101,7 @@ define([
      */
     this._init = function (intermediateSteps) {
       initListeners.call(this);
+      initWatchers.call(this);
 
       var pContactsPeriods = loadContactsAndAbsencePeriods.call(this);
       var pCalendars = pContactsPeriods.then(loadCalendars.bind(this));
@@ -120,7 +123,6 @@ define([
         return intermediateSteps ? intermediateSteps() : null;
       })
       .then(function () {
-        showMonthLoader.call(this);
         this.loading.page = false;
       }.bind(this));
     };
@@ -248,6 +250,19 @@ define([
     }
 
     /**
+     * Initializes the scope properties' watchers
+     */
+    function initWatchers () {
+      $rootScope.$new().$watch(function () {
+        return this.selectedMonths;
+      }.bind(this), function (newValue, oldValue) {
+        if (!angular.equals(newValue, oldValue)) {
+          loadLeaveRequests.call(this);
+        }
+      }.bind(this));
+    }
+
+    /**
      * Returns whether a date is of a specific type
      * half_day_am or half_day_pm
      *
@@ -353,27 +368,39 @@ define([
     }
 
     /**
-     * Loads the leave requests for the contacts, in the currently selected period,
-     * then indexes the leave requests
+     * Loads the leave requests for each of the currently selected months
+     * (or for all the months if none are selected), limited to the calendar contacts,
+     * in the currently selected period. Then finally it indexes the leave requests
      *
      * @return {Promise}
      */
     function loadLeaveRequests () {
-      return LeaveRequest.all({
-        from_date: { from: this.selectedPeriod.start_date },
-        to_date: { to: this.selectedPeriod.end_date },
-        status_id: {'IN': [
-          getLeaveStatusValuefromName(sharedSettings.statusNames.approved),
-          getLeaveStatusValuefromName(sharedSettings.statusNames.adminApproved),
-          getLeaveStatusValuefromName(sharedSettings.statusNames.awaitingApproval)
-        ]},
-        contact_id: { 'IN': this.contacts.map(function (contact) {
-          return contact.id;
-        })}
-      }, null, null, null, false)
-      .then(function (leaveRequestsData) {
-        indexLeaveRequests.call(this, leaveRequestsData.list);
-      }.bind(this));
+      var monthsToLoad = !this.selectedMonths.length
+        ? this.months
+        : this.months.filter(function (month) {
+          return _.includes(this.selectedMonths, month.index);
+        }.bind(this));
+
+      return $q.all(monthsToLoad.map(function (month) {
+        return LeaveRequest.all({
+          from_date: { from: month.days[0].date },
+          to_date: { to: month.days[month.days.length - 1].date },
+          status_id: {'IN': [
+            getLeaveStatusValuefromName(sharedSettings.statusNames.approved),
+            getLeaveStatusValuefromName(sharedSettings.statusNames.adminApproved),
+            getLeaveStatusValuefromName(sharedSettings.statusNames.awaitingApproval)
+          ]},
+          contact_id: { 'IN': this.contacts.map(function (contact) {
+            return contact.id;
+          })}
+        }, null, null, null, false)
+        .then(function (leaveRequestsData) {
+          indexLeaveRequests.call(this, leaveRequestsData.list);
+        }.bind(this))
+        .then(function () {
+          month.loading = false;
+        });
+      }.bind(this)));
     }
 
     /**
@@ -512,16 +539,6 @@ define([
           }
         }.bind(this));
       }.bind(this)));
-    }
-
-    /**
-     * Show month loader for all months initially
-     * then hide each loader on the interval of an offset value
-     */
-    function showMonthLoader () {
-      this.months.forEach(function (month) {
-        month.loading = false;
-      });
     }
   }
 });

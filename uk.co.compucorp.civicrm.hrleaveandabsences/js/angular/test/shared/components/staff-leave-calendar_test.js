@@ -179,25 +179,17 @@
         });
 
         describe('leave requests', function () {
-          var filters;
-
           beforeEach(function () {
-            filters = LeaveRequest.all.calls.mostRecent().args[0];
+            LeaveRequest.all.calls.reset();
+            compileComponent();
           });
 
           it('loads the leave requests', function () {
-            expect(LeaveRequest.all).toHaveBeenCalled();
-          });
-
-          it('loads only the leave requests of the currently selected period', function () {
-            expect(filters).toEqual(jasmine.objectContaining({
-              from_date: {from: controller.selectedPeriod.start_date},
-              to_date: {to: controller.selectedPeriod.end_date}
-            }));
+            expect(LeaveRequest.all.calls.any()).toBe(true);
           });
 
           it('loads only the approved, admin approved, or awaiting approval leave requests', function () {
-            expect(filters).toEqual(jasmine.objectContaining({
+            expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
               status_id: {'IN': [
                 optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'approved').value,
                 optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'admin_approved').value,
@@ -207,9 +199,26 @@
           });
 
           it('loads only the leave requests belonging to the loaded contacts', function () {
-            expect(filters).toEqual(jasmine.objectContaining({
+            expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
               contact_id: { 'IN': [CRM.vars.leaveAndAbsences.contactId] }
             }));
+          });
+
+          describe('splitting the loading by selected months', function () {
+            it('loads the leave requests individually for each selected month', function () {
+              expect(LeaveRequest.all.calls.count()).toBe(controller.selectedMonths.length);
+            });
+
+            it('uses the selected months\' first and last day as date delimiters', function () {
+              LeaveRequest.all.calls.all().forEach(function (call, index) {
+                var callMonth = controller.months[controller.selectedMonths[index]];
+
+                expect(call.args[0]).toEqual(jasmine.objectContaining({
+                  from_date: { from: callMonth.days[0].date },
+                  to_date: { to: callMonth.days[callMonth.days.length - 1].date }
+                }));
+              });
+            });
           });
 
           describe('indexing', function () {
@@ -519,6 +528,37 @@
 
             return returnContactData ? day.contactsData[CRM.vars.leaveAndAbsences.contactId] : day;
           }
+        });
+      });
+
+      describe('selected months watcher', function () {
+        beforeEach(function () {
+          LeaveRequest.all.calls.reset();
+        });
+
+        describe('when some other months are selected', function () {
+          beforeEach(function () {
+            controller.selectedMonths = [1, 2, 3];
+            $rootScope.$digest();
+          });
+
+          it('loads the leave requests of the selected months', function () {
+            expect(LeaveRequest.all.calls.count()).toBe(3);
+          });
+        });
+
+        describe('when none of the months are selected', function () {
+          beforeEach(function () {
+            controller.selectedMonths = [];
+            $rootScope.$digest();
+          });
+
+          it('loads the leave requests for all the months', function () {
+            var startDate = moment(controller.selectedPeriod.start_date);
+            var endDate = moment(controller.selectedPeriod.end_date);
+
+            expect(LeaveRequest.all.calls.count()).toBe(endDate.diff(startDate, 'months') + 1);
+          });
         });
       });
 
