@@ -17,15 +17,14 @@ define([
     var dayTypes = [];
     var leaveRequestStatuses = [];
     var publicHolidays = [];
+    var calendars = [];
 
     this.absencePeriods = [];
     this.absenceTypes = [];
-    this.calendars = [];
     this.contacts = [];
     this.legendCollapsed = true;
     this.leaveRequests = {};
     this.months = [];
-    this.monthLabels = moment.monthsShort();
     this.selectedMonths = [];
     this.selectedPeriod = null;
     this.loading = {
@@ -52,30 +51,6 @@ define([
         backgroundColor: absenceType.color,
         borderColor: absenceType.color
       };
-    };
-
-    /**
-     * Returns day name of the sent date(Monday, Tuesday etc.)
-     *
-     * @param  {string} date
-     * @return {string}
-     */
-    this.getDayName = function (date) {
-      return getDateObjectWithFormat(date).format('ddd');
-    };
-
-    /**
-     * Returns the calendar information for a specific month
-     *
-     * @param  {object} monthObj
-     * @return {array}
-     */
-    this.getMonthData = function (contact, monthObj) {
-      var month = _.find(contact.calendarData, function (month) {
-        return (month.index === monthObj.index) && (month.year === monthObj.year);
-      });
-
-      return month ? month.data : [];
     };
 
     /**
@@ -124,7 +99,6 @@ define([
      */
     this._init = function (intermediateSteps) {
       initListeners.call(this);
-      setDefaultMonths.call(this);
 
       var pContactsPeriods = loadContactsAndAbsencePeriods.call(this);
       var pCalendars = pContactsPeriods.then(loadCalendars.bind(this));
@@ -191,7 +165,7 @@ define([
      * @return {Promise}
      */
     function fillCalendarCellsData () {
-      return $q.all(this.calendars.map(setCalendarProps.bind(this)));
+      return $q.all(calendars.map(setCalendarProps.bind(this)));
     }
 
     /**
@@ -319,8 +293,12 @@ define([
           this.selectedPeriod = _.find(this.absencePeriods, function (period) {
             return !!period.current;
           });
-
+        }.bind(this))
+        .then(function () {
           buildPeriodMonthsList.call(this);
+        }.bind(this))
+        .then(function () {
+          setDefaultMonths.call(this);
         }.bind(this));
     }
 
@@ -346,9 +324,9 @@ define([
       return Calendar.get(this.contacts.map(function (contact) {
         return contact.id;
       }), this.selectedPeriod.id)
-      .then(function (calendars) {
-        this.calendars = calendars;
-      }.bind(this));
+      .then(function (_calendars_) {
+        calendars = _calendars_;
+      });
     }
 
     /**
@@ -494,7 +472,11 @@ define([
      * Chooses the months that are to be selected by default
      */
     function setDefaultMonths () {
-      this.selectedMonths = [this.monthLabels[moment().month()]];
+      var currentMonth = moment().month();
+
+      this.selectedMonths = [_.find(this.months, function (month) {
+        return month.index === currentMonth;
+      }).index];
     }
 
     /**
@@ -537,22 +519,9 @@ define([
      * then hide each loader on the interval of an offset value
      */
     function showMonthLoader () {
-      var monthLoadDelay = 500;
-      var offset = 0;
-
       this.months.forEach(function (month) {
-        // immediately show the current month...
-        month.loading = month.label !== this.selectedMonths[0];
-
-        // delay other months
-        if (month.loading) {
-          $timeout(function () {
-            month.loading = false;
-          }, offset);
-
-          offset += monthLoadDelay;
-        }
-      }.bind(this));
+        month.loading = false;
+      });
     }
   }
 });

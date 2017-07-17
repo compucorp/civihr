@@ -101,7 +101,7 @@
         });
 
         it('selects the current month', function () {
-          expect(controller.selectedMonths).toEqual([moment().format('MMM')]);
+          expect(controller.selectedMonths).toEqual([moment().month()]);
         });
 
         it('loads the public holidays', function () {
@@ -560,33 +560,6 @@
 
           it('returns the title as it is', function () {
             expect(label).toBe(period.title);
-          });
-        });
-      });
-
-      describe('getDayName()', function () {
-        var anySunday;
-
-        beforeEach(function () {
-          anySunday = '2017/02/05';
-        });
-
-        it('returns day name of a date', function () {
-          expect(controller.getDayName(anySunday)).toBe('Sun');
-        });
-      });
-
-      describe('getMonthData()', function () {
-        var returnValue;
-        var januaryMonth = 0;
-
-        beforeEach(function () {
-          returnValue = controller.getMonthData(januaryMonth);
-        });
-
-        it('returns the date which are from the month of january', function () {
-          _.each(returnValue, function (dateObject) {
-            expect(moment(dateObject.date).month()).toBe(januaryMonth);
           });
         });
       });
