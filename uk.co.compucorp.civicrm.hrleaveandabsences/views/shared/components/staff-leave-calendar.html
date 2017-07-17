@@ -4,13 +4,12 @@
       <div class="panel-heading">
         <div class="row">
           <div class="col-sm-8">
-            <ui-select multiple
-                       ng-model="calendar.selectedMonths">
+            <ui-select multiple ng-model="calendar.selectedMonths">
               <ui-select-match placeholder="Select Months">
-                <span ng-bind="$item"></span>
+                <span>{{$item.name.short}}</span>
               </ui-select-match>
-              <ui-select-choices repeat="month in (calendar.monthLabels | filter: $select.search)">
-                <span ng-bind="month"></span>
+              <ui-select-choices repeat="month.index as month in (calendar.months | filter: $select.search)">
+                <span>{{month.name.short}}</span>
               </ui-select-choices>
             </ui-select>
           </div>
@@ -27,15 +26,13 @@
         </div>
       </div>
     </div>
-
     <crm-loading show="!calendar.loading.calendar">
-    <section class="panel panel-default"
-             ng-repeat="month in calendar.months track by $index">
-      <ng-include
-        ng-hide="(calendar.selectedMonths.length !== 0 && calendar.selectedMonths.indexOf(calendar.monthLabels[month.month]) === -1)"
-        src="$root.sharedPathTpl + 'components/staff-leave-calendar-month.html'"></ng-include>
-    </section>
-
+      <section class="panel panel-default" ng-repeat="month in calendar.months track by $index">
+        <ng-include
+          ng-hide="(calendar.selectedMonths.length !== 0 && calendar.selectedMonths.indexOf(month.index) === -1)"
+          src="$root.sharedPathTpl + 'components/staff-leave-calendar-month.html'"></ng-include>
+      </section>
+    </crm-loading>
     <section class="panel panel-default" ng-class="{ 'is-collapsed': calendar.legendCollapsed }">
       <header class="panel-heading panel-heading-plain">
         <h2 class="panel-title" role="button" ng-click="calendar.legendCollapsed = !calendar.legendCollapsed">
@@ -48,7 +45,6 @@
       </header>
       <div class="panel-collapse" uib-collapse="calendar.legendCollapsed">
         <div class="panel-body chr_leave-calendar__legend" ng-show="!calendar.legendCollapsed">
-
           <div class="row" ng-repeat-start="absenceType in calendar.absenceTypes">
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
@@ -113,7 +109,6 @@
               </div>
             </div>
           </div>
-
           <div class="row">
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">

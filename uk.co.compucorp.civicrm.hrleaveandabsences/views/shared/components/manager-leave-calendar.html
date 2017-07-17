@@ -3,8 +3,7 @@
     <div class="panel panel-default">
       <div class="panel-heading chr_manager_calendar__header">
         <div>
-          <ui-select ng-change="calendar.refresh()"
-                     ng-model="calendar.filters.contact">
+          <ui-select ng-change="calendar.refresh()" ng-model="calendar.filters.contact">
             <ui-select-match placeholder="Staff Member" allow-clear>
               <span ng-bind="$select.selected.display_name"></span>
             </ui-select-match>
@@ -52,21 +51,20 @@
         <div class="checkbox">
           <label>
             <input type="checkbox"
-                   ng-change="calendar.refresh()"
-                   ng-model="calendar.filters.contacts_with_leaves"> Show only those who are taking leave
+              ng-change="calendar.refresh()"
+              ng-model="calendar.filters.contacts_with_leaves"> Show only those who are taking leave
           </label>
         </div>
       </div>
       <div class="panel-subheading">
         <div class="row">
           <div class="col-sm-8">
-            <ui-select multiple
-                       ng-model="calendar.selectedMonths">
+            <ui-select multiple ng-model="calendar.selectedMonths">
               <ui-select-match placeholder="Select Months">
-                <span ng-bind="$item"></span>
+                <span>{{$item.name.short}}</span>
               </ui-select-match>
-              <ui-select-choices repeat="month in (calendar.monthLabels | filter: $select.search)">
-                <span ng-bind="month"></span>
+              <ui-select-choices repeat="month.index as month in (calendar.months | filter: $select.search)">
+                <span>{{month.name.short}}</span>
               </ui-select-choices>
             </ui-select>
           </div>
@@ -83,12 +81,10 @@
         </div>
       </div>
     </div>
-
     <crm-loading show="!calendar.loading.calendar">
-      <section class="panel panel-default"
-               ng-repeat="month in calendar.months track by $index">
+      <section class="panel panel-default" ng-repeat="month in calendar.months track by $index">
         <ng-include
-          ng-hide="(calendar.selectedMonths.length !== 0 && calendar.selectedMonths.indexOf(calendar.monthLabels[month.month]) === -1)"
+          ng-hide="(calendar.selectedMonths.length !== 0 && calendar.selectedMonths.indexOf(month.index) === -1)"
           src="$root.sharedPathTpl + 'components/manager-leave-calendar-month.html'"></ng-include>
       </section>
     </crm-loading>
@@ -104,7 +100,6 @@
       </header>
       <div class="panel-collapse" uib-collapse="calendar.legendCollapsed">
         <div class="panel-body chr_leave-calendar__legend" ng-show="!calendar.legendCollapsed">
-
           <div class="row" ng-repeat-start="absenceType in calendar.absenceTypes">
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">
@@ -169,7 +164,6 @@
               </div>
             </div>
           </div>
-
           <div class="row">
             <div class="col-sm-3">
               <div class="chr_leave-calendar__legend__entry">

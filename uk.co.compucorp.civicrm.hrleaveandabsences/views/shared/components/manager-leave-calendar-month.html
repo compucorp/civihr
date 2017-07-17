@@ -1,55 +1,53 @@
 <header class="panel-heading chr_leave-calendar__month-header">
-  <h2 class="panel-title">{{calendar.monthLabels[month.month] + " " + month.year}}</h2>
+  <h2 class="panel-title">{{month.name.long}} {{month.year}}</h2>
 </header>
-<crm-loading show="!calendar.months[$index].loading">
-</crm-loading>
-<div class="chr_leave-calendar__month-body" ng-if="!calendar.months[$index].loading">
-  <div class="table-responsive">
-    <div
-      class="text-center"
-      ng-show="calendar.filterContacts().length === 0">
-      Sorry No Contacts
+<crm-loading show="!month.loading">
+  <div class="chr_leave-calendar__month-body">
+    <div class="table-responsive">
+      <div class="text-center" ng-show="calendar.filterContacts().length === 0">
+        Sorry No Contacts
+      </div>
+      <table
+        ng-hide="calendar.filterContacts().length === 0"
+        class="table table-bordered chr_leave-calendar">
+        <thead>
+          <tr class="chr_leave-calendar__days">
+            <th class="chr_leave-calendar__name">Employee Name</th>
+            <!--send any contact id to get the days for a month-->
+            <th ng-repeat="day in month.days track by day.date">
+              {{day.name}}
+              <div>{{day.index}}</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="chr_leave-calendar__items" ng-repeat="contact in calendar.filterContacts() track by contact.id">
+            <td class="chr_leave-calendar__name">{{contact.display_name}}</td>
+            <td ng-repeat="day in month.days track by day.date">
+              <div class="chr_leave-calendar__item"
+                ng-style="day.contactsData[contact.id].styles"
+                ng-class="{
+                  'chr_leave-calendar__item--type--weekend': day.contactsData[contact.id].isWeekend,
+                  'chr_leave-calendar__item--type--non-working': day.contactsData[contact.id].isNonWorkingDay,
+                  'chr_leave-calendar__item--type--public-holiday': day.contactsData[contact.id].isPublicHoliday,
+                  'chr_leave-calendar__item--requested': day.contactsData[contact.id].isRequested,
+                  'chr_leave-calendar__item--alt': day.contactsData[contact.id].isAccruedTOIL,
+                  'chr_leave-calendar__item--toil-requested': day.contactsData[contact.id].isRequested && day.contactsData[contact.id].isAccruedTOIL
+                }">
+                <span ng-if="day.contactsData[contact.id].isAM">AM</span>
+                <span ng-if="day.contactsData[contact.id].isPM">PM</span>
+                <span ng-if="day.contactsData[contact.id].isAccruedTOIL">AT</span>
+                <a ng-if="day.contactsData[contact.id].leaveRequest"
+                  contact-id="contact.id"
+                  leave-request-popup
+                  leave-request="day.contactsData[contact.id].leaveRequest"
+                  title="Click to open this leave request">
+                </a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <table
-      ng-hide="calendar.filterContacts().length === 0"
-      class="table table-bordered chr_leave-calendar">
-      <thead>
-      <tr class="chr_leave-calendar__days">
-        <th class="chr_leave-calendar__name">Employee Name</th>
-        <!--send any contact id to get the days for a month-->
-        <th ng-repeat="day in calendar.getMonthData(calendar.filterContacts()[0], month) track by day.date">
-          {{calendar.getDayName(day.date)}}
-          <div>{{$index + 1}}</div>
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr class="chr_leave-calendar__items" ng-repeat="contact in calendar.filterContacts() track by contact.id">
-        <td class="chr_leave-calendar__name">{{contact.display_name}}</td>
-        <td ng-repeat="day in calendar.getMonthData(contact, month) track by day.date">
-          <div class="chr_leave-calendar__item"
-               ng-style="day.UI.styles"
-               ng-class="{
-                     'chr_leave-calendar__item--type--weekend': day.UI.isWeekend,
-                     'chr_leave-calendar__item--type--non-working': day.UI.isNonWorkingDay,
-                     'chr_leave-calendar__item--type--public-holiday': day.UI.isPublicHoliday,
-                     'chr_leave-calendar__item--requested': day.UI.isRequested,
-                     'chr_leave-calendar__item--alt': day.UI.isAccruedTOIL,
-                     'chr_leave-calendar__item--toil-requested': day.UI.isRequested && day.UI.isAccruedTOIL
-                     }">
-            <span ng-if="day.UI.isAM">AM</span>
-            <span ng-if="day.UI.isPM">PM</span>
-            <span ng-if="day.UI.isAccruedTOIL">AT</span>
-            <a ng-if="day.leaveRequest"
-               contact-id="calendar.contactId"
-               leave-request-popup
-               leave-request="day.leaveRequest"
-               title="Click to open this leave request">
-            </a>
-          </div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
   </div>
-</div>
+</crm-loading>
