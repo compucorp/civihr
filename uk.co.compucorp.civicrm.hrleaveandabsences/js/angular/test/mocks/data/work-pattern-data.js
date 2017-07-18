@@ -17,24 +17,28 @@ define([
           'contact_id': contact.id,
           'calendar': [
             {
-              'date': '2016-01-05',
-              'type': dayTypeByName('working_day').value
-            },
-            {
-              'date': '2016-01-06',
-              'type': dayTypeByName('working_day').value
-            },
-            {
-              'date': '2016-01-07',
-              'type': dayTypeByName('working_day').value
-            },
-            {
               'date': '2016-02-02',
-              'type': dayTypeByName('non_working_day').value
+              'type': dayTypeByName('working_day').value
             },
             {
               'date': '2016-02-03',
+              'type': dayTypeByName('working_day').value
+            },
+            {
+              'date': '2016-02-04',
+              'type': dayTypeByName('working_day').value
+            },
+            {
+              'date': '2016-02-05',
               'type': dayTypeByName('non_working_day').value
+            },
+            {
+              'date': '2016-02-06',
+              'type': dayTypeByName('weekend').value
+            },
+            {
+              'date': '2016-02-07',
+              'type': dayTypeByName('weekend').value
             },
             {
               'date': '2016-03-03',
