@@ -29,7 +29,7 @@ define([
     actionMatrix[sharedSettings.statusNames.cancelled] = ['view', 'delete'];
     actionMatrix[sharedSettings.statusNames.rejected] = ['view', 'delete'];
 
-    var requestSort = 'from_date DESC';
+    var requestSort = 'from_date ASC';
     var role = 'staff';
 
     var vm = Object.create(this);
@@ -404,6 +404,7 @@ define([
         })
         .then(function (results) {
           vm.sections.expired.data = results.expiredBalanceChangesFlatten.concat(results.expiredTOILS);
+          vm.sections.expired.data = _.sortBy(vm.sections.expired.data, 'expiry_date');
         });
     }
 

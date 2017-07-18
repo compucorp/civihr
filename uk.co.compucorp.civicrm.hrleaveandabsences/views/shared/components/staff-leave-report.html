@@ -373,7 +373,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr ng-repeat="request in report.sections.pending.data">
+                        <tr ng-repeat="request in report.sections.pending.data track by $index">
                           <td class="chr_leave-report__label">
                             {{report.absenceTypes[request.type_id].title}}
                             <span ng-if="request.toil_expiry_date">
