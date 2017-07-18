@@ -21,7 +21,7 @@
     function controller ($log, $q, AbsenceType, AbsencePeriod, Entitlement, Contact) {
       $log.debug('Component: annual-entitlements');
 
-      var vm = Object.create(this);
+      var vm = this;
       var contacts = [];
       var allEntitlements = [];
 
@@ -49,7 +49,7 @@
       /**
        * Shows a comment to the entitlement
        *
-       * @param {object} comment
+       * @param {Object} comment
        */
       vm.showComment = function (comment) {
         /*
@@ -60,7 +60,7 @@
         var text = comment.message +
           '<br/><br/><strong>Last updated:' +
           '<br/>By: ' + comment.author_name +
-          '<br/>Date: ' + moment(comment.date).format('DD/M/YYYY HH.mm') +
+          '<br/>Date: ' + moment.utc(comment.date).local().format('DD/M/YYYY HH:mm') +
           '</strong>';
 
         CRM.alert(text, 'Calculation comment:', 'error');
@@ -118,7 +118,7 @@
       /**
        * Processes entitlements from data and sets them to the controller
        *
-       * @param {object} absencePeriods
+       * @param {Object} absencePeriods
        */
       function setAbsencePeriodsProps (absencePeriods) {
         // Get all periods as per entitlements
@@ -161,7 +161,7 @@
         *
         * The given contact ID is added to the URL, as the cid parameter.
         *
-        * @param {int} contactId
+        * @param {number} contactId
         * @return {string}
         */
       function getEditEntitlementsPageURL (contactId) {
