@@ -36,8 +36,19 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    */
   private $defaultWorkPattern;
 
-  public function __construct($contactID, AbsencePeriod $absencePeriod, JobContractService $jobContractService) {
+  /**
+   * CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar constructor.
+   *
+   * @param int $contactID
+   * @param string $startDate
+   * @param string $endDate
+   * @param \CRM_HRLeaveAndAbsences_Service_JobContract $jobContractService
+   */
+  public function __construct($contactID, $startDate, $endDate, JobContractService $jobContractService) {
     $this->contactID = $contactID;
+    $absencePeriod = new AbsencePeriod();
+    $absencePeriod->start_date = CRM_Utils_Date::processDate($startDate, null, false, 'Y-m-d');
+    $absencePeriod->end_date = CRM_Utils_Date::processDate($endDate, null, false, 'Y-m-d');
     $this->absencePeriod = $absencePeriod;
     $this->jobContractService = $jobContractService;
   }

@@ -62,10 +62,17 @@ function _civicrm_api3_work_pattern_getcalendar_spec(&$spec) {
     'api.required' => 1
   ];
 
-  $spec['period_id'] = [
-    'name' => 'period_id',
-    'title' => 'Absence Period ID',
-    'type' => CRM_Utils_Type::T_INT,
+  $spec['start_date'] = [
+    'name' => 'start_date',
+    'title' => 'Start date of the period',
+    'type' => CRM_Utils_Type::T_DATE,
+    'api.required' => 1
+  ];
+
+  $spec['end_date'] = [
+    'name' => 'end_date',
+    'title' => 'End date of the period',
+    'type' => CRM_Utils_Type::T_DATE,
     'api.required' => 1
   ];
 }
@@ -73,10 +80,10 @@ function _civicrm_api3_work_pattern_getcalendar_spec(&$spec) {
 /**
  * WorkPattern.getCalendar API
  *
- * This API endpoint returns a list of dates for the given Absence Period. The
- * returned dates are only those within the contracts of the contact with the
- * given contact_id. For each date, we use the work pattern(s) assign to the
- * contact to check if it's a working day, non working day or weekend.
+ * This API endpoint returns a list of dates for the given start and end date
+ * Period. The returned dates are only those within the contracts of the contact
+ * with the given contact_id. For each date, we use the work pattern(s) assign to
+ * the contact to check if it's a working day, non working day or weekend.
  *
  * @param array $params
  *
@@ -85,13 +92,13 @@ function _civicrm_api3_work_pattern_getcalendar_spec(&$spec) {
 function civicrm_api3_work_pattern_getcalendar($params) {
   $contactIDs = _civicrm_api3_work_pattern_get_contact_id_from_params($params);
   $jobContractService = new CRM_HRLeaveAndAbsences_Service_JobContract();
-  $absencePeriod = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::findById($params['period_id']);
 
   $calendars = [];
   foreach($contactIDs as $contactID) {
     $calendar = new CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar(
       $contactID,
-      $absencePeriod,
+      $params['start_date'],
+      $params['end_date'],
       $jobContractService
     );
 
