@@ -509,35 +509,35 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     $expectedCalendar = [
       [
         'date' => '2016-01-01', // friday
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2016-01-02', // saturday
-        'type' => $workDayTypes['weekend']
+        'type' => $workDayTypes['weekend']['value']
       ],
       [
         'date' => '2016-01-03', // sunday
-        'type' => $workDayTypes['weekend']
+        'type' => $workDayTypes['weekend']['value']
       ],
       [
         'date' => '2016-01-04', // monday
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2016-01-05', // tuesday
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2016-01-06', // wednesday
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2016-01-07', // thursday
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2016-01-08', // friday
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
     ];
 
@@ -556,63 +556,63 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     $expectedCalendar = [
       [
         'date' => '2016-01-01', // friday, working day on first week
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2016-01-02', // saturday
-        'type' => $workDayTypes['weekend']
+        'type' => $workDayTypes['weekend']['value']
       ],
       [
         'date' => '2016-01-03', // sunday
-        'type' => $workDayTypes['weekend']
+        'type' => $workDayTypes['weekend']['value']
       ],
       [
         'date' => '2016-01-04', // monday, non working day on second week
-        'type' => $workDayTypes['non_working_day']
+        'type' => $workDayTypes['non_working_day']['value']
       ],
       [
         'date' => '2016-01-05', // tuesday
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2016-01-06', // wednesday, non working day on second week
-        'type' => $workDayTypes['non_working_day']
+        'type' => $workDayTypes['non_working_day']['value']
       ],
       [
         'date' => '2016-01-07', // thursday
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2016-01-08', // friday, non working day on second week
-        'type' => $workDayTypes['non_working_day']
+        'type' => $workDayTypes['non_working_day']['value']
       ],
       [
         'date' => '2016-01-09', // saturday
-        'type' => $workDayTypes['weekend']
+        'type' => $workDayTypes['weekend']['value']
       ],
       [
         'date' => '2016-01-10', // sunday
-        'type' => $workDayTypes['weekend']
+        'type' => $workDayTypes['weekend']['value']
       ],
       [
         'date' => '2016-01-11', // monday, working day on first week (looped back to the first week)
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2016-01-12', // tuesday, non working day on first week
-        'type' => $workDayTypes['non_working_day']
+        'type' => $workDayTypes['non_working_day']['value']
       ],
       [
         'date' => '2016-01-13', // wednesday, working day on first week
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2016-01-14', // thursday, non working day on first week
-        'type' => $workDayTypes['non_working_day']
+        'type' => $workDayTypes['non_working_day']['value']
       ],
       [
         'date' => '2016-01-15', // friday, working day on first week
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
     ];
 

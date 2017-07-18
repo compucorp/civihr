@@ -17,9 +17,9 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, period_id
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, start_date, end_date
    */
-  public function testGetCalendarRequiresContactIdAndPeriodID() {
+  public function testGetCalendarRequiresContactIdAndStartAndEndDates() {
     civicrm_api3('WorkPattern', 'getCalendar');
   }
 
@@ -27,24 +27,24 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
    * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id
    */
-  public function testGetCalendarRequiresContactIdIfPeriodIDIsNotEmpty() {
-    civicrm_api3('WorkPattern', 'getCalendar', ['period_id' => 1]);
+  public function testGetCalendarRequiresContactIdIfStartAndEndDatesAreNotEmpty() {
+    civicrm_api3('WorkPattern', 'getCalendar', ['start_date' => '2016-06-03', 'end_date' => '2016-06-05']);
   }
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: period_id
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: start_date
    */
-  public function testGetCalendarRequiresPeriodIdIfContactIDIsNotEmpty() {
-    civicrm_api3('WorkPattern', 'getCalendar', ['contact_id' => 1]);
+  public function testGetCalendarRequiresStartDateIfContactIDAndEndDateAreNotEmpty() {
+    civicrm_api3('WorkPattern', 'getCalendar', ['contact_id' => 1, 'end_date' => '2016-06-03']);
   }
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Unable to find a CRM_HRLeaveAndAbsences_BAO_AbsencePeriod with id 99989389121.
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: end_date
    */
-  public function testGetCalendarThrowsAnErrorIfThePeriodIDIsNotForAnExistentAbsencePeriod() {
-    civicrm_api3('WorkPattern', 'getCalendar', ['contact_id' => 1, 'period_id' => 99989389121]);
+  public function testGetCalendarRequiresEndDateIfContactIDAndStartDateAreNotEmpty() {
+    civicrm_api3('WorkPattern', 'getCalendar', ['contact_id' => 1, 'start_date' => '2016-06-03']);
   }
 
   /**
@@ -56,7 +56,8 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
   public function testGetCalendarContactIDOnlyAllowTheINOperator($operator) {
     civicrm_api3('WorkPattern', 'getCalendar', [
       'contact_id' => [$operator => [1]],
-      'period_id' => 1
+      'start_date' => '2016-06-03',
+      'end_date' => '2016-06-05'
     ]);
   }
 
@@ -66,12 +67,6 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
   public function testGetCalendarCanReturnCalendarsForMultipleContacts() {
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
-
-    // 15 days absence period
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
-      'end_date'   => CRM_Utils_Date::processDate('2015-01-08'),
-    ]);
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
     $workPattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
@@ -100,8 +95,14 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
 
     $workDayTypes = $this->getWorkDayTypeOptionsArray();
 
+
+    // 15 days interval
+    $startDate = '2015-01-05';
+    $endDate = '2015-01-08';
+
     $calendars = civicrm_api3('WorkPattern', 'getCalendar', [
-      'period_id' => $absencePeriod->id,
+      'start_date' => $startDate,
+      'end_date' => $endDate,
       'contact_id' => ['IN' => [$contact1['id'], $contact2['id']]]
     ])['values'];
 
@@ -118,38 +119,38 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
     $expectedContact1Calendar = [
       [
         'date' => '2015-01-05',
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2015-01-06',
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2015-01-07',
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2015-01-08',
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
     ];
 
     $expectedContact2Calendar = [
       [
         'date' => '2015-01-05',
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2015-01-06',
-        'type' => $workDayTypes['non_working_day']
+        'type' => $workDayTypes['non_working_day']['value']
       ],
       [
         'date' => '2015-01-07',
-        'type' => $workDayTypes['working_day']
+        'type' => $workDayTypes['working_day']['value']
       ],
       [
         'date' => '2015-01-08',
-        'type' => $workDayTypes['non_working_day']
+        'type' => $workDayTypes['non_working_day']['value']
       ],
     ];
 
