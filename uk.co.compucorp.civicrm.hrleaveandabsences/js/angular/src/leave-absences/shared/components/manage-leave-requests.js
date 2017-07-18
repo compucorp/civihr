@@ -25,6 +25,7 @@ define([
 
     var vm = this;
     var actionMatrix = {};
+    var filterByAll = { name: 'all', label: 'All' };
 
     actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['respond', 'cancel', 'approve', 'reject'];
     actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['edit', 'cancel'];
@@ -37,10 +38,7 @@ define([
     vm.filteredUsers = [];
     vm.isFilterExpanded = false;
     vm.isAdmin = false; // this property is updated on controller initialization
-    vm.leaveRequestStatuses = [{
-      name: 'all',
-      label: 'All'
-    }];
+    vm.leaveRequestStatuses = [filterByAll];
     vm.filters = {
       contact: {
         department: null,
@@ -132,7 +130,10 @@ define([
         classConfirm: 'btn-' + map[action].btnClass,
         msg: map[action].msg,
         onConfirm: function () {
-          return leaveRequest[action]();
+          return leaveRequest[action]()
+            .then(function () {
+              vm.refresh();
+            });
         }
       });
     };
@@ -379,6 +380,19 @@ define([
           ]);
         })
         .then(function () {
+          /*
+           * If the status filter is not set to "All" and
+           * there are no requests loaded, then
+           * the status filter is set to "All" and the controller is refreshed
+           */
+          if (vm.filters.leaveRequest.leaveStatus !== filterByAll && vm.leaveRequests.table.list.length === 0) {
+            vm.filters.leaveRequest.leaveStatus = filterByAll;
+
+            vm.refresh();
+
+            return;
+          }
+
           vm.loading.content = false;
         });
     }
