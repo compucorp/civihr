@@ -56,16 +56,6 @@ define([
     };
 
     /**
-     * Decides whether sent date is a public holiday
-     *
-     * @param  {string} date
-     * @return {boolean}
-     */
-    this.isPublicHoliday = function (date) {
-      return !!publicHolidays[getDateObjectWithFormat(date).valueOf()];
-    };
-
-    /**
      * Labels the given period according to whether it's current or not
      *
      * @param  {AbsencePeriodInstance} period
@@ -285,6 +275,16 @@ define([
       var status = leaveRequestStatuses[leaveRequest.status_id];
 
       return status.name === sharedSettings.statusNames.awaitingApproval;
+    }
+
+    /**
+     * Decides whether sent date is a public holiday
+     *
+     * @param  {string} date
+     * @return {boolean}
+     */
+    function isPublicHoliday (date) {
+      return !!publicHolidays[getDateObjectWithFormat(date).valueOf()];
     }
 
     /**
@@ -524,7 +524,7 @@ define([
             .then(function (results) {
               contactData.isWeekend = results[0];
               contactData.isNonWorkingDay = results[1];
-              contactData.isPublicHoliday = this.isPublicHoliday(dayObj.date);
+              contactData.isPublicHoliday = isPublicHoliday.call(this, dayObj.date);
             }.bind(this))
             .then(function () {
               // fetch leave request, first search by contact_id then by date

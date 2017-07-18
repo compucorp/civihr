@@ -26,7 +26,7 @@
 
     describe('sharedLeaveCalendar', function () {
       var $componentController, $log, $q, $rootScope, controller, $provide,
-        AbsencePeriod, LeaveRequest, OptionGroup;
+        AbsencePeriod, LeaveRequest, OptionGroup, PublicHoliday;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', 'common.mocks', function (_$provide_) {
         $provide = _$provide_;
@@ -54,17 +54,19 @@
       }));
 
       beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-        _AbsencePeriod_, _LeaveRequest_) {
+        _AbsencePeriod_, _LeaveRequest_, _PublicHoliday_) {
         $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         AbsencePeriod = _AbsencePeriod_;
         LeaveRequest = _LeaveRequest_;
+        PublicHoliday = _PublicHoliday_;
 
         spyOn($log, 'debug');
-        spyOn(LeaveRequest, 'all').and.callThrough();
         spyOn(AbsencePeriod, 'all');
+        spyOn(LeaveRequest, 'all').and.callThrough();
+        spyOn(PublicHoliday, 'all').and.callThrough();
 
         // Set 2016 as current period, because Calendar loads data only for the current period initially,
         // and MockedData has 2016 dates
@@ -92,16 +94,14 @@
       });
 
       describe('on init', function () {
-        var AbsenceType, Calendar, PublicHoliday;
+        var AbsenceType, Calendar;
 
-        beforeEach(inject(function (_AbsenceType_, _Calendar_, _PublicHoliday_) {
+        beforeEach(inject(function (_AbsenceType_, _Calendar_) {
           AbsenceType = _AbsenceType_;
           Calendar = _Calendar_;
-          PublicHoliday = _PublicHoliday_;
 
           spyOn(AbsenceType, 'all').and.callThrough();
           spyOn(Calendar, 'get').and.callThrough();
-          spyOn(PublicHoliday, 'all').and.callThrough();
 
           compileComponent();
         }));
@@ -399,11 +399,21 @@
 
           describe('when the day is a public holiday for a contact', function () {
             beforeEach(function () {
-              // set this so that every date is marked as public holiday
-              spyOn(controller, 'isPublicHoliday').and.returnValue(true);
-              controller.refresh();
-              $rootScope.$digest();
-              // pick any date
+              PublicHoliday.all.and.callFake(function () {
+                var publicHolidayToBe = getDayWithType('non_working_day');
+                var publicHolidays = _.clone(publicHolidayData.all());
+
+                publicHolidays.values.push({
+                  id: '123456789',
+                  title: 'Fake Holiday',
+                  date: publicHolidayToBe.date,
+                  is_active: true
+                });
+
+                return $q.resolve(publicHolidays.values);
+              });
+
+              compileComponent();
               contactData = getDayWithType('non_working_day', true);
             });
 
@@ -569,18 +579,6 @@
 
             expect(LeaveRequest.all.calls.count()).toBe(endDate.diff(startDate, 'months') + 1);
           });
-        });
-      });
-
-      describe('isPublicHoliday()', function () {
-        var date;
-
-        beforeEach(function () {
-          date = publicHolidayData.all().values[0].date;
-        });
-
-        it('checks whether date is a public holiday', function () {
-          expect(controller.isPublicHoliday(date)).toBe(true);
         });
       });
 
