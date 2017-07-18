@@ -79,8 +79,6 @@ define([
      * Refreshes all leave request and calendar data
      */
     this.refresh = function () {
-      this.loading.calendar = true;
-
       loadContacts.call(this)
         .then(function () {
           return $q.all([
@@ -88,10 +86,7 @@ define([
             loadLeaveRequests.call(this)
           ]);
         }.bind(this))
-        .then(fillCalendarCellsData.bind(this))
-        .then(function () {
-          this.loading.calendar = false;
-        }.bind(this));
+        .then(setCalendarProps.bind(this));
     };
 
     /**
@@ -115,7 +110,7 @@ define([
         pCalendars,
         pLeaveRequests
       ])
-      .then(fillCalendarCellsData.bind(this))
+      .then(setCalendarProps.bind(this))
       .then(function () {
         this.loading.calendar = false;
       }.bind(this))
@@ -158,16 +153,7 @@ define([
         }
       );
 
-      fillCalendarCellsData.call(this);
-    }
-
-    /**
-     * Fills the data of each "cell" of the calendar
-     *
-     * @return {Promise}
-     */
-    function fillCalendarCellsData () {
-      return $q.all(calendars.map(setCalendarProps.bind(this)));
+      setCalendarProps.call(this);
     }
 
     /**
@@ -396,10 +382,7 @@ define([
         }, null, null, null, false)
         .then(function (leaveRequestsData) {
           indexLeaveRequests.call(this, leaveRequestsData.list);
-        }.bind(this))
-        .then(function () {
-          month.loading = false;
-        });
+        }.bind(this));
       }.bind(this)));
     }
 
@@ -510,34 +493,46 @@ define([
      * Sets UI related properties(isWeekend, isNonWorkingDay etc)
      * to the calendar data
      */
-    function setCalendarProps (calendar) {
-      return $q.all(_.map(calendar.days, function (day) {
-        var dayMoment = moment(day.date);
-        var dayObj = this.months[dayMoment.month()].days[dayMoment.date() - 1];
-        var contactData = dayObj.contactsData[calendar.contact_id] = {};
+    function setCalendarProps () {
+      // TODO: Improve once we have calendars by month
+      return $q.all(this.months.map(function (month) {
+        return $q.all(month.days.map(function (day) {
+          return $q.all(calendars.map(function (calendar) {
+            var contactData = day.contactsData[calendar.contact_id] = {};
+            var dayObj = _.find(calendar.days, function (calendarDay) {
+              return calendarDay.date === day.date;
+            });
 
-        return $q.all([
-          calendar.isWeekend(getDateObjectWithFormat(day.date)),
-          calendar.isNonWorkingDay(getDateObjectWithFormat(day.date))
-        ])
-        .then(function (results) {
-          contactData.isWeekend = results[0];
-          contactData.isNonWorkingDay = results[1];
-          contactData.isPublicHoliday = this.isPublicHoliday(day.date);
-        }.bind(this))
+            // TODO: Improve once we have calendars by month
+            if (!dayObj) { return; }
+
+            return $q.all([
+              calendar.isWeekend(getDateObjectWithFormat(dayObj.date)),
+              calendar.isNonWorkingDay(getDateObjectWithFormat(dayObj.date))
+            ])
+            .then(function (results) {
+              contactData.isWeekend = results[0];
+              contactData.isNonWorkingDay = results[1];
+              contactData.isPublicHoliday = this.isPublicHoliday(dayObj.date);
+            }.bind(this))
+            .then(function () {
+              // fetch leave request, first search by contact_id then by date
+              var leaveRequest = this.leaveRequests[calendar.contact_id] ? this.leaveRequests[calendar.contact_id][dayObj.date] : null;
+
+              if (leaveRequest) {
+                contactData.leaveRequest = leaveRequest;
+                contactData.styles = getStyles.call(this, leaveRequest);
+                contactData.isAccruedTOIL = leaveRequest.balance_change > 0;
+                contactData.isRequested = isPendingApproval(leaveRequest);
+                contactData.isAM = isDayType('half_day_am', leaveRequest, dayObj.date);
+                contactData.isPM = isDayType('half_day_pm', leaveRequest, dayObj.date);
+              }
+            }.bind(this));
+          }.bind(this)));
+        }.bind(this)))
         .then(function () {
-          // fetch leave request, first search by contact_id then by date
-          var leaveRequest = this.leaveRequests[calendar.contact_id] ? this.leaveRequests[calendar.contact_id][day.date] : null;
-
-          if (leaveRequest) {
-            contactData.leaveRequest = leaveRequest;
-            contactData.styles = getStyles.call(this, leaveRequest);
-            contactData.isAccruedTOIL = leaveRequest.balance_change > 0;
-            contactData.isRequested = isPendingApproval(leaveRequest);
-            contactData.isAM = isDayType('half_day_am', leaveRequest, day.date);
-            contactData.isPM = isDayType('half_day_pm', leaveRequest, day.date);
-          }
-        }.bind(this));
+          month.loading = false;
+        });
       }.bind(this)));
     }
   }

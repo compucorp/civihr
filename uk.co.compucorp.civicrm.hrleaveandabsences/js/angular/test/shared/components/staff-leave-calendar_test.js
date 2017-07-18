@@ -605,20 +605,12 @@
       });
 
       describe('refresh()', function () {
-        it('marks the calendar as loading', function () {
+        beforeEach(function () {
           controller.refresh();
-          expect(controller.loading.calendar).toBe(true);
+          $rootScope.$digest();
         });
 
-        describe('after data load is complete', function () {
-          beforeEach(function () {
-            $rootScope.$digest();
-          });
-
-          it('takes the calendar out of the loading phase', function () {
-            expect(controller.loading.calendar).toBe(false);
-          });
-        });
+        // TODO
       });
 
       function amend2016Period (params) {
