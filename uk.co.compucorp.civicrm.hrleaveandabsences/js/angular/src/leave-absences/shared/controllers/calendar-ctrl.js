@@ -27,7 +27,7 @@ define([
     this.legendCollapsed = true;
     this.leaveRequests = {};
     this.months = [];
-    this.selectedMonths = [];
+    this.selectedMonths = null;
     this.selectedPeriod = null;
     this.loading = {
       calendar: true,
@@ -212,9 +212,10 @@ define([
      * and date as second level
      *
      * @param  {Array} leaveRequests - leave requests array from API
+     * @return {Promise}
      */
     function indexLeaveRequests (leaveRequests) {
-      this.leaveRequests = {};
+      var deferred = $q.defer();
 
       _.each(leaveRequests, function (leaveRequest) {
         this.leaveRequests[leaveRequest.contact_id] = this.leaveRequests[leaveRequest.contact_id] || {};
@@ -223,6 +224,10 @@ define([
           this.leaveRequests[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
         }.bind(this));
       }.bind(this));
+
+      deferred.resolve();
+
+      return deferred.promise;
     }
 
     /**
@@ -242,8 +247,8 @@ define([
       $rootScope.$new().$watch(function () {
         return this.selectedMonths;
       }.bind(this), function (newValue, oldValue) {
-        if (!angular.equals(newValue, oldValue)) {
-          loadLeaveRequests.call(this);
+        if (oldValue !== null && !angular.equals(newValue, oldValue)) {
+          loadLeaveRequests.call(this).then(setCalendarProps.bind(this));
         }
       }.bind(this));
     }
@@ -381,7 +386,7 @@ define([
           })}
         }, null, null, null, false)
         .then(function (leaveRequestsData) {
-          indexLeaveRequests.call(this, leaveRequestsData.list);
+          return indexLeaveRequests.call(this, leaveRequestsData.list);
         }.bind(this));
       }.bind(this)));
     }
