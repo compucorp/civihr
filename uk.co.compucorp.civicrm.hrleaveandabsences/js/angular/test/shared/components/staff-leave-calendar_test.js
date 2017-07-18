@@ -73,6 +73,16 @@
         compileComponent();
       }));
 
+      // The mocked "work pattern calendar" and "leave request" data is made for
+      // the month of February, so we pretend we are in February
+      beforeAll(function () {
+        jasmine.clock().mockDate(new Date(2016, 1, 1));
+      });
+
+      afterAll(function () {
+        jasmine.clock().uninstall();
+      });
+
       it('is initialized', function () {
         expect($log.debug).toHaveBeenCalled();
       });

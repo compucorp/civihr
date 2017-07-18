@@ -500,7 +500,13 @@ define([
      */
     function setCalendarProps () {
       // TODO: Improve once we have calendars by month
-      return $q.all(this.months.map(function (month) {
+      var monthsToLoad = !this.selectedMonths.length
+        ? this.months
+        : this.months.filter(function (month) {
+          return _.includes(this.selectedMonths, month.index);
+        }.bind(this));
+
+      return $q.all(monthsToLoad.map(function (month) {
         return $q.all(month.days.map(function (day) {
           return $q.all(calendars.map(function (calendar) {
             var contactData = day.contactsData[calendar.contact_id] = {};
