@@ -146,7 +146,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr ng-repeat="request in report.sections.holidays.data | orderBy:'+from_date' track by $index">
+                          <tr ng-repeat="request in report.sections.holidays.data track by $index">
                             <td class="chr_leave-report__label">Public Holiday</td>
                             <td>{{request.from_date | date:report.dateFormat}}</td>
                             <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
@@ -197,7 +197,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr ng-repeat="request in report.sections.approved.data | orderBy:'+from_date' track by $index">
+                          <tr ng-repeat="request in report.sections.approved.data track by $index">
                             <td class="chr_leave-report__label">
                               {{report.absenceTypes[request.type_id].title}}
                               <span ng-if="request.toil_expiry_date">
@@ -287,7 +287,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr ng-repeat="entry in report.sections.expired.data | orderBy:'+expiry_date' track by $index">
+                          <tr ng-repeat="entry in report.sections.expired.data track by $index">
                             <td class="chr_leave-report__label">
                               {{entry.type.label}}
                               <span ng-if="entry.expiry_date">
@@ -373,7 +373,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr ng-repeat="request in report.sections.pending.data | orderBy:'+from_date' track by $index">
+                        <tr ng-repeat="request in report.sections.pending.data track by $index">
                           <td class="chr_leave-report__label">
                             {{report.absenceTypes[request.type_id].title}}
                             <span ng-if="request.toil_expiry_date">
@@ -475,7 +475,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr ng-repeat="request in report.sections.other.data | orderBy:'+from_date' track by $index">
+                        <tr ng-repeat="request in report.sections.other.data track by $index">
                           <td class="chr_leave-report__label">
                             {{report.absenceTypes[request.type_id].title}}
                             <span ng-if="request.toil_expiry_date">
