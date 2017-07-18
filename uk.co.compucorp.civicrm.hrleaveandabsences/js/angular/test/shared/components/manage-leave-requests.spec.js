@@ -1021,7 +1021,7 @@
       });
 
       /**
-       * Spyes on dialog.open() method and resolves it with the given value
+       * Spies on dialog.open() method and resolves it with the given value
        *
        * @param {any} value
        */
