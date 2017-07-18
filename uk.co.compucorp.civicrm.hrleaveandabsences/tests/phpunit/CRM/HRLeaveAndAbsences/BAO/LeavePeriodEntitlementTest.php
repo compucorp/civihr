@@ -10,6 +10,7 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest
@@ -99,6 +100,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   public function testBalanceShouldNotIncludeOpenLeaveRequests() {
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('-10 days')]
+    );
+
     $this->createLeaveBalanceChange($periodEntitlement->id, 5);
     $this->assertEquals(5, $periodEntitlement->getBalance());
 
@@ -135,6 +141,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
   public function testBalanceShouldNotIncludeCancelledAndRejectedLeaveRequests() {
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('-10 days')]
+    );
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 6);
     $this->assertEquals(6, $periodEntitlement->getBalance());
@@ -173,6 +184,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
   public function testBalanceShouldOnlyIncludeApprovedLeaveRequests() {
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('-10 days')]
+    );
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 5);
     $this->assertEquals(5, $periodEntitlement->getBalance());
@@ -305,6 +321,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime(),
       new DateTime('+8 days')
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
     );
 
     // None of these will be included in the Leave Request balance
@@ -705,6 +726,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   public function testFutureBalanceShouldIncludeOpenAndApprovedLeaveRequests() {
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('-10 days')]
+    );
+
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
     // This leave request will deduct 3 days from the entitlement
@@ -809,19 +835,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
-    // This leave request will deduct 3 days from the entitlement
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    // This leave request will deduct 2 days from the entitlement
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
       $this->leaveRequestStatuses['approved'],
       date('YmdHis'),
-      date('YmdHis', strtotime('+2 day'))
+      date('YmdHis', strtotime('+1 day'))
     );
 
     $params = ['entitlement_id' => $periodEntitlement->id];
     $result = LeavePeriodEntitlement::getRemainder($params);
     $this->assertEquals(1, count($result));
-    $this->assertEquals(7, $result[0]['remainder']['current']);
+    $this->assertEquals(8, $result[0]['remainder']['current']);
     $this->assertArrayNotHasKey('future', $result[0]['remainder']);
   }
 
@@ -850,20 +881,25 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
-    // This leave request will deduct 3 days from the entitlement
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    // This leave request will deduct 2 days from the entitlement
     $this->createLeaveRequestBalanceChange(
       $periodEntitlement->type_id,
       $periodEntitlement->contact_id,
       $this->leaveRequestStatuses['awaiting_approval'],
       date('YmdHis'),
-      date('YmdHis', strtotime('+2 day'))
+      date('YmdHis', strtotime('+1 day'))
     );
 
     $params = ['entitlement_id' => $periodEntitlement->id, 'include_future' => true];
     $result = LeavePeriodEntitlement::getRemainder($params);
     $this->assertCount(1, $result);
     $this->assertEquals(10, $result[0]['remainder']['current']);
-    $this->assertEquals(7, $result[0]['remainder']['future']);
+    $this->assertEquals(8, $result[0]['remainder']['future']);
   }
 
   public function testGetLeavePeriodEntitlementRemainderWithContactAndPeriodId() {

@@ -47,7 +47,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   }
 
   public function testCanCreateAPublicHolidayLeaveRequestForASingleContact() {
-    AbsencePeriodFabricator::fabricate([
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('first day of this year'),
       'end_date' => CRM_Utils_Date::processDate('last day of this year')
     ]);
@@ -55,6 +55,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
     $periodEntitlement->contact_id = 2;
     $periodEntitlement->type_id = $this->absenceType->id;
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
 
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = CRM_Utils_Date::processDate('first monday of this year');
