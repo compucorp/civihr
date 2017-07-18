@@ -22,7 +22,7 @@
     describe('manageLeaveRequests', function () {
       var $componentController, $log, $q, $provide, $rootScope, controller,
         OptionGroup, AbsenceType, AbsencePeriod, LeaveRequest, LeaveRequestInstance,
-        Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock;
+        Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock, dialog;
       var role = 'admin'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'manager-leave',
@@ -54,13 +54,14 @@
       }]));
 
       beforeEach(inject(function (
-        _$componentController_, _$log_, _$rootScope_, _$q_, _OptionGroup_,
+        _$componentController_, _$log_, _$rootScope_, _$q_, _dialog_, _OptionGroup_,
         _OptionGroupAPIMock_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_,
         _Contact_, _LeaveRequestInstance_) {
         $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
+        dialog = _dialog_;
         OptionGroupAPIMock = _OptionGroupAPIMock_;
         OptionGroup = _OptionGroup_;
         AbsenceType = _AbsenceType_;
@@ -364,6 +365,36 @@
 
           it('returns badge-primary', function () {
             expect(returnValue).toBe('badge-primary');
+          });
+        });
+      });
+
+      describe('when changing a status of a leave request from dropdown', function () {
+        var leaveRequest;
+
+        beforeEach(function () {
+          leaveRequest = LeaveRequestInstance.init(leaveRequestData.all().values[0], true);
+
+          spyOn(leaveRequest, 'approve').and.returnValue($q.resolve());
+          resolveDialogWith(null);
+          controller.action(leaveRequest, 'approve');
+          $rootScope.$digest();
+        });
+
+        it('shows a confirmation dialog', function () {
+          expect(dialog.open).toHaveBeenCalled();
+        });
+
+        describe('user confirms the action', function () {
+          beforeEach(function () {
+            resolveDialogWith(true);
+            spyOn(controller, 'refresh').and.callThrough();
+            controller.action(leaveRequest, 'approve');
+            $rootScope.$digest();
+          });
+
+          it('refreshes the controller', function () {
+            expect(controller.refresh).toHaveBeenCalled();
           });
         });
       });
@@ -988,6 +1019,31 @@
           expect(role === 'admin' ? Contact.all : Contact.leaveManagees).toHaveBeenCalled();
         });
       });
+
+      /**
+       * Spies on dialog.open() method and resolves it with the given value
+       *
+       * @param {any} value
+       */
+      function resolveDialogWith (value) {
+        var spy;
+
+        if (typeof dialog.open.calls !== 'undefined') {
+          spy = dialog.open;
+        } else {
+          spy = spyOn(dialog, 'open');
+        }
+
+        spy.and.callFake(function (options) {
+          return $q.resolve()
+            .then(function () {
+              return options.onConfirm && value ? options.onConfirm() : null;
+            })
+            .then(function () {
+              return value;
+            });
+        });
+      }
 
       function compileComponent () {
         controller = $componentController('manageLeaveRequests', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
