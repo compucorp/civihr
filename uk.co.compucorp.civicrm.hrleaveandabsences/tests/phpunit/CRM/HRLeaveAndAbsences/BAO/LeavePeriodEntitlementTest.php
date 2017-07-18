@@ -440,8 +440,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testSaveFromEntitlementCalculationCanSaveOverriddenValuesGreaterThanProposedEntitlement() {
-    $this->registerCurrentLoggedInContactInSession(1);
-
     $type = new AbsenceType();
     $type->id = 1;
     $period = new AbsencePeriod();
@@ -462,8 +460,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     );
 
     $overriddenEntitlement = 50;
-    $comment = 'Lorem ipsum dolor sit amet...';
-    LeavePeriodEntitlement::saveFromCalculation($calculation, $overriddenEntitlement, $comment);
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $overriddenEntitlement);
 
     $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
       $contact['id'],
@@ -477,13 +474,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($contact['id'], $periodEntitlement->contact_id);
     $this->assertEquals(1, $periodEntitlement->overridden);
     $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
-
-    $this->unregisterCurrentLoggedInContactFromSession();
   }
 
   public function testSaveFromEntitlementCalculationCanSaveOverriddenValuesLessThanTheProposedEntitlement() {
-    $this->registerCurrentLoggedInContactInSession(1);
-
     $type = new AbsenceType();
     $type->id = 1;
     $period = new AbsencePeriod();
@@ -504,8 +497,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     );
 
     $overriddenEntitlement = 5;
-    $comment = 'Lorem ipsum dolor sit amet...';
-    LeavePeriodEntitlement::saveFromCalculation($calculation, $overriddenEntitlement, $comment);
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $overriddenEntitlement);
 
     $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
       $contact['id'],
@@ -519,6 +511,45 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($contact['id'], $periodEntitlement->contact_id);
     $this->assertEquals(1, $periodEntitlement->overridden);
     $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
+  }
+
+  public function testCanSaveALeavePeriodEntitlementWithAComment() {
+    $userId = 1;
+    $this->registerCurrentLoggedInContactInSession($userId);
+
+    $type = new AbsenceType();
+    $type->id = 1;
+    $period = new AbsencePeriod();
+    $period->id = 1;
+    $contact = ['id' => 2];
+
+    $broughtForward = 1;
+    $proRata = 10;
+    $overridden = false;
+    $calculation = $this->getEntitlementCalculationMock(
+      $period,
+      $contact,
+      $type,
+      $broughtForward,
+      $proRata,
+      [],
+      $overridden
+    );
+
+    $comment = 'Lorem ipsum dolor sit amet...';
+    LeavePeriodEntitlement::saveFromCalculation($calculation, null, $comment);
+
+    $dateTimeNow = new DateTime('now');
+    $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+      $contact['id'],
+      $period->id,
+      $type->id
+    );
+
+    $this->assertNotNull($periodEntitlement);
+    $this->assertEquals($comment, $periodEntitlement->comment);
+    $this->assertEquals($dateTimeNow, new DateTime($periodEntitlement->comment_date), '', 10);
+    $this->assertEquals($userId, $periodEntitlement->comment_author_id);
 
     $this->unregisterCurrentLoggedInContactFromSession();
   }
