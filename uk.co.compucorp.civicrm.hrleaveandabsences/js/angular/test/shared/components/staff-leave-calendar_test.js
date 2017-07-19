@@ -271,8 +271,16 @@
             daysInJuly = moment().month(july.index).daysInMonth();
           });
 
+          it('contains a unique identifier made of month+year indexes', function () {
+            expect(july.id).toBe(july.index + '' + july.year);
+          });
+
           it('contains a flag for the loading status', function () {
             expect(july.loading).toBeDefined();
+          });
+
+          it('contains a flag to mark if the contacts\' data had already been loaded', function () {
+            expect(july.contactsDataLoaded).toBeDefined();
           });
 
           it('contains the month long name', function () {
@@ -570,8 +578,8 @@
             $rootScope.$digest();
           });
 
-          it('loads the leave requests of the selected months', function () {
-            expect(LeaveRequest.all.calls.count()).toBe(3);
+          it('loads the leave requests of the added months', function () {
+            expect(LeaveRequest.all.calls.count()).toBe(2);
           });
         });
 
@@ -581,11 +589,11 @@
             $rootScope.$digest();
           });
 
-          it('loads the leave requests for all the months', function () {
+          it('loads the leave requests for all the remaining months', function () {
             var startDate = moment(controller.selectedPeriod.start_date);
             var endDate = moment(controller.selectedPeriod.end_date);
 
-            expect(LeaveRequest.all.calls.count()).toBe(endDate.diff(startDate, 'months') + 1);
+            expect(LeaveRequest.all.calls.count()).toBe(endDate.diff(startDate, 'months'));
           });
         });
       });
@@ -622,20 +630,12 @@
 
       describe('refresh()', function () {
         describe('basic tests', function () {
-          var oldMonths;
-
           beforeEach(function () {
-            oldMonths = controller.months;
-
             Calendar.get.calls.reset();
             LeaveRequest.all.calls.reset();
 
             controller.refresh();
             $rootScope.$digest();
-          });
-
-          it('rebuilds the months structure', function () {
-            expect(controller.months).not.toBe(oldMonths);
           });
 
           it('reloads the calendars', function () {
@@ -667,7 +667,10 @@
         });
 
         describe('source of refresh', function () {
+          var oldMonths;
+
           beforeEach(function () {
+            oldMonths = controller.months;
             spyOn(controller, '_contacts').and.callThrough();
           });
 
@@ -675,6 +678,10 @@
             beforeEach(function () {
               controller.refresh('period');
               $rootScope.$digest();
+            });
+
+            it('rebuilds the months structure', function () {
+              expect(controller.months).not.toBe(oldMonths);
             });
 
             it('does not reloads the contacts', function () {
@@ -686,6 +693,10 @@
             beforeEach(function () {
               controller.refresh('contacts');
               $rootScope.$digest();
+            });
+
+            it('does not rebuild the months structure', function () {
+              expect(controller.months).toBe(oldMonths);
             });
 
             it('reloads the contacts', function () {

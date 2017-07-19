@@ -58,7 +58,10 @@ define([
     };
 
     /**
-     * Rebuilds the months list and reloads the selected months data
+     * Reloads the selected months data
+     *
+     * If the source of the refresh is a period change, then
+     * it rebuilds the months list as well
      * If the source of the refresh is a change in contacts filters, then
      * it reloads the contacts as well
      *
@@ -70,12 +73,15 @@ define([
       vm.loading.calendar = true;
 
       $q.resolve()
-        .then(buildPeriodMonthsList)
+        .then((source === 'period' ? buildPeriodMonthsList : _.noop))
         .then((source === 'contacts' ? loadContacts : _.noop))
         .then(function () {
           vm.loading.calendar = false;
         })
-        .then(loadSelectedMonthsData);
+        .then(function () {
+          // If the contacts list changed, all the months' data needs to be reloaded
+          loadSelectedMonthsData((source === 'contacts'));
+        });
     };
 
     /**
@@ -95,6 +101,7 @@ define([
         loadOptionValues()
       ])
       .then(function () {
+        vm.loading.page = false;
         vm.legendCollapsed = false;
       })
       .then(function () {
@@ -103,10 +110,7 @@ define([
       .then(function () {
         vm.loading.calendar = false;
       })
-      .then(loadSelectedMonthsData)
-      .then(function () {
-        vm.loading.page = false;
-      });
+      .then(loadSelectedMonthsData);
     };
 
     /**
@@ -351,6 +355,8 @@ define([
      * @return {Promise}
      */
     function loadMonthData (month) {
+      month.loading = true;
+
       return $q.all([
         loadMonthWorkPatternCalendars(month),
         loadMonthLeaveRequests(month)
@@ -359,6 +365,7 @@ define([
         setMonthDaysProperties(month, results[0]);
       })
       .then(function () {
+        month.contactsDataLoaded = true;
         month.loading = false;
       });
     }
@@ -423,14 +430,22 @@ define([
      * Loads the data of the currently selected months
      * (or of all the months if none are selectd)
      *
+     * @param {boolean} forceReload if true, then it loads the data of all months
+     *   regardless if the data was already loaded
      * @return {Promise}
      */
-    function loadSelectedMonthsData () {
+    function loadSelectedMonthsData (forceReload) {
       var monthsToLoad = !vm.selectedMonths.length
         ? vm.months
         : vm.months.filter(function (month) {
           return _.includes(vm.selectedMonths, month.index);
         });
+
+      if (forceReload !== true) {
+        monthsToLoad = monthsToLoad.filter(function (month) {
+          return !month.contactsDataLoaded;
+        });
+      }
 
       return $q.all(monthsToLoad.map(loadMonthData));
     }
@@ -443,10 +458,12 @@ define([
      */
     function monthStructure (date) {
       return {
-        loading: true,
+        id: date.month() + '' + date.year(),
         index: date.month(),
         year: date.year(),
         days: monthDaysStructure(date),
+        contactsDataLoaded: false,
+        loading: true,
         name: {
           long: date.format('MMMM'),
           short: date.format('MMM')
