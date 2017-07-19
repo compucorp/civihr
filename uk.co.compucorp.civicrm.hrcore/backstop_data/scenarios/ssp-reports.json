@@ -1,0 +1,20 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP - Reports",
+      "url": "reports"
+    },
+    {
+      "label": "SSP - Reports people",
+      "url": "reports/people/"
+    },
+    {
+      "label": "SSP - Reports - Leave and Absence",
+      "url": "reports/leave_and_absence/"
+    },
+    {
+      "label": "SSP - Reports - Age groups",
+      "url": "reports/settings/age_group/"
+    }
+  ]
+}

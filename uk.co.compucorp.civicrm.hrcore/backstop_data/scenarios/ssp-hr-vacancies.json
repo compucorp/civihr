@@ -1,0 +1,8 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP - HR Vacancies",
+      "url": "hr-vacancies"
+    }
+  ]
+}

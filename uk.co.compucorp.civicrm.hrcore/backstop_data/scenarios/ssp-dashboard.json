@@ -1,0 +1,8 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP - Dashboard",
+      "url": "dashboard"
+    }
+  ]
+}
