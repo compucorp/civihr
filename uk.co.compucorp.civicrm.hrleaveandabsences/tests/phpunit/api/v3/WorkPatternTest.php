@@ -1,8 +1,8 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 
@@ -12,8 +12,6 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
  * @group headless
  */
 class api_v3_WorkPatternTest extends BaseHeadlessTest {
-
-  use CRM_HRLeaveAndAbsences_WorkPatternHelpersTrait;
 
   /**
    * @expectedException CiviCRM_API3_Exception
@@ -93,7 +91,7 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
       'contact_id' => $contact2['id']
     ]);
 
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = array_flip(WorkDay::buildOptions('type', 'validate'));
 
 
     // 15 days interval
@@ -119,38 +117,38 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
     $expectedContact1Calendar = [
       [
         'date' => '2015-01-05',
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2015-01-06',
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2015-01-07',
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2015-01-08',
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
     ];
 
     $expectedContact2Calendar = [
       [
         'date' => '2015-01-05',
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2015-01-06',
-        'type' => $workDayTypes['non_working_day']['value']
+        'type' => $workDayTypes['non_working_day']
       ],
       [
         'date' => '2015-01-07',
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2015-01-08',
-        'type' => $workDayTypes['non_working_day']['value']
+        'type' => $workDayTypes['non_working_day']
       ],
     ];
 

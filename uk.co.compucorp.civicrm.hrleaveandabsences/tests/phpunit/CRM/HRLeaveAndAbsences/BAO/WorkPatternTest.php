@@ -12,7 +12,10 @@ use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolid
  */
 class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
 
+  private $workDayTypeOptions;
+
   public function setUp() {
+    $this->workDayTypeOptions = array_flip(WorkDay::buildOptions('type', 'validate'));
     //Deletes the default work pattern so it doesn't interfere with the tests
     WorkPattern::del(1);
   }
@@ -505,39 +508,39 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   }
 
   public function testGetCalendarCanGenerateTheCalendarForAWorkPatternWithASingleWeek() {
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
     $expectedCalendar = [
       [
         'date' => '2016-01-01', // friday
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2016-01-02', // saturday
-        'type' => $workDayTypes['weekend']['value']
+        'type' => $workDayTypes['weekend']
       ],
       [
         'date' => '2016-01-03', // sunday
-        'type' => $workDayTypes['weekend']['value']
+        'type' => $workDayTypes['weekend']
       ],
       [
         'date' => '2016-01-04', // monday
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2016-01-05', // tuesday
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2016-01-06', // wednesday
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2016-01-07', // thursday
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2016-01-08', // friday
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
     ];
 
@@ -552,67 +555,67 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   }
 
   public function testGetCalendarCanGenerateTheCalendarForAWorkPatternWithMultipleWeeks() {
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
     $expectedCalendar = [
       [
         'date' => '2016-01-01', // friday, working day on first week
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2016-01-02', // saturday
-        'type' => $workDayTypes['weekend']['value']
+        'type' => $workDayTypes['weekend']
       ],
       [
         'date' => '2016-01-03', // sunday
-        'type' => $workDayTypes['weekend']['value']
+        'type' => $workDayTypes['weekend']
       ],
       [
         'date' => '2016-01-04', // monday, non working day on second week
-        'type' => $workDayTypes['non_working_day']['value']
+        'type' => $workDayTypes['non_working_day']
       ],
       [
         'date' => '2016-01-05', // tuesday
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2016-01-06', // wednesday, non working day on second week
-        'type' => $workDayTypes['non_working_day']['value']
+        'type' => $workDayTypes['non_working_day']
       ],
       [
         'date' => '2016-01-07', // thursday
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2016-01-08', // friday, non working day on second week
-        'type' => $workDayTypes['non_working_day']['value']
+        'type' => $workDayTypes['non_working_day']
       ],
       [
         'date' => '2016-01-09', // saturday
-        'type' => $workDayTypes['weekend']['value']
+        'type' => $workDayTypes['weekend']
       ],
       [
         'date' => '2016-01-10', // sunday
-        'type' => $workDayTypes['weekend']['value']
+        'type' => $workDayTypes['weekend']
       ],
       [
         'date' => '2016-01-11', // monday, working day on first week (looped back to the first week)
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2016-01-12', // tuesday, non working day on first week
-        'type' => $workDayTypes['non_working_day']['value']
+        'type' => $workDayTypes['non_working_day']
       ],
       [
         'date' => '2016-01-13', // wednesday, working day on first week
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
       [
         'date' => '2016-01-14', // thursday, non working day on first week
-        'type' => $workDayTypes['non_working_day']['value']
+        'type' => $workDayTypes['non_working_day']
       ],
       [
         'date' => '2016-01-15', // friday, working day on first week
-        'type' => $workDayTypes['working_day']['value']
+        'type' => $workDayTypes['working_day']
       ],
     ];
 
@@ -624,24 +627,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     );
 
     $this->assertEquals($expectedCalendar, $calendar);
-  }
-
-  private function getWorkDayTypeOptionsArray() {
-    $result = $result = civicrm_api3('OptionValue', 'get', array(
-      'sequential' => 1,
-      'option_group_id' => "hrleaveandabsences_work_day_type",
-    ));
-
-    $options = [];
-    foreach($result['values'] as $value) {
-      $options[$value['name']] = [
-        'value' => $value['value'],
-        'name' => $value['name'],
-        'label' => $value['label']
-      ];
-    }
-
-    return $options;
   }
 
   public function testItDoesNotEnqueueTaskToUpdatePublicHolidayLeaveRequestsWhenANewWorkPatternIsCreatedAndNotSetToDefault() {
