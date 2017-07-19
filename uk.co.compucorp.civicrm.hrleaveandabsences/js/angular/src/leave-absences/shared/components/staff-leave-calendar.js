@@ -20,7 +20,8 @@ define([
   function controller ($controller, $log, $q, $rootScope, Calendar, Contact) {
     $log.debug('Component: staff-leave-calendar');
 
-    var vm = _.assign(Object.create($controller('CalendarCtrl')), this);
+    var vm = $controller('CalendarCtrl');
+    vm.contactId = this.contactId;
 
     /**
      * [_contacts description]

@@ -24,8 +24,8 @@ define([
     $log.debug('Component: manager-leave-calendar');
 
     var isAdmin = false;
-    var vm = Object.create($controller('CalendarCtrl'));
-
+    var vm = $controller('CalendarCtrl');
+    vm.contactId = this.contactId;
     vm.filteredContacts = [];
     vm.managedContacts = [];
     vm.filters = {

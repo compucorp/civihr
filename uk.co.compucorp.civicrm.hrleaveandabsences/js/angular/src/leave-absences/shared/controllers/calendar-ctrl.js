@@ -21,15 +21,16 @@ define([
     var publicHolidays = [];
     var calendars = [];
 
-    this.absencePeriods = [];
-    this.absenceTypes = [];
-    this.contacts = [];
-    this.legendCollapsed = true;
-    this.leaveRequests = {};
-    this.months = [];
-    this.selectedMonths = null;
-    this.selectedPeriod = null;
-    this.loading = {
+    var vm = this;
+    vm.absencePeriods = [];
+    vm.absenceTypes = [];
+    vm.contacts = [];
+    vm.legendCollapsed = true;
+    vm.leaveRequests = {};
+    vm.months = [];
+    vm.selectedMonths = null;
+    vm.selectedPeriod = null;
+    vm.loading = {
       calendar: true,
       page: true
     };
@@ -37,9 +38,9 @@ define([
     /**
      * Fetches months from newly selected period and refresh data
      */
-    this.changeSelectedPeriod = function () {
-      buildPeriodMonthsList.call(this);
-      this.refresh();
+    vm.changeSelectedPeriod = function () {
+      buildPeriodMonthsList();
+      vm.refresh();
     };
 
     /**
@@ -48,7 +49,7 @@ define([
      * @param  {object} absenceType
      * @return {object} style
      */
-    this.getAbsenceTypeStyle = function (absenceType) {
+    vm.getAbsenceTypeStyle = function (absenceType) {
       return {
         backgroundColor: absenceType.color,
         borderColor: absenceType.color
@@ -61,22 +62,22 @@ define([
      * @param  {AbsencePeriodInstance} period
      * @return {string}
      */
-    this.labelPeriod = function (period) {
+    vm.labelPeriod = function (period) {
       return period.current ? 'Current Period (' + period.title + ')' : period.title;
     };
 
     /**
      * Refreshes all leave request and calendar data
      */
-    this.refresh = function () {
-      loadContacts.call(this)
+    vm.refresh = function () {
+      loadContacts()
         .then(function () {
           return $q.all([
-            loadCalendars.call(this),
-            loadLeaveRequests.call(this)
+            loadCalendars(),
+            loadLeaveRequests()
           ]);
-        }.bind(this))
-        .then(setCalendarProps.bind(this));
+        })
+        .then(setCalendarProps);
     };
 
     /**
@@ -84,32 +85,32 @@ define([
      *
      * @param {function} intermediateSteps
      */
-    this._init = function (intermediateSteps) {
-      initListeners.call(this);
-      initWatchers.call(this);
+    vm._init = function (intermediateSteps) {
+      initListeners();
+      initWatchers();
 
-      var pContactsPeriods = loadContactsAndAbsencePeriods.call(this);
-      var pCalendars = pContactsPeriods.then(loadCalendars.bind(this));
+      var pContactsPeriods = loadContactsAndAbsencePeriods();
+      var pCalendars = pContactsPeriods.then(loadCalendars);
       var pLeaveRequests = $q.all([
-        loadSupportData.call(this),
+        loadSupportData(),
         pContactsPeriods
       ])
-      .then(loadLeaveRequests.bind(this));
+      .then(loadLeaveRequests);
 
       $q.all([
         pCalendars,
         pLeaveRequests
       ])
-      .then(setCalendarProps.bind(this))
+      .then(setCalendarProps)
       .then(function () {
-        this.loading.calendar = false;
-      }.bind(this))
+        vm.loading.calendar = false;
+      })
       .then(function () {
         return intermediateSteps ? intermediateSteps() : null;
       })
       .then(function () {
-        this.loading.page = false;
-      }.bind(this));
+        vm.loading.page = false;
+      });
     };
 
     /**
@@ -117,15 +118,15 @@ define([
      */
     function buildPeriodMonthsList () {
       var months = [];
-      var pointerDate = moment(this.selectedPeriod.start_date).clone();
-      var endDate = moment(this.selectedPeriod.end_date);
+      var pointerDate = moment(vm.selectedPeriod.start_date).clone();
+      var endDate = moment(vm.selectedPeriod.end_date);
 
       while (pointerDate.isBefore(endDate)) {
-        months.push(monthStructure.call(this, pointerDate));
+        months.push(monthStructure(pointerDate));
         pointerDate.add(1, 'month');
       }
 
-      this.months = months;
+      vm.months = months;
     }
 
     /**
@@ -136,14 +137,14 @@ define([
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function deleteLeaveRequest (event, leaveRequest) {
-      this.leaveRequests[leaveRequest.contact_id] = _.omit(
-        this.leaveRequests[leaveRequest.contact_id],
+      vm.leaveRequests[leaveRequest.contact_id] = _.omit(
+        vm.leaveRequests[leaveRequest.contact_id],
         function (leaveRequestObj) {
           return leaveRequestObj.id === leaveRequest.id;
         }
       );
 
-      setCalendarProps.call(this);
+      setCalendarProps();
     }
 
     /**
@@ -180,11 +181,10 @@ define([
     function getStyles (leaveRequest, dateObj) {
       var absenceType;
 
-      absenceType = _.find(this.absenceTypes, function (absenceType) {
+      absenceType = _.find(vm.absenceTypes, function (absenceType) {
         return absenceType.id === leaveRequest.type_id;
       });
 
-      // If Balance change is positive, mark as Accrued TOIL
       if (leaveRequest.balance_change > 0) {
         return {
           borderColor: absenceType.color
@@ -208,12 +208,12 @@ define([
       var deferred = $q.defer();
 
       _.each(leaveRequests, function (leaveRequest) {
-        this.leaveRequests[leaveRequest.contact_id] = this.leaveRequests[leaveRequest.contact_id] || {};
+        vm.leaveRequests[leaveRequest.contact_id] = vm.leaveRequests[leaveRequest.contact_id] || {};
 
         _.each(leaveRequest.dates, function (leaveRequestDate) {
-          this.leaveRequests[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
-        }.bind(this));
-      }.bind(this));
+          vm.leaveRequests[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
+        });
+      });
 
       deferred.resolve();
 
@@ -224,10 +224,10 @@ define([
      * Initializes the event listeners
      */
     function initListeners () {
-      $rootScope.$on('LeaveRequest::new', this.refresh.bind(this));
-      $rootScope.$on('LeaveRequest::edit', this.refresh.bind(this));
-      $rootScope.$on('LeaveRequest::updatedByManager', this.refresh.bind(this));
-      $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest.bind(this));
+      $rootScope.$on('LeaveRequest::new', vm.refresh);
+      $rootScope.$on('LeaveRequest::edit', vm.refresh);
+      $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
+      $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest);
     }
 
     /**
@@ -235,12 +235,12 @@ define([
      */
     function initWatchers () {
       $rootScope.$new().$watch(function () {
-        return this.selectedMonths;
-      }.bind(this), function (newValue, oldValue) {
+        return vm.selectedMonths;
+      }, function (newValue, oldValue) {
         if (oldValue !== null && !angular.equals(newValue, oldValue)) {
-          loadLeaveRequests.call(this).then(setCalendarProps.bind(this));
+          loadLeaveRequests().then(setCalendarProps);
         }
-      }.bind(this));
+      });
     }
 
     /**
@@ -295,17 +295,17 @@ define([
     function loadAbsencePeriods () {
       return AbsencePeriod.all()
         .then(function (absencePeriods) {
-          this.absencePeriods = _.sortBy(absencePeriods, 'start_date');
-          this.selectedPeriod = _.find(this.absencePeriods, function (period) {
+          vm.absencePeriods = _.sortBy(absencePeriods, 'start_date');
+          vm.selectedPeriod = _.find(vm.absencePeriods, function (period) {
             return !!period.current;
           });
-        }.bind(this))
+        })
         .then(function () {
-          buildPeriodMonthsList.call(this);
-        }.bind(this))
+          buildPeriodMonthsList();
+        })
         .then(function () {
-          setDefaultMonths.call(this);
-        }.bind(this));
+          setDefaultMonths();
+        });
     }
 
     /**
@@ -317,8 +317,8 @@ define([
       return AbsenceType.all({
         is_active: true
       }).then(function (absenceTypes) {
-        this.absenceTypes = absenceTypes;
-      }.bind(this));
+        vm.absenceTypes = absenceTypes;
+      });
     }
 
     /**
@@ -327,9 +327,9 @@ define([
      * @return {Promise}
      */
     function loadCalendars () {
-      return Calendar.get(this.contacts.map(function (contact) {
+      return Calendar.get(vm.contacts.map(function (contact) {
         return contact.id;
-      }), this.selectedPeriod.id)
+      }), vm.selectedPeriod.id)
       .then(function (_calendars_) {
         calendars = _calendars_;
       });
@@ -341,9 +341,9 @@ define([
      * @return {Promise}
      */
     function loadContacts () {
-      return this._contacts().then(function (contacts) {
-        this.contacts = contacts;
-      }.bind(this));
+      return vm._contacts().then(function (contacts) {
+        vm.contacts = contacts;
+      });
     }
 
     /**
@@ -353,8 +353,8 @@ define([
      */
     function loadContactsAndAbsencePeriods () {
       return $q.all([
-        loadContacts.call(this),
-        loadAbsencePeriods.call(this)
+        loadContacts(),
+        loadAbsencePeriods()
       ]);
     }
 
@@ -366,11 +366,11 @@ define([
      * @return {Promise}
      */
     function loadLeaveRequests () {
-      var monthsToLoad = !this.selectedMonths.length
-        ? this.months
-        : this.months.filter(function (month) {
-          return _.includes(this.selectedMonths, month.index);
-        }.bind(this));
+      var monthsToLoad = !vm.selectedMonths.length
+        ? vm.months
+        : vm.months.filter(function (month) {
+          return _.includes(vm.selectedMonths, month.index);
+        });
 
       return $q.all(monthsToLoad.map(function (month) {
         return LeaveRequest.all({
@@ -381,14 +381,14 @@ define([
             getLeaveStatusValuefromName(sharedSettings.statusNames.adminApproved),
             getLeaveStatusValuefromName(sharedSettings.statusNames.awaitingApproval)
           ]},
-          contact_id: { 'IN': this.contacts.map(function (contact) {
+          contact_id: { 'IN': vm.contacts.map(function (contact) {
             return contact.id;
           })}
         }, null, null, null, false)
         .then(function (leaveRequestsData) {
-          return indexLeaveRequests.call(this, leaveRequestsData.list);
-        }.bind(this));
-      }.bind(this)));
+          return indexLeaveRequests(leaveRequestsData.list);
+        });
+      }));
     }
 
     /**
@@ -430,13 +430,13 @@ define([
      */
     function loadSupportData () {
       return $q.all([
-        loadAbsenceTypes.call(this),
-        loadPublicHolidays.call(this),
+        loadAbsenceTypes(),
+        loadPublicHolidays(),
         loadOptionValues()
       ])
       .then(function () {
-        this.legendCollapsed = false;
-      }.bind(this));
+        vm.legendCollapsed = false;
+      });
     }
 
      /**
@@ -450,7 +450,7 @@ define([
         loading: true,
         index: date.month(),
         year: date.year(),
-        days: monthDaysStructure.call(this, date),
+        days: monthDaysStructure(date),
         name: {
           long: date.format('MMMM'),
           short: date.format('MMM')
@@ -472,15 +472,15 @@ define([
           date: currentDay.format('YYYY-MM-DD'),
           name: currentDay.format('ddd'),
           index: currentDay.format('D'),
-          enabled: currentDay.isSameOrAfter(this.selectedPeriod.start_date) &&
-            currentDay.isSameOrBefore(this.selectedPeriod.end_date),
+          enabled: currentDay.isSameOrAfter(vm.selectedPeriod.start_date) &&
+            currentDay.isSameOrBefore(vm.selectedPeriod.end_date),
           contactsData: {}
         };
 
         currentDay.add(1, 'day');
 
         return dayObj;
-      }.bind(this));
+      });
     }
 
     /**
@@ -489,7 +489,7 @@ define([
     function setDefaultMonths () {
       var currentMonth = moment().month();
 
-      this.selectedMonths = [_.find(this.months, function (month) {
+      vm.selectedMonths = [_.find(vm.months, function (month) {
         return month.index === currentMonth;
       }).index];
     }
@@ -500,11 +500,11 @@ define([
      */
     function setCalendarProps () {
       // TODO: Improve once we have calendars by month
-      var monthsToLoad = !this.selectedMonths.length
-        ? this.months
-        : this.months.filter(function (month) {
-          return _.includes(this.selectedMonths, month.index);
-        }.bind(this));
+      var monthsToLoad = !vm.selectedMonths.length
+        ? vm.months
+        : vm.months.filter(function (month) {
+          return _.includes(vm.selectedMonths, month.index);
+        });
 
       return $q.all(monthsToLoad.map(function (month) {
         return $q.all(month.days.map(function (day) {
@@ -524,27 +524,27 @@ define([
             .then(function (results) {
               contactData.isWeekend = results[0];
               contactData.isNonWorkingDay = results[1];
-              contactData.isPublicHoliday = isPublicHoliday.call(this, dayObj.date);
-            }.bind(this))
+              contactData.isPublicHoliday = isPublicHoliday(dayObj.date);
+            })
             .then(function () {
               // fetch leave request, first search by contact_id then by date
-              var leaveRequest = this.leaveRequests[calendar.contact_id] ? this.leaveRequests[calendar.contact_id][dayObj.date] : null;
+              var leaveRequest = vm.leaveRequests[calendar.contact_id] ? vm.leaveRequests[calendar.contact_id][dayObj.date] : null;
 
               if (leaveRequest) {
                 contactData.leaveRequest = leaveRequest;
-                contactData.styles = getStyles.call(this, leaveRequest);
+                contactData.styles = getStyles(leaveRequest);
                 contactData.isAccruedTOIL = leaveRequest.balance_change > 0;
                 contactData.isRequested = isPendingApproval(leaveRequest);
                 contactData.isAM = isDayType('half_day_am', leaveRequest, dayObj.date);
                 contactData.isPM = isDayType('half_day_pm', leaveRequest, dayObj.date);
               }
-            }.bind(this));
-          }.bind(this)));
-        }.bind(this)))
+            });
+          }));
+        }))
         .then(function () {
           month.loading = false;
         });
-      }.bind(this)));
+      }));
     }
   }
 });
