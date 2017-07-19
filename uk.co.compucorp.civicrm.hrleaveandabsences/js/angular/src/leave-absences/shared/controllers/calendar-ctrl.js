@@ -36,14 +36,6 @@ define([
     };
 
     /**
-     * Fetches months from newly selected period and refresh data
-     */
-    vm.changeSelectedPeriod = function () {
-      buildPeriodMonthsList();
-      vm.refresh();
-    };
-
-    /**
      * Labels the given period according to whether it's current or not
      *
      * @param  {object} absenceType
@@ -68,14 +60,25 @@ define([
 
     /**
      * Refreshes all leave request and calendar data
+     *
+     * @param {string} source The source of the refresh (period or contacts change)
      */
-    vm.refresh = function () {
-      loadContacts()
+    vm.refresh = function (source) {
+      source = _.includes(['contacts', 'period'], source) ? source : 'period';
+
+      vm.loading.calendar = true;
+
+      $q.resolve()
+        .then(buildPeriodMonthsList)
+        .then((source === 'contacts' ? loadContacts : _.noop))
         .then(function () {
           return $q.all([
             loadCalendars(),
             loadLeaveRequests()
           ]);
+        })
+        .then(function () {
+          vm.loading.calendar = false;
         })
         .then(setCalendarProps);
     };

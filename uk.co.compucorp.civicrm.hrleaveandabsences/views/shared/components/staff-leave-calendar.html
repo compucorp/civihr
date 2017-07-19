@@ -18,7 +18,7 @@
               <select
                 ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
                 ng-model="calendar.selectedPeriod"
-                ng-change="calendar.changeSelectedPeriod()">
+                ng-change="calendar.refresh('period')">
               </select>
               <span class="crm_custom-select__arrow"></span>
             </div>

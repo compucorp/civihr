@@ -26,7 +26,7 @@
 
     describe('sharedLeaveCalendar', function () {
       var $componentController, $log, $q, $rootScope, controller, $provide,
-        AbsencePeriod, LeaveRequest, OptionGroup, PublicHoliday;
+        AbsencePeriod, Calendar, LeaveRequest, OptionGroup, PublicHoliday;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', 'common.mocks', function (_$provide_) {
         $provide = _$provide_;
@@ -54,17 +54,19 @@
       }));
 
       beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-        _AbsencePeriod_, _LeaveRequest_, _PublicHoliday_) {
+        _AbsencePeriod_, _Calendar_, _LeaveRequest_, _PublicHoliday_) {
         $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         AbsencePeriod = _AbsencePeriod_;
+        Calendar = _Calendar_;
         LeaveRequest = _LeaveRequest_;
         PublicHoliday = _PublicHoliday_;
 
         spyOn($log, 'debug');
         spyOn(AbsencePeriod, 'all');
+        spyOn(Calendar, 'get').and.callThrough();
         spyOn(LeaveRequest, 'all').and.callThrough();
         spyOn(PublicHoliday, 'all').and.callThrough();
 
@@ -94,14 +96,11 @@
       });
 
       describe('on init', function () {
-        var AbsenceType, Calendar;
+        var AbsenceType;
 
-        beforeEach(inject(function (_AbsenceType_, _Calendar_) {
+        beforeEach(inject(function (_AbsenceType_) {
           AbsenceType = _AbsenceType_;
-          Calendar = _Calendar_;
-
           spyOn(AbsenceType, 'all').and.callThrough();
-          spyOn(Calendar, 'get').and.callThrough();
 
           compileComponent();
         }));
@@ -613,12 +612,78 @@
       });
 
       describe('refresh()', function () {
-        beforeEach(function () {
-          controller.refresh();
-          $rootScope.$digest();
+        describe('basic tests', function () {
+          var oldMonths;
+
+          beforeEach(function () {
+            oldMonths = controller.months;
+
+            Calendar.get.calls.reset();
+            LeaveRequest.all.calls.reset();
+
+            controller.refresh();
+            $rootScope.$digest();
+          });
+
+          it('rebuilds the months structure', function () {
+            expect(controller.months).not.toBe(oldMonths);
+          });
+
+          it('reloads the calendars', function () {
+            expect(Calendar.get).toHaveBeenCalled();
+          });
+
+          it('reloads the leave requests', function () {
+            expect(LeaveRequest.all).toHaveBeenCalled();
+          });
         });
 
-        // TODO
+        describe('loading flag', function () {
+          beforeEach(function () {
+            controller.refresh();
+          });
+
+          it('does not mark the entire page as loading', function () {
+            expect(controller.loading.page).not.toBe(true);
+          });
+
+          it('marks the calendar content as loading', function () {
+            expect(controller.loading.calendar).toBe(true);
+          });
+
+          it('takes the calendar out of the loading phase once done', function () {
+            $rootScope.$digest();
+            expect(controller.loading.calendar).toBe(false);
+          });
+        });
+
+        describe('source of refresh', function () {
+          beforeEach(function () {
+            spyOn(controller, '_contacts').and.callThrough();
+          });
+
+          describe('when the source of the refresh is a period change', function () {
+            beforeEach(function () {
+              controller.refresh('period');
+              $rootScope.$digest();
+            });
+
+            it('does not reloads the contacts', function () {
+              expect(controller._contacts).not.toHaveBeenCalled();
+            });
+          });
+
+          describe('when the source of the refresh is a contact filters change', function () {
+            beforeEach(function () {
+              controller.refresh('contacts');
+              $rootScope.$digest();
+            });
+
+            it('reloads the contacts', function () {
+              expect(controller._contacts).toHaveBeenCalled();
+            });
+          });
+        });
       });
 
       function amend2016Period (params) {
