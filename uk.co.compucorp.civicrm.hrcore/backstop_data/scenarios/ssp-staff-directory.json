@@ -1,0 +1,8 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP - Staff Directory",
+      "url": "staff-directory"
+    }
+  ]
+}
