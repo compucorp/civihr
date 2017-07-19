@@ -4,7 +4,8 @@ define([
   'common/services/hr-settings',
   'common/services/dom-event-trigger',
   'common/services/pub-sub',
-  'common/services/check-permissions'
+  'common/services/check-permissions',
+  'common/services/notification'
 ], function () {
 
 });
