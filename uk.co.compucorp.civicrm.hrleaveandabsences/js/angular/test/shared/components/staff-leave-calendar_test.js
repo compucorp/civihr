@@ -166,24 +166,34 @@
         });
 
         describe('contacts\' work pattern calendar', function () {
-          var callParams;
-
           beforeEach(function () {
-            callParams = Calendar.get.calls.mostRecent().args;
+            Calendar.get.calls.reset();
+            compileComponent();
           });
 
           it('loads the work pattern calendars', function () {
-            expect(Calendar.get).toHaveBeenCalled();
+            expect(Calendar.get.calls.any()).toBe(true);
           });
 
           it('loads only the work pattern calendars of the currently loaded contacts', function () {
-            expect(callParams[0]).toEqual(controller.contacts.map(function (contact) {
+            expect(Calendar.get.calls.mostRecent().args[0]).toEqual(controller.contacts.map(function (contact) {
               return contact.id;
             }));
           });
 
-          it('loads only the work pattern calendars of the currently selected period', function () {
-            expect(callParams[1]).toEqual(controller.selectedPeriod.id);
+          describe('splitting the loading by selected months', function () {
+            it('loads the calendars individually for each selected month', function () {
+              expect(Calendar.get.calls.count()).toBe(controller.selectedMonths.length);
+            });
+
+            it('uses the selected months\' first and last day as date delimiters', function () {
+              Calendar.get.calls.all().forEach(function (call, index) {
+                var callMonth = controller.months[controller.selectedMonths[index]];
+
+                expect(call.args[1]).toBe(callMonth.days[0].date);
+                expect(call.args[2]).toBe(callMonth.days[callMonth.days.length - 1].date);
+              });
+            });
           });
         });
 
@@ -519,8 +529,7 @@
                 return $q.resolve({ list: [leaveRequest] });
               });
 
-              controller.refresh();
-              $rootScope.$digest();
+              compileComponent();
 
               controller.months.forEach(function (month) {
                 month.days.forEach(function (dayObj) {

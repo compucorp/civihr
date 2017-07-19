@@ -19,7 +19,6 @@ define([
     var dayTypes = [];
     var leaveRequestStatuses = [];
     var publicHolidays = [];
-    var calendars = [];
 
     var vm = this;
     vm.absencePeriods = [];
@@ -59,7 +58,9 @@ define([
     };
 
     /**
-     * Refreshes all leave request and calendar data
+     * Rebuilds the months list and reloads the selected months data
+     * If the source of the refresh is a change in contacts filters, then
+     * it reloads the contacts as well
      *
      * @param {string} source The source of the refresh (period or contacts change)
      */
@@ -72,15 +73,9 @@ define([
         .then(buildPeriodMonthsList)
         .then((source === 'contacts' ? loadContacts : _.noop))
         .then(function () {
-          return $q.all([
-            loadCalendars(),
-            loadLeaveRequests()
-          ]);
-        })
-        .then(function () {
           vm.loading.calendar = false;
         })
-        .then(setCalendarProps);
+        .then(loadSelectedMonthsData);
     };
 
     /**
@@ -92,25 +87,23 @@ define([
       initListeners();
       initWatchers();
 
-      var pContactsPeriods = loadContactsAndAbsencePeriods();
-      var pCalendars = pContactsPeriods.then(loadCalendars);
-      var pLeaveRequests = $q.all([
-        loadSupportData(),
-        pContactsPeriods
-      ])
-      .then(loadLeaveRequests);
-
       $q.all([
-        pCalendars,
-        pLeaveRequests
+        loadContacts(),
+        loadAbsencePeriods(),
+        loadAbsenceTypes(),
+        loadPublicHolidays(),
+        loadOptionValues()
       ])
-      .then(setCalendarProps)
       .then(function () {
-        vm.loading.calendar = false;
+        vm.legendCollapsed = false;
       })
       .then(function () {
         return intermediateSteps ? intermediateSteps() : null;
       })
+      .then(function () {
+        vm.loading.calendar = false;
+      })
+      .then(loadSelectedMonthsData)
       .then(function () {
         vm.loading.page = false;
       });
@@ -147,7 +140,7 @@ define([
         }
       );
 
-      setCalendarProps();
+      setMonthDaysProperties();
     }
 
     /**
@@ -241,7 +234,7 @@ define([
         return vm.selectedMonths;
       }, function (newValue, oldValue) {
         if (oldValue !== null && !angular.equals(newValue, oldValue)) {
-          loadLeaveRequests().then(setCalendarProps);
+          loadSelectedMonthsData();
         }
       });
     }
@@ -325,17 +318,18 @@ define([
     }
 
     /**
-     * Loads the calendar of each contact, for the currently selected period
+     * Loads the calendar of each contact, for the given month
      *
+     * @param {Object} month
      * @return {Promise}
      */
-    function loadCalendars () {
+    function loadMonthWorkPatternCalendars (month) {
+      var monthStartDate = month.days[0].date;
+      var monthEndDate = month.days[month.days.length - 1].date;
+
       return Calendar.get(vm.contacts.map(function (contact) {
         return contact.id;
-      }), vm.selectedPeriod.id)
-      .then(function (_calendars_) {
-        calendars = _calendars_;
-      });
+      }), monthStartDate, monthEndDate);
     }
 
     /**
@@ -350,48 +344,48 @@ define([
     }
 
     /**
-     * Bundles the loading of the contacts and the absence periods
+     * Loads the work pattern calendar and the leave request of the given month,
+     * then it process the data onto each day of the month
      *
+     * @param  {Object} month
      * @return {Promise}
      */
-    function loadContactsAndAbsencePeriods () {
+    function loadMonthData (month) {
       return $q.all([
-        loadContacts(),
-        loadAbsencePeriods()
-      ]);
+        loadMonthWorkPatternCalendars(month),
+        loadMonthLeaveRequests(month)
+      ])
+      .then(function (results) {
+        setMonthDaysProperties(month, results[0]);
+      })
+      .then(function () {
+        month.loading = false;
+      });
     }
 
     /**
-     * Loads the leave requests for each of the currently selected months
-     * (or for all the months if none are selected), limited to the calendar contacts,
-     * in the currently selected period. Then finally it indexes the leave requests
+     * Loads the approved/pending leave requests for the given month, limited
+     * to the calendar contacts. It then indexes the leave requests
      *
+     * @param {Object} month
      * @return {Promise}
      */
-    function loadLeaveRequests () {
-      var monthsToLoad = !vm.selectedMonths.length
-        ? vm.months
-        : vm.months.filter(function (month) {
-          return _.includes(vm.selectedMonths, month.index);
-        });
-
-      return $q.all(monthsToLoad.map(function (month) {
-        return LeaveRequest.all({
-          from_date: { from: month.days[0].date },
-          to_date: { to: month.days[month.days.length - 1].date },
-          status_id: {'IN': [
-            getLeaveStatusValuefromName(sharedSettings.statusNames.approved),
-            getLeaveStatusValuefromName(sharedSettings.statusNames.adminApproved),
-            getLeaveStatusValuefromName(sharedSettings.statusNames.awaitingApproval)
-          ]},
-          contact_id: { 'IN': vm.contacts.map(function (contact) {
-            return contact.id;
-          })}
-        }, null, null, null, false)
-        .then(function (leaveRequestsData) {
-          return indexLeaveRequests(leaveRequestsData.list);
-        });
-      }));
+    function loadMonthLeaveRequests (month) {
+      return LeaveRequest.all({
+        from_date: { from: month.days[0].date },
+        to_date: { to: month.days[month.days.length - 1].date },
+        status_id: {'IN': [
+          getLeaveStatusValuefromName(sharedSettings.statusNames.approved),
+          getLeaveStatusValuefromName(sharedSettings.statusNames.adminApproved),
+          getLeaveStatusValuefromName(sharedSettings.statusNames.awaitingApproval)
+        ]},
+        contact_id: { 'IN': vm.contacts.map(function (contact) {
+          return contact.id;
+        })}
+      }, null, null, null, false)
+      .then(function (leaveRequestsData) {
+        return indexLeaveRequests(leaveRequestsData.list);
+      });
     }
 
     /**
@@ -426,23 +420,22 @@ define([
     }
 
     /**
-     * Loads all the additional data that is needed for the calendar to function,
-     * after which it displays the legend
+     * Loads the data of the currently selected months
+     * (or of all the months if none are selectd)
      *
      * @return {Promise}
      */
-    function loadSupportData () {
-      return $q.all([
-        loadAbsenceTypes(),
-        loadPublicHolidays(),
-        loadOptionValues()
-      ])
-      .then(function () {
-        vm.legendCollapsed = false;
-      });
+    function loadSelectedMonthsData () {
+      var monthsToLoad = !vm.selectedMonths.length
+        ? vm.months
+        : vm.months.filter(function (month) {
+          return _.includes(vm.selectedMonths, month.index);
+        });
+
+      return $q.all(monthsToLoad.map(loadMonthData));
     }
 
-     /**
+    /**
      * Returns the structure of the month of the given date
      *
      * @param  {Object} date
@@ -487,6 +480,41 @@ define([
     }
 
     /**
+     * Set the properties of the given day, for the contact of the given
+     * work pattern calendar
+     *
+     * @param {Object} day
+     * @param {CalendarInstance} workPatternCalendar
+     */
+    function setDayProperties (day, workPatternCalendar) {
+      var contactData = day.contactsData[workPatternCalendar.contact_id] = {};
+
+      return $q.all([
+        workPatternCalendar.isWeekend(getDateObjectWithFormat(day.date)),
+        workPatternCalendar.isNonWorkingDay(getDateObjectWithFormat(day.date))
+      ])
+      .then(function (results) {
+        contactData.isWeekend = results[0];
+        contactData.isNonWorkingDay = results[1];
+        contactData.isPublicHoliday = isPublicHoliday(day.date);
+      })
+      .then(function () {
+        var leaveRequest = vm.leaveRequests[workPatternCalendar.contact_id]
+          ? vm.leaveRequests[workPatternCalendar.contact_id][day.date]
+          : null;
+
+        if (leaveRequest) {
+          contactData.leaveRequest = leaveRequest;
+          contactData.styles = getStyles(leaveRequest);
+          contactData.isAccruedTOIL = leaveRequest.balance_change > 0;
+          contactData.isRequested = isPendingApproval(leaveRequest);
+          contactData.isAM = isDayType('half_day_am', leaveRequest, day.date);
+          contactData.isPM = isDayType('half_day_pm', leaveRequest, day.date);
+        }
+      });
+    }
+
+    /**
      * Chooses the months that are to be selected by default
      */
     function setDefaultMonths () {
@@ -498,55 +526,19 @@ define([
     }
 
     /**
-     * Sets UI related properties(isWeekend, isNonWorkingDay etc)
-     * to the calendar data
+     * For every day of the given month, it goes through each given contact's
+     * work pattern calendar, and assigns the properties by which the day
+     * will be marked on the calendar
+     *
+     * @param {Object} month
+     * @param {Array} monthWorkPatternCalendars
+     * @return {Promise}
      */
-    function setCalendarProps () {
-      // TODO: Improve once we have calendars by month
-      var monthsToLoad = !vm.selectedMonths.length
-        ? vm.months
-        : vm.months.filter(function (month) {
-          return _.includes(vm.selectedMonths, month.index);
-        });
-
-      return $q.all(monthsToLoad.map(function (month) {
-        return $q.all(month.days.map(function (day) {
-          return $q.all(calendars.map(function (calendar) {
-            var contactData = day.contactsData[calendar.contact_id] = {};
-            var dayObj = _.find(calendar.days, function (calendarDay) {
-              return calendarDay.date === day.date;
-            });
-
-            // TODO: Improve once we have calendars by month
-            if (!dayObj) { return; }
-
-            return $q.all([
-              calendar.isWeekend(getDateObjectWithFormat(dayObj.date)),
-              calendar.isNonWorkingDay(getDateObjectWithFormat(dayObj.date))
-            ])
-            .then(function (results) {
-              contactData.isWeekend = results[0];
-              contactData.isNonWorkingDay = results[1];
-              contactData.isPublicHoliday = isPublicHoliday(dayObj.date);
-            })
-            .then(function () {
-              // fetch leave request, first search by contact_id then by date
-              var leaveRequest = vm.leaveRequests[calendar.contact_id] ? vm.leaveRequests[calendar.contact_id][dayObj.date] : null;
-
-              if (leaveRequest) {
-                contactData.leaveRequest = leaveRequest;
-                contactData.styles = getStyles(leaveRequest);
-                contactData.isAccruedTOIL = leaveRequest.balance_change > 0;
-                contactData.isRequested = isPendingApproval(leaveRequest);
-                contactData.isAM = isDayType('half_day_am', leaveRequest, dayObj.date);
-                contactData.isPM = isDayType('half_day_pm', leaveRequest, dayObj.date);
-              }
-            });
-          }));
-        }))
-        .then(function () {
-          month.loading = false;
-        });
+    function setMonthDaysProperties (month, monthWorkPatternCalendars) {
+      return $q.all(month.days.map(function (day) {
+        return $q.all(monthWorkPatternCalendars.map(function (calendar) {
+          setDayProperties(day, calendar);
+        }));
       }));
     }
   }
