@@ -526,23 +526,14 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   }
 
   /**
-   * This method will adjust the date range given by $startDate and $endDate
+   * This method uses the BasicDatePeriod adjustDatesToMatchPeriodDates method
+   * to adjust the date range given by $startDate and $endDate
    * to be inside this period date range.
    *
    * If the given $startDate is less than the period start date, it will be
    * changed to be equals the period start date. If the given $endDate is greater
    * than the period end date, it will be changed to be equals to the period
    * end date.
-   *
-   * Example:
-   * Period start date: 2016-01-01
-   * Period end date: 2016-12-31
-   * $startDate: 2015-10-01
-   * $endDate: 2016-07-01
-   *
-   * Adjusted values:
-   * $startDate: 2016-01-01 (Adjusted to be equals to the period start date)
-   * $endDate: 2016-07-01 (Not adjusted since it's less then the period end date)
    *
    * @param string $startDate
    *    A date in the Y-m-d format
@@ -554,15 +545,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *    $startDate and second one is the $endDate
    */
   public function adjustDatesToMatchPeriodDates($startDate, $endDate) {
-    if (strtotime($startDate) < strtotime($this->start_date)) {
-      $startDate = $this->start_date;
-    }
+    $period = new BasicDatePeriod($this->start_date, $this->end_date);
+    $adjustedPeriod = $period->adjustDatesToMatchPeriodDates($startDate, $endDate);
 
-    if (strtotime($endDate) > strtotime($this->end_date)) {
-      $endDate = $this->end_date;
-    }
-
-    return [$startDate, $endDate];
+    return [$adjustedPeriod->getStartDate()->format('Y-m-d'), $adjustedPeriod->getEndDate()->format('Y-m-d')];
   }
 
   /**

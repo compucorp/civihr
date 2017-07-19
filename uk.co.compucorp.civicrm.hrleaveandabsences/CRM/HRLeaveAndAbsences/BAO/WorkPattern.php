@@ -442,8 +442,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
   public function getCalendar(DateTime $effectiveDate, DateTime $startDate, DateTime $endDate) {
     $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
-    $workDayTypeLabels = WorkDay::buildOptions('type');
-    $workDayTypeNames = WorkDay::buildOptions('type', 'validate');
     $calendar = [];
     foreach($datePeriod as $date) {
       $workDayType = $this->getWorkDayTypeForDate($date, $effectiveDate);

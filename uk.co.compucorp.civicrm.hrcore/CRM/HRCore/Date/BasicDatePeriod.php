@@ -28,6 +28,17 @@ class CRM_HRCore_Date_BasicDatePeriod implements IteratorAggregate {
   private $datePeriod;
 
   /**
+   * @var \DateTime
+   *   The start date
+   */
+  private $startDate;
+
+  /**
+   * @var \DateTime
+   *   The end date
+   */
+  private $endDate;
+  /**
    * @param mixed $start
    *   Can either be a DateTimeInterface instance of any value acceptable by the
    *   DateTimeImmutable constructor
@@ -47,6 +58,9 @@ class CRM_HRCore_Date_BasicDatePeriod implements IteratorAggregate {
     } else {
       $end = new DateTime($end);
     }
+    $this->startDate = $start;
+    $this->endDate = clone $end;
+
     $end = $end->modify('+1 day');
 
     $interval = new DateInterval('P1D');
@@ -64,5 +78,63 @@ class CRM_HRCore_Date_BasicDatePeriod implements IteratorAggregate {
    */
   public function getIterator() {
     return $this->datePeriod;
+  }
+
+  /**
+   * This method will adjust the date range given by $startDate and $endDate
+   * to be inside this period date range.
+   *
+   * If the given $startDate is less than the period start date, it will be
+   * changed to be equals the period start date. If the given $endDate is greater
+   * than the period end date, it will be changed to be equals to the period
+   * end date.
+   *
+   * Example:
+   * Period start date: 2016-01-01
+   * Period end date: 2016-12-31
+   * $startDate: 2015-10-01
+   * $endDate: 2016-07-01
+   *
+   * Adjusted values:
+   * $startDate: 2016-01-01 (Adjusted to be equals to the period start date)
+   * $endDate: 2016-07-01 (Not adjusted since it's less then the period end date)
+   *
+   * @param string $startDate
+   *    A date any in any format acceptable by the DateTimeImmutable constructor
+   * @param string $endDate
+   *    A date any in any format acceptable by the DateTimeImmutable constructor
+   *
+   * @return self
+   *  A BasicDatePeriod object with having the adjusted dates
+   *  as its start and end date property.
+   */
+  public function adjustDatesToMatchPeriodDates($startDate, $endDate) {
+    if (new DateTime($startDate) < $this->startDate) {
+      $startDate = $this->startDate;
+    }
+
+    if (new DateTime($endDate) > $this->endDate) {
+      $endDate = $this->endDate;
+    }
+
+    return new self($startDate, $endDate);
+  }
+
+  /**
+   * Returns the period start date
+   *
+   * @return DateTime
+   */
+  public function getStartDate() {
+    return $this->startDate;
+  }
+
+  /**
+   * Returns the period end date
+   *
+   * @return DateTime
+   */
+  public function getEndDate() {
+    return $this->endDate;
   }
 }
