@@ -36,12 +36,17 @@ define([
       });
 
       describe('basic tests', function () {
+        var contactId = '1';
+        var startDate = '2017-01-01';
+        var endDate = '2017-12-31';
+        var params = { foo: 'foo', bar: 'bar' };
+
         beforeEach(function () {
-          Calendar.get(jasmine.any(String), jasmine.any(String));
+          Calendar.get(contactId, startDate, endDate, params);
         });
 
         it('calls the equivalent API method', function () {
-          expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
+          expect(WorkPatternAPI.getCalendar).toHaveBeenCalledWith(contactId, startDate, endDate, params);
         });
       });
 

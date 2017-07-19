@@ -53,8 +53,9 @@ define([
 
     describe('getCalendar()', function () {
       var workPatternPromise;
-      var dummyContactId = 1;
-      var dummyPeriodId = 2;
+      var contactId = 1;
+      var startDate = '2017-01-01';
+      var endDate = '2017-12-31';
       var additionalFilters = { foo: 'foo', bar: 'bar' };
 
       beforeEach(function () {
@@ -68,7 +69,7 @@ define([
 
       describe('basic tests', function () {
         beforeEach(function () {
-          workPatternPromise = WorkPatternAPI.getCalendar(dummyContactId, dummyPeriodId, additionalFilters);
+          workPatternPromise = WorkPatternAPI.getCalendar(contactId, startDate, endDate, additionalFilters);
         });
 
         it('sends a GET request to the api', function () {
@@ -80,10 +81,11 @@ define([
           expect(WorkPatternAPI.sendGET.calls.mostRecent().args[1]).toBe('getcalendar');
         });
 
-        it('passes the contact id and period id to the api', function () {
+        it('passes the contact id, start date and end date to the api', function () {
           expect(WorkPatternAPI.sendGET.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
-            contact_id: dummyContactId,
-            period_id: dummyPeriodId
+            contact_id: contactId,
+            start_date: startDate,
+            end_date: endDate
           }));
         });
 
@@ -103,7 +105,7 @@ define([
       });
 
       describe('when multiple contact ids are passed', function () {
-        var multipleContacts = [dummyContactId, dummyContactId + 1];
+        var multipleContacts = [contactId, contactId + 1];
 
         beforeEach(function () {
           WorkPatternAPI.getCalendar(multipleContacts, jasmine.any(Number));

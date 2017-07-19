@@ -20,14 +20,15 @@ define([
          * as a list of days and their type
          *
          * @param {string/int/Array} contactId can be also an array for multiple contacts
-         * @param {string} periodId
+         * @param {string} startDate
+         * @param {string} endDate
          * @param {object} params additional parameters
          * @return {Promise} resolves with CalendarInstance(s)
          */
-        get: function (contactId, periodId, params) {
+        get: function (contactId, startDate, endDate, params) {
           $log.debug('Calendar.get');
 
-          return workPatternAPI.getCalendar(contactId, periodId, params)
+          return workPatternAPI.getCalendar(contactId, startDate, endDate, params)
             .then(function (data) {
               var list = data.values.map(function (contactCalendar) {
                 return instance.init(contactCalendar);

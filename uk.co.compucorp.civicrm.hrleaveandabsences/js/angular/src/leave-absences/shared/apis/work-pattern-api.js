@@ -49,20 +49,22 @@ define([
       },
 
       /**
-       * Returns the calendar for the given contact(s) and period,
+       * Returns the calendar for the given contact(s) and the date range,
        * as a list of days and their type
        *
        * @param {string/int/Array} contactId can be also an array for multiple contacts
-       * @param {string/int} periodId The ID of the Absence Period
+       * @param {string} startDate
+       * @param {string} endDate
        * @param {object} params additional parameters
        * @return {Promise} Resolved with {Array} All calendar records
        */
-      getCalendar: function (contactId, periodId, params) {
-        $log.debug('WorkPatternAPI.getCalendar', contactId, periodId, params);
+      getCalendar: function (contactId, startDate, endDate, params) {
+        $log.debug('WorkPatternAPI.getCalendar', contactId, startDate, endDate, params);
 
         return this.sendGET('WorkPattern', 'getcalendar', _.assign({}, params, {
           contact_id: _.isArray(contactId) ? { 'IN': contactId } : contactId,
-          period_id: periodId
+          start_date: startDate,
+          end_date: endDate
         }));
       },
 
