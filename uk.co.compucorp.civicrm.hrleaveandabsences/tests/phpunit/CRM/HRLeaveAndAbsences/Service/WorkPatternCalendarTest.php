@@ -4,6 +4,7 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRCore_Date_BasicDatePeriod as BasicDatePeriod;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar as WorkPatternCalendarService;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
@@ -54,10 +55,11 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     //15 days date interval.
     $startDate = '2015-01-05';
     $endDate = '2015-01-19';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate, $endDate,
+      $datePeriod,
       $this->jobContractService
     );
 
@@ -103,11 +105,11 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     // 31 days date interval
     $startDate = '2015-01-01';
     $endDate = '2015-01-31';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate,
-      $endDate,
+      $datePeriod,
       $this->jobContractService);
 
     $workDayTypes = $this->workDayTypeOptions;
@@ -160,11 +162,11 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     // 10 days date interval
     $startDate = '2015-01-01';
     $endDate = '2015-01-10';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate,
-      $endDate,
+      $datePeriod,
       $this->jobContractService);
     $calendarDates = $calendar->get();
 
@@ -196,11 +198,11 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     // 10 days date interval
     $startDate = '2015-01-01';
     $endDate = '2015-01-10';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate,
-      $endDate,
+      $datePeriod,
       $this->jobContractService
     );
     $calendarDates = $calendar->get();
@@ -260,11 +262,11 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     // 2 weeks interval
     $startDate = '2015-01-05';
     $endDate = '2015-01-19';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate,
-      $endDate,
+      $datePeriod,
       $this->jobContractService
     );
     $calendarDates = $calendar->get();
@@ -304,11 +306,11 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
 
     $startDate = '2015-01-01';
     $endDate = '2015-01-05';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate,
-      $endDate,
+      $datePeriod,
       $this->jobContractService
     );
     $calendarDates = $calendar->get();
@@ -351,11 +353,11 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     // 19 days interval
     $startDate = '2015-01-05';
     $endDate = '2015-01-23';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate,
-      $endDate,
+      $datePeriod,
       $this->jobContractService
     );
     $calendarDates = $calendar->get();
@@ -405,11 +407,11 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
 
     $startDate = '2016-01-01';
     $endDate = '2016-12-31';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate,
-      $endDate,
+      $datePeriod,
       $this->jobContractService
     );
     $calendarDates = $calendar->get();
@@ -430,12 +432,12 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
 
     $startDate = '2016-03-03';
     $endDate = '2016-03-09';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     //A contract is fabricated for the period between 2016-03-03 and 2016-03-09
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate,
-      $endDate,
+      $datePeriod,
       $this->jobContractService
     );
     $calendarDates = $calendar->get();
@@ -468,12 +470,12 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
     $startDate = '2016-03-03';
     $endDate = '2016-03-06';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     //A contract is fabricated period between 2016-03-03 and 2016-03-06
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate,
-      $endDate,
+      $datePeriod,
       $this->jobContractService
     );
     $calendarDates = $calendar->get();
@@ -529,11 +531,11 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
 
     $startDate = '2016-01-01';
     $endDate = '2016-01-31';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
-      $startDate,
-      $endDate,
+      $datePeriod,
       $this->jobContractService
     );
     $calendarDates = $calendar->get();
