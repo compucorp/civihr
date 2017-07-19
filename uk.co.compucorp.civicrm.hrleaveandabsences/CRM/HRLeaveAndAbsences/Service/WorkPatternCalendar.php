@@ -20,7 +20,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
   private $contactID;
 
   /**
-   * @var BasicDatePeriod
+   * @var CRM_HRCore_Date_BasicDatePeriod
    */
   private $datePeriod;
 
@@ -40,10 +40,10 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar {
    * CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar constructor.
    *
    * @param int $contactID
-   * @param BasicDatePeriod $datePeriod
+   * @param CRM_HRCore_Date_BasicDatePeriod $datePeriod
    * @param \CRM_HRLeaveAndAbsences_Service_JobContract $jobContractService
    */
-  public function __construct($contactID, $datePeriod, JobContractService $jobContractService) {
+  public function __construct($contactID, BasicDatePeriod $datePeriod, JobContractService $jobContractService) {
     $this->contactID = $contactID;
     $this->datePeriod = $datePeriod;
     $this->jobContractService = $jobContractService;

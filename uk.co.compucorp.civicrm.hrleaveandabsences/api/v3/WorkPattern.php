@@ -81,9 +81,9 @@ function _civicrm_api3_work_pattern_getcalendar_spec(&$spec) {
  * WorkPattern.getCalendar API
  *
  * This API endpoint returns a list of dates for the given start and end date
- * Period. The returned dates are only those within the contracts of the contact
- * with the given contact_id. For each date, we use the work pattern(s) assign to
- * the contact to check if it's a working day, non working day or weekend.
+ * Period. The returned dates are only those within the start and end date of
+ * the period for the given contact_id. For each date, we use the work pattern(s)
+ * assign to the contact to check if it's a working day, non working day or weekend.
  *
  * @param array $params
  *

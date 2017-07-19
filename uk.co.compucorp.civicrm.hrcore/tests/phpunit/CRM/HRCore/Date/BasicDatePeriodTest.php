@@ -98,7 +98,6 @@ class CRM_HRCore_Date_BasicDatePeriodTest extends \PHPUnit_Framework_TestCase im
     //fromDate is less than the period start date therefore period start date will be returned
     $this->assertEquals($period->getStartDate(), $adjustedPeriod->getStartDate());
     $this->assertEquals($period->getEndDate(), $adjustedPeriod->getEndDate());
-
   }
 
   public function testAdjustDatesToMatchPeriodDatesShouldAdjustEndDateIfItsGreaterThanThePeriodEndDate() {

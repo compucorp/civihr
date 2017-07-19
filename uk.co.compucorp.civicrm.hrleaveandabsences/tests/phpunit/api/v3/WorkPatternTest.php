@@ -93,7 +93,6 @@ class api_v3_WorkPatternTest extends BaseHeadlessTest {
 
     $workDayTypes = array_flip(WorkDay::buildOptions('type', 'validate'));
 
-
     // 15 days interval
     $startDate = '2015-01-05';
     $endDate = '2015-01-08';
