@@ -605,7 +605,7 @@ define([
       this._loadCalendar = function () {
         var self = this;
 
-        return Calendar.get(self.request.contact_id, self.period.id)
+        return Calendar.get(self.request.contact_id, self.period.start_date, self.period.end_date)
           .then(function (usersCalendar) {
             self.calendar = usersCalendar;
           });
