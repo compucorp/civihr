@@ -263,8 +263,10 @@
 
             beforeEach(function () {
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+              expiryDate = '2017-12-31';
               toilRequest = TOILRequestInstance.init(mockData.findBy('status_id', status));
               toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+              toilRequest.toil_expiry_date = expiryDate;
               var directiveOptions = {
                 contactId: 203, // manager's contact id
                 leaveRequest: toilRequest
@@ -272,6 +274,7 @@
 
               role = 'manager';
               initTestController(directiveOptions);
+              $ctrl.calculateToilExpiryDate();
 
               expiryDate = $ctrl._convertDateFormatFromServer($ctrl.request.toil_expiry_date);
               originalToilToAccrue = optionGroupMock.specificObject('hrleaveandabsences_toil_amounts', 'name', 'quarter_day');
@@ -313,12 +316,13 @@
                   role = 'staff';
                   delete $ctrl.request.id;
 
+                  oldExpiryDate = $ctrl.request.toil_expiry_date;
                   initTestController(directiveOptions);
-                  $ctrl.updateExpiryDate();
+                  $ctrl.calculateToilExpiryDate();
                 });
 
-                it('has expired date set by staff', function () {
-                  expect($ctrl.request.toil_expiry_date).toEqual(newExpiryDate);
+                it('has expired date updated by staff', function () {
+                  expect($ctrl.request.toil_expiry_date).not.toEqual(oldExpiryDate);
                 });
 
                 it('has toil amount set by staff', function () {
@@ -333,9 +337,9 @@
                     leaveRequest: $ctrl.request
                   };
                   role = 'staff';
-                  $ctrl.request.toil_expiry_date = oldExpiryDate;
 
                   initTestController(directiveOptions);
+                  $ctrl.uiOptions.expiryDate = oldExpiryDate;
                   $ctrl.updateExpiryDate();
                 });
 

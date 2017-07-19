@@ -382,16 +382,15 @@ define([
           }.bind(this));
       };
 
-      /**
-       * This should be called whenever a date has been changed
-       * First it syncs `from` and `to` date, if it's in 'single day' mode
-       * Then, if all the dates are there, it gets the balance change
-       *
-       * @param {Date} date - the selected date
-       * @param {String} dayType - set to from if from date is selected else to
-       * @return {Promise}
-       */
-      this.updateAbsencePeriodDatesTypes = function (date, dayType) {
+       /**
+        * Loads absence types and calendar data on component initialization and
+        * when they need to be updated.
+        *
+        * @param {Date} date - the selected date
+        * @param {String} dayType - set to from if from date is selected else to
+        * @return {Promise}
+        */
+      this.loadAbsencePeriodDatesTypes = function (date, dayType) {
         var self = this;
         var oldPeriodId = self.period.id;
         dayType = dayType || 'from';
@@ -419,21 +418,34 @@ define([
             }
           })
           .then(function () {
-            self._setMinMaxDate();
+            this._setMinMaxDate();
 
-            return filterLeaveRequestDayTypes.call(self, date, dayType);
-          })
-          .then(function () {
-            return self.updateBalance();
-          })
-          .catch(function (error) {
-            self.errors = [error];
+            return filterLeaveRequestDayTypes.call(this, date, dayType);
+          }.bind(this));
+      };
 
-            self._setDateAndTypes();
-          })
-          .finally(function () {
-            self.loading[dayType + 'DayTypes'] = false;
-          });
+      /**
+       * This should be called whenever a date has been changed
+       * First it syncs `from` and `to` date, if it's in 'single day' mode
+       * Then, if all the dates are there, it gets the balance change
+       *
+       * @param {Date} date - the selected date
+       * @param {String} dayType - set to from if from date is selected else to
+       * @return {Promise}
+       */
+      this.updateAbsencePeriodDatesTypes = function (date, dayType) {
+        return this.loadAbsencePeriodDatesTypes(date, dayType)
+        .then(function () {
+          return this.updateBalance();
+        }.bind(this))
+        .catch(function (error) {
+          this.errors = [error];
+
+          this._setDateAndTypes();
+        }.bind(this))
+        .finally(function () {
+          this.loading[dayType + 'DayTypes'] = false;
+        }.bind(this));
       };
 
       /**
@@ -912,13 +924,13 @@ define([
 
           this.uiOptions.fromDate = this._convertDateFormatFromServer(this.request.from_date);
 
-          return this.updateAbsencePeriodDatesTypes(this.uiOptions.fromDate, 'from')
+          return this.loadAbsencePeriodDatesTypes(this.uiOptions.fromDate, 'from')
             .then(function () {
               // to_date and type has been reset in above call so reinitialize from clone
               this.request.to_date = attributes.to_date;
               this.request.to_date_type = attributes.to_date_type;
               this.uiOptions.toDate = this._convertDateFormatFromServer(this.request.to_date);
-              return this.updateAbsencePeriodDatesTypes(this.uiOptions.toDate, 'to');
+              return this.loadAbsencePeriodDatesTypes(this.uiOptions.toDate, 'to');
             }.bind(this));
         } else {
           return $q.resolve();

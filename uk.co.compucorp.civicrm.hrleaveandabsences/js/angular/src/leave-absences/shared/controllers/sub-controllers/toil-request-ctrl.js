@@ -75,6 +75,7 @@ define([
         })
         .then(function (expiryDate) {
           vm.request.toil_expiry_date = expiryDate;
+          vm.uiOptions.expiryDate = new Date(expiryDate);
           return expiryDate;
         });
       };
@@ -105,14 +106,21 @@ define([
       };
 
       /**
-       * This should be called whenever a date has been changed
-       * First it syncs `from` and `to` date, if it's in 'single day' mode
-       * Then, if all the dates are there, it gets the balance change
+       * Clears the request's expiry date and the UI expiry date picker.
+       */
+      vm.clearExpiryDate = function () {
+        vm.request.toil_expiry_date = false;
+        vm.uiOptions.expiryDate = null;
+      };
+
+      /**
+       * Overwrites the parent funtion. Inits UI values, and loads absence types
+       * and calendar.
        *
        * @param {Date} date - the selected date
        * @return {Promise}
        */
-      vm.updateAbsencePeriodDatesTypes = function (date) {
+      vm.loadAbsencePeriodDatesTypes = function (date) {
         var oldPeriodId = vm.period.id;
 
         return vm._checkAndSetAbsencePeriod(date)
@@ -131,12 +139,23 @@ define([
                 vm._loadCalendar()
               ]);
             }
-          })
+          });
+      };
+
+      /**
+       * Overwrites the parent function. It calculates the expiry date when
+       * the `from` or `to` date change value.
+       *
+       * @param {Date} date - the selected date
+       * @return {Promise}
+       */
+      vm.updateAbsencePeriodDatesTypes = function (date) {
+        return vm.loadAbsencePeriodDatesTypes()
           .then(function () {
             vm._setMinMaxDate();
             vm._setDates();
-            vm.calculateToilExpiryDate();
             vm.updateBalance();
+            vm.calculateToilExpiryDate();
           })
           .catch(function (error) {
             vm.errors = [error];
@@ -157,7 +176,6 @@ define([
        */
       vm._initRequest = function () {
         var attributes = vm._initRequestAttributes();
-
         vm.request = TOILRequestInstance.init(attributes);
         // toil request does not have date type but leave request requires it for validation, hence setting it to All Day's value which is 1
         vm.request.to_date_type = vm.request.from_date_type = '1';
