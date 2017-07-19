@@ -535,10 +535,10 @@ define([
      * Chooses the months that are to be selected by default
      */
     function setDefaultMonths () {
-      var currentMonth = moment().month();
+      var currentMonthId = moment().month() + '' + moment().year();
 
       vm.selectedMonths = [_.find(vm.months, function (month) {
-        return month.index === currentMonth;
+        return month.id === currentMonthId;
       }).index];
     }
 
