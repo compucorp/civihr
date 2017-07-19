@@ -92,13 +92,13 @@ function _civicrm_api3_work_pattern_getcalendar_spec(&$spec) {
 function civicrm_api3_work_pattern_getcalendar($params) {
   $contactIDs = _civicrm_api3_work_pattern_get_contact_id_from_params($params);
   $jobContractService = new CRM_HRLeaveAndAbsences_Service_JobContract();
+  $datePeriod = new CRM_HRCore_Date_BasicDatePeriod($params['start_date'], $params['end_date']);
 
   $calendars = [];
   foreach($contactIDs as $contactID) {
     $calendar = new CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar(
       $contactID,
-      $params['start_date'],
-      $params['end_date'],
+      $datePeriod,
       $jobContractService
     );
 
