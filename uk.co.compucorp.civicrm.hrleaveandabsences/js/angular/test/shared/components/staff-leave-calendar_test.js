@@ -706,38 +706,84 @@
         });
       });
 
-      describe('when a leave request is deleted', function () {
-        var leaveRequestToDelete;
+      describe('event listeners', function () {
+        describe('when a leave request is deleted', function () {
+          var leaveRequestToDelete;
 
-        beforeEach(function () {
-          leaveRequestToDelete = getLeaveRequestOfCurrentlySelectedMonth();
+          beforeEach(function () {
+            leaveRequestToDelete = getLeaveRequestOfCurrentlySelectedMonth();
 
-          LeaveRequest.all.calls.reset();
-          $rootScope.$emit('LeaveRequest::deleted', leaveRequestToDelete);
-          $rootScope.$digest();
+            LeaveRequest.all.calls.reset();
+            $rootScope.$emit('LeaveRequest::deleted', leaveRequestToDelete);
+            $rootScope.$digest();
+          });
+
+          it('does not re-fetch the leave requests from the backend', function () {
+            expect(LeaveRequest.all).not.toHaveBeenCalled();
+          });
+
+          it('removes the leave request from the list of the contact\'s leave requests', function () {
+            expect(_.find(controller.leaveRequests[CRM.vars.leaveAndAbsences.contactId], function (leaveRequest) {
+              return leaveRequestToDelete.id === leaveRequest.id;
+            })).toBeUndefined();
+          });
+
+          it('resets the properties of each day that the leave request spans', function () {
+            expect(getLeaveRequestDays(leaveRequestToDelete).every(function (day) {
+              var contactData = day.contactsData[CRM.vars.leaveAndAbsences.contactId];
+
+              return contactData.leaveRequest === null &&
+                contactData.styles === null &&
+                contactData.isAccruedTOIL === null &&
+                contactData.isRequested === null &&
+                contactData.isAM === null &&
+                contactData.isPM === null;
+            })).toBe(true);
+          });
         });
 
-        it('does not re-fetches the leave requests from the backend', function () {
-          expect(LeaveRequest.all).not.toHaveBeenCalled();
-        });
+        describe('when a leave request is added', function () {
+          var leaveRequestToAdd;
 
-        it('removes the leave request from the list of the contact\'s leave requests', function () {
-          expect(_.find(controller.leaveRequests[CRM.vars.leaveAndAbsences.contactId], function (leaveRequest) {
-            return leaveRequestToDelete.id === leaveRequest.id;
-          })).toBeUndefined();
-        });
+          beforeEach(function () {
+            leaveRequestToAdd = _.clone(getLeaveRequestOfCurrentlySelectedMonth());
+            leaveRequestToAdd = _.assign(leaveRequestToAdd, {
+              id: '1',
+              from_date: '2016-02-20',
+              to_date: '2016-02-21',
+              dates: [
+                { 'id': '1', 'date': '2016-02-20' },
+                { 'id': '2', 'date': '2016-02-21' }
+              ]
+            });
+            LeaveRequest.all.calls.reset();
 
-        it('resets the properties of each day that the leave request spanned', function () {
-          expect(getLeaveRequestDays(leaveRequestToDelete).every(function (day) {
-            var contactData = day.contactsData[CRM.vars.leaveAndAbsences.contactId];
+            $rootScope.$emit('LeaveRequest::new', leaveRequestToAdd);
+            $rootScope.$digest();
+          });
 
-            return contactData.leaveRequest === null &&
-              contactData.styles === null &&
-              contactData.isAccruedTOIL === null &&
-              contactData.isRequested === null &&
-              contactData.isAM === null &&
-              contactData.isPM === null;
-          })).toBe(true);
+          it('does not re-fetch the leave requests from the backend', function () {
+            expect(LeaveRequest.all).not.toHaveBeenCalled();
+          });
+
+          it('adds the leave request to the list of the contacts\'s leave requests', function () {
+            expect(_.find(controller.leaveRequests[CRM.vars.leaveAndAbsences.contactId], function (leaveRequest) {
+              return leaveRequestToAdd.id === leaveRequest.id;
+            })).toBeDefined();
+          });
+
+          it('updates the properties of each day that the leave request spans', function () {
+            expect(getLeaveRequestDays(leaveRequestToAdd).every(function (day) {
+              var contactData = day.contactsData[CRM.vars.leaveAndAbsences.contactId];
+
+              return contactData.leaveRequest !== null &&
+                contactData.styles !== null &&
+                contactData.isAccruedTOIL !== null &&
+                contactData.isRequested !== null &&
+                contactData.isAM !== null &&
+                contactData.isPM !== null;
+            })).toBe(true);
+          });
         });
 
         function getLeaveRequestOfCurrentlySelectedMonth () {

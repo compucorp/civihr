@@ -113,6 +113,17 @@ define([
     };
 
     /**
+     * Adds a leave request to the calendar
+     *
+     * @param {Object} event
+     * @param {LeaveRequestInstance} leaveRequest
+     */
+    function addLeaveRequest (event, leaveRequest) {
+      indexLeaveRequests([leaveRequest]);
+      updateLeaveRequestDaysProperties(leaveRequest);
+    }
+
+    /**
      * Creates a list of all the months in the currently selected period
      */
     function buildPeriodMonthsList () {
@@ -133,13 +144,15 @@ define([
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
-    function deleteLeaveRequest (leaveRequest) {
+    function deleteLeaveRequest (event, leaveRequest) {
       vm.leaveRequests[leaveRequest.contact_id] = _.omit(
         vm.leaveRequests[leaveRequest.contact_id],
         function (leaveRequestObj) {
           return leaveRequestObj.id === leaveRequest.id;
         }
       );
+
+      updateLeaveRequestDaysProperties(leaveRequest);
     }
 
     /**
@@ -163,6 +176,29 @@ define([
     }
 
     /**
+     * Returns the list of day objects corresponding to the dates the
+     * given leave request spans
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {Array}
+     */
+    function getLeaveRequestDays (leaveRequest) {
+      var days = [];
+      var pointerDate = moment(leaveRequest.from_date).clone();
+      var toDate = moment(leaveRequest.to_date);
+
+      while (pointerDate.isSameOrBefore(toDate)) {
+        days.push(_.find(getMonthFromDate(pointerDate).days, function (day) {
+          return day.date === pointerDate.format('YYYY-MM-DD');
+        }));
+
+        pointerDate.add(1, 'day');
+      }
+
+      return days;
+    }
+
+    /**
      * Returns leave status value from name
      * @param {String} name - name of the leave status
      * @returns {int/boolean}
@@ -173,6 +209,20 @@ define([
       });
 
       return leaveStatus ? leaveStatus.value : false;
+    }
+
+    /**
+     * Returns a month object starting from a date
+     *
+     * @param  {Object} dateMoment
+     * @return {Object}
+     */
+    function getMonthFromDate (dateMoment) {
+      var monthId = generateMonthId(dateMoment);
+
+      return _.find(vm.months, function (month) {
+        return month.id === monthId;
+      });
     }
 
     /**
@@ -203,11 +253,13 @@ define([
     function indexLeaveRequests (leaveRequests) {
       var deferred = $q.defer();
 
-      _.each(leaveRequests, function (leaveRequest) {
+      leaveRequests.forEach(function (leaveRequest) {
+        var days = leaveRequest.dates ? leaveRequest.dates : getLeaveRequestDays(leaveRequest);
+
         vm.leaveRequests[leaveRequest.contact_id] = vm.leaveRequests[leaveRequest.contact_id] || {};
 
-        _.each(leaveRequest.dates, function (leaveRequestDate) {
-          vm.leaveRequests[leaveRequest.contact_id][leaveRequestDate.date] = leaveRequest;
+        days.forEach(function (day) {
+          vm.leaveRequests[leaveRequest.contact_id][day.date] = leaveRequest;
         });
       });
 
@@ -220,13 +272,10 @@ define([
      * Initializes the event listeners
      */
     function initListeners () {
-      $rootScope.$on('LeaveRequest::new', vm.refresh);
+      $rootScope.$on('LeaveRequest::new', addLeaveRequest);
       $rootScope.$on('LeaveRequest::edit', vm.refresh);
       $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
-      $rootScope.$on('LeaveRequest::deleted', function (event, leaveRequest) {
-        deleteLeaveRequest(leaveRequest);
-        updateLeaveRequestDaysProperties(leaveRequest);
-      });
+      $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest);
     }
 
     /**
@@ -531,11 +580,7 @@ define([
      * Chooses the months that are to be selected by default
      */
     function setDefaultMonths () {
-      var currentMonthId = generateMonthId(moment());
-
-      vm.selectedMonths = [_.find(vm.months, function (month) {
-        return month.id === currentMonthId;
-      }).index];
+      vm.selectedMonths = [getMonthFromDate(moment()).index];
     }
 
     /**
@@ -560,24 +605,14 @@ define([
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function updateLeaveRequestDaysProperties (leaveRequest) {
-      var month, workPatternCalendar, dayObj;
-      var pointerDate = moment(leaveRequest.from_date).clone();
-      var toDate = moment(leaveRequest.to_date);
-
-      while (pointerDate.isSameOrBefore(toDate)) {
-        month = _.find(vm.months, function (month) {
-          return month.id === generateMonthId(pointerDate);
-        });
-        workPatternCalendar = _.find(calendarsByMonthId[month.id], function (calendar) {
+      _.each(getLeaveRequestDays(leaveRequest), function (day) {
+        var month = getMonthFromDate(moment(day.date));
+        var calendar = _.find(calendarsByMonthId[month.id], function (calendar) {
           return calendar.contact_id === leaveRequest.contact_id;
         });
-        dayObj = _.find(month.days, function (day) {
-          return day.date === pointerDate.format('YYYY-MM-DD');
-        });
 
-        setDayProperties(dayObj, workPatternCalendar);
-        pointerDate.add(1, 'day');
-      }
+        setDayProperties(day, calendar);
+      });
     }
   }
 });
