@@ -3,6 +3,21 @@
     {
       "label": "SSP - Dashboard",
       "url": "dashboard"
+    },
+    {
+      "label": "SSP - Dashboard- Request TOIL",
+      "url": "dashboard",
+      "onReadyScript": "ssp/dashboard-request-toil"
+    },
+    {
+      "label": "SSP - Dashboard- Request TOIL Date",
+      "url": "dashboard",
+      "onReadyScript": "ssp/dashboard-request-toil-date"
+    },
+    {
+      "label": "SSP - Dashboard- Open Calendar",
+      "url": "dashboard",
+      "onReadyScript": "ssp/dashboard-open-calendar"
     }
   ]
 }
