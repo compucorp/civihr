@@ -149,29 +149,13 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
    * @return \CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern|null
    */
   public static function getForDate($contactID, DateTime $date) {
-    $contactWorkPatternTable = self::getTableName();
-    $workPatternTable = WorkPattern::getTableName();
+    $contactWorkPattern = self::getAllForPeriod($contactID, $date, $date);
 
-    $query = "SELECT cwp.* FROM {$contactWorkPatternTable} cwp
-              INNER JOIN {$workPatternTable} wp 
-                ON cwp.pattern_id = wp.id
-              WHERE cwp.contact_id = %1 AND 
-              cwp.effective_date <= %2 AND 
-              (cwp.effective_end_date >= %2 OR cwp.effective_end_date IS NULL) AND
-              wp.is_active = 1";
-
-    $params = [
-      1 => [$contactID, 'Integer'],
-      2 => [$date->format('Y-m-d'), 'String']
-    ];
-
-    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
-    if($result->N == 1) {
-      $result->fetch();
-      return $result;
+    if(!$contactWorkPattern) {
+      return null;
     }
 
-    return null;
+    return $contactWorkPattern[0];
   }
 
   /**
