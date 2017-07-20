@@ -15,17 +15,13 @@ define([
         'type_id': absenceTypeData.all().values[0]['id'],
         'contact_id': '202',
         'status_id': optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1'),
-        'from_date': '2016-02-01',
+        'from_date': '2016-02-02',
         'from_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
         'to_date': '2016-02-03',
         'to_date_type': optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1'),
-        'balance_change': -3,
+        'balance_change': -2,
         'request_type': 'leave',
         'dates': [{
-          'id': '20',
-          'date': '2016-02-01'
-        },
-        {
           'id': '21',
           'date': '2016-02-02'
         },
