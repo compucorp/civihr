@@ -157,6 +157,20 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     $this->assertEquals($workPattern3->id, $contactWorkPattern->pattern_id);
   }
 
+  public function testGetForDateReturnsNullForADisabledWorkPatternEvenThoughTheContactWorkPatternIsStillEffective() {
+    $workPattern1 = WorkPatternFabricator::fabricate(['is_active' => 0]);
+    $contactID = 2;
+
+    ContactWorkPattern::create([
+      'contact_id' => $contactID,
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+
+    $contactWorkPattern = ContactWorkPattern::getForDate($contactID, new DateTime('2016-03-25'));
+    $this->assertNull($contactWorkPattern);
+  }
+
   public function testGetForDateReturnsNullIfTheEmployeeHasNoWorkPatterns() {
     $contactWorkPattern = ContactWorkPattern::getForDate(2, new DateTime('2016-03-25'));
     $this->assertNull($contactWorkPattern);
