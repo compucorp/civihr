@@ -490,6 +490,43 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     ));
   }
 
+  public function testGetAllForPeriodOnlyReturnsContactWorkPatternsLinkedToAnActiveWorkPatternForTheGivenPeriod() {
+    $workPattern1 = WorkPatternFabricator::fabricate();
+    $workPattern2 = WorkPatternFabricator::fabricate(['is_active' => 0]);
+    $workPattern3 = WorkPatternFabricator::fabricate();
+    $contactID = 2;
+
+    $contactWorkPattern1 = ContactWorkPattern::create([
+      'contact_id' => $contactID,
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+
+    $contactWorkPattern2 = ContactWorkPattern::create([
+      'contact_id' => $contactID,
+      'pattern_id' => $workPattern2->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-02-23'),
+    ]);
+
+    $contactWorkPattern3 = ContactWorkPattern::create([
+      'contact_id' => $contactID,
+      'pattern_id' => $workPattern3->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-03-01'),
+    ]);
+
+    $contactWorkPatterns = ContactWorkPattern::getAllForPeriod(
+      $contactID,
+      new DateTime('2016-01-01'),
+      new DateTime('2016-03-30')
+    );
+
+    //ContactWorkPattern3 is not linked to an active WorkPattern therefore it wil not
+    //be returned.
+    $this->assertCount(2, $contactWorkPatterns);
+    $this->assertEquals($contactWorkPattern1->id, $contactWorkPatterns[0]->id);
+    $this->assertEquals($contactWorkPattern3->id, $contactWorkPatterns[1]->id);
+  }
+
   public function testGetContactsUsingWorkPatternFromDate() {
     $contactID1 = 1;
     $contactID2 = 2;
