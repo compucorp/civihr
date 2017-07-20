@@ -1,0 +1,8 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP - Manager Absence Approval",
+      "url": "manager-absence-approval"
+    }
+  ]
+}

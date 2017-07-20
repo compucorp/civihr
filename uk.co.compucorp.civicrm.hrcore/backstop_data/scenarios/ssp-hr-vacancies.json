@@ -3,6 +3,11 @@
     {
       "label": "SSP - HR Vacancies",
       "url": "hr-vacancies"
+    },
+    {
+      "label": "SSP - HR Vacancies - More Details",
+      "url": "hr-vacancies",
+      "onReadyScript": "ssp/vacancies-more-details"
     }
   ]
 }
