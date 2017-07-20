@@ -3,6 +3,11 @@
     {
       "label": "SSP - HR Resources",
       "url": "hr-resources"
+    },
+    {
+      "label": "SSP - HR Resources - See Resources",
+      "url": "hr-resources",
+      "onReadyScript": "ssp/hr-resources-see-resources"
     }
   ]
 }
