@@ -706,6 +706,64 @@
         });
       });
 
+      describe('when a leave request is deleted', function () {
+        var leaveRequestToDelete;
+
+        beforeEach(function () {
+          leaveRequestToDelete = getLeaveRequestOfCurrentlySelectedMonth();
+
+          LeaveRequest.all.calls.reset();
+          $rootScope.$emit('LeaveRequest::deleted', leaveRequestToDelete);
+          $rootScope.$digest();
+        });
+
+        it('does not re-fetches the leave requests from the backend', function () {
+          expect(LeaveRequest.all).not.toHaveBeenCalled();
+        });
+
+        it('removes the leave request from the list of the contact\'s leave requests', function () {
+          expect(_.find(controller.leaveRequests[CRM.vars.leaveAndAbsences.contactId], function (leaveRequest) {
+            return leaveRequestToDelete.id === leaveRequest.id;
+          })).toBeUndefined();
+        });
+
+        it('resets the properties of each day that the leave request spanned', function () {
+          expect(getLeaveRequestDays(leaveRequestToDelete).every(function (day) {
+            var contactData = day.contactsData[CRM.vars.leaveAndAbsences.contactId];
+
+            return contactData.leaveRequest === null &&
+              contactData.styles === null &&
+              contactData.isAccruedTOIL === null &&
+              contactData.isRequested === null &&
+              contactData.isAM === null &&
+              contactData.isPM === null;
+          })).toBe(true);
+        });
+
+        function getLeaveRequestOfCurrentlySelectedMonth () {
+          return _(controller.leaveRequests[CRM.vars.leaveAndAbsences.contactId])
+            .find(function (leaveRequest) {
+              return _.includes(controller.selectedMonths, moment(leaveRequest.from_date).month());
+            });
+        }
+
+        function getLeaveRequestDays (leaveRequest) {
+          var days = [];
+          var pointerDate = moment(leaveRequest.from_date).clone();
+          var toDate = moment(leaveRequest.to_date);
+
+          while (pointerDate.isSameOrBefore(toDate)) {
+            days.push(_.find(controller.months[pointerDate.month()].days, function (day) {
+              return day.date === pointerDate.format('YYYY-MM-DD');
+            }));
+
+            pointerDate.add(1, 'day');
+          }
+
+          return days;
+        }
+      });
+
       function amend2016Period (params) {
         AbsencePeriod.all.and.callFake(function () {
           var absencePeriods = _.clone(absencePeriodData.all().values);
