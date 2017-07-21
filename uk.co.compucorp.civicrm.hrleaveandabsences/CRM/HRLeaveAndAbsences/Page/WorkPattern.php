@@ -174,6 +174,7 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
 
     if($workPattern->is_default) {
       $mask -= CRM_Core_Action::BASIC;
+      $mask -= CRM_Core_Action::DISABLE;
     }
 
     if($this->canNotDelete($workPattern->id)) {
