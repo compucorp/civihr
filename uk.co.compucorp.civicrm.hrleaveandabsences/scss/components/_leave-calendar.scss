@@ -5,6 +5,7 @@ $chr-leave-calendar-item-requested-border-height: 0.5em;
 $chr-leave-calendar-legend-size:                  20px;
 
 .chr_leave-calendar {
+  margin-bottom: 0;
 
   @media (min-width: $screen-lg-min) {
     table-layout: fixed;
@@ -68,8 +69,8 @@ td.chr_leave-calendar__name {
   }
 }
 
-//Public Holiday, Weekend and Non Working day needs to be specified before other styles
-//to give other styles more priority
+// Public Holiday, Weekend and Non Working day needs to be specified before other styles
+// to give other styles more priority
 .chr_leave-calendar__item--type--public-holiday {
   background-color: #8ec68a !important;
   border-color: #8ec68a;
@@ -153,6 +154,34 @@ td.chr_leave-calendar__name {
 .chr_leave-calendar__legend__label {
   font-size: $font-size-small;
 }
+
+
+.chr_leave-calendar__pagination {
+  padding: 5px 0;
+
+  [class*="btn"] {
+    outline: none;
+
+    .fa {
+      color: $gray;
+    }
+
+    &[disabled] {
+
+      .fa {
+        opacity: 0.5;
+      }
+    }
+
+    &:hover:not([disabled]) {
+
+      .fa {
+        color: $gray-darker;
+      }
+    }
+  }
+}
+
 
 .chr_leave-calendar__weekend {
   opacity: 0.5;
