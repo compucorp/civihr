@@ -176,6 +176,7 @@ define([
        */
       vm._initRequest = function () {
         var attributes = vm._initRequestAttributes();
+
         vm.request = TOILRequestInstance.init(attributes);
         // toil request does not have date type but leave request requires it for validation, hence setting it to All Day's value which is 1
         vm.request.to_date_type = vm.request.from_date_type = '1';

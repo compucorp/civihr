@@ -382,41 +382,40 @@ define([
           }.bind(this));
       };
 
-       /**
-        * Loads absence types and calendar data on component initialization and
-        * when they need to be updated.
-        *
-        * @param {Date} date - the selected date
-        * @param {String} dayType - set to from if from date is selected else to
-        * @return {Promise}
-        */
+      /**
+       * Loads absence types and calendar data on component initialization and
+       * when they need to be updated.
+       *
+       * @param {Date} date - the selected date
+       * @param {String} dayType - set to from if from date is selected else to
+       * @return {Promise}
+       */
       this.loadAbsencePeriodDatesTypes = function (date, dayType) {
-        var self = this;
-        var oldPeriodId = self.period.id;
+        var oldPeriodId = this.period.id;
         dayType = dayType || 'from';
-        self.loading[dayType + 'DayTypes'] = true;
+        this.loading[dayType + 'DayTypes'] = true;
 
-        return self._checkAndSetAbsencePeriod(date)
+        return this._checkAndSetAbsencePeriod(date)
           .then(function () {
-            var isInCurrentPeriod = oldPeriodId === self.period.id;
+            var isInCurrentPeriod = oldPeriodId === this.period.id;
 
             if (!isInCurrentPeriod) {
               // partial reset is required when user has selected a to date and
               // then changes absence period from from date
               // no reset required for single days and to date changes
-              if (self.uiOptions.multipleDays && dayType === 'from') {
-                self.uiOptions.showBalance = false;
-                self.uiOptions.toDate = null;
-                self.request.to_date = null;
-                self.request.to_date_type = null;
+              if (this.uiOptions.multipleDays && dayType === 'from') {
+                this.uiOptions.showBalance = false;
+                this.uiOptions.toDate = null;
+                this.request.to_date = null;
+                this.request.to_date_type = null;
               }
 
               return $q.all([
-                self._loadAbsenceTypes(),
-                self._loadCalendar()
+                this._loadAbsenceTypes(),
+                this._loadCalendar()
               ]);
             }
-          })
+          }.bind(this))
           .then(function () {
             this._setMinMaxDate();
 
