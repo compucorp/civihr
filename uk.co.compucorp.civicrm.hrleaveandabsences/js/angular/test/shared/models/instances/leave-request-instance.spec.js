@@ -14,7 +14,7 @@ define([
   'use strict';
 
   describe('LeaveRequestInstance', function () {
-    var $provide, LeaveRequestInstance, LeaveRequestAPI, $q, OptionGroup,
+    var $provide, LeaveRequestInstance, LeaveRequestAPI, $q, OptionGroup, OptionGroupAPIMock,
       $rootScope, instance, sharedSettings;
 
     beforeEach(module('leave-absences.models', 'leave-absences.models.instances',
@@ -33,14 +33,20 @@ define([
     });
 
     beforeEach(inject(['LeaveRequestInstance', 'LeaveRequestAPI', '$rootScope',
-      '$q', 'shared-settings', 'OptionGroup',
-      function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _sharedSettings_, _OptionGroup_) {
-        LeaveRequestInstance = _LeaveRequestInstance_.init({}, false);
+      '$q', 'shared-settings', 'OptionGroup', 'OptionGroupAPIMock',
+      function (_LeaveRequestInstance_, _LeaveRequestAPI_, _$rootScope_, _$q_, _sharedSettings_, _OptionGroup_, _OptionGroupAPIMock_) {
         LeaveRequestAPI = _LeaveRequestAPI_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         sharedSettings = _sharedSettings_;
         OptionGroup = _OptionGroup_;
+        OptionGroupAPIMock = _OptionGroupAPIMock_;
+
+        spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
+          return OptionGroupAPIMock.valuesOf(name);
+        });
+
+        LeaveRequestInstance = _LeaveRequestInstance_.init({}, false);
 
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
@@ -66,10 +72,6 @@ define([
 
       it('sets the request type to "leave"', function () {
         expect(instance.request_type).toEqual('leave');
-      });
-
-      it('sets the file uploader', function () {
-        expect(instance.fileUploader).toBeDefined();
       });
     });
 
@@ -171,9 +173,9 @@ define([
       });
 
       function commonSetup (statusName, methodName) {
-        spyOn(OptionGroup, 'valuesOf').and.returnValue($q.resolve([{
-          name: statusName, value: getStatusIdByName(statusName)
-        }]));
+        // spyOn(OptionGroup, 'valuesOf').and.returnValue($q.resolve([{
+        //   name: statusName, value: getStatusIdByName(statusName)
+        // }]));
 
         instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
         promise = instance[methodName]();
@@ -193,11 +195,11 @@ define([
         instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
         instance.comments = commentsData.getCommentsWithMixedIDs().values;
         instance.comments.push(_.assign(commentsData.getComments().values[0], { toBeDeleted: true }));
-        instance.fileUploader.queue = [{ 'key': 2 }];
+        instance.fileUploader = { queue: [{ 'key': 2 }] };
 
         LeaveRequestAPI.update.and.returnValue($q.resolve());
         spyOn(instance, 'toAPI');
-        spyOn(instance.fileUploader, 'uploadAll').and.callThrough();
+        instance.fileUploader.uploadAll = jasmine.createSpy('uploadAll');
 
         promise = instance.update();
       });
@@ -256,13 +258,13 @@ define([
 
       beforeEach(function () {
         instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
-        instance.fileUploader.queue = [{ 'key': 2 }];
+        instance.fileUploader = { queue: [{ 'key': 2 }] };
         instance.comments = commentsData.getCommentsWithMixedIDs().values;
         instance.comments.push((function () {
           return _.assign({}, commentsData.getComments().values[0], { toBeDeleted: true });
         }()));
 
-        spyOn(instance.fileUploader, 'uploadAll').and.callThrough();
+        instance.fileUploader.uploadAll = jasmine.createSpy('uploadAll');
 
         promise = instance.create();
       });
@@ -374,9 +376,9 @@ define([
       var instance;
 
       beforeEach(function () {
-        spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
-          return $q.resolve(optionGroupMockData.getCollection('hrleaveandabsences_leave_request_status'));
-        });
+        // spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
+        //   return $q.resolve(optionGroupMockData.getCollection('hrleaveandabsences_leave_request_status'));
+        // });
 
         instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
       });

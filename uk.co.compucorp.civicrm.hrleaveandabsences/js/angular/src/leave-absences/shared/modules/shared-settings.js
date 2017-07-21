@@ -23,7 +23,9 @@
       },
       fileUploader: {
         queueLimit: 10,
-        allowedMimeTypes: {
+        mimeTypesMap: {
+          // If other extensions are added in the OptionGroups,
+          // mime types need to be added here
           'txt': 'plain',
           'png': 'png',
           'jpeg': 'jpeg',

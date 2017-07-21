@@ -72,6 +72,30 @@ define([
       }
 
       /**
+       * Load file extensions which are supported for upload
+       *
+       * @return {Promise}
+       */
+      function loadSupportedFileTypes () {
+        return OptionGroup.valuesOf('safe_file_extension')
+          .then(function (extensions) {
+            var allowedMimeTypes = {};
+            extensions.map(function (ext) {
+              allowedMimeTypes[ext.label] = sharedSettings.fileUploader.mimeTypesMap[ext.label];
+            });
+            // FileUpload.uploader has uploader property which was causing circular reference issue
+            // hence renamed this uploader to fileUploader
+
+            this.fileUploader = FileUpload.uploader({
+              entityTable: 'civicrm_hrleaveandabsences_leave_request',
+              crmAttachmentToken: sharedSettings.attachmentToken,
+              queueLimit: sharedSettings.fileUploader.queueLimit,
+              allowedMimeTypes: allowedMimeTypes
+            });
+          }.bind(this));
+      }
+
+      /**
        * Save comments which do not have an ID and delete comments which are marked for deletion
        *
        * @return {Promise}
@@ -120,18 +144,12 @@ define([
          * @return {object}
          */
         defaultCustomData: function () {
+          loadSupportedFileTypes.call(this);
+
           return {
             comments: [],
             files: [],
-            request_type: 'leave',
-            // FileUpload.uploader has uploader property which was causing circular reference issue
-            // hence renamed this uploader to fileUploader
-            fileUploader: FileUpload.uploader({
-              entityTable: 'civicrm_hrleaveandabsences_leave_request',
-              crmAttachmentToken: sharedSettings.attachmentToken,
-              queueLimit: sharedSettings.fileUploader.queueLimit,
-              allowedMimeTypes: sharedSettings.fileUploader.allowedMimeTypes
-            })
+            request_type: 'leave'
           };
         },
 

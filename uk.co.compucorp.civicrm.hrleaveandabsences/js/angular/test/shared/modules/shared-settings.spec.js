@@ -35,7 +35,7 @@ define([
       });
 
       it('contains the list of allowed mime types', function () {
-        expect(sharedSettings.fileUploader.allowedMimeTypes).toBeDefined();
+        expect(sharedSettings.fileUploader.mimeTypesMap).toBeDefined();
       });
     });
 

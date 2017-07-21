@@ -16,10 +16,10 @@ define([
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html';
     }],
     controllerAs: 'filesTab',
-    controller: ['$log', 'HR_settings', 'shared-settings', controller]
+    controller: ['$log', 'HR_settings', 'shared-settings', 'OptionGroup', controller]
   });
 
-  function controller ($log, HRSettings, sharedSettings) {
+  function controller ($log, HRSettings, sharedSettings, OptionGroup) {
     $log.debug('Component: leave-request-popup-files-tab');
 
     var vm = Object.create(this);
@@ -70,8 +70,9 @@ define([
       var filesWithSoftDelete = _.filter(vm.request.files, function (file) {
         return file.toBeDeleted;
       });
+      var queueLength = vm.request.fileUploader.queue ? vm.request.fileUploader.queue.length : 0;
 
-      return vm.request.files.length + vm.request.fileUploader.queue.length - filesWithSoftDelete.length;
+      return vm.request.files.length + queueLength - filesWithSoftDelete.length;
     };
 
     /**
@@ -85,9 +86,23 @@ define([
     };
 
     (function init () {
-      vm.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
+      loadSupportedFileTypes();
       vm.request.loadAttachments();
     }());
+
+    /**
+     * Load file extensions which are supported for upload
+     *
+     * @return {Promise}
+     */
+    function loadSupportedFileTypes () {
+      return OptionGroup.valuesOf('safe_file_extension')
+        .then(function (extensions) {
+          vm.supportedFileTypes = extensions.map(function (ext) {
+            return ext.label;
+          });
+        });
+    }
 
     return vm;
   }
