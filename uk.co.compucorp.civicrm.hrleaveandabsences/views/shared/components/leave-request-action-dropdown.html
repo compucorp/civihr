@@ -1,0 +1,20 @@
+<div uib-dropdown dropdown-append-to-body ng-if="vm.actions.length">
+  <a href class="btn btn-default btn-inline" uib-dropdown-toggle>
+    <i class="fa fa-ellipsis-v"></i>
+  </a>
+  <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+    <li ng-repeat="action in vm.actions"
+      ng-switch="['edit', 'respond', 'view'].indexOf(action) > -1">
+      <a href
+        ng-switch-when="true"
+        leave-request-popup
+        leave-request="vm.request"
+        is-self-record="$root.section === 'my-leave'">
+        {{vm.actionLabels[action]}}
+      </a>
+      <a href ng-switch-default ng-click="vm.act(action)">
+        {{vm.actionLabels[action]}}
+      </a>
+    </li>
+  </ul>
+</div>
