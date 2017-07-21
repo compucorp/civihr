@@ -347,7 +347,7 @@
               from_date: { from: newPeriod.start_date },
               to_date: { to: newPeriod.end_date },
               status_id: valueOfRequestStatus('approved')
-            }), null, requestSortParam);
+            }), null, requestSortParam, null, false);
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
               period_id: newPeriod.id
             }), jasmine.any(Array));
@@ -446,7 +446,7 @@
           it('fetches all leave requests linked to a public holiday', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               public_holiday: true
-            }), null, requestSortParam);
+            }), null, requestSortParam, null, false);
           });
 
           it('caches the data', function () {
@@ -462,7 +462,7 @@
           it('fetches all approved leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               status_id: valueOfRequestStatus('approved')
-            }), null, requestSortParam);
+            }), null, requestSortParam, null, false);
           });
 
           it('caches the data', function () {
@@ -500,7 +500,7 @@
                 valueOfRequestStatus(sharedSettings.statusNames.rejected),
                 valueOfRequestStatus(sharedSettings.statusNames.cancelled)
               ] }
-            }), null, requestSortParam);
+            }), null, requestSortParam, null, false);
           });
 
           it('caches the data', function () {
@@ -583,7 +583,7 @@
                 to_date: {to: controller.selectedPeriod.end_date},
                 request_type: 'toil',
                 expired: true
-              }, null, requestSortParam);
+              }, null, requestSortParam, null, false);
             });
 
             it('does not pass to the Model the entitlements already stored', function () {
@@ -626,243 +626,6 @@
             expect(controller.sections.approved.open).toBe(false);
           });
         });
-      });
-
-      describe('action matrix for a leave request', function () {
-        var actionMatrix, leaveRequestData;
-
-        beforeEach(function () {
-          leaveRequestData = _.assign(leaveRequestMock.all().values[0], {
-            type_id: absenceTypeData.findByKeyValue('allow_request_cancelation', '2').id
-          });
-        });
-
-        describe('status: awaiting approval', function () {
-          describe('when the user is not a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-            });
-
-            it('shows the "edit" and "cancel" actions', function () {
-              expect(actionMatrix).toEqual(['edit', 'cancel']);
-            });
-          });
-
-          describe('when the user is a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-            });
-
-            it('shows the "respond", "cancel" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['respond', 'cancel', 'delete']);
-            });
-          });
-        });
-
-        describe('status: more information required', function () {
-          describe('when the user is not a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
-            });
-
-            it('shows the "respond" and "cancel" actions', function () {
-              expect(actionMatrix).toEqual(['respond', 'cancel']);
-            });
-          });
-
-          describe('when the user is a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
-            });
-
-            it('shows the "edit", "cancel" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['edit', 'cancel', 'delete']);
-            });
-          });
-        });
-
-        describe('status: approved', function () {
-          describe('when the user is not a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
-            });
-
-            it('shows the "cancel" and the "view" actions', function () {
-              expect(actionMatrix).toEqual(['view', 'cancel']);
-            });
-          });
-
-          describe('when the user is a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
-            });
-
-            it('shows the "cancel", "view" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['view', 'cancel', 'delete']);
-            });
-          });
-        });
-
-        describe('status: cancelled', function () {
-          describe('when the user is not a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
-            });
-
-            it('shows the "view" action', function () {
-              expect(actionMatrix).toEqual(['view']);
-            });
-          });
-
-          describe('when the user is a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
-            });
-
-            it('shows the "view" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['view', 'delete']);
-            });
-          });
-        });
-
-        describe('status: rejected', function () {
-          describe('when the user is not a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
-            });
-
-            it('shows the "view" action', function () {
-              expect(actionMatrix).toEqual(['view']);
-            });
-          });
-
-          describe('when the user is a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
-            });
-
-            it('shows the "view" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['view', 'delete']);
-            });
-          });
-        });
-
-        describe('"cancel" action', function () {
-          describe('when the absence type of the leave request does not allow to cancel', function () {
-            beforeEach(function () {
-              leaveRequestData.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '1').id;
-            });
-
-            describe('when the user is not a L&A admin', function () {
-              beforeEach(function () {
-                setRoleToAdmin(false);
-                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-              });
-
-              it('does not show the "cancel" action', function () {
-                expect(actionMatrix).not.toContain('cancel');
-              });
-            });
-
-            describe('when the user is a L&A admin', function () {
-              beforeEach(function () {
-                setRoleToAdmin(true);
-                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-              });
-
-              it('shows the "cancel" action', function () {
-                expect(actionMatrix).toContain('cancel');
-              });
-            });
-          });
-
-          describe('when the absence type of the leave request allows to cancel only before the start date', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              leaveRequestData.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '3').id;
-            });
-
-            describe('when from date is less than today', function () {
-              beforeEach(function () {
-                var baseDate = moment(leaveRequestData.from_date);
-                var dateAfterFromDate = baseDate.add(10, 'days').toDate();
-                jasmine.clock().mockDate(dateAfterFromDate);
-
-                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-              });
-
-              describe('when the user is not a L&A admin', function () {
-                beforeEach(function () {
-                  setRoleToAdmin(false);
-                  actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-                });
-
-                it('does not show the "cancel" action', function () {
-                  expect(actionMatrix).not.toContain('cancel');
-                });
-              });
-
-              describe('when the user is a L&A admin', function () {
-                beforeEach(function () {
-                  setRoleToAdmin(true);
-                  actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-                });
-
-                it('shows the "cancel" action', function () {
-                  expect(actionMatrix).toContain('cancel');
-                });
-              });
-            });
-
-            describe('when from date is more than today', function () {
-              beforeEach(function () {
-                var baseDate = moment(leaveRequestData.from_date);
-                var dateBeforeFromDate = baseDate.subtract(10, 'days').toDate();
-                jasmine.clock().mockDate(dateBeforeFromDate);
-
-                setRoleToAdmin(false);
-                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-              });
-
-              it('shows the "cancel" action', function () {
-                expect(actionMatrix).toContain('cancel');
-              });
-            });
-          });
-        });
-
-        /**
-         * Sets (or not) the user's role as admin depending on the value passed
-         *
-         * @param {Boolean} isAdmin
-         */
-        function setRoleToAdmin (isAdmin) {
-          isUserAdmin = !!isAdmin;
-          compileComponent();
-        }
-
-        /**
-         * Calls the controller method that returns the action matrix for
-         * a given Leave Request in a particular status
-         *
-         * @param  {string} statusName
-         * @return {Array}
-         */
-        function getActionMatrixForStatus (statusName) {
-          leaveRequestData.status_id = valueOfRequestStatus(statusName);
-
-          return controller.actionsFor(LeaveRequestInstance.init(leaveRequestData, true));
-        }
       });
 
       describe('when a new leave request is created', function () {

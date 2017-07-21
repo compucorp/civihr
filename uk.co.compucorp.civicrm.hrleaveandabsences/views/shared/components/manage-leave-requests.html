@@ -132,30 +132,12 @@
                 <td style="width: 25%;">{{request.from_date}} - {{request.to_date}}</td>
                 <td style="width: 20%;">{{vm.getLeaveStatusByValue(request.status_id)}}</td>
                 <td style="width: 10%;" class="text-center">
-                  <div uib-dropdown dropdown-append-to-body>
-                    <a href class="btn btn-default btn-inline" uib-dropdown-toggle>
-                      <i class="fa fa-ellipsis-v"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-                      <li
-                        ng-repeat="action in vm.actionsFor(request)"
-                        ng-switch="['cancel', 'approve', 'reject'].indexOf(action)">
-                        <a
-                          ng-switch-when="-1"
-                          href
-                          leave-request-popup leave-request="request"
-                          contact-id="vm.contactId">
-                          {{action}}
-                        </a>
-                        <a
-                          ng-switch-default
-                          href
-                          ng-click="vm.action(request, action)">
-                          {{action}}
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
+                  <leave-request-action-dropdown
+                    request="request"
+                    role="vm.isAdmin ? 'admin' : 'manager'"
+                    absence-types="vm.absenceTypesIndexed"
+                    request-statuses="vm.leaveRequestStatusesIndexed">
+                  </leave-request-action-dropdown>
                 </td>
               </tr>
               </tbody>

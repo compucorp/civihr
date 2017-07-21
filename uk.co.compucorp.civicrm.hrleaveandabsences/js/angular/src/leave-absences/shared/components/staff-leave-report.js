@@ -2,7 +2,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/shared/modules/components'
+  'leave-absences/shared/modules/components',
+  'leave-absences/shared/components/leave-request-action-dropdown'
 ], function (_, moment, components) {
   components.component('staffLeaveReport', {
     bindings: {
@@ -22,23 +23,16 @@ define([
   function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
 
-    var actionMatrix = {};
-    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['edit', 'cancel', 'delete'];
-    actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['respond', 'cancel', 'delete'];
-    actionMatrix[sharedSettings.statusNames.approved] = ['view', 'cancel', 'delete'];
-    actionMatrix[sharedSettings.statusNames.cancelled] = ['view', 'delete'];
-    actionMatrix[sharedSettings.statusNames.rejected] = ['view', 'delete'];
-
     var requestSort = 'from_date ASC';
-    var role = 'staff';
+    var vm = this;
 
-    var vm = Object.create(this);
     vm.absencePeriods = [];
     vm.absenceTypes = {};
     vm.absenceTypesFiltered = {};
     vm.dateFormat = HRSettings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.selectedPeriod = null;
+    vm.role = 'staff';
     vm.loading = {
       content: true,
       page: true
@@ -50,38 +44,6 @@ define([
       holidays: { open: false, data: [], loading: false, loadFn: loadPublicHolidaysRequests },
       pending: { open: false, data: [], loading: false, loadFn: loadPendingRequests },
       other: { open: false, data: [], loading: false, loadFn: loadOtherRequests }
-    };
-
-    /**
-     * Returns the available actions, based on the current status
-     * of the given leave request and on additional logic
-     *
-     * @param  {LeaveRequestInstance} leaveRequest
-     * @return {Array}
-     */
-    vm.actionsFor = function (leaveRequest) {
-      var statusKey = vm.leaveRequestStatuses[leaveRequest.status_id].name;
-      var actions = statusKey ? actionMatrix[statusKey] : [];
-
-      if (!canLeaveRequestBeCancelled(leaveRequest)) {
-        actions = _.without(actions, 'cancel');
-      }
-
-      // TODO: The logic is not really elegant, but the whole "actions" bit
-      // (html + js) should be moved into its own component
-      if (role === 'admin') {
-        // The staff's "edit" action is "respond" for admin, and viceversa
-        if (_.includes(actions, 'edit')) {
-          actions = actions.join(',').replace('edit', 'respond').split(',');
-        } else if (_.includes(actions, 'respond')) {
-          actions = actions.join(',').replace('respond', 'edit').split(',');
-        }
-      } else {
-        // A non-admin user does not have access to the "delete" actions
-        actions = _.without(actions, 'delete');
-      }
-
-      return actions;
     };
 
     /**
@@ -138,7 +100,7 @@ define([
       .then(function () {
         return $q.all([
           loadOpenSectionsData(),
-          clearClosedSectionsData()
+          clearSectionsData()
         ]);
       });
     };
@@ -162,7 +124,7 @@ define([
     (function init () {
       checkPermissions(sharedSettings.permissions.admin.administer)
       .then(function (isAdmin) {
-        role = isAdmin ? 'admin' : role;
+        vm.role = isAdmin ? 'admin' : vm.role;
       })
       .then(function () {
         return $q.all([
@@ -203,38 +165,10 @@ define([
     }
 
     /**
-     * Checks if the given leave request can be cancelled
-     *
-     * Based on following constants
-     * REQUEST_CANCELATION_NO = 1;
-     * REQUEST_CANCELATION_ALWAYS = 2;
-     * REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE = 3;
-     *
-     * @param  {LeaveRequestInstance} leaveRequest
-     * @return {Boolean}
+     * Clears the cached data of all sections
      */
-    function canLeaveRequestBeCancelled (leaveRequest) {
-      var allowCancellationValue = vm.absenceTypes[leaveRequest.type_id].allow_request_cancelation;
-
-      if (role === 'admin') {
-        return true;
-      }
-
-      if (allowCancellationValue === '3') {
-        return moment().isBefore(leaveRequest.from_date);
-      }
-
-      return allowCancellationValue === '2';
-    }
-
-    /**
-     * Clears the cached data of all the closed sections
-     */
-    function clearClosedSectionsData () {
+    function clearSectionsData () {
       Object.values(vm.sections)
-        .filter(function (section) {
-          return !section.open;
-        })
         .forEach(function (section) {
           section.data = [];
         });
@@ -291,7 +225,7 @@ define([
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         status_id: valueOfRequestStatus(sharedSettings.statusNames.approved)
-      }, null, requestSort)
+      }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.approved.data = leaveRequests.list;
       });
@@ -394,7 +328,7 @@ define([
           to_date: {to: vm.selectedPeriod.end_date},
           request_type: 'toil',
           expired: true
-        }, null, requestSort)
+        }, null, requestSort, null, false)
       ])
         .then(function (results) {
           return $q.all({
@@ -437,7 +371,7 @@ define([
           valueOfRequestStatus(sharedSettings.statusNames.rejected),
           valueOfRequestStatus(sharedSettings.statusNames.cancelled)
         ] }
-      }, null, requestSort)
+      }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.other.data = leaveRequests.list;
       });
@@ -474,7 +408,7 @@ define([
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         public_holiday: true
-      }, null, requestSort)
+      }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.holidays.data = leaveRequests.list;
       });
@@ -533,14 +467,8 @@ define([
      * Register events which will be called by other modules
      */
     function registerEvents () {
-      $rootScope.$on('LeaveRequest::new', function () {
-        vm.refresh();
-      });
-
-      $rootScope.$on('LeaveRequest::edit', function () {
-        vm.refresh();
-      });
-
+      $rootScope.$on('LeaveRequest::new', function () { vm.refresh(); });
+      $rootScope.$on('LeaveRequest::edit', function () { vm.refresh(); });
       $rootScope.$on('LeaveRequest::deleted', function (event, leaveRequest) {
         removeLeaveRequestFromItsSection(leaveRequest);
       });
@@ -604,7 +532,5 @@ define([
         return status.name === statusName;
       })['value'];
     }
-
-    return vm;
   }
 });

@@ -21,8 +21,8 @@
 
     describe('manageLeaveRequests', function () {
       var $componentController, $log, $q, $provide, $rootScope, controller,
-        OptionGroup, AbsenceType, AbsencePeriod, LeaveRequest, LeaveRequestInstance,
-        Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock, dialog;
+        OptionGroup, AbsenceType, AbsencePeriod, LeaveRequest,
+        Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock;
       var role = 'admin'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'manager-leave',
@@ -54,21 +54,18 @@
       }]));
 
       beforeEach(inject(function (
-        _$componentController_, _$log_, _$rootScope_, _$q_, _dialog_, _OptionGroup_,
-        _OptionGroupAPIMock_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_,
-        _Contact_, _LeaveRequestInstance_) {
+        _$componentController_, _$log_, _$rootScope_, _$q_, _OptionGroup_,
+        _OptionGroupAPIMock_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_) {
         $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
-        dialog = _dialog_;
         OptionGroupAPIMock = _OptionGroupAPIMock_;
         OptionGroup = _OptionGroup_;
         AbsenceType = _AbsenceType_;
         AbsencePeriod = _AbsencePeriod_;
         LeaveRequest = _LeaveRequest_;
         Contact = _Contact_;
-        LeaveRequestInstance = _LeaveRequestInstance_;
       }));
 
       beforeEach(function () {
@@ -365,36 +362,6 @@
 
           it('returns badge-primary', function () {
             expect(returnValue).toBe('badge-primary');
-          });
-        });
-      });
-
-      describe('when changing a status of a leave request from dropdown', function () {
-        var leaveRequest;
-
-        beforeEach(function () {
-          leaveRequest = LeaveRequestInstance.init(leaveRequestData.all().values[0], true);
-
-          spyOn(leaveRequest, 'approve').and.returnValue($q.resolve());
-          resolveDialogWith(null);
-          controller.action(leaveRequest, 'approve');
-          $rootScope.$digest();
-        });
-
-        it('shows a confirmation dialog', function () {
-          expect(dialog.open).toHaveBeenCalled();
-        });
-
-        describe('user confirms the action', function () {
-          beforeEach(function () {
-            resolveDialogWith(true);
-            spyOn(controller, 'refresh').and.callThrough();
-            controller.action(leaveRequest, 'approve');
-            $rootScope.$digest();
-          });
-
-          it('refreshes the controller', function () {
-            expect(controller.refresh).toHaveBeenCalled();
           });
         });
       });
@@ -933,73 +900,6 @@
         });
       });
 
-      describe('action matrix for a leave request', function () {
-        var actionMatrix;
-
-        describe('status: awaiting approval', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-          });
-
-          it('shows the "respond", "cancel", "approve" and "reject" actions', function () {
-            expect(actionMatrix).toEqual(['respond', 'cancel', 'approve', 'reject']);
-          });
-        });
-
-        describe('status: more information required', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
-          });
-
-          it('shows the "edit" and "cancel" actions', function () {
-            expect(actionMatrix).toEqual(['edit', 'cancel']);
-          });
-        });
-
-        describe('status: approved', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
-          });
-
-          it('shows the "edit" action', function () {
-            expect(actionMatrix).toEqual(['edit']);
-          });
-        });
-
-        describe('status: cancelled', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
-          });
-
-          it('shows the "edit" action', function () {
-            expect(actionMatrix).toEqual(['edit']);
-          });
-        });
-
-        describe('status: rejected', function () {
-          beforeEach(function () {
-            actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
-          });
-
-          it('shows the "edit" action', function () {
-            expect(actionMatrix).toEqual(['edit']);
-          });
-        });
-
-        /**
-         * Calls the controller method that returns the action matrix for
-         * a given Leave Request in a particular status
-         *
-         * @param  {string} statusName
-         * @return {Array}
-         */
-        function getActionMatrixForStatus (statusName) {
-          return controller.actionsFor(LeaveRequestInstance.init({
-            status_id: optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', statusName).value
-          }));
-        }
-      });
-
       describe('when new leave request is created', function () {
         beforeEach(function () {
           $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
@@ -1019,31 +919,6 @@
           expect(role === 'admin' ? Contact.all : Contact.leaveManagees).toHaveBeenCalled();
         });
       });
-
-      /**
-       * Spies on dialog.open() method and resolves it with the given value
-       *
-       * @param {any} value
-       */
-      function resolveDialogWith (value) {
-        var spy;
-
-        if (typeof dialog.open.calls !== 'undefined') {
-          spy = dialog.open;
-        } else {
-          spy = spyOn(dialog, 'open');
-        }
-
-        spy.and.callFake(function (options) {
-          return $q.resolve()
-            .then(function () {
-              return options.onConfirm && value ? options.onConfirm() : null;
-            })
-            .then(function () {
-              return value;
-            });
-        });
-      }
 
       function compileComponent () {
         controller = $componentController('manageLeaveRequests', null, { contactId: CRM.vars.leaveAndAbsences.contactId });

@@ -3,6 +3,7 @@
 define([
   'common/lodash',
   'leave-absences/shared/modules/components',
+  'leave-absences/shared/components/leave-request-action-dropdown',
   'common/models/contact'
 ], function (_, components) {
   components.component('manageLeaveRequests', {
@@ -24,21 +25,16 @@ define([
     $log.debug('Component: manage-leave-requests');
 
     var vm = this;
-    var actionMatrix = {};
     var filterByAll = { name: 'all', label: 'All' };
-
-    actionMatrix[sharedSettings.statusNames.awaitingApproval] = ['respond', 'cancel', 'approve', 'reject'];
-    actionMatrix[sharedSettings.statusNames.moreInformationRequired] = ['edit', 'cancel'];
-    actionMatrix[sharedSettings.statusNames.approved] = ['edit'];
-    actionMatrix[sharedSettings.statusNames.cancelled] = ['edit'];
-    actionMatrix[sharedSettings.statusNames.rejected] = ['edit'];
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
+    vm.absenceTypesIndexed = {}; // This object is needed for leaveRequestActionDropdown component
     vm.filteredUsers = [];
     vm.isFilterExpanded = false;
     vm.isAdmin = false; // this property is updated on controller initialization
     vm.leaveRequestStatuses = [filterByAll];
+    vm.leaveRequestStatusesIndexed = {}; // This object is needed for leaveRequestActionDropdown component
     vm.filters = {
       contact: {
         department: null,
@@ -77,65 +73,6 @@ define([
     vm.pagination = {
       page: 1,
       size: 7
-    };
-
-    /**
-     * Returns the available actions, based on the current status
-     * of the given leave request
-     *
-     * @param  {LeaveRequestInstance} leaveRequest
-     * @return {Array}
-     */
-    vm.actionsFor = function (leaveRequest) {
-      var statusKey = _.find(vm.leaveRequestStatuses, function (status) {
-        return status.value ? status.value === leaveRequest.status_id : false;
-      }).name;
-
-      return statusKey ? actionMatrix[statusKey] : [];
-    };
-
-    /**
-     * Performs an action on a given leave request
-     * TODO: refactor when adding more actions
-     *
-     * @param {LeaveRequestInstance} leaveRequest
-     * @param {string} action
-     */
-    vm.action = function (leaveRequest, action) {
-      var map = {
-        cancel: {
-          title: 'Cancellation',
-          btnClass: 'danger',
-          btnLabel: 'Confirm',
-          msg: 'This cannot be undone'
-        },
-        approve: {
-          title: 'Approval',
-          btnClass: 'success',
-          btnLabel: 'Approve',
-          msg: 'Please confirm approval'
-        },
-        reject: {
-          title: 'Rejection',
-          btnClass: 'warning',
-          btnLabel: 'Reject',
-          msg: 'Please confirm rejection'
-        }
-      };
-
-      dialog.open({
-        title: 'Confirm ' + map[action].title + '?',
-        copyCancel: 'Cancel',
-        copyConfirm: map[action].btnLabel,
-        classConfirm: 'btn-' + map[action].btnClass,
-        msg: map[action].msg,
-        onConfirm: function () {
-          return leaveRequest[action]()
-            .then(function () {
-              vm.refresh();
-            });
-        }
-      });
     };
 
     /**
@@ -359,6 +296,7 @@ define([
       return AbsenceType.all()
         .then(function (absenceTypes) {
           vm.absenceTypes = absenceTypes;
+          vm.absenceTypesIndexed = _.indexBy(absenceTypes, 'id');
         });
     }
 
@@ -422,6 +360,8 @@ define([
       var returnFields = type === 'filter' ? {
         return: ['status_id']
       } : {};
+
+      vm.leaveRequests[type].list = []; // flushes the current cached data
       // cache is set to always false as changing selection either in status menu
       // or pages or adding new requests was reverting back to older cache
       return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, 'from_date DESC', returnFields, false)
@@ -501,6 +441,7 @@ define([
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
           vm.leaveRequestStatuses = statuses.concat(vm.leaveRequestStatuses);
+          vm.leaveRequestStatusesIndexed = _.indexBy(statuses, 'value');
         });
     }
 
@@ -561,8 +502,10 @@ define([
      * Register events which will be called by other modules
      */
     function registerEvents () {
-      $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
-      $rootScope.$on('LeaveRequest::new', vm.refresh);
+      $rootScope.$on('LeaveRequest::updatedByManager', function () { vm.refresh(); });
+      $rootScope.$on('LeaveRequest::new', function () { vm.refresh(); });
+      $rootScope.$on('LeaveRequest::edit', function () { vm.refresh(); });
+      $rootScope.$on('LeaveRequest::deleted', function () { vm.refresh(); });
     }
   }
 });
