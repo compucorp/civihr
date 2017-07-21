@@ -194,25 +194,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     $this->assertEmpty($values);
   }
 
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
-   * @expectedExceptionMessage You cannot disable a Work Pattern if it's the last one
-   */
-  public function testCannotDisablePatternIfItIsTheLastWorkPatternEnabled() {
-    $workPattern = WorkPatternFabricator::fabricate(['is_active' => 1]);
-    $this->updateBasicWorkPattern($workPattern->id, ['is_active' => 0]);
-  }
-
-  public function testCanDisablePatternIfItIsNotTheLastWorkPatternEnabled() {
-    $workPattern1 = WorkPatternFabricator::fabricate(['is_active' => 1]);
-    WorkPatternFabricator::fabricate(['is_active' => 1]);
-
-    $this->updateBasicWorkPattern($workPattern1->id, ['is_active' => 0]);
-
-    $workPattern1 = WorkPattern::findById($workPattern1->id);
-    $this->assertEquals(0, $workPattern1->is_active);
-  }
-
   public function testGetLeaveDaysForDateShouldReturnZeroIfDateIsNotGreaterThanOrEqualTheStartDate() {
     $pattern = new WorkPattern();
 
@@ -712,5 +693,24 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     if($item) {
       $queue->deleteItem($item);
     }
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
+   * @expectedExceptionMessage You cannot create a new Work Pattern as default and set disabled
+   */
+  public function testCannotCreateANewDefaultWorkPatternThatIsInactive() {
+    WorkPatternFabricator::fabricate(['is_default' => 1, 'is_active' => 0]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
+   * @expectedExceptionMessage You cannot disable the default Work Pattern
+   */
+  public function testCannotDisableTheDefaultWorkPattern() {
+    $workPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
+    $params = ['id' => $workPattern->id, 'is_active' => 0];
+
+    WorkPattern::create($params);
   }
 }
