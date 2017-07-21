@@ -84,12 +84,12 @@
 </crm-loading>
 
 <!--Expiry Date Section - Only For Toil-->
-<div class="row" ng-show="$ctrl.isLeaveType('toil') && $ctrl.requestCanExpire">
+<div class="row" ng-show="$ctrl.isLeaveType('toil') && ($ctrl.requestCanExpire || $ctrl.canManage)">
   <div class="col-xs-12 form-horizontal">
     <hr>
     <div class="form-group">
       <label class="col-xs-4 control-label">Expiry Date</label>
-      <div class="col-xs-4">
+      <div class="col-xs-5">
         <span
           class="chr_leave-request-modal__span-expiry"
           ng-if="!$ctrl.canManage || $ctrl.isSelfRecord">
@@ -107,6 +107,12 @@
             ng-click="$ctrl.uiOptions.date.expiry.show = true"
             ng-change="$ctrl.updateExpiryDate()"
             is-open="$ctrl.uiOptions.date.expiry.show"/>
+          <span
+            class="chr_leave-request-modal__expiry-clear pointer"
+            ng-if="!$ctrl.requestCanExpire && $ctrl.request.toil_expiry_date"
+            ng-click="$ctrl.clearExpiryDate()">
+            <i class="fa fa-times"></i>
+          </span>
           <span
             class="input-group-addon pointer"
             class="btn btn-default fa fa-calendar"

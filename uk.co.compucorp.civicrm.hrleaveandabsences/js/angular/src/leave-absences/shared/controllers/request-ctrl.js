@@ -383,6 +383,47 @@ define([
       };
 
       /**
+       * Loads absence types and calendar data on component initialization and
+       * when they need to be updated.
+       *
+       * @param {Date} date - the selected date
+       * @param {String} dayType - set to from if from date is selected else to
+       * @return {Promise}
+       */
+      this.loadAbsencePeriodDatesTypes = function (date, dayType) {
+        var oldPeriodId = this.period.id;
+        dayType = dayType || 'from';
+        this.loading[dayType + 'DayTypes'] = true;
+
+        return this._checkAndSetAbsencePeriod(date)
+          .then(function () {
+            var isInCurrentPeriod = oldPeriodId === this.period.id;
+
+            if (!isInCurrentPeriod) {
+              // partial reset is required when user has selected a to date and
+              // then changes absence period from from date
+              // no reset required for single days and to date changes
+              if (this.uiOptions.multipleDays && dayType === 'from') {
+                this.uiOptions.showBalance = false;
+                this.uiOptions.toDate = null;
+                this.request.to_date = null;
+                this.request.to_date_type = null;
+              }
+
+              return $q.all([
+                this._loadAbsenceTypes(),
+                this._loadCalendar()
+              ]);
+            }
+          }.bind(this))
+          .then(function () {
+            this._setMinMaxDate();
+
+            return filterLeaveRequestDayTypes.call(this, date, dayType);
+          }.bind(this));
+      };
+
+      /**
        * This should be called whenever a date has been changed
        * First it syncs `from` and `to` date, if it's in 'single day' mode
        * Then, if all the dates are there, it gets the balance change
@@ -392,48 +433,18 @@ define([
        * @return {Promise}
        */
       this.updateAbsencePeriodDatesTypes = function (date, dayType) {
-        var self = this;
-        var oldPeriodId = self.period.id;
-        dayType = dayType || 'from';
-        self.loading[dayType + 'DayTypes'] = true;
+        return this.loadAbsencePeriodDatesTypes(date, dayType)
+        .then(function () {
+          return this.updateBalance();
+        }.bind(this))
+        .catch(function (error) {
+          this.errors = [error];
 
-        return self._checkAndSetAbsencePeriod(date)
-          .then(function () {
-            var isInCurrentPeriod = oldPeriodId === self.period.id;
-
-            if (!isInCurrentPeriod) {
-              // partial reset is required when user has selected a to date and
-              // then changes absence period from from date
-              // no reset required for single days and to date changes
-              if (self.uiOptions.multipleDays && dayType === 'from') {
-                self.uiOptions.showBalance = false;
-                self.uiOptions.toDate = null;
-                self.request.to_date = null;
-                self.request.to_date_type = null;
-              }
-
-              return $q.all([
-                self._loadAbsenceTypes(),
-                self._loadCalendar()
-              ]);
-            }
-          })
-          .then(function () {
-            self._setMinMaxDate();
-
-            return filterLeaveRequestDayTypes.call(self, date, dayType);
-          })
-          .then(function () {
-            return self.updateBalance();
-          })
-          .catch(function (error) {
-            self.errors = [error];
-
-            self._setDateAndTypes();
-          })
-          .finally(function () {
-            self.loading[dayType + 'DayTypes'] = false;
-          });
+          this._setDateAndTypes();
+        }.bind(this))
+        .finally(function () {
+          this.loading[dayType + 'DayTypes'] = false;
+        }.bind(this));
       };
 
       /**
@@ -912,13 +923,13 @@ define([
 
           this.uiOptions.fromDate = this._convertDateFormatFromServer(this.request.from_date);
 
-          return this.updateAbsencePeriodDatesTypes(this.uiOptions.fromDate, 'from')
+          return this.loadAbsencePeriodDatesTypes(this.uiOptions.fromDate, 'from')
             .then(function () {
               // to_date and type has been reset in above call so reinitialize from clone
               this.request.to_date = attributes.to_date;
               this.request.to_date_type = attributes.to_date_type;
               this.uiOptions.toDate = this._convertDateFormatFromServer(this.request.to_date);
-              return this.updateAbsencePeriodDatesTypes(this.uiOptions.toDate, 'to');
+              return this.loadAbsencePeriodDatesTypes(this.uiOptions.toDate, 'to');
             }.bind(this));
         } else {
           return $q.resolve();
