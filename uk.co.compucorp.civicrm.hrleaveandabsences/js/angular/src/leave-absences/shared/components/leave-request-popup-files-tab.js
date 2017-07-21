@@ -70,7 +70,8 @@ define([
       var filesWithSoftDelete = _.filter(vm.request.files, function (file) {
         return file.toBeDeleted;
       });
-      var queueLength = vm.request.fileUploader.queue ? vm.request.fileUploader.queue.length : 0;
+      var queueLength = (vm.request.fileUploader && vm.request.fileUploader.queue)
+        ? vm.request.fileUploader.queue.length : 0;
 
       return vm.request.files.length + queueLength - filesWithSoftDelete.length;
     };
