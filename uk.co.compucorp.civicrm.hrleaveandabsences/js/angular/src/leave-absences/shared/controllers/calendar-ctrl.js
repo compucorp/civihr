@@ -145,13 +145,7 @@ define([
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function deleteLeaveRequest (event, leaveRequest) {
-      vm.leaveRequests[leaveRequest.contact_id] = _.omit(
-        vm.leaveRequests[leaveRequest.contact_id],
-        function (leaveRequestObj) {
-          return leaveRequestObj.id === leaveRequest.id;
-        }
-      );
-
+      removeLeaveRequestFromIndexedList(leaveRequest);
       updateLeaveRequestDaysProperties(leaveRequest);
     }
 
@@ -163,6 +157,17 @@ define([
      */
     function generateMonthId (dateMoment) {
       return dateMoment.month() + '' + dateMoment.year();
+    }
+
+    /**
+     * Returns work pattern calendar of the given month of the given contact
+     *
+     * @param  {String} contactId
+     * @param  {String} monthId
+     * @return {Object}
+     */
+    function getContactMonthWorkPatternCalendar (contactId, monthId) {
+      return calendarsByMonthId[monthId][contactId];
     }
 
     /**
@@ -196,6 +201,18 @@ define([
       }
 
       return days;
+    }
+
+    /**
+     * Finds the given leave request in the internal indexed list
+     *
+     * @param  {LeaveRequestInstance} leaveRequest]
+     * @return {LeaveRequestInstance}
+     */
+    function getLeaveRequestFromIndexedList (leaveRequest) {
+      return _.find(vm.leaveRequests[leaveRequest.contact_id], function (leaveRequestOb) {
+        return leaveRequest.id === leaveRequestOb.id;
+      });
     }
 
     /**
@@ -273,8 +290,8 @@ define([
      */
     function initListeners () {
       $rootScope.$on('LeaveRequest::new', addLeaveRequest);
-      $rootScope.$on('LeaveRequest::edit', vm.refresh);
-      $rootScope.$on('LeaveRequest::updatedByManager', vm.refresh);
+      $rootScope.$on('LeaveRequest::edit', updateLeaveRequest);
+      $rootScope.$on('LeaveRequest::updatedByManager', updateLeaveRequest);
       $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest);
     }
 
@@ -379,7 +396,7 @@ define([
         return contact.id;
       }), monthStartDate, monthEndDate)
       .then(function (monthCalendars) {
-        calendarsByMonthId[month.id] = monthCalendars;
+        calendarsByMonthId[month.id] = _.indexBy(monthCalendars, 'contact_id');
       });
     }
 
@@ -544,35 +561,59 @@ define([
     }
 
     /**
-     * Set the properties of the given day, for the contact of the given
-     * work pattern calendar
+     * Removes the given leave request from the internal indexed list
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     */
+    function removeLeaveRequestFromIndexedList (leaveRequest) {
+      vm.leaveRequests[leaveRequest.contact_id] = _.omit(
+        vm.leaveRequests[leaveRequest.contact_id],
+        function (leaveRequestObj) {
+          return leaveRequestObj.id === leaveRequest.id;
+        }
+      );
+    }
+
+    /**
+     * Sets the properties of the given day, for the contact with the given id
      *
      * @param {Object} day
-     * @param {CalendarInstance} workPatternCalendar
+     * @param {String} contactId
+     * @param {Boolean} leaveRequestPropertiesOnly updates only properties
+     *   related to the contact's leave request on the day (if any)
      */
-    function setDayProperties (day, workPatternCalendar) {
-      var contactData = day.contactsData[workPatternCalendar.contact_id] = {};
+    function setDayContactData (day, contactId, leaveRequestPropertiesOnly) {
+      var month, p, workPatternCalendar;
 
-      return $q.all([
+      day.contactsData[contactId] = day.contactsData[contactId] || {};
+
+      month = getMonthFromDate(moment(day.date));
+      workPatternCalendar = getContactMonthWorkPatternCalendar(contactId, month.id);
+
+      p = leaveRequestPropertiesOnly === true ? $q.resolve() : $q.all([
         workPatternCalendar.isWeekend(getDateObjectWithFormat(day.date)),
         workPatternCalendar.isNonWorkingDay(getDateObjectWithFormat(day.date))
       ])
       .then(function (results) {
-        contactData.isWeekend = results[0];
-        contactData.isNonWorkingDay = results[1];
-        contactData.isPublicHoliday = isPublicHoliday(day.date);
-      })
-      .then(function () {
-        var leaveRequest = vm.leaveRequests[workPatternCalendar.contact_id]
-          ? vm.leaveRequests[workPatternCalendar.contact_id][day.date]
-          : null;
+        _.assign(day.contactsData[contactId], {
+          isWeekend: results[0],
+          isNonWorkingDay: results[1],
+          isPublicHoliday: isPublicHoliday(day.date)
+        });
+      });
 
-        contactData.leaveRequest = leaveRequest || null;
-        contactData.styles = leaveRequest ? getStyles(leaveRequest) : null;
-        contactData.isAccruedTOIL = leaveRequest ? leaveRequest.balance_change > 0 : null;
-        contactData.isRequested = leaveRequest ? isPendingApproval(leaveRequest) : null;
-        contactData.isAM = leaveRequest ? isDayType('half_day_am', leaveRequest, day.date) : null;
-        contactData.isPM = leaveRequest ? isDayType('half_day_pm', leaveRequest, day.date) : null;
+      return p.then(function () {
+        return vm.leaveRequests[contactId] ? vm.leaveRequests[contactId][day.date] : null;
+      })
+      .then(function (leaveRequest) {
+        _.assign(day.contactsData[contactId], {
+          leaveRequest: leaveRequest || null,
+          styles: leaveRequest ? getStyles(leaveRequest) : null,
+          isAccruedTOIL: leaveRequest ? leaveRequest.balance_change > 0 : null,
+          isRequested: leaveRequest ? isPendingApproval(leaveRequest) : null,
+          isAM: leaveRequest ? isDayType('half_day_am', leaveRequest, day.date) : null,
+          isPM: leaveRequest ? isDayType('half_day_pm', leaveRequest, day.date) : null
+        });
       });
     }
 
@@ -584,35 +625,43 @@ define([
     }
 
     /**
-     * For every day of the given month, it goes through each of its contacts'
-     * work pattern calendars, and assigns the properties by which the day
-     * will be marked on the calendar
+     * It sets the properties of every day of the given month
      *
      * @param {Object} month
      * @return {Promise}
      */
     function setMonthDaysProperties (month) {
       return $q.all(month.days.map(function (day) {
-        return $q.all(calendarsByMonthId[month.id].map(function (calendar) {
-          setDayProperties(day, calendar);
+        return $q.all(vm.contacts.map(function (contact) {
+          setDayContactData(day, contact.id);
         }));
       }));
+    }
+
+    /**
+     * Updates the given leave request in the calendar
+     * For simplicity's sake, it directly deletes it and re-adds it
+     *
+     * @param  {Object} event
+     * @param  {LeaveRequestInstance} leaveRequest
+     */
+    function updateLeaveRequest (event, leaveRequest) {
+      var oldLeaveRequest = getLeaveRequestFromIndexedList(leaveRequest);
+
+      deleteLeaveRequest(null, oldLeaveRequest);
+      addLeaveRequest(null, leaveRequest);
     }
 
     /**
      * Updates the properties of the days that the given leave request spans
      *
      * @param  {LeaveRequestInstance} leaveRequest
+     * @return {Promise}
      */
     function updateLeaveRequestDaysProperties (leaveRequest) {
-      _.each(getLeaveRequestDays(leaveRequest), function (day) {
-        var month = getMonthFromDate(moment(day.date));
-        var calendar = _.find(calendarsByMonthId[month.id], function (calendar) {
-          return calendar.contact_id === leaveRequest.contact_id;
-        });
-
-        setDayProperties(day, calendar);
-      });
+      return $q.all(getLeaveRequestDays(leaveRequest).map(function (day) {
+        setDayContactData(day, leaveRequest.contact_id, true);
+      }));
     }
   }
 });

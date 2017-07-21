@@ -27,6 +27,7 @@
     describe('sharedLeaveCalendar', function () {
       var $componentController, $log, $q, $rootScope, controller, $provide,
         AbsencePeriod, Calendar, LeaveRequest, OptionGroup, PublicHoliday;
+      var contactId = CRM.vars.leaveAndAbsences.contactId;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', 'common.mocks', function (_$provide_) {
         $provide = _$provide_;
@@ -219,7 +220,7 @@
 
           it('loads only the leave requests belonging to the loaded contacts', function () {
             expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-              contact_id: { 'IN': [CRM.vars.leaveAndAbsences.contactId] }
+              contact_id: { 'IN': [contactId] }
             }));
           });
 
@@ -445,7 +446,7 @@
             beforeEach(function () {
               leaveRequest = _.clone(leaveRequestData.singleDataSuccess().values[0]);
               workPattern = _.find(workPatternMocked.getCalendar.values, function (workPattern) {
-                return workPattern.contact_id === CRM.vars.leaveAndAbsences.contactId;
+                return workPattern.contact_id === contactId;
               });
 
               workPattern.calendar[0].date = leaveRequest.from_date;
@@ -547,7 +548,7 @@
                 });
               });
 
-              return day.contactsData[CRM.vars.leaveAndAbsences.contactId];
+              return day.contactsData[contactId];
             }
           });
 
@@ -562,7 +563,7 @@
               });
             });
 
-            return returnContactData ? day.contactsData[CRM.vars.leaveAndAbsences.contactId] : day;
+            return returnContactData ? day.contactsData[contactId] : day;
           }
         });
       });
@@ -723,22 +724,13 @@
           });
 
           it('removes the leave request from the list of the contact\'s leave requests', function () {
-            expect(_.find(controller.leaveRequests[CRM.vars.leaveAndAbsences.contactId], function (leaveRequest) {
+            expect(_.find(controller.leaveRequests[contactId], function (leaveRequest) {
               return leaveRequestToDelete.id === leaveRequest.id;
             })).toBeUndefined();
           });
 
           it('resets the properties of each day that the leave request spans', function () {
-            expect(getLeaveRequestDays(leaveRequestToDelete).every(function (day) {
-              var contactData = day.contactsData[CRM.vars.leaveAndAbsences.contactId];
-
-              return contactData.leaveRequest === null &&
-                contactData.styles === null &&
-                contactData.isAccruedTOIL === null &&
-                contactData.isRequested === null &&
-                contactData.isAM === null &&
-                contactData.isPM === null;
-            })).toBe(true);
+            expect(getLeaveRequestDays(leaveRequestToDelete).every(isDayContactDataNull)).toBe(true);
           });
         });
 
@@ -747,17 +739,9 @@
 
           beforeEach(function () {
             leaveRequestToAdd = _.clone(getLeaveRequestOfCurrentlySelectedMonth());
-            leaveRequestToAdd = _.assign(leaveRequestToAdd, {
-              id: '1',
-              from_date: '2016-02-20',
-              to_date: '2016-02-21',
-              dates: [
-                { 'id': '1', 'date': '2016-02-20' },
-                { 'id': '2', 'date': '2016-02-21' }
-              ]
-            });
-            LeaveRequest.all.calls.reset();
+            leaveRequestToAdd = modifyLeaveRequestData(leaveRequestToAdd, true);
 
+            LeaveRequest.all.calls.reset();
             $rootScope.$emit('LeaveRequest::new', leaveRequestToAdd);
             $rootScope.$digest();
           });
@@ -766,28 +750,98 @@
             expect(LeaveRequest.all).not.toHaveBeenCalled();
           });
 
-          it('adds the leave request to the list of the contacts\'s leave requests', function () {
-            expect(_.find(controller.leaveRequests[CRM.vars.leaveAndAbsences.contactId], function (leaveRequest) {
+          it('adds the leave request to the list of the contact\'s leave requests', function () {
+            expect(_.find(controller.leaveRequests[contactId], function (leaveRequest) {
               return leaveRequestToAdd.id === leaveRequest.id;
             })).toBeDefined();
           });
 
           it('updates the properties of each day that the leave request spans', function () {
-            expect(getLeaveRequestDays(leaveRequestToAdd).every(function (day) {
-              var contactData = day.contactsData[CRM.vars.leaveAndAbsences.contactId];
-
-              return contactData.leaveRequest !== null &&
-                contactData.styles !== null &&
-                contactData.isAccruedTOIL !== null &&
-                contactData.isRequested !== null &&
-                contactData.isAM !== null &&
-                contactData.isPM !== null;
-            })).toBe(true);
+            expect(getLeaveRequestDays(leaveRequestToAdd).every(isDayContactDataNull)).toBe(false);
           });
         });
 
+        describe('when a leave request is updated and its dates have changed', function () {
+          var leaveRequestToUpdate, oldDays, newDays;
+
+          beforeEach(function () {
+            leaveRequestToUpdate = _.clone(getLeaveRequestOfCurrentlySelectedMonth());
+            leaveRequestToUpdate = modifyLeaveRequestData(leaveRequestToUpdate);
+
+            oldDays = getDaysFromDatesOfIndexedLeaveRequest(leaveRequestToUpdate);
+
+            LeaveRequest.all.calls.reset();
+
+            $rootScope.$emit('LeaveRequest::edit', leaveRequestToUpdate);
+            $rootScope.$digest();
+
+            newDays = getDaysFromDatesOfIndexedLeaveRequest(leaveRequestToUpdate);
+          });
+
+          it('does not re-fetch the leave requests from the backend', function () {
+            expect(LeaveRequest.all).not.toHaveBeenCalled();
+          });
+
+          it('does not index the leave request by the old dates anymore', function () {
+            expect(newDays.map(function (day) {
+              return day.date;
+            })).not.toEqual(oldDays.map(function (day) {
+              return day.date;
+            }));
+          });
+
+          it('indexes the leave request by the new dates', function () {
+            expect(newDays.map(function (day) {
+              return day.date;
+            })).toEqual(leaveRequestToUpdate.dates.map(function (date) {
+              return date.date;
+            }));
+          });
+
+          it('resets the properties of the days that the leave request does not span anymore', function () {
+            expect(oldDays.every(isDayContactDataNull)).toBe(true);
+          });
+
+          it('sets the properties of the days that the leave request now spans', function () {
+            expect(newDays.every(isDayContactDataNull)).toBe(false);
+          });
+        });
+
+        function modifyLeaveRequestData (leaveRequest, modifyId) {
+          var modified = _.assign({}, leaveRequest, {
+            from_date: '2016-02-20',
+            to_date: '2016-02-21',
+            dates: [
+              { 'id': '1', 'date': '2016-02-20' },
+              { 'id': '2', 'date': '2016-02-21' }
+            ]
+          });
+
+          if (modifyId === true) {
+            modified.id = '1';
+          }
+
+          return modified;
+        }
+
+        function getDaysFromDatesOfIndexedLeaveRequest (leaveRequest) {
+          return _(controller.leaveRequests[contactId])
+            .map(function (_leaveRequest_, date) {
+              return leaveRequest.id === _leaveRequest_.id ? date : null;
+            })
+            .compact()
+            .map(function (date) {
+              date = moment(date);
+
+              return _.find(controller.months[date.month()].days, function (day) {
+                return day.date === date.format('YYYY-MM-DD');
+              });
+            })
+            .value();
+        }
+
         function getLeaveRequestOfCurrentlySelectedMonth () {
-          return _(controller.leaveRequests[CRM.vars.leaveAndAbsences.contactId])
+          return _(controller.leaveRequests[contactId])
             .find(function (leaveRequest) {
               return _.includes(controller.selectedMonths, moment(leaveRequest.from_date).month());
             });
@@ -808,6 +862,17 @@
 
           return days;
         }
+
+        function isDayContactDataNull (day) {
+          var contactData = day.contactsData[contactId];
+
+          return contactData.leaveRequest === null &&
+            contactData.styles === null &&
+            contactData.isAccruedTOIL === null &&
+            contactData.isRequested === null &&
+            contactData.isAM === null &&
+            contactData.isPM === null;
+        }
       });
 
       function amend2016Period (params) {
@@ -820,7 +885,7 @@
       }
 
       function compileComponent () {
-        controller = $componentController('staffLeaveCalendar', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
+        controller = $componentController('staffLeaveCalendar', null, { contactId: contactId });
         $rootScope.$digest();
       }
     });
