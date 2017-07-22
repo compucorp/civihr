@@ -92,10 +92,6 @@
         expect($log.debug).toHaveBeenCalled();
       });
 
-      it('has the legend expanded', function () {
-        expect(controller.legendCollapsed).toBe(false);
-      });
-
       describe('on init', function () {
         var AbsenceType;
 

@@ -25,7 +25,6 @@ define([
     vm.absencePeriods = [];
     vm.absenceTypes = [];
     vm.contacts = [];
-    vm.legendCollapsed = true;
     vm.leaveRequests = {};
     vm.months = [];
     vm.pageSize = 20;
@@ -34,19 +33,6 @@ define([
     vm.loading = {
       calendar: true,
       page: true
-    };
-
-    /**
-     * Labels the given period according to whether it's current or not
-     *
-     * @param  {object} absenceType
-     * @return {object} style
-     */
-    vm.getAbsenceTypeStyle = function (absenceType) {
-      return {
-        backgroundColor: absenceType.color,
-        borderColor: absenceType.color
-      };
     };
 
     /**
@@ -104,7 +90,6 @@ define([
       ])
       .then(function () {
         vm.loading.page = false;
-        vm.legendCollapsed = false;
       })
       .then((intermediateSteps ? intermediateSteps() : _.noop))
       .then(function () {

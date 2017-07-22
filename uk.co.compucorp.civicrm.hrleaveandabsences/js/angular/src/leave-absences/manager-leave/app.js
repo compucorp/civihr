@@ -10,12 +10,13 @@ define([
   'common/services/check-permissions',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/components/leave-request-popup-comments-tab',
+  'leave-absences/shared/components/leave-calendar-legend.component',
+  'leave-absences/shared/components/manager-leave-calendar',
   'leave-absences/shared/directives/leave-request-popup',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/manager-leave/modules/config',
   'leave-absences/manager-leave/components/manager-leave-container',
-  'leave-absences/shared/components/manager-leave-calendar',
   'leave-absences/manager-leave/components/manager-leave-requests'
 ], function (angular) {
   angular.module('manager-leave', [
