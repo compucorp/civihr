@@ -106,7 +106,7 @@ define([
      */
     function addLeaveRequest (event, leaveRequest) {
       indexLeaveRequests([leaveRequest]);
-      updateLeaveRequestDaysProperties(leaveRequest);
+      updateLeaveRequestDaysContactData(leaveRequest);
     }
 
     /**
@@ -132,7 +132,7 @@ define([
      */
     function deleteLeaveRequest (event, leaveRequest) {
       removeLeaveRequestFromIndexedList(leaveRequest);
-      updateLeaveRequestDaysProperties(leaveRequest);
+      updateLeaveRequestDaysContactData(leaveRequest);
     }
 
     /**
@@ -412,7 +412,7 @@ define([
         loadMonthLeaveRequests(month)
       ])
       .then(function () {
-        setMonthDaysProperties(month);
+        return setMonthDaysContactData(month);
       })
       .then(function () {
         month.contactsDataLoaded = true;
@@ -617,10 +617,10 @@ define([
      * @param {Object} month
      * @return {Promise}
      */
-    function setMonthDaysProperties (month) {
+    function setMonthDaysContactData (month) {
       return $q.all(month.days.map(function (day) {
         return $q.all(vm.contacts.map(function (contact) {
-          setDayContactData(day, contact.id);
+          return setDayContactData(day, contact.id);
         }));
       }));
     }
@@ -645,9 +645,9 @@ define([
      * @param  {LeaveRequestInstance} leaveRequest
      * @return {Promise}
      */
-    function updateLeaveRequestDaysProperties (leaveRequest) {
+    function updateLeaveRequestDaysContactData (leaveRequest) {
       return $q.all(getLeaveRequestDays(leaveRequest).map(function (day) {
-        setDayContactData(day, leaveRequest.contact_id, true);
+        return setDayContactData(day, leaveRequest.contact_id, true);
       }));
     }
   }
