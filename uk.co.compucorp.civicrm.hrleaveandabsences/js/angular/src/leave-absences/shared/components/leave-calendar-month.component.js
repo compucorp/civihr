@@ -18,5 +18,10 @@ define([
 
   function controller ($log) {
     $log.debug('Component: leave-calendar-month');
+
+    var vm = this;
+    vm.currentPage = 0;
+    vm.pageSize = 20;
+    vm.showContactName = vm.showContactName ? !!vm.showContactName : false;
   }
 });

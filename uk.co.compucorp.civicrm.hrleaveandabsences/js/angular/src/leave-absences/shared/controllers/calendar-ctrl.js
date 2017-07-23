@@ -27,7 +27,6 @@ define([
     vm.contacts = [];
     vm.leaveRequests = {};
     vm.months = [];
-    vm.pageSize = 20;
     vm.selectedMonths = null;
     vm.selectedPeriod = null;
     vm.loading = {
@@ -514,7 +513,6 @@ define([
         days: monthDaysStructure(date),
         contactsDataLoaded: false,
         loading: true,
-        currentPage: 0,
         name: {
           long: date.format('MMMM'),
           short: date.format('MMM')
