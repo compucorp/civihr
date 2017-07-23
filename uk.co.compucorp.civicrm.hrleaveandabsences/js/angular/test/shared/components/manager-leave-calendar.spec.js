@@ -115,42 +115,6 @@
         });
       });
 
-      describe('filterContacts', function () {
-        beforeEach(function () {
-          controller.filteredContacts = ContactAPIMock.mockedContacts().list;
-        });
-
-        describe('when contacts with leaves filter is false', function () {
-          var returnValue;
-
-          beforeEach(function () {
-            controller.filters.contacts_with_leaves = false;
-            returnValue = controller.filterContacts();
-          });
-
-          it('does not filter the contacts', function () {
-            expect(returnValue).toEqual(controller.filteredContacts);
-          });
-        });
-
-        describe('when contacts with leaves filter is true', function () {
-          var returnValue,
-            anyLeaveRequest;
-
-          beforeEach(function () {
-            controller.filters.contacts_with_leaves = true;
-            anyLeaveRequest = leaveRequestData.all().values[0];
-            returnValue = controller.filterContacts();
-          });
-
-          it('filters the contacts which have a leave request', function () {
-            expect(!!_.find(returnValue, function (contact) {
-              return contact.id === anyLeaveRequest.contact_id;
-            })).toBe(true);
-          });
-        });
-      });
-
       function compileComponent () {
         controller = $componentController('managerLeaveCalendar', null, { contactId: CRM.vars.leaveAndAbsences.contactId });
         $rootScope.$digest();

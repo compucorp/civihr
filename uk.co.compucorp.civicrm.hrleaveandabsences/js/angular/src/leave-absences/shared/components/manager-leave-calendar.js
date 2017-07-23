@@ -26,7 +26,6 @@ define([
     var isAdmin = false;
     var vm = $controller('CalendarCtrl');
     vm.contactId = this.contactId;
-    vm.filteredContacts = [];
     vm.managedContacts = [];
     vm.filters = {
       contact: null,
@@ -37,27 +36,13 @@ define([
       contacts_with_leaves: false
     };
 
-    /**
-     * Filters contacts if contacts_with_leaves is turned on
-     *
-     * @return {array}
-     */
-    vm.filterContacts = function () {
-      if (vm.filters.contacts_with_leaves) {
-        return vm.filteredContacts.filter(function (contact) {
-          return (vm.leaveRequests[contact.id] && Object.keys(vm.leaveRequests[contact.id]).length > 0);
-        });
-      }
-
-      return vm.filteredContacts;
-    };
-
     vm._contacts = function () {
       if (isAdmin) {
         return Contact.all()
           .then(function (contacts) {
             vm.managedContacts = contacts.list;
-            vm.filteredContacts = contacts.list;
+
+            return contacts.list;
           });
       }
 
@@ -68,9 +53,6 @@ define([
         })
         .then(function () {
           return loadContacts();
-        })
-        .then(function () {
-          return vm.filteredContacts;
         });
     };
 
@@ -93,7 +75,11 @@ define([
     function loadContacts () {
       return Contact.all(prepareContactFilters(), null, 'display_name')
         .then(function (contacts) {
-          vm.filteredContacts = contacts.list;
+          return !vm.filters.contacts_with_leaves
+            ? contacts.list
+            : contacts.list.filter(function (contact) {
+              return (vm.leaveRequests[contact.id] && Object.keys(vm.leaveRequests[contact.id]).length > 0);
+            });
         });
     }
 
