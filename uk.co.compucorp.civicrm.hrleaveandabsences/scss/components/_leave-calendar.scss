@@ -36,6 +36,11 @@ $chr-leave-calendar-legend-size:                  20px;
     height: $chr-leave-calendar-cell-height;
     padding: 0 !important;
   }
+
+  leave-calendar-day {
+    display: block;
+    height: 100%;
+  }
 }
 
 th.chr_leave-calendar__name,

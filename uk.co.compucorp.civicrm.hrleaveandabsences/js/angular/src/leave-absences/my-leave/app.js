@@ -17,6 +17,7 @@ define([
   'leave-absences/shared/components/staff-leave-report',
   'leave-absences/shared/components/staff-leave-calendar',
   'leave-absences/shared/components/leave-request-popup-comments-tab',
+  'leave-absences/shared/components/leave-calendar-day.component',
   'leave-absences/shared/components/leave-calendar-legend.component',
   'leave-absences/shared/directives/leave-request-popup',
   'leave-absences/shared/models/entitlement-model',

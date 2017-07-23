@@ -16,27 +16,7 @@
         <tbody>
           <tr class="chr_leave-calendar__items" ng-repeat="contact in calendar.contacts track by contact.id">
             <td ng-repeat="day in month.days track by day.date">
-              <div class="chr_leave-calendar__item"
-                ng-style="day.contactsData[contact.id].styles"
-                ng-class="{
-                  'chr_leave-calendar__item--type--weekend': day.contactsData[contact.id].isWeekend,
-                  'chr_leave-calendar__item--type--non-working': day.contactsData[contact.id].isNonWorkingDay,
-                  'chr_leave-calendar__item--type--public-holiday': day.contactsData[contact.id].isPublicHoliday,
-                  'chr_leave-calendar__item--requested': day.contactsData[contact.id].isRequested,
-                  'chr_leave-calendar__item--alt': day.contactsData[contact.id].isAccruedTOIL,
-                  'chr_leave-calendar__item--toil-requested': day.contactsData[contact.id].isRequested && day.contactsData[contact.id].isAccruedTOIL
-                }">
-                <span ng-if="day.contactsData[contact.id].isAM">AM</span>
-                <span ng-if="day.contactsData[contact.id].isPM">PM</span>
-                <span ng-if="day.contactsData[contact.id].isAccruedTOIL">AT</span>
-                <a ng-if="day.contactsData[contact.id].leaveRequest"
-                  contact-id="contact.id"
-                  selected-contact-id="$root.settings.contactId"
-                  leave-request-popup
-                  leave-request="day.contactsData[contact.id].leaveRequest"
-                  title="Click to open this leave request">
-                </a>
-              </div>
+              <leave-calendar-day contact-data="day.contactsData[contact.id]"></leave-calendar-day>
             </td>
           </tr>
         </tbody>

@@ -1,0 +1,21 @@
+<div class="chr_leave-calendar__item"
+  ng-style="day.contactData.styles"
+  ng-class="{
+    'chr_leave-calendar__item--type--weekend': day.contactData.isWeekend,
+    'chr_leave-calendar__item--type--non-working': day.contactData.isNonWorkingDay,
+    'chr_leave-calendar__item--type--public-holiday': day.contactData.isPublicHoliday,
+    'chr_leave-calendar__item--requested': day.contactData.isRequested,
+    'chr_leave-calendar__item--alt': day.contactData.isAccruedTOIL,
+    'chr_leave-calendar__item--toil-requested': day.contactData.isRequested && day.contactData.isAccruedTOIL
+  }">
+  <span ng-if="day.contactData.isAM">AM</span>
+  <span ng-if="day.contactData.isPM">PM</span>
+  <span ng-if="day.contactData.isAccruedTOIL">AT</span>
+  <a ng-if="day.contactData.leaveRequest"
+    contact-id="contact.id"
+    selected-contact-id="$root.settings.contactId"
+    leave-request-popup
+    leave-request="day.contactData.leaveRequest"
+    title="Click to open this leave request">
+  </a>
+</div>
