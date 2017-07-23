@@ -28,9 +28,10 @@
     </div>
     <crm-loading show="!calendar.loading.calendar">
       <section class="panel panel-default" ng-repeat="month in calendar.months track by $index">
-        <ng-include
-          ng-if="(calendar.selectedMonths.length == 0 || calendar.selectedMonths.indexOf(month.index) > -1)"
-          src="$root.sharedPathTpl + 'components/staff-leave-calendar-month.html'"></ng-include>
+        <leave-calendar-month month="month"
+          contacts="calendar.contacts"
+          ng-if="(calendar.selectedMonths.length == 0 || calendar.selectedMonths.indexOf(month.index) > -1)">
+        </leave-calendar-month>
       </section>
     </crm-loading>
     <leave-calendar-legend absence-types="calendar.absenceTypes" ng-if="calendar.absenceTypes.length"></leave-calendar-legend>

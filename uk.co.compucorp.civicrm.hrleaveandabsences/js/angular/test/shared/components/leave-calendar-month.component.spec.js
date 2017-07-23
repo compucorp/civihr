@@ -5,7 +5,7 @@ define([
 ], function () {
   'use strict';
 
-  describe('leaveCalendarDay', function () {
+  describe('leaveCalendarMonth', function () {
     var $componentController, $log;
 
     beforeEach(module('leave-absences.templates', 'leave-absences.components'));
@@ -22,7 +22,7 @@ define([
     });
 
     function compileComponent () {
-      $componentController('leaveCalendarDay');
+      $componentController('leaveCalendarMonth');
     }
   });
 });

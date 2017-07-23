@@ -1,21 +1,21 @@
 <header class="panel-heading chr_leave-calendar__month-header">
-  <h2 class="panel-title">{{month.name.long}} {{month.year}}</h2>
+  <h2 class="panel-title">{{month.month.name.long}} {{month.month.year}}</h2>
 </header>
-<crm-loading show="!month.loading">
+<crm-loading show="!month.month.loading">
   <div class="chr_leave-calendar__month-body">
     <div class="table-responsive">
       <table class="table table-bordered chr_leave-calendar">
         <thead>
           <tr class="chr_leave-calendar__days">
-            <th ng-repeat="day in month.days track by day.date">
+            <th ng-repeat="day in month.month.days track by day.date">
               {{day.name}}
               <div>{{day.index}}</div>
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr class="chr_leave-calendar__items" ng-repeat="contact in calendar.contacts track by contact.id">
-            <td ng-repeat="day in month.days track by day.date">
+          <tr class="chr_leave-calendar__items" ng-repeat="contact in month.contacts track by contact.id">
+            <td ng-repeat="day in month.month.days track by day.date">
               <leave-calendar-day contact-data="day.contactsData[contact.id]"></leave-calendar-day>
             </td>
           </tr>
