@@ -42,6 +42,7 @@ define([
     vm.months = [];
     vm.selectedMonths = null;
     vm.selectedPeriod = null;
+    vm.showContactName = false;
     vm.showFilters = false;
     vm.loading = { calendar: true, page: true };
     vm.filters = {
