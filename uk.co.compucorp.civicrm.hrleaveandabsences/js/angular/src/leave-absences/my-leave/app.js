@@ -15,7 +15,6 @@ define([
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/components/staff-leave-report',
-  'leave-absences/shared/components/staff-leave-calendar',
   'leave-absences/shared/components/leave-request-popup-comments-tab',
   'leave-absences/shared/components/leave-calendar.component',
   'leave-absences/shared/components/leave-calendar-day.component',

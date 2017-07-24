@@ -13,7 +13,6 @@ define([
   'leave-absences/shared/components/leave-calendar-day.component',
   'leave-absences/shared/components/leave-calendar-legend.component',
   'leave-absences/shared/components/leave-calendar-month.component',
-  'leave-absences/shared/components/manager-leave-calendar',
   'leave-absences/shared/directives/leave-request-popup',
   'leave-absences/admin-dashboard/modules/config',
   'leave-absences/admin-dashboard/components/admin-dashboard-container',

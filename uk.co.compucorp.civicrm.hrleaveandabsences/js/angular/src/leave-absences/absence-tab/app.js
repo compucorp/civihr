@@ -21,7 +21,6 @@ define([
   'leave-absences/shared/components/leave-calendar-legend.component',
   'leave-absences/shared/components/leave-calendar-month.component',
   'leave-absences/shared/components/staff-leave-report',
-  'leave-absences/shared/components/staff-leave-calendar',
   'leave-absences/shared/directives/leave-request-popup',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/calendar-model',
