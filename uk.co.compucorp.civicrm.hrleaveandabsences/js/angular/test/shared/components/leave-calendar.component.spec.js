@@ -105,15 +105,6 @@
       });
 
       describe('on init', function () {
-        var AbsenceType;
-
-        beforeEach(inject(function (_AbsenceType_) {
-          AbsenceType = _AbsenceType_;
-          spyOn(AbsenceType, 'all').and.callThrough();
-
-          compileComponent();
-        }));
-
         it('hides the loader for the whole page', function () {
           expect(controller.loading.page).toBe(false);
         });
@@ -150,7 +141,7 @@
             });
           });
 
-          describe('when the user is an manager', function () {
+          describe('when the user is a manager', function () {
             beforeEach(function () {
               currentContact.role = 'manager';
               compileComponent();
@@ -220,6 +211,15 @@
         });
 
         describe('absence types', function () {
+          var AbsenceType;
+
+          beforeEach(inject(function (_AbsenceType_) {
+            AbsenceType = _AbsenceType_;
+            spyOn(AbsenceType, 'all').and.callThrough();
+
+            compileComponent();
+          }));
+
           it('loads the absence types', function () {
             expect(controller.absenceTypes.length).not.toBe(0);
           });
@@ -231,12 +231,29 @@
           });
         });
 
-        describe('contacts\' work pattern calendar', function () {
-          beforeEach(function () {
-            Calendar.get.calls.reset();
-            compileComponent();
+        describe('filter option values', function () {
+          var optionGroups = ['hrjc_region', 'hrjc_location', 'hrjc_level_type', 'hrjc_department'];
+
+          describe('when the filters should not be shown', function () {
+            it('does not fetch the filters option values', function () {
+              expect(OptionGroup.valuesOf).not.toHaveBeenCalledWith(optionGroups);
+            });
           });
 
+          describe('when the filters should be shown', function () {
+            beforeEach(function () {
+              compileComponent(true);
+              controller.showFilters = true;
+              $rootScope.$digest();
+            });
+
+            it('fetches the filters option values', function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith(optionGroups);
+            });
+          });
+        });
+
+        describe('contacts\' work pattern calendar', function () {
           it('loads the work pattern calendars', function () {
             expect(Calendar.get.calls.any()).toBe(true);
           });
@@ -264,11 +281,6 @@
         });
 
         describe('leave requests', function () {
-          beforeEach(function () {
-            LeaveRequest.all.calls.reset();
-            compileComponent();
-          });
-
           it('loads the leave requests', function () {
             expect(LeaveRequest.all.calls.any()).toBe(true);
           });
@@ -953,16 +965,11 @@
         });
       }
 
-      function compileComponent () {
+      function compileComponent (skipDigest) {
         controller = $componentController('leaveCalendar', null, { contactId: currentContact.id });
-        $rootScope.$digest();
+        skipDigest !== true && $rootScope.$digest();
       }
 
-      /**
-       * [spyOnSubCtrlLoadContacts description]
-       * @param  {[type]} $controller [description]
-       * @return {[type]}             [description]
-       */
       function spyOnSubCtrlLoadContacts () {
         var ctrlName = 'LeaveCalendar' + _.capitalize(currentContact.role) + 'Controller';
         var realSubCtrl = $controller(ctrlName).init(controller);
@@ -981,11 +988,6 @@
         return spy;
       }
 
-      /**
-       * [mockedCheckPermissions description]
-       * @param  {[type]} permissionToCheck [description]
-       * @return {[type]}                   [description]
-       */
       function mockCheckPermissionService () {
         return jasmine.createSpy().and.callFake(function (permissionToCheck) {
           if (permissionToCheck === sharedSettings.permissions.ssp.manage) {

@@ -41,18 +41,18 @@ define([
     vm.months = [];
     vm.selectedMonths = null;
     vm.selectedPeriod = null;
-    vm.loading = {
-      calendar: true,
-      page: true
-    };
-
+    vm.showFilters = false;
+    vm.loading = { calendar: true, page: true };
     vm.filters = {
-      contact: null,
-      department: null,
-      level_type: null,
-      location: null,
-      region: null,
-      contacts_with_leaves: false
+      optionValues: {},
+      userSettings: {
+        contact: null,
+        contacts_with_leaves: false,
+        department: null,
+        level_type: null,
+        location: null,
+        region: null
+      }
     };
 
     /**
@@ -92,11 +92,7 @@ define([
         });
     };
 
-    /**
-     * Initialize the calendar
-     *
-     * @param {function} intermediateSteps
-     */
+    // init
     (function init () {
       setUserRole().then(function () {
         initListeners();
@@ -109,13 +105,14 @@ define([
           loadAbsencePeriods(),
           loadAbsenceTypes(),
           loadPublicHolidays(),
-          loadOptionValues()
+          loadBasicOptionValues()
         ]);
       })
       .then(function () {
-        vm.loading.page = false;
+        return vm.showFilters ? loadFiltersOptionValues() : _.noop;
       })
       .then(function () {
+        vm.loading.page = false;
         vm.loading.calendar = false;
       })
       .then(loadSelectedMonthsData);
@@ -381,6 +378,22 @@ define([
     }
 
     /**
+     * Loads the OptionValues necessary for basic functioning of the controller
+     *
+     * @return {Promise}
+     */
+    function loadBasicOptionValues () {
+      return OptionGroup.valuesOf([
+        'hrleaveandabsences_leave_request_status',
+        'hrleaveandabsences_leave_request_day_type'
+      ])
+      .then(function (data) {
+        leaveRequestStatuses = _.indexBy(data.hrleaveandabsences_leave_request_status, 'value');
+        dayTypes = _.indexBy(data.hrleaveandabsences_leave_request_day_type, 'name');
+      });
+    }
+
+    /**
      * Loads the contacts by using the `_.contacts` method in the child controller
      *
      * @return {Promise}
@@ -388,6 +401,26 @@ define([
     function loadContacts () {
       return subController.loadContacts().then(function (contacts) {
         vm.contacts = contacts;
+      });
+    }
+
+    /**
+     * Loads the OptionValues necessary for the filters
+     *
+     * @return {Promise}
+     */
+    function loadFiltersOptionValues () {
+      return OptionGroup.valuesOf([
+        'hrjc_region',
+        'hrjc_location',
+        'hrjc_level_type',
+        'hrjc_department'
+      ])
+      .then(function (data) {
+        vm.filters.optionValues.regions = data.hrjc_region;
+        vm.filters.optionValues.locations = data.hrjc_location;
+        vm.filters.optionValues.levelTypes = data.hrjc_level_type;
+        vm.filters.optionValues.departments = data.hrjc_department;
       });
     }
 
@@ -454,22 +487,6 @@ define([
       }), monthStartDate, monthEndDate)
       .then(function (monthCalendars) {
         calendarsByMonthId[month.id] = _.indexBy(monthCalendars, 'contact_id');
-      });
-    }
-
-    /**
-     * Loads the OptionValues necessary for the controller
-     *
-     * @return {Promise}
-     */
-    function loadOptionValues () {
-      return OptionGroup.valuesOf([
-        'hrleaveandabsences_leave_request_status',
-        'hrleaveandabsences_leave_request_day_type'
-      ])
-      .then(function (data) {
-        leaveRequestStatuses = _.indexBy(data.hrleaveandabsences_leave_request_status, 'value');
-        dayTypes = _.indexBy(data.hrleaveandabsences_leave_request_day_type, 'name');
       });
     }
 
