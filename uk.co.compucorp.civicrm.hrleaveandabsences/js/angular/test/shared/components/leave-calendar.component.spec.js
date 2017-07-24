@@ -163,6 +163,18 @@
             });
           });
 
+          describe('when the role-override binding is used', function () {
+            beforeEach(function () {
+              currentContact.role = 'admin';
+              compileComponent(false, { roleOverride: 'staff' });
+            });
+
+            it('ignores the real user\'s role and uses the one given in the binding instead', function () {
+              expect($log.debug).not.toHaveBeenCalledWith('LeaveCalendarAdminController');
+              expect($log.debug).toHaveBeenCalledWith('LeaveCalendarStaffController');
+            });
+          });
+
           afterEach(function () {
             currentContact.role = 'staff';
           });
@@ -965,8 +977,8 @@
         });
       }
 
-      function compileComponent (skipDigest) {
-        controller = $componentController('leaveCalendar', null, { contactId: currentContact.id });
+      function compileComponent (skipDigest, bindings) {
+        controller = $componentController('leaveCalendar', null, _.assign({ contactId: currentContact.id }, bindings));
         skipDigest !== true && $rootScope.$digest();
       }
 

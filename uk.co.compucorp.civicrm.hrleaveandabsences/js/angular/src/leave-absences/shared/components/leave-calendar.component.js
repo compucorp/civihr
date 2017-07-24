@@ -11,7 +11,8 @@ define([
 ], function (angular, _, moment, components) {
   components.component('leaveCalendar', {
     bindings: {
-      contactId: '<'
+      contactId: '<',
+      roleOverride: '@?'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/leave-calendar.html';
@@ -657,13 +658,19 @@ define([
      * Sets the user's role based on his permissions
      */
     function setUserRole () {
-      return $q.all([
-        checkPermissions(sharedSettings.permissions.admin.administer),
-        checkPermissions(sharedSettings.permissions.ssp.manage)
-      ])
-      .then(function (results) {
-        userRole = results[0] ? 'admin' : (results[1] ? 'manager' : 'staff');
-      });
+      if (vm.roleOverride) {
+        return $q.resolve().then(function () {
+          userRole = vm.roleOverride;
+        });
+      } else {
+        return $q.all([
+          checkPermissions(sharedSettings.permissions.admin.administer),
+          checkPermissions(sharedSettings.permissions.ssp.manage)
+        ])
+        .then(function (results) {
+          userRole = results[0] ? 'admin' : (results[1] ? 'manager' : 'staff');
+        });
+      }
     }
 
     /**
