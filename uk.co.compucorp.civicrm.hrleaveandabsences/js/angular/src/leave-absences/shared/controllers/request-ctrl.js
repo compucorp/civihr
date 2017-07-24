@@ -139,7 +139,6 @@ define([
           return $q.resolve();
         }
 
-        self.errors = [];
         self.loading.showBalanceChange = true;
         return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange.call(self))
           .then(function (balanceChange) {
@@ -420,6 +419,10 @@ define([
             this._setMinMaxDate();
 
             return filterLeaveRequestDayTypes.call(this, date, dayType);
+          }.bind(this))
+          .catch(handleError.bind(this))
+          .finally(function () {
+            this.loading[dayType + 'DayTypes'] = false;
           }.bind(this));
       };
 
@@ -437,13 +440,9 @@ define([
         .then(function () {
           return this.updateBalance();
         }.bind(this))
-        .catch(function (error) {
-          this.errors = [error];
-
+        .catch(function (errors) {
+          handleError.call(this, errors);
           this._setDateAndTypes();
-        }.bind(this))
-        .finally(function () {
-          this.loading[dayType + 'DayTypes'] = false;
         }.bind(this));
       };
 
