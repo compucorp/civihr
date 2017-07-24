@@ -77,15 +77,18 @@ define([
        * @return {Promise}
        */
       function loadSupportedFileTypes () {
+        var allowedMimeTypes;
+
         return OptionGroup.valuesOf('safe_file_extension')
           .then(function (extensions) {
-            var allowedMimeTypes = {};
+            allowedMimeTypes = {};
             extensions.map(function (ext) {
               allowedMimeTypes[ext.label] = sharedSettings.fileUploader.mimeTypesMap[ext.label];
             });
-            // FileUpload.uploader has uploader property which was causing circular reference issue
-            // hence renamed this uploader to fileUploader
-
+          })
+          .finally(function () {
+            // if the API calls throws an error or fails, "allowedMimeTypes" will be undefined
+            // hence the default extension will be set to the uploader in file-upload.js
             this.fileUploader = FileUpload.uploader({
               entityTable: 'civicrm_hrleaveandabsences_leave_request',
               crmAttachmentToken: sharedSettings.attachmentToken,

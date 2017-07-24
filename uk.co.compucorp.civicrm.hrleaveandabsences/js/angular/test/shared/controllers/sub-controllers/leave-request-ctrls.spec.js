@@ -884,6 +884,7 @@
 
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             leaveRequest.fileUploader.queue = [];
+
             initTestController({
               contactId: leaveRequest.contact_id, // staff's contact id
               isSelfRecord: true,
