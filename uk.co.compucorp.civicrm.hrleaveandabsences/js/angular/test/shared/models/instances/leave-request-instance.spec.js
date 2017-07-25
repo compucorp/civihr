@@ -80,7 +80,7 @@ define([
 
       describe('cancel()', function () {
         beforeEach(function () {
-          commonSetup(sharedSettings.statusNames.cancelled, 'cancel');
+          commonSetup('cancel');
         });
 
         it('fetches the hrleaveandabsences_leave_request_status Option Values', function () {
@@ -102,7 +102,7 @@ define([
 
       describe('approve()', function () {
         beforeEach(function () {
-          commonSetup(sharedSettings.statusNames.approved, 'approve');
+          commonSetup('approve');
         });
 
         it('fetches the hrleaveandabsences_leave_request_status Option Values', function () {
@@ -126,7 +126,7 @@ define([
 
       describe('reject()', function () {
         beforeEach(function () {
-          commonSetup(sharedSettings.statusNames.rejected, 'reject');
+          commonSetup('reject');
         });
 
         it('fetches the hrleaveandabsences_leave_request_status Option Values', function () {
@@ -150,7 +150,7 @@ define([
 
       describe('sendBack()', function () {
         beforeEach(function () {
-          commonSetup(sharedSettings.statusNames.moreInformationRequired, 'sendBack');
+          commonSetup('sendBack');
         });
 
         it('fetches the hrleaveandabsences_leave_request_status Option Values', function () {
@@ -172,11 +172,7 @@ define([
         });
       });
 
-      function commonSetup (statusName, methodName) {
-        // spyOn(OptionGroup, 'valuesOf').and.returnValue($q.resolve([{
-        //   name: statusName, value: getStatusIdByName(statusName)
-        // }]));
-
+      function commonSetup (methodName) {
         instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
         promise = instance[methodName]();
       }
@@ -360,10 +356,6 @@ define([
       var instance;
 
       beforeEach(function () {
-        // spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
-        //   return $q.resolve(optionGroupMockData.getCollection('hrleaveandabsences_leave_request_status'));
-        // });
-
         instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
       });
 

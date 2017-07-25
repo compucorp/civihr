@@ -270,8 +270,7 @@ define([
 
         return $q.all([
           self._loadAbsenceTypes(),
-          self._loadCalendar(),
-          self.request.loadAttachments()
+          self._loadCalendar()
         ])
           .then(function () {
             return loadDayTypes.call(self);
@@ -285,8 +284,7 @@ define([
             initContact.call(self);
 
             if (self.isMode('edit')) {
-              initialLeaveRequestAttributes = angular.copy(self.request.attributes());
-
+              setInitialAttributes.call(self);
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
               }
@@ -523,6 +521,7 @@ define([
        */
       this._init = function () {
         initAvailableStatusesMatrix.call(this);
+        $rootScope.$on('Request Updated', setInitialAttributes.bind(this));
 
         return initRoles.call(this)
           .then(function () {
@@ -1161,6 +1160,13 @@ define([
       }
 
       /**
+       * Set Initial attribute
+       */
+      function setInitialAttributes () {
+        initialLeaveRequestAttributes = angular.copy(this.request.attributes());
+      }
+
+      /**
        * Validates and updates the leave request
        *
        * @returns {Promise}
@@ -1180,14 +1186,13 @@ define([
       }
 
       /**
-       * Fire and event to start Uploading attachment
+       * Fire and event to start Uploading attachment and resolves it according to the result
        *
        * @returns {Promise}
        */
       function uploadAttachment () {
         var deferred = $q.defer();
 
-        $rootScope.$broadcast('uploadFiles: start');
         var successEvent = $rootScope.$on('uploadFiles: success', function () {
           deferred.resolve('Upload Successful');
           // Destroy the listener
@@ -1198,6 +1203,8 @@ define([
           // Destroy the listener
           errorEvent();
         });
+
+        $rootScope.$broadcast('uploadFiles: start');
 
         return deferred.promise;
       }

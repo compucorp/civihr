@@ -102,6 +102,10 @@ define([
 
     (function init () {
       loadSupportedFileTypes();
+      vm.request.loadAttachments()
+      .then(function () {
+        $rootScope.$broadcast('Request Updated');
+      });
       events.push($rootScope.$on('uploadFiles: start', uploadAttachments));
     }());
 
