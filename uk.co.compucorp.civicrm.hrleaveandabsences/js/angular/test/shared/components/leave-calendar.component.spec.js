@@ -10,24 +10,19 @@
     'mocks/data/absence-type-data',
     'mocks/data/option-group-mock-data',
     'mocks/data/public-holiday-data',
-    'mocks/data/work-pattern-data',
-    'mocks/data/leave-request-data',
     'common/mocks/services/api/contact-mock',
     'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
-    'mocks/apis/leave-request-api-mock',
     'mocks/apis/public-holiday-api-mock',
     'mocks/apis/option-group-api-mock',
-    'mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/config',
     'leave-absences/my-leave/app'
-  ], function (angular, moment, _, helper, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData, workPatternMocked, leaveRequestData) {
+  ], function (angular, moment, _, helper, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData) {
     'use strict';
 
     describe('leaveCalendar', function () {
       var $componentController, $controller, $controllerProvider, $log, $q,
-        $rootScope, controller, $provide, AbsencePeriod, Calendar, LeaveRequest,
-        OptionGroup, PublicHoliday, sharedSettings;
+        $rootScope, controller, $provide, AbsencePeriod, OptionGroup, PublicHoliday, sharedSettings;
       var mockedCheckPermissions = mockCheckPermissionService();
       var currentContact = {
         id: CRM.vars.leaveAndAbsences.contactId,
@@ -39,19 +34,16 @@
         $controllerProvider = _$controllerProvider_;
       }));
 
-      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, LeaveRequestAPIMock,
-        PublicHolidayAPIMock, WorkPatternAPIMock) {
-        $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
-        $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
-        $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
-        $provide.value('PublicHolidayAPI', PublicHolidayAPIMock);
-        $provide.value('WorkPatternAPI', WorkPatternAPIMock);
-        $provide.value('checkPermissions', mockedCheckPermissions);
-      }));
-
-      beforeEach(inject(['api.contact.mock', function (ContactAPIMock) {
-        $provide.value('api.contact', ContactAPIMock);
-      }]));
+      beforeEach(inject([
+        'AbsencePeriodAPIMock', 'AbsenceTypeAPIMock', 'PublicHolidayAPIMock', 'api.contact.mock',
+        function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, PublicHolidayAPIMock, ContactAPIMock) {
+          $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
+          $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+          $provide.value('PublicHolidayAPI', PublicHolidayAPIMock);
+          $provide.value('checkPermissions', mockedCheckPermissions);
+          $provide.value('api.contact', ContactAPIMock);
+        }
+      ]));
 
       beforeEach(inject(function (_OptionGroup_, OptionGroupAPIMock) {
         OptionGroup = _OptionGroup_;
@@ -63,24 +55,20 @@
 
       beforeEach(inject([
         '$componentController', '$controller', '$log', '$q', '$rootScope', 'AbsencePeriod',
-        'Calendar', 'LeaveRequest', 'PublicHoliday', 'shared-settings',
+        'PublicHoliday', 'shared-settings',
         function (_$componentController_, _$controller_, _$log_, _$q_, _$rootScope_,
-          _AbsencePeriod_, _Calendar_, _LeaveRequest_, _PublicHoliday_, _sharedSettings_) {
+          _AbsencePeriod_, _PublicHoliday_, _sharedSettings_) {
           $componentController = _$componentController_;
           $controller = _$controller_;
           $log = _$log_;
           $q = _$q_;
           $rootScope = _$rootScope_;
           AbsencePeriod = _AbsencePeriod_;
-          Calendar = _Calendar_;
-          LeaveRequest = _LeaveRequest_;
           PublicHoliday = _PublicHoliday_;
           sharedSettings = _sharedSettings_;
 
           spyOn($log, 'debug');
           spyOn(AbsencePeriod, 'all');
-          spyOn(Calendar, 'get').and.callThrough();
-          spyOn(LeaveRequest, 'all').and.callThrough();
           spyOn(PublicHoliday, 'all').and.callThrough();
 
           // Set 2016 as current period, because Calendar loads data only for the current period initially,
