@@ -27,7 +27,7 @@
       var requestSortParam = 'from_date ASC';
 
       var $componentController, $q, $log, $provide, $rootScope, controller;
-      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, dialog, sharedSettings;
+      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, sharedSettings;
 
       beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
         $provide = _$provide_;
@@ -56,14 +56,13 @@
         HRSettings = HRSettingsMock;
       }]));
 
-      beforeEach(inject(function ($componentController, _AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _dialog_) {
+      beforeEach(inject(function ($componentController, _AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_) {
         AbsencePeriod = _AbsencePeriod_;
         AbsenceType = _AbsenceType_;
         Entitlement = _Entitlement_;
         LeaveRequest = _LeaveRequest_;
         LeaveRequestInstance = _LeaveRequestInstance_;
         OptionGroup = _OptionGroup_;
-        dialog = _dialog_;
 
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
@@ -347,7 +346,7 @@
               from_date: { from: newPeriod.start_date },
               to_date: { to: newPeriod.end_date },
               status_id: valueOfRequestStatus('approved')
-            }), null, requestSortParam);
+            }), null, requestSortParam, null, false);
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
               period_id: newPeriod.id
             }), jasmine.any(Array));
@@ -446,7 +445,7 @@
           it('fetches all leave requests linked to a public holiday', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               public_holiday: true
-            }), null, requestSortParam);
+            }), null, requestSortParam, null, false);
           });
 
           it('caches the data', function () {
@@ -462,7 +461,7 @@
           it('fetches all approved leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               status_id: valueOfRequestStatus('approved')
-            }), null, requestSortParam);
+            }), null, requestSortParam, null, false);
           });
 
           it('caches the data', function () {
@@ -500,7 +499,7 @@
                 valueOfRequestStatus(sharedSettings.statusNames.rejected),
                 valueOfRequestStatus(sharedSettings.statusNames.cancelled)
               ] }
-            }), null, requestSortParam);
+            }), null, requestSortParam, null, false);
           });
 
           it('caches the data', function () {
@@ -583,7 +582,7 @@
                 to_date: {to: controller.selectedPeriod.end_date},
                 request_type: 'toil',
                 expired: true
-              }, null, requestSortParam);
+              }, null, requestSortParam, null, false);
             });
 
             it('does not pass to the Model the entitlements already stored', function () {
@@ -628,243 +627,6 @@
         });
       });
 
-      describe('action matrix for a leave request', function () {
-        var actionMatrix, leaveRequestData;
-
-        beforeEach(function () {
-          leaveRequestData = _.assign(leaveRequestMock.all().values[0], {
-            type_id: absenceTypeData.findByKeyValue('allow_request_cancelation', '2').id
-          });
-        });
-
-        describe('status: awaiting approval', function () {
-          describe('when the user is not a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-            });
-
-            it('shows the "edit" and "cancel" actions', function () {
-              expect(actionMatrix).toEqual(['edit', 'cancel']);
-            });
-          });
-
-          describe('when the user is a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-            });
-
-            it('shows the "respond", "cancel" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['respond', 'cancel', 'delete']);
-            });
-          });
-        });
-
-        describe('status: more information required', function () {
-          describe('when the user is not a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
-            });
-
-            it('shows the "respond" and "cancel" actions', function () {
-              expect(actionMatrix).toEqual(['respond', 'cancel']);
-            });
-          });
-
-          describe('when the user is a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.moreInformationRequired);
-            });
-
-            it('shows the "edit", "cancel" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['edit', 'cancel', 'delete']);
-            });
-          });
-        });
-
-        describe('status: approved', function () {
-          describe('when the user is not a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
-            });
-
-            it('shows the "cancel" and the "view" actions', function () {
-              expect(actionMatrix).toEqual(['view', 'cancel']);
-            });
-          });
-
-          describe('when the user is a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.approved);
-            });
-
-            it('shows the "cancel", "view" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['view', 'cancel', 'delete']);
-            });
-          });
-        });
-
-        describe('status: cancelled', function () {
-          describe('when the user is not a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
-            });
-
-            it('shows the "view" action', function () {
-              expect(actionMatrix).toEqual(['view']);
-            });
-          });
-
-          describe('when the user is a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.cancelled);
-            });
-
-            it('shows the "view" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['view', 'delete']);
-            });
-          });
-        });
-
-        describe('status: rejected', function () {
-          describe('when the user is not a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
-            });
-
-            it('shows the "view" action', function () {
-              expect(actionMatrix).toEqual(['view']);
-            });
-          });
-
-          describe('when the user is a L&A admin', function () {
-            beforeEach(function () {
-              setRoleToAdmin(true);
-              actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.rejected);
-            });
-
-            it('shows the "view" and "delete" actions', function () {
-              expect(actionMatrix).toEqual(['view', 'delete']);
-            });
-          });
-        });
-
-        describe('"cancel" action', function () {
-          describe('when the absence type of the leave request does not allow to cancel', function () {
-            beforeEach(function () {
-              leaveRequestData.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '1').id;
-            });
-
-            describe('when the user is not a L&A admin', function () {
-              beforeEach(function () {
-                setRoleToAdmin(false);
-                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-              });
-
-              it('does not show the "cancel" action', function () {
-                expect(actionMatrix).not.toContain('cancel');
-              });
-            });
-
-            describe('when the user is a L&A admin', function () {
-              beforeEach(function () {
-                setRoleToAdmin(true);
-                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-              });
-
-              it('shows the "cancel" action', function () {
-                expect(actionMatrix).toContain('cancel');
-              });
-            });
-          });
-
-          describe('when the absence type of the leave request allows to cancel only before the start date', function () {
-            beforeEach(function () {
-              setRoleToAdmin(false);
-              leaveRequestData.type_id = absenceTypeData.findByKeyValue('allow_request_cancelation', '3').id;
-            });
-
-            describe('when from date is less than today', function () {
-              beforeEach(function () {
-                var baseDate = moment(leaveRequestData.from_date);
-                var dateAfterFromDate = baseDate.add(10, 'days').toDate();
-                jasmine.clock().mockDate(dateAfterFromDate);
-
-                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-              });
-
-              describe('when the user is not a L&A admin', function () {
-                beforeEach(function () {
-                  setRoleToAdmin(false);
-                  actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-                });
-
-                it('does not show the "cancel" action', function () {
-                  expect(actionMatrix).not.toContain('cancel');
-                });
-              });
-
-              describe('when the user is a L&A admin', function () {
-                beforeEach(function () {
-                  setRoleToAdmin(true);
-                  actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-                });
-
-                it('shows the "cancel" action', function () {
-                  expect(actionMatrix).toContain('cancel');
-                });
-              });
-            });
-
-            describe('when from date is more than today', function () {
-              beforeEach(function () {
-                var baseDate = moment(leaveRequestData.from_date);
-                var dateBeforeFromDate = baseDate.subtract(10, 'days').toDate();
-                jasmine.clock().mockDate(dateBeforeFromDate);
-
-                setRoleToAdmin(false);
-                actionMatrix = getActionMatrixForStatus(sharedSettings.statusNames.awaitingApproval);
-              });
-
-              it('shows the "cancel" action', function () {
-                expect(actionMatrix).toContain('cancel');
-              });
-            });
-          });
-        });
-
-        /**
-         * Sets (or not) the user's role as admin depending on the value passed
-         *
-         * @param {Boolean} isAdmin
-         */
-        function setRoleToAdmin (isAdmin) {
-          isUserAdmin = !!isAdmin;
-          compileComponent();
-        }
-
-        /**
-         * Calls the controller method that returns the action matrix for
-         * a given Leave Request in a particular status
-         *
-         * @param  {string} statusName
-         * @return {Array}
-         */
-        function getActionMatrixForStatus (statusName) {
-          leaveRequestData.status_id = valueOfRequestStatus(statusName);
-
-          return controller.actionsFor(LeaveRequestInstance.init(leaveRequestData, true));
-        }
-      });
-
       describe('when a new leave request is created', function () {
         beforeEach(function () {
           spyOn(controller, 'refresh').and.callThrough();
@@ -881,160 +643,19 @@
         });
       });
 
-      describe('when cancelling a leave request', function () {
-        var leaveRequest1, leaveRequest2, leaveRequest3;
-
+      describe('when request is edited', function () {
         beforeEach(function () {
-          Entitlement.all.calls.reset();
-          LeaveRequest.balanceChangeByAbsenceType.calls.reset();
+          spyOn(controller, 'refresh').and.callThrough();
+          $rootScope.$emit('LeaveRequest::edit');
+          $rootScope.$digest();
         });
 
-        beforeEach(function () {
-          leaveRequest1 = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
-          leaveRequest2 = LeaveRequestInstance.init(leaveRequestMock.all().values[1], true);
-          leaveRequest3 = LeaveRequestInstance.init(leaveRequestMock.all().values[2], true);
-
-          spyOn(leaveRequest1, 'cancel').and.callThrough();
-          spyOn(leaveRequest1, 'update').and.callFake(function () {
-            return $q.resolve(leaveRequestMock.singleDataSuccess());
-          });
-
-          controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
-        });
-
-        describe('the user is prompted for confirmation', function () {
-          beforeEach(function () {
-            resolveDialogWith(null);
-
-            controller.action(leaveRequest1, 'cancel');
-            $rootScope.$digest();
-          });
-
-          it('shows a confirmation dialog', function () {
-            expect(dialog.open).toHaveBeenCalled();
-          });
-        });
-
-        describe('when the user confirms', function () {
-          var oldBalanceChange, oldList, oldRemainder;
-
-          describe('basic tests', function () {
-            beforeEach(function () {
-              oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
-              oldList = controller.sections.pending.data;
-              oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
-            });
-
-            beforeEach(function () {
-              cancelRequest(leaveRequest1);
-            });
-
-            it('sends the cancellation request', function () {
-              expect(leaveRequest1.cancel).toHaveBeenCalled();
-            });
-
-            it('removes the leave request from the current section', function () {
-              expect(controller.sections.pending.data).not.toContain(leaveRequest1);
-            });
-
-            it('remove the leave request without creating a new array', function () {
-              expect(controller.sections.pending.data).toBe(oldList);
-            });
-
-            describe('balance changes', function () {
-              var newBalanceChange;
-
-              beforeEach(function () {
-                newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
-              });
-
-              it('updates the balance changes for the section the leave request was in', function () {
-                expect(newBalanceChange).not.toBe(oldBalanceChange);
-                expect(newBalanceChange).toBe(oldBalanceChange - leaveRequest1.balance_change);
-              });
-
-              it('does not send a request to the backend to fetch the updated balance changes', function () {
-                expect(LeaveRequest.balanceChangeByAbsenceType).not.toHaveBeenCalled();
-              });
-            });
-
-            describe('remainders', function () {
-              var newRemainder;
-
-              beforeEach(function () {
-                newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
-              });
-
-              it('updates the remainder of the entitlement of the absence type the leave request was for', function () {
-                expect(newRemainder).not.toBe(oldRemainder);
-                expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
-              });
-
-              it('does not send a request to the backend to fetch the updated remainders', function () {
-                expect(Entitlement.all).not.toHaveBeenCalled();
-              });
-            });
-          });
-
-          describe('moving the request to the "Other" section', function () {
-            describe('when the section has cached data', function () {
-              beforeEach(function () {
-                var alreadyRejected = LeaveRequestInstance.init(helper.createRandomLeaveRequest(), true);
-                controller.sections.other.data = [alreadyRejected];
-
-                cancelRequest(leaveRequest1);
-              });
-
-              it('moves the leave request in it', function () {
-                expect(controller.sections.other.data).toContain(leaveRequest1);
-              });
-            });
-
-            describe('when the section has not any cached data', function () {
-              beforeEach(function () {
-                controller.sections.other.data = [];
-
-                cancelRequest(leaveRequest1);
-              });
-
-              it('does not move the leave request in it', function () {
-                expect(controller.sections.other.data).not.toContain(leaveRequest1);
-              });
-            });
-          });
-
-          /**
-           * Set up the confirmation dialog to be confirmed and then
-           * triggers the leave request cancellation
-           *
-           * @param  {LeaveRequestInstance} leaveRequest
-           */
-          function cancelRequest (leaveRequest) {
-            resolveDialogWith(true);
-            controller.action(leaveRequest1, 'cancel');
-            $rootScope.$digest();
-          }
-        });
-
-        describe('when the user does not confirm', function () {
-          beforeEach(function () {
-            resolveDialogWith(false);
-
-            controller.action(leaveRequest1, 'cancel');
-            $rootScope.$digest();
-          });
-
-          it('does not send the cancellation request', function () {
-            expect(leaveRequest1.cancel).not.toHaveBeenCalled();
-          });
-
-          it('does not remove the leave request from the current section', function () {
-            expect(controller.sections.pending.data).toContain(leaveRequest1);
-          });
+        it('refreshes the controller', function () {
+          expect(controller.refresh).toHaveBeenCalled();
         });
       });
 
-      describe('when deleting a leave request', function () {
+      describe('when request is deleted', function () {
         var leaveRequest1, leaveRequest2, leaveRequest3;
 
         beforeEach(function () {
@@ -1045,110 +666,75 @@
           spyOn(leaveRequest1, 'delete').and.returnValue($q.resolve());
         });
 
-        describe('dialog', function () {
-          beforeEach(function () {
-            resolveDialogWith(null);
+        describe('basic tests', function () {
+          var newBalanceChange, oldList, oldBalanceChange;
 
-            controller.action(leaveRequest1, 'delete');
+          beforeEach(function () {
+            oldList = controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+            oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+
+            leaveRequest1.delete();
+            $rootScope.$emit('LeaveRequest::deleted', leaveRequest1);
             $rootScope.$digest();
+
+            newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
           });
 
-          it('shows a confirmation dialog', function () {
-            expect(dialog.open).toHaveBeenCalled();
-          });
-        });
-
-        describe('when the user confirms', function () {
-          beforeEach(function () {
-            resolveDialogWith(true);
+          it('sends the deletion request', function () {
+            expect(leaveRequest1.delete).toHaveBeenCalled();
           });
 
-          describe('basic tests', function () {
-            var newBalanceChange, oldList, oldBalanceChange;
-
-            beforeEach(function () {
-              oldList = controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
-              oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
-
-              controller.action(leaveRequest1, 'delete');
-              $rootScope.$digest();
-
-              newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
-            });
-
-            it('sends the deletion request', function () {
-              expect(leaveRequest1.delete).toHaveBeenCalled();
-            });
-
-            it('removes the leave request from its section', function () {
-              expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(false);
-            });
-
-            it('removes the leave request without creating a new array', function () {
-              expect(controller.sections.pending.data).toBe(oldList);
-            });
-
-            it('updates the balance changes for the section the leave request was in', function () {
-              expect(newBalanceChange).not.toBe(oldBalanceChange);
-              expect(newBalanceChange).toBe(oldBalanceChange - leaveRequest1.balance_change);
-            });
+          it('removes the leave request from its section', function () {
+            expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(false);
           });
 
-          describe('when the leave request was already approved', function () {
-            var oldRemainder, newRemainder;
-
-            beforeEach(function () {
-              controller.sections.approved.data = [leaveRequest1, leaveRequest2, leaveRequest3];
-              oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
-
-              controller.action(leaveRequest1, 'delete');
-              $rootScope.$digest();
-
-              newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
-            });
-
-            it('updates the current remainder of the entitlement of the absence type the leave request was for', function () {
-              expect(newRemainder).not.toBe(oldRemainder);
-              expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
-            });
+          it('removes the leave request without creating a new array', function () {
+            expect(controller.sections.pending.data).toBe(oldList);
           });
 
-          describe('when the leave request was still open', function () {
-            var oldRemainder, newRemainder;
-
-            beforeEach(function () {
-              controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
-              oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
-
-              controller.action(leaveRequest1, 'delete');
-              $rootScope.$digest();
-
-              newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
-            });
-
-            it('updates the future remainder of the entitlement of the absence type the leave request was for', function () {
-              expect(newRemainder).not.toBe(oldRemainder);
-              expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
-            });
+          it('updates the balance changes for the section the leave request was in', function () {
+            expect(newBalanceChange).not.toBe(oldBalanceChange);
+            expect(newBalanceChange).toBe(oldBalanceChange - leaveRequest1.balance_change);
           });
         });
 
-        describe('when the user does not confirm', function () {
-          beforeEach(function () {
-            resolveDialogWith(false);
+        describe('when the leave request was already approved', function () {
+          var oldRemainder, newRemainder;
 
+          beforeEach(function () {
+            controller.sections.approved.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+            oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
+
+            leaveRequest1.delete();
+            $rootScope.$emit('LeaveRequest::deleted', leaveRequest1);
+            $rootScope.$digest();
+
+            newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
+          });
+
+          it('updates the current remainder of the entitlement of the absence type the leave request was for', function () {
+            expect(newRemainder).not.toBe(oldRemainder);
+            expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
+          });
+        });
+
+        describe('when the leave request was still open', function () {
+          var oldRemainder, newRemainder;
+
+          beforeEach(function () {
             controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+            oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
 
-            controller.action(leaveRequest1, 'delete');
+            leaveRequest1.delete();
+            $rootScope.$emit('LeaveRequest::deleted', leaveRequest1);
             $rootScope.$digest();
+
+            newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
           });
 
-          it('does not send the deletion request', function () {
-            expect(leaveRequest1.delete).not.toHaveBeenCalled();
-          });
-
-          it('does not remove the leave request from its section', function () {
-            expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(true);
+          it('updates the future remainder of the entitlement of the absence type the leave request was for', function () {
+            expect(newRemainder).not.toBe(oldRemainder);
+            expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
           });
         });
       });
@@ -1182,31 +768,6 @@
 
         controller.toggleSection(section);
         digest && $rootScope.$digest();
-      }
-
-      /**
-       * Spyes on dialog.open() method and resolves it with the given value
-       *
-       * @param {any} value
-       */
-      function resolveDialogWith (value) {
-        var spy;
-
-        if (typeof dialog.open.calls !== 'undefined') {
-          spy = dialog.open;
-        } else {
-          spy = spyOn(dialog, 'open');
-        }
-
-        spy.and.callFake(function (options) {
-          return $q.resolve()
-            .then(function () {
-              return options.onConfirm && value ? options.onConfirm() : null;
-            })
-            .then(function () {
-              return value;
-            });
-        });
       }
     });
   });

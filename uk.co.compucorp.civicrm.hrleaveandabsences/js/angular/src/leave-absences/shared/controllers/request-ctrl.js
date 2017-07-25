@@ -26,6 +26,7 @@ define([
       LeaveRequest, PublicHoliday, sharedSettings
     ) {
       $log.debug('RequestCtrl');
+
       var absenceTypesAndIds;
       var availableStatusesMatrix = {};
       var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
@@ -993,23 +994,22 @@ define([
        */
       function loadManagees () {
         if (this.directiveOptions.selectedContactId) {
-          // When in absence tab, because "loadManagees" is called only in manager mode,
-          // and selectedContactId is not set for Manager Leave in SSP
+          // In case of a pre-selected contact administration
           return Contact.find(this.directiveOptions.selectedContactId)
             .then(function (contact) {
               this.managedContacts = [contact];
             }.bind(this));
         } else if (this.isRole('admin')) {
-          // When in Admin Dashboard
+          // In case of general administration
           return Contact.all()
             .then(function (contacts) {
               this.managedContacts = _.remove(contacts.list, function (contact) {
-                // Removes the admin from the list of managees
+                // Removes the admin from the list of contacts
                 return contact.id !== this.directiveOptions.contactId;
               }.bind(this));
             }.bind(this));
         } else {
-          // Everywhere else
+          // In any other case (including managing)
           return Contact.find(this.directiveOptions.contactId)
             .then(function (contact) {
               return contact.leaveManagees();

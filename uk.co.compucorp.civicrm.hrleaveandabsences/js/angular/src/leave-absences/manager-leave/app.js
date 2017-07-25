@@ -9,6 +9,7 @@ define([
   'common/services/angular-date/date-format',
   'common/services/check-permissions',
   'leave-absences/shared/ui-router',
+  'leave-absences/shared/components/leave-request-actions.component',
   'leave-absences/shared/components/leave-request-create-dropdown',
   'leave-absences/shared/components/leave-request-popup-comments-tab',
   'leave-absences/shared/components/leave-request-popup-files-tab',

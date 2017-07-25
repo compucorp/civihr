@@ -8,6 +8,7 @@ define([
   'common/services/check-permissions',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/ui-router',
+  'leave-absences/shared/components/leave-request-actions.component',
   'leave-absences/shared/components/leave-request-create-dropdown',
   'leave-absences/shared/components/leave-request-popup-comments-tab',
   'leave-absences/shared/components/manager-leave-calendar',
