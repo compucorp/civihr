@@ -420,8 +420,11 @@ define([
 
             return filterLeaveRequestDayTypes.call(this, date, dayType);
           }.bind(this))
-          .catch(handleError.bind(this))
           .finally(function () {
+            /**
+             * after the request is completed fromDayTypes or toDayTypes are
+             * set to false and the corresponding field is shown on the ui.
+             */
             this.loading[dayType + 'DayTypes'] = false;
           }.bind(this));
       };
