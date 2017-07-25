@@ -5,6 +5,7 @@ define([
   'common/moment',
   'leave-absences/shared/modules/components',
   'common/services/file-upload',
+  'common/services/file-mime-types',
   'common/services/hr-settings'
 ], function (_, moment, components) {
   components.component('leaveRequestPopupFilesTab', {
@@ -18,10 +19,10 @@ define([
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html';
     }],
     controllerAs: 'filesTab',
-    controller: ['$log', '$rootScope', 'HR_settings', 'shared-settings', 'OptionGroup', 'FileUpload', controller]
+    controller: ['$log', '$rootScope', 'HR_settings', 'shared-settings', 'OptionGroup', 'FileUpload', 'FileMimeTypes', controller]
   });
 
-  function controller ($log, $rootScope, HRSettings, sharedSettings, OptionGroup, FileUpload) {
+  function controller ($log, $rootScope, HRSettings, sharedSettings, OptionGroup, FileUpload, FileMimeTypes) {
     $log.debug('Component: leave-request-popup-files-tab');
 
     var vm = Object.create(this);
@@ -117,7 +118,7 @@ define([
           allowedMimeTypes = {};
 
           vm.supportedFileTypes = extensions.map(function (ext) {
-            allowedMimeTypes[ext.label] = sharedSettings.fileUploader.mimeTypesMap[ext.label];
+            allowedMimeTypes[ext.label] = FileMimeTypes.getMimeTypeFor(ext.label);
             return ext.label;
           });
         })
