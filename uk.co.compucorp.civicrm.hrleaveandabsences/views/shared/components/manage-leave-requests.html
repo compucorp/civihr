@@ -132,12 +132,12 @@
                 <td style="width: 25%;">{{request.from_date}} - {{request.to_date}}</td>
                 <td style="width: 20%;">{{vm.getLeaveStatusByValue(request.status_id)}}</td>
                 <td style="width: 10%;" class="text-center">
-                  <leave-request-action-dropdown
-                    request="request"
+                  <leave-request-actions
+                    leave-request="request"
                     role="vm.isAdmin ? 'admin' : 'manager'"
-                    absence-types="vm.absenceTypesIndexed"
-                    request-statuses="vm.leaveRequestStatusesIndexed">
-                  </leave-request-action-dropdown>
+                    absence-types="vm.absenceTypes"
+                    leave-request-statuses="vm.leaveRequestStatuses">
+                  </leave-request-actions>
                 </td>
               </tr>
               </tbody>

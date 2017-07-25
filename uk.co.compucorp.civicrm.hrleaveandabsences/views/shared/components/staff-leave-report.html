@@ -212,12 +212,12 @@
                               {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                             </td>
                             <td>
-                              <leave-request-action-dropdown
-                                request="request"
+                              <leave-request-actions
+                                leave-request="request"
                                 role="$root.section === 'my-leave' ? 'staff' : report.role"
                                 absence-types="report.absenceTypes"
-                                request-statuses="report.leaveRequestStatuses">
-                              </leave-request-action-dropdown>
+                                leave-request-statuses="report.leaveRequestStatuses">
+                              </leave-request-actions>
                             </td>
                           </tr>
                         </tbody>
@@ -373,12 +373,12 @@
                             {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                           </td>
                           <td>
-                            <leave-request-action-dropdown
-                              request="request"
+                            <leave-request-actions
+                              leave-request="request"
                               role="$root.section === 'my-leave' ? 'staff' : report.role"
                               absence-types="report.absenceTypes"
-                              request-statuses="report.leaveRequestStatuses">
-                            </leave-request-action-dropdown>
+                              leave-request-statuses="report.leaveRequestStatuses">
+                            </leave-request-actions>
                           </td>
                         </tr>
                       </tbody>
@@ -460,12 +460,12 @@
                             {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                           </td>
                           <td>
-                            <leave-request-action-dropdown
-                              request="request"
+                            <leave-request-actions
+                              leave-request="request"
                               role="$root.section === 'my-leave' ? 'staff' : report.role"
                               absence-types="report.absenceTypes"
-                              request-statuses="report.leaveRequestStatuses">
-                            </leave-request-action-dropdown>
+                              leave-request-statuses="report.leaveRequestStatuses">
+                            </leave-request-actions>
                           </td>
                         </tr>
                       </tbody>
