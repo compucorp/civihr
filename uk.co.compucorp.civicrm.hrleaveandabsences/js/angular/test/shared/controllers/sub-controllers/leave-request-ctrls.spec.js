@@ -1177,6 +1177,16 @@
           it('does not load contacts', function () {
             expect($ctrl.managedContacts.length).toEqual(0);
           });
+
+          describe('loading', function () {
+            it('is not loading fromDayTypes', function () {
+              expect($ctrl.loading.fromDayTypes).toBe(false);
+            });
+
+            it('is not loading toDayTypes', function () {
+              expect($ctrl.loading.toDayTypes).toBe(false);
+            });
+          });
         });
       });
 
