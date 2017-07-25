@@ -412,7 +412,7 @@ define([
         to_date: {
           to: filters.selectedPeriod.end_date
         },
-        unassigned: filters.assignedTo === 'unassigned'
+        unassigned: (filters.assignedTo === 'unassigned' ? true : undefined)
       };
     }
 
