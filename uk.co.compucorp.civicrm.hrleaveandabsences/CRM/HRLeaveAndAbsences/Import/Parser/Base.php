@@ -64,6 +64,12 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
   private $sicknessReasons;
 
   /**
+   * @var string
+   *  Date Format type chosen on Leave Request Upload Data page
+   */
+  private $dateFormatType;
+
+  /**
    * Class constructor.
    *
    * @param array $mapperKeys
@@ -94,6 +100,8 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
     $this->setActiveFields($this->_mapperKeys);
     $this->absenceTypes = $this->getAbsenceTypes();
     $this->absenceStatuses = $this->getAbsenceStatuses();
+    $session = CRM_Core_Session::singleton();
+    $this->dateFormatType = $session->get('dateTypes');
   }
 
   /**
@@ -297,17 +305,15 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
     foreach($params as $key=>$value) {
       $fieldType = empty($fields[$key]['type']) ? null : $fields[$key]['type'];
       if ($fieldType && $fieldType == CRM_Utils_Type::T_DATE) {
-
-        try {
-          new DateTime($value);
-        } catch (Exception $e) {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('Invalid Date value for '.$fields[$key]['title'], $errorMessage);
+        $dateValue = CRM_Utils_Date::formatDate($value, $this->dateFormatType);
+        if (!$dateValue) {
+          self::addToErrorMsg('Invalid Date format for '.$fields[$key]['title'], $errorMessage);
         }
       }
 
       if ($fieldType && ($fieldType == CRM_Utils_Type::T_FLOAT || $fieldType == CRM_Utils_Type::T_INT)) {
         if(!is_numeric($value)) {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('Invalid value for '.$fields[$key]['title'], $errorMessage);
+          self::addToErrorMsg('Invalid value for '.$fields[$key]['title'], $errorMessage);
         }
       }
     }
@@ -459,8 +465,8 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
    * @return LeaveRequest
    */
   private function createLeaveRequestFromImportData($params) {
-    $startDate = new DateTime($params['start_date']);
-    $endDate = new DateTime($params['end_date']);
+    $startDate = CRM_Utils_Date::formatDate($params['start_date'], $this->dateFormatType);
+    $endDate = CRM_Utils_Date::formatDate($params['end_date'], $this->dateFormatType);
     $dateTypes = $this->getDateTypes();
 
     $payload = [
@@ -468,8 +474,8 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
       'type_id' => $params['type_id'],
       'status_id' => $params['status_id'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
-      'from_date' => $startDate->format('YmdHis'),
-      'to_date' => $endDate->format('YmdHis'),
+      'from_date' => $startDate,
+      'to_date' => $endDate,
       'from_date_type' => $dateTypes['all_day'],
       'to_date_type' => $dateTypes['all_day']
     ];
@@ -497,8 +503,8 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
    *  array of CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate
    */
   private function createBalanceChangeForLeaveDate($params, $leaveDates) {
-    $absenceDate = new DateTime($params['absence_date']);
-    $absenceDate = $absenceDate->format('Y-m-d');
+    $absenceDate = CRM_Utils_Date::formatDate($params['absence_date'], $this->dateFormatType);
+    $absenceDate = CRM_Utils_Date::processDate($absenceDate, null, false, 'Y-m-d');
     $balanceChangeTypes = $this->getBalanceChangeTypes();
     $balanceChangeType = $balanceChangeTypes['debit'];
     $amount = $params['qty'] * -1;
@@ -532,12 +538,12 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
       return;
     }
 
-    $absenceDate = new DateTime($params['absence_date']);
+    $absenceDate = CRM_Utils_Date::formatDate($params['absence_date'], $this->dateFormatType);
     $payload = [
       'leave_request_id' => $leaveRequestID,
       'text' => $params['comments'],
       'contact_id' => $params['contact_id'],
-      'created_at' => $absenceDate->format('YmdHis'),
+      'created_at' => $absenceDate,
     ];
 
     $this->getLeaveRequestCommentService()->add($payload);
