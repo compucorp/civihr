@@ -50,9 +50,7 @@
         </div>
         <div class="checkbox">
           <label>
-            <input type="checkbox"
-              ng-change="calendar.refresh('contacts')"
-              ng-model="calendar.filters.userSettings.contacts_with_leaves"> Show only those who are taking leave
+            <input type="checkbox" ng-model="calendar.filters.userSettings.contacts_with_leaves"> Show only those who are taking leave
           </label>
         </div>
       </div>
@@ -88,7 +86,7 @@
         month="month"
         period="calendar.selectedPeriod"
         show-contact-name="calendar.showContactName"
-        show-only-with-leave-request="calendar.showContactName"
+        show-only-with-leave-requests="calendar.filters.userSettings.contacts_with_leaves"
         support-data="calendar.supportData">
       </leave-calendar-month>
     </div>

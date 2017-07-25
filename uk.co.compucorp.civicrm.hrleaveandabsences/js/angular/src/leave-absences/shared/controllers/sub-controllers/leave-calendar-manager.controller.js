@@ -58,11 +58,7 @@ define([
     function loadContacts () {
       return Contact.all(prepareContactFilters(), null, 'display_name')
         .then(function (contacts) {
-          return !vm.filters.userSettings.contacts_with_leaves
-            ? contacts.list
-            : contacts.list.filter(function (contact) {
-              return (vm.leaveRequests[contact.id] && Object.keys(vm.leaveRequests[contact.id]).length > 0);
-            });
+          return contacts.list;
         });
     }
 

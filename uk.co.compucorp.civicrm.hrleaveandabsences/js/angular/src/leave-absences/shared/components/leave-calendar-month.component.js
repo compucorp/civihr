@@ -11,7 +11,7 @@ define([
       month: '<',
       period: '<',
       showContactName: '<',
-      showOnlyWithLeaveRequest: '<',
+      showOnlyWithLeaveRequests: '<',
       supportData: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
@@ -33,7 +33,9 @@ define([
     vm.pageSize = 20;
     vm.visible = false;
     vm.showContactName = vm.showContactName ? !!vm.showContactName : false;
-    vm.showOnlyWithLeaveRequest = vm.showOnlyWithLeaveRequest ? !!vm.showOnlyWithLeaveRequest : false;
+    vm.showOnlyWithLeaveRequests = vm.showOnlyWithLeaveRequests ? !!vm.showOnlyWithLeaveRequests : false;
+
+    vm.contactsList = contactsList;
 
     (function init () {
       var dateFromMonth = moment().month(vm.month.index).year(vm.month.year);
@@ -104,6 +106,17 @@ define([
      */
     function contactMonthWorkPatternCalendar (contactId) {
       return calendars[contactId];
+    }
+
+    /**
+     * Gives the list of contacts to display, eventually filtered
+     *
+     * @return {Array}
+     */
+    function contactsList () {
+      return !vm.showOnlyWithLeaveRequests ? vm.contacts : vm.contacts.filter(function (contact) {
+        return _.includes(Object.keys(leaveRequests), contact.id);
+      });
     }
 
     /**
@@ -412,7 +425,9 @@ define([
       });
 
       if (isIncluded) {
+        vm.currentPage = 0;
         vm.visible = true;
+
         (forceReload || !dataLoaded) && loadMonthData();
       } else {
         vm.visible = false;

@@ -202,7 +202,7 @@ define([
     }
 
     /**
-     * Loads the contacts by using the `_.contacts` method in the child controller
+     * Loads the contacts by using the `loadContacts` method in the sub-controller
      *
      * @return {Promise}
      */

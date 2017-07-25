@@ -21,7 +21,8 @@
 
     describe('leaveCalendarMonth', function () {
       var $componentController, $log, $provide, $q, $rootScope, Calendar,
-        LeaveRequest, controller, daysInFebruary, february, period2016, publicHolidays;
+        LeaveRequest, controller, daysInFebruary, february, leaveRequestInFebruary,
+        period2016, publicHolidays;
       var currentContactId = CRM.vars.leaveAndAbsences.contactId;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
@@ -49,12 +50,13 @@
         daysInFebruary = moment().month(february.index).year(february.year).daysInMonth();
         period2016 = _.clone(AbsencePeriodData.all().values[0]);
         publicHolidays = PublicHolidayData.all().values;
+        leaveRequestInFebruary = LeaveRequestData.all().values[0];
 
         spyOn($log, 'debug');
         spyOn(Calendar, 'get').and.callThrough();
         spyOn(LeaveRequest, 'all').and.callFake(function () {
           // gives only a leave request from February
-          return $q.resolve({ list: [LeaveRequestData.all().values[0]] });
+          return $q.resolve({ list: [leaveRequestInFebruary] });
         });
 
         compileComponent();
@@ -82,7 +84,7 @@
       });
 
       it('has the show-only-with-leave-request name binding set to false by default', function () {
-        expect(controller.showOnlyWithLeaveRequest).toBe(false);
+        expect(controller.showOnlyWithLeaveRequests).toBe(false);
       });
 
       describe('on init', function () {
@@ -154,6 +156,17 @@
                 from_date: { from: month.days[0].date },
                 to_date: { to: month.days[month.days.length - 1].date }
               }));
+            });
+          });
+
+          describe('current page', function () {
+            beforeEach(function () {
+              controller.currentPage = 5;
+              sendShowMonthsSignal();
+            });
+
+            it('resets it to 0', function () {
+              expect(controller.currentPage).toBe(0);
             });
           });
 
@@ -478,7 +491,7 @@
           var leaveRequestToDelete;
 
           beforeEach(function () {
-            leaveRequestToDelete = LeaveRequestData.all().values[0];
+            leaveRequestToDelete = leaveRequestInFebruary;
 
             LeaveRequest.all.calls.reset();
             $rootScope.$emit('LeaveRequest::deleted', leaveRequestToDelete);
@@ -498,7 +511,7 @@
           var leaveRequestToAdd;
 
           beforeEach(function () {
-            leaveRequestToAdd = _.clone(LeaveRequestData.all().values[0]);
+            leaveRequestToAdd = _.clone(leaveRequestInFebruary);
             leaveRequestToAdd = modifyLeaveRequestData(leaveRequestToAdd, true);
 
             LeaveRequest.all.calls.reset();
@@ -519,7 +532,7 @@
           var leaveRequestToUpdate, oldDays, newDays;
 
           beforeEach(function () {
-            leaveRequestToUpdate = _.clone(LeaveRequestData.all().values[0]);
+            leaveRequestToUpdate = _.clone(leaveRequestInFebruary);
             oldDays = getLeaveRequestDays(leaveRequestToUpdate);
             leaveRequestToUpdate = modifyLeaveRequestData(leaveRequestToUpdate);
 
@@ -587,6 +600,34 @@
             contactData.isAM === null &&
             contactData.isPM === null;
         }
+      });
+
+      describe('contactsList()', function () {
+        beforeEach(function () {
+          sendShowMonthsSignal();
+        });
+
+        describe('when show-only-with-leave-requests is set to false', function () {
+          beforeEach(function () {
+            controller.showOnlyWithLeaveRequests = false;
+          });
+
+          it('returns all contacts', function () {
+            expect(controller.contactsList()).toEqual(controller.contacts);
+          });
+        });
+
+        describe('when show-only-with-leave-requests is set to true', function () {
+          beforeEach(function () {
+            controller.showOnlyWithLeaveRequests = true;
+          });
+
+          it('returns only the contacts with at least a leave request in the month', function () {
+            expect(controller.contactsList()).toEqual(controller.contacts.filter(function (contact) {
+              return contact.id === leaveRequestInFebruary.contact_id;
+            }));
+          });
+        });
       });
 
       function compileComponent (sendSignal) {
