@@ -2258,6 +2258,32 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
+  public function testLeaveRequestIsValidShouldReturnErrorWhenContactHasNoPeriodEntitlementForTheAbsenceType() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $contactID = 1;
+    $leaveDate = new DateTime('2016-11-15');
+    $dateType = $this->leaveRequestDayTypes['all_day']['value'];
+
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $leaveDate->format('YmdHis'),
+      'from_date_type' => $dateType,
+      'to_date' => $leaveDate->format('YmdHis'),
+      'to_date_type' => $dateType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+
+    $errorMessage = 'Contact does not have period entitlement for the absence type';
+    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
   public function testLeaveRequestIsValidShouldReturnErrorWhenTheDatesAreNotContainedInValidAbsencePeriod() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),

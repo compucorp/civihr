@@ -1454,6 +1454,32 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Contact does not have period entitlement for the absence type
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenContactHasNoPeriodEntitlementForTheAbsenceType() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $contactID = 1;
+    $leaveDate = new DateTime('2016-11-15');
+    $dateType = $this->leaveRequestDayTypes['all_day']['value'];
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $leaveDate->format('YmdHis'),
+      'from_date_type' => $dateType,
+      'to_date' => $leaveDate->format('YmdHis'),
+      'to_date_type' => $dateType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage Leave Request must have at least one working day to be created
    */
   public function testLeaveRequestCanNotBeCreatedWhenLeaveRequestDateIsAPublicHoliday() {
