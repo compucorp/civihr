@@ -717,6 +717,21 @@ define([
           $rootScope.$apply();
         });
 
+        describe('managed_by', function () {
+          describe('when user is manager', function () {
+            beforeEach(function () {
+              role = 'manager';
+
+              compileComponent();
+              defer.resolve(ContactAPIMock.mockedContacts().list);
+            });
+
+            it('fetches only the leave requests managed by the user', function () {
+              expectLeaveRequestsFilteredBy({ managed_by: contactId });
+            });
+          });
+        });
+
         describe('type_id', function () {
           describe('when selected absence types has value', function () {
             var mockAbsenceType = {
@@ -730,11 +745,7 @@ define([
             });
 
             it('filtered by type id', function () {
-              promise.then(function () {
-                expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                  type_id: 'mockedvalue'
-                }));
-              });
+              expectLeaveRequestsFilteredBy({ type_id: 'mockedvalue' });
             });
           });
 
@@ -748,11 +759,7 @@ define([
             });
 
             it('not filtered by type id', function () {
-              promise.then(function () {
-                expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                  type_id: null
-                }));
-              });
+              expectLeaveRequestsFilteredBy({ type_id: null });
             });
           });
         });
@@ -767,13 +774,7 @@ define([
           });
 
           it('filtered by from date', function () {
-            promise.then(function () {
-              expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                from_date: {
-                  from: mockFromDate
-                }
-              }));
-            });
+            expectLeaveRequestsFilteredBy({ from_date: { from: mockFromDate } });
           });
         });
 
@@ -787,13 +788,7 @@ define([
           });
 
           it('filtered by to date', function () {
-            promise.then(function () {
-              expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                to_date: {
-                  to: mockToDate
-                }
-              }));
-            });
+            expectLeaveRequestsFilteredBy({ to_date: { to: mockToDate } });
           });
         });
 
@@ -823,12 +818,10 @@ define([
             });
 
             it('filtered by filtered users', function () {
-              promise.then(function () {
-                expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                  contact_id: {
-                    'IN': controller.filteredUsers.map(function (contact) { return contact.id; })
-                  }
-                }));
+              expectLeaveRequestsFilteredBy({
+                contact_id: {
+                  'IN': controller.filteredUsers.map(function (contact) { return contact.id; })
+                }
               });
             });
           });
@@ -869,16 +862,66 @@ define([
             });
 
             it('filtered by waiting approval status', function () {
-              promise.then(function () {
-                expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                  status_id: {
-                    IN: [waitingApprovalValue]
-                  }
-                }));
+              expectLeaveRequestsFilteredBy({
+                status_id: { IN: [waitingApprovalValue] }
               });
             });
           });
         });
+
+        describe('filter by assignee', function () {
+          beforeEach(function () {
+            role = 'admin';
+          });
+
+          describe('when all selected', function () {
+            beforeEach(function () {
+              compileComponent();
+              controller.refreshWithFilterByAssignee('all');
+              defer.resolve(ContactAPIMock.mockedContacts().list);
+            });
+
+            it('ignores both "managed_by" and "unassigned"', function () {
+              expectLeaveRequestsFilteredBy({ managed_by: undefined, unassigned: undefined });
+            });
+          });
+
+          describe('when selected assigned to user only', function () {
+            beforeEach(function () {
+              compileComponent();
+              controller.refreshWithFilterByAssignee('me');
+              defer.resolve(ContactAPIMock.mockedContacts().list);
+            });
+
+            it('uses "managed_by" but ignores "unassigned"', function () {
+              expectLeaveRequestsFilteredBy({ managed_by: contactId, unassigned: undefined });
+            });
+          });
+
+          describe('when selected unassigned only', function () {
+            beforeEach(function () {
+              compileComponent();
+              controller.refreshWithFilterByAssignee('unassigned');
+              defer.resolve(ContactAPIMock.mockedContacts().list);
+            });
+
+            it('uses "unassigned" but ignores "managed_by"', function () {
+              expectLeaveRequestsFilteredBy({ managed_by: undefined, unassigned: true });
+            });
+          });
+        });
+
+        /**
+         * Tests if the leave request's recent call
+         * included specific set of parameters
+         *
+         * @param {Object} parameters
+         */
+        function expectLeaveRequestsFilteredBy (parameters) {
+          promise.then(function () {
+            expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining(parameters));
+          });
+        }
       });
     });
 
