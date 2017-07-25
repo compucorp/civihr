@@ -242,14 +242,6 @@ define([
             });
           });
         });
-
-        describe('attachments', function () {
-          it('uploads file with entity id', function () {
-            promise.then(function () {
-              expect(instance.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
-            });
-          });
-        });
       });
     });
 
@@ -307,14 +299,6 @@ define([
                   expect(LeaveRequestAPI.deleteComment).not.toHaveBeenCalledWith(comment.comment_id);
                 }
               });
-            });
-          });
-        });
-
-        describe('attachments', function () {
-          it('uploads the attachments with and entity id', function () {
-            promise.then(function () {
-              expect(instance.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: instance.id });
             });
           });
         });

@@ -554,6 +554,8 @@
 
               $ctrl.submit();
               $scope.$digest();
+              $rootScope.$broadcast('uploadFiles: success');
+              $scope.$digest();
             });
 
             it('has all required fields', function () {
@@ -728,7 +730,7 @@
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
               var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-              leaveRequest.fileUploader.queue = [];
+              leaveRequest.fileUploader = { queue: [] };
               var directiveOptions = {
                 contactId: leaveRequest.contact_id, // staff's contact id
                 isSelfRecord: true,
@@ -790,6 +792,8 @@
                 }
 
                 $ctrl.submit();
+                $scope.$apply();
+                $rootScope.$broadcast('uploadFiles: success');
                 $scope.$apply();
               });
 
@@ -883,7 +887,7 @@
             var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            leaveRequest.fileUploader.queue = [];
+            leaveRequest.fileUploader = { queue: [] };
 
             initTestController({
               contactId: leaveRequest.contact_id, // staff's contact id
@@ -963,7 +967,7 @@
           var waitingApprovalStatus;
 
           beforeEach(function () {
-            $ctrl.request.fileUploader.queue = [];
+            $ctrl.request.fileUploader = { queue: [] };
             waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
           });
 
@@ -1011,6 +1015,8 @@
             // set status id manually as manager would set it on UI
             $ctrl.newStatusOnSave = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
             $ctrl.submit();
+            $scope.$apply();
+            $rootScope.$broadcast('uploadFiles: success');
             $scope.$apply();
           });
 
