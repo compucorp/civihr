@@ -81,15 +81,17 @@
         </div>
       </div>
     </div>
-    <crm-loading show="!calendar.loading.calendar">
-      <section class="panel panel-default" ng-repeat="month in calendar.months track by $index">
-        <leave-calendar-month month="month"
-          contacts="calendar.contacts"
-          show-contact-name="calendar.showContactName"
-          ng-if="(calendar.selectedMonths.length == 0 || calendar.selectedMonths.indexOf(month.index) > -1)">
-        </leave-calendar-month>
-      </section>
-    </crm-loading>
-    <leave-calendar-legend absence-types="calendar.absenceTypes" ng-if="calendar.absenceTypes.length"></leave-calendar-legend>
+    <crm-loading show="!calendar.loading.calendar"></crm-loading>
+    <div ng-if="!calendar.loading.months">
+      <leave-calendar-month ng-repeat="month in calendar.months track by $index"
+        contacts="calendar.contacts"
+        month="month"
+        period="calendar.selectedPeriod"
+        show-contact-name="calendar.showContactName"
+        show-only-with-leave-request="calendar.showContactName"
+        support-data="calendar.supportData">
+      </leave-calendar-month>
+    </div>
+    <leave-calendar-legend absence-types="calendar.supportData.absenceTypes" ng-if="calendar.supportData.absenceTypes.length"></leave-calendar-legend>
   </crm-loading>
 </section>
