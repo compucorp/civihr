@@ -360,7 +360,7 @@ define([
 
       day.contactsData[contactId] = day.contactsData[contactId] || {};
 
-      workPatternCalendar = contactMonthWorkPatternCalendar(contactId, vm.month.id);
+      workPatternCalendar = contactMonthWorkPatternCalendar(contactId);
 
       p = (leaveRequestPropertiesOnly === true) ? $q.resolve() : $q.all([
         workPatternCalendar.isWeekend(dateObjectWithFormat(day.date)),

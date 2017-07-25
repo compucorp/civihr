@@ -22,7 +22,8 @@
 
     describe('leaveCalendar', function () {
       var $componentController, $controller, $controllerProvider, $log, $q,
-        $rootScope, controller, $provide, AbsencePeriod, OptionGroup, PublicHoliday, sharedSettings;
+        $rootScope, $timeout, controller, $provide, AbsencePeriod, OptionGroup,
+        PublicHoliday, sharedSettings;
       var mockedCheckPermissions = mockCheckPermissionService();
       var currentContact = {
         id: CRM.vars.leaveAndAbsences.contactId,
@@ -54,15 +55,16 @@
       }));
 
       beforeEach(inject([
-        '$componentController', '$controller', '$log', '$q', '$rootScope', 'AbsencePeriod',
-        'PublicHoliday', 'shared-settings',
+        '$componentController', '$controller', '$log', '$q', '$rootScope', '$timeout',
+        'AbsencePeriod', 'PublicHoliday', 'shared-settings',
         function (_$componentController_, _$controller_, _$log_, _$q_, _$rootScope_,
-          _AbsencePeriod_, _PublicHoliday_, _sharedSettings_) {
+          _$timeout_, _AbsencePeriod_, _PublicHoliday_, _sharedSettings_) {
           $componentController = _$componentController_;
           $controller = _$controller_;
           $log = _$log_;
           $q = _$q_;
           $rootScope = _$rootScope_;
+          $timeout = _$timeout_;
           AbsencePeriod = _AbsencePeriod_;
           PublicHoliday = _PublicHoliday_;
           sharedSettings = _sharedSettings_;
@@ -246,7 +248,7 @@
             beforeEach(function () {
               compileComponent(true);
               controller.showFilters = true;
-              $rootScope.$digest();
+              digest();
             });
 
             it('fetches the filters option values', function () {
@@ -286,7 +288,7 @@
         describe('when some other months are selected', function () {
           beforeEach(function () {
             controller.selectedMonths = [1, 2, 3];
-            $rootScope.$digest();
+            digest();
           });
 
           it('sends the "show months" event with the newly selected months', function () {
@@ -303,7 +305,7 @@
         describe('when none of the months are selected', function () {
           beforeEach(function () {
             controller.selectedMonths = [];
-            $rootScope.$digest();
+            digest();
           });
 
           it('sends the "show months" event with the all the months', function () {
@@ -349,7 +351,7 @@
         describe('basic tests', function () {
           beforeEach(function () {
             controller.refresh();
-            $rootScope.$digest();
+            digest();
           });
         });
 
@@ -367,7 +369,7 @@
           });
 
           it('takes the calendar out of the loading phase once done', function () {
-            $rootScope.$digest();
+            digest();
             expect(controller.loading.calendar).toBe(false);
           });
         });
@@ -389,7 +391,7 @@
           describe('when the source of the refresh is a period change', function () {
             beforeEach(function () {
               controller.refresh('period');
-              $rootScope.$digest();
+              digest();
             });
 
             it('rebuilds the months structure', function () {
@@ -412,7 +414,7 @@
           describe('when the source of the refresh is a contact filters change', function () {
             beforeEach(function () {
               controller.refresh('contacts');
-              $rootScope.$digest();
+              digest();
             });
 
             it('does not rebuild the months structure', function () {
@@ -445,7 +447,12 @@
 
       function compileComponent (skipDigest, bindings) {
         controller = $componentController('leaveCalendar', null, _.assign({ contactId: currentContact.id }, bindings));
-        skipDigest !== true && $rootScope.$digest();
+        !skipDigest && digest();
+      }
+
+      function digest () {
+        $rootScope.$digest();
+        $timeout.flush();
       }
 
       function spyOnSubCtrlLoadContacts () {

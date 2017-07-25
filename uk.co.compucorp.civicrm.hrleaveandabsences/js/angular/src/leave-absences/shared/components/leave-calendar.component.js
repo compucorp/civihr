@@ -28,20 +28,20 @@ define([
     $log.debug('Component: leave-calendar');
 
     var subController, userRole;
-    var dayTypes = [];
-    var leaveRequestStatuses = [];
-    var publicHolidays = [];
-
     var vm = this;
+
     vm.absencePeriods = [];
     vm.absenceTypes = [];
     vm.contacts = [];
+    vm.dayTypes = [];
+    vm.leaveRequestStatuses = [];
     vm.months = [];
+    vm.publicHolidays = [];
     vm.selectedMonths = null;
     vm.selectedPeriod = null;
     vm.showContactName = false;
     vm.showFilters = false;
-    vm.loading = { calendar: true, page: true };
+    vm.loading = { calendar: true, months: true, page: true };
     vm.filters = {
       optionValues: {},
       userSettings: {
@@ -78,16 +78,22 @@ define([
       source = _.includes(['contacts', 'period'], source) ? source : 'period';
 
       vm.loading.calendar = true;
+      vm.loading.months = true;
 
       $q.resolve()
         .then((source === 'period' ? buildPeriodMonthsList : _.noop))
         .then((source === 'contacts' ? loadContacts : _.noop))
+        .then(waitForNextTick)
         .then(function () {
-          vm.loading.calendar = false;
+          vm.loading.months = false;
         })
         .then(function () {
           // If the contacts list changed, all the months' data needs to be reloaded
           sendShowMonthsSignal((source === 'contacts'));
+        })
+        .then(waitForNextTick)
+        .then(function () {
+          vm.loading.calendar = false;
         });
     };
 
@@ -111,9 +117,13 @@ define([
       })
       .then(function () {
         vm.loading.page = false;
-        vm.loading.calendar = false;
+        vm.loading.months = false;
       })
-      .then(sendShowMonthsSignal);
+      .then(sendShowMonthsSignal)
+      .then(waitForNextTick)
+      .then(function () {
+        vm.loading.calendar = false;
+      });
     }());
 
     /**
@@ -130,16 +140,6 @@ define([
       }
 
       vm.months = months;
-    }
-
-    /**
-     * Converts given date to moment object with server format
-     *
-     * @param {Date/String} date from server
-     * @return {Date} Moment date
-     */
-    function dateObjectWithFormat (date) {
-      return moment(date, sharedSettings.serverDateFormat);
     }
 
     /**
@@ -203,8 +203,8 @@ define([
         'hrleaveandabsences_leave_request_day_type'
       ])
       .then(function (data) {
-        leaveRequestStatuses = _.indexBy(data.hrleaveandabsences_leave_request_status, 'value');
-        dayTypes = _.indexBy(data.hrleaveandabsences_leave_request_day_type, 'name');
+        vm.leaveRequestStatuses = data.hrleaveandabsences_leave_request_status;
+        vm.dayTypes = data.hrleaveandabsences_leave_request_day_type;
       });
     }
 
@@ -246,11 +246,8 @@ define([
      */
     function loadPublicHolidays () {
       return PublicHoliday.all()
-        .then(function (publicHolidaysData) {
-          // convert to an object with time stamp as key
-          publicHolidays = _.transform(publicHolidaysData, function (result, publicHoliday) {
-            result[dateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
-          }, {});
+        .then(function (publicHolidays) {
+          vm.publicHolidays = publicHolidays;
         });
     }
 
@@ -281,7 +278,9 @@ define([
           return _.includes(vm.selectedMonths, month.index);
         });
 
-      $rootScope.$emit('LeaveCalendar::showMonths', monthsToShow, !!forceDataReload);
+      return waitForNextTick().then(function () {
+        $rootScope.$emit('LeaveCalendar::showMonths', monthsToShow, !!forceDataReload);
+      });
     }
 
     /**
@@ -308,6 +307,16 @@ define([
           userRole = results[0] ? 'admin' : (results[1] ? 'manager' : 'staff');
         });
       }
+    }
+
+    /**
+     * Waits for the next tick of the event loop, to make sure that all the data
+     * from the component had been transmitted to the child components
+     */
+    function waitForNextTick () {
+      return $q(function (resolve) {
+        $timeout(resolve, 0);
+      });
     }
   }
 });
