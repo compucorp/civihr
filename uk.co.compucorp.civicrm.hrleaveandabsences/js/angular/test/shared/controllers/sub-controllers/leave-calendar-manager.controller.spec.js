@@ -70,7 +70,7 @@
       function initController () {
         controller = $controller('LeaveCalendarManagerController').init({
           contactId: contactId,
-          filters: {}
+          filters: { userSettings: {} }
         });
       }
     });

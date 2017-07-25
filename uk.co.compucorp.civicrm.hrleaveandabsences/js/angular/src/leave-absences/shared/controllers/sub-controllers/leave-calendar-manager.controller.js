@@ -58,7 +58,7 @@ define([
     function loadContacts () {
       return Contact.all(prepareContactFilters(), null, 'display_name')
         .then(function (contacts) {
-          return !vm.filters.contacts_with_leaves
+          return !vm.filters.userSettings.contacts_with_leaves
             ? contacts.list
             : contacts.list.filter(function (contact) {
               return (vm.leaveRequests[contact.id] && Object.keys(vm.leaveRequests[contact.id]).length > 0);
@@ -73,13 +73,13 @@ define([
      */
     function prepareContactFilters () {
       return {
-        department: vm.filters.department ? vm.filters.department.value : null,
-        level_type: vm.filters.level_type ? vm.filters.level_type.value : null,
-        location: vm.filters.location ? vm.filters.location.value : null,
-        region: vm.filters.region ? vm.filters.region.value : null,
+        department: vm.filters.userSettings.department ? vm.filters.userSettings.department.value : null,
+        level_type: vm.filters.level_type ? vm.filters.userSettings.level_type.value : null,
+        location: vm.filters.userSettings.location ? vm.filters.userSettings.location.value : null,
+        region: vm.filters.userSettings.region ? vm.filters.userSettings.region.value : null,
         id: {
           'IN': vm.filters.contact
-            ? [vm.filters.contact.id]
+            ? [vm.filters.userSettings.contact.id]
             : vm.lookupContacts.map(function (contact) {
               return contact.id;
             })
