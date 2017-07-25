@@ -3,7 +3,6 @@
 define([
   'common/lodash',
   'leave-absences/shared/modules/components',
-  'leave-absences/shared/components/leave-request-action-dropdown',
   'common/models/contact'
 ], function (_, components) {
   components.component('manageLeaveRequests', {
@@ -29,12 +28,10 @@ define([
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
-    vm.absenceTypesIndexed = {}; // This object is needed for leaveRequestActionDropdown component
     vm.filteredUsers = [];
     vm.isFilterExpanded = false;
     vm.isAdmin = false; // this property is updated on controller initialization
     vm.leaveRequestStatuses = [filterByAll];
-    vm.leaveRequestStatusesIndexed = {}; // This object is needed for leaveRequestActionDropdown component
     vm.filters = {
       contact: {
         department: null,
@@ -296,7 +293,6 @@ define([
       return AbsenceType.all()
         .then(function (absenceTypes) {
           vm.absenceTypes = absenceTypes;
-          vm.absenceTypesIndexed = _.indexBy(absenceTypes, 'id');
         });
     }
 
@@ -441,7 +437,6 @@ define([
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
           vm.leaveRequestStatuses = statuses.concat(vm.leaveRequestStatuses);
-          vm.leaveRequestStatusesIndexed = _.indexBy(statuses, 'value');
         });
     }
 

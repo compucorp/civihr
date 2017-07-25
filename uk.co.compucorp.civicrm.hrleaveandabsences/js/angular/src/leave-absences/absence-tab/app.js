@@ -9,6 +9,7 @@ define([
   'common/services/check-permissions',
   'common/services/angular-date/date-format',
   'leave-absences/absence-tab/modules/config',
+  'leave-absences/shared/components/leave-request-actions.component',
   'leave-absences/absence-tab/components/absence-tab-container',
   'leave-absences/absence-tab/components/absence-tab-report',
   'leave-absences/absence-tab/components/absence-tab-entitlements',

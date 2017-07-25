@@ -2,8 +2,7 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/shared/modules/components',
-  'leave-absences/shared/components/leave-request-action-dropdown'
+  'leave-absences/shared/modules/components'
 ], function (_, moment, components) {
   components.component('staffLeaveReport', {
     bindings: {
@@ -15,12 +14,12 @@ define([
     controllerAs: 'report',
     controller: [
       '$log', '$q', '$rootScope', 'checkPermissions', 'AbsencePeriod', 'AbsenceType',
-      'Entitlement', 'LeaveRequest', 'OptionGroup', 'dialog', 'HR_settings',
+      'Entitlement', 'LeaveRequest', 'OptionGroup', 'HR_settings',
       'shared-settings', controller
     ]
   });
 
-  function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, dialog, HRSettings, sharedSettings) {
+  function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
 
     var requestSort = 'from_date ASC';
@@ -32,7 +31,7 @@ define([
     vm.dateFormat = HRSettings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.selectedPeriod = null;
-    vm.role = 'staff';
+    vm.role = ($rootScope.section === 'absence-tab' ? 'admin' : 'staff');
     vm.loading = {
       content: true,
       page: true
@@ -44,33 +43,6 @@ define([
       holidays: { open: false, data: [], loading: false, loadFn: loadPublicHolidaysRequests },
       pending: { open: false, data: [], loading: false, loadFn: loadPendingRequests },
       other: { open: false, data: [], loading: false, loadFn: loadOtherRequests }
-    };
-
-    /**
-     * Performs an action on a given leave request
-     * NOTE: For now it only supports the similar "cancel" and "delete" actions
-     *
-     * @param {LeaveRequestInstance} leaveRequest
-     * @param {string} action
-     */
-    vm.action = function (leaveRequest, action) {
-      if (!~['cancel', 'delete'].indexOf(action)) {
-        return;
-      }
-
-      dialog.open({
-        title: 'Confirm ' + (action === 'cancel' ? 'Cancellation' : 'Deletion') + '?',
-        copyCancel: 'Cancel',
-        copyConfirm: 'Confirm',
-        classConfirm: 'btn-danger',
-        msg: 'Are you sure you want to ' + action + ' this leave record? This cannot be undone',
-        onConfirm: function () {
-          return leaveRequest[action]();
-        }
-      })
-      .then(function (response) {
-        !!response && removeLeaveRequestFromItsSection(leaveRequest, action === 'cancel');
-      });
     };
 
     /**
@@ -120,19 +92,14 @@ define([
       }
     };
 
-    // Init block
-    (function init () {
-      checkPermissions(sharedSettings.permissions.admin.administer)
-      .then(function (isAdmin) {
-        vm.role = isAdmin ? 'admin' : vm.role;
-      })
-      .then(function () {
-        return $q.all([
-          loadStatuses(),
-          loadAbsenceTypes(),
-          loadAbsencePeriods()
-        ]);
-      })
+    init();
+
+    function init () {
+      $q.all([
+        loadStatuses(),
+        loadAbsenceTypes(),
+        loadAbsencePeriods()
+      ])
       .then(function () {
         vm.loading.page = false;
       })
@@ -147,7 +114,7 @@ define([
       });
 
       registerEvents();
-    })();
+    }
 
     /**
      * Calls the load function of the given data, and puts the section
