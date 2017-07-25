@@ -12,10 +12,7 @@ define([
       period: '<',
       showContactName: '<',
       showOnlyWithLeaveRequest: '<',
-      absenceTypes: '<',
-      dayTypes: '<',
-      leaveRequestStatuses: '<',
-      publicHolidays: '<'
+      supportData: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/leave-calendar-month.html';
@@ -170,7 +167,7 @@ define([
      * @returns {int/boolean}
      */
     function leaveRequestStatusValueFromName (name) {
-      var leaveStatus = _.find(vm.leaveRequestStatuses, function (status) {
+      var leaveStatus = _.find(vm.supportData.leaveRequestStatuses, function (status) {
         return status.name === name;
       });
 
@@ -181,9 +178,9 @@ define([
      * Indexes for easy access the data that the component needs
      */
     function indexData () {
-      vm.dayTypes = _.indexBy(vm.dayTypes, 'name');
-      vm.leaveRequestStatuses = _.indexBy(vm.leaveRequestStatuses, 'value');
-      vm.publicHolidays = _.transform(vm.publicHolidays, function (result, publicHoliday) {
+      vm.supportData.dayTypes = _.indexBy(vm.supportData.dayTypes, 'name');
+      vm.supportData.leaveRequestStatuses = _.indexBy(vm.supportData.leaveRequestStatuses, 'value');
+      vm.supportData.publicHolidays = _.transform(vm.supportData.publicHolidays, function (result, publicHoliday) {
         result[dateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
       }, {});
     }
@@ -235,7 +232,7 @@ define([
      * @return {boolean}
      */
     function isDayType (name, leaveRequest, date) {
-      var dayType = vm.dayTypes[name];
+      var dayType = vm.supportData.dayTypes[name];
 
       if (moment(date).isSame(leaveRequest.from_date)) {
         return dayType.value === leaveRequest.from_date_type;
@@ -253,7 +250,7 @@ define([
      * @return {boolean}
      */
     function isPendingApproval (leaveRequest) {
-      var status = vm.leaveRequestStatuses[leaveRequest.status_id];
+      var status = vm.supportData.leaveRequestStatuses[leaveRequest.status_id];
 
       return status.name === sharedSettings.statusNames.awaitingApproval;
     }
@@ -265,7 +262,7 @@ define([
      * @return {boolean}
      */
     function isPublicHoliday (date) {
-      return !!vm.publicHolidays[dateObjectWithFormat(date).valueOf()];
+      return !!vm.supportData.publicHolidays[dateObjectWithFormat(date).valueOf()];
     }
 
     /**
@@ -431,7 +428,7 @@ define([
      * @return {object}
      */
     function styles (leaveRequest, dateObj) {
-      var absenceType = _.find(vm.absenceTypes, function (absenceType) {
+      var absenceType = _.find(vm.supportData.absenceTypes, function (absenceType) {
         return absenceType.id === leaveRequest.type_id;
       });
 

@@ -225,7 +225,7 @@
           }));
 
           it('loads the absence types', function () {
-            expect(controller.absenceTypes.length).not.toBe(0);
+            expect(controller.supportData.absenceTypes.length).not.toBe(0);
           });
 
           it('excludes the inactive absence types', function () {

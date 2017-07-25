@@ -372,7 +372,7 @@
             });
 
             it('assigns it the colors of its absence type', function () {
-              var absenceTypeColor = _.find(controller.absenceTypes, function (absenceType) {
+              var absenceTypeColor = _.find(controller.supportData.absenceTypes, function (absenceType) {
                 return absenceType.id === leaveRequest.type_id;
               }).color;
 
@@ -594,10 +594,12 @@
           contacts: ContactData.all.values,
           month: february,
           period: period2016,
-          absenceTypes: AbsenceTypeData.all().values,
-          dayTypes: OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'),
-          leaveRequestStatuses: OptionGroupData.getCollection('hrleaveandabsences_leave_request_status'),
-          publicHolidays: publicHolidays
+          supportData: {
+            absenceTypes: AbsenceTypeData.all().values,
+            dayTypes: OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'),
+            leaveRequestStatuses: OptionGroupData.getCollection('hrleaveandabsences_leave_request_status'),
+            publicHolidays: publicHolidays
+          }
         });
 
         !!sendSignal && sendShowMonthsSignal();

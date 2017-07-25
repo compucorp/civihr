@@ -31,17 +31,18 @@ define([
     var vm = this;
 
     vm.absencePeriods = [];
-    vm.absenceTypes = [];
     vm.contacts = [];
-    vm.dayTypes = [];
-    vm.leaveRequestStatuses = [];
     vm.months = [];
-    vm.publicHolidays = [];
     vm.selectedMonths = null;
     vm.selectedPeriod = null;
     vm.showContactName = false;
     vm.showFilters = false;
-    vm.loading = { calendar: true, months: true, page: true };
+    vm.supportData = {};
+    vm.loading = {
+      calendar: true,
+      months: true,
+      page: true
+    };
     vm.filters = {
       optionValues: {},
       userSettings: {
@@ -107,9 +108,7 @@ define([
         return $q.all([
           loadContacts(),
           loadAbsencePeriods(),
-          loadAbsenceTypes(),
-          loadPublicHolidays(),
-          loadBasicOptionValues()
+          loadSupportData()
         ]);
       })
       .then(function () {
@@ -187,8 +186,6 @@ define([
     function loadAbsenceTypes () {
       return AbsenceType.all({
         is_active: true
-      }).then(function (absenceTypes) {
-        vm.absenceTypes = absenceTypes;
       });
     }
 
@@ -201,11 +198,7 @@ define([
       return OptionGroup.valuesOf([
         'hrleaveandabsences_leave_request_status',
         'hrleaveandabsences_leave_request_day_type'
-      ])
-      .then(function (data) {
-        vm.leaveRequestStatuses = data.hrleaveandabsences_leave_request_status;
-        vm.dayTypes = data.hrleaveandabsences_leave_request_day_type;
-      });
+      ]);
     }
 
     /**
@@ -245,10 +238,26 @@ define([
      * @return {Promise}
      */
     function loadPublicHolidays () {
-      return PublicHoliday.all()
-        .then(function (publicHolidays) {
-          vm.publicHolidays = publicHolidays;
-        });
+      return PublicHoliday.all();
+    }
+
+    /**
+     * Loads all the data needed for the child components
+     *
+     * @return {Promise}
+     */
+    function loadSupportData () {
+      return $q.all([
+        loadAbsenceTypes(),
+        loadPublicHolidays(),
+        loadBasicOptionValues()
+      ])
+      .then(function (results) {
+        vm.supportData.absenceTypes = results[0];
+        vm.supportData.publicHolidays = results[1];
+        vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
+        vm.supportData.dayTypes = results[2].hrleaveandabsences_leave_request_day_type;
+      });
     }
 
     /**
