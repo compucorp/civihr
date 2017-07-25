@@ -109,10 +109,6 @@
           expect(controller.loading.page).toBe(false);
         });
 
-        it('selects the current month', function () {
-          expect(controller.selectedMonths).toEqual([moment().month()]);
-        });
-
         it('loads the public holidays', function () {
           expect(PublicHoliday.all).toHaveBeenCalled();
         });
@@ -209,8 +205,10 @@
           it('selects the current period', function () {
             expect(controller.selectedPeriod.current).toBe(true);
           });
+        });
 
-          it('creates the list of months of the selected period', function () {
+        describe('months', function () {
+          it('creates a list of the months of the selected period', function () {
             var months = controller.months;
             var periodStartDate = moment(controller.selectedPeriod.start_date);
             var periodEndDate = moment(controller.selectedPeriod.end_date);
@@ -219,6 +217,10 @@
             expect(months[0].year).toEqual(periodStartDate.year());
             expect(months[months.length - 1].index).toEqual(periodEndDate.month());
             expect(months[months.length - 1].year).toEqual(periodEndDate.year());
+          });
+
+          it('selects the current month', function () {
+            expect(controller.selectedMonths).toEqual([moment().month()]);
           });
         });
 
@@ -265,401 +267,32 @@
           });
         });
 
-        describe('contacts\' work pattern calendar', function () {
-          it('loads the work pattern calendars', function () {
-            expect(Calendar.get.calls.any()).toBe(true);
-          });
-
-          it('loads only the work pattern calendars of the currently loaded contacts', function () {
-            expect(Calendar.get.calls.mostRecent().args[0]).toEqual(controller.contacts.map(function (contact) {
-              return contact.id;
-            }));
-          });
-
-          describe('splitting the loading by selected months', function () {
-            it('loads the calendars individually for each selected month', function () {
-              expect(Calendar.get.calls.count()).toBe(controller.selectedMonths.length);
-            });
-
-            it('uses the selected months\' first and last day as date delimiters', function () {
-              Calendar.get.calls.all().forEach(function (call, index) {
-                var callMonth = controller.months[controller.selectedMonths[index]];
-
-                expect(call.args[1]).toBe(callMonth.days[0].date);
-                expect(call.args[2]).toBe(callMonth.days[callMonth.days.length - 1].date);
-              });
-            });
-          });
-        });
-
-        describe('leave requests', function () {
-          it('loads the leave requests', function () {
-            expect(LeaveRequest.all.calls.any()).toBe(true);
-          });
-
-          it('loads only the approved, admin approved, or awaiting approval leave requests', function () {
-            expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-              status_id: {'IN': [
-                optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'approved').value,
-                optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'admin_approved').value,
-                optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval').value
-              ]}
-            }));
-          });
-
-          it('loads only the leave requests belonging to the loaded contacts', function () {
-            expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-              contact_id: { 'IN': [currentContact.id] }
-            }));
-          });
-
-          describe('splitting the loading by selected months', function () {
-            it('loads the leave requests individually for each selected month', function () {
-              expect(LeaveRequest.all.calls.count()).toBe(controller.selectedMonths.length);
-            });
-
-            it('uses the selected months\' first and last day as date delimiters', function () {
-              LeaveRequest.all.calls.all().forEach(function (call, index) {
-                var callMonth = controller.months[controller.selectedMonths[index]];
-
-                expect(call.args[0]).toEqual(jasmine.objectContaining({
-                  from_date: { from: callMonth.days[0].date },
-                  to_date: { to: callMonth.days[callMonth.days.length - 1].date }
-                }));
-              });
-            });
-          });
-
-          describe('indexing', function () {
-            var leaveRequests;
-
-            beforeEach(function () {
-              leaveRequests = controller.leaveRequests;
-            });
-
-            it('indexes the overall list of leave requests by contact id', function () {
-              expect(Object.keys(leaveRequests)).toEqual(controller.contacts.map(function (contact) {
-                return contact.id;
-              }));
-            });
-
-            it('indexes the leave requests of a specific contact by date', function () {
-              expect(Object.keys(leaveRequests[controller.contacts[0].id]).every(function (key) {
-                return moment(key).isValid();
-              })).toBe(true);
-            });
-          });
-        });
-      });
-
-      describe('calendar data structure', function () {
-        describe('month', function () {
-          var july, daysInJuly;
+        describe('"show months" event', function () {
+          var eventArgs;
 
           beforeEach(function () {
-            july = controller.months[6];
-            daysInJuly = moment().month(july.index).daysInMonth();
+            spyOn($rootScope, '$emit');
+            compileComponent();
+
+            eventArgs = $rootScope.$emit.calls.mostRecent().args;
           });
 
-          it('contains a unique identifier made of month+year indexes', function () {
-            expect(july.id).toBe(july.index + '' + july.year);
+          it('sends an event to show the months', function () {
+            expect($rootScope.$emit).toHaveBeenCalled();
+            expect(eventArgs[0]).toBe('LeaveCalendar::showMonths');
           });
 
-          it('contains a flag for the loading status', function () {
-            expect(july.loading).toBeDefined();
-          });
-
-          it('contains a flag to mark if the contacts\' data had already been loaded', function () {
-            expect(july.contactsDataLoaded).toBeDefined();
-          });
-
-          it('contains the month long name', function () {
-            expect(july.name.long).toBe('July');
-          });
-
-          it('contains the month short name', function () {
-            expect(july.name.short).toBe('Jul');
-          });
-
-          it('contains the month index', function () {
-            expect(july.index).toBe(6);
-          });
-
-          it('contains the year', function () {
-            expect(july.year).toBe(moment(controller.selectedPeriod.start_date).year());
-          });
-
-          it('contains the list of days', function () {
-            expect(july.days.length).toEqual(daysInJuly);
-          });
-
-          describe('when the currently selected period does not start at the beginning of the month', function () {
-            var january, daysInJanuary;
-
-            beforeEach(function () {
-              amend2016Period({ start_date: '2016-01-20' });
-              compileComponent();
-            });
-
-            beforeEach(function () {
-              january = controller.months[0];
-              daysInJanuary = moment().month(january.index).daysInMonth();
-            });
-
-            it('still contains all the days anyway', function () {
-              expect(january.days.length).toEqual(daysInJanuary);
-            });
-          });
-
-          describe('when the currently selected period does not finish at the end of the month', function () {
-            var december, daysInDecember;
-
-            beforeEach(function () {
-              amend2016Period({ end_date: '2016-12-26' });
-              compileComponent();
-            });
-
-            beforeEach(function () {
-              december = controller.months[11];
-              daysInDecember = moment().month(december.index).daysInMonth();
-            });
-
-            it('still contains all the days anyway', function () {
-              expect(december.days.length).toEqual(daysInDecember);
-            });
-          });
-        });
-
-        describe('day', function () {
-          var twentiethOfJanuary;
-
-          beforeEach(function () {
-            twentiethOfJanuary = controller.months[0].days[19];
-          });
-
-          it('contains the date', function () {
-            expect(twentiethOfJanuary.date).toBe('2016-01-20');
-          });
-
-          it('contains the day index', function () {
-            expect(twentiethOfJanuary.index).toBe('20');
-          });
-
-          it('contains the name of day', function () {
-            expect(twentiethOfJanuary.name).toBe('Wed');
-          });
-
-          it('contains the data specific for each contact in the calendar', function () {
-            expect(twentiethOfJanuary.contactsData).toEqual(jasmine.any(Object));
-          });
-
-          describe('when the day is within the currently selected period', function () {
-            it('is marked as enabled', function () {
-              expect(twentiethOfJanuary.enabled).toBe(true);
-            });
-          });
-
-          describe('when the day is outside the currently selected period', function () {
-            beforeEach(function () {
-              amend2016Period({ start_date: '2016-01-22' });
-              compileComponent();
-
-              twentiethOfJanuary = controller.months[0].days[19];
-            });
-
-            it('is marked as disabled', function () {
-              expect(twentiethOfJanuary.enabled).toBe(false);
-            });
-          });
-        });
-
-        describe('day\'s data specific for each contact', function () {
-          var contactData;
-
-          it('is indexed by contact id', function () {
-            var indexes = Object.keys(getDayWithType('working_day').contactsData);
-
-            expect(indexes).toEqual(controller.contacts.map(function (contact) {
-              return contact.id;
+          it('attaches to the event only the currently selected months', function () {
+            expect(eventArgs[1]).toEqual(controller.months.filter(function (month) {
+              return _.includes(controller.selectedMonths, month.index);
             }));
           });
-
-          describe('when the day is a weekend for a contact', function () {
-            beforeEach(function () {
-              contactData = getDayWithType('weekend', true);
-            });
-
-            it('marks it as such', function () {
-              expect(contactData.isWeekend).toBe(true);
-            });
-          });
-
-          describe('when the day is a non-working day for a contact', function () {
-            beforeEach(function () {
-              contactData = getDayWithType('non_working_day', true);
-            });
-
-            it('marks it as such', function () {
-              expect(contactData.isNonWorkingDay).toBe(true);
-            });
-          });
-
-          describe('when the day is a public holiday for a contact', function () {
-            beforeEach(function () {
-              var publicHolidayToBe = getDayWithType('non_working_day');
-              var publicHolidays = _.clone(publicHolidayData.all());
-
-              PublicHoliday.all.and.callFake(function () {
-                publicHolidays.values.push({
-                  id: '123456789',
-                  title: 'Fake Holiday',
-                  date: publicHolidayToBe.date,
-                  is_active: true
-                });
-
-                return $q.resolve(publicHolidays.values);
-              });
-
-              compileComponent();
-              contactData = getDayWithType('non_working_day', true);
-            });
-
-            it('marks it as such', function () {
-              expect(contactData.isPublicHoliday).toBe(true);
-            });
-          });
-
-          describe('when the contact has recorded a leave request on the day', function () {
-            var leaveRequest, workPattern;
-
-            beforeEach(function () {
-              leaveRequest = _.clone(leaveRequestData.singleDataSuccess().values[0]);
-              workPattern = _.find(workPatternMocked.getCalendar.values, function (workPattern) {
-                return workPattern.contact_id === currentContact.id;
-              });
-
-              workPattern.calendar[0].date = leaveRequest.from_date;
-            });
-
-            describe('basic tests', function () {
-              beforeEach(function () {
-                leaveRequest.status_id = optionGroupMock.specificObject(
-                  'hrleaveandabsences_leave_request_status', 'name', 'approved'
-                ).value;
-
-                contactData = commonSetup();
-              });
-
-              it('contains a reference to the leave request itself', function () {
-                expect(contactData.leaveRequest).toBe(leaveRequest);
-              });
-
-              it('assigns it the colors of its absence type', function () {
-                var absenceTypeColor = _.find(controller.absenceTypes, function (absenceType) {
-                  return absenceType.id === leaveRequest.type_id;
-                }).color;
-
-                expect(contactData.styles).toEqual({
-                  backgroundColor: absenceTypeColor,
-                  borderColor: absenceTypeColor
-                });
-              });
-            });
-
-            describe('when the leave request is still awaiting approval', function () {
-              beforeEach(function () {
-                leaveRequest.status_id = optionGroupMock.specificObject(
-                  'hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval'
-                ).value;
-
-                contactData = commonSetup();
-              });
-
-              it('marks it as such', function () {
-                expect(contactData.isRequested).toBe(true);
-              });
-            });
-
-            describe('when the leave request is for half day am', function () {
-              beforeEach(function () {
-                leaveRequest.from_date_type = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
-                  return absenceType.name === 'half_day_am';
-                }).value;
-
-                contactData = commonSetup();
-              });
-
-              it('marks it as such', function () {
-                expect(contactData.isAM).toBe(true);
-              });
-            });
-
-            describe('when leave request is for half day pm', function () {
-              beforeEach(function () {
-                leaveRequest.from_date_type = _.find(optionGroupMock.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
-                  return absenceType.name === 'half_day_pm';
-                }).value;
-
-                contactData = commonSetup();
-              });
-
-              it('marks it as such', function () {
-                expect(contactData.isPM).toBe(true);
-              });
-            });
-
-            describe('when the balance change of the leave request is positive', function () {
-              beforeEach(function () {
-                leaveRequest.balance_change = 2;
-
-                contactData = commonSetup();
-              });
-
-              it('marks it as such', function () {
-                expect(contactData.isAccruedTOIL).toBe(true);
-              });
-            });
-
-            function commonSetup () {
-              var day;
-
-              LeaveRequest.all.and.callFake(function () {
-                return $q.resolve({ list: [leaveRequest] });
-              });
-
-              compileComponent();
-
-              controller.months.forEach(function (month) {
-                month.days.forEach(function (dayObj) {
-                  if (dayObj.date === leaveRequest.from_date) {
-                    day = dayObj;
-                  }
-                });
-              });
-
-              return day.contactsData[currentContact.id];
-            }
-          });
-
-          function getDayWithType (dayType, returnContactData) {
-            var day;
-
-            controller.months.forEach(function (month) {
-              month.days.forEach(function (dayObj) {
-                if (dayObj.date === helper.getDate(dayType).date) {
-                  day = dayObj;
-                }
-              });
-            });
-
-            return returnContactData ? day.contactsData[currentContact.id] : day;
-          }
         });
       });
 
       describe('selected months watcher', function () {
         beforeEach(function () {
-          LeaveRequest.all.calls.reset();
+          spyOn($rootScope, '$emit');
         });
 
         describe('when some other months are selected', function () {
@@ -668,8 +301,14 @@
             $rootScope.$digest();
           });
 
-          it('loads the leave requests of the added months', function () {
-            expect(LeaveRequest.all.calls.count()).toBe(2);
+          it('sends the "show months" event with the newly selected months', function () {
+            expect($rootScope.$emit).toHaveBeenCalledWith(
+              'LeaveCalendar::showMonths',
+              controller.months.filter(function (month) {
+                return _.includes([1, 2, 3], month.index);
+              }),
+              jasmine.any(Boolean)
+            );
           });
         });
 
@@ -679,11 +318,11 @@
             $rootScope.$digest();
           });
 
-          it('loads the leave requests for all the remaining months', function () {
-            var startDate = moment(controller.selectedPeriod.start_date);
-            var endDate = moment(controller.selectedPeriod.end_date);
-
-            expect(LeaveRequest.all.calls.count()).toBe(endDate.diff(startDate, 'months'));
+          it('sends the "show months" event with the all the months', function () {
+            expect($rootScope.$emit).toHaveBeenCalledWith(
+              'LeaveCalendar::showMonths',
+              controller.months,
+              jasmine.any(Boolean));
           });
         });
       });
@@ -721,19 +360,8 @@
       describe('refresh()', function () {
         describe('basic tests', function () {
           beforeEach(function () {
-            Calendar.get.calls.reset();
-            LeaveRequest.all.calls.reset();
-
             controller.refresh();
             $rootScope.$digest();
-          });
-
-          it('reloads the calendars', function () {
-            expect(Calendar.get).toHaveBeenCalled();
-          });
-
-          it('reloads the leave requests', function () {
-            expect(LeaveRequest.all).toHaveBeenCalled();
           });
         });
 
@@ -760,12 +388,14 @@
           var oldMonths, spyLoadContacts;
 
           beforeEach(function () {
+            spyOn($rootScope, '$emit');
             spyLoadContacts = spyOnSubCtrlLoadContacts();
 
             compileComponent();
             oldMonths = controller.months;
 
             spyLoadContacts.calls.reset();
+            $rootScope.$emit.calls.reset();
           });
 
           describe('when the source of the refresh is a period change', function () {
@@ -780,6 +410,14 @@
 
             it('does not reloads the contacts', function () {
               expect(spyLoadContacts).not.toHaveBeenCalled();
+            });
+
+            it('sends the "show months" signal without forcing data reload', function () {
+              expect($rootScope.$emit).toHaveBeenCalledWith(
+                'LeaveCalendar::showMonths',
+                jasmine.any(Array),
+                false
+              );
             });
           });
 
@@ -796,176 +434,16 @@
             it('reloads the contacts', function () {
               expect(spyLoadContacts).toHaveBeenCalled();
             });
-          });
-        });
-      });
 
-      describe('event listeners', function () {
-        describe('when a leave request is deleted', function () {
-          var leaveRequestToDelete;
-
-          beforeEach(function () {
-            leaveRequestToDelete = getLeaveRequestOfCurrentlySelectedMonth();
-
-            LeaveRequest.all.calls.reset();
-            $rootScope.$emit('LeaveRequest::deleted', leaveRequestToDelete);
-            $rootScope.$digest();
-          });
-
-          it('does not re-fetch the leave requests from the backend', function () {
-            expect(LeaveRequest.all).not.toHaveBeenCalled();
-          });
-
-          it('removes the leave request from the list of the contact\'s leave requests', function () {
-            expect(_.find(controller.leaveRequests[currentContact.id], function (leaveRequest) {
-              return leaveRequestToDelete.id === leaveRequest.id;
-            })).toBeUndefined();
-          });
-
-          it('resets the properties of each day that the leave request spans', function () {
-            expect(getLeaveRequestDays(leaveRequestToDelete).every(isDayContactDataNull)).toBe(true);
-          });
-        });
-
-        describe('when a leave request is added', function () {
-          var leaveRequestToAdd;
-
-          beforeEach(function () {
-            leaveRequestToAdd = _.clone(getLeaveRequestOfCurrentlySelectedMonth());
-            leaveRequestToAdd = modifyLeaveRequestData(leaveRequestToAdd, true);
-
-            LeaveRequest.all.calls.reset();
-            $rootScope.$emit('LeaveRequest::new', leaveRequestToAdd);
-            $rootScope.$digest();
-          });
-
-          it('does not re-fetch the leave requests from the backend', function () {
-            expect(LeaveRequest.all).not.toHaveBeenCalled();
-          });
-
-          it('adds the leave request to the list of the contact\'s leave requests', function () {
-            expect(_.find(controller.leaveRequests[currentContact.id], function (leaveRequest) {
-              return leaveRequestToAdd.id === leaveRequest.id;
-            })).toBeDefined();
-          });
-
-          it('updates the properties of each day that the leave request spans', function () {
-            expect(getLeaveRequestDays(leaveRequestToAdd).every(isDayContactDataNull)).toBe(false);
-          });
-        });
-
-        describe('when a leave request is updated and its dates have changed', function () {
-          var leaveRequestToUpdate, oldDays, newDays;
-
-          beforeEach(function () {
-            leaveRequestToUpdate = _.clone(getLeaveRequestOfCurrentlySelectedMonth());
-            leaveRequestToUpdate = modifyLeaveRequestData(leaveRequestToUpdate);
-
-            oldDays = getDaysFromDatesOfIndexedLeaveRequest(leaveRequestToUpdate);
-
-            LeaveRequest.all.calls.reset();
-
-            $rootScope.$emit('LeaveRequest::edit', leaveRequestToUpdate);
-            $rootScope.$digest();
-
-            newDays = getDaysFromDatesOfIndexedLeaveRequest(leaveRequestToUpdate);
-          });
-
-          it('does not re-fetch the leave requests from the backend', function () {
-            expect(LeaveRequest.all).not.toHaveBeenCalled();
-          });
-
-          it('does not index the leave request by the old dates anymore', function () {
-            expect(newDays.map(function (day) {
-              return day.date;
-            })).not.toEqual(oldDays.map(function (day) {
-              return day.date;
-            }));
-          });
-
-          it('indexes the leave request by the new dates', function () {
-            expect(newDays.map(function (day) {
-              return day.date;
-            })).toEqual(leaveRequestToUpdate.dates.map(function (date) {
-              return date.date;
-            }));
-          });
-
-          it('resets the properties of the days that the leave request does not span anymore', function () {
-            expect(oldDays.every(isDayContactDataNull)).toBe(true);
-          });
-
-          it('sets the properties of the days that the leave request now spans', function () {
-            expect(newDays.every(isDayContactDataNull)).toBe(false);
-          });
-        });
-
-        function modifyLeaveRequestData (leaveRequest, modifyId) {
-          var modified = _.assign({}, leaveRequest, {
-            from_date: '2016-02-20',
-            to_date: '2016-02-21',
-            dates: [
-              { 'id': '1', 'date': '2016-02-20' },
-              { 'id': '2', 'date': '2016-02-21' }
-            ]
-          });
-
-          if (modifyId === true) {
-            modified.id = '1';
-          }
-
-          return modified;
-        }
-
-        function getDaysFromDatesOfIndexedLeaveRequest (leaveRequest) {
-          return _(controller.leaveRequests[currentContact.id])
-            .map(function (_leaveRequest_, date) {
-              return leaveRequest.id === _leaveRequest_.id ? date : null;
-            })
-            .compact()
-            .map(function (date) {
-              date = moment(date);
-
-              return _.find(controller.months[date.month()].days, function (day) {
-                return day.date === date.format('YYYY-MM-DD');
-              });
-            })
-            .value();
-        }
-
-        function getLeaveRequestOfCurrentlySelectedMonth () {
-          return _(controller.leaveRequests[currentContact.id])
-            .find(function (leaveRequest) {
-              return _.includes(controller.selectedMonths, moment(leaveRequest.from_date).month());
+            it('sends the "show months" signal with forcing data reload', function () {
+              expect($rootScope.$emit).toHaveBeenCalledWith(
+                'LeaveCalendar::showMonths',
+                jasmine.any(Array),
+                true
+              );
             });
-        }
-
-        function getLeaveRequestDays (leaveRequest) {
-          var days = [];
-          var pointerDate = moment(leaveRequest.from_date).clone();
-          var toDate = moment(leaveRequest.to_date);
-
-          while (pointerDate.isSameOrBefore(toDate)) {
-            days.push(_.find(controller.months[pointerDate.month()].days, function (day) {
-              return day.date === pointerDate.format('YYYY-MM-DD');
-            }));
-
-            pointerDate.add(1, 'day');
-          }
-
-          return days;
-        }
-
-        function isDayContactDataNull (day) {
-          var contactData = day.contactsData[currentContact.id];
-
-          return contactData.leaveRequest === null &&
-            contactData.styles === null &&
-            contactData.isAccruedTOIL === null &&
-            contactData.isRequested === null &&
-            contactData.isAM === null &&
-            contactData.isPM === null;
-        }
+          });
+        });
       });
 
       function amend2016Period (params) {
