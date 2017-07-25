@@ -4,11 +4,13 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
+  'common/services/file-upload',
   'common/services/hr-settings'
 ], function (_, moment, components) {
   components.component('leaveRequestPopupFilesTab', {
     bindings: {
       canManage: '<',
+      fileUploader: '=',
       mode: '<',
       request: '<'
     },
@@ -16,13 +18,14 @@ define([
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html';
     }],
     controllerAs: 'filesTab',
-    controller: ['$log', 'HR_settings', 'shared-settings', 'OptionGroup', controller]
+    controller: ['$log', '$rootScope', 'HR_settings', 'shared-settings', 'OptionGroup', 'FileUpload', controller]
   });
 
-  function controller ($log, HRSettings, sharedSettings, OptionGroup) {
+  function controller ($log, $rootScope, HRSettings, sharedSettings, OptionGroup, FileUpload) {
     $log.debug('Component: leave-request-popup-files-tab');
 
     var vm = Object.create(this);
+    var events = [];
     vm.supportedFileTypes = '';
     vm.today = Date.now();
     vm.userDateFormatWithTime = HRSettings.DATE_FORMAT + ' HH:mm';
@@ -70,8 +73,8 @@ define([
       var filesWithSoftDelete = _.filter(vm.request.files, function (file) {
         return file.toBeDeleted;
       });
-      var queueLength = (vm.request.fileUploader && vm.request.fileUploader.queue)
-        ? vm.request.fileUploader.queue.length : 0;
+      var queueLength = (vm.fileUploader && vm.fileUploader.queue)
+        ? vm.fileUploader.queue.length : 0;
 
       return vm.request.files.length + queueLength - filesWithSoftDelete.length;
     };
@@ -86,23 +89,65 @@ define([
       return !attachment.attachment_id || vm.canManage;
     };
 
+    /**
+     * Gets called when the component is destroyed
+     */
+    vm.$onDestroy = function () {
+      // destroy all the event
+      events.map(function (event) {
+        event();
+      });
+    };
+
     (function init () {
       loadSupportedFileTypes();
-      vm.request.loadAttachments();
+      events.push($rootScope.$on('uploadFiles: start', uploadAttachments));
     }());
 
     /**
-     * Load file extensions which are supported for upload
+     * Load file extensions which are supported for upload and creates uploader object
      *
      * @return {Promise}
      */
     function loadSupportedFileTypes () {
+      var allowedMimeTypes;
+
       return OptionGroup.valuesOf('safe_file_extension')
         .then(function (extensions) {
+          allowedMimeTypes = {};
+
           vm.supportedFileTypes = extensions.map(function (ext) {
+            allowedMimeTypes[ext.label] = sharedSettings.fileUploader.mimeTypesMap[ext.label];
             return ext.label;
           });
+        })
+        .finally(function () {
+          // if the API calls throws an error or fails, "allowedMimeTypes" will be undefined
+          // hence the default extension will be set to the uploader in file-upload.js
+          vm.fileUploader = FileUpload.uploader({
+            entityTable: 'civicrm_hrleaveandabsences_leave_request',
+            crmAttachmentToken: sharedSettings.attachmentToken,
+            queueLimit: sharedSettings.fileUploader.queueLimit,
+            allowedMimeTypes: allowedMimeTypes
+          });
         });
+    }
+
+    /**
+     * Upload attachment in file uploder's queue, fires an event when done
+     */
+    function uploadAttachments () {
+      if (vm.fileUploader.queue && vm.fileUploader.queue.length > 0) {
+        vm.fileUploader.uploadAll({ entityID: vm.request.id })
+        .then(function () {
+          $rootScope.$broadcast('uploadFiles: success');
+        })
+        .catch(function () {
+          $rootScope.$broadcast('uploadFiles: error');
+        });
+      } else {
+        $rootScope.$broadcast('uploadFiles: success');
+      }
     }
 
     return vm;

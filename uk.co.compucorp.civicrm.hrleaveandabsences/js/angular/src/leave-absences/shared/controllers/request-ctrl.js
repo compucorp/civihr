@@ -39,6 +39,7 @@ define([
       this.canManage = false; // this flag is set on initialisation of the controller
       this.contactName = null;
       this.errors = [];
+      this.fileUploader = null;
       this.isSelfRecord = false; // this flag is set on initialisation of the controller
       this.managedContacts = [];
       this.mode = ''; // can be edit, create, view
@@ -229,7 +230,6 @@ define([
        *
        * @return {Array}
        */
-
       this.getStatuses = function () {
         if (!this.request || angular.equals({}, this.requestStatuses)) {
           return [];
@@ -270,7 +270,8 @@ define([
 
         return $q.all([
           self._loadAbsenceTypes(),
-          self._loadCalendar()
+          self._loadCalendar(),
+          self.request.loadAttachments()
         ])
           .then(function () {
             return loadDayTypes.call(self);
@@ -708,6 +709,9 @@ define([
       function createRequest () {
         return this.request.create()
           .then(function () {
+            return uploadAttachment();
+          })
+          .then(function () {
             postSubmit.call(this, 'LeaveRequest::new');
           }.bind(this));
       }
@@ -845,17 +849,14 @@ define([
       /**
        * Checks if a leave request has been changed since opening the modal
        *
-       * FileUploader property deleted because it will not be used
-       * in object comparison
-       *
        * @return {Boolean}
        */
       function hasRequestChanged () {
         // using angular.equals to automatically ignore the $$hashkey property
         return !angular.equals(
-          _.omit(initialLeaveRequestAttributes, 'fileUploader'),
-          _.omit(this.request.attributes(), 'fileUploader')
-        ) || this.request.fileUploader.queue.length !== 0 ||
+          initialLeaveRequestAttributes,
+          this.request.attributes()
+        ) || (this.fileUploader && this.fileUploader.queue.length !== 0) ||
           (this.canManage && this.newStatusOnSave);
       }
 
@@ -1167,12 +1168,38 @@ define([
       function updateRequest () {
         return this.request.update()
           .then(function () {
+            return uploadAttachment();
+          })
+          .then(function () {
             if (this.isRole('manager')) {
               postSubmit.call(this, 'LeaveRequest::updatedByManager');
             } else if (this.isRole('staff') || this.isRole('admin')) {
               postSubmit.call(this, 'LeaveRequest::edit');
             }
           }.bind(this));
+      }
+
+      /**
+       * Fire and event to start Uploading attachment
+       *
+       * @returns {Promise}
+       */
+      function uploadAttachment () {
+        var deferred = $q.defer();
+
+        $rootScope.$broadcast('uploadFiles: start');
+        var successEvent = $rootScope.$on('uploadFiles: success', function () {
+          deferred.resolve('Upload Successful');
+          // Destroy the listener
+          successEvent();
+        });
+        var errorEvent = $rootScope.$on('uploadFiles: error', function () {
+          deferred.reject('Upload Error');
+          // Destroy the listener
+          errorEvent();
+        });
+
+        return deferred.promise;
       }
 
       /**

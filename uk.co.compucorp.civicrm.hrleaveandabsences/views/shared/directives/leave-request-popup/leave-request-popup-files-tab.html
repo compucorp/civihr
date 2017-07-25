@@ -17,7 +17,7 @@
             }"
             aria-hidden="true"></i>
           <span class="chr_leave-request-files_file-name">
-            <a href="{{file.url}}" target="_blank">{{file.name}}<a/>
+            <a href="{{file.url}}" target="_blank">{{file.name}}</a>
           </span>
         </div>
         <div
@@ -34,8 +34,8 @@
       </div>
       <hr/>
     </li>
-    <span ng-if="filesTab.request.fileUploader" ng-disabled="filesTab.isMode('view')">
-      <li ng-repeat="file in filesTab.request.fileUploader.queue">
+    <span ng-if="filesTab.fileUploader" ng-disabled="filesTab.isMode('view')">
+      <li ng-repeat="file in filesTab.fileUploader.queue">
         <div class="chr_leave-request-files_meta">
           <span class="chr_leave-request-files_author">Me</span>
           <span>-</span>
@@ -61,7 +61,7 @@
             <span
               class="btn btn-link"
               ng-disabled="filesTab.isMode('view')"
-              ng-click="filesTab.request.fileUploader.removeFromQueue(file)">
+              ng-click="filesTab.fileUploader.removeFromQueue(file)">
               Remove</span>
           </div>
         </div>
@@ -71,12 +71,13 @@
   </ul>
 </div>
 <div
+  ng-if="filesTab.fileUploader"
   class="chr_leave-request-files_upload"
   ng-class="{'chr_disabled': !filesTab.canUploadMore() || filesTab.isMode('view')}">
   <div
     nv-file-drop
-    uploader="filesTab.request.fileUploader"
-    ng-disabled="!filesTab.request.fileUploader">
+    uploader="filesTab.fileUploader"
+    ng-disabled="!filesTab.fileUploader">
     <div class="chr_leave-request-files_upload_action row text-center">
       Drag and drop file here
     </div>
@@ -89,7 +90,7 @@
         <input
           type="file"
           nv-file-select
-          uploader="filesTab.request.fileUploader"
+          uploader="filesTab.fileUploader"
           class="hidden">
       </label>
     </div>

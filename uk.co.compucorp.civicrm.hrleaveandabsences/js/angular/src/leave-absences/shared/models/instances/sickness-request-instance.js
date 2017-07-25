@@ -1,7 +1,9 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'leave-absences/shared/modules/models-instances',
-  'leave-absences/shared/models/instances/leave-request-instance',
+  'leave-absences/shared/models/instances/leave-request-instance'
 ], function (_, modelInstances) {
   'use strict';
 
@@ -9,7 +11,6 @@ define([
     'LeaveRequestAPI',
     'LeaveRequestInstance',
     function (LeaveRequestAPI, LeaveRequestInstance) {
-
       return LeaveRequestInstance.extend({
 
         /**
@@ -60,7 +61,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates', 'comments', 'fileUploader', 'files'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'files'], key)) {
             result[key] = this[key];
           }
         }

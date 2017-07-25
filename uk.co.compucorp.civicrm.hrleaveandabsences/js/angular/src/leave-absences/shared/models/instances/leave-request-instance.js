@@ -3,14 +3,14 @@ define([
   'common/lodash',
   'leave-absences/shared/modules/models-instances',
   'common/models/option-group',
-  'common/models/instances/instance',
-  'common/services/file-upload'
+  'common/models/instances/instance'
+
 ], function (_, instances) {
   'use strict';
 
-  instances.factory('LeaveRequestInstance', ['$q', 'OptionGroup', 'FileUpload',
+  instances.factory('LeaveRequestInstance', ['$q', 'OptionGroup',
     'shared-settings', 'ModelInstance', 'LeaveRequestAPI',
-    function ($q, OptionGroup, FileUpload, sharedSettings, ModelInstance, LeaveRequestAPI) {
+    function ($q, OptionGroup, sharedSettings, ModelInstance, LeaveRequestAPI) {
       /**
        * Update status ID
        *
@@ -72,33 +72,6 @@ define([
       }
 
       /**
-       * Load file extensions which are supported for upload
-       *
-       * @return {Promise}
-       */
-      function loadSupportedFileTypes () {
-        var allowedMimeTypes;
-
-        return OptionGroup.valuesOf('safe_file_extension')
-          .then(function (extensions) {
-            allowedMimeTypes = {};
-            extensions.map(function (ext) {
-              allowedMimeTypes[ext.label] = sharedSettings.fileUploader.mimeTypesMap[ext.label];
-            });
-          })
-          .finally(function () {
-            // if the API calls throws an error or fails, "allowedMimeTypes" will be undefined
-            // hence the default extension will be set to the uploader in file-upload.js
-            this.fileUploader = FileUpload.uploader({
-              entityTable: 'civicrm_hrleaveandabsences_leave_request',
-              crmAttachmentToken: sharedSettings.attachmentToken,
-              queueLimit: sharedSettings.fileUploader.queueLimit,
-              allowedMimeTypes: allowedMimeTypes
-            });
-          }.bind(this));
-      }
-
-      /**
        * Save comments which do not have an ID and delete comments which are marked for deletion
        *
        * @return {Promise}
@@ -125,19 +98,6 @@ define([
         return $q.all(promises);
       }
 
-      /**
-       * Upload attachment in file uploder's queue
-       *
-       * @return {Promise}
-       */
-      function uploadAttachments () {
-        if (this.fileUploader.queue && this.fileUploader.queue.length > 0) {
-          return this.fileUploader.uploadAll({ entityID: this.id });
-        } else {
-          return $q.resolve([]);
-        }
-      }
-
       return ModelInstance.extend({
 
         /**
@@ -147,8 +107,6 @@ define([
          * @return {object}
          */
         defaultCustomData: function () {
-          loadSupportedFileTypes.call(this);
-
           return {
             comments: [],
             files: [],
@@ -194,7 +152,6 @@ define([
             .then(function () {
               return $q.all([
                 saveAndDeleteComments.call(this),
-                uploadAttachments.call(this),
                 deleteAttachments.call(this)
               ]);
             }.bind(this));
@@ -212,8 +169,7 @@ define([
               this.id = result.id;
 
               return $q.all([
-                saveAndDeleteComments.call(this),
-                uploadAttachments.call(this)
+                saveAndDeleteComments.call(this)
               ]);
             }.bind(this));
         },
@@ -334,7 +290,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates', 'comments', 'fileUploader', 'files'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'files'], key)) {
             result[key] = this[key];
           }
         },
