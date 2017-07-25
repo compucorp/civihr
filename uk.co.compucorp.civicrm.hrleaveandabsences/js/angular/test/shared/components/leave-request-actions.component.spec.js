@@ -61,7 +61,7 @@ define([
         });
 
         it('shows actions "Respond", "Approve", "Reject", "Cancel" and "Delete"', function () {
-          expect(flattenActions(controller.list)).toEqual(['respond', 'approve', 'reject', 'cancel', 'delete']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['respond', 'approve', 'reject', 'cancel', 'delete']);
         });
       });
 
@@ -73,7 +73,7 @@ define([
         });
 
         it('shows actions "Respond", "Approve", "Reject" and "Cancel"', function () {
-          expect(flattenActions(controller.list)).toEqual(['respond', 'approve', 'reject', 'cancel']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['respond', 'approve', 'reject', 'cancel']);
         });
       });
 
@@ -85,7 +85,7 @@ define([
         });
 
         it('shows actions "Edit", "Cancel"', function () {
-          expect(flattenActions(controller.list)).toEqual(['edit', 'cancel']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel']);
         });
       });
     });
@@ -103,7 +103,7 @@ define([
         });
 
         it('shows actions "Edit", "Cancel" and "Delete"', function () {
-          expect(flattenActions(controller.list)).toEqual(['edit', 'cancel', 'delete']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel', 'delete']);
         });
       });
 
@@ -115,7 +115,7 @@ define([
         });
 
         it('shows actions "Edit" and "Cancel"', function () {
-          expect(flattenActions(controller.list)).toEqual(['edit', 'cancel']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel']);
         });
       });
 
@@ -127,7 +127,7 @@ define([
         });
 
         it('shows actions "Respond" and "Cancel"', function () {
-          expect(flattenActions(controller.list)).toEqual(['respond', 'cancel']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['respond', 'cancel']);
         });
       });
     });
@@ -145,7 +145,7 @@ define([
         });
 
         it('shows actions "View" and "Delete"', function () {
-          expect(flattenActions(controller.list)).toEqual(['view', 'delete']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['view', 'delete']);
         });
       });
 
@@ -157,7 +157,7 @@ define([
         });
 
         it('shows actions "View"', function () {
-          expect(flattenActions(controller.list)).toEqual(['view']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
         });
       });
 
@@ -169,7 +169,7 @@ define([
         });
 
         it('shows actions "View"', function () {
-          expect(flattenActions(controller.list)).toEqual(['view']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
         });
       });
     });
@@ -187,7 +187,7 @@ define([
         });
 
         it('shows actions "View" and "Delete"', function () {
-          expect(flattenActions(controller.list)).toEqual(['view', 'delete']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['view', 'delete']);
         });
       });
 
@@ -199,7 +199,7 @@ define([
         });
 
         it('shows actions "View"', function () {
-          expect(flattenActions(controller.list)).toEqual(['view']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
         });
       });
 
@@ -211,7 +211,7 @@ define([
         });
 
         it('shows actions "View"', function () {
-          expect(flattenActions(controller.list)).toEqual(['view']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
         });
       });
     });
@@ -229,7 +229,7 @@ define([
         });
 
         it('shows actions "View" and "Delete"', function () {
-          expect(flattenActions(controller.list)).toEqual(['view', 'delete']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['view', 'delete']);
         });
       });
 
@@ -241,7 +241,7 @@ define([
         });
 
         it('shows actions "View"', function () {
-          expect(flattenActions(controller.list)).toEqual(['view']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
         });
       });
 
@@ -253,7 +253,7 @@ define([
         });
 
         it('shows actions "View"', function () {
-          expect(flattenActions(controller.list)).toEqual(['view']);
+          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
         });
       });
     });
@@ -276,7 +276,7 @@ define([
           });
 
           it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(true);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
           });
         });
 
@@ -288,7 +288,7 @@ define([
           });
 
           it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(true);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
           });
         });
 
@@ -300,7 +300,7 @@ define([
           });
 
           it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(true);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
           });
         });
       });
@@ -318,7 +318,7 @@ define([
           });
 
           it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(true);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
           });
         });
 
@@ -330,7 +330,7 @@ define([
           });
 
           it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(true);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
           });
         });
 
@@ -342,7 +342,7 @@ define([
           });
 
           it('does not include "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(false);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(false);
           });
         });
       });
@@ -366,7 +366,7 @@ define([
           });
 
           it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(true);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
           });
         });
 
@@ -378,7 +378,7 @@ define([
           });
 
           it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(true);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
           });
         });
 
@@ -390,7 +390,7 @@ define([
           });
 
           it('does not include "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(false);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(false);
           });
         });
       });
@@ -408,7 +408,7 @@ define([
           });
 
           it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(true);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
           });
         });
 
@@ -420,7 +420,7 @@ define([
           });
 
           it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(true);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
           });
         });
 
@@ -432,7 +432,7 @@ define([
           });
 
           it('does not include "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.list), 'cancel')).toBe(false);
+            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(false);
           });
         });
       });

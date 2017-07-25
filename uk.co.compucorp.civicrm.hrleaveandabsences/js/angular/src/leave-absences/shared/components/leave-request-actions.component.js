@@ -29,27 +29,24 @@ define([
     $log.debug('Component: leave-request-action-dropdown');
 
     var vm = this;
+    var statusNames = sharedSettings.statusNames;
     var actions = {
       edit: {
         label: 'Edit',
-        statuses: [sharedSettings.statusNames.awaitingApproval]
+        allowedStatuses: [statusNames.awaitingApproval]
       },
       respond: {
         label: 'Respond',
-        statuses: [sharedSettings.statusNames.moreInformationRequired]
+        allowedStatuses: [statusNames.moreInformationRequired]
       },
       view: {
         label: 'View',
-        statuses: [
-          sharedSettings.statusNames.approved,
-          sharedSettings.statusNames.rejected,
-          sharedSettings.statusNames.cancelled
-        ]
+        allowedStatuses: [statusNames.approved, statusNames.rejected, statusNames.cancelled]
       },
       approve: {
         label: 'Approve',
         isDirectAction: true,
-        statuses: [sharedSettings.statusNames.awaitingApproval],
+        allowedStatuses: [statusNames.awaitingApproval],
         dialog: {
           title: 'Approval',
           btnClass: 'success',
@@ -60,7 +57,7 @@ define([
       reject: {
         label: 'Reject',
         isDirectAction: true,
-        statuses: [sharedSettings.statusNames.awaitingApproval],
+        allowedStatuses: [statusNames.awaitingApproval],
         dialog: {
           title: 'Rejection',
           btnClass: 'warning',
@@ -71,10 +68,7 @@ define([
       cancel: {
         label: 'Cancel',
         isDirectAction: true,
-        statuses: [
-          sharedSettings.statusNames.awaitingApproval,
-          sharedSettings.statusNames.moreInformationRequired
-        ],
+        allowedStatuses: [statusNames.awaitingApproval, statusNames.moreInformationRequired],
         dialog: {
           title: 'Cancellation',
           btnClass: 'danger',
@@ -85,12 +79,12 @@ define([
       delete: {
         label: 'Delete',
         isDirectAction: true,
-        statuses: [
-          sharedSettings.statusNames.awaitingApproval,
-          sharedSettings.statusNames.moreInformationRequired,
-          sharedSettings.statusNames.approved,
-          sharedSettings.statusNames.rejected,
-          sharedSettings.statusNames.cancelled
+        allowedStatuses: [
+          statusNames.awaitingApproval,
+          statusNames.moreInformationRequired,
+          statusNames.approved,
+          statusNames.rejected,
+          statusNames.cancelled
         ],
         dialog: {
           title: 'Deletion',
@@ -101,7 +95,7 @@ define([
       }
     };
 
-    vm.list = [];
+    vm.allowedActions = [];
 
     /**
      * Performs an action on a given leave request
@@ -130,27 +124,8 @@ define([
     init();
 
     function init () {
-      /* This component expects vm.leaveRequestStatuses and vm.absenceTypes
-       * to be an objects, so if arrays are passed, they are transformed into
-       * object with according indexes
-       */
-      if (Array.isArray(vm.leaveRequestStatuses)) {
-        vm.leaveRequestStatuses = _.indexBy(vm.leaveRequestStatuses, 'value');
-      }
-
-      if (Array.isArray(vm.absenceTypes)) {
-        vm.absenceTypes = _.indexBy(vm.absenceTypes, 'id');
-      }
-
-      var allowedActions = getAllowedActions();
-
-      vm.list = _.map(allowedActions, function (action) {
-        return {
-          key: action,
-          label: actions[action].label,
-          isDirectAction: actions[action].isDirectAction
-        };
-      });
+      indexSupportData();
+      setAllowedActions();
     }
 
     /**
@@ -167,11 +142,11 @@ define([
      * @return {Boolean}
      */
     function canLeaveRequestBeCancelled () {
+      var allowCancellationValue = vm.absenceTypes[vm.leaveRequest.type_id].allow_request_cancelation;
+
       if (vm.role === 'admin' || vm.role === 'manager') {
         return true;
       }
-
-      var allowCancellationValue = vm.absenceTypes[vm.leaveRequest.type_id].allow_request_cancelation;
 
       if (allowCancellationValue === '3') {
         return moment().isBefore(vm.leaveRequest.from_date);
@@ -181,44 +156,57 @@ define([
     }
 
     /**
+     * Indexes leave request statuses and absence types
+     * if they are passed as arrays to the component
+     */
+    function indexSupportData () {
+      if (Array.isArray(vm.leaveRequestStatuses)) {
+        vm.leaveRequestStatuses = _.indexBy(vm.leaveRequestStatuses, 'value');
+      }
+
+      if (Array.isArray(vm.absenceTypes)) {
+        vm.absenceTypes = _.indexBy(vm.absenceTypes, 'id');
+      }
+    }
+
+    /**
      * @TODO This function utilises external resource
      * vm.leaveRequestStatuses - this sould be refactored
      *
-     * Defines which actions can be taken with the
-     * leave request basing on its status, user role
+     * Sets actions that can be performed within the
+     * leave request basing on its status and user role
      *
-     * @return {Array} allowed actions
      */
-    function getAllowedActions () {
+    function setAllowedActions () {
       var leaveRequestStatus = vm.leaveRequestStatuses[vm.leaveRequest.status_id].name;
-      var allowedActions = [];
+      var allowedActions = _.compact(_.map(actions, function (action, actionKey) {
+        return _.includes(action.allowedStatuses, leaveRequestStatus) ? actionKey : null;
+      }));
 
-      _.each(actions, function (action, actionKey) {
-        if (_.include(action.statuses, leaveRequestStatus)) {
-          allowedActions.push(actionKey);
-        }
+      (!canLeaveRequestBeCancelled()) && _.pull(allowedActions, 'cancel');
+      (vm.role !== 'admin') && _.pull(allowedActions, 'delete');
+      (vm.role === 'staff') && _.pull(allowedActions, 'approve', 'reject');
+      (vm.role !== 'staff') && swapEditAndRespondActions(allowedActions);
+
+      vm.allowedActions = _.map(allowedActions, function (action) {
+        return {
+          key: action,
+          label: actions[action].label,
+          isDirectAction: actions[action].isDirectAction
+        };
       });
+    }
 
-      if (!canLeaveRequestBeCancelled()) {
-        _.pull(allowedActions, 'cancel');
-      }
-
-      if (vm.role !== 'admin') {
-        _.pull(allowedActions, 'delete');
-      }
-
-      if (vm.role === 'staff') {
-        _.pull(allowedActions, 'approve', 'reject');
-      } else {
-        // Inverts Edit and Respond actions for Admin and Manager
-        allowedActions = _.map(allowedActions, function (action) {
-          if (action === 'edit') { return 'respond'; }
-          if (action === 'respond') { return 'edit'; }
-          return action;
-        });
-      }
-
-      return allowedActions;
+    /**
+     * Swaps Edit and Respond actions in allowed actions list
+     *
+     * @param {Array} actions
+     */
+    function swapEditAndRespondActions (actions) {
+      _.each(actions, function (action, actionKey) {
+        (action === 'edit') && (actions[actionKey] = 'respond');
+        (action === 'respond') && (actions[actionKey] = 'edit');
+      });
     }
   }
 });
