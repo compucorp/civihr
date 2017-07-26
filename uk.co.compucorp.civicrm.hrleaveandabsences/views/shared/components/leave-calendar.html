@@ -79,17 +79,18 @@
         </div>
       </div>
     </div>
-    <crm-loading show="!calendar.loading.calendar"></crm-loading>
-    <div ng-if="!calendar.loading.months">
-      <leave-calendar-month ng-repeat="month in calendar.months track by $index"
-        contacts="calendar.contacts"
-        month="month"
-        period="calendar.selectedPeriod"
-        show-contact-name="calendar.showContactName"
-        show-only-with-leave-requests="calendar.filters.userSettings.contacts_with_leaves"
-        support-data="calendar.supportData">
-      </leave-calendar-month>
-    </div>
+    <crm-loading show="!calendar.loading.calendar">
+      <div ng-if="calendar.injectMonths">
+        <leave-calendar-month ng-repeat="month in calendar.months track by $index"
+          contacts="calendar.contacts"
+          month="month"
+          period="calendar.selectedPeriod"
+          show-contact-name="calendar.showContactName"
+          show-only-with-leave-requests="calendar.filters.userSettings.contacts_with_leaves"
+          support-data="calendar.supportData">
+        </leave-calendar-month>
+      </div>
+    </crm-loading>
     <leave-calendar-legend absence-types="calendar.supportData.absenceTypes" ng-if="calendar.supportData.absenceTypes.length"></leave-calendar-legend>
   </crm-loading>
 </section>

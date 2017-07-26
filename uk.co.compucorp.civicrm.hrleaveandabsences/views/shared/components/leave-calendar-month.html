@@ -4,7 +4,7 @@
   </header>
   <crm-loading show="!month.month.loading">
     <div class="chr_leave-calendar__month-body">
-      <div class="table-responsive" ng-switch="!!month.contactsList()">
+      <div class="table-responsive" ng-switch="!!month.contactsList().length">
         <div class="text-center" ng-switch-when="false">
           Sorry No Contacts
         </div>

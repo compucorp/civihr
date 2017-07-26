@@ -70,6 +70,7 @@
           sharedSettings = _sharedSettings_;
 
           spyOn($log, 'debug');
+          spyOn($rootScope, '$emit').and.callThrough();
           spyOn(AbsencePeriod, 'all');
           spyOn(PublicHoliday, 'all').and.callThrough();
 
@@ -258,37 +259,45 @@
         });
 
         describe('"show months" event', function () {
-          var eventArgs;
-
           beforeEach(function () {
-            spyOn($rootScope, '$emit');
             compileComponent();
-
-            eventArgs = $rootScope.$emit.calls.mostRecent().args;
+            controller.injectMonths = true;
           });
 
-          it('sends an event to show the months', function () {
-            expect($rootScope.$emit).toHaveBeenCalled();
-            expect(eventArgs[0]).toBe('LeaveCalendar::showMonths');
+          describe('when it has not yet received the "month injected" event from all the months', function () {
+            beforeEach(function () {
+              simulateMonthsInjected(2);
+            });
+
+            it('does not send the event', function () {
+              expect($rootScope.$emit).not.toHaveBeenCalled();
+            });
           });
 
-          it('attaches to the event only the currently selected months', function () {
-            expect(eventArgs[1]).toEqual(controller.months.filter(function (month) {
-              return _.includes(controller.selectedMonths, month.index);
-            }));
+          describe('when it has received the "month injected" event from all the months', function () {
+            beforeEach(function () {
+              simulateMonthsInjected(controller.months.length);
+            });
+
+            it('sends the event', function () {
+              expect($rootScope.$emit).toHaveBeenCalled();
+              expect($rootScope.$emit.calls.mostRecent().args[0]).toBe('LeaveCalendar::showMonths');
+            });
+
+            it('attaches to the event only the currently selected months', function () {
+              expect($rootScope.$emit.calls.mostRecent().args[1]).toEqual(controller.months.filter(function (month) {
+                return _.includes(controller.selectedMonths, month.index);
+              }));
+            });
           });
         });
       });
 
       describe('selected months watcher', function () {
-        beforeEach(function () {
-          spyOn($rootScope, '$emit');
-        });
-
         describe('when some other months are selected', function () {
           beforeEach(function () {
             controller.selectedMonths = [1, 2, 3];
-            digest();
+            digest(true);
           });
 
           it('sends the "show months" event with the newly selected months', function () {
@@ -305,7 +314,7 @@
         describe('when none of the months are selected', function () {
           beforeEach(function () {
             controller.selectedMonths = [];
-            digest();
+            digest(true);
           });
 
           it('sends the "show months" event with the all the months', function () {
@@ -348,13 +357,6 @@
       });
 
       describe('refresh()', function () {
-        describe('basic tests', function () {
-          beforeEach(function () {
-            controller.refresh();
-            digest();
-          });
-        });
-
         describe('loading flag', function () {
           beforeEach(function () {
             controller.refresh();
@@ -367,18 +369,12 @@
           it('marks the calendar content as loading', function () {
             expect(controller.loading.calendar).toBe(true);
           });
-
-          it('takes the calendar out of the loading phase once done', function () {
-            digest();
-            expect(controller.loading.calendar).toBe(false);
-          });
         });
 
         describe('source of refresh', function () {
           var oldMonths, spyLoadContacts;
 
           beforeEach(function () {
-            spyOn($rootScope, '$emit');
             spyLoadContacts = spyOnSubCtrlLoadContacts();
 
             compileComponent();
@@ -391,7 +387,9 @@
           describe('when the source of the refresh is a period change', function () {
             beforeEach(function () {
               controller.refresh('period');
-              digest();
+              digest(true);
+
+              simulateMonthsInjected(controller.months.length);
             });
 
             it('rebuilds the months structure', function () {
@@ -414,7 +412,9 @@
           describe('when the source of the refresh is a contact filters change', function () {
             beforeEach(function () {
               controller.refresh('contacts');
-              digest();
+              digest(true);
+
+              simulateMonthsInjected(controller.months.length);
             });
 
             it('does not rebuild the months structure', function () {
@@ -450,9 +450,9 @@
         !skipDigest && digest();
       }
 
-      function digest () {
+      function digest (skipFlush) {
         $rootScope.$digest();
-        $timeout.flush();
+        !skipFlush && $timeout.flush();
       }
 
       function spyOnSubCtrlLoadContacts () {
@@ -471,6 +471,15 @@
         });
 
         return spy;
+      }
+
+      function simulateMonthsInjected (numberOfMonths) {
+        _.times(numberOfMonths, function () {
+          $rootScope.$emit('LeaveCalendar::monthInjected');
+        });
+
+        $rootScope.$emit.calls.reset();
+        digest(true);
       }
 
       function mockCheckPermissionService () {

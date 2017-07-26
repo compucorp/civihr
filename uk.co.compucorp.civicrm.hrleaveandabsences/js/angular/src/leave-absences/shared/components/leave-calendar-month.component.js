@@ -44,6 +44,8 @@ define([
       initListeners();
 
       vm.month = buildMonthStructure(dateFromMonth);
+
+      $rootScope.$emit('LeaveCalendar::monthInjected');
     }());
 
     /**

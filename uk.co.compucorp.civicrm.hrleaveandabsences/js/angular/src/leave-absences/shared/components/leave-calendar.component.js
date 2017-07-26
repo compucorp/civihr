@@ -32,6 +32,7 @@ define([
 
     vm.absencePeriods = [];
     vm.contacts = [];
+    vm.injectMonths = false;
     vm.months = [];
     vm.selectedMonths = null;
     vm.selectedPeriod = null;
@@ -40,7 +41,6 @@ define([
     vm.supportData = {};
     vm.loading = {
       calendar: true,
-      months: true,
       page: true
     };
     vm.filters = {
@@ -78,31 +78,18 @@ define([
     vm.refresh = function (source) {
       source = _.includes(['contacts', 'period'], source) ? source : 'period';
 
-      vm.loading.calendar = true;
-      vm.loading.months = true;
-
       $q.resolve()
         .then((source === 'period' ? buildPeriodMonthsList : _.noop))
         .then((source === 'contacts' ? loadContacts : _.noop))
-        .then(waitForNextTick)
         .then(function () {
-          vm.loading.months = false;
-        })
-        .then(function () {
-          // If the contacts list changed, all the months' data needs to be reloaded
-          sendShowMonthsSignal((source === 'contacts'));
-        })
-        .then(waitForNextTick)
-        .then(function () {
-          vm.loading.calendar = false;
+          injectAndShowMonths((source === 'contacts'));
         });
     };
 
     // init
     (function init () {
-      setUserRole().then(function () {
-        initWatchers();
-      })
+      setUserRole()
+      .then(initWatchers)
       .then(injectSubController)
       .then(function () {
         return $q.all([
@@ -115,13 +102,10 @@ define([
         return vm.showFilters ? loadFiltersOptionValues() : _.noop;
       })
       .then(function () {
-        vm.loading.page = false;
-        vm.loading.months = false;
+        injectAndShowMonths();
       })
-      .then(sendShowMonthsSignal)
-      .then(waitForNextTick)
       .then(function () {
-        vm.loading.calendar = false;
+        vm.loading.page = false;
       });
     }());
 
@@ -151,6 +135,28 @@ define([
         if (oldValue !== null && !angular.equals(newValue, oldValue)) {
           sendShowMonthsSignal();
         }
+      });
+    }
+
+    /**
+     * Injects the leave-calendar-month components
+     * and sends the "show months" signal
+     *
+     * @param  {Boolean} forceDataReload whether the months need to force data reload
+     */
+    function injectAndShowMonths (forceDataReload) {
+      vm.injectMonths = false;
+      vm.loading.calendar = true;
+
+      waitUntilMonthsAreInjected().then(function () {
+        sendShowMonthsSignal(forceDataReload);
+        vm.loading.calendar = false;
+      });
+
+      // make sure the leave-calendar-month components are removed
+      // before injecting them again
+      waitForNextDigest().then(function () {
+        vm.injectMonths = true;
       });
     }
 
@@ -287,9 +293,7 @@ define([
           return _.includes(vm.selectedMonths, month.index);
         });
 
-      return waitForNextTick().then(function () {
-        $rootScope.$emit('LeaveCalendar::showMonths', monthsToShow, !!forceDataReload);
-      });
+      $rootScope.$emit('LeaveCalendar::showMonths', monthsToShow, !!forceDataReload);
     }
 
     /**
@@ -319,12 +323,29 @@ define([
     }
 
     /**
-     * Waits for the next tick of the event loop, to make sure that all the data
+     * Waits for the next digest cycle to make sure that all the data
      * from the component had been transmitted to the child components
      */
-    function waitForNextTick () {
+    function waitForNextDigest () {
       return $q(function (resolve) {
         $timeout(resolve, 0);
+      });
+    }
+
+    /**
+     * Waits until all leave-calendar-month components are injected
+     *
+     * @return {Promise}
+     */
+    function waitUntilMonthsAreInjected () {
+      return $q(function (resolve) {
+        var monthLoadedCounter = 0;
+        var removeListener = $rootScope.$on('LeaveCalendar::monthInjected', function () {
+          if (++monthLoadedCounter === vm.months.length) {
+            removeListener();
+            resolve();
+          }
+        });
       });
     }
   }
