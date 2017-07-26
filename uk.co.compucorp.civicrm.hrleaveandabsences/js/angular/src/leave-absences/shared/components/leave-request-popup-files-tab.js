@@ -19,14 +19,15 @@ define([
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html';
     }],
     controllerAs: 'filesTab',
-    controller: ['$log', '$rootScope', 'HR_settings', 'shared-settings', 'OptionGroup', 'FileUpload', 'FileMimeTypes', controller]
+    controller: ['$log', '$rootScope', '$q', 'HR_settings', 'shared-settings', 'OptionGroup', 'FileUpload', 'FileMimeTypes', controller]
   });
 
-  function controller ($log, $rootScope, HRSettings, sharedSettings, OptionGroup, FileUpload, FileMimeTypes) {
+  function controller ($log, $rootScope, $q, HRSettings, sharedSettings, OptionGroup, FileUpload, FileMimeTypes) {
     $log.debug('Component: leave-request-popup-files-tab');
 
     var vm = Object.create(this);
     var events = [];
+    vm.filesLoaded = false;
     vm.supportedFileTypes = '';
     vm.today = Date.now();
     vm.userDateFormatWithTime = HRSettings.DATE_FORMAT + ' HH:mm';
@@ -101,10 +102,15 @@ define([
     };
 
     (function init () {
-      loadSupportedFileTypes();
-      vm.request.loadAttachments()
+      $q.all([
+        loadSupportedFileTypes(),
+        vm.request.loadAttachments()
+      ])
       .then(function () {
         $rootScope.$broadcast('Request Updated');
+      })
+      .finally(function () {
+        vm.filesLoaded = true;
       });
       events.push($rootScope.$on('uploadFiles: start', uploadAttachments));
     }());
