@@ -21,7 +21,7 @@
 
     describe('leaveCalendarMonth', function () {
       var $componentController, $log, $provide, $q, $rootScope, Calendar,
-        LeaveRequest, controller, daysInFebruary, february, leaveRequestInFebruary,
+        LeaveRequest, OptionGroup, controller, daysInFebruary, february, leaveRequestInFebruary,
         period2016, publicHolidays;
       var currentContactId = CRM.vars.leaveAndAbsences.contactId;
 
@@ -29,22 +29,20 @@
         $provide = _$provide_;
       }));
 
-      beforeEach(inject(function (LeaveRequestAPIMock, OptionGroup, OptionGroupAPIMock, WorkPatternAPIMock) {
+      beforeEach(inject(function (LeaveRequestAPIMock, WorkPatternAPIMock) {
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
-
-        spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
-          return OptionGroupAPIMock.valuesOf(name);
-        });
       }));
 
-      beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _Calendar_, _LeaveRequest_) {
+      beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
+        _Calendar_, _LeaveRequest_, _OptionGroup_, OptionGroupAPIMock) {
         $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         Calendar = _Calendar_;
         LeaveRequest = _LeaveRequest_;
+        OptionGroup = _OptionGroup_;
 
         february = { index: 1, year: 2016 };
         daysInFebruary = moment().month(february.index).year(february.year).daysInMonth();
@@ -55,8 +53,10 @@
         spyOn($log, 'debug');
         spyOn(Calendar, 'get').and.callThrough();
         spyOn(LeaveRequest, 'all').and.callFake(function () {
-          // gives only a leave request from February
-          return $q.resolve({ list: [leaveRequestInFebruary] });
+          return $q.resolve({ list: [leaveRequestInFebruary] }); // leave request from February
+        });
+        spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
+          return OptionGroupAPIMock.valuesOf(name);
         });
 
         compileComponent();

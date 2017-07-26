@@ -12,7 +12,7 @@ define([
   instances.factory('CalendarInstance', [
     '$log', '$q', 'ModelInstance', 'shared-settings', 'OptionGroup',
     function ($log, $q, ModelInstance, sharedSettings, OptionGroup) {
-      var promise = OptionGroup.valuesOf('hrleaveandabsences_work_day_type');
+      var dayTypesPromise;
 
       return ModelInstance.extend({
 
@@ -86,13 +86,14 @@ define([
        * @return Promise resolves to {Boolean}
        */
       function checkDateType (date, typeName) {
-        return promise.then(function (dayTypes) {
-          var searchedDate = this.days[getDateObjectWithFormat(date).valueOf()];
+        return loadDayTypes()
+          .then(function (dayTypes) {
+            var searchedDate = this.days[getDateObjectWithFormat(date).valueOf()];
 
-          return searchedDate ? _.find(dayTypes, function (dayType) {
-            return dayType.name === typeName;
-          }).value === searchedDate.type : false;
-        }.bind(this));
+            return searchedDate ? _.find(dayTypes, function (dayType) {
+              return dayType.name === typeName;
+            }).value === searchedDate.type : false;
+          }.bind(this));
       }
 
       /**
@@ -103,6 +104,18 @@ define([
        */
       function getDateObjectWithFormat (date) {
         return moment(date, sharedSettings.serverDateFormat).clone();
+      }
+
+      /**
+       * Fetches the list of day types OptionValues and stores the promise
+       * internally so that future calls will not make any more requests
+       *
+       * @return {Promise} resolves to {Array}
+       */
+      function loadDayTypes () {
+        dayTypesPromise = dayTypesPromise || OptionGroup.valuesOf('hrleaveandabsences_work_day_type');
+
+        return dayTypesPromise;
       }
     }]);
 });

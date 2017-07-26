@@ -46,19 +46,12 @@
         }
       ]));
 
-      beforeEach(inject(function (_OptionGroup_, OptionGroupAPIMock) {
-        OptionGroup = _OptionGroup_;
-
-        spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
-          return OptionGroupAPIMock.valuesOf(name);
-        });
-      }));
-
       beforeEach(inject([
         '$componentController', '$controller', '$log', '$q', '$rootScope', '$timeout',
-        'AbsencePeriod', 'PublicHoliday', 'shared-settings',
+        'AbsencePeriod', 'OptionGroup', 'PublicHoliday', 'shared-settings', 'OptionGroupAPIMock',
         function (_$componentController_, _$controller_, _$log_, _$q_, _$rootScope_,
-          _$timeout_, _AbsencePeriod_, _PublicHoliday_, _sharedSettings_) {
+          _$timeout_, _AbsencePeriod_, _OptionGroup_, _PublicHoliday_, _sharedSettings_,
+          OptionGroupAPIMock) {
           $componentController = _$componentController_;
           $controller = _$controller_;
           $log = _$log_;
@@ -67,12 +60,16 @@
           $timeout = _$timeout_;
           AbsencePeriod = _AbsencePeriod_;
           PublicHoliday = _PublicHoliday_;
+          OptionGroup = _OptionGroup_;
           sharedSettings = _sharedSettings_;
 
           spyOn($log, 'debug');
           spyOn($rootScope, '$emit').and.callThrough();
           spyOn(AbsencePeriod, 'all');
           spyOn(PublicHoliday, 'all').and.callThrough();
+          spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
+            return OptionGroupAPIMock.valuesOf(name);
+          });
 
           // Set 2016 as current period, because Calendar loads data only for the current period initially,
           // and MockedData has 2016 dates

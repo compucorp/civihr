@@ -5,7 +5,7 @@ define([
   'common/moment',
   'mocks/data/work-pattern-data',
   'mocks/data/option-group-mock-data',
-  'leave-absences/shared/models/instances/calendar-instance',
+  'leave-absences/shared/models/instances/calendar.instance',
   'mocks/apis/option-group-api-mock'
 ], function (_, moment, workPatternMocked, optionGroupMocked) {
   'use strict';
@@ -28,8 +28,8 @@ define([
     }));
 
     describe('on injection', function () {
-      it('fetches the list of day types', function () {
-        expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_work_day_type');
+      it('does not fetches the list of day types', function () {
+        expect(OptionGroup.valuesOf).not.toHaveBeenCalled();
       });
     });
 
@@ -57,6 +57,45 @@ define([
       it('creates the `days` property, an object with timestamps as keys', function () {
         expect(+key).toBe(date);
       });
+    });
+
+    describe('loading of day types OptionValues', function () {
+      describe('when it is the first time a `isXYZ` method is called', function () {
+        beforeEach(function () {
+          callRandomIsXYZMethod();
+        });
+
+        it('fetches the list of day types', function () {
+          expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_work_day_type');
+        });
+      });
+
+      describe('when it is not the first time a `isXYZ` method is called', function () {
+        var promise;
+
+        beforeEach(function () {
+          callRandomIsXYZMethod();
+          OptionGroup.valuesOf.calls.reset();
+
+          promise = callRandomIsXYZMethod();
+        });
+
+        it('does not feth the list of day types', function () {
+          expect(OptionGroup.valuesOf).not.toHaveBeenCalled();
+        });
+
+        it('still returns a value', function () {
+          promise.then(function (value) {
+            expect(value).toBeDefined();
+          });
+        });
+      });
+
+      function callRandomIsXYZMethod () {
+        var isXYZMethods = ['isNonWorkingDay', 'isWeekend', 'isWorkingDay'];
+
+        return instance[_.sample(isXYZMethods)](dateOfType('working_day'));
+      }
     });
 
     describe('isWorkingDay()', function () {
