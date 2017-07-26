@@ -27,6 +27,10 @@ $chr-leave-calendar-legend-size:                  20px;
   opacity: 0.5;
 }
 
+.chr_leave-calendar__day--current {
+  color: $brand-primary;
+}
+
 
 .chr_leave-calendar__item {
   color: #FFF;

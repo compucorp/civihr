@@ -13,8 +13,11 @@
             <tr class="chr_leave-calendar__days">
               <th class="chr_leave-calendar__name" ng-if="month.showContactName">Employee Name</th>
               <th class="chr_leave-calendar__day"
-                ng-class="{ 'chr_leave-calendar__day--disabled': !day.enabled }"
-                ng-repeat="day in month.month.days track by day.date">
+                ng-repeat="day in month.month.days track by day.date"
+                ng-class="{
+                  'chr_leave-calendar__day--current': day.current,
+                  'chr_leave-calendar__day--disabled': !day.enabled
+                }">
                 {{day.name}}
                 <div>{{day.index}}</div>
               </th>

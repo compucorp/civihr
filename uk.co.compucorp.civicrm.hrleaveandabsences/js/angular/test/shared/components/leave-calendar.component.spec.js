@@ -79,7 +79,8 @@
           amend2016Period({ current: true });
 
           compileComponent();
-        }]));
+        }
+      ]));
 
       // The mocked "work pattern calendar" and "leave request" data is made for
       // the month of February, so we pretend we are in February

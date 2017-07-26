@@ -303,6 +303,39 @@
             expect(twentiethOfFebruary.enabled).toBe(false);
           });
         });
+
+        describe('current day flag', function () {
+          describe('when the day is actually the current one', function () {
+            beforeEach(function () {
+              setCurrentDay(new Date(2016, 1, 20));
+              twentiethOfFebruary = controller.month.days[19];
+            });
+
+            it('is set to true', function () {
+              expect(twentiethOfFebruary.current).toBe(true);
+            });
+          });
+
+          describe('when the day is not the current one', function () {
+            beforeEach(function () {
+              setCurrentDay(new Date(2016, 1, 1));
+              twentiethOfFebruary = controller.month.days[19];
+            });
+
+            it('is set to false', function () {
+              expect(twentiethOfFebruary.current).toBe(false);
+            });
+          });
+
+          afterEach(function () {
+            jasmine.clock().uninstall();
+          });
+
+          function setCurrentDay (date) {
+            jasmine.clock().mockDate(date);
+            compileComponent();
+          }
+        });
       });
 
       describe('day\'s data specific for each contact', function () {

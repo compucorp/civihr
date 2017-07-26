@@ -82,19 +82,21 @@ define([
      * @return {object}
      */
     function buildMonthDaysStructure (dateMoment) {
-      var currentDay = dateMoment.clone().startOf('month');
+      var today = moment();
+      var pointerDay = dateMoment.clone().startOf('month');
 
       return _.map(_.times(dateMoment.daysInMonth()), function () {
         var dayObj = {
-          date: currentDay.format('YYYY-MM-DD'),
-          name: currentDay.format('ddd'),
-          index: currentDay.format('D'),
-          enabled: currentDay.isSameOrAfter(vm.period.start_date) &&
-            currentDay.isSameOrBefore(vm.period.end_date),
+          date: pointerDay.format('YYYY-MM-DD'),
+          name: pointerDay.format('ddd'),
+          index: pointerDay.format('D'),
+          current: today.isSame(pointerDay, 'day'),
+          enabled: pointerDay.isSameOrAfter(vm.period.start_date) &&
+            pointerDay.isSameOrBefore(vm.period.end_date),
           contactsData: {}
         };
 
-        currentDay.add(1, 'day');
+        pointerDay.add(1, 'day');
 
         return dayObj;
       });
