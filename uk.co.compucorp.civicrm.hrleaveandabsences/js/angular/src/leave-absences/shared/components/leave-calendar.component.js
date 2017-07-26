@@ -39,10 +39,7 @@ define([
     vm.showContactName = false;
     vm.showFilters = false;
     vm.supportData = {};
-    vm.loading = {
-      calendar: true,
-      page: true
-    };
+    vm.loading = { calendar: true, page: true };
     vm.filters = {
       optionValues: {},
       userSettings: {
@@ -55,38 +52,9 @@ define([
       }
     };
 
-    /**
-     * Labels the given period according to whether it's current or not
-     *
-     * @param  {AbsencePeriodInstance} period
-     * @return {string}
-     */
-    vm.labelPeriod = function (period) {
-      return period.current ? 'Current Period (' + period.title + ')' : period.title;
-    };
+    vm.labelPeriod = labelPeriod;
+    vm.refresh = refresh;
 
-    /**
-     * Reloads the selected months data
-     *
-     * If the source of the refresh is a period change, then
-     * it rebuilds the months list as well
-     * If the source of the refresh is a change in contacts filters, then
-     * it reloads the contacts as well
-     *
-     * @param {string} source The source of the refresh (period or contacts change)
-     */
-    vm.refresh = function (source) {
-      source = _.includes(['contacts', 'period'], source) ? source : 'period';
-
-      $q.resolve()
-        .then((source === 'period' ? buildPeriodMonthsList : _.noop))
-        .then((source === 'contacts' ? loadContacts : _.noop))
-        .then(function () {
-          injectAndShowMonths((source === 'contacts'));
-        });
-    };
-
-    // init
     (function init () {
       setUserRole()
       .then(initWatchers)
@@ -165,6 +133,16 @@ define([
      */
     function injectSubController () {
       subController = $controller('LeaveCalendar' + _.capitalize(userRole) + 'Controller').init(vm);
+    }
+
+    /**
+     * Labels the given period according to whether it's current or not
+     *
+     * @param  {AbsencePeriodInstance} period
+     * @return {string}
+     */
+    function labelPeriod (period) {
+      return period.current ? 'Current Period (' + period.title + ')' : period.title;
     }
 
     /**
@@ -278,6 +256,27 @@ define([
         year: dateMoment.year(),
         name: dateMoment.format('MMM')
       };
+    }
+
+    /**
+     * Reloads the selected months data
+     *
+     * If the source of the refresh is a period change, then
+     * it rebuilds the months list as well
+     * If the source of the refresh is a change in contacts filters, then
+     * it reloads the contacts as well
+     *
+     * @param {string} source The source of the refresh (period or contacts change)
+     */
+    function refresh (source) {
+      source = _.includes(['contacts', 'period'], source) ? source : 'period';
+
+      $q.resolve()
+        .then((source === 'period' ? buildPeriodMonthsList : _.noop))
+        .then((source === 'contacts' ? loadContacts : _.noop))
+        .then(function () {
+          injectAndShowMonths((source === 'contacts'));
+        });
     }
 
     /**
