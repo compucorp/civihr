@@ -17,8 +17,6 @@ define([
   function controller ($log) {
     $log.debug('Component: absence-tab-report');
 
-    var vm = {};
-
-    return vm;
+    var vm = this;
   }
 });

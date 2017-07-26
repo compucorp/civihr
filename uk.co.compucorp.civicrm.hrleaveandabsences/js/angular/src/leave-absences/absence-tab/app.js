@@ -8,7 +8,7 @@ define([
   'common/modules/directives',
   'common/services/angular-date/date-format',
   'common/services/check-permissions',
-  'common/services/notification',
+  'common/services/notification.service',
   'leave-absences/absence-tab/modules/config',
   'leave-absences/absence-tab/components/absence-tab-container.component',
   'leave-absences/absence-tab/components/absence-tab-report.component',
