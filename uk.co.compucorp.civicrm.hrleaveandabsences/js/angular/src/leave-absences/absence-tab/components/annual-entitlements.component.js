@@ -15,10 +15,10 @@
         return settings.pathTpl + 'components/annual-entitlements.html';
       }],
       controllerAs: 'entitlements',
-      controller: ['$log', '$q', 'AbsenceType', 'AbsencePeriod', 'Entitlement', 'Contact', controller]
+      controller: ['$log', '$q', 'AbsenceType', 'AbsencePeriod', 'Entitlement', 'Contact', 'notification', controller]
     });
 
-    function controller ($log, $q, AbsenceType, AbsencePeriod, Entitlement, Contact) {
+    function controller ($log, $q, AbsenceType, AbsencePeriod, Entitlement, Contact, notification) {
       $log.debug('Component: annual-entitlements');
 
       var vm = this;

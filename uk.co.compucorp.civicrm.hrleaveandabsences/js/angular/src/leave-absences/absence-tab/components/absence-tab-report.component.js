@@ -1,7 +1,8 @@
-define([
-  'leave-absences/absence-tab/modules/components',
-], function (components) {
+/* eslint-env amd */
 
+define([
+  'leave-absences/absence-tab/modules/components'
+], function (components) {
   components.component('absenceTabReport', {
     bindings: {
       contactId: '<'
@@ -13,7 +14,7 @@ define([
     controller: ['$log', controller]
   });
 
-  function controller($log) {
+  function controller ($log) {
     $log.debug('Component: absence-tab-report');
 
     var vm = {};
