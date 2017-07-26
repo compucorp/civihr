@@ -12,7 +12,9 @@
           <thead>
             <tr class="chr_leave-calendar__days">
               <th class="chr_leave-calendar__name" ng-if="month.showContactName">Employee Name</th>
-              <th class="chr_leave-calendar__day" ng-repeat="day in month.month.days track by day.date">
+              <th class="chr_leave-calendar__day"
+                ng-class="{ 'chr_leave-calendar__day--disabled': !day.enabled }"
+                ng-repeat="day in month.month.days track by day.date">
                 {{day.name}}
                 <div>{{day.index}}</div>
               </th>
@@ -22,7 +24,10 @@
             <tr class="chr_leave-calendar__items" ng-repeat="contact in month.contactsList() | limitTo: month.pageSize: month.currentPage * month.pageSize">
               <td class="chr_leave-calendar__name" ng-if="month.showContactName">{{contact.display_name}}</td>
               <td ng-repeat="day in month.month.days track by day.date">
-                <leave-calendar-day contact-data="day.contactsData[contact.id]"></leave-calendar-day>
+                <leave-calendar-day
+                  contact-data="day.contactsData[contact.id]"
+                  ng-class="{ 'chr_leave-calendar__item--disabled': !day.enabled }"
+                ></leave-calendar-day>
               </td>
             </tr>
           </tbody>
