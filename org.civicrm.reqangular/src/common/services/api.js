@@ -1,5 +1,4 @@
 /* eslint-env amd */
-
 define([
   'common/angular',
   'common/lodash',
@@ -19,7 +18,7 @@ define([
      * @return {Promise/Any}
      */
     function responseHandler (response) {
-      if (response.data.is_error) {
+      if (!!response.data.is_error) {
         $log.error(response.data);
 
         return $q.reject(response.data.error_message);
@@ -28,12 +27,6 @@ define([
       return response.data;
     }
 
-    /**
-     * Prepare the params to pass to the API endpoint (setting defaults, etc)
-     *
-     * @param  {object} params
-     * @return {object}
-     */
     function prepareParams (params) {
       var defaults = {
         options: { limit: 0 }
@@ -86,13 +79,11 @@ define([
               params.options.limit = pagination.size;
             }
 
-            return this.sendGET(entity, action, params, cache);
+            return this.sendGET(entity, action, params, cache).then(function (data) {
+              return data.values;
+            });
           }.bind(this))(),
           (function () {
-            if (!pagination) {
-              return $q.resolve();
-            }
-
             var params = _.assign({}, filters, { 'return': 'id' });
             // Removing chained calls, they are not necessary for getting the count
             params = _.omit(params, function (__, key) { return _.startsWith(key, 'api.'); });
@@ -100,14 +91,11 @@ define([
             return this.sendGET(entity, action, params, cache);
           }.bind(this))()
         ]).then(function (results) {
-          var currentList = results[0];
-          var allList = pagination ? results[1] : currentList;
-
           return {
-            list: currentList.values,
-            total: allList.count,
-            allIds: allList.values.map(function (record) {
-              return record.id;
+            list: results[0],
+            total: results[1].count,
+            allIds: results[1].values.map(function (cycle) {
+              return cycle.id;
             }).join(',')
           };
         });
