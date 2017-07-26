@@ -12,7 +12,7 @@
           <thead>
             <tr class="chr_leave-calendar__days">
               <th class="chr_leave-calendar__name" ng-if="month.showContactName">Employee Name</th>
-              <th ng-repeat="day in month.month.days track by day.date">
+              <th class="chr_leave-calendar__day" ng-repeat="day in month.month.days track by day.date">
                 {{day.name}}
                 <div>{{day.index}}</div>
               </th>
