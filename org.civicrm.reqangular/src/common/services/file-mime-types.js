@@ -6,7 +6,7 @@ define([
 ], function (_, services) {
   'use strict';
 
-  services.factory('FileMimeTypes', [function () {
+  services.factory('fileMimeTypes', ['$q', function ($q) {
     var mimeTypesMap = {
       // If other extensions are added in the OptionGroups,
       // mime types need to be added here
@@ -25,8 +25,13 @@ define([
     };
 
     return {
-      getMimeTypeFor: function (extension) {
-        return mimeTypesMap[extension];
+      /**
+       * Returns mime type for given file extension
+       * @param {String} fileExtension
+       * @return {Promise}
+       */
+      getMimeTypeFor: function (fileExtension) {
+        return $q.resolve(mimeTypesMap[fileExtension]);
       }
     };
   }]);

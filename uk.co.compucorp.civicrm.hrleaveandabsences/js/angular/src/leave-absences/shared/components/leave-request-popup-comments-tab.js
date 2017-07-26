@@ -141,7 +141,7 @@ define([
     function loadCommentsAndContactNames () {
       return vm.request.loadComments()
         .then(function () {
-          $rootScope.$broadcast('Request Updated');
+          $rootScope.$broadcast('LeaveRequestModal::requestObjectUpdated');
           // loadComments sets the comments on request object instead of returning it
           vm.request.comments.length && loadContactNames();
         });

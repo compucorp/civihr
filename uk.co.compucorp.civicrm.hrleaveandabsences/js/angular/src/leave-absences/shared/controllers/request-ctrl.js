@@ -29,7 +29,10 @@ define([
 
       var absenceTypesAndIds;
       var availableStatusesMatrix = {};
+      var childProcessCount = 0;
+      var childResponsesReceived = 0;
       var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
+      var listeners = [];
       var role = '';
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
@@ -521,7 +524,7 @@ define([
        */
       this._init = function () {
         initAvailableStatusesMatrix.call(this);
-        $rootScope.$on('Request Updated', setInitialAttributes.bind(this));
+        initListeners.call(this);
 
         return initRoles.call(this)
           .then(function () {
@@ -701,15 +704,31 @@ define([
       }
 
       /**
+       * Checks if all the child processes are done, if yes it resolves/rejects the promise
+       *
+       * @param {Array} errorResponses
+       * @param {Object} deferred
+       */
+      function checkIfAllChildProcessAreDone (errorResponses, deferred) {
+        childResponsesReceived++;
+        if (childResponsesReceived === childProcessCount) {
+          unsubscribeFromEvents();
+          if (errorResponses.length > 0) {
+            deferred.reject(errorResponses);
+          } else {
+            deferred.resolve('Child Processes Done');
+          }
+        }
+      }
+
+      /**
        * Validates and creates the leave request
        *
        * @returns {Promise}
        */
       function createRequest () {
         return this.request.create()
-          .then(function () {
-            return uploadAttachment();
-          })
+          .then(initChildProcess)
           .then(function () {
             postSubmit.call(this, 'LeaveRequest::new');
           }.bind(this));
@@ -915,6 +934,33 @@ define([
       }
 
       /**
+       * Fire an event to start child processes which needs to be done after leave request is saved.
+       * Waits for the response before resolving the promise
+       *
+       * @returns {Promise}
+       */
+      function initChildProcess () {
+        var deferred = $q.defer();
+        var errorResponses = [];
+
+        if (childProcessCount > 0) {
+          listeners.push($rootScope.$on('LeaveRequestModal::childProcess::success', function () {
+            checkIfAllChildProcessAreDone(errorResponses, deferred);
+          }));
+          listeners.push($rootScope.$on('LeaveRequestModal::childProcess::error', function (e, data) {
+            errorResponses.push(data);
+            checkIfAllChildProcessAreDone(errorResponses, deferred);
+          }));
+
+          $rootScope.$broadcast('LeaveRequestModal::childProcess::start');
+        } else {
+          deferred.resolve();
+        }
+
+        return deferred.promise;
+      }
+
+      /**
        * Initialize from and to dates and day types.
        * It will also set the day types.
        *
@@ -937,6 +983,11 @@ define([
         } else {
           return $q.resolve();
         }
+      }
+
+      function initListeners () {
+        listeners.push($rootScope.$on('LeaveRequestModal::requestObjectUpdated', setInitialAttributes.bind(this)));
+        listeners.push($rootScope.$on('LeaveRequestModal::childProcess::register', function () { childProcessCount++; }));
       }
 
       /**
@@ -1167,15 +1218,23 @@ define([
       }
 
       /**
+       * Gets called when the component is destroyed
+       */
+      function unsubscribeFromEvents () {
+        // destroy all the event
+        _.forEach(listeners, function (listener) {
+          listener();
+        });
+      }
+
+      /**
        * Validates and updates the leave request
        *
        * @returns {Promise}
        */
       function updateRequest () {
         return this.request.update()
-          .then(function () {
-            return uploadAttachment();
-          })
+          .then(initChildProcess)
           .then(function () {
             if (this.isRole('manager')) {
               postSubmit.call(this, 'LeaveRequest::updatedByManager');
@@ -1183,30 +1242,6 @@ define([
               postSubmit.call(this, 'LeaveRequest::edit');
             }
           }.bind(this));
-      }
-
-      /**
-       * Fire and event to start Uploading attachment and resolves it according to the result
-       *
-       * @returns {Promise}
-       */
-      function uploadAttachment () {
-        var deferred = $q.defer();
-
-        var successEvent = $rootScope.$on('uploadFiles: success', function () {
-          deferred.resolve('Upload Successful');
-          // Destroy the listener
-          successEvent();
-        });
-        var errorEvent = $rootScope.$on('uploadFiles: error', function () {
-          deferred.reject('Upload Error');
-          // Destroy the listener
-          errorEvent();
-        });
-
-        $rootScope.$broadcast('uploadFiles: start');
-
-        return deferred.promise;
       }
 
       /**

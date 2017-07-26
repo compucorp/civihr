@@ -8,15 +8,25 @@ define([
   'use strict';
 
   describe('file-mime-types', function () {
-    var FileMimeTypes;
+    var fileMimeTypes;
 
     beforeEach(module('common.services'));
-    beforeEach(inject(function (_FileMimeTypes_) {
-      FileMimeTypes = _FileMimeTypes_;
+    beforeEach(inject(function (_fileMimeTypes_) {
+      fileMimeTypes = _fileMimeTypes_;
     }));
 
-    it('returns mime types for given extension', function () {
-      expect(FileMimeTypes.getMimeTypeFor('txt')).toBe('plain');
+    describe('getMimeTypeFor()', function () {
+      var promise;
+
+      beforeEach(function () {
+        promise = fileMimeTypes.getMimeTypeFor('txt');
+      });
+
+      it('returns mime types for given file extension', function () {
+        promise.then(function (mimeType) {
+          expect(mimeType).toBe('plain');
+        });
+      });
     });
   });
 });

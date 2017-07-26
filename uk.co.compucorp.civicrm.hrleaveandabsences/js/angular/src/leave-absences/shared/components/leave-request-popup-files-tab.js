@@ -19,14 +19,15 @@ define([
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html';
     }],
     controllerAs: 'filesTab',
-    controller: ['$log', '$rootScope', '$q', 'HR_settings', 'shared-settings', 'OptionGroup', 'FileUpload', 'FileMimeTypes', controller]
+    controller: ['$log', '$rootScope', '$q', 'HR_settings', 'shared-settings', 'OptionGroup', 'FileUpload', 'fileMimeTypes', controller]
   });
 
-  function controller ($log, $rootScope, $q, HRSettings, sharedSettings, OptionGroup, FileUpload, FileMimeTypes) {
+  function controller ($log, $rootScope, $q, HRSettings, sharedSettings, OptionGroup, FileUpload, fileMimeTypes) {
     $log.debug('Component: leave-request-popup-files-tab');
 
+    var allowedMimeTypes;
+    var listeners = [];
     var vm = Object.create(this);
-    var events = [];
     vm.filesLoaded = false;
     vm.supportedFileTypes = '';
     vm.today = Date.now();
@@ -72,13 +73,10 @@ define([
      * @return {Number} of files
      */
     vm.getFilesCount = function () {
-      var filesWithSoftDelete = _.filter(vm.request.files, function (file) {
-        return file.toBeDeleted;
-      });
-      var queueLength = (vm.fileUploader && vm.fileUploader.queue)
-        ? vm.fileUploader.queue.length : 0;
+      var filesToDelete = filesMarkedForDeletion();
+      var queue = fileUploaderQueue();
 
-      return vm.request.files.length + queueLength - filesWithSoftDelete.length;
+      return vm.request.files.length + queue.length - filesToDelete.length;
     };
 
     /**
@@ -91,29 +89,65 @@ define([
       return !attachment.attachment_id || vm.canManage;
     };
 
-    /**
-     * Gets called when the component is destroyed
-     */
-    vm.$onDestroy = function () {
-      // destroy all the event
-      events.map(function (event) {
-        event();
-      });
-    };
+    vm.$onDestroy = unsubscribeFromEvents;
 
     (function init () {
+      $rootScope.$broadcast('LeaveRequestModal::childProcess::register');
+      initListeners();
+
       $q.all([
         loadSupportedFileTypes(),
         vm.request.loadAttachments()
       ])
       .then(function () {
-        $rootScope.$broadcast('Request Updated');
+        $rootScope.$broadcast('LeaveRequestModal::requestObjectUpdated');
       })
       .finally(function () {
         vm.filesLoaded = true;
       });
-      events.push($rootScope.$on('uploadFiles: start', uploadAttachments));
     }());
+
+    /**
+     * Returns an array of files marked for deletion
+     *
+     * @return {Array}
+     */
+    function filesMarkedForDeletion () {
+      return _.filter(vm.request.files, function (file) {
+        return file.toBeDeleted;
+      });
+    }
+
+    /**
+     * Returns the file uploader queue
+     *
+     * @return {Array}
+     */
+    function fileUploaderQueue () {
+      return (vm.fileUploader && vm.fileUploader.queue)
+        ? vm.fileUploader.queue : [];
+    }
+
+    /**
+     * Initializes all the listeners
+     */
+    function initListeners () {
+      listeners.push($rootScope.$on('LeaveRequestModal::childProcess::start', uploadAttachments));
+    }
+
+    /**
+     * Initializes the file uploader object
+     */
+    function initFileUploader () {
+      // if the API calls throws an error or fails, "allowedMimeTypes" will be undefined
+      // hence the default file extension will be set to the uploader in file-upload.js
+      vm.fileUploader = FileUpload.uploader({
+        entityTable: 'civicrm_hrleaveandabsences_leave_request',
+        crmAttachmentToken: sharedSettings.attachmentToken,
+        queueLimit: sharedSettings.fileUploader.queueLimit,
+        allowedMimeTypes: allowedMimeTypes
+      });
+    }
 
     /**
      * Load file extensions which are supported for upload and creates uploader object
@@ -121,27 +155,36 @@ define([
      * @return {Promise}
      */
     function loadSupportedFileTypes () {
-      var allowedMimeTypes;
-
       return OptionGroup.valuesOf('safe_file_extension')
-        .then(function (extensions) {
-          allowedMimeTypes = {};
+        .then(function (fileExtensions) {
+          var fileExtensionPromise = [];
 
-          vm.supportedFileTypes = extensions.map(function (ext) {
-            allowedMimeTypes[ext.label] = FileMimeTypes.getMimeTypeFor(ext.label);
+          vm.supportedFileTypes = fileExtensions.map(function (ext) {
             return ext.label;
           });
-        })
-        .finally(function () {
-          // if the API calls throws an error or fails, "allowedMimeTypes" will be undefined
-          // hence the default extension will be set to the uploader in file-upload.js
-          vm.fileUploader = FileUpload.uploader({
-            entityTable: 'civicrm_hrleaveandabsences_leave_request',
-            crmAttachmentToken: sharedSettings.attachmentToken,
-            queueLimit: sharedSettings.fileUploader.queueLimit,
-            allowedMimeTypes: allowedMimeTypes
+
+          // set mime types
+          allowedMimeTypes = {};
+          _.forEach(fileExtensions, function (ext) {
+            fileExtensionPromise.push(fileMimeTypes.getMimeTypeFor(ext.label)
+            .then(function (mimeType) {
+              allowedMimeTypes[ext.label] = mimeType;
+            }));
           });
-        });
+
+          return fileExtensionPromise;
+        })
+        .finally(initFileUploader);
+    }
+
+    /**
+     * Gets called when the component is destroyed
+     */
+    function unsubscribeFromEvents () {
+      // destroy all the event
+      _.forEach(listeners, function (listener) {
+        listener();
+      });
     }
 
     /**
@@ -151,13 +194,13 @@ define([
       if (vm.fileUploader.queue && vm.fileUploader.queue.length > 0) {
         vm.fileUploader.uploadAll({ entityID: vm.request.id })
         .then(function () {
-          $rootScope.$broadcast('uploadFiles: success');
+          $rootScope.$broadcast('LeaveRequestModal::childProcess::success');
         })
         .catch(function () {
-          $rootScope.$broadcast('uploadFiles: error');
+          $rootScope.$broadcast('LeaveRequestModal::childProcess::error', 'File Upload Error');
         });
       } else {
-        $rootScope.$broadcast('uploadFiles: success');
+        $rootScope.$broadcast('LeaveRequestModal::childProcess::success');
       }
     }
 

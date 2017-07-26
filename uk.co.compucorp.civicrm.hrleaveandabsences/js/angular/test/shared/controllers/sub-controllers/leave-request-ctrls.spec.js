@@ -554,8 +554,6 @@
 
               $ctrl.submit();
               $scope.$digest();
-              $rootScope.$broadcast('uploadFiles: success');
-              $scope.$digest();
             });
 
             it('has all required fields', function () {
@@ -793,8 +791,6 @@
 
                 $ctrl.submit();
                 $scope.$apply();
-                $rootScope.$broadcast('uploadFiles: success');
-                $scope.$apply();
               });
 
               it('allows user to submit', function () {
@@ -1015,8 +1011,6 @@
             // set status id manually as manager would set it on UI
             $ctrl.newStatusOnSave = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
             $ctrl.submit();
-            $scope.$apply();
-            $rootScope.$broadcast('uploadFiles: success');
             $scope.$apply();
           });
 

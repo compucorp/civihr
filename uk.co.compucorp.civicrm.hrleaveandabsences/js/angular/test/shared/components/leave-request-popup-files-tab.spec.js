@@ -72,7 +72,7 @@ define([
       describe('when upload is successful', function () {
         beforeEach(function () {
           controller.fileUploader.uploadAll.and.returnValue($q.resolve());
-          $rootScope.$broadcast('uploadFiles: start');
+          $rootScope.$broadcast('LeaveRequestModal::childProcess::start');
           $rootScope.$digest();
         });
 
@@ -81,19 +81,19 @@ define([
         });
 
         it('broadcasts success event', function () {
-          expect($rootScope.$broadcast).toHaveBeenCalledWith('uploadFiles: success');
+          expect($rootScope.$broadcast).toHaveBeenCalledWith('LeaveRequestModal::childProcess::success');
         });
       });
 
       describe('when upload is not successful', function () {
         beforeEach(function () {
           controller.fileUploader.uploadAll.and.returnValue($q.reject());
-          $rootScope.$broadcast('uploadFiles: start');
+          $rootScope.$broadcast('LeaveRequestModal::childProcess::start');
           $rootScope.$digest();
         });
 
         it('broadcasts error event', function () {
-          expect($rootScope.$broadcast).toHaveBeenCalledWith('uploadFiles: error');
+          expect($rootScope.$broadcast).toHaveBeenCalledWith('LeaveRequestModal::childProcess::error', 'File Upload Error');
         });
       });
     });
