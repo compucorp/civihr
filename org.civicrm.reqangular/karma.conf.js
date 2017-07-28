@@ -22,6 +22,9 @@ module.exports = function (config) {
             extPath + 'node_modules/requirejs/require.js',
             extPath + 'node_modules/karma-requirejs/lib/adapter.js',
 
+            // load test helpers
+            { pattern: extPath + 'test/helpers/**/*.helper.js', included: true },
+
             // load vendor libraries
             { pattern: extPath + 'src/common/vendor/*.min.js', included: false },
 
