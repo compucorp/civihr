@@ -1,3 +1,4 @@
+/* globals CRM, inject */
 /* eslint-env amd, jasmine */
 
 (function (CRM) {
