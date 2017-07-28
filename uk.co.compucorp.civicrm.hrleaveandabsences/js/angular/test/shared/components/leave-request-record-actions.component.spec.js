@@ -6,7 +6,7 @@ define([
 ], function (angular) {
   'use strict';
 
-  describe('leaveRequestCreateDropdown', function () {
+  describe('leaveRequestRecordActions', function () {
     var vm, $componentController, $log, $rootScope;
     var contactId = '208';
 
@@ -41,7 +41,7 @@ define([
     });
 
     function compileComponent () {
-      vm = $componentController('leaveRequestCreateDropdown', null, { contactId: contactId });
+      vm = $componentController('leaveRequestRecordActions', null, { contactId: contactId });
       $rootScope.$digest();
     }
   });
