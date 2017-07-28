@@ -1,4 +1,5 @@
 /* eslint-env amd */
+/* global Drupal */
 
 (function (CRM, Drupal) {
   define([
@@ -24,11 +25,13 @@
       }
 
       /**
-       * This method returns the sessions as a promise. Even though the sessions
-       * is a value this will change in the future as there will be a Session
-       * endpoint on the API.
+       * Returns the session data of the currently logged in user (contact).
        *
-       * @returns {Promise}
+       * @TODO Even though the session values are taken from the global CRM and
+       * Drupal variables, this should be amended in the future once a Session
+       * endpoint in the API is ready.
+       *
+       * @return {Promise} resolves with {Object}
        */
       function get () {
         return $q.resolve(session);

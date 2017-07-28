@@ -158,13 +158,19 @@ function hrcore_civicrm_pre($op, $objectName, $objectId, &$params) {
 }
 
 /**
- * Implements hrcore_civicrm_pageRun. This hook adds session variable to
- * CRM.vars object.
+ * Implements hrcore_civicrm_pageRun.
  *
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_pageRun/
  */
- function hrcore_civicrm_pageRun($page) {
-    CRM_Core_Resources::singleton()->addVars('session', [
-       'contact_id' => CRM_Core_Session::getLoggedInContactID()
-    ]);
- }
+function hrcore_civicrm_pageRun($page) {
+  _hrcore_add_js_session_vars();
+}
+
+/**
+ * This function adds the session variable to CRM.vars object.
+ */
+function _hrcore_add_js_session_vars() {
+  CRM_Core_Resources::singleton()->addVars('session', [
+    'contact_id' => CRM_Core_Session::getLoggedInContactID()
+  ]);
+}
