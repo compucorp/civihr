@@ -31,7 +31,6 @@ define([
         if (pagination) {
           start = (pagination.page - 1) * pagination.size;
           end = start + pagination.size;
-
           list = list.slice(start, end);
         }
 
@@ -61,9 +60,10 @@ define([
       },
 
       /**
-       * # DRAFT #
-       *
        * Mocked contacts
+       *
+       * @todo remove this method completely and use `common/mocks/data/contact.data`
+       * directly in modules that were previously using .mockedContacts()
        */
       mockedContacts: function () {
         var contacts = ContactData.all.values;

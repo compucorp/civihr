@@ -33,9 +33,9 @@ define([
      * @param {array} optionValues
      * @return {object} an object formed as such:
      *  {
-     *    group_name_1: [ { value_1 }, { ... }, { value_n } ],
+     *    group_name_1: [ { value_1: value_1 }, { ... }, { value_n: value_n } ],
      *    ...
-     *    group_name_n: [ { value_1 }, { ... }, { value_n } ]
+     *    group_name_n: [ { value_1: vlaue_1 }, { ... }, { value_n: value_n } ]
      *  }
      */
     function valuesByGroup (optionValues) {
@@ -55,7 +55,7 @@ define([
        * @param {string/array} groupNames
        *   If the value is an array of names, the method will group
        *   the values by option group names
-       * @param {object} optional parameters for the query
+       * @param {object} params optional parameters for the query
        * @return {Promise}
        *   Resolves to an array with the values (if `groupNames` is a string)
        *   or an object with keys as the group names and values as the
