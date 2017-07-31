@@ -1,20 +1,19 @@
-/* globals CRM, inject */
 /* eslint-env amd, jasmine */
 
 (function (CRM) {
   define([
     'common/angular',
     'common/angularMocks',
-    'common/services/notification'
+    'common/services/notification.service'
   ], function () {
     'use strict';
 
-    describe('notification', function () {
-      var title, body, options, notification;
+    describe('notificationService', function () {
+      var title, body, options, notificationService;
 
       beforeEach(module('common.services'));
-      beforeEach(inject(function (_notification_) {
-        notification = _notification_;
+      beforeEach(inject(function (_notificationService_) {
+        notificationService = _notificationService_;
         title = 'Sample title';
         body = 'Sample Body text';
         options = {
@@ -27,7 +26,7 @@
 
       describe('alert()', function () {
         beforeEach(function () {
-          notification.alert(title, body, options);
+          notificationService.alert(title, body, options);
         });
 
         it('calls CRM.alert to display alert notification', function () {
@@ -37,7 +36,7 @@
 
       describe('success()', function () {
         beforeEach(function () {
-          notification.success(title, body, options);
+          notificationService.success(title, body, options);
         });
 
         it('calls CRM.alert to display success notification', function () {
@@ -47,7 +46,7 @@
 
       describe('info()', function () {
         beforeEach(function () {
-          notification.info(title, body, options);
+          notificationService.info(title, body, options);
         });
 
         it('calls CRM.alert to display info notification', function () {
@@ -57,7 +56,7 @@
 
       describe('error()', function () {
         beforeEach(function () {
-          notification.error(title, body, options);
+          notificationService.error(title, body, options);
         });
 
         it('calls CRM.alert to display error notification', function () {
