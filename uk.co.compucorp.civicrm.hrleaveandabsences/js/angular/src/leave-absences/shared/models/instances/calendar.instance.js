@@ -100,7 +100,7 @@ define([
        * Converts given date to moment object with server format
        *
        * @param {Date/String} date from server
-       * @return {Object} Moment date
+       * @return {Moment} Moment date
        */
       function getDateObjectWithFormat (date) {
         return moment(date, sharedSettings.serverDateFormat).clone();

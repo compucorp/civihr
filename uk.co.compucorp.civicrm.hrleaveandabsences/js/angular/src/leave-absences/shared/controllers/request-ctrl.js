@@ -823,7 +823,7 @@ define([
        *
        * @param {Date} date to Checks
        * @param {Array} listOfDayTypes array of day types
-       * @return {Promise}
+       * @return {Promise} resolves with an {Array} of day types
        */
       function getDayTypesFromDate (date, listOfDayTypes) {
         date = moment(date);

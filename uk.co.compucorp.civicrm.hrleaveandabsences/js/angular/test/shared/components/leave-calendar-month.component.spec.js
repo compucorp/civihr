@@ -88,11 +88,11 @@
       });
 
       describe('on init', function () {
-        it('does not load the contacts\' work pattern calendars', function () {
+        it("does not load the contacts' work pattern calendars", function () {
           expect(Calendar.get).not.toHaveBeenCalled();
         });
 
-        it('does not load the contacts\' leave requests', function () {
+        it("does not load the contacts' leave requests", function () {
           expect(LeaveRequest.all).not.toHaveBeenCalled();
         });
       });
@@ -107,7 +107,7 @@
             expect(controller.visible).toBe(true);
           });
 
-          describe('contacts\' work pattern calendar', function () {
+          describe("contacts' work pattern calendar", function () {
             it('loads the work pattern calendars', function () {
               expect(Calendar.get).toHaveBeenCalled();
             });
@@ -118,7 +118,7 @@
               }));
             });
 
-            it('uses the selected months\' first and last day as date delimiters', function () {
+            it("uses the selected months' first and last day as date delimiters", function () {
               var month = controller.month;
 
               expect(Calendar.get.calls.mostRecent().args[1]).toBe(month.days[0].date);
@@ -149,7 +149,7 @@
               }));
             });
 
-            it('uses the selected months\' first and last day as date delimiters', function () {
+            it("uses the selected months' first and last day as date delimiters", function () {
               var month = controller.month;
 
               expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
@@ -208,11 +208,11 @@
             expect(controller.visible).toBe(false);
           });
 
-          it('does not load the contacts\' work pattern calendars', function () {
+          it("does not load the contacts' work pattern calendars", function () {
             expect(Calendar.get).not.toHaveBeenCalled();
           });
 
-          it('does not load the contacts\' leave requests', function () {
+          it("does not load the contacts' leave requests", function () {
             expect(LeaveRequest.all).not.toHaveBeenCalled();
           });
         });
@@ -338,7 +338,7 @@
         });
       });
 
-      describe('day\'s data specific for each contact', function () {
+      describe("day's data specific for each contact", function () {
         var contactData;
 
         beforeEach(function () {
@@ -694,6 +694,12 @@
         !!sendSignal && sendShowMonthsSignal();
       }
 
+      /**
+       * Sends the "show months" signal to the component
+       *
+       * @param  {Boolean} includeFebruary Whether to include Feb (the current month)
+       * @param  {Boolean} forceReload Whether to force reloading the month's data
+       */
       function sendShowMonthsSignal (includeFebruary, forceReload) {
         var selectedMonths = [{ index: 11, year: 2016 }];
 

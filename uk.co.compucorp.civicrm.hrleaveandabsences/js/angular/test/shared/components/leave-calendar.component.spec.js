@@ -22,7 +22,7 @@
 
     describe('leaveCalendar', function () {
       var $componentController, $controller, $controllerProvider, $log, $q,
-        $rootScope, $timeout, controller, $provide, AbsencePeriod, OptionGroup,
+        $rootScope, controller, $provide, AbsencePeriod, OptionGroup,
         PublicHoliday, sharedSettings;
       var mockedCheckPermissions = mockCheckPermissionService();
       var currentContact = {
@@ -47,17 +47,16 @@
       ]));
 
       beforeEach(inject([
-        '$componentController', '$controller', '$log', '$q', '$rootScope', '$timeout',
+        '$componentController', '$controller', '$log', '$q', '$rootScope',
         'AbsencePeriod', 'OptionGroup', 'PublicHoliday', 'shared-settings', 'OptionGroupAPIMock',
         function (_$componentController_, _$controller_, _$log_, _$q_, _$rootScope_,
-          _$timeout_, _AbsencePeriod_, _OptionGroup_, _PublicHoliday_, _sharedSettings_,
+          _AbsencePeriod_, _OptionGroup_, _PublicHoliday_, _sharedSettings_,
           OptionGroupAPIMock) {
           $componentController = _$componentController_;
           $controller = _$controller_;
           $log = _$log_;
           $q = _$q_;
           $rootScope = _$rootScope_;
-          $timeout = _$timeout_;
           AbsencePeriod = _AbsencePeriod_;
           PublicHoliday = _PublicHoliday_;
           OptionGroup = _OptionGroup_;
@@ -247,7 +246,7 @@
             beforeEach(function () {
               compileComponent(true);
               controller.showFilters = true;
-              digest();
+              $rootScope.$digest();
             });
 
             it('fetches the filters option values', function () {
@@ -295,7 +294,7 @@
         describe('when some other months are selected', function () {
           beforeEach(function () {
             controller.selectedMonths = [1, 2, 3];
-            digest(true);
+            $rootScope.$digest();
           });
 
           it('sends the "show months" event with the newly selected months', function () {
@@ -312,7 +311,7 @@
         describe('when none of the months are selected', function () {
           beforeEach(function () {
             controller.selectedMonths = [];
-            digest(true);
+            $rootScope.$digest();
           });
 
           it('sends the "show months" event with the all the months', function () {
@@ -385,7 +384,7 @@
           describe('when the source of the refresh is a period change', function () {
             beforeEach(function () {
               controller.refresh('period');
-              digest(true);
+              $rootScope.$digest();
 
               simulateMonthsInjected(controller.months.length);
             });
@@ -410,7 +409,7 @@
           describe('when the source of the refresh is a contact filters change', function () {
             beforeEach(function () {
               controller.refresh('contacts');
-              digest(true);
+              $rootScope.$digest();
 
               simulateMonthsInjected(controller.months.length);
             });
@@ -434,6 +433,11 @@
         });
       });
 
+      /**
+       * Amends the property of the 2016 period (the current one)
+       *
+       * @param  {Object} params
+       */
       function amend2016Period (params) {
         AbsencePeriod.all.and.callFake(function () {
           var absencePeriods = _.clone(absencePeriodData.all().values);
@@ -445,14 +449,15 @@
 
       function compileComponent (skipDigest, bindings) {
         controller = $componentController('leaveCalendar', null, _.assign({ contactId: currentContact.id }, bindings));
-        !skipDigest && digest();
+        !skipDigest && $rootScope.$digest();
       }
 
-      function digest (skipFlush) {
-        $rootScope.$digest();
-        !skipFlush && $timeout.flush();
-      }
-
+      /**
+       * Spies on the `loadContracts()` method of the sub-controller that will
+       * be injected in the component (it will change depending on the current role)
+       *
+       * @return {Function}
+       */
       function spyOnSubCtrlLoadContacts () {
         var ctrlName = 'LeaveCalendar' + _.capitalize(currentContact.role) + 'Controller';
         var realSubCtrl = $controller(ctrlName).init(controller);
@@ -471,15 +476,27 @@
         return spy;
       }
 
+      /**
+       * Simulates that the given number of months sends the "injected"
+       * signal to the component
+       *
+       * @param {int} numberOfMonths
+       */
       function simulateMonthsInjected (numberOfMonths) {
         _.times(numberOfMonths, function () {
           $rootScope.$emit('LeaveCalendar::monthInjected');
         });
 
         $rootScope.$emit.calls.reset();
-        digest(true);
+        $rootScope.$digest();
       }
 
+      /**
+       * Mocks the `checkPermission` service, returning a different response
+       * based on the current role set in the tests
+       *
+       * @return {Promise} resolves to {Boolean}
+       */
       function mockCheckPermissionService () {
         return jasmine.createSpy().and.callFake(function (permissionToCheck) {
           if (permissionToCheck === sharedSettings.permissions.ssp.manage) {

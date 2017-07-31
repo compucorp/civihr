@@ -55,6 +55,10 @@
         });
       });
 
+      /**
+       * Mocks the `init` method of `ContactInstance` so that the
+       * we can spy on the `leaveManagees()` method
+       */
       function spyOnContactInstance () {
         realContactInstance = ContactInstance.init({ id: contactId });
 

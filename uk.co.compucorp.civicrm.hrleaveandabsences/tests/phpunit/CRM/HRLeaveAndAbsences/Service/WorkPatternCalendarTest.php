@@ -52,7 +52,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       'effective_date' => CRM_Utils_Date::processDate('2015-02-05'),
     ]);
 
-    //15 days date interval.
+    // 15 days date interval.
     $startDate = '2015-01-05';
     $endDate = '2015-01-19';
     $datePeriod = new BasicDatePeriod($startDate, $endDate);
@@ -434,7 +434,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     $endDate = '2016-03-09';
     $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
-    //A contract is fabricated for the period between 2016-03-03 and 2016-03-09
+    // A contract is fabricated for the period between 2016-03-03 and 2016-03-09
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
       $datePeriod,
@@ -472,7 +472,7 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
     $endDate = '2016-03-06';
     $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
-    //A contract is fabricated period between 2016-03-03 and 2016-03-06
+    // A contract is fabricated period between 2016-03-03 and 2016-03-06
     $calendar = new WorkPatternCalendarService(
       $this->contact['id'],
       $datePeriod,

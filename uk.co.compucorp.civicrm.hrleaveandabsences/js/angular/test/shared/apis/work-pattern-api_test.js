@@ -53,7 +53,7 @@ define([
 
     describe('getCalendar()', function () {
       var workPatternPromise;
-      var contactId = 1;
+      var contactId = '1';
       var startDate = '2017-01-01';
       var endDate = '2017-12-31';
       var additionalFilters = { foo: 'foo', bar: 'bar' };
@@ -105,7 +105,7 @@ define([
       });
 
       describe('when multiple contact ids are passed', function () {
-        var multipleContacts = [contactId, contactId + 1];
+        var multipleContacts = [contactId, (parseInt(contactId) + 1).toString()];
 
         beforeEach(function () {
           WorkPatternAPI.getCalendar(multipleContacts, jasmine.any(Number));
