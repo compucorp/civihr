@@ -27,13 +27,13 @@ define([
     var dataLoaded = false;
     var calendars = {};
     var leaveRequests = {};
-
     var vm = this;
+
     vm.currentPage = 0;
     vm.pageSize = 20;
     vm.visible = false;
-    vm.showContactName = vm.showContactName ? !!vm.showContactName : false;
-    vm.showOnlyWithLeaveRequests = vm.showOnlyWithLeaveRequests ? !!vm.showOnlyWithLeaveRequests : false;
+    vm.showContactName = !!vm.showContactName;
+    vm.showOnlyWithLeaveRequests = !!vm.showOnlyWithLeaveRequests;
 
     vm.$onDestroy = onDestroy;
     vm.contactsList = contactsList;
@@ -52,10 +52,9 @@ define([
     /**
      * Adds a leave request to the calendar
      *
-     * @param {Object} event
      * @param {LeaveRequestInstance} leaveRequest
      */
-    function addLeaveRequest (event, leaveRequest) {
+    function addLeaveRequest (__, leaveRequest) {
       indexLeaveRequests([leaveRequest]);
       updateLeaveRequestDaysContactData(leaveRequest);
     }
@@ -63,7 +62,7 @@ define([
     /**
      * Returns the structure of the month of the given date
      *
-     * @param  {Object} dateMoment
+     * @param  {Moment} dateMoment
      * @return {Object}
      */
     function buildMonthStructure (dateMoment) {
@@ -79,8 +78,8 @@ define([
     /**
      * Returns the structure of the days list of the month of the given date
      *
-     * @param  {object} dateMoment
-     * @return {object}
+     * @param  {Moment} dateMoment
+     * @return {Object}
      */
     function buildMonthDaysStructure (dateMoment) {
       var today = moment();
@@ -128,7 +127,7 @@ define([
      * Converts given date to moment object with server format
      *
      * @param {Date/String} date from server
-     * @return {Date} Moment date
+     * @return {Moment}
      */
     function dateObjectWithFormat (date) {
       return moment(date, sharedSettings.serverDateFormat);
@@ -139,7 +138,7 @@ define([
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
-    function deleteLeaveRequest (event, leaveRequest) {
+    function deleteLeaveRequest (__, leaveRequest) {
       removeLeaveRequestFromIndexedList(leaveRequest);
       updateLeaveRequestDaysContactData(leaveRequest);
     }
@@ -195,14 +194,14 @@ define([
      * Returns whether a date is of a specific type
      * half_day_am or half_day_pm
      *
-     * @param  {string} name
+     * @param  {string} typeName
      * @param  {object} leaveRequest
      * @param  {string} date
      *
      * @return {boolean}
      */
-    function isDayType (name, leaveRequest, date) {
-      var dayType = vm.supportData.dayTypes[name];
+    function isDayType (typeName, leaveRequest, date) {
+      var dayType = vm.supportData.dayTypes[typeName];
 
       if (moment(date).isSame(leaveRequest.from_date)) {
         return dayType.value === leaveRequest.from_date_type;
@@ -261,26 +260,27 @@ define([
     /**
      * Finds the given leave request in the internal indexed list
      *
-     * @param  {LeaveRequestInstance} leaveRequest]
+     * @param  {LeaveRequestInstance} leaveRequest
      * @return {LeaveRequestInstance}
      */
     function leaveRequestFromIndexedList (leaveRequest) {
-      return _.find(leaveRequests[leaveRequest.contact_id], function (leaveRequestOb) {
-        return leaveRequest.id === leaveRequestOb.id;
+      return _.find(leaveRequests[leaveRequest.contact_id], function (leaveRequestObj) {
+        return leaveRequest.id === leaveRequestObj.id;
       });
     }
 
     /**
      * Returns leave status value from name
+     *
      * @param {String} name - name of the leave status
-     * @returns {int/boolean}
+     * @returns {int/null}
      */
     function leaveRequestStatusValueFromName (name) {
       var leaveStatus = _.find(vm.supportData.leaveRequestStatuses, function (status) {
         return status.name === name;
       });
 
-      return leaveStatus ? leaveStatus.value : false;
+      return leaveStatus ? leaveStatus.value : null;
     }
 
     /**
@@ -378,13 +378,13 @@ define([
      *   related to the contact's leave request on the day (if any)
      */
     function setDayContactData (day, contactId, leaveRequestPropertiesOnly) {
-      var p, workPatternCalendar;
+      var promise, workPatternCalendar;
 
       day.contactsData[contactId] = day.contactsData[contactId] || {};
 
       workPatternCalendar = contactMonthWorkPatternCalendar(contactId);
 
-      p = (leaveRequestPropertiesOnly === true) ? $q.resolve() : $q.all([
+      promise = (leaveRequestPropertiesOnly === true) ? $q.resolve() : $q.all([
         workPatternCalendar.isWeekend(dateObjectWithFormat(day.date)),
         workPatternCalendar.isNonWorkingDay(dateObjectWithFormat(day.date))
       ])
@@ -396,7 +396,7 @@ define([
         });
       });
 
-      return p.then(function () {
+      return promise.then(function () {
         return leaveRequests[contactId] ? leaveRequests[contactId][day.date] : null;
       })
       .then(function (leaveRequest) {
@@ -427,11 +427,10 @@ define([
     /**
      * Show the month and its data if it's included in the given list
      *
-     * @param  {Object} event
      * @param  {Array} monthsToShow
      * @param  {Boolean} forceReload If true it forces the reload of the data
      */
-    function showMonthIfInList (event, monthsToShow, forceReload) {
+    function showMonthIfInList (__, monthsToShow, forceReload) {
       var isIncluded = !!_.find(monthsToShow, function (month) {
         return month.index === vm.month.index;
       });
@@ -450,11 +449,10 @@ define([
      * Returns the styles for a specific leaveRequest
      * which will be used in the view for each date
      *
-     * @param  {object} leaveRequest
-     * @param  {object} dateObj - Date UI object which handles look of a calendar cell
-     * @return {object}
+     * @param  {Object} leaveRequest
+     * @return {Object}
      */
-    function styles (leaveRequest, dateObj) {
+    function styles (leaveRequest) {
       var absenceType = _.find(vm.supportData.absenceTypes, function (absenceType) {
         return absenceType.id === leaveRequest.type_id;
       });
@@ -468,10 +466,9 @@ define([
      * Updates the given leave request in the calendar
      * For simplicity's sake, it directly deletes it and re-adds it
      *
-     * @param  {Object} event
      * @param  {LeaveRequestInstance} leaveRequest
      */
-    function updateLeaveRequest (event, leaveRequest) {
+    function updateLeaveRequest (__, leaveRequest) {
       var oldLeaveRequest = leaveRequestFromIndexedList(leaveRequest);
 
       deleteLeaveRequest(null, oldLeaveRequest);
