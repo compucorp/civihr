@@ -35,6 +35,7 @@ define([
     vm.showContactName = vm.showContactName ? !!vm.showContactName : false;
     vm.showOnlyWithLeaveRequests = vm.showOnlyWithLeaveRequests ? !!vm.showOnlyWithLeaveRequests : false;
 
+    vm.$onDestroy = onDestroy;
     vm.contactsList = contactsList;
 
     (function init () {
@@ -144,54 +145,6 @@ define([
     }
 
     /**
-     * Returns the list of day objects corresponding to the dates the
-     * given leave request spans
-     *
-     * @param  {LeaveRequestInstance} leaveRequest
-     * @return {Array}
-     */
-    function leaveRequestDays (leaveRequest) {
-      var days = [];
-      var pointerDate = moment(leaveRequest.from_date).clone();
-      var toDate = moment(leaveRequest.to_date);
-
-      while (pointerDate.isSameOrBefore(toDate)) {
-        days.push(_.find(vm.month.days, function (day) {
-          return day.date === pointerDate.format('YYYY-MM-DD');
-        }));
-
-        pointerDate.add(1, 'day');
-      }
-
-      return days;
-    }
-
-    /**
-     * Finds the given leave request in the internal indexed list
-     *
-     * @param  {LeaveRequestInstance} leaveRequest]
-     * @return {LeaveRequestInstance}
-     */
-    function leaveRequestFromIndexedList (leaveRequest) {
-      return _.find(leaveRequests[leaveRequest.contact_id], function (leaveRequestOb) {
-        return leaveRequest.id === leaveRequestOb.id;
-      });
-    }
-
-    /**
-     * Returns leave status value from name
-     * @param {String} name - name of the leave status
-     * @returns {int/boolean}
-     */
-    function leaveRequestStatusValueFromName (name) {
-      var leaveStatus = _.find(vm.supportData.leaveRequestStatuses, function (status) {
-        return status.name === name;
-      });
-
-      return leaveStatus ? leaveStatus.value : false;
-    }
-
-    /**
      * Indexes for easy access the data that the component needs
      */
     function indexData () {
@@ -283,6 +236,54 @@ define([
     }
 
     /**
+     * Returns the list of day objects corresponding to the dates the
+     * given leave request spans
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {Array}
+     */
+    function leaveRequestDays (leaveRequest) {
+      var days = [];
+      var pointerDate = moment(leaveRequest.from_date).clone();
+      var toDate = moment(leaveRequest.to_date);
+
+      while (pointerDate.isSameOrBefore(toDate)) {
+        days.push(_.find(vm.month.days, function (day) {
+          return day.date === pointerDate.format('YYYY-MM-DD');
+        }));
+
+        pointerDate.add(1, 'day');
+      }
+
+      return days;
+    }
+
+    /**
+     * Finds the given leave request in the internal indexed list
+     *
+     * @param  {LeaveRequestInstance} leaveRequest]
+     * @return {LeaveRequestInstance}
+     */
+    function leaveRequestFromIndexedList (leaveRequest) {
+      return _.find(leaveRequests[leaveRequest.contact_id], function (leaveRequestOb) {
+        return leaveRequest.id === leaveRequestOb.id;
+      });
+    }
+
+    /**
+     * Returns leave status value from name
+     * @param {String} name - name of the leave status
+     * @returns {int/boolean}
+     */
+    function leaveRequestStatusValueFromName (name) {
+      var leaveStatus = _.find(vm.supportData.leaveRequestStatuses, function (status) {
+        return status.name === name;
+      });
+
+      return leaveStatus ? leaveStatus.value : false;
+    }
+
+    /**
      * Loads the work pattern calendar and the leave request of the month,
      * then it process the data onto each day of the month
      *
@@ -359,6 +360,13 @@ define([
           return leaveRequestObj.id === leaveRequest.id;
         }
       );
+    }
+
+    /**
+     * Event handler for when the component is destroyed
+     */
+    function onDestroy () {
+      $rootScope.$emit('LeaveCalendar::monthDestroyed');
     }
 
     /**

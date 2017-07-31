@@ -663,6 +663,21 @@
         });
       });
 
+      describe('on destroy', function () {
+        var $rootScope;
+
+        beforeEach(inject(function (_$rootScope_) {
+          $rootScope = _$rootScope_;
+          spyOn($rootScope, '$emit');
+
+          controller.$onDestroy();
+        }));
+
+        it('sends an event', function () {
+          expect($rootScope.$emit).toHaveBeenCalledWith('LeaveCalendar::monthDestroyed');
+        });
+      });
+
       function compileComponent (sendSignal) {
         controller = $componentController('leaveCalendarMonth', null, {
           contacts: ContactData.all.values,
