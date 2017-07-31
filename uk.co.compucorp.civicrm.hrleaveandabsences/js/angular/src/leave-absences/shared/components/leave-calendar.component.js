@@ -110,7 +110,7 @@ define([
      * Injects the leave-calendar-month components
      * and sends the "show months" signal
      *
-     * @param  {Boolean} forceDataReload whether the months need to force data reload
+     * @param {Boolean} forceDataReload whether the months need to force data reload
      */
     function injectAndShowMonths (forceDataReload) {
       vm.injectMonths = false;
@@ -121,8 +121,10 @@ define([
         vm.loading.calendar = false;
       });
 
-      // make sure the leave-calendar-month components are removed
-      // before injecting them again
+      /*
+       * Makes sure the leave-calendar-month components are removed
+       * before injecting them again
+       */
       waitForNextDigest().then(function () {
         vm.injectMonths = true;
       });
@@ -168,9 +170,7 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({
-        is_active: true
-      });
+      return AbsenceType.all({ is_active: true });
     }
 
     /**
@@ -247,7 +247,7 @@ define([
     /**
      * Returns the structure of the month of the given date
      *
-     * @param  {Object} dateMoment
+     * @param  {Moment} dateMoment
      * @return {Object}
      */
     function monthStructure (dateMoment) {
@@ -272,8 +272,8 @@ define([
       source = _.includes(['contacts', 'period'], source) ? source : 'period';
 
       $q.resolve()
-        .then((source === 'period' ? buildPeriodMonthsList : _.noop))
-        .then((source === 'contacts' ? loadContacts : _.noop))
+        .then(source === 'period' ? buildPeriodMonthsList : _.noop)
+        .then(source === 'contacts' ? loadContacts : _.noop)
         .then(function () {
           injectAndShowMonths((source === 'contacts'));
         });
@@ -296,7 +296,7 @@ define([
     }
 
     /**
-     * Chooses the months that are to be selected by default
+     * Sets the months that are to be selected by default
      */
     function setDefaultMonths () {
       vm.selectedMonths = [moment().month()];
@@ -307,7 +307,7 @@ define([
      */
     function setUserRole () {
       if (vm.roleOverride) {
-        return $q.resolve().then(function () {
+        return $q.fcall(function () {
           userRole = vm.roleOverride;
         });
       } else {
