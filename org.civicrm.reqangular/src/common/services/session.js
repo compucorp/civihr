@@ -1,5 +1,5 @@
 /* eslint-env amd */
-/* global Drupal */
+/* global CRM */
 
 (function (CRM, Drupal) {
   define([
@@ -42,4 +42,4 @@
       };
     }]);
   });
-})(CRM, Drupal);
+})(CRM, window.Drupal);
