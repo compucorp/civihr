@@ -4,8 +4,8 @@
 define([
   'common/angular',
   'mocks/data/leave-request-data',
-  'leave-absences/manager-leave/app',
-  'common/mocks/services/session-mock'
+  'common/mocks/services/session-mock',
+  'leave-absences/manager-leave/app'
 ], function (angular, leaveRequestData) {
   'use strict';
 
@@ -24,7 +24,7 @@ define([
 
     beforeEach(inject(function (_SessionMock_) {
       SessionMock = _SessionMock_;
-      SessionMock.sessionObject.contact_id = staffId;
+      SessionMock.sessionObject.contactId = staffId;
       $provide.value('Session', SessionMock);
     }));
 
@@ -62,13 +62,9 @@ define([
         });
       });
 
-      describe('loading current logged in user', function () {
-        it('sets loggedInContactId equal to the session contact_id', function () {
-          expect(controller.loggedInContactId).toBe(staffId);
-        });
-
-        it('stops loading.loggedInContactId', function () {
-          expect(controller.loading.loggedInContactId).toBe(false);
+      describe('when loading `currently logged in user` is done', function () {
+        it('stops loading the component', function () {
+          expect(controller.loading.component).toBe(false);
         });
       });
     });
@@ -105,9 +101,13 @@ define([
         var managerComment = 'another text';
 
         beforeEach(function () {
+          SessionMock.sessionObject.contactId = managerId;
+          leaveRequest = LeaveRequestInstance.init(leaveRequestData.singleDataSuccess());
+          compileComponent(true, leaveRequest);
+
           controller.canManage = true;
           controller.request.comments = [];
-          controller.loggedInContactId = managerId;
+          controller.request.id = requestId;
           controller.comment.text = managerComment;
           controller.addComment();
         });

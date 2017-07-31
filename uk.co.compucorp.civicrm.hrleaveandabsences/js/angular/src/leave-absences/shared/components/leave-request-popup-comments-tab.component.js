@@ -23,16 +23,14 @@ define([
   function controller ($log, $rootScope, HRSettings, sharedSettings, Contact, Session) {
     $log.debug('Component: leave-request-popup-comments-tab');
 
-    var vm = Object.create(this);
+    var loggedInContactId = null;
+    var vm = this;
 
+    vm.loading = { component: true };
     vm.comment = {
       text: '',
       contacts: {}
     };
-    vm.loading = {
-      loggedInContactId: false
-    };
-    vm.loggedInContactId = null;
 
     (function init () {
       loadCommentsAndContactNames();
@@ -44,7 +42,7 @@ define([
      */
     vm.addComment = function () {
       vm.request.comments.push({
-        contact_id: vm.loggedInContactId,
+        contact_id: loggedInContactId,
         created_at: moment(new Date()).format(sharedSettings.serverDateTimeFormat),
         leave_request_id: vm.request.id,
         text: vm.comment.text
@@ -79,7 +77,7 @@ define([
      * @return {String}
      */
     vm.getCommentorName = function (contactId) {
-      if (contactId === vm.loggedInContactId) {
+      if (contactId === loggedInContactId) {
         return 'Me';
       } else if (vm.comment.contacts[contactId]) {
         return vm.comment.contacts[contactId].display_name;
@@ -122,14 +120,8 @@ define([
      * @return {Promise}
      */
     function loadContactNames () {
-      var contactIDs = [];
-
-      _.each(vm.request.comments, function (comment) {
-        // Push only unique contactId's which are not same as logged in user
-        if (comment.contact_id !== vm.request.contact_id && contactIDs.indexOf(comment.contact_id) === -1) {
-          contactIDs.push(comment.contact_id);
-        }
-      });
+      var contactsIndex = _.indexBy(vm.request.comments, 'contact_id');
+      var contactIDs = Object.keys(contactsIndex);
 
       return Contact.all({
         id: { IN: contactIDs }
@@ -154,21 +146,19 @@ define([
     }
 
     /**
-     * Loads the contact id of the current logged in user.
+     * Loads the contact id of the currently logged in user.
      *
      * @return {Promise}
      */
     function loadLoggedInContactId () {
-      vm.loading.loggedInContactId = true;
+      vm.loading.component = true;
 
       return Session.get().then(function (value) {
-        vm.loggedInContactId = value.contact_id;
+        loggedInContactId = value.contactId;
       })
-      .finally(function () {
-        vm.loading.loggedInContactId = false;
+      .then(function () {
+        vm.loading.component = false;
       });
     }
-
-    return vm;
   }
 });

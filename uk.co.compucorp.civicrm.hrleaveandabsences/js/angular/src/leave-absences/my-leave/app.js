@@ -17,7 +17,7 @@ define([
   'leave-absences/shared/components/staff-leave-report',
   'leave-absences/shared/components/staff-leave-calendar',
   'leave-absences/shared/components/leave-request-actions.component',
-  'leave-absences/shared/components/leave-request-popup-comments-tab',
+  'leave-absences/shared/components/leave-request-popup-comments-tab.component',
   'leave-absences/shared/components/leave-request-popup-files-tab',
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/directives/leave-request-popup',

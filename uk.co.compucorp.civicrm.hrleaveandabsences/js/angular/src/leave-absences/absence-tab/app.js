@@ -16,7 +16,7 @@ define([
   'leave-absences/absence-tab/components/absence-tab-work-patterns',
   'leave-absences/absence-tab/components/contract-entitlements',
   'leave-absences/absence-tab/components/annual-entitlements',
-  'leave-absences/shared/components/leave-request-popup-comments-tab',
+  'leave-absences/shared/components/leave-request-popup-comments-tab.component',
   'leave-absences/shared/components/leave-request-popup-files-tab',
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/components/staff-leave-report',
