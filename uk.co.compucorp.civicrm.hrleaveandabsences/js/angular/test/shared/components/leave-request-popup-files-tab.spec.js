@@ -8,17 +8,16 @@ define([
   'use strict';
 
   describe('leaveRequestPopupFilesTab', function () {
-    var leaveRequest, $componentController, $log, $q, $rootScope, controller, OptionGroup, OptionGroupAPIMock,
+    var leaveRequest, $componentController, $log, $rootScope, controller, OptionGroup, OptionGroupAPIMock,
       LeaveRequestInstance;
 
     beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'manager-leave'));
 
     beforeEach(inject(function (
-      _$componentController_, _$q_, _$log_, _$rootScope_, _LeaveRequestInstance_,
+      _$componentController_, _$log_, _$rootScope_, _LeaveRequestInstance_,
       _OptionGroup_, _OptionGroupAPIMock_) {
       $componentController = _$componentController_;
       $log = _$log_;
-      $q = _$q_;
       $rootScope = _$rootScope_;
       LeaveRequestInstance = _LeaveRequestInstance_;
       OptionGroupAPIMock = _OptionGroupAPIMock_;
@@ -67,34 +66,6 @@ define([
         controller.fileUploader.queue = [1, 2, 3];
         controller.fileUploader.uploadAll = jasmine.createSpy('uploadAll');
         spyOn($rootScope, '$broadcast').and.callThrough();
-      });
-
-      describe('when upload is successful', function () {
-        beforeEach(function () {
-          controller.fileUploader.uploadAll.and.returnValue($q.resolve());
-          $rootScope.$broadcast('LeaveRequestModal::childProcess::start');
-          $rootScope.$digest();
-        });
-
-        it('uploads all files', function () {
-          expect(controller.fileUploader.uploadAll).toHaveBeenCalledWith({ entityID: controller.request.id });
-        });
-
-        it('broadcasts success event', function () {
-          expect($rootScope.$broadcast).toHaveBeenCalledWith('LeaveRequestModal::childProcess::success');
-        });
-      });
-
-      describe('when upload is not successful', function () {
-        beforeEach(function () {
-          controller.fileUploader.uploadAll.and.returnValue($q.reject());
-          $rootScope.$broadcast('LeaveRequestModal::childProcess::start');
-          $rootScope.$digest();
-        });
-
-        it('broadcasts error event', function () {
-          expect($rootScope.$broadcast).toHaveBeenCalledWith('LeaveRequestModal::childProcess::error', 'File Upload Error');
-        });
       });
     });
 

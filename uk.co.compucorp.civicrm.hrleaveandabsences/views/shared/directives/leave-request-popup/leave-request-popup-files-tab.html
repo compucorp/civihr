@@ -97,7 +97,7 @@
       </div>
     </div>
     <div class="chr_leave-request-files_upload_action row text-warning" ng-if="filesTab.canUploadMore()">
-      You can upload up to 10 files. The supported file extensions are {{ filesTab.supportedFileTypes.join(', ') }}.
+      You can upload up to 10 files. The supported file extensions are {{ filesTab.listFileTypes() }}.
     </div>
     <div class="chr_leave-request-files_upload_action row text-warning text-center" ng-if="!(filesTab.canUploadMore())">
       You have reached the limit of 10 uploaded files.

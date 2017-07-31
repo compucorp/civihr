@@ -1,7 +1,6 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'common/angular',
   'common/angularMocks',
   'common/services/file-mime-types'
 ], function () {

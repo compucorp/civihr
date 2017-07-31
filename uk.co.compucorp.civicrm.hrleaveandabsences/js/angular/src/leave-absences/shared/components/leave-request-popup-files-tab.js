@@ -25,14 +25,17 @@ define([
   function controller ($log, $rootScope, $q, HRSettings, sharedSettings, OptionGroup, FileUpload, fileMimeTypes) {
     $log.debug('Component: leave-request-popup-files-tab');
 
-    var allowedMimeTypes;
+    var fileExtensions = [];
     var listeners = [];
+    var mimeTypes = {};
     var vm = Object.create(this);
     vm.filesLoaded = false;
-    vm.supportedFileTypes = '';
     vm.today = Date.now();
     vm.userDateFormatWithTime = HRSettings.DATE_FORMAT + ' HH:mm';
     vm.userDateFormat = HRSettings.DATE_FORMAT;
+
+    vm.listFileTypes = listFileTypes;
+    vm.$onDestroy = unsubscribeFromEvents;
 
     /**
      * Checks if user can upload more file, it totals the number of already
@@ -89,19 +92,15 @@ define([
       return !attachment.attachment_id || vm.canManage;
     };
 
-    vm.$onDestroy = unsubscribeFromEvents;
-
     (function init () {
-      $rootScope.$broadcast('LeaveRequestModal::childProcess::register');
+      $rootScope.$broadcast('LeaveRequestPopup::childComponent::register');
       initListeners();
 
       $q.all([
-        loadSupportedFileTypes(),
-        vm.request.loadAttachments()
+        loadSupportedFileExtensions(),
+        loadAttachments()
       ])
-      .then(function () {
-        $rootScope.$broadcast('LeaveRequestModal::requestObjectUpdated');
-      })
+      .then(initFileUploader)
       .finally(function () {
         vm.filesLoaded = true;
       });
@@ -125,27 +124,72 @@ define([
      */
     function fileUploaderQueue () {
       return (vm.fileUploader && vm.fileUploader.queue)
-        ? vm.fileUploader.queue : [];
+        ? vm.fileUploader.queue
+        : [];
     }
 
     /**
      * Initializes all the listeners
      */
     function initListeners () {
-      listeners.push($rootScope.$on('LeaveRequestModal::childProcess::start', uploadAttachments));
+      listeners.push(
+        $rootScope.$on('LeaveRequestPopup::submit', uploadAttachments)
+      );
     }
 
     /**
      * Initializes the file uploader object
      */
     function initFileUploader () {
-      // if the API calls throws an error or fails, "allowedMimeTypes" will be undefined
-      // hence the default file extension will be set to the uploader in file-upload.js
-      vm.fileUploader = FileUpload.uploader({
-        entityTable: 'civicrm_hrleaveandabsences_leave_request',
-        crmAttachmentToken: sharedSettings.attachmentToken,
-        queueLimit: sharedSettings.fileUploader.queueLimit,
-        allowedMimeTypes: allowedMimeTypes
+      loadMimeTypesOfSupportedFileExtensions()
+        .then(function () {
+          vm.fileUploader = FileUpload.uploader({
+            entityTable: 'civicrm_hrleaveandabsences_leave_request',
+            crmAttachmentToken: sharedSettings.attachmentToken,
+            queueLimit: sharedSettings.fileUploader.queueLimit,
+            allowedMimeTypes: mimeTypes
+          });
+        });
+    }
+
+    /**
+     * Returns a string of allowed files extensions for upload
+     * @returns {string}
+     */
+    function listFileTypes () {
+      return fileExtensions.length > 0
+        ? fileExtensions.map(function (ext) {
+          return ext.label;
+        }).join(', ')
+        : '';
+    }
+
+    /**
+     * Loads the attachments, and broadcasts an event when they are loaded
+     */
+    function loadAttachments () {
+      return vm.request.loadAttachments()
+        .then(function () {
+          $rootScope.$broadcast('LeaveRequestPopup::requestObjectUpdated');
+        });
+    }
+
+    /**
+     * Loads the mime types for supported file extensions
+     *
+     * @returns {Promise}
+     */
+    function loadMimeTypesOfSupportedFileExtensions () {
+      return $q.all(fileExtensions.map(function (fileExtension) {
+        return fileMimeTypes.getMimeTypeFor(fileExtension.label)
+          .then(function (mimeType) {
+            mimeTypes[fileExtension.label] = mimeType;
+          });
+      }))
+      .catch(function () {
+        // if the API calls throws an error or fails, "allowedMimeTypes" will be undefined
+        // hence the default file extension will be set to the uploader in file-upload.js
+        mimeTypes = null;
       });
     }
 
@@ -154,27 +198,11 @@ define([
      *
      * @return {Promise}
      */
-    function loadSupportedFileTypes () {
+    function loadSupportedFileExtensions () {
       return OptionGroup.valuesOf('safe_file_extension')
-        .then(function (fileExtensions) {
-          var fileExtensionPromise = [];
-
-          vm.supportedFileTypes = fileExtensions.map(function (ext) {
-            return ext.label;
-          });
-
-          // set mime types
-          allowedMimeTypes = {};
-          _.forEach(fileExtensions, function (ext) {
-            fileExtensionPromise.push(fileMimeTypes.getMimeTypeFor(ext.label)
-            .then(function (mimeType) {
-              allowedMimeTypes[ext.label] = mimeType;
-            }));
-          });
-
-          return fileExtensionPromise;
-        })
-        .finally(initFileUploader);
+        .then(function (fileExtensionsData) {
+          fileExtensions = fileExtensionsData;
+        });
     }
 
     /**
@@ -188,19 +216,17 @@ define([
     }
 
     /**
-     * Upload attachment in file uploder's queue, fires an event when done
+     * * Upload attachment in file uploder's queue
+     * @param {Object} e - event object
+     * @param {Function} callBack - call back function
      */
-    function uploadAttachments () {
+    function uploadAttachments (e, callBack) {
       if (vm.fileUploader.queue && vm.fileUploader.queue.length > 0) {
         vm.fileUploader.uploadAll({ entityID: vm.request.id })
-        .then(function () {
-          $rootScope.$broadcast('LeaveRequestModal::childProcess::success');
-        })
-        .catch(function () {
-          $rootScope.$broadcast('LeaveRequestModal::childProcess::error', 'File Upload Error');
-        });
+          .then(function () { callBack(); })
+          .catch(callBack);
       } else {
-        $rootScope.$broadcast('LeaveRequestModal::childProcess::success');
+        callBack();
       }
     }
 

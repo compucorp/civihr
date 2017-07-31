@@ -29,8 +29,7 @@ define([
 
       var absenceTypesAndIds;
       var availableStatusesMatrix = {};
-      var childProcessCount = 0;
-      var childResponsesReceived = 0;
+      var childComponentsCount = 0;
       var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
       var listeners = [];
       var role = '';
@@ -704,31 +703,13 @@ define([
       }
 
       /**
-       * Checks if all the child processes are done, if yes it resolves/rejects the promise
-       *
-       * @param {Array} errorResponses
-       * @param {Object} deferred
-       */
-      function checkIfAllChildProcessAreDone (errorResponses, deferred) {
-        childResponsesReceived++;
-        if (childResponsesReceived === childProcessCount) {
-          unsubscribeFromEvents();
-          if (errorResponses.length > 0) {
-            deferred.reject(errorResponses);
-          } else {
-            deferred.resolve('Child Processes Done');
-          }
-        }
-      }
-
-      /**
        * Validates and creates the leave request
        *
        * @returns {Promise}
        */
       function createRequest () {
         return this.request.create()
-          .then(initChildProcess)
+          .then(triggerChildComponentsSubmitAndWaitForResponse)
           .then(function () {
             postSubmit.call(this, 'LeaveRequest::new');
           }.bind(this));
@@ -939,22 +920,25 @@ define([
        *
        * @returns {Promise}
        */
-      function initChildProcess () {
+      function triggerChildComponentsSubmitAndWaitForResponse () {
         var deferred = $q.defer();
-        var errorResponses = [];
+        var errors = [];
+        var responses = 0;
 
-        if (childProcessCount > 0) {
-          listeners.push($rootScope.$on('LeaveRequestModal::childProcess::success', function () {
-            checkIfAllChildProcessAreDone(errorResponses, deferred);
-          }));
-          listeners.push($rootScope.$on('LeaveRequestModal::childProcess::error', function (e, data) {
-            errorResponses.push(data);
-            checkIfAllChildProcessAreDone(errorResponses, deferred);
-          }));
-
-          $rootScope.$broadcast('LeaveRequestModal::childProcess::start');
+        if (childComponentsCount > 0) {
+          $rootScope.$broadcast('LeaveRequestPopup::submit', doneCallback);
         } else {
           deferred.resolve();
+        }
+
+        function doneCallback (error) {
+          error && errors.push(error);
+
+          if (++responses === childComponentsCount) {
+            unsubscribeFromEvents();
+
+            errors.length > 0 ? deferred.reject(errors) : deferred.resolve();
+          }
         }
 
         return deferred.promise;
@@ -986,8 +970,10 @@ define([
       }
 
       function initListeners () {
-        listeners.push($rootScope.$on('LeaveRequestModal::requestObjectUpdated', setInitialAttributes.bind(this)));
-        listeners.push($rootScope.$on('LeaveRequestModal::childProcess::register', function () { childProcessCount++; }));
+        listeners.push(
+          $rootScope.$on('LeaveRequestPopup::requestObjectUpdated', setInitialAttributes.bind(this)),
+          $rootScope.$on('LeaveRequestPopup::childComponent::register', function () { childComponentsCount++; })
+        );
       }
 
       /**
@@ -1234,7 +1220,7 @@ define([
        */
       function updateRequest () {
         return this.request.update()
-          .then(initChildProcess)
+          .then(triggerChildComponentsSubmitAndWaitForResponse)
           .then(function () {
             if (this.isRole('manager')) {
               postSubmit.call(this, 'LeaveRequest::updatedByManager');

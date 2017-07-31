@@ -28,6 +28,7 @@ define([
       /**
        * Returns mime type for given file extension
        * @param {String} fileExtension
+       *
        * @return {Promise}
        */
       getMimeTypeFor: function (fileExtension) {
