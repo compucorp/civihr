@@ -113,19 +113,16 @@ define([
      * @param {Boolean} forceDataReload whether the months need to force data reload
      */
     function injectAndShowMonths (forceDataReload) {
-      vm.injectMonths = false;
       vm.loading.calendar = true;
 
-      waitUntilMonthsAreInjected().then(function () {
+      waitUntilMonthsAre('injected').then(function () {
         sendShowMonthsSignal(forceDataReload);
+      })
+      .then(function () {
         vm.loading.calendar = false;
       });
 
-      /*
-       * Makes sure the leave-calendar-month components are removed
-       * before injecting them again
-       */
-      waitForNextDigest().then(function () {
+      makeSureMonthsAreNotInjected().then(function () {
         vm.injectMonths = true;
       });
     }
@@ -245,6 +242,23 @@ define([
     }
 
     /**
+     * If the months are already injected, it removes then and then wait
+     * for their components to confirme that they are destroyed
+     *
+     * @return {Promise}
+     */
+    function makeSureMonthsAreNotInjected () {
+      var promise = $q.resolve();
+
+      if (vm.injectMonths) {
+        promise = waitUntilMonthsAre('destroyed');
+        vm.injectMonths = false;
+      }
+
+      return promise;
+    }
+
+    /**
      * Returns the structure of the month of the given date
      *
      * @param  {Moment} dateMoment
@@ -307,7 +321,7 @@ define([
      */
     function setUserRole () {
       if (vm.roleOverride) {
-        return $q.fcall(function () {
+        return $q.resolve().then(function () {
           userRole = vm.roleOverride;
         });
       } else {
@@ -322,24 +336,14 @@ define([
     }
 
     /**
-     * Waits for the next digest cycle to make sure that all the data
-     * from the component had been transmitted to the child components
-     */
-    function waitForNextDigest () {
-      return $q(function (resolve) {
-        $timeout(resolve, 0);
-      });
-    }
-
-    /**
-     * Waits until all leave-calendar-month components are injected
+     * Waits until all leave-calendar-month components are <some status>
      *
      * @return {Promise}
      */
-    function waitUntilMonthsAreInjected () {
+    function waitUntilMonthsAre (status) {
       return $q(function (resolve) {
         var monthLoadedCounter = 0;
-        var removeListener = $rootScope.$on('LeaveCalendar::monthInjected', function () {
+        var removeListener = $rootScope.$on('LeaveCalendar::month' + _.capitalize(status), function () {
           if (++monthLoadedCounter === vm.months.length) {
             removeListener();
             resolve();
