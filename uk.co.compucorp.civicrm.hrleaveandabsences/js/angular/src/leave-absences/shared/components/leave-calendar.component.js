@@ -82,10 +82,10 @@ define([
      */
     function buildPeriodMonthsList () {
       var months = [];
-      var pointerDate = moment(vm.selectedPeriod.start_date).clone();
-      var endDate = moment(vm.selectedPeriod.end_date);
+      var pointerDate = moment(vm.selectedPeriod.start_date).clone().startOf('month');
+      var limitDate = moment(vm.selectedPeriod.end_date).clone().endOf('month');
 
-      while (pointerDate.isBefore(endDate)) {
+      while (pointerDate.isBefore(limitDate)) {
         months.push(monthStructure(pointerDate));
         pointerDate.add(1, 'month');
       }
