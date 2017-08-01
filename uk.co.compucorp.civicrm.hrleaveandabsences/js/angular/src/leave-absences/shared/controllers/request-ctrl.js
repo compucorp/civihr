@@ -26,9 +26,12 @@ define([
       LeaveRequest, PublicHoliday, sharedSettings
     ) {
       $log.debug('RequestCtrl');
+
       var absenceTypesAndIds;
       var availableStatusesMatrix = {};
+      var childComponentsCount = 0;
       var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
+      var listeners = [];
       var role = '';
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
@@ -38,6 +41,8 @@ define([
       this.canManage = false; // this flag is set on initialisation of the controller
       this.contactName = null;
       this.errors = [];
+      this.fileUploader = null;
+      this.isSelfRecord = false; // this flag is set on initialisation of the controller
       this.managedContacts = [];
       this.mode = ''; // can be edit, create, view
       this.newStatusOnSave = null;
@@ -48,8 +53,6 @@ define([
       this.selectedAbsenceType = {};
       this.statusNames = sharedSettings.statusNames;
       this.submitting = false;
-      this.supportedFileTypes = '';
-      this.today = Date.now();
       this.balance = {
         closing: 0,
         opening: 0,
@@ -87,7 +90,6 @@ define([
         isChangeExpanded: false,
         multipleDays: true,
         userDateFormat: HRSettings.DATE_FORMAT,
-        userDateFormatWithTime: HRSettings.DATE_FORMAT + ' HH:mm',
         showBalance: false,
         date: {
           from: {
@@ -141,7 +143,6 @@ define([
           return $q.resolve();
         }
 
-        self.errors = [];
         self.loading.showBalanceChange = true;
         return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange.call(self))
           .then(function (balanceChange) {
@@ -181,16 +182,6 @@ define([
       };
 
       /**
-       * Checks if user can upload more file, it totals the number of already
-       * uploaded files and those which are in queue and compares it to limit.
-       *
-       * @return {Boolean} true is user can upload more else false
-       */
-      this.canUploadMore = function () {
-        return this.getFilesCount() < sharedSettings.fileUploader.queueLimit;
-      };
-
-      /**
       * Closes the error alerts if any
       */
       this.closeAlert = function () {
@@ -227,19 +218,6 @@ define([
       };
 
       /**
-       * Calculates the total number of files associated with request.
-       *
-       * @return {Number} of files
-       */
-      this.getFilesCount = function () {
-        var filesWithSoftDelete = _.filter(this.request.files, function (file) {
-          return file.toBeDeleted;
-        });
-
-        return this.request.files.length + this.request.fileUploader.queue.length - filesWithSoftDelete.length;
-      };
-
-      /**
        * Format a date-time into user format and returns
        *
        * @return {String}
@@ -254,7 +232,6 @@ define([
        *
        * @return {Array}
        */
-
       this.getStatuses = function () {
         if (!this.request || angular.equals({}, this.requestStatuses)) {
           return [];
@@ -309,8 +286,7 @@ define([
             initContact.call(self);
 
             if (self.isMode('edit')) {
-              initialLeaveRequestAttributes = angular.copy(self.request.attributes());
-
+              setInitialAttributes.call(self);
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
               }
@@ -379,16 +355,6 @@ define([
       };
 
       /**
-       * Decides visiblity of remove attachment button
-       * @param {Object} attachment - attachment object
-       *
-       * @return {Boolean}
-       */
-      this.removeAttachmentVisibility = function (attachment) {
-        return !attachment.attachment_id || this.canManage;
-      };
-
-      /**
        * Submits the form, only if the leave request is valid, also emits event
        * to notify event subscribers about the the save.
        * Updates request based on role and mode
@@ -418,6 +384,54 @@ define([
       };
 
       /**
+       * Loads absence types and calendar data on component initialization and
+       * when they need to be updated.
+       *
+       * @param {Date} date - the selected date
+       * @param {String} dayType - set to from if from date is selected else to
+       * @return {Promise}
+       */
+      this.loadAbsencePeriodDatesTypes = function (date, dayType) {
+        var oldPeriodId = this.period.id;
+        dayType = dayType || 'from';
+        this.loading[dayType + 'DayTypes'] = true;
+
+        return this._checkAndSetAbsencePeriod(date)
+          .then(function () {
+            var isInCurrentPeriod = oldPeriodId === this.period.id;
+
+            if (!isInCurrentPeriod) {
+              // partial reset is required when user has selected a to date and
+              // then changes absence period from from date
+              // no reset required for single days and to date changes
+              if (this.uiOptions.multipleDays && dayType === 'from') {
+                this.uiOptions.showBalance = false;
+                this.uiOptions.toDate = null;
+                this.request.to_date = null;
+                this.request.to_date_type = null;
+              }
+
+              return $q.all([
+                this._loadAbsenceTypes(),
+                this._loadCalendar()
+              ]);
+            }
+          }.bind(this))
+          .then(function () {
+            this._setMinMaxDate();
+
+            return filterLeaveRequestDayTypes.call(this, date, dayType);
+          }.bind(this))
+          .finally(function () {
+            /**
+             * after the request is completed fromDayTypes or toDayTypes are
+             * set to false and the corresponding field is shown on the ui.
+             */
+            this.loading[dayType + 'DayTypes'] = false;
+          }.bind(this));
+      };
+
+      /**
        * This should be called whenever a date has been changed
        * First it syncs `from` and `to` date, if it's in 'single day' mode
        * Then, if all the dates are there, it gets the balance change
@@ -427,48 +441,14 @@ define([
        * @return {Promise}
        */
       this.updateAbsencePeriodDatesTypes = function (date, dayType) {
-        var self = this;
-        var oldPeriodId = self.period.id;
-        dayType = dayType || 'from';
-        self.loading[dayType + 'DayTypes'] = true;
-
-        return self._checkAndSetAbsencePeriod(date)
-          .then(function () {
-            var isInCurrentPeriod = oldPeriodId === self.period.id;
-
-            if (!isInCurrentPeriod) {
-              // partial reset is required when user has selected a to date and
-              // then changes absence period from from date
-              // no reset required for single days and to date changes
-              if (self.uiOptions.multipleDays && dayType === 'from') {
-                self.uiOptions.showBalance = false;
-                self.uiOptions.toDate = null;
-                self.request.to_date = null;
-                self.request.to_date_type = null;
-              }
-
-              return $q.all([
-                self._loadAbsenceTypes(),
-                self._loadCalendar()
-              ]);
-            }
-          })
-          .then(function () {
-            self._setMinMaxDate();
-
-            return filterLeaveRequestDayTypes.call(self, date, dayType);
-          })
-          .then(function () {
-            return self.updateBalance();
-          })
-          .catch(function (error) {
-            self.errors = [error];
-
-            self._setDateAndTypes();
-          })
-          .finally(function () {
-            self.loading[dayType + 'DayTypes'] = false;
-          });
+        return this.loadAbsencePeriodDatesTypes(date, dayType)
+        .then(function () {
+          return this.updateBalance();
+        }.bind(this))
+        .catch(function (errors) {
+          handleError.call(this, errors);
+          this._setDateAndTypes();
+        }.bind(this));
       };
 
       /**
@@ -542,8 +522,8 @@ define([
        * @return {Promise}
        */
       this._init = function () {
-        this.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
         initAvailableStatusesMatrix.call(this);
+        initListeners.call(this);
 
         return initRoles.call(this)
           .then(function () {
@@ -563,8 +543,6 @@ define([
           .then(function () {
             initAbsencePeriod.call(this);
             this._setMinMaxDate();
-
-            return this.request.loadAttachments();
           }.bind(this))
           .then(function () {
             if (this.directiveOptions.selectedContactId) {
@@ -713,11 +691,11 @@ define([
 
       /**
        * Changes status of the leave request before saving it
-       * For staff the status_id should be always set to awaitingApproval before saving
-       * If manager has changed the status through dropdown, assign the same before calling API
+       * When recording for yourself the status_id should be always set to awaitingApproval before saving
+       * If manager or admin have changed the status through dropdown, assign the same before calling API
        */
       function changeStatusBeforeSave () {
-        if (this.isRole('staff')) {
+        if (this.isSelfRecord) {
           this.request.status_id = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
         } else if (this.canManage) {
           this.request.status_id = this.newStatusOnSave || this.request.status_id;
@@ -731,6 +709,7 @@ define([
        */
       function createRequest () {
         return this.request.create()
+          .then(triggerChildComponentsSubmitAndWaitForResponse)
           .then(function () {
             postSubmit.call(this, 'LeaveRequest::new');
           }.bind(this));
@@ -869,17 +848,14 @@ define([
       /**
        * Checks if a leave request has been changed since opening the modal
        *
-       * FileUploader property deleted because it will not be used
-       * in object comparison
-       *
        * @return {Boolean}
        */
       function hasRequestChanged () {
         // using angular.equals to automatically ignore the $$hashkey property
         return !angular.equals(
-          _.omit(initialLeaveRequestAttributes, 'fileUploader'),
-          _.omit(this.request.attributes(), 'fileUploader')
-        ) || this.request.fileUploader.queue.length !== 0 ||
+          initialLeaveRequestAttributes,
+          this.request.attributes()
+        ) || (this.fileUploader && this.fileUploader.queue.length !== 0) ||
           (this.canManage && this.newStatusOnSave);
       }
 
@@ -939,6 +915,36 @@ define([
       }
 
       /**
+       * Fire an event to start child processes which needs to be done after leave request is saved.
+       * Waits for the response before resolving the promise
+       *
+       * @returns {Promise}
+       */
+      function triggerChildComponentsSubmitAndWaitForResponse () {
+        var deferred = $q.defer();
+        var errors = [];
+        var responses = 0;
+
+        if (childComponentsCount > 0) {
+          $rootScope.$broadcast('LeaveRequestPopup::submit', doneCallback);
+        } else {
+          deferred.resolve();
+        }
+
+        function doneCallback (error) {
+          error && errors.push(error);
+
+          if (++responses === childComponentsCount) {
+            unsubscribeFromEvents();
+
+            errors.length > 0 ? deferred.reject(errors) : deferred.resolve();
+          }
+        }
+
+        return deferred.promise;
+      }
+
+      /**
        * Initialize from and to dates and day types.
        * It will also set the day types.
        *
@@ -950,17 +956,24 @@ define([
 
           this.uiOptions.fromDate = this._convertDateFormatFromServer(this.request.from_date);
 
-          return this.updateAbsencePeriodDatesTypes(this.uiOptions.fromDate, 'from')
+          return this.loadAbsencePeriodDatesTypes(this.uiOptions.fromDate, 'from')
             .then(function () {
               // to_date and type has been reset in above call so reinitialize from clone
               this.request.to_date = attributes.to_date;
               this.request.to_date_type = attributes.to_date_type;
               this.uiOptions.toDate = this._convertDateFormatFromServer(this.request.to_date);
-              return this.updateAbsencePeriodDatesTypes(this.uiOptions.toDate, 'to');
+              return this.loadAbsencePeriodDatesTypes(this.uiOptions.toDate, 'to');
             }.bind(this));
         } else {
           return $q.resolve();
         }
+      }
+
+      function initListeners () {
+        listeners.push(
+          $rootScope.$on('LeaveRequestPopup::requestObjectUpdated', setInitialAttributes.bind(this)),
+          $rootScope.$on('LeaveRequestPopup::childComponent::register', function () { childComponentsCount++; })
+        );
       }
 
       /**
@@ -982,6 +995,7 @@ define([
         })
         .finally(function () {
           this.canManage = this.isRole('manager') || this.isRole('admin');
+          this.isSelfRecord = this.directiveOptions.isSelfRecord;
         }.bind(this));
       }
 
@@ -1017,20 +1031,22 @@ define([
        */
       function loadManagees () {
         if (this.directiveOptions.selectedContactId) {
-          // When in absence tab, because "loadManagees" is called only in manager mode,
-          // and selectedContactId is not set for Manager Leave in SSP
+          // In case of a pre-selected contact administration
           return Contact.find(this.directiveOptions.selectedContactId)
             .then(function (contact) {
               this.managedContacts = [contact];
             }.bind(this));
         } else if (this.isRole('admin')) {
-          // When in Admin Dashboard
+          // In case of general administration
           return Contact.all()
             .then(function (contacts) {
-              this.managedContacts = contacts.list;
+              this.managedContacts = _.remove(contacts.list, function (contact) {
+                // Removes the admin from the list of contacts
+                return contact.id !== this.directiveOptions.contactId;
+              }.bind(this));
             }.bind(this));
         } else {
-          // Everywhere else
+          // In any other case (including managing)
           return Contact.find(this.directiveOptions.contactId)
             .then(function (contact) {
               return contact.leaveManagees();
@@ -1181,12 +1197,30 @@ define([
       }
 
       /**
+       * Set Initial attribute
+       */
+      function setInitialAttributes () {
+        initialLeaveRequestAttributes = angular.copy(this.request.attributes());
+      }
+
+      /**
+       * Gets called when the component is destroyed
+       */
+      function unsubscribeFromEvents () {
+        // destroy all the event
+        _.forEach(listeners, function (listener) {
+          listener();
+        });
+      }
+
+      /**
        * Validates and updates the leave request
        *
        * @returns {Promise}
        */
       function updateRequest () {
         return this.request.update()
+          .then(triggerChildComponentsSubmitAndWaitForResponse)
           .then(function () {
             if (this.isRole('manager')) {
               postSubmit.call(this, 'LeaveRequest::updatedByManager');

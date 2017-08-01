@@ -26,7 +26,11 @@ request-type: Sickness
             {foreach from=$sicknessRequiredDocuments item=value key=id}
               <div class="request-document">
                 <span class="request-document-required">
-                  <input type="checkbox" disabled {if in_array($id, $leaveRequiredDocuments)}checked{/if}>
+                  {if in_array($id, $leaveRequiredDocuments)}
+                  <input type="checkbox" disabled checked>
+                  {else}
+                  <input type="checkbox" disabled>
+                  {/if}
                 </span>
                 <span class="request-document-title">{$value}</span>
               </div>

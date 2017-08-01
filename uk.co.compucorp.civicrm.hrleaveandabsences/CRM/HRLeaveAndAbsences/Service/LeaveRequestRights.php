@@ -58,8 +58,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
     $isSicknessRequest = $requestType === LeaveRequest::REQUEST_TYPE_SICKNESS;
     $isOpenLeaveRequest = in_array($statusID, $openStatuses);
 
-    $currentUserCanChangeDates = ($isSicknessRequest && $this->currentUserIsManagerOrAdmin($contactID)) ||
-                                 ($this->currentUserIsLeaveContact($contactID) && $isOpenLeaveRequest);
+    $currentUserCanChangeDates = ($isSicknessRequest && $this->currentUserIsLeaveManagerOf($contactID)) ||
+                                 ($this->currentUserIsLeaveContact($contactID) && $isOpenLeaveRequest) ||
+                                  $this->currentUserIsAdmin();
 
     return $currentUserCanChangeDates;
   }
@@ -89,7 +90,28 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   public function canDeleteFor($contactID) {
+    return $this->currentUserIsAdmin();
+  }
+
+  /**
+   * Checks if the current user is an Admin
+   *
+   * @return bool
+   */
+  private function currentUserIsAdmin() {
     return $this->leaveManagerService->currentUserIsAdmin();
+  }
+
+  /**
+   * Checks if the current user is a leave manager of the contact ID passed in
+   *
+   * @param int $contactID
+   *   The contactID of the leave request
+   *
+   * @return bool
+   */
+  private function currentUserIsLeaveManagerOf($contactID) {
+    return $this->leaveManagerService->currentUserIsLeaveManagerOf($contactID);
   }
 
   /**
@@ -101,8 +123,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   private function currentUserIsManagerOrAdmin($contactID) {
-    return $this->leaveManagerService->currentUserIsLeaveManagerOf($contactID) ||
-           $this->leaveManagerService->currentUserIsAdmin();
+    return $this->currentUserIsLeaveManagerOf($contactID) ||
+           $this->currentUserIsAdmin();
   }
 
   /**

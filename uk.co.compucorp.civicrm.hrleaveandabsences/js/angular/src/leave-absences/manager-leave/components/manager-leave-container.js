@@ -10,12 +10,10 @@ define([
     templateUrl: ['settings', function (settings) {
       return settings.pathTpl + 'components/manager-leave-container.html';
     }],
-    controller: ['$log', function ($log) {
+    controller: ['$log', '$rootScope', function ($log, $rootScope) {
       $log.debug('Component: manager-leave-container');
 
-      var vm = Object.create(this);
-
-      return vm;
+      $rootScope.section = 'manager-leave';
     }],
     controllerAs: 'managerLeave'
   });

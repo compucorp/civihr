@@ -144,5 +144,17 @@
       <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
     </OptionValue>
 
+    <OptionValue>
+      <label>Other - Please leave a comment</label>
+      <value>12</value>
+      <name>other</name>
+      <is_default>0</is_default>
+      <weight>11</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
   </OptionValues>
 </CustomData>

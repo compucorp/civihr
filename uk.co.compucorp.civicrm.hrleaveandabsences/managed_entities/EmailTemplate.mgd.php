@@ -752,7 +752,11 @@ return [
                           {foreach from=$sicknessRequiredDocuments item=value key=id}
                             <div class="request-document" style="Margin-bottom: 10px; margin-bottom: 10px;">
                               <span class="request-document-required" style="Margin-right: 5px; margin-right: 5px; width: 25px;">
-                                <input type="checkbox" disabled {if="" in_array($id,="" $leaverequireddocuments)}checked{="" if}="" style="Margin: 0; margin: 0;">
+                                {if in_array($id, $leaveRequiredDocuments)}
+                                <input type="checkbox" disabled checked style="Margin: 0; margin: 0;">
+                                {else}
+                                <input type="checkbox" disabled style="Margin: 0; margin: 0;">
+                                {/if}
                               </span>
                               <span class="request-document-title" style="color: #4D5663;">{$value}</span>
                             </div>

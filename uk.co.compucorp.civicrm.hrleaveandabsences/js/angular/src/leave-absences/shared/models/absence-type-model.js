@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/models',
   'leave-absences/shared/models/instances/absence-type-instance',
@@ -38,6 +40,27 @@ define([
          */
         calculateToilExpiryDate: function (absenceTypeID, date, params) {
           return absenceTypeAPI.calculateToilExpiryDate(absenceTypeID, date, params);
+        },
+
+        /**
+         * Determines if the absence type can expire by querying if
+         * the expiration unit and duration are not null.
+         *
+         * @param   {string} absenceTypeId
+         * @return  {Promise}
+         */
+        canExpire: function (absenceTypeId) {
+          return absenceTypeAPI.all({
+            accrual_expiration_unit: { 'IS NOT NULL': 1 },
+            accrual_expiration_duration: { 'IS NOT NULL': 1 },
+            allow_accruals_request: 1,
+            id: absenceTypeId,
+            options: { limit: 1 },
+            return: ['id']
+          })
+          .then(function (results) {
+            return results.length > 0;
+          });
         }
       });
     }

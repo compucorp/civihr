@@ -5,6 +5,9 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
+use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
+use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
+use CRM_Hrjobcontract_BAO_HRJobDetails as HRJobDetails;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
@@ -39,9 +42,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * specific statuses. For this, one can pass an array of statuses as the
    * $leaveRequestStatus parameter.
    *
-   * Note: the balance changes linked to the given LeavePeriodEntitlement, that
+   * Note 1: the balance changes linked to the given LeavePeriodEntitlement, that
    * is source_id == entitlement->id and source_type == 'entitlement', will also
    * be included in the sum.
+   *
+   * Note 2: for parity with the LeaveRequest.get and LeaveRequest.getFull APIs,
+   * this method will only consider balance changes from leave requests that
+   * overlap contracts
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
    *   The LeavePeriodEntitlement to get the Balance to
@@ -58,6 +65,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
+    $contractTable = HRJobContract::getTableName();
+    $contractRevisionTable = HRJobContractRevision::getTableName();
+    $contractDetailsTable = HRJobDetails::getTableName();
 
     $whereLeaveRequestDates = self::buildLeaveRequestDateWhereClause($periodEntitlement);
 
@@ -76,8 +86,29 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       LEFT JOIN {$leaveRequestTable} leave_request 
              ON leave_request_date.leave_request_id = leave_request.id AND
                 leave_request.is_deleted = 0
+      LEFT JOIN {$contractTable} contract 
+             ON leave_request.contact_id = contract.contact_id
+      LEFT JOIN {$contractRevisionTable} contract_revision 
+            ON contract_revision.id = (
+              SELECT id FROM {$contractRevisionTable} contract_revision2
+              WHERE contract_revision2.jobcontract_id = contract.id
+              ORDER BY contract_revision2.effective_date DESC
+              LIMIT 1
+            )
+      LEFT JOIN {$contractDetailsTable} contract_details 
+             ON contract_revision.details_revision_id = contract_details.jobcontract_revision_id
+      
       WHERE ((
               $whereLeaveRequestDates AND
+              contract.deleted = 0 AND
+              ( 
+                leave_request.from_date <= contract_details.period_end_date OR
+                contract_details.period_end_date IS NULL
+              )  AND
+              ( 
+                leave_request.to_date >= contract_details.period_start_date OR
+                (leave_request.to_date IS NULL AND leave_request.from_date >= contract_details.period_start_date)
+              )  AND
               leave_request.type_id = {$periodEntitlement->type_id} AND
               leave_request.contact_id = {$periodEntitlement->contact_id}
               $whereLeaveRequestStatus
@@ -193,6 +224,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * Since balance changes caused by LeaveRequests are negative, this method
    * will return a negative number.
    *
+   * Note: for parity with the LeaveRequest.get and LeaveRequest.getFull APIs,
+   * this method only sums the balance changes for Leave Requests overlapping
+   * active contracts
+   *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
    * @param array $leaveRequestStatus
    *   An array of values from Leave Request Status option list
@@ -219,6 +254,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
+    $contractTable = HRJobContract::getTableName();
+    $contractRevisionTable = HRJobContractRevision::getTableName();
+    $contractDetailsTable = HRJobDetails::getTableName();
 
     $whereLeaveRequestDates = self::buildLeaveRequestDateWhereClause($periodEntitlement);
 
@@ -231,7 +269,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       INNER JOIN {$leaveRequestTable} leave_request 
               ON leave_request_date.leave_request_id = leave_request.id AND
                  leave_request.is_deleted = 0
+      INNER JOIN {$contractTable} contract 
+             ON leave_request.contact_id = contract.contact_id
+      INNER JOIN {$contractRevisionTable} contract_revision 
+            ON contract_revision.id = (
+              SELECT id FROM {$contractRevisionTable} contract_revision2
+              WHERE contract_revision2.jobcontract_id = contract.id
+              ORDER BY contract_revision2.effective_date DESC
+              LIMIT 1
+            )
+      INNER JOIN {$contractDetailsTable} contract_details 
+             ON contract_revision.details_revision_id = contract_details.jobcontract_revision_id
+             
       WHERE {$whereLeaveRequestDates} AND
+            contract.deleted = 0 AND
+            ( 
+              leave_request.from_date <= contract_details.period_end_date OR
+              contract_details.period_end_date IS NULL
+            )  AND
+            ( 
+              leave_request.to_date >= contract_details.period_start_date OR
+              (leave_request.to_date IS NULL AND leave_request.from_date >= contract_details.period_start_date)
+            ) AND  
             leave_balance_change.expired_balance_change_id IS NULL AND
             leave_request.type_id = {$periodEntitlement->type_id} AND
             leave_request.contact_id = {$periodEntitlement->contact_id}

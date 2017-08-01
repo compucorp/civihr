@@ -32,7 +32,7 @@
             })
             .state('manager-leave.requests', {
               url: '/requests',
-              template: '<manager-leave-requests contact-id="managerLeave.contactId"></manager-leave-requests>'
+              template: '<manage-leave-requests contact-id="managerLeave.contactId"></manage-leave-requests>'
             })
             .state('manager-leave.calendar', {
               url: '/calendar',

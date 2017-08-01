@@ -9,14 +9,15 @@
         return settings.pathTpl + 'components/absence-tab-container.html';
       }],
       controllerAs: 'absence',
-      controller: ['$log', function ($log) {
+      controller: ['$log', '$rootScope', function ($log, $rootScope) {
         $log.debug('Component: absence-tab-container');
 
-        var vm = Object.create(this);
-        vm.contactId = CRM.adminId;
+        $rootScope.section = 'absence-tab';
 
-        return vm;
+        var vm = this;
+
+        vm.contactId = CRM.adminId;
       }]
     });
   });
-})(CRM, require);
+})(CRM);

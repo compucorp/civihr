@@ -149,7 +149,7 @@
                           <tr ng-repeat="request in report.sections.holidays.data track by $index">
                             <td class="chr_leave-report__label">Public Holiday</td>
                             <td>{{request.from_date | date:report.dateFormat}}</td>
-                            <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
+                            <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
                             <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                               {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                             </td>
@@ -200,35 +200,24 @@
                           <tr ng-repeat="request in report.sections.approved.data track by $index">
                             <td class="chr_leave-report__label">
                               {{report.absenceTypes[request.type_id].title}}
+                              <span ng-if="request.toil_expiry_date">
+                                (expires {{request.toil_expiry_date | date:report.dateFormat}})
+                              </span>
                             </td>
                             <td>
                               {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
                             </td>
-                            <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
+                            <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
                             <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                               {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                             </td>
                             <td>
-                              <div uib-dropdown dropdown-append-to-body ng-if="report.actionsFor(request).length">
-                                <a href class="btn btn-default btn-inline" uib-dropdown-toggle>
-                                  <i class="fa fa-ellipsis-v"></i>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-                                  <li ng-repeat="action in ::report.actionsFor(request)"
-                                    ng-switch="['edit', 'respond', 'view'].indexOf(action) > -1">
-                                    <a href
-                                      ng-switch-when="true"
-                                      leave-request-popup
-                                      leave-request="request"
-                                      contact-id="report.contactId">
-                                      {{action}}
-                                    </a>
-                                    <a href ng-switch-default ng-click="report.action(request, action)">
-                                      {{action}}
-                                    </a>
-                                  </li>
-                                </ul>
-                              </div>
+                              <leave-request-actions
+                                leave-request="request"
+                                role="$root.section === 'my-leave' ? 'staff' : report.role"
+                                absence-types="report.absenceTypes"
+                                leave-request-statuses="report.leaveRequestStatuses">
+                              </leave-request-actions>
                             </td>
                           </tr>
                         </tbody>
@@ -369,38 +358,27 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr ng-repeat="request in report.sections.pending.data">
+                        <tr ng-repeat="request in report.sections.pending.data track by $index">
                           <td class="chr_leave-report__label">
                             {{report.absenceTypes[request.type_id].title}}
+                            <span ng-if="request.toil_expiry_date">
+                              (expires {{request.toil_expiry_date | date:report.dateFormat}})
+                            </span>
                           </td>
                           <td>
                             {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
                           </td>
-                          <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
+                          <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
                           <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                             {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                           </td>
                           <td>
-                            <div uib-dropdown dropdown-append-to-body ng-if="report.actionsFor(request).length">
-                              <a href class="btn btn-default btn-inline" uib-dropdown-toggle>
-                                <i class="fa fa-ellipsis-v"></i>
-                              </a>
-                              <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-                                <li ng-repeat="action in ::report.actionsFor(request)"
-                                  ng-switch="['edit', 'respond', 'view'].indexOf(action) > -1">
-                                  <a href
-                                    ng-switch-when="true"
-                                    leave-request-popup
-                                    leave-request="request"
-                                    contact-id="report.contactId">
-                                    {{action}}
-                                  </a>
-                                  <a href ng-switch-default ng-click="report.action(request, action)">
-                                    {{action}}
-                                  </a>
-                                </li>
-                              </ul>
-                            </div>
+                            <leave-request-actions
+                              leave-request="request"
+                              role="$root.section === 'my-leave' ? 'staff' : report.role"
+                              absence-types="report.absenceTypes"
+                              leave-request-statuses="report.leaveRequestStatuses">
+                            </leave-request-actions>
                           </td>
                         </tr>
                       </tbody>
@@ -448,7 +426,7 @@
                     <table class="table table-condensed" ng-switch-when="false">
                       <tbody>
                         <tr>
-                          <td align="center">There are no expired balance changes</td>
+                          <td align="center">No requests found</td>
                         </tr>
                       </tbody>
                     </table>
@@ -470,36 +448,24 @@
                         <tr ng-repeat="request in report.sections.other.data track by $index">
                           <td class="chr_leave-report__label">
                             {{report.absenceTypes[request.type_id].title}}
+                            <span ng-if="request.toil_expiry_date">
+                              (expires {{request.toil_expiry_date | date:report.dateFormat}})
+                            </span>
                           </td>
                           <td>
                             {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
                           </td>
-                          <td>{{::report.leaveRequestStatuses[request.status_id].label}}</td>
+                          <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
                           <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
                             {{(request.type_id == absenceType.id ? request.balance_change : '')}}
                           </td>
                           <td>
-                            <div uib-dropdown dropdown-append-to-body
-                              ng-if="report.actionsFor(request).length">
-                              <a href class="btn btn-default btn-inline" uib-dropdown-toggle>
-                                <i class="fa fa-ellipsis-v"></i>
-                              </a>
-                              <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-                                <li ng-repeat="action in ::report.actionsFor(request)"
-                                  ng-switch="['edit', 'respond', 'view'].indexOf(action) > -1">
-                                  <a href
-                                    ng-switch-when="true"
-                                    leave-request-popup
-                                    leave-request="request"
-                                    contact-id="report.contactId">
-                                    {{action}}
-                                  </a>
-                                  <a href ng-switch-default ng-click="report.action(request, action)">
-                                    {{action}}
-                                  </a>
-                                </li>
-                              </ul>
-                            </div>
+                            <leave-request-actions
+                              leave-request="request"
+                              role="$root.section === 'my-leave' ? 'staff' : report.role"
+                              absence-types="report.absenceTypes"
+                              leave-request-statuses="report.leaveRequestStatuses">
+                            </leave-request-actions>
                           </td>
                         </tr>
                       </tbody>

@@ -4,14 +4,14 @@
 
 <crm-loading show="!$ctrl.loading.absenceTypes">
   <div
-    ng-show="$ctrl.canManage && !$ctrl.isMode('create')"
+    ng-show="$ctrl.canManage && !$ctrl.isMode('create') && !$ctrl.isSelfRecord"
     class="row chr_leave-request-modal__user-info">
     <span class="col-xs-6">{{$ctrl.contactName}}</span>
     <span class="col-xs-6">{{::$ctrl.getStatusFromValue($ctrl.request.status_id).label}}</span>
   </div>
   <!-- ng-show is required in model as it was not showing the list of managees for ui-select-choices-->
-  <div class="modal-body chr_leave-request-modal__form">
-    <div ng-show="$ctrl.canManage && !$ctrl.isMode('edit')">
+  <div class="modal-body chr_leave-request-modal__form" ng-if="!$ctrl.loading.absenceTypes">
+    <div ng-show="$ctrl.canManage && !$ctrl.isMode('edit') && !$ctrl.isSelfRecord">
       <ui-select
         autofocus
         ng-model="$ctrl.request.contact_id"
@@ -58,23 +58,16 @@
               </ng-include>
             </uib-tab>
             <uib-tab heading="Comments">
-              <leave-request-popup-comments-tab
-              request="$ctrl.request"
-              mode="$ctrl.mode"
-              can-manage="$ctrl.canManage"
-              >
-              </leave-request-popup-comments-tab>
+              <leave-request-popup-comments-tab request="$ctrl.request" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-comments-tab>
             </uib-tab>
             <uib-tab heading="Files">
-              <ng-include
-                src="sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html'">
-              </ng-include>
+              <leave-request-popup-files-tab request="$ctrl.request" file-uploader="$ctrl.fileUploader" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-files-tab>
             </uib-tab>
           </uib-tabset>
         </div>
       </div>
       <div
-        ng-show="$ctrl.canManage"
+        ng-show="$ctrl.canManage && !$ctrl.isSelfRecord"
         class="row chr_leave-request-modal__response">
         <div class="col-xs-12 form-horizontal">
           <div class="form-group">

@@ -51,16 +51,14 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
     $entityName = 'WorkPattern';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
+    self::validateParams($params);
+
     if(isset($params['is_default']) && $params['is_default']) {
       self::unsetDefaultWorkPatterns();
     }
 
     if($hook == 'create') {
       $params['weight'] = self::getMaxWeight() + 1;
-    }
-
-    if($hook == 'edit' && isset($params['is_active']) && !$params['is_active']) {
-      self::checkIfPatternCanBeDisabled($params['id']);
     }
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
@@ -104,35 +102,60 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
-   * This method checks if a Work Pattern can be disabled.
+   * A method for validating the params passed to the Work Pattern create method
    *
-   * A Work Pattern can be disabled only if it's not the last enabled pattern.
-   *
-   * @param int $id
-   *  The ID of the WorkPattern to be checked
+   * @param array $params
+   *   The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
    */
-  private static function checkIfPatternCanBeDisabled($id) {
-    $tableName = self::getTableName();
-    $id = (int)$id;
+  public static function validateParams($params) {
+    self::validateDefaultWorkPattern($params);
+  }
 
-    $query = "
-        SELECT COUNT(*) as total
-        FROM {$tableName}
-        WHERE is_active = 1 AND id <> $id
-    ";
+  /**
+   * Validates that the default WorkPattern cannot be disabled during an
+   * update on the BAO and also that a new work pattern created as default
+   * cannot be created as disabled.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
+   */
+  public static function validateDefaultWorkPattern($params) {
+    $isToBeSetAsDefault = isset($params['is_default']) && $params['is_default'];
+    $isToBeDisabled = isset($params['is_active']) && !$params['is_active'];
+    $isUpdate = !empty($params['id']);
 
-    $dao = CRM_Core_DAO::executeQuery($query);
-    $dao->fetch();
-
-    $total = (int)$dao->total;
-
-    if($total == 0) {
+    if (!$isUpdate && $isToBeSetAsDefault && $isToBeDisabled) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException(
-        "You cannot disable a Work Pattern if it's the last one"
+        'You cannot create a new Work Pattern as default and set disabled'
       );
     }
+
+    if($isUpdate && $isToBeDisabled) {
+      $isDefaultWorkPattern = self::isDefault($params['id']);
+
+      if ($isDefaultWorkPattern) {
+        throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException(
+          'You cannot disable the default Work Pattern'
+        );
+      }
+    }
+  }
+
+  /**
+   * Checks whether the Work Pattern with the given ID
+   * is the default Work Pattern or not.
+   *
+   * @param int $workPatternID
+   *
+   * @return boolean
+   */
+  private static function isDefault($workPatternID) {
+    $workPattern = self::findById($workPatternID);
+
+    return $workPattern->is_default;
   }
 
   /**

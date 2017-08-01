@@ -8,14 +8,12 @@ define([
       return settings.pathTpl + 'components/admin-dashboard-container.html';
     }],
     controllerAs: 'vm',
-    controller: ['$log', controller]
+    controller: ['$log', '$rootScope', controller]
   });
 
-  function controller ($log) {
+  function controller ($log, $rootScope) {
     $log.debug('Component: admin-dashboard-container');
 
-    var vm = Object.create(this);
-
-    return vm;
+    $rootScope.section = 'admin-dashboard';
   }
 });

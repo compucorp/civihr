@@ -111,7 +111,8 @@
       describe('staff opens request popup', function () {
         beforeEach(inject(function () {
           var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId
+            contactId: CRM.vars.leaveAndAbsences.contactId,
+            isSelfRecord: true
           };
 
           initTestController(directiveOptions);
@@ -583,31 +584,6 @@
               expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', $ctrl.request);
             });
           });
-
-          describe('when submit with attachments', function () {
-            var sampleFileInQueue = {
-              lastModifiedDate: new Date(),
-              size: 1e6,
-              type: 'text/plain',
-              name: '/unitTest.txt'
-            };
-
-            beforeEach(function () {
-              setTestDates(date2016, date2016);
-              // entitlements are randomly generated so resetting them to positive here
-              $ctrl.balance.closing = 1;
-              $ctrl.request.fileUploader.addToQueue(sampleFileInQueue);
-              // no callThrough as it calls the real URL to upload
-              spyOn($ctrl.request.fileUploader, 'uploadAll');
-
-              $ctrl.submit();
-              $scope.$digest();
-            });
-
-            it('uploads attachments', function () {
-              expect($ctrl.request.fileUploader.uploadAll).toHaveBeenCalledWith({entityID: jasmine.any(String)});
-            });
-          });
         });
 
         describe('when absence period is changed', function () {
@@ -752,8 +728,10 @@
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
               var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+              leaveRequest.fileUploader = { queue: [] };
               var directiveOptions = {
                 contactId: leaveRequest.contact_id, // staff's contact id
+                isSelfRecord: true,
                 leaveRequest: leaveRequest
               };
 
@@ -845,6 +823,7 @@
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
                   contactId: leaveRequest.contact_id, // staff's contact id
+                  isSelfRecord: true,
                   leaveRequest: leaveRequest
                 };
 
@@ -866,6 +845,7 @@
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 var directiveOptions = {
                   contactId: leaveRequest.contact_id, // staff's contact id
+                  isSelfRecord: true,
                   leaveRequest: leaveRequest
                 };
 
@@ -903,9 +883,11 @@
             var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+            leaveRequest.fileUploader = { queue: [] };
 
             initTestController({
               contactId: leaveRequest.contact_id, // staff's contact id
+              isSelfRecord: true,
               leaveRequest: leaveRequest
             });
           });
@@ -934,6 +916,7 @@
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             var directiveOptions = {
               contactId: leaveRequest.contact_id, // staff's contact id
+              isSelfRecord: true,
               leaveRequest: leaveRequest
             };
 
@@ -960,30 +943,6 @@
             });
           });
         });
-
-        describe('when user uploads files', function () {
-          describe('when number of files are below allowed limit', function () {
-            beforeEach(function () {
-              $ctrl.request.files = [1, 2, 3, 4];
-              $ctrl.request.fileUploader.queue = [1, 2];
-            });
-
-            it('returns true', function () {
-              expect($ctrl.canUploadMore()).toBeTruthy();
-            });
-          });
-
-          describe('when number of files are above allowed limit', function () {
-            beforeEach(function () {
-              $ctrl.request.files = [1, 2, 3, 4, 5];
-              $ctrl.request.fileUploader.queue = [1, 2, 3, 4, 5];
-            });
-
-            it('returns false', function () {
-              expect($ctrl.canUploadMore()).toBeFalsy();
-            });
-          });
-        });
       });
 
       describe('manager opens leave request popup', function () {
@@ -1004,6 +963,7 @@
           var waitingApprovalStatus;
 
           beforeEach(function () {
+            $ctrl.request.fileUploader = { queue: [] };
             waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
           });
 
@@ -1195,10 +1155,47 @@
           it('does not load contacts', function () {
             expect($ctrl.managedContacts.length).toEqual(0);
           });
+
+          describe('loading', function () {
+            it('is not loading fromDayTypes', function () {
+              expect($ctrl.loading.fromDayTypes).toBe(false);
+            });
+
+            it('is not loading toDayTypes', function () {
+              expect($ctrl.loading.toDayTypes).toBe(false);
+            });
+          });
         });
       });
 
       describe('admin opens leave request popup in create mode', function () {
+        var adminId = 206;
+
+        beforeEach(function () {
+          $ctrl.request.contact_id = adminId.toString();
+
+          role = 'admin';
+          initTestController({
+            contactId: adminId
+          });
+        });
+
+        describe('on initialization', function () {
+          it('is in create mode', function () {
+            expect($ctrl.isMode('create')).toBeTruthy();
+          });
+
+          it('has admin role', function () {
+            expect($ctrl.isRole('admin')).toBeTruthy();
+          });
+
+          it('does not contain admin in the list of managees', function () {
+            expect(_.find($ctrl.managedContacts, { 'id': adminId })).toBeUndefined();
+          });
+        });
+      });
+
+      describe('admin opens leave request popup in create mode for a pre-selected contact', function () {
         var selectedContactId = 208;
         var adminId = 206;
 

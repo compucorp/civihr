@@ -43,7 +43,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
   }
 
   public function testCanDeleteAPublicHolidayLeaveRequestForASingleContact() {
-    AbsencePeriodFabricator::fabricate([
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31')
     ]);
@@ -53,6 +53,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     );
     $periodEntitlement->contact_id = 2;
     $periodEntitlement->type_id = $this->absenceType->id;
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
 
     $publicHoliday = $this->instantiatePublicHoliday('2016-01-01');
 
@@ -182,7 +187,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday2);
     $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday3);
 
-    $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday1));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday2));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday3));
 
     $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteAllForContract($contract['id']);
@@ -190,7 +197,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     // It's -1 instead of 0 because the public holiday 1 and public holiday 2
     // will be deleted and the public holiday 3 is after the contract end date
     // and will not be deleted.
-    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday1));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday2));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday3));
   }
 
   public function testItDeletesLeaveRequestsForAllPublicHolidaysOverlappingAContractWithNoEndDate() {

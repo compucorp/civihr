@@ -25,7 +25,7 @@
 
     describe('ToilRequestCtrl', function () {
       var $log, $q, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller, sharedSettings,
-        $provide, Contact, ContactAPIMock, AbsenceTypeAPI, TOILRequestInstance;
+        $provide, Contact, ContactAPIMock, AbsenceTypeAPI, AbsenceType, TOILRequestInstance;
       var date2016 = '01/12/2016';
       var role = 'staff'; // change this value to set other roles
 
@@ -73,11 +73,12 @@
       }]));
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _Contact_,
-        _AbsenceTypeAPI_, _TOILRequestInstance_, $q) {
+        _AbsenceTypeAPI_, _AbsenceType_, _TOILRequestInstance_, $q) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
         AbsenceTypeAPI = _AbsenceTypeAPI_;
+        AbsenceType = _AbsenceType_;
         TOILRequestInstance = _TOILRequestInstance_;
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
         Contact = _Contact_;
@@ -86,6 +87,7 @@
         spyOn(AbsenceTypeAPI, 'all').and.callThrough();
         spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
         spyOn(TOILRequestInstance, 'init').and.callThrough();
+        spyOn(AbsenceType, 'canExpire').and.callThrough();
         spyOn(Contact, 'all').and.callFake(function () {
           return $q.resolve(ContactAPIMock.mockedContacts());
         });
@@ -96,7 +98,8 @@
 
         beforeEach(function () {
           var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId
+            contactId: CRM.vars.leaveAndAbsences.contactId,
+            isSelfRecord: true
           };
 
           initTestController(directiveOptions);
@@ -181,6 +184,8 @@
                 $ctrl.balance.closing = 1;
                 $ctrl.submit();
                 $scope.$digest();
+                $rootScope.$broadcast('uploadFiles: success');
+                $scope.$digest();
               });
 
               it('has all required fields', function () {
@@ -260,8 +265,10 @@
 
             beforeEach(function () {
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+              expiryDate = '2017-12-31';
               toilRequest = TOILRequestInstance.init(mockData.findBy('status_id', status));
               toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+              toilRequest.toil_expiry_date = expiryDate;
               var directiveOptions = {
                 contactId: 203, // manager's contact id
                 leaveRequest: toilRequest
@@ -269,6 +276,7 @@
 
               role = 'manager';
               initTestController(directiveOptions);
+              $ctrl.calculateToilExpiryDate();
 
               expiryDate = $ctrl._convertDateFormatFromServer($ctrl.request.toil_expiry_date);
               originalToilToAccrue = optionGroupMock.specificObject('hrleaveandabsences_toil_amounts', 'name', 'quarter_day');
@@ -301,24 +309,81 @@
                 expect($ctrl.request.toil_expiry_date).toEqual(newExpiryDate);
               });
 
-              describe('and staff edits', function () {
+              describe('and staff edits new request', function () {
                 beforeEach(function () {
                   var directiveOptions = {
                     contactId: toilRequest.contact_id, // staff's contact id
                     leaveRequest: $ctrl.request
                   };
+                  role = 'staff';
+                  delete $ctrl.request.id;
+
+                  oldExpiryDate = $ctrl.request.toil_expiry_date;
+                  initTestController(directiveOptions);
+                  $ctrl.calculateToilExpiryDate();
+                });
+
+                it('has expired date updated by staff', function () {
+                  expect($ctrl.request.toil_expiry_date).not.toEqual(oldExpiryDate);
+                });
+
+                it('has toil amount set by staff', function () {
+                  expect($ctrl.request.toil_to_accrue).toEqual(originalToilToAccrue.value);
+                });
+              });
+
+              describe('and staff edits open request', function () {
+                beforeEach(function () {
+                  var directiveOptions = {
+                    contactId: toilRequest.contact_id, // staff's contact id
+                    leaveRequest: $ctrl.request
+                  };
+                  role = 'staff';
 
                   initTestController(directiveOptions);
+                  $ctrl.uiOptions.expiryDate = oldExpiryDate;
+                  $ctrl.updateExpiryDate();
                 });
 
                 it('has expired date set by manager', function () {
-                  expect($ctrl.request.toil_expiry_date).toEqual(newExpiryDate);
+                  expect($ctrl.request.toil_expiry_date).toEqual(oldExpiryDate);
                 });
 
                 it('has toil amount set by manager', function () {
                   expect($ctrl.request.toil_to_accrue).toEqual(originalToilToAccrue.value);
                 });
               });
+            });
+          });
+        });
+
+        describe('when TOIL Request does not expire', function () {
+          beforeEach(function () {
+            AbsenceType.canExpire.and.returnValue($q.resolve(false));
+            initTestController({
+              contactId: 202,
+              leaveRequest: $ctrl.request
+            });
+          });
+
+          it('should set requestCanExpire to false', function () {
+            expect($ctrl.requestCanExpire).toBe(false);
+          });
+
+          describe('when request date changes', function () {
+            beforeEach(function () {
+              spyOn(AbsenceType, 'calculateToilExpiryDate');
+              $ctrl.request.to_date = new Date();
+              $ctrl.calculateToilExpiryDate();
+              $rootScope.$digest();
+            });
+
+            it('should not calculate the expiry date field', function () {
+              expect(AbsenceType.calculateToilExpiryDate).not.toHaveBeenCalled();
+            });
+
+            it('should set expiry date to false', function () {
+              expect($ctrl.request.toil_expiry_date).toBe(false);
             });
           });
         });

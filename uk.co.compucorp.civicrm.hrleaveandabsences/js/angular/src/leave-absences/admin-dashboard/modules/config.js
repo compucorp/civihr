@@ -17,7 +17,7 @@ define([
         $stateProvider
           .state('requests', {
             url: '/requests',
-            template: '<admin-dashboard-requests></admin-dashboard-requests>'
+            template: '<manage-leave-requests contact-id="$root.settings.contactId"></manage-leave-requests>'
           })
           .state('calendar', {
             url: '/calendar',
