@@ -1,11 +1,14 @@
 /* eslint-env amd */
-/* global Drupal */
+/* global CRM */
 
 (function (CRM, Drupal) {
   define([
     'common/modules/services'
   ], function (services) {
     'use strict';
+
+    // Default Drupal value in case it's not defined
+    Drupal = Drupal || { settings: {} };
 
     services.service('Session', ['$q', function ($q) {
       /**
@@ -15,12 +18,12 @@
        * on definitions from SSP.
        */
       var session = {
-        contact_id: CRM.vars.session
+        contactId: CRM.vars.session
           ? CRM.vars.session.contact_id
           : Drupal.settings.currentCiviCRMUserId
       };
 
-      if (!session.contact_id) {
+      if (!session.contactId) {
         throw new Error('Session Error: *Logged In Contact Id* is not defined');
       }
 
@@ -42,4 +45,4 @@
       };
     }]);
   });
-})(CRM, Drupal);
+})(CRM, window.Drupal);
