@@ -3,15 +3,15 @@
 define([
   'common/lodash',
   'common/mocks/module',
-  'common/mocks/data/contract-data'
-], function (_, mocks, mockData) {
+  'common/mocks/data/contract.data'
+], function (_, mocks, ContractData) {
   'use strict';
 
   mocks.factory('api.contract.mock', ['$q', function ($q) {
     return {
       all: function (params) {
         return $q(function (resolve, reject) {
-          resolve(mockData.all().values.map(storeDetails));
+          resolve(ContractData.all.values.map(storeDetails));
         });
       },
 
@@ -21,7 +21,7 @@ define([
        * @return {object}
        */
       mockedContracts: function () {
-        return mockData.all().values.map(storeDetails);
+        return ContractData.all.values.map(storeDetails);
       },
 
       /**
