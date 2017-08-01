@@ -67,7 +67,7 @@
           Session = _Session_;
 
           Session.get().then(function (session) {
-            value = session.contact_id;
+            value = session.contactId;
           });
 
           $scope.$digest();
