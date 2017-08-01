@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/apis',
   'common/lodash',
@@ -256,8 +257,7 @@ define([
           params = _.assign({}, params, {
             leave_request_id: leaveRequestID,
             text: comment.text,
-            contact_id: comment.contact_id,
-            created_at: comment.created_at
+            contact_id: comment.contact_id
           });
 
           return this.sendPOST('LeaveRequest', 'addcomment', params)

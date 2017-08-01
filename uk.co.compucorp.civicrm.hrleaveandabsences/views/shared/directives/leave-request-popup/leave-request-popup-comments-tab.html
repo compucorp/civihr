@@ -1,10 +1,5 @@
 <crm-loading show="!$ctrl.loading.component">
   <div
-    class="text-center chr_leave-request-modal__comments_empty"
-    ng-show="commentsCtrl.getActiveComments().length === 0">
-    No comments available. Comments can be added below.
-  </div>
-  <div
     class="chr_leave-request-modal__comments"
     ng-hide="commentsCtrl.getActiveComments().length === 0">
     <div
@@ -13,7 +8,7 @@
       <div class="chr_leave-request-comment__meta">
         <span class="chr_leave-request-comment__author">{{commentsCtrl.getCommentorName(comment.contact_id)}}</span>
         <span>-</span>
-        <span class="chr_leave-request-comment__date">{{commentsCtrl.formatDateTime(comment.created_at)}}</span>
+        <span class="chr_leave-request-comment__date">{{comment.created_at ? commentsCtrl.formatDateTime(comment.created_at) : "Just now"}}</span>
         <button
           class="btn btn-link"
           ng-disabled="commentsCtrl.isMode('view')"
@@ -32,7 +27,6 @@
     ta-toolbar="[['bold','italics','underline']]"
     ng-model="commentsCtrl.comment.text"></div>
   <div class="chr_wysiwyg__action">
-    <hr/>
     <button
       class="btn btn-link"
       ng-click="commentsCtrl.addComment()"

@@ -56,7 +56,7 @@ define([
      * @return {String}
      */
     vm.formatDateTime = function (dateTime) {
-      return moment(dateTime, sharedSettings.serverDateTimeFormat).format(HRSettings.DATE_FORMAT.toUpperCase() + ' HH:mm');
+      return moment.utc(dateTime, sharedSettings.serverDateTimeFormat).local().format(HRSettings.DATE_FORMAT.toUpperCase() + ' HH:mm');
     };
 
     /**

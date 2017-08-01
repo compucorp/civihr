@@ -863,6 +863,44 @@
               });
             });
           });
+
+          describe('with new comments', function () {
+            var leaveRequestId, comment;
+
+            beforeEach(function () {
+              var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+              var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+              var contatId = '204';
+
+              comment = {
+                contact_id: contatId,
+                leave_request_id: leaveRequest.id,
+                text: 'some text'
+              };
+              leaveRequestId = leaveRequest.id;
+              leaveRequest.contact_id = contatId;
+              leaveRequest.comments = [comment];
+
+              initTestController({
+                contactId: leaveRequest.contact_id,
+                isSelfRecord: true,
+                leaveRequest: leaveRequest
+              });
+            });
+
+            describe('and submits', function () {
+              beforeEach(function () {
+                spyOn(LeaveRequestAPI, 'saveComment').and.callThrough();
+
+                $ctrl.submit();
+                $scope.$apply();
+              });
+
+              it('calls Save Comment API with correct arguments', function () {
+                expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(leaveRequestId, comment);
+              });
+            });
+          });
         });
 
         describe('canSubmit()', function () {
