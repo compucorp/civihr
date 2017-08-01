@@ -1238,7 +1238,8 @@ define([
       function validateBeforeSubmit () {
         if (this.balance.closing < 0 && this.selectedAbsenceType.allow_overuse === '0') {
           // show an error
-          return $q.reject(['You are not allowed to apply leave in negative']);
+          return $q.reject(['You cannot make a request for this leave type at this time ' +
+            'as this would leave you with a negative balance']);
         }
 
         return this.request.isValid();
