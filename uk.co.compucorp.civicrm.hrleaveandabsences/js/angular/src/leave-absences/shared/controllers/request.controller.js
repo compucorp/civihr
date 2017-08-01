@@ -985,7 +985,7 @@ define([
       this.submitting = true;
       changeStatusBeforeSave.call(this);
 
-      validateBeforeSubmit.call(this)
+      return validateBeforeSubmit.call(this)
         .then(function () {
           return this.isMode('edit') ? updateRequest.call(this) : createRequest.call(this);
         }.bind(this))
