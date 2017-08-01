@@ -44,6 +44,7 @@
     <th>{ts}Employee name{/ts}</th>
     <th>{ts}Leave type{/ts}</th>
     <th>{ts}Prev. yr entitlement{/ts}</th>
+    <th>{ts}Prev. yr Accrued TOIL{/ts}</th>
     <th>{ts}Days taken{/ts}</th>
     <th>{ts}Remaining{/ts}</th>
     <th>{ts}Brought Forward from previous period{/ts}</th>
@@ -74,6 +75,7 @@
       <td>{$contact.display_name}</td>
       <td><span class="absence-type" style="background-color: {$absenceType->color};">{$absenceType->title}</span></td>
       <td>{$calculation->getPreviousPeriodProposedEntitlement()}</td>
+      <td>{$calculation->getAccruedTOILForPreviousPeriod()}</td>
       <td>{$calculation->getNumberOfDaysTakenOnThePreviousPeriod()}</td>
       <td>{$calculation->getNumberOfDaysRemainingInThePreviousPeriod()}</td>
       <td>{$calculation->getBroughtForward()}</td>
