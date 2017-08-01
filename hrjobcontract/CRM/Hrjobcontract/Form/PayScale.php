@@ -157,7 +157,8 @@ class CRM_Hrjobcontract_Form_PayScale extends CRM_Core_Form {
       Session::setStatus($deleteMsg, 'Success', 'success');
     }
     else {
-      $params = $this->getParams();
+      $params = $this->exportValues();
+      $params['is_active'] = CRM_Utils_Array::value('is_active', $params, 0);
 
       if ($this->_action & CRM_Core_Action::UPDATE) {
         $params['id'] = $this->_id;
@@ -185,30 +186,6 @@ class CRM_Hrjobcontract_Form_PayScale extends CRM_Core_Form {
       $session = Session::singleton();
       $session->replaceUserContext($url);
     }
-  }
-
-  /**
-   * @return array
-   */
-  private function getParams() {
-    $params = $this->exportValues();
-
-    $properties = [
-      'pay_scale',
-      'currency',
-      'amount',
-      'pay_frequency',
-      'is_active'
-    ];
-
-    // set defaults
-    foreach ($properties as $property) {
-      if (!array_key_exists($property, $params)) {
-        $params[$property] = 0;
-      }
-    }
-
-    return $params;
   }
 
 }
