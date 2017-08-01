@@ -4,9 +4,10 @@
   wrapShim: true,
   modules: [
     {name: 'admin-dashboard'},
+    {name: 'absence-tab'},
     {name: 'my-leave'},
     {name: 'manager-leave'},
-    {name: 'absence-tab'}
+    {name: 'waiting-approval-notification'}
   ],
   mainConfigFile: 'src/leave-absences/shared/config.js',
   paths: {
