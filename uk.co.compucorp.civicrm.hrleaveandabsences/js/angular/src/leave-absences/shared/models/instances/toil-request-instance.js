@@ -1,7 +1,10 @@
+/* eslint-env amd */
+
 define([
+  'common/lodash',
   'leave-absences/shared/modules/models-instances',
-  'leave-absences/shared/models/instances/leave-request-instance',
-], function (modelInstances) {
+  'leave-absences/shared/models/instances/leave-request-instance'
+], function (_, modelInstances) {
   'use strict';
 
   modelInstances.factory('TOILRequestInstance', [
@@ -56,7 +59,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates', 'comments', 'fileUploader', 'files', 'toilDurationHours', 'toilDurationMinutes'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'files', 'toilDurationHours', 'toilDurationMinutes'], key)) {
             result[key] = this[key];
           }
         }

@@ -184,6 +184,8 @@
                 $ctrl.balance.closing = 1;
                 $ctrl.submit();
                 $scope.$digest();
+                $rootScope.$broadcast('uploadFiles: success');
+                $scope.$digest();
               });
 
               it('has all required fields', function () {

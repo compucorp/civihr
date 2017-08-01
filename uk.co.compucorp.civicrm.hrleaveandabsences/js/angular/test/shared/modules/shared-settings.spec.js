@@ -33,10 +33,6 @@ define([
       it('contains the queue limit setting', function () {
         expect(sharedSettings.fileUploader.queueLimit).toBeDefined();
       });
-
-      it('contains the list of allowed mime types', function () {
-        expect(sharedSettings.fileUploader.allowedMimeTypes).toBeDefined();
-      });
     });
 
     describe('leave request statuses', function () {

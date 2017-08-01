@@ -4,11 +4,14 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
+  'common/services/file-upload',
+  'common/services/file-mime-types',
   'common/services/hr-settings'
 ], function (_, moment, components) {
   components.component('leaveRequestPopupFilesTab', {
     bindings: {
       canManage: '<',
+      fileUploader: '=',
       mode: '<',
       request: '<'
     },
@@ -16,17 +19,23 @@ define([
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html';
     }],
     controllerAs: 'filesTab',
-    controller: ['$log', 'HR_settings', 'shared-settings', controller]
+    controller: ['$log', '$rootScope', '$q', 'HR_settings', 'shared-settings', 'OptionGroup', 'FileUpload', 'fileMimeTypes', controller]
   });
 
-  function controller ($log, HRSettings, sharedSettings) {
+  function controller ($log, $rootScope, $q, HRSettings, sharedSettings, OptionGroup, FileUpload, fileMimeTypes) {
     $log.debug('Component: leave-request-popup-files-tab');
 
+    var fileExtensions = [];
+    var listeners = [];
+    var mimeTypes = {};
     var vm = Object.create(this);
-    vm.supportedFileTypes = '';
+    vm.filesLoaded = false;
     vm.today = Date.now();
     vm.userDateFormatWithTime = HRSettings.DATE_FORMAT + ' HH:mm';
     vm.userDateFormat = HRSettings.DATE_FORMAT;
+
+    vm.listFileTypes = listFileTypes;
+    vm.$onDestroy = unsubscribeFromEvents;
 
     /**
      * Checks if user can upload more file, it totals the number of already
@@ -67,11 +76,10 @@ define([
      * @return {Number} of files
      */
     vm.getFilesCount = function () {
-      var filesWithSoftDelete = _.filter(vm.request.files, function (file) {
-        return file.toBeDeleted;
-      });
+      var filesToDelete = filesMarkedForDeletion();
+      var queue = fileUploaderQueue();
 
-      return vm.request.files.length + vm.request.fileUploader.queue.length - filesWithSoftDelete.length;
+      return vm.request.files.length + queue.length - filesToDelete.length;
     };
 
     /**
@@ -85,9 +93,142 @@ define([
     };
 
     (function init () {
-      vm.supportedFileTypes = _.keys(sharedSettings.fileUploader.allowedMimeTypes);
-      vm.request.loadAttachments();
+      $rootScope.$broadcast('LeaveRequestPopup::childComponent::register');
+      initListeners();
+
+      $q.all([
+        loadSupportedFileExtensions(),
+        loadAttachments()
+      ])
+      .then(initFileUploader)
+      .finally(function () {
+        vm.filesLoaded = true;
+      });
     }());
+
+    /**
+     * Returns an array of files marked for deletion
+     *
+     * @return {Array}
+     */
+    function filesMarkedForDeletion () {
+      return _.filter(vm.request.files, function (file) {
+        return file.toBeDeleted;
+      });
+    }
+
+    /**
+     * Returns the file uploader queue
+     *
+     * @return {Array}
+     */
+    function fileUploaderQueue () {
+      return (vm.fileUploader && vm.fileUploader.queue)
+        ? vm.fileUploader.queue
+        : [];
+    }
+
+    /**
+     * Initializes all the listeners
+     */
+    function initListeners () {
+      listeners.push(
+        $rootScope.$on('LeaveRequestPopup::submit', uploadAttachments)
+      );
+    }
+
+    /**
+     * Initializes the file uploader object
+     */
+    function initFileUploader () {
+      loadMimeTypesOfSupportedFileExtensions()
+        .then(function () {
+          vm.fileUploader = FileUpload.uploader({
+            entityTable: 'civicrm_hrleaveandabsences_leave_request',
+            crmAttachmentToken: sharedSettings.attachmentToken,
+            queueLimit: sharedSettings.fileUploader.queueLimit,
+            allowedMimeTypes: mimeTypes
+          });
+        });
+    }
+
+    /**
+     * Returns a string of allowed files extensions for upload
+     * @returns {string}
+     */
+    function listFileTypes () {
+      return fileExtensions.length > 0
+        ? fileExtensions.map(function (ext) {
+          return ext.label;
+        }).join(', ')
+        : '';
+    }
+
+    /**
+     * Loads the attachments, and broadcasts an event when they are loaded
+     */
+    function loadAttachments () {
+      return vm.request.loadAttachments()
+        .then(function () {
+          $rootScope.$broadcast('LeaveRequestPopup::requestObjectUpdated');
+        });
+    }
+
+    /**
+     * Loads the mime types for supported file extensions
+     *
+     * @returns {Promise}
+     */
+    function loadMimeTypesOfSupportedFileExtensions () {
+      return $q.all(fileExtensions.map(function (fileExtension) {
+        return fileMimeTypes.getMimeTypeFor(fileExtension.label)
+          .then(function (mimeType) {
+            mimeTypes[fileExtension.label] = mimeType;
+          });
+      }))
+      .catch(function () {
+        // if the API calls throws an error or fails, "allowedMimeTypes" will be undefined
+        // hence the default file extension will be set to the uploader in file-upload.js
+        mimeTypes = null;
+      });
+    }
+
+    /**
+     * Load file extensions which are supported for upload and creates uploader object
+     *
+     * @return {Promise}
+     */
+    function loadSupportedFileExtensions () {
+      return OptionGroup.valuesOf('safe_file_extension')
+        .then(function (fileExtensionsData) {
+          fileExtensions = fileExtensionsData;
+        });
+    }
+
+    /**
+     * Gets called when the component is destroyed
+     */
+    function unsubscribeFromEvents () {
+      // destroy all the event
+      _.forEach(listeners, function (listener) {
+        listener();
+      });
+    }
+
+    /**
+     * * Upload attachment in file uploder's queue
+     * @param {Object} e - event object
+     * @param {Function} callBack - call back function
+     */
+    function uploadAttachments (e, callBack) {
+      if (vm.fileUploader.queue && vm.fileUploader.queue.length > 0) {
+        vm.fileUploader.uploadAll({ entityID: vm.request.id })
+          .then(function () { callBack(); })
+          .catch(callBack);
+      } else {
+        callBack();
+      }
+    }
 
     return vm;
   }

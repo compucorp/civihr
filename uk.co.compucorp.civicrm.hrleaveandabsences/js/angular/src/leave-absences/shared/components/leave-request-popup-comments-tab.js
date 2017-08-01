@@ -16,10 +16,10 @@ define([
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-comments-tab.html';
     }],
     controllerAs: 'commentsCtrl',
-    controller: ['$log', 'HR_settings', 'shared-settings', 'Contact', controller]
+    controller: ['$log', '$rootScope', 'HR_settings', 'shared-settings', 'Contact', controller]
   });
 
-  function controller ($log, HRSettings, sharedSettings, Contact) {
+  function controller ($log, $rootScope, HRSettings, sharedSettings, Contact) {
     $log.debug('Component: leave-request-popup-comments-tab');
 
     var vm = Object.create(this);
@@ -141,6 +141,7 @@ define([
     function loadCommentsAndContactNames () {
       return vm.request.loadComments()
         .then(function () {
+          $rootScope.$broadcast('LeaveRequestPopup::requestObjectUpdated');
           // loadComments sets the comments on request object instead of returning it
           vm.request.comments.length && loadContactNames();
         });

@@ -159,6 +159,8 @@
             setReason();
             $ctrl.submit();
             $scope.$digest();
+            $rootScope.$broadcast('uploadFiles: success');
+            $scope.$digest();
           });
 
           it('has all required fields', function () {

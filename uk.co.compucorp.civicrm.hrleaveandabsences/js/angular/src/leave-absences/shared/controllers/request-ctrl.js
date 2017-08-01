@@ -29,7 +29,9 @@ define([
 
       var absenceTypesAndIds;
       var availableStatusesMatrix = {};
+      var childComponentsCount = 0;
       var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
+      var listeners = [];
       var role = '';
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
@@ -39,6 +41,7 @@ define([
       this.canManage = false; // this flag is set on initialisation of the controller
       this.contactName = null;
       this.errors = [];
+      this.fileUploader = null;
       this.isSelfRecord = false; // this flag is set on initialisation of the controller
       this.managedContacts = [];
       this.mode = ''; // can be edit, create, view
@@ -229,7 +232,6 @@ define([
        *
        * @return {Array}
        */
-
       this.getStatuses = function () {
         if (!this.request || angular.equals({}, this.requestStatuses)) {
           return [];
@@ -284,8 +286,7 @@ define([
             initContact.call(self);
 
             if (self.isMode('edit')) {
-              initialLeaveRequestAttributes = angular.copy(self.request.attributes());
-
+              setInitialAttributes.call(self);
               if (self.request.from_date === self.request.to_date) {
                 self.uiOptions.multipleDays = false;
               }
@@ -522,6 +523,7 @@ define([
        */
       this._init = function () {
         initAvailableStatusesMatrix.call(this);
+        initListeners.call(this);
 
         return initRoles.call(this)
           .then(function () {
@@ -707,6 +709,7 @@ define([
        */
       function createRequest () {
         return this.request.create()
+          .then(triggerChildComponentsSubmitAndWaitForResponse)
           .then(function () {
             postSubmit.call(this, 'LeaveRequest::new');
           }.bind(this));
@@ -845,17 +848,14 @@ define([
       /**
        * Checks if a leave request has been changed since opening the modal
        *
-       * FileUploader property deleted because it will not be used
-       * in object comparison
-       *
        * @return {Boolean}
        */
       function hasRequestChanged () {
         // using angular.equals to automatically ignore the $$hashkey property
         return !angular.equals(
-          _.omit(initialLeaveRequestAttributes, 'fileUploader'),
-          _.omit(this.request.attributes(), 'fileUploader')
-        ) || this.request.fileUploader.queue.length !== 0 ||
+          initialLeaveRequestAttributes,
+          this.request.attributes()
+        ) || (this.fileUploader && this.fileUploader.queue.length !== 0) ||
           (this.canManage && this.newStatusOnSave);
       }
 
@@ -915,6 +915,36 @@ define([
       }
 
       /**
+       * Fire an event to start child processes which needs to be done after leave request is saved.
+       * Waits for the response before resolving the promise
+       *
+       * @returns {Promise}
+       */
+      function triggerChildComponentsSubmitAndWaitForResponse () {
+        var deferred = $q.defer();
+        var errors = [];
+        var responses = 0;
+
+        if (childComponentsCount > 0) {
+          $rootScope.$broadcast('LeaveRequestPopup::submit', doneCallback);
+        } else {
+          deferred.resolve();
+        }
+
+        function doneCallback (error) {
+          error && errors.push(error);
+
+          if (++responses === childComponentsCount) {
+            unsubscribeFromEvents();
+
+            errors.length > 0 ? deferred.reject(errors) : deferred.resolve();
+          }
+        }
+
+        return deferred.promise;
+      }
+
+      /**
        * Initialize from and to dates and day types.
        * It will also set the day types.
        *
@@ -937,6 +967,13 @@ define([
         } else {
           return $q.resolve();
         }
+      }
+
+      function initListeners () {
+        listeners.push(
+          $rootScope.$on('LeaveRequestPopup::requestObjectUpdated', setInitialAttributes.bind(this)),
+          $rootScope.$on('LeaveRequestPopup::childComponent::register', function () { childComponentsCount++; })
+        );
       }
 
       /**
@@ -1160,12 +1197,30 @@ define([
       }
 
       /**
+       * Set Initial attribute
+       */
+      function setInitialAttributes () {
+        initialLeaveRequestAttributes = angular.copy(this.request.attributes());
+      }
+
+      /**
+       * Gets called when the component is destroyed
+       */
+      function unsubscribeFromEvents () {
+        // destroy all the event
+        _.forEach(listeners, function (listener) {
+          listener();
+        });
+      }
+
+      /**
        * Validates and updates the leave request
        *
        * @returns {Promise}
        */
       function updateRequest () {
         return this.request.update()
+          .then(triggerChildComponentsSubmitAndWaitForResponse)
           .then(function () {
             if (this.isRole('manager')) {
               postSubmit.call(this, 'LeaveRequest::updatedByManager');
