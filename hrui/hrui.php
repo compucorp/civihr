@@ -953,24 +953,27 @@ function _hrui_menuSetActive($isActive) {
 function _hrui_createHelpMenu(&$menu) {
   _hrui_civix_insert_navigation_menu($menu, '', [
     'name' => ts('Help'),
-    'permission' => 'access CiviCRM'
+    'permission' => 'access CiviCRM',
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Help', [
     'name' => ts('User Guide'),
     'url' => 'http://civihr-documentation.readthedocs.io/en/latest/',
+    'target' => '_blank',
     'permission' => 'access CiviCRM'
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Help', [
     'name' => ts('CiviHR website'),
     'url' => 'https://www.civihr.org/',
+    'target' => '_blank',
     'permission' => 'access CiviCRM'
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Help', [
     'name' => ts('Get support'),
     'url' => 'https://www.civihr.org/support',
+    'target' => '_blank',
     'permission' => 'access CiviCRM'
   ]);
 }
@@ -988,18 +991,21 @@ function _hrui_createDeveloperMenu(&$menu) {
 
   _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('API Explorer'),
-    'url' => '/civicrm/api',
+    'url' => 'civicrm/api',
+    'target' => '_blank',
     'permission' => 'access CiviCRM'
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('Developer Docs'),
+    'target' => '_blank',
     'url' => 'https://civicrm.org/developer-documentation?src=iam',
     'permission' => 'access CiviCRM'
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('Style Guide'),
+    'target' => '_blank',
     'url' => 'https://www.civihr.org/support',
     'permission' => 'access CiviCRM'
   ]);
