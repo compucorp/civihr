@@ -4,7 +4,8 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
-  'common/services/hr-settings'
+  'common/services/hr-settings',
+  'common/services/session'
 ], function (_, moment, components) {
   components.component('leaveRequestPopupCommentsTab', {
     bindings: {
@@ -16,14 +17,16 @@ define([
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-comments-tab.html';
     }],
     controllerAs: 'commentsCtrl',
-    controller: ['$log', '$rootScope', 'HR_settings', 'shared-settings', 'Contact', controller]
+    controller: ['$log', '$rootScope', 'HR_settings', 'shared-settings', 'Contact', 'Session', controller]
   });
 
-  function controller ($log, $rootScope, HRSettings, sharedSettings, Contact) {
+  function controller ($log, $rootScope, HRSettings, sharedSettings, Contact, Session) {
     $log.debug('Component: leave-request-popup-comments-tab');
 
-    var vm = Object.create(this);
+    var loggedInContactId = null;
+    var vm = this;
 
+    vm.loading = { component: true };
     vm.comment = {
       text: '',
       contacts: {}
@@ -31,6 +34,7 @@ define([
 
     (function init () {
       loadCommentsAndContactNames();
+      loadLoggedInContactId();
     }());
 
     /**
@@ -38,7 +42,7 @@ define([
      */
     vm.addComment = function () {
       vm.request.comments.push({
-        contact_id: vm.request.contact_id,
+        contact_id: loggedInContactId,
         created_at: moment(new Date()).format(sharedSettings.serverDateTimeFormat),
         leave_request_id: vm.request.id,
         text: vm.comment.text
@@ -73,7 +77,7 @@ define([
      * @return {String}
      */
     vm.getCommentorName = function (contactId) {
-      if (contactId === vm.request.contact_id) {
+      if (contactId === loggedInContactId) {
         return 'Me';
       } else if (vm.comment.contacts[contactId]) {
         return vm.comment.contacts[contactId].display_name;
@@ -116,14 +120,8 @@ define([
      * @return {Promise}
      */
     function loadContactNames () {
-      var contactIDs = [];
-
-      _.each(vm.request.comments, function (comment) {
-        // Push only unique contactId's which are not same as logged in user
-        if (comment.contact_id !== vm.request.contact_id && contactIDs.indexOf(comment.contact_id) === -1) {
-          contactIDs.push(comment.contact_id);
-        }
-      });
+      var contactsIndex = _.indexBy(vm.request.comments, 'contact_id');
+      var contactIDs = Object.keys(contactsIndex);
 
       return Contact.all({
         id: { IN: contactIDs }
@@ -147,6 +145,20 @@ define([
         });
     }
 
-    return vm;
+    /**
+     * Loads the contact id of the currently logged in user.
+     *
+     * @return {Promise}
+     */
+    function loadLoggedInContactId () {
+      vm.loading.component = true;
+
+      return Session.get().then(function (value) {
+        loggedInContactId = value.contactId;
+      })
+      .then(function () {
+        vm.loading.component = false;
+      });
+    }
   }
 });
