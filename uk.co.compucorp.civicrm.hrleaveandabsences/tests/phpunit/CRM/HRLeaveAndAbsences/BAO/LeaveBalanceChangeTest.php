@@ -2274,7 +2274,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(3, $totalBalanceChange);
   }
 
-  public function testGetTotalApprovedToilForPeriod() {
+  public function testGetTotalApprovedToilForPeriodShouldOnlyAccountForApprovedRequests() {
     $contactID = 1;
     $absenceTypeID = 1;
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
