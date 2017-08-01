@@ -11,4 +11,10 @@
     back: '/index.php?q=*path*&*query*',
     front: '/index.php?q=*path*&*query*'
   });
+
+  window.Drupal = {
+    settings: {
+      currentCiviCRMUserId: 123
+    }
+  };
 })(CRM);
