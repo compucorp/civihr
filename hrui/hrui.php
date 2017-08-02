@@ -999,7 +999,7 @@ function _hrui_createDeveloperMenu(&$menu) {
   _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('Developer Docs'),
     'target' => '_blank',
-    'url' => 'https://civicrm.org/developer-documentation?src=iam',
+    'url' => 'https://civihr.atlassian.net/wiki/spaces/CIV/pages',
     'permission' => 'access CiviCRM'
   ]);
 
