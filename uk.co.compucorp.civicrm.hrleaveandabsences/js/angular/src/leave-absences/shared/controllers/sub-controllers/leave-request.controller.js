@@ -1,7 +1,8 @@
 /* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/controllers',
-  'leave-absences/shared/controllers/request-ctrl',
+  'leave-absences/shared/controllers/request.controller',
   'leave-absences/shared/models/instances/leave-request-instance'
 ], function (controllers) {
   controllers.controller('LeaveRequestCtrl', [

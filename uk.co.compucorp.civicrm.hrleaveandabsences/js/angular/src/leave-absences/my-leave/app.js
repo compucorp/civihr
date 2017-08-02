@@ -20,7 +20,7 @@ define([
   'leave-absences/shared/components/leave-request-popup-comments-tab.component',
   'leave-absences/shared/components/leave-request-popup-files-tab',
   'leave-absences/shared/components/leave-request-record-actions.component',
-  'leave-absences/shared/directives/leave-request-popup',
+  'leave-absences/shared/directives/leave-request-popup.directive',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/shared/models/calendar-model',

@@ -5,7 +5,7 @@
     'common/angular',
     'common/angularMocks',
     'leave-absences/shared/config',
-    'leave-absences/shared/directives/leave-request-popup'
+    'leave-absences/shared/directives/leave-request-popup.directive'
   ], function (angular) {
     'use strict';
 

@@ -21,7 +21,7 @@ define([
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/components/staff-leave-report',
   'leave-absences/shared/components/staff-leave-calendar',
-  'leave-absences/shared/directives/leave-request-popup',
+  'leave-absences/shared/directives/leave-request-popup.directive',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/calendar-model',
   'leave-absences/shared/models/leave-request-model',

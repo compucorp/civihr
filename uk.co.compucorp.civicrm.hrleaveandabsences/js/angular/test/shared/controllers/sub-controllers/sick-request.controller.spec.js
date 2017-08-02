@@ -17,7 +17,7 @@
     'mocks/apis/option-group-api-mock',
     'mocks/apis/public-holiday-api-mock',
     'common/mocks/services/api/contact-mock',
-    'leave-absences/shared/controllers/sub-controllers/sick-request-ctrl',
+    'leave-absences/shared/controllers/sub-controllers/sick-request.controller',
     'leave-absences/shared/modules/shared-settings'
   ], function (_, optionGroupMock, mockData) {
     'use strict';

@@ -1,16 +1,18 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'leave-absences/shared/modules/controllers',
-  'leave-absences/shared/controllers/request-ctrl',
-  'leave-absences/shared/models/instances/sickness-request-instance',
+  'leave-absences/shared/controllers/request.controller',
+  'leave-absences/shared/models/instances/sickness-request-instance'
 ], function (_, controllers) {
   controllers.controller('SicknessRequestCtrl', [
     '$controller', '$log', '$q', '$uibModalInstance', 'api.optionGroup', 'directiveOptions', 'SicknessRequestInstance',
     function ($controller, $log, $q, $modalInstance, OptionGroup, directiveOptions, SicknessRequestInstance) {
       $log.debug('SicknessRequestCtrl');
 
-      var parentRequestCtrl = $controller('RequestCtrl'),
-        vm = Object.create(parentRequestCtrl);
+      var parentRequestCtrl = $controller('RequestCtrl');
+      var vm = Object.create(parentRequestCtrl);
 
       vm.directiveOptions = directiveOptions;
       vm.$modalInstance = $modalInstance;
@@ -37,7 +39,7 @@ define([
        */
       vm.isDocumentInRequest = function (value) {
         return !!_.find(vm.sicknessDocumentTypes, function (document) {
-          return document.value == value;
+          return document.value === value;
         });
       };
 
@@ -52,7 +54,7 @@ define([
         var docsArray = vm.request.getDocumentArray();
 
         return !!_.find(docsArray, function (document) {
-          return document == value;
+          return document === value;
         });
       };
 
@@ -68,7 +70,7 @@ define([
       /**
        * Initializes the controller on loading the dialog
        */
-      (function initController() {
+      (function initController () {
         vm.loading.absenceTypes = true;
 
         vm._init()
@@ -88,7 +90,7 @@ define([
        *
        * @return {Promise}
        */
-      function loadDocuments() {
+      function loadDocuments () {
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_required_document')
           .then(function (documentTypes) {
             vm.sicknessDocumentTypes = documentTypes;
@@ -100,7 +102,7 @@ define([
        *
        * @return {Promise}
        */
-      function loadReasons() {
+      function loadReasons () {
         return OptionGroup.valuesOf('hrleaveandabsences_sickness_reason')
           .then(function (reasons) {
             vm.sicknessReasons = _.indexBy(reasons, 'name');
