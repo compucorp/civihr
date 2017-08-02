@@ -9,14 +9,15 @@ define([
       return settings.pathTpl + 'components/manager-notification-badge.html';
     }],
     controllerAs: 'managerNotificationBadge',
-    controller: ['$log', '$q', '$rootScope', 'Session', 'OptionGroup', 'shared-settings', controller]
+    controller: ('ManagerNotificationBadgeController', ManagerNotificationBadgeController)
   });
 
-  function controller ($log, $q, $rootScope, Session, OptionGroup, sharedSettings) {
+  ManagerNotificationBadgeController.$inject = ['$log', '$q', '$rootScope', 'Session', 'OptionGroup', 'shared-settings'];
+
+  function ManagerNotificationBadgeController ($log, $q, $rootScope, Session, OptionGroup, sharedSettings) {
     $log.debug('Component: manager-notification-badge');
 
     var filters = {};
-    var leaveRequestStatuses = [];
     var vm = this;
     vm.eventName = 'updateStatus';
 
@@ -25,7 +26,7 @@ define([
         getManagerId(),
         getStatusId()
       ]).then(function () {
-        $rootScope.$emit('ManagerNotification:: Initialize Filters::' + vm.eventName, filters);
+        $rootScope.$emit('LeaveNotificationBadge:: Initialize Filters::' + vm.eventName, filters);
       });
     })();
 
@@ -44,11 +45,11 @@ define([
     /**
      * Get the status id for awaiting approval status
      *
-     * @returns {Promise}
+     * @return {Promise}
      */
     function getStatusId () {
       return loadStatuses()
-        .then(function () {
+        .then(function (leaveRequestStatuses) {
           filters.status_id = _.find(leaveRequestStatuses, function (status) {
             return status.name === sharedSettings.statusNames.awaitingApproval;
           }).value;
@@ -58,13 +59,10 @@ define([
     /**
      * Loads all the leave request statuses
      *
-     * @returns {Promise}
+     * @return {Promise}
      */
     function loadStatuses () {
-      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
-        .then(function (statuses) {
-          leaveRequestStatuses = statuses;
-        });
+      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status');
     }
   }
 });

@@ -31,7 +31,7 @@ define([
     });
 
     it('broadcasts an event with filter data', function () {
-      expect($rootScope.$emit).toHaveBeenCalledWith('ManagerNotification:: Initialize Filters::' + controller.eventName, {
+      expect($rootScope.$emit).toHaveBeenCalledWith('LeaveNotificationBadge:: Initialize Filters::' + controller.eventName, {
         managed_by: window.Drupal.settings.currentCiviCRMUserId,
         status_id: '3'
       });

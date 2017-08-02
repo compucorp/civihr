@@ -11,10 +11,12 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-notification-badge.html';
     }],
     controllerAs: 'badge',
-    controller: ['$log', '$rootScope', 'pubSub', 'LeaveRequest', controller]
+    controller: ('LeaveNotificationBadgeController', LeaveNotificationBadgeController)
   });
 
-  function controller ($log, $rootScope, pubSub, LeaveRequest) {
+  LeaveNotificationBadgeController.$inject = ['$log', '$rootScope', 'pubSub', 'LeaveRequest'];
+
+  function LeaveNotificationBadgeController ($log, $rootScope, pubSub, LeaveRequest) {
     $log.debug('Component: leave-notification-badge');
 
     var filters = {};
@@ -43,11 +45,12 @@ define([
 
     /**
      * Initializes the filter and fetches fetches filtered leave requests
-     * @param {Object} e - Event object
+     *
      * @param {Object} filtersData - Filters
+     *
      * @return {Promise}
      */
-    function initializeFilters (e, filtersData) {
+    function initializeFilters (__, filtersData) {
       filters = filtersData;
 
       return fetchCount();
@@ -57,8 +60,8 @@ define([
      * Initializes the event listeners
      */
     function initializeListeners () {
-      $rootScope.$on('ManagerNotification:: Initialize Filters::' + vm.eventName, initializeFilters);
-      pubSub.subscribe('LeaveRequest::' + vm.eventName, fetchCount);
+      $rootScope.$on('LeaveNotificationBadge:: Initialize Filters::' + vm.eventName, initializeFilters);
+      pubSub.subscribe('LeaveNotificationBadge::' + vm.eventName, fetchCount);
     }
   }
 });

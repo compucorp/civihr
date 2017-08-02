@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'leave-absences/manager-leave/app'
+  'leave-absences/shared/components/leave-notification-badge.component'
 ], function () {
   'use strict';
 
@@ -27,16 +27,16 @@ define([
       expect($log.debug).toHaveBeenCalled();
     });
 
-    describe('initial tests', function () {
-      it('count is zero', function () {
+    describe('on init', function () {
+      it('sets count to zero', function () {
         expect(controller.count).toBe(0);
       });
 
-      it('loader is shown', function () {
+      it('sets shows the loader', function () {
         expect(controller.loading.count).toBe(true);
       });
 
-      it('event name is same as the passed attribute', function () {
+      it('sets the event name same as the passed attribute', function () {
         expect(controller.eventName).toBe(eventName);
       });
     });
@@ -47,7 +47,7 @@ define([
 
       beforeEach(function () {
         spyOn(LeaveRequest, 'all').and.returnValue($q.resolve(apiReturnValue));
-        $rootScope.$broadcast('ManagerNotification:: Initialize Filters::' + eventName, filters);
+        $rootScope.$broadcast('LeaveNotificationBadge:: Initialize Filters::' + eventName, filters);
       });
 
       it('calls Leave Request API to get the count', function () {
@@ -59,11 +59,11 @@ define([
           $rootScope.$digest();
         });
 
-        it('count is set to number of records returned', function () {
+        it('sets count to number of records returned', function () {
           expect(controller.count).toBe(apiReturnValue.list.length);
         });
 
-        it('loader is hidden', function () {
+        it('hides the loader', function () {
           expect(controller.loading.count).toBe(false);
         });
       });
