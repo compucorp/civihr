@@ -20,6 +20,7 @@ define([
     var filters = {};
     var vm = this;
     vm.count = 0;
+    vm.loading = { count: true };
 
     (function init () {
       initializeListeners();
@@ -31,9 +32,11 @@ define([
      * @return {Promise}
      */
     function fetchCount () {
+      vm.loading.count = true;
       return LeaveRequest.all(filters)
         .then(function (leaveRequests) {
           vm.count = leaveRequests.list.length;
+          vm.loading.count = false;
         });
     }
 
