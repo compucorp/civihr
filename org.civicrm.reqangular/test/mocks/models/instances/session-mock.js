@@ -7,9 +7,14 @@ define([
 
   mocks.service('SessionMock', ['$q', function ($q) {
     var session = {
-      contact_id: 999
+      contactId: 999
     };
 
+    /**
+     * Returns user session
+     *
+     * @return {Promise} resolves with {Object}
+     */
     function get () {
       return $q.resolve(session);
     }

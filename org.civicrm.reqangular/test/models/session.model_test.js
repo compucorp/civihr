@@ -5,7 +5,7 @@
   define([
     'common/angular',
     'common/angularMocks',
-    'common/services/session'
+    'common/models/session.model'
   ], function () {
     'use strict';
 
@@ -13,7 +13,7 @@
       var $scope, Session, value;
       var contactId = 999;
 
-      beforeEach(module('common.services'));
+      beforeEach(module('common.models'));
 
       describe('get method', function () {
         describe('when logged in at the Admin Portal', function () {
