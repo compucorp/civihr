@@ -129,7 +129,6 @@
               <tr
                 class="pointer"
                 leave-request-popup leave-request="request"
-                is-self-record="$root.section === 'my-leave'"
                 ng-repeat="request in vm.leaveRequests.table.list track by request.id">
                 <td style="width: 25%;">{{vm.getUserNameByID(request.contact_id)}}</td>
                 <td style="width: 20%;">{{vm.getAbsenceTypesByID(request.type_id)}}</td>

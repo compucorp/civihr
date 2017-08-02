@@ -5,7 +5,7 @@ define([
   'common/moment',
   'leave-absences/shared/modules/components',
   'common/services/hr-settings',
-  'common/services/session'
+  'common/models/session.model'
 ], function (_, moment, components) {
   components.component('leaveRequestPopupCommentsTab', {
     bindings: {

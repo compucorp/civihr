@@ -7,8 +7,8 @@ define([
   'common/moment',
   'common/services/api/option-group',
   'common/services/hr-settings',
-  'common/services/session',
   'common/models/contact',
+  'common/models/session.model',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/calendar-model',
@@ -528,23 +528,15 @@ define([
         initListeners.call(this);
 
         return loadLoggedInContactId.call(this)
-          .then(function () {
-            return initRoles.call(this);
-          }.bind(this))
-          .then(function () {
-            return this._initRequest();
-          }.bind(this))
-          .then(function () {
-            return loadStatuses.call(this);
-          }.bind(this))
+          .then(initRoles.bind(this))
+          .then(this._initRequest.bind(this))
+          .then(loadStatuses.bind(this))
           .then(function () {
             initOpenMode.call(this);
 
             return this.canManage && !this.isMode('edit') && loadManagees.call(this);
           }.bind(this))
-          .then(function () {
-            return loadAbsencePeriods.call(this);
-          }.bind(this))
+          .then(loadAbsencePeriods.bind(this))
           .then(function () {
             initAbsencePeriod.call(this);
             this._setMinMaxDate();
