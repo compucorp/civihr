@@ -97,12 +97,8 @@
         var parentRequestCtrl;
 
         beforeEach(function () {
-          var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId,
-            isSelfRecord: true
-          };
+          initTestController({ isSelfRecord: true });
 
-          initTestController(directiveOptions);
           parentRequestCtrl = $controller('RequestCtrl');
         });
 
@@ -235,12 +231,9 @@
           beforeEach(function () {
             toilRequest = TOILRequestInstance.init(mockData.findBy('request_type', 'toil'));
             toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            var directiveOptions = {
-              contactId: toilRequest.contact_id, // staff's contact id
-              leaveRequest: toilRequest
-            };
 
-            initTestController(directiveOptions);
+            initTestController({ leaveRequest: toilRequest });
+
             absenceType = _.find($ctrl.absenceTypes, function (absenceType) {
               return absenceType.id === $ctrl.request.type_id;
             });
@@ -265,17 +258,14 @@
 
             beforeEach(function () {
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+
               expiryDate = '2017-12-31';
               toilRequest = TOILRequestInstance.init(mockData.findBy('status_id', status));
               toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               toilRequest.toil_expiry_date = expiryDate;
-              var directiveOptions = {
-                contactId: 203, // manager's contact id
-                leaveRequest: toilRequest
-              };
-
               role = 'manager';
-              initTestController(directiveOptions);
+
+              initTestController({ leaveRequest: toilRequest });
               $ctrl.calculateToilExpiryDate();
 
               expiryDate = $ctrl._convertDateFormatFromServer($ctrl.request.toil_expiry_date);
@@ -311,15 +301,11 @@
 
               describe('and staff edits new request', function () {
                 beforeEach(function () {
-                  var directiveOptions = {
-                    contactId: toilRequest.contact_id, // staff's contact id
-                    leaveRequest: $ctrl.request
-                  };
                   role = 'staff';
                   delete $ctrl.request.id;
-
                   oldExpiryDate = $ctrl.request.toil_expiry_date;
-                  initTestController(directiveOptions);
+
+                  initTestController({ leaveRequest: $ctrl.request });
                   $ctrl.calculateToilExpiryDate();
                 });
 
@@ -334,14 +320,12 @@
 
               describe('and staff edits open request', function () {
                 beforeEach(function () {
-                  var directiveOptions = {
-                    contactId: toilRequest.contact_id, // staff's contact id
-                    leaveRequest: $ctrl.request
-                  };
                   role = 'staff';
 
-                  initTestController(directiveOptions);
+                  initTestController({ leaveRequest: $ctrl.request });
+
                   $ctrl.uiOptions.expiryDate = oldExpiryDate;
+
                   $ctrl.updateExpiryDate();
                 });
 
@@ -360,10 +344,7 @@
         describe('when TOIL Request does not expire', function () {
           beforeEach(function () {
             AbsenceType.canExpire.and.returnValue($q.resolve(false));
-            initTestController({
-              contactId: 202,
-              leaveRequest: $ctrl.request
-            });
+            initTestController({ leaveRequest: $ctrl.request });
           });
 
           it('should set requestCanExpire to false', function () {

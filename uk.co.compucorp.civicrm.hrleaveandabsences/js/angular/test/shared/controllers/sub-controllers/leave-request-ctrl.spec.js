@@ -110,12 +110,8 @@
 
       describe('staff opens request popup', function () {
         beforeEach(inject(function () {
-          var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId,
-            isSelfRecord: true
-          };
+          initTestController({ isSelfRecord: true });
 
-          initTestController(directiveOptions);
           parentRequestCtrl = $controller('RequestCtrl');
         }));
 
@@ -727,15 +723,11 @@
             beforeEach(function () {
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
               var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               leaveRequest.fileUploader = { queue: [] };
-              var directiveOptions = {
-                contactId: leaveRequest.contact_id, // staff's contact id
-                isSelfRecord: true,
-                leaveRequest: leaveRequest
-              };
 
-              initTestController(directiveOptions);
+              initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
             });
 
             describe('on initialization', function () {
@@ -821,13 +813,8 @@
 
                 leaveRequest.from_date = leaveRequest.to_date = dateServer2017;
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-                var directiveOptions = {
-                  contactId: leaveRequest.contact_id, // staff's contact id
-                  isSelfRecord: true,
-                  leaveRequest: leaveRequest
-                };
 
-                initTestController(directiveOptions);
+                initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
               });
 
               it('selects single day', function () {
@@ -843,15 +830,12 @@
                 var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-                var directiveOptions = {
-                  contactId: leaveRequest.contact_id, // staff's contact id
-                  isSelfRecord: true,
-                  leaveRequest: leaveRequest
-                };
 
-                initTestController(directiveOptions);
+                initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
+
                 expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
                 $ctrl.balance.closing = 5;
+
                 $ctrl.submit();
               });
 
@@ -885,11 +869,7 @@
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             leaveRequest.fileUploader = { queue: [] };
 
-            initTestController({
-              contactId: leaveRequest.contact_id, // staff's contact id
-              isSelfRecord: true,
-              leaveRequest: leaveRequest
-            });
+            initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
           });
 
           it('does not allow to submit the leave request without changes', function () {
@@ -912,15 +892,11 @@
 
           beforeEach(function () {
             var approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+
             leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', approvalStatus));
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            var directiveOptions = {
-              contactId: leaveRequest.contact_id, // staff's contact id
-              isSelfRecord: true,
-              leaveRequest: leaveRequest
-            };
 
-            initTestController(directiveOptions);
+            initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
           });
 
           it('sets mode to view', function () {
@@ -949,14 +925,11 @@
         beforeEach(function () {
           var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
           var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-          var directiveOptions = {
-            contactId: 203, // manager's contact id
-            leaveRequest: leaveRequest
-          };
           role = 'manager';
 
-          initTestController(directiveOptions);
+          initTestController({ leaveRequest: leaveRequest });
         });
 
         describe('on initialization', function () {
@@ -1045,11 +1018,9 @@
 
       describe('manager raises absence request on behalf of staff', function () {
         beforeEach(function () {
-          var directiveOptions = {
-            contactId: 203 // manager's contact id
-          };
           role = 'manager';
-          initTestController(directiveOptions);
+
+          initTestController();
         });
 
         it('does not set contact', function () {
@@ -1066,7 +1037,7 @@
 
             beforeEach(function () {
               approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
-              $ctrl.request.contact_id = 202;
+              $ctrl.request.contact_id = '204';
               $ctrl.initAfterContactSelection();
               $scope.$digest();
             });
@@ -1128,7 +1099,7 @@
       });
 
       describe('admin opens leave request popup in edit mode', function () {
-        var adminId = 206;
+        var adminId = '206';
 
         beforeEach(function () {
           var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
@@ -1137,10 +1108,7 @@
           leaveRequest.contact_id = adminId.toString();
 
           role = 'admin';
-          initTestController({
-            contactId: adminId,
-            leaveRequest: leaveRequest
-          });
+          initTestController({ leaveRequest: leaveRequest });
         });
 
         describe('on initialization', function () {
@@ -1169,15 +1137,13 @@
       });
 
       describe('admin opens leave request popup in create mode', function () {
-        var adminId = 206;
+        var adminId = '206';
 
         beforeEach(function () {
           $ctrl.request.contact_id = adminId.toString();
 
           role = 'admin';
-          initTestController({
-            contactId: adminId
-          });
+          initTestController();
         });
 
         describe('on initialization', function () {
@@ -1196,17 +1162,15 @@
       });
 
       describe('admin opens leave request popup in create mode for a pre-selected contact', function () {
-        var selectedContactId = 208;
-        var adminId = 206;
+        var selectedContactId = '208';
+        var adminId = '206';
 
         beforeEach(function () {
           $ctrl.request.contact_id = adminId.toString();
 
           role = 'admin';
-          initTestController({
-            contactId: adminId,
-            selectedContactId: selectedContactId
-          });
+
+          initTestController({ selectedContactId: selectedContactId });
         });
 
         describe('on initialization', function () {
@@ -1235,7 +1199,7 @@
           spyOn(dialog, 'open').and.callFake(function (params) {
             confirmFunction = params.onConfirm;
           });
-          initTestController({ contactId: CRM.vars.leaveAndAbsences.contactId });
+          initTestController();
           $ctrl.deleteLeaveRequest();
         });
 
@@ -1285,10 +1249,7 @@
 
           status = _.indexBy(allStatuses, 'name');
 
-          initTestController({
-            contactId: CRM.vars.leaveAndAbsences.contactId,
-            userRole: 'admin'
-          });
+          initTestController();
 
           $ctrl._init();
           $ctrl.request = { status_id: null };
@@ -1408,6 +1369,7 @@
        */
       function initTestController (directiveOptions) {
         $scope = $rootScope.$new();
+        directiveOptions = directiveOptions || {};
 
         $ctrl = $controller('LeaveRequestCtrl', {
           $scope: $scope,

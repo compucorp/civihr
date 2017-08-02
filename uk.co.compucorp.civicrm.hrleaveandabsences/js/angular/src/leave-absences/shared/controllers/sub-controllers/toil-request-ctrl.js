@@ -76,6 +76,7 @@ define([
         .then(function (expiryDate) {
           vm.request.toil_expiry_date = expiryDate;
           vm.uiOptions.expiryDate = new Date(expiryDate);
+
           return expiryDate;
         });
       };

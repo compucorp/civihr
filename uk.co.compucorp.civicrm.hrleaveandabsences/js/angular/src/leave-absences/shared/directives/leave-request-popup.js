@@ -33,7 +33,6 @@ define([
 
       return {
         scope: {
-          contactId: '<',
           leaveRequest: '<',
           leaveType: '@',
           selectedContactId: '<',
@@ -54,7 +53,6 @@ define([
               resolve: {
                 directiveOptions: function () {
                   return {
-                    contactId: scope.contactId,
                     leaveRequest: scope.leaveRequest,
                     selectedContactId: scope.selectedContactId,
                     isSelfRecord: scope.isSelfRecord

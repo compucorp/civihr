@@ -84,12 +84,8 @@
         var parentRequestCtrl;
 
         beforeEach(function () {
-          var directiveOptions = {
-            contactId: CRM.vars.leaveAndAbsences.contactId,
-            isSelfRecord: true
-          };
+          initTestController({ isSelfRecord: true });
 
-          initTestController(directiveOptions);
           parentRequestCtrl = $controller('RequestCtrl');
         });
 
@@ -214,12 +210,7 @@
           sicknessRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
           sicknessRequest.sickness_required_documents = '1,2';
 
-          var directiveOptions = {
-            contactId: sicknessRequest.contact_id, // staff's contact id
-            leaveRequest: sicknessRequest
-          };
-
-          initTestController(directiveOptions);
+          initTestController({ leaveRequest: sicknessRequest });
         });
 
         it('does show balance', function () {
