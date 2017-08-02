@@ -1,5 +1,4 @@
-(function (CRM, Drupal, require) {
-  CRM.vars.leaveAndAbsences = CRM.vars.leaveAndAbsences || Drupal.settings.civihr_leave_absences;
+(function (CRM, require) {
   var srcPath = CRM.vars.leaveAndAbsences.baseURL + '/js/angular/src/leave-absences';
 
   require.config({
@@ -20,4 +19,4 @@
       );
     });
   });
-})(CRM, window.Drupal, require);
+})(CRM, require);

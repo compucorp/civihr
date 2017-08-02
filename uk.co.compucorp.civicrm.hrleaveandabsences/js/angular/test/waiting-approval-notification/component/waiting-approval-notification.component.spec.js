@@ -8,7 +8,7 @@
     'use strict';
 
     describe('waitingApprovalNotification', function () {
-      var $componentController, $log, $rootScope, OptionGroup, OptionGroupAPIMock;
+      var controller, $componentController, $log, $rootScope, OptionGroup, OptionGroupAPIMock;
 
       beforeEach(module('leave-absences.mocks', 'waiting-approval-notification'));
       beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _OptionGroupAPIMock_, _OptionGroup_) {
@@ -32,14 +32,14 @@
       });
 
       it('broadcasts an event with filter data', function () {
-        expect($rootScope.$emit).toHaveBeenCalledWith('WaitingApproval:: Initialize Filters', {
+        expect($rootScope.$emit).toHaveBeenCalledWith('WaitingApproval:: Initialize Filters::' + controller.eventName, {
           managed_by: window.Drupal.settings.currentCiviCRMUserId,
           status_id: '3'
         });
       });
 
       function compileComponent () {
-        $componentController('waitingApprovalNotification', null, {});
+        controller = $componentController('waitingApprovalNotification', null, {});
         $rootScope.$digest();
       }
     });

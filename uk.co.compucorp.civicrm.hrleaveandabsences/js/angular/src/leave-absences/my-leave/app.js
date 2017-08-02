@@ -11,7 +11,7 @@ define([
   'common/services/angular-date/date-format',
   'leave-absences/shared/ui-router',
   'leave-absences/my-leave/modules/config',
-  'leave-absences/my-leave/components/my-leave-container',
+  'leave-absences/my-leave/components/my-leave-container.component',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/components/staff-leave-report',

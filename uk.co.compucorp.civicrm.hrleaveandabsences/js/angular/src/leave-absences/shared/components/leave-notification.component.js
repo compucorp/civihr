@@ -33,6 +33,7 @@ define([
      */
     function fetchCount () {
       vm.loading.count = true;
+
       return LeaveRequest.all(filters)
         .then(function (leaveRequests) {
           vm.count = leaveRequests.list.length;
@@ -48,6 +49,7 @@ define([
      */
     function initializeFilters (e, filtersData) {
       filters = filtersData;
+
       return fetchCount();
     }
 
@@ -55,7 +57,7 @@ define([
      * Initializes the event listeners
      */
     function initializeListeners () {
-      $rootScope.$on('WaitingApproval:: Initialize Filters', initializeFilters);
+      $rootScope.$on('WaitingApproval:: Initialize Filters::' + vm.eventName, initializeFilters);
       pubSub.subscribe('LeaveRequest::' + vm.eventName, fetchCount);
     }
 

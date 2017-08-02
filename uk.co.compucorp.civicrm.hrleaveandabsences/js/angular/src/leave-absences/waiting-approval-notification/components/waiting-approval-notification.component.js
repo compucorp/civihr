@@ -25,7 +25,7 @@ define([
         getManagerId(),
         getStatusId()
       ]).then(function () {
-        $rootScope.$emit('WaitingApproval:: Initialize Filters', filters);
+        $rootScope.$emit('WaitingApproval:: Initialize Filters::' + vm.eventName, filters);
       });
     })();
 

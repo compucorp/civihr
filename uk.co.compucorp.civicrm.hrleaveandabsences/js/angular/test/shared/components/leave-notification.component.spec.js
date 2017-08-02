@@ -47,7 +47,7 @@ define([
 
       beforeEach(function () {
         spyOn(LeaveRequest, 'all').and.returnValue($q.resolve(apiReturnValue));
-        $rootScope.$broadcast('WaitingApproval:: Initialize Filters', filters);
+        $rootScope.$broadcast('WaitingApproval:: Initialize Filters::' + eventName, filters);
       });
 
       it('calls Leave Request API to get the count', function () {
