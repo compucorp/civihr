@@ -5,7 +5,7 @@ define([
 ], function () {
   'use strict';
 
-  describe('leaveNotification', function () {
+  describe('leaveNotificationBadge', function () {
     var $componentController, $log, $rootScope, $q, controller, LeaveRequest;
     var eventName = 'some-event';
 
@@ -70,7 +70,7 @@ define([
     });
 
     function compileComponent () {
-      controller = $componentController('leaveNotification', null, {
+      controller = $componentController('leaveNotificationBadge', null, {
         eventName: eventName
       });
       $rootScope.$digest();

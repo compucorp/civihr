@@ -5,7 +5,7 @@ define([
   'common/services/pub-sub',
   'common/services/session',
   'leave-absences/shared/modules/shared-settings',
-  'leave-absences/shared/components/leave-notification.component',
+  'leave-absences/shared/components/leave-notification-badge.component',
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/manager-notification-badge/components/manager-notification-badge.component',
   'leave-absences/manager-notification-badge/modules/config'

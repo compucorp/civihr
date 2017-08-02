@@ -3,19 +3,19 @@
 define([
   'leave-absences/shared/modules/components'
 ], function (components) {
-  components.component('leaveNotification', {
+  components.component('leaveNotificationBadge', {
     bindings: {
       eventName: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sharedPathTpl + 'components/leave-notification.html';
+      return sharedSettings.sharedPathTpl + 'components/leave-notification-badge.html';
     }],
-    controllerAs: 'notification',
+    controllerAs: 'badge',
     controller: ['$log', '$rootScope', 'pubSub', 'LeaveRequest', controller]
   });
 
   function controller ($log, $rootScope, pubSub, LeaveRequest) {
-    $log.debug('Component: leave-notification');
+    $log.debug('Component: leave-notification-badge');
 
     var filters = {};
     var vm = this;
