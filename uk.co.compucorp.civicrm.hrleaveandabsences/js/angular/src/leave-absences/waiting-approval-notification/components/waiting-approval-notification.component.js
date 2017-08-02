@@ -37,7 +37,7 @@ define([
     function getManagerId () {
       return Session.get()
         .then(function (session) {
-          filters.managed_by = session.contact_id;
+          filters.managed_by = session.contactId;
         });
     }
 
