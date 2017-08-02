@@ -1,11 +1,13 @@
 <div uib-dropdown dropdown-append-to-body ng-if="actions.allowedActions.length">
-  <a href class="btn btn-default btn-inline" uib-dropdown-toggle>
+  <a href class="btn btn-default btn-inline"
+    ng-click="$event.stopPropagation()" uib-dropdown-toggle>
     <i class="fa fa-ellipsis-v"></i>
   </a>
   <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
     <li ng-repeat="action in actions.allowedActions"
       ng-switch="!action.isDirectAction">
       <a href
+        ng-click="$event.stopPropagation()"
         ng-switch-when="true"
         leave-request-popup
         leave-request="actions.leaveRequest"
