@@ -3,9 +3,9 @@
 (function (CRM) {
   define([
     'common/angular',
-    'leave-absences/waiting-approval-notification/modules/settings'
+    'leave-absences/manager-notification-badge/modules/settings'
   ], function (angular) {
-    return angular.module('waiting-approval-notification.config', ['waiting-approval-notification.settings'])
+    return angular.module('manager-notification-badge.config', ['manager-notification-badge.settings'])
       .config([
         '$resourceProvider', '$httpProvider', '$logProvider', 'settings',
         function ($resourceProvider, $httpProvider, $logProvider, settings) {

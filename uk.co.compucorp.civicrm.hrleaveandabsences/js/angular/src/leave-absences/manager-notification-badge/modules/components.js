@@ -3,5 +3,5 @@
 define([
   'common/angular'
 ], function (angular) {
-  return angular.module('waiting-approval-notification.components', []);
+  return angular.module('manager-notification-badge.components', []);
 });

@@ -57,10 +57,8 @@ define([
      * Initializes the event listeners
      */
     function initializeListeners () {
-      $rootScope.$on('WaitingApproval:: Initialize Filters::' + vm.eventName, initializeFilters);
+      $rootScope.$on('ManagerNotification:: Initialize Filters::' + vm.eventName, initializeFilters);
       pubSub.subscribe('LeaveRequest::' + vm.eventName, fetchCount);
     }
-
-    return vm;
   }
 });

@@ -5,9 +5,9 @@
   modules: [
     {name: 'admin-dashboard'},
     {name: 'absence-tab'},
-    {name: 'my-leave'},
     {name: 'manager-leave'},
-    {name: 'waiting-approval-notification'}
+    {name: 'manager-notification-badge'},
+    {name: 'my-leave'}
   ],
   mainConfigFile: 'src/leave-absences/shared/config.js',
   paths: {

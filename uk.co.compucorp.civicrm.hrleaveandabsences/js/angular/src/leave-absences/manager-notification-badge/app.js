@@ -7,16 +7,16 @@ define([
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/components/leave-notification.component',
   'leave-absences/shared/models/leave-request-model',
-  'leave-absences/waiting-approval-notification/components/waiting-approval-notification.component',
-  'leave-absences/waiting-approval-notification/modules/config'
+  'leave-absences/manager-notification-badge/components/manager-notification-badge.component',
+  'leave-absences/manager-notification-badge/modules/config'
 ], function (angular) {
-  angular.module('waiting-approval-notification', [
+  angular.module('manager-notification-badge', [
     'ngResource',
     'leave-absences.components',
     'leave-absences.models',
     'leave-absences.settings',
-    'waiting-approval-notification.components',
-    'waiting-approval-notification.config'
+    'manager-notification-badge.components',
+    'manager-notification-badge.config'
   ])
   .run(['$log', function ($log) {
     $log.debug('app.run');

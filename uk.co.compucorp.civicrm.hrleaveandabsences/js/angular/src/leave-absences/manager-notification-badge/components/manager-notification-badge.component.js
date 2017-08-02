@@ -2,18 +2,18 @@
 
 define([
   'common/lodash',
-  'leave-absences/waiting-approval-notification/modules/components'
+  'leave-absences/manager-notification-badge/modules/components'
 ], function (_, components) {
-  components.component('waitingApprovalNotification', {
+  components.component('managerNotificationBadge', {
     templateUrl: ['settings', function (settings) {
-      return settings.pathTpl + 'components/waiting-approval-notification.html';
+      return settings.pathTpl + 'components/manager-notification-badge.html';
     }],
-    controllerAs: 'waitingApprovalNotification',
+    controllerAs: 'managerNotificationBadge',
     controller: ['$log', '$q', '$rootScope', 'Session', 'OptionGroup', 'shared-settings', controller]
   });
 
   function controller ($log, $q, $rootScope, Session, OptionGroup, sharedSettings) {
-    $log.debug('Component: waiting-approval-notification');
+    $log.debug('Component: manager-notification-badge');
 
     var filters = {};
     var leaveRequestStatuses = [];
@@ -25,7 +25,7 @@ define([
         getManagerId(),
         getStatusId()
       ]).then(function () {
-        $rootScope.$emit('WaitingApproval:: Initialize Filters::' + vm.eventName, filters);
+        $rootScope.$emit('ManagerNotification:: Initialize Filters::' + vm.eventName, filters);
       });
     })();
 
@@ -66,7 +66,5 @@ define([
           leaveRequestStatuses = statuses;
         });
     }
-
-    return vm;
   }
 });
