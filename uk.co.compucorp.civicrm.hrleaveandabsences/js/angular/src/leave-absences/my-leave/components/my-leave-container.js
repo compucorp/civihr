@@ -11,46 +11,10 @@ define([
       return settings.pathTpl + 'components/my-leave-container.html';
     }],
     controllerAs: 'myleave',
-    controller: ['$log', '$rootScope', '$scope', '$uibModal', 'settings', function ($log, $rootScope, $scope, $modal, settings) {
+    controller: ['$log', '$rootScope', function ($log, $rootScope) {
       $log.debug('Component: my-leave-container');
 
       $rootScope.section = 'my-leave';
-
-      var vm = this;
-
-      vm.leaveRequest = {
-        fromDate: new Date(),
-        toDate: new Date(),
-        showDatePickerFrom: false,
-        showDatePickerTo: false,
-        isChangeExpanded: false,
-        selectedResponse: '1',
-        isAdmin: false
-      };
-
-      vm.showModal = function () {
-        $modal.open({
-          templateUrl: settings.pathTpl + 'components/my-leave-request.html',
-          // TODO The controller needs to be moved a separate file when implementing the logic
-          controller: ['leaveRequest', '$uibModalInstance', function (leaveRequest, modalInstance) {
-            var vm = {};
-
-            vm.leaveRequest = leaveRequest;
-
-            vm.closeModal = function () {
-              modalInstance.close();
-            };
-
-            return vm;
-          }],
-          controllerAs: 'modal',
-          resolve: {
-            leaveRequest: function () {
-              return vm.leaveRequest;
-            }
-          }
-        });
-      };
     }]
   });
 });
