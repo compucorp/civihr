@@ -159,6 +159,10 @@
               expect($ctrl.uiOptions.toDate).not.toBeDefined();
             });
 
+            it('defaults to a multiple day selection', function () {
+              expect($ctrl.uiOptions.multipleDays).toBe(true);
+            });
+
             it('has no day types selected', function () {
               expect($ctrl.uiOptions.selectedFromType).not.toBeDefined();
               expect($ctrl.uiOptions.selectedToType).not.toBeDefined();

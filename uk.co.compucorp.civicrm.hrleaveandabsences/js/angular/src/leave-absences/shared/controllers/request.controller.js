@@ -290,9 +290,6 @@ define([
 
             if (self.isMode('edit')) {
               setInitialAttributes.call(self);
-              if (self.request.from_date === self.request.to_date) {
-                self.uiOptions.multipleDays = false;
-              }
             }
 
             self.postContactSelection = false;
@@ -546,6 +543,9 @@ define([
             if (this.directiveOptions.selectedContactId) {
               this.request.contact_id = this.directiveOptions.selectedContactId;
             }
+
+            setDaySelectionMode.call(this);
+
             // The additional check here prevents error being displayed on startup when no contact is selected
             if (this.request.contact_id) {
               return this.initAfterContactSelection();
@@ -1163,6 +1163,16 @@ define([
         this.pagination.totalItems = this.balance.change.breakdown.length;
         this.pagination.filteredbreakdown = this.balance.change.breakdown;
         this.pagination.pageChanged();
+      }
+
+      /**
+       * Sets day selection mode: multiple days or a single day
+       */
+      function setDaySelectionMode () {
+        if ((this.isMode('edit') && this.request.from_date === this.request.to_date) ||
+          (this.isMode('create') && this.isLeaveType('sickness'))) {
+          this.uiOptions.multipleDays = false;
+        }
       }
 
       /**

@@ -125,6 +125,10 @@
             expect(Object.keys($ctrl.toilAmounts).length).toBeGreaterThan(0);
           });
 
+          it('defaults to a multiple day selection', function () {
+            expect($ctrl.uiOptions.multipleDays).toBe(true);
+          });
+
           it('gets absence types with true allow_accruals_request param', function () {
             expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
               allow_accruals_request: true
