@@ -6,7 +6,6 @@
     <li ng-repeat="option in vm.leaveRequestOptions">
       <a
         leave-request-popup leave-type="{{option.type}}"
-        contact-id="vm.contactId"
         selected-contact-id="vm.selectedContactId"
         is-self-record="vm.isSelfRecord">
         <i class="fa fa-{{option.icon}}" aria-hidden="true"></i> {{option.label}}

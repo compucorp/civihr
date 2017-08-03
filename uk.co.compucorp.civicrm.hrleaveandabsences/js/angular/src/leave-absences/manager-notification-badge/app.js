@@ -2,8 +2,8 @@
 
 define([
   'common/angular',
+  'common/models/session.model',
   'common/services/pub-sub',
-  'common/services/session',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/shared/components/leave-notification-badge.component',

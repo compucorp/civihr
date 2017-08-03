@@ -3,9 +3,9 @@
 define([
   'common/lodash',
   'leave-absences/shared/modules/directives',
-  'leave-absences/shared/controllers/sub-controllers/leave-request-ctrl',
-  'leave-absences/shared/controllers/sub-controllers/sick-request-ctrl',
-  'leave-absences/shared/controllers/sub-controllers/toil-request-ctrl'
+  'leave-absences/shared/controllers/sub-controllers/leave-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/sick-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/toil-request.controller'
 ], function (_, directives) {
   'use strict';
 
@@ -33,7 +33,6 @@ define([
 
       return {
         scope: {
-          contactId: '<',
           leaveRequest: '<',
           leaveType: '@',
           selectedContactId: '<',
@@ -54,7 +53,6 @@ define([
               resolve: {
                 directiveOptions: function () {
                   return {
-                    contactId: scope.contactId,
                     leaveRequest: scope.leaveRequest,
                     selectedContactId: scope.selectedContactId,
                     isSelfRecord: scope.isSelfRecord

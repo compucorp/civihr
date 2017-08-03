@@ -8,6 +8,7 @@ define([
   'common/services/api/option-group',
   'common/services/hr-settings',
   'common/models/contact',
+  'common/models/session.model',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/calendar-model',
@@ -20,10 +21,10 @@ define([
   controllers.controller('RequestCtrl', [
     '$log', '$q', '$rootScope', 'Contact', 'dialog', 'AbsencePeriod', 'AbsenceType',
     'api.optionGroup', 'checkPermissions', 'Calendar', 'Entitlement', 'HR_settings',
-    'LeaveRequest', 'PublicHoliday', 'shared-settings',
+    'Session', 'LeaveRequest', 'PublicHoliday', 'shared-settings',
     function ($log, $q, $rootScope, Contact, dialog, AbsencePeriod, AbsenceType,
       OptionGroup, checkPermissions, Calendar, Entitlement, HRSettings,
-      LeaveRequest, PublicHoliday, sharedSettings
+      Session, LeaveRequest, PublicHoliday, sharedSettings
     ) {
       $log.debug('RequestCtrl');
 
@@ -32,6 +33,7 @@ define([
       var childComponentsCount = 0;
       var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
       var listeners = [];
+      var loggedInContactId = '';
       var role = '';
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
@@ -525,21 +527,16 @@ define([
         initAvailableStatusesMatrix.call(this);
         initListeners.call(this);
 
-        return initRoles.call(this)
-          .then(function () {
-            return this._initRequest();
-          }.bind(this))
-          .then(function () {
-            return loadStatuses.call(this);
-          }.bind(this))
+        return loadLoggedInContactId.call(this)
+          .then(initRoles.bind(this))
+          .then(this._initRequest.bind(this))
+          .then(loadStatuses.bind(this))
           .then(function () {
             initOpenMode.call(this);
 
             return this.canManage && !this.isMode('edit') && loadManagees.call(this);
           }.bind(this))
-          .then(function () {
-            return loadAbsencePeriods.call(this);
-          }.bind(this))
+          .then(loadAbsencePeriods.bind(this))
           .then(function () {
             initAbsencePeriod.call(this);
             this._setMinMaxDate();
@@ -569,7 +566,7 @@ define([
           // _.deepClone or angular.copy were not uploading files correctly
           attributes = this.directiveOptions.leaveRequest.attributes();
         } else if (!this.canManage) {
-          attributes = { contact_id: this.directiveOptions.contactId };
+          attributes = { contact_id: loggedInContactId };
         }
 
         return attributes;
@@ -1025,6 +1022,17 @@ define([
       }
 
       /**
+       * Loads the contact id of the currently logged in user
+       *
+       * @return {Promise}
+       */
+      function loadLoggedInContactId () {
+        return Session.get().then(function (value) {
+          loggedInContactId = value.contactId;
+        });
+      }
+
+      /**
        * Loads the managees of currently logged in user
        *
        * @return {Promise}
@@ -1042,12 +1050,12 @@ define([
             .then(function (contacts) {
               this.managedContacts = _.remove(contacts.list, function (contact) {
                 // Removes the admin from the list of contacts
-                return contact.id !== this.directiveOptions.contactId;
-              }.bind(this));
+                return contact.id !== loggedInContactId;
+              });
             }.bind(this));
         } else {
           // In any other case (including managing)
-          return Contact.find(this.directiveOptions.contactId)
+          return Contact.find(loggedInContactId)
             .then(function (contact) {
               return contact.leaveManagees();
             })

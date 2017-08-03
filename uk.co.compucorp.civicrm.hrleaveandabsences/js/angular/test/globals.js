@@ -2,7 +2,7 @@
   CRM.vars = {
     leaveAndAbsences: {
       baseURL: '/base/tools/extensions/civihr/uk.co.compucorp.civicrm.hrleaveandabsences',
-      contactId: 202,
+      contactId: '202',
       attachmentToken: 'sample123'
     }
   };
@@ -14,7 +14,7 @@
 
   window.Drupal = {
     settings: {
-      currentCiviCRMUserId: 123
+      currentCiviCRMUserId: '202'
     }
   };
 })(CRM);

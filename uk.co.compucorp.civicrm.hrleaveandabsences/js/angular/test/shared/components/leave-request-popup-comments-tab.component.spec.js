@@ -1,10 +1,9 @@
 /* eslint-env amd, jasmine */
-/* global CRM, inject */
 
 define([
   'common/angular',
   'mocks/data/leave-request-data',
-  'common/mocks/services/session-mock',
+  'common/mocks/models/instances/session-mock',
   'leave-absences/manager-leave/app'
 ], function (angular, leaveRequestData) {
   'use strict';
