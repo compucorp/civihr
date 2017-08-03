@@ -4,7 +4,7 @@
   </button>
   <ul class="dropdown-menu" role="menu" uib-dropdown-menu>
     <li ng-repeat="option in vm.leaveRequestOptions">
-      <a
+      <a href
         leave-request-popup leave-type="{{option.type}}"
         selected-contact-id="vm.selectedContactId"
         is-self-record="vm.isSelfRecord">
