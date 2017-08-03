@@ -5,10 +5,11 @@ define([
   'leave-absences/shared/modules/controllers',
   'common/lodash',
   'common/moment',
-  'common/services/api/option-group',
-  'common/services/hr-settings',
   'common/models/contact',
   'common/models/session.model',
+  'common/services/api/option-group',
+  'common/services/hr-settings',
+  'common/services/pub-sub',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/calendar-model',
@@ -20,10 +21,10 @@ define([
 
   controllers.controller('RequestCtrl', [
     '$log', '$q', '$rootScope', 'Contact', 'dialog', 'AbsencePeriod', 'AbsenceType',
-    'api.optionGroup', 'checkPermissions', 'Calendar', 'Entitlement', 'HR_settings',
+    'api.optionGroup', 'checkPermissions', 'pubSub', 'Calendar', 'Entitlement', 'HR_settings',
     'Session', 'LeaveRequest', 'PublicHoliday', 'shared-settings',
     function ($log, $q, $rootScope, Contact, dialog, AbsencePeriod, AbsenceType,
-      OptionGroup, checkPermissions, Calendar, Entitlement, HRSettings,
+      OptionGroup, checkPermissions, pubSub, Calendar, Entitlement, HRSettings,
       Session, LeaveRequest, PublicHoliday, sharedSettings
     ) {
       $log.debug('RequestCtrl');
@@ -677,6 +678,20 @@ define([
       };
 
       /**
+       * Broadcasts an event when request has been updated from awaiting approval status to something else
+       */
+      function broadcastRequestUpdatedEvent () {
+        var awaitingApprovalStatusValue = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
+
+        // Check if the leave request had awaiting approval status before update,
+        // and after update the status is not awaiting approval
+        if (initialLeaveRequestAttributes.status_id === awaitingApprovalStatusValue &&
+          awaitingApprovalStatusValue !== this.request.status_id) {
+          pubSub.publish('ManagerBadge:: Update Count');
+        }
+      }
+
+      /**
        * Checks if all params are set to calculate balance
        *
        * @param {Boolean} true if all present else false
@@ -1133,7 +1148,9 @@ define([
        * @param {String} eventName name of the event to emit
        */
       function postSubmit (eventName) {
+        broadcastRequestUpdatedEvent.call(this);
         $rootScope.$emit(eventName, this.request);
+
         this.errors = [];
         // close the modal
         this.ok();

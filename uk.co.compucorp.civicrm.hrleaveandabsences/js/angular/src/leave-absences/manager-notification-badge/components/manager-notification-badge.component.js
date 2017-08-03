@@ -19,7 +19,7 @@ define([
 
     var filters = {};
     var vm = this;
-    vm.refreshCountEventName = 'updateStatus';
+    vm.refreshCountEventName = 'ManagerBadge:: Update Count';
 
     (function init () {
       $q.all([

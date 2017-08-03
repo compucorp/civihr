@@ -37,7 +37,7 @@ define([
     function fetchCount () {
       vm.loading.count = true;
 
-      return LeaveRequest.all(vm.filters)
+      return LeaveRequest.all(vm.filters, null, null, null, false)
         .then(function (leaveRequests) {
           vm.count = leaveRequests.list.length;
           vm.loading.count = false;
