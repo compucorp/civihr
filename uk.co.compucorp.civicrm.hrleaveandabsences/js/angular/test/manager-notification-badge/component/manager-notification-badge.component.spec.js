@@ -30,8 +30,8 @@ define([
       expect($log.debug).toHaveBeenCalled();
     });
 
-    it('broadcasts an event with filter data', function () {
-      expect($rootScope.$emit).toHaveBeenCalledWith('LeaveNotificationBadge:: Initialize Filters::' + controller.eventName, {
+    it('sets the filter with manager id and status id', function () {
+      expect(controller.filters).toEqual({
         managed_by: window.Drupal.settings.currentCiviCRMUserId,
         status_id: '3'
       });

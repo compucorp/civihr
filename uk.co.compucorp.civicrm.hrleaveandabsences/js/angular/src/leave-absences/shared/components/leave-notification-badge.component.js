@@ -5,27 +5,28 @@ define([
 ], function (components) {
   components.component('leaveNotificationBadge', {
     bindings: {
-      eventName: '<'
+      filters: '<',
+      refreshCountEventName: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/leave-notification-badge.html';
     }],
     controllerAs: 'badge',
-    controller: ('LeaveNotificationBadgeController', LeaveNotificationBadgeController)
+    controller: LeaveNotificationBadgeController
   });
 
-  LeaveNotificationBadgeController.$inject = ['$log', '$rootScope', 'pubSub', 'LeaveRequest'];
+  LeaveNotificationBadgeController.$inject = ['$log', 'pubSub', 'LeaveRequest'];
 
-  function LeaveNotificationBadgeController ($log, $rootScope, pubSub, LeaveRequest) {
+  function LeaveNotificationBadgeController ($log, pubSub, LeaveRequest) {
     $log.debug('Component: leave-notification-badge');
 
-    var filters = {};
     var vm = this;
     vm.count = 0;
     vm.loading = { count: true };
 
     (function init () {
-      initializeListeners();
+      initListeners();
+      fetchCount();
     })();
 
     /**
@@ -36,7 +37,7 @@ define([
     function fetchCount () {
       vm.loading.count = true;
 
-      return LeaveRequest.all(filters)
+      return LeaveRequest.all(vm.filters)
         .then(function (leaveRequests) {
           vm.count = leaveRequests.list.length;
           vm.loading.count = false;
@@ -44,24 +45,10 @@ define([
     }
 
     /**
-     * Initializes the filter and fetches fetches filtered leave requests
-     *
-     * @param {Object} filtersData - Filters
-     *
-     * @return {Promise}
-     */
-    function initializeFilters (__, filtersData) {
-      filters = filtersData;
-
-      return fetchCount();
-    }
-
-    /**
      * Initializes the event listeners
      */
-    function initializeListeners () {
-      $rootScope.$on('LeaveNotificationBadge:: Initialize Filters::' + vm.eventName, initializeFilters);
-      pubSub.subscribe('LeaveNotificationBadge::' + vm.eventName, fetchCount);
+    function initListeners () {
+      pubSub.subscribe(vm.refreshCountEventName, fetchCount);
     }
   }
 });

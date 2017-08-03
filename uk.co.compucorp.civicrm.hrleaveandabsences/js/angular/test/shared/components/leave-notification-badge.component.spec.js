@@ -7,7 +7,9 @@ define([
 
   describe('leaveNotificationBadge', function () {
     var $componentController, $log, $rootScope, $q, controller, LeaveRequest;
+    var apiReturnValue = { list: [1, 2, 3] };
     var eventName = 'some-event';
+    var filters = { list: 'somevalue' };
 
     beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'manager-leave'));
 
@@ -19,6 +21,7 @@ define([
       LeaveRequest = _LeaveRequest_;
 
       spyOn($log, 'debug');
+      spyOn(LeaveRequest, 'all').and.returnValue($q.resolve(apiReturnValue));
 
       compileComponent();
     }));
@@ -28,26 +31,8 @@ define([
     });
 
     describe('on init', function () {
-      it('sets count to zero', function () {
-        expect(controller.count).toBe(0);
-      });
-
-      it('sets shows the loader', function () {
-        expect(controller.loading.count).toBe(true);
-      });
-
       it('sets the event name same as the passed attribute', function () {
-        expect(controller.eventName).toBe(eventName);
-      });
-    });
-
-    describe('when filter data is initialized', function () {
-      var filters = { list: 'somevalue' };
-      var apiReturnValue = { list: [1, 2, 3] };
-
-      beforeEach(function () {
-        spyOn(LeaveRequest, 'all').and.returnValue($q.resolve(apiReturnValue));
-        $rootScope.$broadcast('LeaveNotificationBadge:: Initialize Filters::' + eventName, filters);
+        expect(controller.refreshCountEventName).toBe(eventName);
       });
 
       it('calls Leave Request API to get the count', function () {
@@ -55,10 +40,6 @@ define([
       });
 
       describe('after api returns with value', function () {
-        beforeEach(function () {
-          $rootScope.$digest();
-        });
-
         it('sets count to number of records returned', function () {
           expect(controller.count).toBe(apiReturnValue.list.length);
         });
@@ -71,7 +52,8 @@ define([
 
     function compileComponent () {
       controller = $componentController('leaveNotificationBadge', null, {
-        eventName: eventName
+        refreshCountEventName: eventName,
+        filters: filters
       });
       $rootScope.$digest();
     }

@@ -9,24 +9,24 @@ define([
       return settings.pathTpl + 'components/manager-notification-badge.html';
     }],
     controllerAs: 'managerNotificationBadge',
-    controller: ('ManagerNotificationBadgeController', ManagerNotificationBadgeController)
+    controller: ManagerNotificationBadgeController
   });
 
-  ManagerNotificationBadgeController.$inject = ['$log', '$q', '$rootScope', 'Session', 'OptionGroup', 'shared-settings'];
+  ManagerNotificationBadgeController.$inject = ['$log', '$q', 'Session', 'OptionGroup', 'shared-settings'];
 
-  function ManagerNotificationBadgeController ($log, $q, $rootScope, Session, OptionGroup, sharedSettings) {
+  function ManagerNotificationBadgeController ($log, $q, Session, OptionGroup, sharedSettings) {
     $log.debug('Component: manager-notification-badge');
 
     var filters = {};
     var vm = this;
-    vm.eventName = 'updateStatus';
+    vm.refreshCountEventName = 'updateStatus';
 
     (function init () {
       $q.all([
         getManagerId(),
         getStatusId()
       ]).then(function () {
-        $rootScope.$emit('LeaveNotificationBadge:: Initialize Filters::' + vm.eventName, filters);
+        vm.filters = filters;
       });
     })();
 
