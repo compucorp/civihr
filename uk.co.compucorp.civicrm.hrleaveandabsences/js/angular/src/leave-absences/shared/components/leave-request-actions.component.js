@@ -183,8 +183,7 @@ define([
         return status.name === sharedSettings.statusNames.awaitingApproval;
       }).value;
 
-      // Check if the status before the action was awaiting approval
-      // If yes publish an event
+      // Check if the status was "Awaiting Approval" before the action
       if (statusIdBeforeAction === awaitingApprovalStatusValue) {
         pubSub.publish('ManagerBadge:: Update Count');
       }

@@ -5,11 +5,11 @@ define([
   'leave-absences/shared/modules/controllers',
   'common/lodash',
   'common/moment',
+  'common/models/contact',
+  'common/models/session.model',
   'common/services/api/option-group',
   'common/services/hr-settings',
   'common/services/pub-sub',
-  'common/models/contact',
-  'common/models/session.model',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/calendar-model',
@@ -1150,6 +1150,7 @@ define([
       function postSubmit (eventName) {
         broadcastRequestUpdatedEvent.call(this);
         $rootScope.$emit(eventName, this.request);
+
         this.errors = [];
         // close the modal
         this.ok();

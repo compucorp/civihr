@@ -54,6 +54,7 @@ define([
     describe('when event is fired', function () {
       beforeEach(function () {
         apiReturnValue = { list: [1, 2, 3, 4] };
+
         pubSub.publish(eventName);
         LeaveRequest.all.and.returnValue($q.resolve(apiReturnValue));
       });
