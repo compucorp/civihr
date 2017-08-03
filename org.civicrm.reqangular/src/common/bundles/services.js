@@ -7,8 +7,7 @@ define([
   'common/services/file-upload',
   'common/services/hr-settings',
   'common/services/notification',
-  'common/services/pub-sub',
-  'common/services/session'
+  'common/services/pub-sub'
 ], function () {
 
 });

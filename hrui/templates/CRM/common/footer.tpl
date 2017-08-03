@@ -36,15 +36,11 @@
 
     {if !empty($footer_status_severity)}
       <span class="status{if $footer_status_severity gt 3} crm-error{elseif $footer_status_severity gt 2} crm-warning{else} crm-ok{/if}">
-      <a href="{crmURL p='civicrm/a/#/status'}">{$footer_status_message}</a>.
-    </span>
+      <a target="_blank" href="{crmURL p='civicrm/a/#/status'}">{$footer_status_message}</a>.
+    </span>&nbsp;
     {/if}
-    CiviHR is openly available under the <a href="http://www.gnu.org/licenses/agpl-3.0.html "> GNU AGPL License</a>.
-    <br />
-    <a target="_blank" href="http://civihr-documentation.readthedocs.io/en/latest/">User Guide</a>&nbsp;
-    <a target="_blank" href="https://github.com/civicrm/civihr">{ts}Download CiviHR{/ts}</a>&nbsp;
-    <a target="_blank" href="https://civihr.atlassian.net/wiki/display/CIV/Welcome ">View Wiki page</a>&nbsp;
-    <a target="_blank" href="https://civihr.org">Project website</a>
+    CiviHR is openly available under the <a target="_blank" href="http://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL License</a> and can be downloaded from the
+    <a target="_blank" href="https://civihr.org">Project website</a>&nbsp;.
     <div class="text-center">
       <div class="footer-logo">
         <i class="icon-logo-full"></i>
