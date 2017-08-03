@@ -4,7 +4,8 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
-  'common/services/hr-settings'
+  'common/services/hr-settings',
+  'common/services/pub-sub'
 ], function (_, moment, components) {
   components.component('leaveRequestActions', {
     bindings: {
@@ -22,13 +23,16 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-request-actions.html';
     }],
     controllerAs: 'actions',
-    controller: ['$log', '$q', '$rootScope', 'OptionGroup', 'dialog', 'shared-settings', controller]
+    controller: LeaveRequestActionsController
   });
 
-  function controller ($log, $q, $rootScope, OptionGroup, dialog, sharedSettings) {
+  LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog', 'pubSub', 'shared-settings'];
+
+  function LeaveRequestActionsController ($log, $rootScope, dialog, pubSub, sharedSettings) {
     $log.debug('Component: leave-request-action-dropdown');
 
     var vm = this;
+    var statusIdBeforeAction;
     var statusNames = sharedSettings.statusNames;
     var actions = {
       edit: {
@@ -100,11 +104,11 @@ define([
     /**
      * Performs an action on a given leave request
      *
-     * @param {LeaveRequestInstance} leaveRequest
      * @param {string} action
      */
     vm.action = function (action) {
       var dialogParams = actions[action].dialog;
+      statusIdBeforeAction = vm.leaveRequest.status_id;
 
       dialog.open({
         title: 'Confirm ' + dialogParams.title + '?',
@@ -115,7 +119,7 @@ define([
         onConfirm: function () {
           return vm.leaveRequest[action]()
             .then(function () {
-              $rootScope.$emit('LeaveRequest::' + (action === 'delete' ? 'deleted' : 'edit'), vm.leaveRequest);
+              publishEvents(action);
             });
         }
       });
@@ -167,6 +171,25 @@ define([
       if (Array.isArray(vm.absenceTypes)) {
         vm.absenceTypes = _.indexBy(vm.absenceTypes, 'id');
       }
+    }
+
+    /**
+     * Publish events
+     *
+     * @param action
+     */
+    function publishEvents (action) {
+      var awaitingApprovalStatusValue = _.find(vm.leaveRequestStatuses, function (status) {
+        return status.name === sharedSettings.statusNames.awaitingApproval;
+      }).value;
+
+      // Check if the status before the action was awaiting approval
+      // If yes publish an event
+      if (statusIdBeforeAction === awaitingApprovalStatusValue) {
+        pubSub.publish('ManagerBadge:: Update Count');
+      }
+
+      $rootScope.$emit('LeaveRequest::' + (action === 'delete' ? 'deleted' : 'edit'), vm.leaveRequest);
     }
 
     /**

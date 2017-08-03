@@ -6,18 +6,19 @@ define([
   'use strict';
 
   describe('leaveNotificationBadge', function () {
-    var $componentController, $log, $rootScope, $q, controller, LeaveRequest;
+    var $componentController, $log, $rootScope, $q, controller, LeaveRequest, pubSub;
     var apiReturnValue = { list: [1, 2, 3] };
     var eventName = 'some-event';
     var filters = { list: 'somevalue' };
 
     beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'manager-leave'));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _$q_, _LeaveRequest_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _$q_, _pubSub_, _LeaveRequest_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
       $rootScope = _$rootScope_;
+      pubSub = _pubSub_;
       LeaveRequest = _LeaveRequest_;
 
       spyOn($log, 'debug');
@@ -36,7 +37,29 @@ define([
       });
 
       it('calls Leave Request API to get the count', function () {
-        expect(LeaveRequest.all).toHaveBeenCalledWith(filters);
+        expect(LeaveRequest.all).toHaveBeenCalledWith(filters, null, null, null, false);
+      });
+
+      describe('after api returns with value', function () {
+        it('sets count to number of records returned', function () {
+          expect(controller.count).toBe(apiReturnValue.list.length);
+        });
+
+        it('hides the loader', function () {
+          expect(controller.loading.count).toBe(false);
+        });
+      });
+    });
+
+    describe('when event is fired', function () {
+      beforeEach(function () {
+        apiReturnValue = { list: [1, 2, 3, 4] };
+        pubSub.publish(eventName);
+        LeaveRequest.all.and.returnValue($q.resolve(apiReturnValue));
+      });
+
+      it('calls Leave Request API to get the count', function () {
+        expect(LeaveRequest.all).toHaveBeenCalledWith(filters, null, null, null, false);
       });
 
       describe('after api returns with value', function () {
