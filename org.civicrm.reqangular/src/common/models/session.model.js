@@ -3,14 +3,13 @@
 (function (CRM, Drupal) {
   define([
     'common/modules/models',
-    'common/models/model',
-    'common/models/instances/session-instance.instance'
+    'common/models/model'
   ], function (models) {
     'use strict';
 
     models.factory('Session', [
-      '$log', '$q', 'Model', 'SessionInstance',
-      function ($log, $q, Model, SessionInstance) {
+      '$log', '$q', 'Model',
+      function ($log, $q, Model) {
         $log.debug('Session');
 
         return Model.extend({

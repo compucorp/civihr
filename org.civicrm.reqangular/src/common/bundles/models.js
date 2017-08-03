@@ -12,8 +12,7 @@ define([
   'common/models/instances/contact-instance',
   'common/models/instances/contract-instance',
   'common/models/instances/group-instance',
-  'common/models/instances/job-role-instance',
-  'common/models/instances/session-instance.instance'
+  'common/models/instances/job-role-instance'
 ], function () {
 
 });
