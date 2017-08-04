@@ -25,7 +25,8 @@
     describe('SicknessRequestCtrl', function () {
       var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $controller, sharedSettings, $q,
         $provide, AbsenceTypeAPI, SicknessRequestInstance;
-      var date2016 = '01/12/2016';
+      var date2016 = '2016-12-01';
+      var date2017 = '2017-12-01';
       var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
@@ -121,6 +122,10 @@
           });
         });
 
+        it('defaults to a single day selection', function () {
+          expect($ctrl.uiOptions.multipleDays).toBe(false);
+        });
+
         it('cannot submit request', function () {
           expect($ctrl.canSubmit()).toBe(false);
         });
@@ -209,12 +214,44 @@
           sicknessRequest = SicknessRequestInstance.init(mockData.findBy('request_type', 'sickness'));
           sicknessRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
           sicknessRequest.sickness_required_documents = '1,2';
+          sicknessRequest.status_id = optionGroupMock.specificValue(
+            'hrleaveandabsences_leave_request_status', 'value', '3');
 
           initTestController({ leaveRequest: sicknessRequest });
         });
 
+        it('sets edit mode', function () {
+          expect($ctrl.isMode('edit')).toBeTruthy();
+        });
+
         it('does show balance', function () {
           expect($ctrl.uiOptions.showBalance).toBeTruthy();
+        });
+
+        describe('when request states multiple days', function () {
+          beforeEach(function () {
+            sicknessRequest.from_date = date2016;
+            sicknessRequest.to_date = date2017;
+
+            initTestController({ leaveRequest: sicknessRequest });
+          });
+
+          it('shows multiple days', function () {
+            expect($ctrl.uiOptions.multipleDays).toBeTruthy();
+          });
+        });
+
+        describe('when request states a single day', function () {
+          beforeEach(function () {
+            sicknessRequest.from_date = date2016;
+            sicknessRequest.to_date = date2016;
+
+            initTestController({ leaveRequest: sicknessRequest });
+          });
+
+          it('shows single day', function () {
+            expect($ctrl.uiOptions.multipleDays).not.toBeTruthy();
+          });
         });
 
         describe('initializes required documents', function () {
