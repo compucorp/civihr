@@ -5,43 +5,46 @@ define([
   'leave-absences/shared/controllers/request.controller',
   'leave-absences/shared/models/instances/leave-request-instance'
 ], function (controllers) {
-  controllers.controller('LeaveRequestCtrl', [
-    '$controller', '$log', '$uibModalInstance', 'directiveOptions', 'LeaveRequestInstance',
-    function ($controller, $log, $modalInstance, directiveOptions, LeaveRequestInstance) {
-      $log.debug('LeaveRequestCtrl');
+  controllers.controller('LeaveRequestCtrl', LeaveRequestCtrl);
 
-      var parentRequestCtrl = $controller('RequestCtrl');
-      var vm = Object.create(parentRequestCtrl);
+  LeaveRequestCtrl.$inject = ['$controller', '$log', '$uibModalInstance',
+    'directiveOptions', 'LeaveRequestInstance'];
 
-      vm.directiveOptions = directiveOptions;
-      vm.$modalInstance = $modalInstance;
-      vm.initParams = {
-        absenceType: {
-          is_sick: false
-        }
-      };
+  function LeaveRequestCtrl ($controller, $log, $modalInstance,
+    directiveOptions, LeaveRequestInstance) {
+    $log.debug('LeaveRequestCtrl');
 
-      vm._initRequest = _initRequest;
+    var parentRequestCtrl = $controller('RequestCtrl');
+    var vm = Object.create(parentRequestCtrl);
 
-      (function init () {
-        vm.loading.absenceTypes = true;
-
-        vm._init()
-          .finally(function () {
-            vm.loading.absenceTypes = false;
-          });
-      })();
-
-      /**
-       * Initialize leaverequest based on attributes that come from directive
-       */
-      function _initRequest () {
-        var attributes = vm._initRequestAttributes();
-
-        vm.request = LeaveRequestInstance.init(attributes);
+    vm.directiveOptions = directiveOptions;
+    vm.$modalInstance = $modalInstance;
+    vm.initParams = {
+      absenceType: {
+        is_sick: false
       }
+    };
 
-      return vm;
+    vm._initRequest = _initRequest;
+
+    (function init () {
+      vm.loading.absenceTypes = true;
+
+      vm._init()
+        .finally(function () {
+          vm.loading.absenceTypes = false;
+        });
+    })();
+
+    /**
+     * Initialize leaverequest based on attributes that come from directive
+     */
+    function _initRequest () {
+      var attributes = vm._initRequestAttributes();
+
+      vm.request = LeaveRequestInstance.init(attributes);
     }
-  ]);
+
+    return vm;
+  }
 });
