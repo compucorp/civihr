@@ -242,21 +242,21 @@ class CRM_Hrjobcontract_SelectValues {
   }
 
   /**
-   * Get leave types .
+   * Get leave types.
+   *
    * @return array
    */
   public static function buildLeaveTypes() {
-    $result = civicrm_api3('HRAbsenceType', 'get', array(
+    $result = civicrm_api3('AbsenceType', 'get', [
       'sequential' => 1,
-      'is_active' => 1,
-      'options' => array('limit' => 0),
-    ));
+      'is_active' => 1
+    ]);
     $result = $result['values'];
-    $options = array();
+    $options = [];
     foreach ($result as $item) {
-      $label = $item['title'];
-      $options[] =  array( 'id'=>$item['id'], 'label'=> $label);
+      $options[] =  ['id'=>$item['id'], 'label'=> $item['title']];
     }
+
     return $options;
   }
 }
