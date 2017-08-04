@@ -105,9 +105,9 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         // leave types options:
         $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
         foreach($absenceTypes as $absenceType) {
-          $absenceTypeArray = (array)$absenceType;
-          $this->_leaveTypes[$absenceType->id] = $absenceTypeArray;
-          $this->_leaveTypesFlipped[$absenceTypeArray['title']] = $absenceType->id;
+            $absenceTypeArray = (array)$absenceType;
+            $this->_leaveTypes[$absenceType->id] = $absenceTypeArray;
+            $this->_leaveTypesFlipped[$absenceTypeArray['title']] = $absenceType->id;
         }
 
         // location options:
@@ -575,5 +575,14 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         }
 
         return $contactId;
+    }
+
+    /**
+     * Returns Leave/Absence Types
+     *
+     * @return array
+     */
+    public function getLeaveTypes() {
+        return $this->_leaveTypes;
     }
 }
