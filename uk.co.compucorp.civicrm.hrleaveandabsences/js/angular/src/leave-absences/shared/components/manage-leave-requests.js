@@ -41,7 +41,7 @@ define([
       },
       leaveRequest: {
         leaveStatus: vm.leaveRequestStatuses[0],
-        pending_requests: false,
+        pending_requests: true,
         contact_id: null,
         selectedPeriod: null,
         selectedAbsenceTypes: null,
@@ -270,6 +270,17 @@ define([
     }
 
     /**
+     * Returns status value for the given name
+     * @param {String} statusName
+     * @return {String}
+     */
+    function getStatusValueFromName (statusName) {
+      return _.find(vm.leaveRequestStatuses, function (status) {
+        return status.name === statusName;
+      }).value;
+    }
+
+    /**
      * Loads the absence periods
      *
      * @return {Promise}
@@ -471,19 +482,18 @@ define([
     function prepareStatusFilter (filterByStatus) {
       var filters = vm.filters.leaveRequest;
       var statusFilter = [];
-      // get the value for the waiting_approval status
-      var waitingApprovalID = _.find(vm.leaveRequestStatuses, function (status) {
-        return status.name === sharedSettings.statusNames.awaitingApproval;
-      }).value;
+      var waitingApprovalID = getStatusValueFromName(sharedSettings.statusNames.awaitingApproval);
+      var moreInformationRequiredID = getStatusValueFromName(sharedSettings.statusNames.moreInformationRequired);
 
       // if filterByStatus is true then add the leaveStatus to be used in the leave request api
       if (filterByStatus && filters.leaveStatus && filters.leaveStatus.value) {
         statusFilter.push(filters.leaveStatus.value);
       }
 
-      // if pending_requests is true then add the awaiting_approval to be used in the leave request api
-      if (filters.pending_requests && waitingApprovalID) {
+      // When pending_requests is true records with Awaiting Approval or More Information Requested needs to be shown
+      if (filters.pending_requests) {
         statusFilter.push(waitingApprovalID);
+        statusFilter.push(moreInformationRequiredID);
       }
 
       if (statusFilter.length) {

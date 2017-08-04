@@ -703,6 +703,7 @@ define([
 
             beforeEach(function () {
               controller.filters.leaveRequest.leaveStatus = mockStatus;
+              controller.filters.leaveRequest.pending_requests = false;
               executeFilter();
             });
 
@@ -721,15 +722,18 @@ define([
             var waitingApprovalValue = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status').find(function (data) {
               return data.name === 'awaiting_approval';
             }).value;
+            var moreInformationRequiredID = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status').find(function (data) {
+              return data.name === 'more_information_required';
+            }).value;
 
             beforeEach(function () {
               controller.filters.leaveRequest.pending_requests = true;
               executeFilter();
             });
 
-            it('filtered by waiting approval status', function () {
+            it('filtered by waiting approval and more information required status', function () {
               expectLeaveRequestsFilteredBy({
-                status_id: { IN: [waitingApprovalValue] }
+                status_id: { IN: [waitingApprovalValue, moreInformationRequiredID] }
               });
             });
           });
