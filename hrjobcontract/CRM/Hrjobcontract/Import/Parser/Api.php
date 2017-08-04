@@ -46,11 +46,14 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       if(!isset($fieldProviders[$entity])) {
         $fieldProviders[$entity] = new CRM_Hrjobcontract_Import_FieldsProvider_Generic($entity);
       }
-      $entityFields[$entity] = $fieldProviders[$entity]->provide();
 
-      $this->handleSpecialFields($entityFields, $entity);
+      $providedFields = $fieldProviders[$entity]->provide();
+      if($providedFields) {
+        $entityFields[$entity] = $providedFields;
 
-      $this->_allFields = array_merge($entityFields[$entity], $this->_allFields);
+        $this->handleSpecialFields($entityFields, $entity);
+        $this->_allFields = array_merge($entityFields[$entity], $this->_allFields);
+      }
     }
 
     $this->_entityFields = $entityFields;
@@ -642,35 +645,6 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         }
         else  {
           $errorMessage = "{$this->_fields[$key]->_title} with ID [$value] is not an existing provider";
-        }
-        break;
-      case 'HRJobLeave-leave_amount':
-        $convertedValue = array();
-        $leaveAmounts = explode(',', $value);
-        if (!empty($leaveAmounts))  {
-          foreach($leaveAmounts as $leave)  {
-            $typeAndAmount = explode(':', $leave);
-            if (!empty($typeAndAmount))  {
-              $leaveType = trim($typeAndAmount[0]);
-              $leaveAmount = trim($typeAndAmount[1]);
-              if ( filter_var($leaveAmount, FILTER_VALIDATE_INT) === FALSE  || $leaveAmount < 0 )  {
-                $errorMessage = "Leave Amount values should be positive integers";
-                break;
-              }
-              $typeID = $this->getOptionID('HRJobLeave-leave_type', $leaveType);
-              if ($typeID === FALSE) {
-                $errorMessage = "({$leaveType}) is not a valid leave type";
-              }
-              $convertedValue[$typeID] = $leaveAmount;
-            }
-            else {
-              $errorMessage = "{$this->_fields[$key]->_title} format is not correct";
-              break;
-            }
-          }
-        }
-        else {
-          $errorMessage = "{$this->_fields[$key]->_title} format is not correct";
         }
         break;
       case 'HRJobPay-annual_benefits':
