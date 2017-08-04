@@ -111,3 +111,4 @@ id,contact_type,contact_sub_type,sort_name,display_name,nick_name,legal_name,ima
 343,Organization,,Wodesworth Memorial Fund,Wodesworth Memorial Fund,,,,en_US,Both,60bc6fef4c9d77ae36a03bb2de55dd31,CiviHR Sample Data,,,,,,,,,,3,Wodesworth Memorial Fund,,,Wodesworth Memorial Fund,0,
 344,Organization,,Royal Society for Social Welfare,Royal Society for Social Welfare,,,,en_US,Both,69ced0cf5ec4988e5fc175207ac83375,CiviHR Sample Data,,,,,,,,,,3,Royal Society for Social Welfare,,,Royal Society for Social Welfare,0,
 345,Organization,,Sir Henry Patten Trust,Sir Henry Patten Trust,,,,en_US,Both,b2486b0bab40a5fc3a026e92bba9f25c,CiviHR Sample Data,,,,,,,,,,3,Sir Henry Patten Trust,,,Sir Henry Patten Trust,0,
+346,Organization,Pension_Provider,Friends Life,Friends Life,,,,en_US,Both,,CiviHR Sample Data,,,,,,,,,,3,Friends Life,,,Friends Life,0,

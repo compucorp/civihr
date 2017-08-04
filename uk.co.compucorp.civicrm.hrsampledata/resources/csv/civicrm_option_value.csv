@@ -3,7 +3,6 @@ name,activity_type,Interview Prospect,120,Interview Prospect,,0,0,0,0,CiviCase
 name,activity_type,ID badge,124,ID badge,,0,0,0,0,CiviCase
 name,individual_prefix,Miss,5,Miss.,,0,0,0,0,
 name,hrjc_contract_type,Fixed Term,1,Fixed Term,,0,0,0,0,
-name,hrjc_pension_type,Aviva Pensions,1,Friends Life,,0,0,0,0,
 name,hrjc_department,Resources,1,Resources,,0,0,0,0,
 name,hrjc_department,Finance,2,Programme Funding,,0,0,0,0,
 name,hrjc_department,Marketing & Fundraising,3,Programmes,,0,0,0,0,
