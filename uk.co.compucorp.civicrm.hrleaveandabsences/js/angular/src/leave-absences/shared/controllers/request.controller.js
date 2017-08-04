@@ -36,6 +36,7 @@ define([
       var listeners = [];
       var loggedInContactId = '';
       var role = '';
+      var vm = this;
       var NO_ENTITLEMENT_ERROR = 'No entitlement';
 
       this.absencePeriods = [];
@@ -70,24 +71,12 @@ define([
         fromDayTypes: false,
         toDayTypes: false
       };
-      // TODO temp fix to allow pageChanged to be called from html as well from functions here with proper context
-      var parentThis = this;
       this.pagination = {
         currentPage: 1,
         filteredbreakdown: this.balance.change.breakdown,
         numPerPage: 5,
         totalItems: this.balance.change.breakdown.length,
-        /**
-         * Called when user changes the page under selection. It filters the
-         * breakdown to obtain the ones for currently selected page.
-         */
-        pageChanged: function () {
-          // filter breakdowns
-          var begin = (this.currentPage - 1) * this.numPerPage;
-          var end = begin + this.numPerPage;
-
-          this.filteredbreakdown = parentThis.balance.change.breakdown.slice(begin, end);
-        }
+        pageChanged: pageChanged
       };
       this.uiOptions = {
         isChangeExpanded: false,
@@ -123,21 +112,58 @@ define([
         }
       };
 
+      this.changeInNoOfDays = changeInNoOfDays;
+      this.calculateBalanceChange = calculateBalanceChange;
+      this.canSubmit = canSubmit;
+      this.closeAlert = closeAlert;
+      this.deleteLeaveRequest = deleteLeaveRequest;
+      this.dismissModal = dismissModal;
+      this.formatDateTime = formatDateTime;
+      this.getStatuses = getStatuses;
+      this.getStatusFromValue = getStatusFromValue;
+      this.initAfterContactSelection = initAfterContactSelection;
+      this.isLeaveStatus = isLeaveStatus;
+      this.isLeaveType = isLeaveType;
+      this.isMode = isMode;
+      this.isRole = isRole;
+      this.ok = ok;
+      this.submit = submit;
+      this.loadAbsencePeriodDatesTypes = loadAbsencePeriodDatesTypes;
+      this.updateAbsencePeriodDatesTypes = updateAbsencePeriodDatesTypes;
+      this.updateBalance = updateBalance;
+      this._calculateOpeningAndClosingBalance = _calculateOpeningAndClosingBalance;
+      this._checkAndSetAbsencePeriod = _checkAndSetAbsencePeriod;
+      this._convertDateToServerFormat = _convertDateToServerFormat;
+      this._convertDateFormatFromServer = _convertDateFormatFromServer;
+      this._init = _init;
+      this._initRequestAttributes = _initRequestAttributes;
+      this._loadCalendar = _loadCalendar;
+      this._loadAbsenceTypes = _loadAbsenceTypes;
+      this._reset = _reset;
+      this._setDates = _setDates;
+      this._setDateAndTypes = _setDateAndTypes;
+      this._setMinMaxDate = _setMinMaxDate;
+
       /**
-       * Change handler when changing no. of days like Multiple Days or Single Day.
-       * It will reset dates, day types, change balance.
+       * Broadcasts an event when request has been updated from awaiting approval status to something else
        */
-      this.changeInNoOfDays = function () {
-        this._reset();
-        this._calculateOpeningAndClosingBalance();
-      };
+      function broadcastRequestUpdatedEvent () {
+        var awaitingApprovalStatusValue = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
+
+        // Check if the leave request had awaiting approval status before update,
+        // and after update the status is not awaiting approval
+        if (initialLeaveRequestAttributes.status_id === awaitingApprovalStatusValue &&
+          awaitingApprovalStatusValue !== this.request.status_id) {
+          pubSub.publish('ManagerBadge:: Update Count');
+        }
+      }
 
       /**
        * Calculate change in balance, it updates local balance variables.
        *
        * @return {Promise} empty promise if all required params are not set otherwise promise from server
        */
-      this.calculateBalanceChange = function () {
+      function calculateBalanceChange () {
         var self = this;
 
         self._setDateAndTypes();
@@ -157,14 +183,24 @@ define([
             self.loading.showBalanceChange = false;
           })
           .catch(handleError.bind(self));
-      };
+      }
+
+      /**
+       * Checks if all params are set to calculate balance
+       *
+       * @param {Boolean} true if all present else false
+       */
+      function canCalculateChange () {
+        return !!this.request.from_date && !!this.request.to_date &&
+          !!this.request.from_date_type && !!this.request.to_date_type;
+      }
 
       /**
        * Checks if submit button can be enabled for user and returns true if succeeds
        *
        * @return {Boolean}
        */
-      this.canSubmit = function () {
+      function canSubmit () {
         var canSubmit = canCalculateChange.call(this);
 
         // check if user has changed any attribute
@@ -182,523 +218,15 @@ define([
         canSubmit = canSubmit && !!this.period.id;
 
         return canSubmit && !this.isMode('view');
-      };
-
-      /**
-      * Closes the error alerts if any
-      */
-      this.closeAlert = function () {
-        this.errors = [];
-      };
-
-      /**
-       * Deletes the leave request
-       */
-      this.deleteLeaveRequest = function () {
-        dialog.open({
-          title: 'Confirm Deletion?',
-          copyCancel: 'Cancel',
-          copyConfirm: 'Confirm',
-          classConfirm: 'btn-danger',
-          msg: 'This cannot be undone',
-          onConfirm: function () {
-            return this.directiveOptions.leaveRequest.delete()
-              .then(function () {
-                this.dismissModal();
-                $rootScope.$emit('LeaveRequest::deleted', this.directiveOptions.leaveRequest);
-              }.bind(this));
-          }.bind(this)
-        });
-      };
-
-      /**
-       * Close the modal
-       */
-      this.dismissModal = function () {
-        this.$modalInstance.dismiss({
-          $value: 'cancel'
-        });
-      };
-
-      /**
-       * Format a date-time into user format and returns
-       *
-       * @return {String}
-       */
-      this.formatDateTime = function (dateTime) {
-        return moment(dateTime, sharedSettings.serverDateTimeFormat).format(this.uiOptions.userDateFormat.toUpperCase() + ' HH:mm');
-      };
-
-      /**
-       * Returns an array of statuses depending on the previous status value
-       * This is used to populate the dropdown with array of statuses.
-       *
-       * @return {Array}
-       */
-      this.getStatuses = function () {
-        if (!this.request || angular.equals({}, this.requestStatuses)) {
-          return [];
-        }
-
-        if (!this.request.status_id) {
-          return getAvailableStatusesForStatusName.call(this, 'none');
-        }
-
-        return getAvailableStatusesForCurrentStatus.call(this);
-      };
-
-      /**
-       * Gets status object for given status value
-       *
-       * @param {String} value - value of the status
-       * @return {Object} option group of type status or undefined if not found
-       */
-      this.getStatusFromValue = function (value) {
-        return _.find(this.requestStatuses, function (status) {
-          return status.value === value;
-        });
-      };
-
-      /**
-       * Initializes after contact is selected either directly or by manager
-       *
-       * @return {Promise}
-       */
-      this.initAfterContactSelection = function () {
-        var self = this;
-        self.postContactSelection = true;
-
-        // when manager deselects contact it is called without a selected contact_id
-        if (!self.request.contact_id) {
-          return $q.reject('The contact id was not set');
-        }
-
-        return $q.all([
-          self._loadAbsenceTypes(),
-          self._loadCalendar()
-        ])
-          .then(function () {
-            return loadDayTypes.call(self);
-          })
-          .then(function () {
-            return initDates.call(self);
-          })
-          .then(function () {
-            setInitialAbsenceTypes.call(self);
-            initStatus.call(self);
-            initContact.call(self);
-
-            if (self.isMode('edit')) {
-              setInitialAttributes.call(self);
-            }
-
-            self.postContactSelection = false;
-            return self.calculateBalanceChange();
-          })
-          .catch(function (error) {
-            if (error !== NO_ENTITLEMENT_ERROR) {
-              return $q.reject(error);
-            }
-          });
-      };
-
-      /**
-       * Checks if the leave request has the given status
-       *
-       * @param {String} leaveStatus
-       * @return {Boolean}
-       */
-      this.isLeaveStatus = function (leaveStatus) {
-        var status = this.getStatusFromValue(this.request.status_id);
-
-        return status ? status.name === leaveStatus : false;
-      };
-
-      /**
-       * Checks if popup is opened in given leave type like `leave` or `sickness` or 'toil'
-       *
-       * @param {String} leaveTypeParam to check the leave type of current request
-       * @return {Boolean}
-       */
-      this.isLeaveType = function (leaveTypeParam) {
-        return this.request.request_type === leaveTypeParam;
-      };
-
-      /**
-       * Checks if popup is opened in given mode
-       *
-       * @param {String} modeParam to open leave request like edit or view or create
-       * @return {Boolean}
-       */
-      this.isMode = function (modeParam) {
-        return this.mode === modeParam;
-      };
-
-      /**
-       * Checks if popup is opened in given role
-       *
-       * @param {String} roleParam like manager, staff
-       * @return {Boolean}
-       */
-      this.isRole = function (roleParam) {
-        return role === roleParam;
-      };
-
-      /**
-       * Dismiss modal on successful creation on submit
-       */
-      this.ok = function () {
-        // todo handle closure to pass data back to callee
-        this.$modalInstance.close({
-          $value: this.request
-        });
-      };
-
-      /**
-       * Submits the form, only if the leave request is valid, also emits event
-       * to notify event subscribers about the the save.
-       * Updates request based on role and mode
-       */
-      this.submit = function () {
-        var originalStatus = this.request.status_id;
-
-        if (this.isMode('view') || this.submitting) {
-          return;
-        }
-
-        this.submitting = true;
-        changeStatusBeforeSave.call(this);
-
-        validateBeforeSubmit.call(this)
-          .then(function () {
-            return this.isMode('edit') ? updateRequest.call(this) : createRequest.call(this);
-          }.bind(this))
-          .catch(function (errors) {
-            // if there is an error, put back the original status
-            this.request.status_id = originalStatus;
-            errors && handleError.call(this, errors);
-          }.bind(this))
-          .finally(function () {
-            this.submitting = false;
-          }.bind(this));
-      };
-
-      /**
-       * Loads absence types and calendar data on component initialization and
-       * when they need to be updated.
-       *
-       * @param {Date} date - the selected date
-       * @param {String} dayType - set to from if from date is selected else to
-       * @return {Promise}
-       */
-      this.loadAbsencePeriodDatesTypes = function (date, dayType) {
-        var oldPeriodId = this.period.id;
-        dayType = dayType || 'from';
-        this.loading[dayType + 'DayTypes'] = true;
-
-        return this._checkAndSetAbsencePeriod(date)
-          .then(function () {
-            var isInCurrentPeriod = oldPeriodId === this.period.id;
-
-            if (!isInCurrentPeriod) {
-              // partial reset is required when user has selected a to date and
-              // then changes absence period from from date
-              // no reset required for single days and to date changes
-              if (this.uiOptions.multipleDays && dayType === 'from') {
-                this.uiOptions.showBalance = false;
-                this.uiOptions.toDate = null;
-                this.request.to_date = null;
-                this.request.to_date_type = null;
-              }
-
-              return $q.all([
-                this._loadAbsenceTypes(),
-                this._loadCalendar()
-              ]);
-            }
-          }.bind(this))
-          .then(function () {
-            this._setMinMaxDate();
-
-            return filterLeaveRequestDayTypes.call(this, date, dayType);
-          }.bind(this))
-          .finally(function () {
-            /**
-             * after the request is completed fromDayTypes or toDayTypes are
-             * set to false and the corresponding field is shown on the ui.
-             */
-            this.loading[dayType + 'DayTypes'] = false;
-          }.bind(this));
-      };
-
-      /**
-       * This should be called whenever a date has been changed
-       * First it syncs `from` and `to` date, if it's in 'single day' mode
-       * Then, if all the dates are there, it gets the balance change
-       *
-       * @param {Date} date - the selected date
-       * @param {String} dayType - set to from if from date is selected else to
-       * @return {Promise}
-       */
-      this.updateAbsencePeriodDatesTypes = function (date, dayType) {
-        return this.loadAbsencePeriodDatesTypes(date, dayType)
-        .then(function () {
-          return this.updateBalance();
-        }.bind(this))
-        .catch(function (errors) {
-          handleError.call(this, errors);
-          this._setDateAndTypes();
-        }.bind(this));
-      };
-
-      /**
-       * Whenever the absence type changes, update the balance opening.
-       * Also the balance change needs to be recalculated, if the `from` and `to`
-       * dates have been already selected
-       */
-      this.updateBalance = function () {
-        this.selectedAbsenceType = getSelectedAbsenceType.call(this);
-        // get the `balance` of the newly selected absence type
-        this.balance.opening = this.selectedAbsenceType.remainder;
-
-        this.calculateBalanceChange();
-      };
-
-      /**
-       * Calculates and updates opening and closing balances
-       */
-      this._calculateOpeningAndClosingBalance = function () {
-        this.balance.opening = this.selectedAbsenceType.remainder;
-        // the change is negative so adding it will actually subtract it
-        this.balance.closing = this.balance.opening + this.balance.change.amount;
-      };
-
-      /**
-       * Finds if date is in any absence period and sets absence period for the given date
-       *
-       * @param {Date/String} date
-       * @return {Promise} with true value if period found else rejected false
-       */
-      this._checkAndSetAbsencePeriod = function (date) {
-        var formattedDate = moment(date).format(this.uiOptions.userDateFormat.toUpperCase());
-
-        this.period = _.find(this.absencePeriods, function (period) {
-          return period.isInPeriod(formattedDate);
-        });
-
-        if (!this.period) {
-          this.period = {};
-          // inform user if absence period is not found
-          this.loading['fromDayTypes'] = false;
-          return $q.reject('Please change date as it is not in any absence period');
-        }
-
-        return $q.resolve(true);
-      };
-
-      /**
-       * Converts given date to server format
-       *
-       * @param {Date} date
-       * @return {String} date converted to server format
-       */
-      this._convertDateToServerFormat = function (date) {
-        return moment(date).format(sharedSettings.serverDateFormat);
-      };
-
-      /**
-       * Converts given date to javascript date as expected by uib-datepicker
-       *
-       * @param {String} date from server
-       * @return {Date}
-       */
-      this._convertDateFormatFromServer = function (date) {
-        return moment(date, sharedSettings.serverDateFormat).toDate();
-      };
-
-      /**
-       * Initializes the controller on loading the dialog
-       *
-       * @return {Promise}
-       */
-      this._init = function () {
-        initAvailableStatusesMatrix.call(this);
-        initListeners.call(this);
-
-        return loadLoggedInContactId.call(this)
-          .then(initRoles.bind(this))
-          .then(this._initRequest.bind(this))
-          .then(loadStatuses.bind(this))
-          .then(function () {
-            initOpenMode.call(this);
-
-            return this.canManage && !this.isMode('edit') && loadManagees.call(this);
-          }.bind(this))
-          .then(loadAbsencePeriods.bind(this))
-          .then(function () {
-            initAbsencePeriod.call(this);
-            this._setMinMaxDate();
-          }.bind(this))
-          .then(function () {
-            if (this.directiveOptions.selectedContactId) {
-              this.request.contact_id = this.directiveOptions.selectedContactId;
-            }
-
-            setDaySelectionMode.call(this);
-
-            // The additional check here prevents error being displayed on startup when no contact is selected
-            if (this.request.contact_id) {
-              return this.initAfterContactSelection();
-            }
-          }.bind(this))
-          .catch(handleError.bind(this));
-      };
-
-      /**
-       * Initialize request attributes based on directive
-       *
-       * @return {Object} attributes
-       */
-      this._initRequestAttributes = function () {
-        var attributes = {};
-
-        // if set indicates self leaverequest is either being managed or edited
-        if (this.directiveOptions.leaveRequest) {
-          // _.deepClone or angular.copy were not uploading files correctly
-          attributes = this.directiveOptions.leaveRequest.attributes();
-        } else if (!this.canManage) {
-          attributes = { contact_id: loggedInContactId };
-        }
-
-        return attributes;
-      };
-
-      /**
-       * Initializes user's calendar (work patterns)
-       *
-       * @return {Promise}
-       */
-      this._loadCalendar = function () {
-        var self = this;
-
-        return Calendar.get(self.request.contact_id, self.period.id)
-          .then(function (usersCalendar) {
-            self.calendar = usersCalendar;
-          });
-      };
-
-      /**
-       * Initializes values for absence types and entitlements when the
-       * leave request popup model is displayed
-       *
-       * @return {Promise}
-       */
-      this._loadAbsenceTypes = function () {
-        var self = this;
-
-        return AbsenceType.all(self.initParams.absenceType)
-          .then(function (absenceTypes) {
-            var absenceTypesIds = absenceTypes.map(function (absenceType) {
-              return absenceType.id;
-            });
-
-            absenceTypesAndIds = {
-              types: absenceTypes,
-              ids: absenceTypesIds
-            };
-
-            return setAbsenceTypesFromEntitlements.call(self, absenceTypesAndIds);
-          });
-      };
-
-      /**
-       * Resets data in dates, types, balance.
-       */
-      this._reset = function () {
-        this.uiOptions.toDate = this.uiOptions.fromDate;
-        this.request.to_date_type = this.request.from_date_type;
-        this.request.to_date = this.request.from_date;
-
-        this.calculateBalanceChange();
-      };
-
-      /**
-       * Sets dates and types for this.request from UI
-       */
-      this._setDates = function () {
-        this.request.from_date = this.uiOptions.fromDate ? this._convertDateToServerFormat(this.uiOptions.fromDate) : null;
-        this.request.to_date = this.uiOptions.toDate ? this._convertDateToServerFormat(this.uiOptions.toDate) : null;
-
-        if (!this.uiOptions.multipleDays && this.uiOptions.fromDate) {
-          this.uiOptions.toDate = this.uiOptions.fromDate;
-          this.request.to_date = this.request.from_date;
-        }
-      };
-
-      /**
-       * Sets dates and types for this.request from UI
-       */
-      this._setDateAndTypes = function () {
-        this._setDates();
-
-        if (this.uiOptions.multipleDays) {
-          this.uiOptions.showBalance = !!this.request.from_date && !!this.request.from_date_type &&
-            !!this.request.to_date && !!this.request.to_date_type && !!this.period.id;
-        } else {
-          if (this.uiOptions.fromDate) {
-            this.request.to_date_type = this.request.from_date_type;
-          }
-
-          this.uiOptions.showBalance = !!this.request.from_date && !!this.request.from_date_type && !!this.period.id;
-        }
-      };
-
-      /**
-       * Sets the min and max for to date from absence period. It also sets the
-       * init/starting date which user can select from. For multiple days request
-       * user can select to date which is one more than the the start date.
-       */
-      this._setMinMaxDate = function () {
-        if (this.uiOptions.fromDate) {
-          var nextFromDay = moment(this.uiOptions.fromDate).add(1, 'd').toDate();
-
-          this.uiOptions.date.to.options.minDate = nextFromDay;
-          this.uiOptions.date.to.options.initDate = nextFromDay;
-
-          // also re-set to date if from date is changing and less than to date
-          if (this.uiOptions.toDate && moment(this.uiOptions.toDate).isBefore(this.uiOptions.fromDate)) {
-            this.uiOptions.toDate = this.uiOptions.fromDate;
-          }
-        } else {
-          this.uiOptions.date.to.options.minDate = this._convertDateFormatFromServer(this.period.start_date);
-          this.uiOptions.date.to.options.initDate = this.uiOptions.date.to.options.minDate;
-        }
-
-        this.uiOptions.date.to.options.maxDate = this._convertDateFormatFromServer(this.period.end_date);
-      };
-
-      /**
-       * Broadcasts an event when request has been updated from awaiting approval status to something else
-       */
-      function broadcastRequestUpdatedEvent () {
-        var awaitingApprovalStatusValue = this.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
-
-        // Check if the leave request had awaiting approval status before update,
-        // and after update the status is not awaiting approval
-        if (initialLeaveRequestAttributes.status_id === awaitingApprovalStatusValue &&
-          awaitingApprovalStatusValue !== this.request.status_id) {
-          pubSub.publish('ManagerBadge:: Update Count');
-        }
       }
 
       /**
-       * Checks if all params are set to calculate balance
-       *
-       * @param {Boolean} true if all present else false
+       * Change handler when changing no. of days like Multiple Days or Single Day.
+       * It will reset dates, day types, change balance.
        */
-      function canCalculateChange () {
-        return !!this.request.from_date && !!this.request.to_date &&
-          !!this.request.from_date_type && !!this.request.to_date_type;
+      function changeInNoOfDays () {
+        this._reset();
+        this._calculateOpeningAndClosingBalance();
       }
 
       /**
@@ -715,6 +243,13 @@ define([
       }
 
       /**
+      * Closes the error alerts if any
+      */
+      function closeAlert () {
+        this.errors = [];
+      }
+
+      /**
        * Validates and creates the leave request
        *
        * @returns {Promise}
@@ -725,6 +260,35 @@ define([
           .then(function () {
             postSubmit.call(this, 'LeaveRequest::new');
           }.bind(this));
+      }
+
+      /**
+       * Deletes the leave request
+       */
+      function deleteLeaveRequest () {
+        dialog.open({
+          title: 'Confirm Deletion?',
+          copyCancel: 'Cancel',
+          copyConfirm: 'Confirm',
+          classConfirm: 'btn-danger',
+          msg: 'This cannot be undone',
+          onConfirm: function () {
+            return this.directiveOptions.leaveRequest.delete()
+              .then(function () {
+                this.dismissModal();
+                $rootScope.$emit('LeaveRequest::deleted', this.directiveOptions.leaveRequest);
+              }.bind(this));
+          }.bind(this)
+        });
+      }
+
+      /**
+       * Close the modal
+       */
+      function dismissModal () {
+        this.$modalInstance.dismiss({
+          $value: 'cancel'
+        });
       }
 
       /**
@@ -778,6 +342,15 @@ define([
       }
 
       /**
+       * Format a date-time into user format and returns
+       *
+       * @return {String}
+       */
+      function formatDateTime (dateTime) {
+        return moment(dateTime, sharedSettings.serverDateTimeFormat).format(this.uiOptions.userDateFormat.toUpperCase() + ' HH:mm');
+      }
+
+      /**
        * Helper functions to get available statuses depending on the
        * current request status value.
        *
@@ -802,17 +375,6 @@ define([
       }
 
       /**
-       * Helper function to obtain params for leave request calculateBalanceChange api call
-       *
-       * @return {Object} containing required keys for leave request
-       */
-      function getParamsForBalanceChange () {
-        return _.pick(this.request, ['contact_id', 'from_date',
-          'from_date_type', 'to_date', 'to_date_type'
-        ]);
-      }
-
-      /**
        * Gets list of day types if its found to be weekend or non working in calendar
        *
        * @param {Date} date to Checks
@@ -834,6 +396,17 @@ define([
       }
 
       /**
+       * Helper function to obtain params for leave request calculateBalanceChange api call
+       *
+       * @return {Object} containing required keys for leave request
+       */
+      function getParamsForBalanceChange () {
+        return _.pick(this.request, ['contact_id', 'from_date',
+          'from_date_type', 'to_date', 'to_date_type'
+        ]);
+      }
+
+      /**
        * Gets currently selected absence type from leave request type_id
        *
        * @return {Object} absence type object
@@ -844,16 +417,47 @@ define([
         }.bind(this));
       }
 
-      function handleError (errors) {
-        // show errors
-        this.errors = _.isArray(errors) ? errors : [errors];
+      /**
+       * Returns an array of statuses depending on the previous status value
+       * This is used to populate the dropdown with array of statuses.
+       *
+       * @return {Array}
+       */
+      function getStatuses () {
+        if (!this.request || angular.equals({}, this.requestStatuses)) {
+          return [];
+        }
 
-        // reset loading Checks
+        if (!this.request.status_id) {
+          return getAvailableStatusesForStatusName.call(this, 'none');
+        }
+
+        return getAvailableStatusesForCurrentStatus.call(this);
+      }
+
+      /**
+       * Gets status object for given status value
+       *
+       * @param {String} value - value of the status
+       * @return {Object} option group of type status or undefined if not found
+       */
+      function getStatusFromValue (value) {
+        return _.find(this.requestStatuses, function (status) {
+          return status.value === value;
+        });
+      }
+
+      /**
+       * Handles errors
+       *
+       * @param {Array|Object}
+       */
+      function handleError (errors) {
+        this.errors = _.isArray(errors) ? errors : [errors];
         this.loading.showBalanceChange = false;
         this.loading.absenceTypes = false;
         this.loading.fromDayTypes = false;
         this.loading.toDayTypes = false;
-
         this.submitting = false;
       }
 
@@ -869,6 +473,58 @@ define([
           this.request.attributes()
         ) || (this.fileUploader && this.fileUploader.queue.length !== 0) ||
           (this.canManage && this.newStatusOnSave);
+      }
+
+      /**
+       * Inits absence period for the current date
+       */
+      function initAbsencePeriod () {
+        this.period = _.find(this.absencePeriods, function (period) {
+          return period.current;
+        });
+      }
+
+      /**
+       * Initializes after contact is selected either directly or by manager
+       *
+       * @return {Promise}
+       */
+      function initAfterContactSelection () {
+        var self = this;
+        self.postContactSelection = true;
+
+        // when manager deselects contact it is called without a selected contact_id
+        if (!self.request.contact_id) {
+          return $q.reject('The contact id was not set');
+        }
+
+        return $q.all([
+          self._loadAbsenceTypes(),
+          self._loadCalendar()
+        ])
+          .then(function () {
+            return loadDayTypes.call(self);
+          })
+          .then(function () {
+            return initDates.call(self);
+          })
+          .then(function () {
+            setInitialAbsenceTypes.call(self);
+            initStatus.call(self);
+            initContact.call(self);
+
+            if (self.isMode('edit')) {
+              setInitialAttributes.call(self);
+            }
+
+            self.postContactSelection = false;
+            return self.calculateBalanceChange();
+          })
+          .catch(function (error) {
+            if (error !== NO_ENTITLEMENT_ERROR) {
+              return $q.reject(error);
+            }
+          });
       }
 
       /**
@@ -896,64 +552,19 @@ define([
       }
 
       /**
-       * Initialize open mode of the dialog
-       */
-      function initOpenMode () {
-        if (this.request.id) {
-          this.mode = 'edit';
-
-          var viewModeStatuses = [
-            this.requestStatuses[sharedSettings.statusNames.approved].value,
-            this.requestStatuses[sharedSettings.statusNames.adminApproved].value,
-            this.requestStatuses[sharedSettings.statusNames.rejected].value,
-            this.requestStatuses[sharedSettings.statusNames.cancelled].value
-          ];
-
-          if (this.isRole('staff') && viewModeStatuses.indexOf(this.request.status_id) > -1) {
-            this.mode = 'view';
-          }
-        } else {
-          this.mode = 'create';
-        }
-      }
-
-      /**
-       * Inits absence period for the current date
-       */
-      function initAbsencePeriod () {
-        this.period = _.find(this.absencePeriods, function (period) {
-          return period.current;
-        });
-      }
-
-      /**
-       * Fire an event to start child processes which needs to be done after leave request is saved.
-       * Waits for the response before resolving the promise
+       * Initialize contact
        *
-       * @returns {Promise}
+       * {Promise}
        */
-      function triggerChildComponentsSubmitAndWaitForResponse () {
-        var deferred = $q.defer();
-        var errors = [];
-        var responses = 0;
-
-        if (childComponentsCount > 0) {
-          $rootScope.$broadcast('LeaveRequestPopup::submit', doneCallback);
-        } else {
-          deferred.resolve();
+      function initContact () {
+        if (this.canManage) {
+          return Contact.find(this.request.contact_id)
+            .then(function (contact) {
+              this.contactName = contact.display_name;
+            }.bind(this));
         }
 
-        function doneCallback (error) {
-          error && errors.push(error);
-
-          if (++responses === childComponentsCount) {
-            unsubscribeFromEvents();
-
-            errors.length > 0 ? deferred.reject(errors) : deferred.resolve();
-          }
-        }
-
-        return deferred.promise;
+        return $q.resolve();
       }
 
       /**
@@ -981,6 +592,9 @@ define([
         }
       }
 
+      /**
+       * Initialises listeners
+       */
       function initListeners () {
         listeners.push(
           $rootScope.$on('LeaveRequestPopup::requestObjectUpdated', setInitialAttributes.bind(this)),
@@ -989,7 +603,29 @@ define([
       }
 
       /**
-       * Initialize roles
+       * Initialises open mode of the dialog
+       */
+      function initOpenMode () {
+        if (this.request.id) {
+          this.mode = 'edit';
+
+          var viewModeStatuses = [
+            this.requestStatuses[sharedSettings.statusNames.approved].value,
+            this.requestStatuses[sharedSettings.statusNames.adminApproved].value,
+            this.requestStatuses[sharedSettings.statusNames.rejected].value,
+            this.requestStatuses[sharedSettings.statusNames.cancelled].value
+          ];
+
+          if (this.isRole('staff') && viewModeStatuses.indexOf(this.request.status_id) > -1) {
+            this.mode = 'view';
+          }
+        } else {
+          this.mode = 'create';
+        }
+      }
+
+      /**
+       * Initialises roles
        */
       function initRoles () {
         role = 'staff';
@@ -1012,7 +648,7 @@ define([
       }
 
       /**
-       * Initialize status
+       * Initialises status
        */
       function initStatus () {
         if (this.isRole('admin') || (this.isMode('create') && this.isRole('manager'))) {
@@ -1021,19 +657,119 @@ define([
       }
 
       /**
-       * Initialize contact
+       * Checks if the leave request has the given status
        *
-       * {Promise}
+       * @param {String} leaveStatus
+       * @return {Boolean}
        */
-      function initContact () {
-        if (this.canManage) {
-          return Contact.find(this.request.contact_id)
-            .then(function (contact) {
-              this.contactName = contact.display_name;
-            }.bind(this));
-        }
+      function isLeaveStatus (leaveStatus) {
+        var status = this.getStatusFromValue(this.request.status_id);
 
-        return $q.resolve();
+        return status ? status.name === leaveStatus : false;
+      }
+
+      /**
+       * Checks if popup is opened in given leave type like `leave` or `sickness` or 'toil'
+       *
+       * @param {String} leaveTypeParam to check the leave type of current request
+       * @return {Boolean}
+       */
+      function isLeaveType (leaveTypeParam) {
+        return this.request.request_type === leaveTypeParam;
+      }
+
+      /**
+       * Checks if popup is opened in given mode
+       *
+       * @param {String} modeParam to open leave request like edit or view or create
+       * @return {Boolean}
+       */
+      function isMode (modeParam) {
+        return this.mode === modeParam;
+      }
+
+      /**
+       * Checks if popup is opened in given role
+       *
+       * @param {String} roleParam like manager, staff
+       * @return {Boolean}
+       */
+      function isRole (roleParam) {
+        return role === roleParam;
+      }
+
+      /**
+       * Loads absence types and calendar data on component initialization and
+       * when they need to be updated.
+       *
+       * @param {Date} date - the selected date
+       * @param {String} dayType - set to from if from date is selected else to
+       * @return {Promise}
+       */
+      function loadAbsencePeriodDatesTypes (date, dayType) {
+        var oldPeriodId = this.period.id;
+        dayType = dayType || 'from';
+        this.loading[dayType + 'DayTypes'] = true;
+
+        return this._checkAndSetAbsencePeriod(date)
+          .then(function () {
+            var isInCurrentPeriod = oldPeriodId === this.period.id;
+
+            if (!isInCurrentPeriod) {
+              // partial reset is required when user has selected a to date and
+              // then changes absence period from from date
+              // no reset required for single days and to date changes
+              if (this.uiOptions.multipleDays && dayType === 'from') {
+                this.uiOptions.showBalance = false;
+                this.uiOptions.toDate = null;
+                this.request.to_date = null;
+                this.request.to_date_type = null;
+              }
+
+              return $q.all([
+                this._loadAbsenceTypes(),
+                this._loadCalendar()
+              ]);
+            }
+          }.bind(this))
+          .then(function () {
+            this._setMinMaxDate();
+
+            return filterLeaveRequestDayTypes.call(this, date, dayType);
+          }.bind(this))
+          .finally(function () {
+            /**
+             * after the request is completed fromDayTypes or toDayTypes are
+             * set to false and the corresponding field is shown on the ui.
+             */
+            this.loading[dayType + 'DayTypes'] = false;
+          }.bind(this));
+      }
+
+      /**
+       * Loads all absence periods
+       */
+      function loadAbsencePeriods () {
+        var self = this;
+
+        return AbsencePeriod.all()
+          .then(function (periods) {
+            self.absencePeriods = periods;
+          });
+      }
+
+      /**
+       * Initializes leave request day types
+       *
+       * @return {Promise}
+       */
+      function loadDayTypes () {
+        var self = this;
+
+        return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
+          .then(function (dayTypes) {
+            self.requestDayTypes = dayTypes;
+          });
       }
 
       /**
@@ -1081,32 +817,6 @@ define([
       }
 
       /**
-       * Loads all absence periods
-       */
-      function loadAbsencePeriods () {
-        var self = this;
-
-        return AbsencePeriod.all()
-          .then(function (periods) {
-            self.absencePeriods = periods;
-          });
-      }
-
-      /**
-       * Initializes leave request day types
-       *
-       * @return {Promise}
-       */
-      function loadDayTypes () {
-        var self = this;
-
-        return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
-          .then(function (dayTypes) {
-            self.requestDayTypes = dayTypes;
-          });
-      }
-
-      /**
        * Initializes leave request statuses
        *
        * @return {Promise}
@@ -1143,6 +853,26 @@ define([
       }
 
       /**
+       * Dismiss modal on successful creation on submit
+       */
+      function ok () {
+        // @TODO handle closure to pass data back to callee
+        this.$modalInstance.close({
+          $value: this.request
+        });
+      }
+
+      /**
+       * It filters the breakdown to obtain the ones for currently selected page.
+       */
+      function pageChanged () {
+        var begin = (this.currentPage - 1) * this.numPerPage;
+        var end = begin + this.numPerPage;
+
+        this.filteredbreakdown = vm.balance.change.breakdown.slice(begin, end);
+      }
+
+      /**
        * Called after successful submission of leave request
        *
        * @param {String} eventName name of the event to emit
@@ -1163,30 +893,6 @@ define([
         this.pagination.totalItems = this.balance.change.breakdown.length;
         this.pagination.filteredbreakdown = this.balance.change.breakdown;
         this.pagination.pageChanged();
-      }
-
-      /**
-       * Sets day selection mode: multiple days or a single day
-       */
-      function setDaySelectionMode () {
-        if ((this.isMode('edit') && this.request.from_date === this.request.to_date) ||
-          (this.isMode('create') && this.isLeaveType('sickness'))) {
-          this.uiOptions.multipleDays = false;
-        }
-      }
-
-      /**
-       * Set initial values to absence types when opening the popup
-       */
-      function setInitialAbsenceTypes () {
-        if (this.isMode('create')) {
-          // Assign the first absence type to the leave request
-          this.selectedAbsenceType = this.absenceTypes[0];
-          this.request.type_id = this.selectedAbsenceType.id;
-        } else {
-          // Either View or Edit Mode
-          this.selectedAbsenceType = getSelectedAbsenceType.call(this);
-        }
       }
 
       /**
@@ -1214,6 +920,16 @@ define([
       }
 
       /**
+       * Sets day selection mode: multiple days or a single day
+       */
+      function setDaySelectionMode () {
+        if ((this.isMode('edit') && this.request.from_date === this.request.to_date) ||
+          (this.isMode('create') && this.isLeaveType('sickness'))) {
+          this.uiOptions.multipleDays = false;
+        }
+      }
+
+      /**
        * Sets the collection for given day types to sent list of day types,
        * also initializes the day types
        *
@@ -1232,10 +948,83 @@ define([
       }
 
       /**
+       * Set initial values to absence types when opening the popup
+       */
+      function setInitialAbsenceTypes () {
+        if (this.isMode('create')) {
+          // Assign the first absence type to the leave request
+          this.selectedAbsenceType = this.absenceTypes[0];
+          this.request.type_id = this.selectedAbsenceType.id;
+        } else {
+          // Either View or Edit Mode
+          this.selectedAbsenceType = getSelectedAbsenceType.call(this);
+        }
+      }
+
+      /**
        * Set Initial attribute
        */
       function setInitialAttributes () {
         initialLeaveRequestAttributes = angular.copy(this.request.attributes());
+      }
+
+      /**
+       * Submits the form, only if the leave request is valid, also emits event
+       * to notify event subscribers about the the save.
+       * Updates request based on role and mode
+       */
+      function submit () {
+        var originalStatus = this.request.status_id;
+
+        if (this.isMode('view') || this.submitting) {
+          return;
+        }
+
+        this.submitting = true;
+        changeStatusBeforeSave.call(this);
+
+        validateBeforeSubmit.call(this)
+          .then(function () {
+            return this.isMode('edit') ? updateRequest.call(this) : createRequest.call(this);
+          }.bind(this))
+          .catch(function (errors) {
+            // if there is an error, put back the original status
+            this.request.status_id = originalStatus;
+            errors && handleError.call(this, errors);
+          }.bind(this))
+          .finally(function () {
+            this.submitting = false;
+          }.bind(this));
+      }
+
+      /**
+       * Fire an event to start child processes which needs to be done after leave request is saved.
+       * Waits for the response before resolving the promise
+       *
+       * @returns {Promise}
+       */
+      function triggerChildComponentsSubmitAndWaitForResponse () {
+        var deferred = $q.defer();
+        var errors = [];
+        var responses = 0;
+
+        if (childComponentsCount > 0) {
+          $rootScope.$broadcast('LeaveRequestPopup::submit', doneCallback);
+        } else {
+          deferred.resolve();
+        }
+
+        function doneCallback (error) {
+          error && errors.push(error);
+
+          if (++responses === childComponentsCount) {
+            unsubscribeFromEvents();
+
+            errors.length > 0 ? deferred.reject(errors) : deferred.resolve();
+          }
+        }
+
+        return deferred.promise;
       }
 
       /**
@@ -1246,6 +1035,39 @@ define([
         _.forEach(listeners, function (listener) {
           listener();
         });
+      }
+
+      /**
+       * This should be called whenever a date has been changed
+       * First it syncs `from` and `to` date, if it's in 'single day' mode
+       * Then, if all the dates are there, it gets the balance change
+       *
+       * @param {Date} date - the selected date
+       * @param {String} dayType - set to from if from date is selected else to
+       * @return {Promise}
+       */
+      function updateAbsencePeriodDatesTypes (date, dayType) {
+        return this.loadAbsencePeriodDatesTypes(date, dayType)
+        .then(function () {
+          return this.updateBalance();
+        }.bind(this))
+        .catch(function (errors) {
+          handleError.call(this, errors);
+          this._setDateAndTypes();
+        }.bind(this));
+      }
+
+      /**
+       * Whenever the absence type changes, update the balance opening.
+       * Also the balance change needs to be recalculated, if the `from` and `to`
+       * dates have been already selected
+       */
+      function updateBalance () {
+        this.selectedAbsenceType = getSelectedAbsenceType.call(this);
+        // get the `balance` of the newly selected absence type
+        this.balance.opening = this.selectedAbsenceType.remainder;
+
+        this.calculateBalanceChange();
       }
 
       /**
@@ -1280,7 +1102,218 @@ define([
         return this.request.isValid();
       }
 
-      return this;
+      /**
+       * Calculates and updates opening and closing balances
+       */
+      function _calculateOpeningAndClosingBalance () {
+        this.balance.opening = this.selectedAbsenceType.remainder;
+        // the change is negative so adding it will actually subtract it
+        this.balance.closing = this.balance.opening + this.balance.change.amount;
+      }
+
+      /**
+       * Finds if date is in any absence period and sets absence period for the given date
+       *
+       * @param {Date/String} date
+       * @return {Promise} with true value if period found else rejected false
+       */
+      function _checkAndSetAbsencePeriod (date) {
+        var formattedDate = moment(date).format(this.uiOptions.userDateFormat.toUpperCase());
+
+        this.period = _.find(this.absencePeriods, function (period) {
+          return period.isInPeriod(formattedDate);
+        });
+
+        if (!this.period) {
+          this.period = {};
+          // inform user if absence period is not found
+          this.loading['fromDayTypes'] = false;
+          return $q.reject('Please change date as it is not in any absence period');
+        }
+
+        return $q.resolve(true);
+      }
+
+      /**
+       * Converts given date to javascript date as expected by uib-datepicker
+       *
+       * @param {String} date from server
+       * @return {Date}
+       */
+      function _convertDateFormatFromServer (date) {
+        return moment(date, sharedSettings.serverDateFormat).toDate();
+      }
+
+      /**
+       * Converts given date to server format
+       *
+       * @param {Date} date
+       * @return {String} date converted to server format
+       */
+      function _convertDateToServerFormat (date) {
+        return moment(date).format(sharedSettings.serverDateFormat);
+      }
+
+      /**
+       * Initializes the controller on loading the dialog
+       *
+       * @return {Promise}
+       */
+      function _init () {
+        initAvailableStatusesMatrix.call(this);
+        initListeners.call(this);
+
+        return loadLoggedInContactId.call(this)
+          .then(initRoles.bind(this))
+          .then(this._initRequest.bind(this))
+          .then(loadStatuses.bind(this))
+          .then(function () {
+            initOpenMode.call(this);
+
+            return this.canManage && !this.isMode('edit') && loadManagees.call(this);
+          }.bind(this))
+          .then(loadAbsencePeriods.bind(this))
+          .then(function () {
+            initAbsencePeriod.call(this);
+            this._setMinMaxDate();
+          }.bind(this))
+          .then(function () {
+            if (this.directiveOptions.selectedContactId) {
+              this.request.contact_id = this.directiveOptions.selectedContactId;
+            }
+
+            setDaySelectionMode.call(this);
+
+            // The additional check here prevents error being displayed on startup when no contact is selected
+            if (this.request.contact_id) {
+              return this.initAfterContactSelection();
+            }
+          }.bind(this))
+          .catch(handleError.bind(this));
+      }
+
+      /**
+       * Initialize request attributes based on directive
+       *
+       * @return {Object} attributes
+       */
+      function _initRequestAttributes () {
+        var attributes = {};
+
+        // if set indicates self leaverequest is either being managed or edited
+        if (this.directiveOptions.leaveRequest) {
+          // _.deepClone or angular.copy were not uploading files correctly
+          attributes = this.directiveOptions.leaveRequest.attributes();
+        } else if (!this.canManage) {
+          attributes = { contact_id: loggedInContactId };
+        }
+
+        return attributes;
+      }
+
+      /**
+       * Initializes values for absence types and entitlements when the
+       * leave request popup model is displayed
+       *
+       * @return {Promise}
+       */
+      function _loadAbsenceTypes () {
+        var self = this;
+
+        return AbsenceType.all(self.initParams.absenceType)
+          .then(function (absenceTypes) {
+            var absenceTypesIds = absenceTypes.map(function (absenceType) {
+              return absenceType.id;
+            });
+
+            absenceTypesAndIds = {
+              types: absenceTypes,
+              ids: absenceTypesIds
+            };
+
+            return setAbsenceTypesFromEntitlements.call(self, absenceTypesAndIds);
+          });
+      }
+
+      /**
+       * Initializes user's calendar (work patterns)
+       *
+       * @return {Promise}
+       */
+      function _loadCalendar () {
+        var self = this;
+
+        return Calendar.get(self.request.contact_id, self.period.id)
+          .then(function (usersCalendar) {
+            self.calendar = usersCalendar;
+          });
+      }
+
+      /**
+       * Resets data in dates, types, balance.
+       */
+      function _reset () {
+        this.uiOptions.toDate = this.uiOptions.fromDate;
+        this.request.to_date_type = this.request.from_date_type;
+        this.request.to_date = this.request.from_date;
+
+        this.calculateBalanceChange();
+      }
+
+      /**
+       * Sets dates and types for this.request from UI
+       */
+      function _setDateAndTypes () {
+        this._setDates();
+
+        if (this.uiOptions.multipleDays) {
+          this.uiOptions.showBalance = !!this.request.from_date && !!this.request.from_date_type &&
+            !!this.request.to_date && !!this.request.to_date_type && !!this.period.id;
+        } else {
+          if (this.uiOptions.fromDate) {
+            this.request.to_date_type = this.request.from_date_type;
+          }
+
+          this.uiOptions.showBalance = !!this.request.from_date && !!this.request.from_date_type && !!this.period.id;
+        }
+      }
+
+      /**
+       * Sets dates and types for this.request from UI
+       */
+      function _setDates () {
+        this.request.from_date = this.uiOptions.fromDate ? this._convertDateToServerFormat(this.uiOptions.fromDate) : null;
+        this.request.to_date = this.uiOptions.toDate ? this._convertDateToServerFormat(this.uiOptions.toDate) : null;
+
+        if (!this.uiOptions.multipleDays && this.uiOptions.fromDate) {
+          this.uiOptions.toDate = this.uiOptions.fromDate;
+          this.request.to_date = this.request.from_date;
+        }
+      }
+
+      /**
+       * Sets the min and max for to date from absence period. It also sets the
+       * init/starting date which user can select from. For multiple days request
+       * user can select to date which is one more than the the start date.
+       */
+      function _setMinMaxDate () {
+        if (this.uiOptions.fromDate) {
+          var nextFromDay = moment(this.uiOptions.fromDate).add(1, 'd').toDate();
+
+          this.uiOptions.date.to.options.minDate = nextFromDay;
+          this.uiOptions.date.to.options.initDate = nextFromDay;
+
+          // also re-set to date if from date is changing and less than to date
+          if (this.uiOptions.toDate && moment(this.uiOptions.toDate).isBefore(this.uiOptions.fromDate)) {
+            this.uiOptions.toDate = this.uiOptions.fromDate;
+          }
+        } else {
+          this.uiOptions.date.to.options.minDate = this._convertDateFormatFromServer(this.period.start_date);
+          this.uiOptions.date.to.options.initDate = this.uiOptions.date.to.options.minDate;
+        }
+
+        this.uiOptions.date.to.options.maxDate = this._convertDateFormatFromServer(this.period.end_date);
+      }
     }
   ]);
 });

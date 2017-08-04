@@ -23,13 +23,40 @@ define([
         }
       };
 
+      vm.calculateBalanceChange = calculateBalanceChange;
+      vm.calculateToilExpiryDate = calculateToilExpiryDate;
+      vm.canSubmit = canSubmit;
+      vm.changeInNoOfDays = changeInNoOfDays;
+      vm.clearExpiryDate = clearExpiryDate;
+      vm.loadAbsencePeriodDatesTypes = loadAbsencePeriodDatesTypes;
+      vm.updateAbsencePeriodDatesTypes = updateAbsencePeriodDatesTypes;
+      vm.updateExpiryDate = updateExpiryDate;
+      vm._initRequest = _initRequest;
+
+      (function init () {
+        vm.loading.absenceTypes = true;
+
+        vm._init()
+          .then(function () {
+            return initRequestCanExpire();
+          })
+          .then(function () {
+            initExpiryDate();
+
+            return loadToilAmounts();
+          })
+          .finally(function () {
+            vm.loading.absenceTypes = false;
+          });
+      })();
+
       /**
        * Calculate change in balance, it updates balance variables.
        * It overrides the parent's implementation
        *
        * @return {Promise} empty promise if all required params are not set otherwise promise from server
        */
-      vm.calculateBalanceChange = function () {
+      function calculateBalanceChange () {
         if (vm.request.toil_to_accrue) {
           vm.loading.showBalanceChange = true;
           vm._setDateAndTypes();
@@ -39,14 +66,14 @@ define([
           vm.request.to_date_type = vm.request.from_date_type = '1';
           vm.loading.showBalanceChange = false;
         }
-      };
+      }
 
       /**
        * Calculates toil expiry date.
        *
        * @return {Promise}
        */
-      vm.calculateToilExpiryDate = function () {
+      function calculateToilExpiryDate () {
         /**
          * blocks the expiry date from updating if this is an existing request
          * and user is not a manager or admin.
@@ -79,129 +106,7 @@ define([
 
           return expiryDate;
         });
-      };
-
-      /**
-       * Checks if submit button can be enabled for user and returns true if successful
-       *
-       * @return {Boolean}
-       */
-      vm.canSubmit = function () {
-        return parentRequestCtrl.canSubmit.call(this) &&
-          !!vm.request.toil_duration &&
-          !!vm.request.toil_to_accrue &&
-          !!vm.request.from_date &&
-          !!vm.request.to_date;
-      };
-
-      /**
-       * Extends parent method. Fires calculation of expiry date when the
-       * number of days changes and the expiry date can be calculated.
-       */
-      vm.changeInNoOfDays = function () {
-        parentRequestCtrl.changeInNoOfDays.call(this);
-
-        if (canCalculateExpiryDate()) {
-          vm.calculateToilExpiryDate();
-        }
-      };
-
-      /**
-       * Clears the request's expiry date and the UI expiry date picker.
-       */
-      vm.clearExpiryDate = function () {
-        vm.request.toil_expiry_date = false;
-        vm.uiOptions.expiryDate = null;
-      };
-
-      /**
-       * Overwrites the parent funtion. Inits UI values, and loads absence types
-       * and calendar.
-       *
-       * @param {Date} date - the selected date
-       * @return {Promise}
-       */
-      vm.loadAbsencePeriodDatesTypes = function (date) {
-        var oldPeriodId = vm.period.id;
-
-        return vm._checkAndSetAbsencePeriod(date)
-          .then(function () {
-            var isInCurrentPeriod = oldPeriodId === vm.period.id;
-
-            if (!isInCurrentPeriod) {
-              if (vm.uiOptions.multipleDays) {
-                vm.uiOptions.showBalance = false;
-                vm.uiOptions.toDate = null;
-                vm.request.to_date = null;
-              }
-
-              return $q.all([
-                vm._loadAbsenceTypes(),
-                vm._loadCalendar()
-              ]);
-            }
-          });
-      };
-
-      /**
-       * Overwrites the parent function. It calculates the expiry date when
-       * the `from` or `to` date change value.
-       *
-       * @param {Date} date - the selected date
-       * @return {Promise}
-       */
-      vm.updateAbsencePeriodDatesTypes = function (date) {
-        return vm.loadAbsencePeriodDatesTypes()
-          .then(function () {
-            vm._setMinMaxDate();
-            vm._setDates();
-            vm.updateBalance();
-            vm.calculateToilExpiryDate();
-          })
-          .catch(function (error) {
-            vm.errors = [error];
-          });
-      };
-
-      /**
-       * Updates expiry date when user changes it on ui
-       */
-      vm.updateExpiryDate = function () {
-        if (vm.uiOptions.expiryDate) {
-          vm.request.toil_expiry_date = vm._convertDateToServerFormat(vm.uiOptions.expiryDate);
-        }
-      };
-
-      /**
-       * Initialize leaverequest based on attributes that come from directive
-       */
-      vm._initRequest = function () {
-        var attributes = vm._initRequestAttributes();
-
-        vm.request = TOILRequestInstance.init(attributes);
-        // toil request does not have date type but leave request requires it for validation, hence setting it to All Day's value which is 1
-        vm.request.to_date_type = vm.request.from_date_type = '1';
-      };
-
-      /**
-       * Initializes the controller on loading the dialog
-       */
-      (function initController () {
-        vm.loading.absenceTypes = true;
-
-        vm._init()
-          .then(function () {
-            return initRequestCanExpire();
-          })
-          .then(function () {
-            initExpiryDate();
-
-            return loadToilAmounts();
-          })
-          .finally(function () {
-            vm.loading.absenceTypes = false;
-          });
-      })();
+      }
 
       /**
        * Determines if the expiry date can be calculated based on the
@@ -212,6 +117,39 @@ define([
       function canCalculateExpiryDate () {
         return (vm.uiOptions.multipleDays && vm.request.to_date) ||
           (!vm.uiOptions.multipleDays && vm.request.from_date);
+      }
+
+      /**
+       * Checks if submit button can be enabled for user and returns true if successful
+       *
+       * @return {Boolean}
+       */
+      function canSubmit () {
+        return parentRequestCtrl.canSubmit.call(this) &&
+          !!vm.request.toil_duration &&
+          !!vm.request.toil_to_accrue &&
+          !!vm.request.from_date &&
+          !!vm.request.to_date;
+      }
+
+      /**
+       * Extends parent method. Fires calculation of expiry date when the
+       * number of days changes and the expiry date can be calculated.
+       */
+      function changeInNoOfDays () {
+        parentRequestCtrl.changeInNoOfDays.call(this);
+
+        if (canCalculateExpiryDate()) {
+          vm.calculateToilExpiryDate();
+        }
+      }
+
+      /**
+       * Clears the request's expiry date and the UI expiry date picker.
+       */
+      function clearExpiryDate () {
+        vm.request.toil_expiry_date = false;
+        vm.uiOptions.expiryDate = null;
       }
 
       /**
@@ -259,6 +197,15 @@ define([
       }
 
       /**
+       * Initialize expiryDate on UI from server's toil_expiry_date
+       */
+      function initExpiryDate () {
+        if (vm.canManage) {
+          vm.uiOptions.expiryDate = vm._convertDateFormatFromServer(vm.request.toil_expiry_date);
+        }
+      }
+
+      /**
        * Initialize requestCanExpire according to admin setting
        * and request type.
        * @return {Promise}
@@ -271,12 +218,32 @@ define([
       }
 
       /**
-       * Initialize expiryDate on UI from server's toil_expiry_date
+       * Overwrites the parent funtion. Inits UI values, and loads absence types
+       * and calendar.
+       *
+       * @param {Date} date - the selected date
+       * @return {Promise}
        */
-      function initExpiryDate () {
-        if (vm.canManage) {
-          vm.uiOptions.expiryDate = vm._convertDateFormatFromServer(vm.request.toil_expiry_date);
-        }
+      function loadAbsencePeriodDatesTypes (date) {
+        var oldPeriodId = vm.period.id;
+
+        return vm._checkAndSetAbsencePeriod(date)
+          .then(function () {
+            var isInCurrentPeriod = oldPeriodId === vm.period.id;
+
+            if (!isInCurrentPeriod) {
+              if (vm.uiOptions.multipleDays) {
+                vm.uiOptions.showBalance = false;
+                vm.uiOptions.toDate = null;
+                vm.request.to_date = null;
+              }
+
+              return $q.all([
+                vm._loadAbsenceTypes(),
+                vm._loadCalendar()
+              ]);
+            }
+          });
       }
 
       /**
@@ -289,6 +256,49 @@ define([
           .then(function (amounts) {
             vm.toilAmounts = _.indexBy(amounts, 'value');
           });
+      }
+
+      /**
+       * Overwrites the parent function. It calculates the expiry date when
+       * the `from` or `to` date change value.
+       *
+       * @param {Date} date - the selected date
+       * @return {Promise}
+       */
+      function updateAbsencePeriodDatesTypes (date) {
+        return vm.loadAbsencePeriodDatesTypes()
+          .then(function () {
+            vm._setMinMaxDate();
+            vm._setDates();
+            vm.updateBalance();
+            vm.calculateToilExpiryDate();
+          })
+          .catch(function (error) {
+            vm.errors = [error];
+          });
+      }
+
+      /**
+       * Updates expiry date when user changes it on ui
+       */
+      function updateExpiryDate () {
+        if (vm.uiOptions.expiryDate) {
+          vm.request.toil_expiry_date = vm._convertDateToServerFormat(vm.uiOptions.expiryDate);
+        }
+      }
+
+      /**
+       * Initialize leaverequest based on attributes that come from directive
+       */
+      function _initRequest () {
+        var attributes = vm._initRequestAttributes();
+
+        vm.request = TOILRequestInstance.init(attributes);
+        /*
+         * toil request does not have date type but leave request requires it
+         * for validation, hence setting it to All Day's value which is 1
+         */
+        vm.request.to_date_type = vm.request.from_date_type = '1';
       }
 
       return vm;

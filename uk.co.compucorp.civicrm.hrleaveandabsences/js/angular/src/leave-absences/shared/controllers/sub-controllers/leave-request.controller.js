@@ -21,19 +21,9 @@ define([
         }
       };
 
-      /**
-       * Initialize leaverequest based on attributes that come from directive
-       */
-      vm._initRequest = function () {
-        var attributes = vm._initRequestAttributes();
+      vm._initRequest = _initRequest;
 
-        vm.request = LeaveRequestInstance.init(attributes);
-      };
-
-      /**
-       * Initializes the controller on loading the dialog
-       */
-      (function initController () {
+      (function init () {
         vm.loading.absenceTypes = true;
 
         vm._init()
@@ -41,6 +31,15 @@ define([
             vm.loading.absenceTypes = false;
           });
       })();
+
+      /**
+       * Initialize leaverequest based on attributes that come from directive
+       */
+      function _initRequest () {
+        var attributes = vm._initRequestAttributes();
+
+        vm.request = LeaveRequestInstance.init(attributes);
+      }
 
       return vm;
     }
