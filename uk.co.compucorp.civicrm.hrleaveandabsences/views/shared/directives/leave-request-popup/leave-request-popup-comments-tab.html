@@ -4,11 +4,11 @@
     ng-hide="commentsCtrl.getActiveComments().length === 0">
     <div
       class="chr_leave-request-comment"
-      ng-repeat="comment in commentsCtrl.getActiveComments() | orderBy: commentsCtrl.orderComment : true">
+      ng-repeat="comment in commentsCtrl.getActiveComments() | orderBy: commentsCtrl.id : true">
       <div class="chr_leave-request-comment__meta">
         <span class="chr_leave-request-comment__author">{{commentsCtrl.getCommentorName(comment.contact_id)}}</span>
         <span>-</span>
-        <span class="chr_leave-request-comment__date">{{comment.created_at ? commentsCtrl.formatDateTime(comment.created_at) : "Just now"}}</span>
+        <span class="chr_leave-request-comment__date">{{comment.comment_id ? commentsCtrl.formatDateTime(comment.created_at) : "Just now"}}</span>
         <button
           class="btn btn-link"
           ng-disabled="commentsCtrl.isMode('view')"
@@ -25,6 +25,7 @@
     prevent-animations
     ta-disabled="commentsCtrl.isMode('view')"
     ta-toolbar="[['bold','italics','underline']]"
+    placeholder="Start typing here..."
     ng-model="commentsCtrl.comment.text"></div>
   <div class="chr_wysiwyg__action">
     <button
