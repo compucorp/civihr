@@ -44,10 +44,6 @@ define([
         it('sets count to number of records returned', function () {
           expect(controller.count).toBe(apiReturnValue.list.length);
         });
-
-        it('hides the loader', function () {
-          expect(controller.loading.count).toBe(false);
-        });
       });
     });
 
@@ -66,10 +62,6 @@ define([
       describe('after api returns with value', function () {
         it('sets count to number of records returned', function () {
           expect(controller.count).toBe(apiReturnValue.list.length);
-        });
-
-        it('hides the loader', function () {
-          expect(controller.loading.count).toBe(false);
         });
       });
     });
