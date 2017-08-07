@@ -35,7 +35,7 @@
 
                                 <div class="col-sm-5">
                                     <div class="chr_custom-select chr_custom-select--full">
-                                        <select id="{{prefix}}contract-type" class="form-control" name="detailsContractType"
+                                        <select id="{{prefix}}contract-type" class="form-control no-select2" name="detailsContractType"
                                                 ng-model="entity.details.contract_type"
                                                 ng-options="key as value for (key, value) in options.details.contract_type"
                                                 ng-disabled="isDisabled" required>
@@ -49,7 +49,7 @@
 
                                 <div class="col-sm-5">
                                     <div class="chr_custom-select chr_custom-select--full">
-                                        <select id="{{prefix}}location" class="form-control"
+                                        <select id="{{prefix}}location" class="form-control no-select2"
                                                 ng-model="entity.details.location"
                                                 ng-options="key as value for (key, value) in options.details.location"
                                                 ng-disabled="isDisabled">
@@ -114,7 +114,7 @@
 
                                 <div class="col-sm-5">
                                     <div class="chr_custom-select chr_custom-select--full">
-                                        <select id="{{prefix}}end-reason" class="form-control" name="detailsEndReason"
+                                        <select id="{{prefix}}end-reason" class="form-control no-select2" name="detailsEndReason"
                                                 ng-model="entity.details.end_reason"
                                                 ng-options="key as value for (key, value) in options.details.end_reason"
                                                 ng-disabled="isDisabled" ng-required="!!entity.details.period_end_date">
@@ -141,7 +141,7 @@
                                                ng-model="entity.details.notice_amount"
                                                ng-disabled="isDisabled">
                                         <div class="chr_custom-select">
-                                            <select id="{{prefix}}notice-unit" class="form-control" name="detailsNoticeUnit"
+                                            <select id="{{prefix}}notice-unit" class="form-control no-select2" name="detailsNoticeUnit"
                                                     ng-model="entity.details.notice_unit"
                                                     ng-options="key as value for (key, value) in options.details.notice_unit"
                                                     ng-disabled="isDisabled"
@@ -162,7 +162,7 @@
                                                ng-model="entity.details.notice_amount_employee"
                                                ng-disabled="isDisabled">
                                        <div class="chr_custom-select">
-                                            <select id="{{prefix}}notice-unit-employee" class="form-control" name="detailsNoticeUnitEmployee"
+                                            <select id="{{prefix}}notice-unit-employee" class="form-control no-select2" name="detailsNoticeUnitEmployee"
                                                     ng-model="entity.details.notice_unit_employee"
                                                     ng-options="key as value for (key, value) in options.details.notice_unit_employee"
                                                     ng-disabled="isDisabled"
