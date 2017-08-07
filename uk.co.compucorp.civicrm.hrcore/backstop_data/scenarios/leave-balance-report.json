@@ -1,0 +1,14 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP: Leave Balance Report",
+      "url": "manager-leave#/manager-leave/balance-report",
+      "onReadyScript": "ssp-leave-absences/manager/leave-balance-report"
+    },
+    {
+      "label": "Admin Portal: Leave Balance Report",
+      "url": "civicrm/leaveandabsences/dashboard#/balance-report",
+      "onReadyScript": "leave-absence-dashboard/leave-balance-report/leave-balance-report"
+    }
+  ]
+}

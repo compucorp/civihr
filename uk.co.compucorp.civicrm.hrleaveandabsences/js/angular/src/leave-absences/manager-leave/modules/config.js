@@ -40,7 +40,7 @@
             })
             .state('manager-leave.balance-report', {
               url: '/balance-report',
-              template: '<balance-report></balance-report>'
+              template: '<leave-balance-report></leave-balance-report>'
             });
         }
       ]);

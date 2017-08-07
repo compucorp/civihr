@@ -3,11 +3,11 @@
 define([
   'leave-absences/shared/modules/components'
 ], function (components) {
-  components.component('balanceReport', {
+  components.component('leaveBalanceReport', {
     controller: balanceReportController,
     controllerAs: 'vm',
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sharedPathTpl + 'components/balance-report.html';
+      return sharedSettings.sharedPathTpl + 'components/leave-balance-report.html';
     }]
   });
 

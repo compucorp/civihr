@@ -1,18 +1,18 @@
-.chr_balance-report {
-  .chr_balance-report__results-value {
+.chr_leave-balance-report {
+  .chr_leave-balance-report__results-value {
     color: darken($gray-light, 45%);
   }
 
-  .chr_balance-report__overflow-scroll {
+  .chr_leave-balance-report__overflow-scroll {
     margin-bottom: 2em;
     overflow-x: auto;
   }
 
-  .chr_balance-report__contact-id-column {
+  .chr_leave-balance-report__contact-id-column {
     min-width: 10em;
   }
 
-  .chr_balance-report__name-column {
+  .chr_leave-balance-report__name-column {
     min-width: 15em;
   }
 
@@ -21,14 +21,14 @@
    * if they should not behave like links. This style removes any hover effects
    * that may confuse the user.
    */
-  .chr_balance-report__pagination li.label a:hover {
+  .chr_leave-balance-report__pagination li.label a:hover {
     color: inherit;
     background-color: inherit;
   }
 
   /* Media queries */
   @media (min-width: $screen-sm-min) {
-    .chr_balance-report__filters .form-group {
+    .chr_leave-balance-report__filters .form-group {
       label { display: inline-block; width: 35%; }
       .form-control { width: calc(65% - 4px); }
     }

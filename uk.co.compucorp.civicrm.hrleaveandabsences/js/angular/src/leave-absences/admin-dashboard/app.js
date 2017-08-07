@@ -8,7 +8,7 @@ define([
   'common/services/check-permissions',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/ui-router',
-  'leave-absences/shared/components/balance-report.component',
+  'leave-absences/shared/components/leave-balance-report.component',
   'leave-absences/shared/components/leave-request-actions.component',
   'leave-absences/shared/components/leave-request-popup-comments-tab.component',
   'leave-absences/shared/components/leave-request-popup-files-tab',
