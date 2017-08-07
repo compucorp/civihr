@@ -452,7 +452,8 @@ define([
         return pendingRequestFilters.indexOf(status) > -1;
       });
 
-      // When any of the pending request filters are not applied
+      // If statusFilter still has items, means one of pendingRequestFilters is selected on the UI
+      // Then do not add new filters
       if (statusFilter.length === 0) {
         // Add pending request specific filters
         statusFilter = statusFilter.concat(pendingRequestFilters);
