@@ -1,5 +1,4 @@
-<span class="chr_leave_notification badge badge-primary">
-  <i ng-if="badge.loading.count" class="fa fa-refresh fa-spin"></i>
-  <span ng-if="!badge.loading.count">{{badge.count}}</span>
+<span ng-if="!badge.loading.count && badge.count > 0" class="chr_leave_notification badge badge-primary">
+  <span>{{badge.count}}</span>
 </span>
 
