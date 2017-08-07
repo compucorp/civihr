@@ -1,5 +1,6 @@
 <?php
 
+use CRM_Hrjobcontract_DAO_HRJobContractRevision as HRJobContractRevision;
 use CRM_Hrjobcontract_ExportImportValuesConverter as ImportExportUtility;
 
 class CRM_Hrjobcontract_Import_EntityHandler_HRJobLeave extends CRM_Hrjobcontract_Import_EntityHandler {
@@ -8,7 +9,7 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobLeave extends CRM_Hrjobcontrac
     parent::__construct('HRJobLeave');
   }
 
-  public function handle(array $params, CRM_Hrjobcontract_DAO_HRJobContractRevision $contractRevision, array &$previousRevision) {
+  public function handle(array $params, HRJobContractRevision $contractRevision, array &$previousRevision) {
     $leaveData = $this->prepareLeaveData(
       $params, $contractRevision->jobcontract_id, $contractRevision->id
     );

@@ -254,7 +254,7 @@ class CRM_Hrjobcontract_SelectValues {
     $result = $result['values'];
     $options = [];
     foreach ($result as $item) {
-      $options[] =  ['id'=>$item['id'], 'label'=> $item['title']];
+      $options[] = ['id' => $item['id'], 'label' => $item['title']];
     }
 
     return $options;

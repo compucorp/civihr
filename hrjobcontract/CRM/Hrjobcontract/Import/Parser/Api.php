@@ -660,7 +660,9 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       default:
         $importExportUtility = ImportExportUtility::singleton();
         $leaveTypes = $importExportUtility->getLeaveTypes();
-        $leaveTypes = array_map(function ($value) { return filter_var($value, FILTER_SANITIZE_STRING); }, array_column($leaveTypes, 'title'));
+        $leaveTypes = array_map(function ($value) {
+          return filter_var($value, FILTER_SANITIZE_STRING);
+        }, array_column($leaveTypes, 'title'));
 
         if (in_array($key, $leaveTypes)) {
           if (!is_numeric($value)) {
@@ -673,7 +675,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   }
 
   /**
-   * Checks if given field requires returntype to be 'value', 'label' or 'id'
+   * Checks if given field requires return type to be 'value', 'label' or 'id'
    * and obtains its value in DB for given $value.
    *
    * @param string $key
