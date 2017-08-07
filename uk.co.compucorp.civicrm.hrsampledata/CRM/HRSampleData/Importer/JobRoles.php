@@ -15,7 +15,7 @@ class CRM_HRSampleData_Importer_JobRoles extends CRM_HRSampleData_CSVImporterVis
 
 
   public function __construct() {
-    $this->costCenters = $this->getFixData('OptionValue', 'name', 'value', [
+    $this->costCenters = $this->getFixData('OptionValue', 'name', 'id', [
       'option_group_id' => 'cost_centres',
     ]);
   }
