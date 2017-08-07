@@ -34,7 +34,6 @@ class CRM_HRSampleData_CSVProcessor_JobContractTest extends CRM_HRSampleData_Bas
       'hrjc_contract_type',
       'hrjc_contract_end_reason',
       'hrjc_location',
-      'hrjc_pension_type',
     ];
     foreach($contractOptionValues as $group) {
       $this->optionValues[$group] = OptionValueFabricator::fabricate(['option_group_id' => $group]);
@@ -87,7 +86,7 @@ class CRM_HRSampleData_CSVProcessor_JobContractTest extends CRM_HRSampleData_Bas
       1,
       5,
       5,
-      $this->optionValues['hrjc_pension_type']['name'],
+      $this->testContact['id'],
       'Sick:0,Annual_Leave:28,Maternity:0,Paternity:0,TOIL:0,Other:0',
     ];
 
