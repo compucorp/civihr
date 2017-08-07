@@ -280,12 +280,10 @@ define([
             deferred.reject('id is mandatory field');
           }
 
-          this.sendPOST('LeaveRequest', 'create', params)
+          return this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
-            deferred.resolve(data.values[0]);
+            return data.values[0];
           });
-
-          return deferred.promise;
         }
       });
     }]);

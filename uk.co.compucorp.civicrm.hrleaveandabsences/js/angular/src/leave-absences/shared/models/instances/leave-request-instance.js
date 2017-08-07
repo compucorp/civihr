@@ -77,23 +77,24 @@ define([
        * @return {Promise}
        */
       function saveAndDeleteComments () {
+        var leaveRequestId = this.id;
         var promises = [];
-        var self = this;
 
-        // Save comments which dont have an ID
-        self.comments.map(function (comment, index) {
-          if (!comment.comment_id) {
-            // IIFE is created to keep actual value of 'index' when promise is resolved
-            (function (index) {
-              promises.push(LeaveRequestAPI.saveComment(self.id, comment)
-                .then(function (commentData) {
-                  self.comments[index] = commentData;
-                }));
-            })(index);
-          } else if (comment.toBeDeleted) {
-            promises.push(LeaveRequestAPI.deleteComment(comment.comment_id));
-          }
-        });
+        // Pushing a chain of API calls to create new comments sequentially
+        promises.push($q.sequence(this.comments.filter(function (comment) {
+          return !comment.comment_id;
+        }).map(function (comment) {
+          return function () {
+            return LeaveRequestAPI.saveComment(leaveRequestId, comment);
+          };
+        })));
+
+        // Deleting comments can done in parallel, no need in a promise chain
+        promises = promises.concat(this.comments.filter(function (comment) {
+          return comment.comment_id && comment.toBeDeleted;
+        }).map(function (comment) {
+          return LeaveRequestAPI.deleteComment(comment.comment_id);
+        }));
 
         return $q.all(promises);
       }

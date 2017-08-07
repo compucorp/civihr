@@ -864,22 +864,31 @@
             });
           });
 
-          describe('with new comments', function () {
-            var leaveRequestId, comment;
+          describe('with both new and deleted comments', function () {
+            var leaveRequestId, newComment, commentToBeDeleted;
 
             beforeEach(function () {
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
               var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
-              var contatId = '204';
+              var contactId = '204';
 
-              comment = {
-                contact_id: contatId,
+              newComment = {
+                contact_id: contactId,
                 leave_request_id: leaveRequest.id,
                 text: 'some text'
               };
+
+              commentToBeDeleted = {
+                comment_id: '77',
+                toBeDeleted: true,
+                contact_id: contactId,
+                leave_request_id: leaveRequest.id,
+                text: 'some text'
+              };
+
               leaveRequestId = leaveRequest.id;
-              leaveRequest.contact_id = contatId;
-              leaveRequest.comments = [comment];
+              leaveRequest.contact_id = contactId;
+              leaveRequest.comments = [newComment, commentToBeDeleted];
 
               initTestController({
                 contactId: leaveRequest.contact_id,
@@ -891,13 +900,18 @@
             describe('and submits', function () {
               beforeEach(function () {
                 spyOn(LeaveRequestAPI, 'saveComment').and.callThrough();
+                spyOn(LeaveRequestAPI, 'deleteComment').and.callThrough();
 
                 $ctrl.submit();
-                $scope.$apply();
+                $scope.$digest();
               });
 
               it('calls Save Comment API with correct arguments', function () {
-                expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(leaveRequestId, comment);
+                expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(leaveRequestId, newComment);
+              });
+
+              it('calls Delete Comment API with correct arguments', function () {
+                expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(commentToBeDeleted.comment_id);
               });
             });
           });
