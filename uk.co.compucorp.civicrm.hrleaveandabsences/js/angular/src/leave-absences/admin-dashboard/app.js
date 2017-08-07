@@ -13,7 +13,7 @@ define([
   'leave-absences/shared/components/leave-request-popup-files-tab',
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/components/manager-leave-calendar',
-  'leave-absences/shared/components/manage-leave-requests',
+  'leave-absences/shared/components/manage-leave-requests.component',
   'leave-absences/shared/directives/leave-request-popup.directive',
   'leave-absences/admin-dashboard/modules/config',
   'leave-absences/admin-dashboard/components/admin-dashboard-container'

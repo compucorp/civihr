@@ -13,13 +13,15 @@ define([
       return sharedSettings.sharedPathTpl + 'components/manage-leave-requests.html';
     }],
     controllerAs: 'vm',
-    controller: [
-      '$log', '$q', '$rootScope', 'shared-settings', 'checkPermissions',
-      'Contact', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest', 'OptionGroup',
-      'dialog', controller]
+    controller: ManageLeaveRequestsController
   });
 
-  function controller ($log, $q, $rootScope, sharedSettings, checkPermissions, Contact, AbsencePeriod, AbsenceType, LeaveRequest, OptionGroup, dialog) {
+  ManageLeaveRequestsController.$inject = [
+    '$log', '$q', '$rootScope', 'Contact', 'checkPermissions', 'OptionGroup',
+    'shared-settings', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest'
+  ];
+
+  function ManageLeaveRequestsController ($log, $q, $rootScope, Contact, checkPermissions, OptionGroup, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest) {
     'use strict';
     $log.debug('Component: manage-leave-requests');
 
@@ -41,7 +43,7 @@ define([
       },
       leaveRequest: {
         leaveStatus: vm.leaveRequestStatuses[0],
-        pending_requests: false,
+        pending_requests: true,
         contact_id: null,
         selectedPeriod: null,
         selectedAbsenceTypes: null,
@@ -72,186 +74,49 @@ define([
       size: 7
     };
 
-    /**
-     * Clears selected users and refreshes leave requests
-     */
-    vm.clearStaffSelection = function () {
-      vm.filters.leaveRequest.contact_id = null;
-      vm.refresh();
-    };
-
-    /**
-     * Filters leave requests by status
-     *
-     * @param {Object} status - status object
-     * @return {array}
-     */
-    vm.filterLeaveRequestByStatus = function (status) {
-      if (status.name === 'all' || status === '') {
-        return vm.leaveRequests.filter.list;
-      }
-
-      return vm.leaveRequests.filter.list.filter(function (request) {
-        return request.status_id === status.value;
-      });
-    };
-
-    /**
-     * Returns the title of a Absence type when id is given
-     *
-     * @param {string} id - id of the Absence type
-     * @return {string}
-     */
-    vm.getAbsenceTypesByID = function (id) {
-      if (vm.absenceTypes && id) {
-        var type = _.find(vm.absenceTypes, function (absenceType) {
-          return absenceType.id === id;
-        });
-
-        return type ? type.title : null;
-      }
-    };
-
-    /**
-     * Returns the name(label) of a Leave request status when id is given
-     *
-     * @param {string} id - id of the leave request
-     * @return {string}
-     */
-    vm.getLeaveStatusByValue = function (value) {
-      var status = _.find(vm.leaveRequestStatuses, function (status) {
-        return status.value === value;
-      });
-
-      return status ? status.label : null;
-    };
-
-    /**
-     * Returns the class name for filter navigation when name is given
-     *
-     * @param {string} name - name of the status
-     * @return {string}
-     */
-    vm.getNavBadge = function (name) {
-      switch (name) {
-        case sharedSettings.statusNames.approved:
-          return 'badge-success';
-        case sharedSettings.statusNames.rejected:
-          return 'badge-danger';
-        case sharedSettings.statusNames.cancelled:
-        case 'all':
-          return '';
-        default:
-          return 'badge-primary';
-      }
-    };
-
-    /**
-     * Returns the username when id is given
-     *
-     * @param {string} id - id of the user
-     * @return {string}
-     */
-    vm.getUserNameByID = function (id) {
-      var user = _.find(vm.filteredUsers, function (contact) {
-        return contact.id === id;
-      });
-      return user ? user.display_name : null;
-    };
-
-    /**
-     * Labels the given period according to whether it's current or not
-     *
-     * @param  {AbsencePeriodInstance} period
-     * @return {string}
-     */
-    vm.labelPeriod = function (period) {
-      return period.current ? 'Current Period (' + period.title + ')' : period.title;
-    };
-
-    /**
-     * Returns an array of a given size
-     *
-     * @param {number} n - no of elements in the array
-     * @return {Array}
-     */
-    vm.getArrayOfSize = function (n) {
-      return new Array(n || 0);
-    };
-
-    /**
-     * Refreshes the leave request data
-     *
-     * @param {int} page - page number of the pagination element
-     */
-    vm.refresh = function (page) {
-      // vm.refresh is called from registerEvents and was sending events object in the function "arguments".
-      // Without the check parameter page was set to the passed event object from function "arguments" and
-      // hence the page was not getting refreshed as the below condition would always fail.
-      page = typeof (page) === 'number' ? page : 1;
-
-      // page <= vm.totalNoOfPages() - Do not load new data if the page no is more than total
-      // no of pages, this can happen when Next button is pressed on the pagination
-      // vm.totalNoOfPages() === 0 - If total no of pages is 0 then load new data
-      // This can happen when the list is empty and a new filter is applied
-      if (page <= vm.totalNoOfPages() || vm.totalNoOfPages() === 0) {
-        vm.pagination.page = page;
-
-        loadManageesAndLeaves();
-      }
-    };
-
-    /**
-     * Refreshes the leave request data and also changes current selected leave status
-     *
-     * @param {string} status - status to be selected
-     */
-    vm.refreshWithFilter = function (status) {
-      vm.filters.leaveRequest.leaveStatus = status;
-      vm.refresh();
-    };
-
-    /**
-     * Refreshes the leave request data and also changes current selected leave status
-     *
-     * @param {string} type - by assignee type to be selected
-     */
-    vm.refreshWithFilterByAssignee = function (type) {
-      vm.filters.leaveRequest.assignedTo = type;
-      vm.refresh();
-    };
-
-    /**
-     * Calculates the total number of pages for the pagination
-     *
-     * @return {number}
-     */
-    vm.totalNoOfPages = function () {
-      return Math.ceil(vm.leaveRequests.table.total / vm.pagination.size);
-    };
+    vm.clearStaffSelection = clearStaffSelection;
+    vm.filterLeaveRequestByStatus = filterLeaveRequestByStatus;
+    vm.getAbsenceTypesByID = getAbsenceTypesByID;
+    vm.getArrayOfSize = getArrayOfSize;
+    vm.getLeaveStatusByValue = getLeaveStatusByValue;
+    vm.getNavBadge = getNavBadge;
+    vm.getUserNameByID = getUserNameByID;
+    vm.labelPeriod = labelPeriod;
+    vm.refresh = refresh;
+    vm.refreshWithFilter = refreshWithFilter;
+    vm.refreshWithFilterByAssignee = refreshWithFilterByAssignee;
+    vm.totalNoOfPages = totalNoOfPages;
 
     (function init () {
       checkPermissions(sharedSettings.permissions.admin.administer)
-      .then(function (isAdmin) {
-        vm.isAdmin = isAdmin;
+        .then(function (isAdmin) {
+          vm.isAdmin = isAdmin;
 
-        $q.all([
-          loadAbsencePeriods(),
-          loadAbsenceTypes(),
-          loadRegions(),
-          loadDepartments(),
-          loadLocations(),
-          loadLevelTypes(),
-          loadStatuses()
-        ])
-        .then(function () {
-          vm.loading.page = false;
-          loadManageesAndLeaves();
+          $q.all([
+            loadAbsencePeriods(),
+            loadAbsenceTypes(),
+            loadRegions(),
+            loadDepartments(),
+            loadLocations(),
+            loadLevelTypes(),
+            loadStatuses()
+          ])
+            .then(function () {
+              vm.loading.page = false;
+              loadManageesAndLeaves();
+            });
+
+          registerEvents();
         });
-
-        registerEvents();
-      });
     })();
+
+    /**
+     * Clears selected users and refreshes leave requests
+     */
+    function clearStaffSelection () {
+      vm.filters.leaveRequest.contact_id = null;
+      vm.refresh();
+    }
 
     /**
      * Returns the filter object for contacts api
@@ -267,6 +132,116 @@ define([
         location: filters.location,
         region: filters.region
       };
+    }
+
+    /**
+     * Filters leave requests by status
+     *
+     * @param {Object} status - status object
+     * @return {array}
+     */
+    function filterLeaveRequestByStatus (status) {
+      if (status.name === 'all' || status === '') {
+        return vm.leaveRequests.filter.list;
+      }
+
+      return vm.leaveRequests.filter.list.filter(function (request) {
+        return request.status_id === status.value;
+      });
+    }
+
+    /**
+     * Returns the title of a Absence type when id is given
+     *
+     * @param {string} id - id of the Absence type
+     * @return {string}
+     */
+    function getAbsenceTypesByID (id) {
+      if (vm.absenceTypes && id) {
+        var type = _.find(vm.absenceTypes, function (absenceType) {
+          return absenceType.id === id;
+        });
+
+        return type ? type.title : null;
+      }
+    }
+
+    /**
+     * Returns an array of a given size
+     *
+     * @param {number} n - no of elements in the array
+     * @return {Array}
+     */
+    function getArrayOfSize (n) {
+      return new Array(n || 0);
+    }
+
+    /**
+     * Returns the name(label) of a Leave request status when id is given
+     *
+     * @param {string} id - id of the leave request
+     * @return {string}
+     */
+    function getLeaveStatusByValue (value) {
+      var status = _.find(vm.leaveRequestStatuses, function (status) {
+        return status.value === value;
+      });
+
+      return status ? status.label : null;
+    }
+
+    /**
+     * Returns the class name for filter navigation when name is given
+     *
+     * @param {string} name - name of the status
+     * @return {string}
+     */
+    function getNavBadge (name) {
+      switch (name) {
+        case sharedSettings.statusNames.approved:
+          return 'badge-success';
+        case sharedSettings.statusNames.rejected:
+          return 'badge-danger';
+        case sharedSettings.statusNames.cancelled:
+        case 'all':
+          return '';
+        default:
+          return 'badge-primary';
+      }
+    }
+
+    /**
+     * Returns status value for the given name
+     * @param {String} statusName
+     * @return {String}
+     */
+    function getStatusValueFromName (statusName) {
+      return _.find(vm.leaveRequestStatuses, function (status) {
+        return status.name === statusName;
+      }).value;
+    }
+
+    /**
+     * Returns the username when id is given
+     *
+     * @param {string} id - id of the user
+     * @return {string}
+     */
+    function getUserNameByID (id) {
+      var user = _.find(vm.filteredUsers, function (contact) {
+        return contact.id === id;
+      });
+      return user ? user.display_name : null;
+    }
+
+    /**
+     * Labels the given period according to whether it's current or not
+     *
+     * @param  {AbsencePeriodInstance} period
+     * @return {string}
+     */
+    function labelPeriod (period) {
+      return period.current ? 'Current Period (' + period.title + ')' : period.title;
     }
 
     /**
@@ -461,6 +436,33 @@ define([
     }
 
     /**
+     * Applies the filters when pending request is checked
+     *
+     * @param {Array} statusFilter
+     * @return {Array}
+     */
+    function preparePendingRequestOnlyFilters (statusFilter) {
+      var pendingRequestFilters = [
+        getStatusValueFromName(sharedSettings.statusNames.moreInformationRequired),
+        getStatusValueFromName(sharedSettings.statusNames.awaitingApproval)
+      ];
+
+      // Remove others filters
+      statusFilter = statusFilter.filter(function (status) {
+        return pendingRequestFilters.indexOf(status) > -1;
+      });
+
+      // If statusFilter still has items, means one of pendingRequestFilters is selected on the UI
+      // Then do not add new filters
+      if (statusFilter.length === 0) {
+        // Add pending request specific filters
+        statusFilter = statusFilter.concat(pendingRequestFilters);
+      }
+
+      return statusFilter;
+    }
+
+    /**
      * Returns the status filter to be used for leave request api
      *
      * @param {boolean} filterByStatus - if true then leave request api will be filtered using
@@ -471,19 +473,14 @@ define([
     function prepareStatusFilter (filterByStatus) {
       var filters = vm.filters.leaveRequest;
       var statusFilter = [];
-      // get the value for the waiting_approval status
-      var waitingApprovalID = _.find(vm.leaveRequestStatuses, function (status) {
-        return status.name === sharedSettings.statusNames.awaitingApproval;
-      }).value;
 
       // if filterByStatus is true then add the leaveStatus to be used in the leave request api
       if (filterByStatus && filters.leaveStatus && filters.leaveStatus.value) {
         statusFilter.push(filters.leaveStatus.value);
       }
 
-      // if pending_requests is true then add the awaiting_approval to be used in the leave request api
-      if (filters.pending_requests && waitingApprovalID) {
-        statusFilter.push(waitingApprovalID);
+      if (filters.pending_requests) {
+        statusFilter = preparePendingRequestOnlyFilters(statusFilter);
       }
 
       if (statusFilter.length) {
@@ -494,6 +491,48 @@ define([
     }
 
     /**
+     * Refreshes the leave request data
+     *
+     * @param {int} page - page number of the pagination element
+     */
+    function refresh (page) {
+      // vm.refresh is called from registerEvents and was sending events object in the function "arguments".
+      // Without the check parameter page was set to the passed event object from function "arguments" and
+      // hence the page was not getting refreshed as the below condition would always fail.
+      page = typeof (page) === 'number' ? page : 1;
+
+      // page <= vm.totalNoOfPages() - Do not load new data if the page no is more than total
+      // no of pages, this can happen when Next button is pressed on the pagination
+      // vm.totalNoOfPages() === 0 - If total no of pages is 0 then load new data
+      // This can happen when the list is empty and a new filter is applied
+      if (page <= vm.totalNoOfPages() || vm.totalNoOfPages() === 0) {
+        vm.pagination.page = page;
+
+        loadManageesAndLeaves();
+      }
+    }
+
+    /**
+     * Refreshes the leave request data and also changes current selected leave status
+     *
+     * @param {string} status - status to be selected
+     */
+    function refreshWithFilter (status) {
+      vm.filters.leaveRequest.leaveStatus = status;
+      vm.refresh();
+    }
+
+    /**
+     * Refreshes the leave request data and also changes current selected leave status
+     *
+     * @param {string} type - by assignee type to be selected
+     */
+    function refreshWithFilterByAssignee (type) {
+      vm.filters.leaveRequest.assignedTo = type;
+      vm.refresh();
+    }
+
+    /**
      * Register events which will be called by other modules
      */
     function registerEvents () {
@@ -501,6 +540,15 @@ define([
       $rootScope.$on('LeaveRequest::new', function () { vm.refresh(); });
       $rootScope.$on('LeaveRequest::edit', function () { vm.refresh(); });
       $rootScope.$on('LeaveRequest::deleted', function () { vm.refresh(); });
+    }
+
+    /**
+     * Calculates the total number of pages for the pagination
+     *
+     * @return {number}
+     */
+    function totalNoOfPages () {
+      return Math.ceil(vm.leaveRequests.table.total / vm.pagination.size);
     }
   }
 });
