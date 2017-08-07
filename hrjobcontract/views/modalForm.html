@@ -256,7 +256,7 @@
                 <label for="standard-hours" class="col-sm-4 control-label">Location/Standard hours</label>
                 <div class="col-sm-5">
                   <div class="chr_custom-select chr_custom-select--full">
-                    <select id="standard-hours" class="form-control"
+                    <select id="standard-hours" class="form-control no-select2"
                       ng-options="hoursLocation.id as (hoursLocation.location + ' - ' + hoursLocation.standard_hours + ' hours per ' + hoursLocation.periodicity) for hoursLocation in utils.hoursLocation"
                       ng-model="entity.hour.location_standard_hours"
                       ng-disabled="isDisabled">
@@ -268,7 +268,7 @@
                 <label for="{{prefix}}hours-type" class="col-sm-4 control-label">Hours type</label>
                 <div class="col-sm-5">
                   <div class="chr_custom-select chr_custom-select--full">
-                    <select id="{{prefix}}hours-type" class="form-control"
+                    <select id="{{prefix}}hours-type" class="form-control no-select2"
                       ng-options="key as value for (key, value) in options.hour.hours_type"
                       ng-model="entity.hour.hours_type"
                       ng-disabled="isDisabled">
@@ -342,7 +342,7 @@
             <div class="form-group">
               <label for="{{prefix}}pay-scale-grade" class="col-sm-4 control-label">Pay Scale / Grade</label>
               <div class="col-sm-5">
-                <select id="{{prefix}}pay-scale-grade" class="form-control"
+                <select id="{{prefix}}pay-scale-grade" class="form-control no-select2"
                   ng-change="applyPayScaleGradeData()"
                   ng-options="payScaleGrade.id as (payScaleGrade.pay_scale + (payScaleGrade.currency || payScaleGrade.amount ? ' - ' : '') + payScaleGrade.currency + ' ' + payScaleGrade.amount + (payScaleGrade.pay_frequency ? ' per ' + payScaleGrade.pay_frequency : '')) for payScaleGrade in utils.payScaleGrade"
                   ng-model="entity.pay.pay_scale"
@@ -355,14 +355,14 @@
               <label for="{{prefix}}pay-amount" class="col-sm-4 control-label">Pay</label>
               <div class="col-sm-8">
                 <div class="form-inline">
-                  <select class="form-control"
+                  <select class="form-control no-select2"
                     ng-model="entity.pay.pay_currency"
                     ng-options="key as value for (key, value) in options.pay.pay_currency"
                     ng-disabled="isDisabled">
                   </select>
                   <input id="{{prefix}}pay-amount" type="text" class="form-control input-inline-sm" hrjc-number ng-model="entity.pay.pay_amount" ng-disabled="isDisabled">
                   per
-                  <select class="form-control"
+                  <select class="form-control no-select2"
                     ng-model="entity.pay.pay_unit"
                     ng-options="key as value for (key, value) in options.pay.pay_unit"
                     ng-disabled="isDisabled">
@@ -383,7 +383,7 @@
               <label for="{{prefix}}pay-cycle" class="col-sm-4 control-label">Pay cycle</label>
               <div class="col-sm-3">
                 <select id="{{prefix}}pay-cycle"
-                  class="form-control"
+                  class="form-control no-select2"
                   ng-change="calcPayPerCycleGross(); calcBenefitsPerCycle(); calcDeductionsPerCycle();"
                   ng-options="key as value for (key, value) in options.pay.pay_cycle"
                   ng-model="entity.pay.pay_cycle"
@@ -439,7 +439,7 @@
                         <tr ng-repeat="benefit in entity.pay.annual_benefits">
                           <td class="index">{{$index+1}}</td>
                           <td>
-                            <select class="form-control"
+                            <select class="form-control no-select2"
                               ng-options="key as value for (key, value) in options.pay.benefit_name"
                               ng-model="benefit.name"
                               ng-disabled="isDisabled">
@@ -447,7 +447,7 @@
                             </select>
                           </td>
                           <td>
-                            <select class="form-control"
+                            <select class="form-control no-select2"
                               ng-options="key as value for (key, value) in options.pay.benefit_type"
                               ng-model="benefit.type"
                               ng-disabled="isDisabled">
@@ -510,7 +510,7 @@
                         <tr ng-repeat="deduction in entity.pay.annual_deductions">
                           <td class="index">{{$index+1}}</td>
                           <td>
-                            <select class="form-control"
+                            <select class="form-control no-select2"
                               ng-options="key as value for (key, value) in options.pay.deduction_name"
                               ng-model="deduction.name"
                               ng-disabled="isDisabled">
@@ -518,7 +518,7 @@
                             </select>
                           </td>
                           <td>
-                            <select class="form-control"
+                            <select class="form-control no-select2"
                               ng-options="key as value for (key, value) in options.pay.deduction_type"
                               ng-model="deduction.type"
                               ng-disabled="isDisabled">
@@ -661,7 +661,7 @@
                 <label for="health-health-plan" class="col-sm-4 control-label">Plan Type</label>
                 <div class="col-sm-4">
                   <div class="chr_custom-select chr_custom-select--full">
-                    <select id="health-health-plan" class="form-control"
+                    <select id="health-health-plan" class="form-control no-select2"
                       ng-model="entity.health.plan_type"
                       ng-options="key as value for (key, value) in options.health.plan_type"
                       ng-disabled="isDisabled">
@@ -737,7 +737,7 @@
                 <label for="health-life-plan" class="col-sm-4 control-label">Plan Type</label>
                 <div class="col-sm-4">
                   <div class="chr_custom-select chr_custom-select--full">
-                    <select id="health-life-plan" class="form-control"
+                    <select id="health-life-plan" class="form-control no-select2"
                       ng-model="entity.health.plan_type_life_insurance"
                       ng-options="key as value for (key, value) in options.health.plan_type_life_insurance"
                       ng-disabled="isDisabled">
@@ -785,7 +785,7 @@
                 <label for="pension-isenrolled" class="col-sm-4 control-label">Is Enrolled</label>
                 <div class="col-sm-4">
                   <div class="chr_custom-select chr_custom-select--full">
-                    <select id="pension-isenrolled" class="form-control"
+                    <select id="pension-isenrolled" class="form-control no-select2"
                       ng-model="entity.pension.is_enrolled"
                       ng-options="key as value for (key, value) in options.pension.is_enrolled"
                       ng-disabled="isDisabled">
