@@ -329,9 +329,9 @@
             <div class="col-xs-12">
               <div class="form-group">
                 <div class="col-sm-5 col-sm-offset-4">
-                  <input type="radio" id="{{prefix}}paid" value="1" ng-model="entity.pay.is_paid" ng-change="setDefaults()" ng-disabled="isDisabled">
+                  <input type="radio" class="old-radiocheckbox-style" id="{{prefix}}paid" value="1" ng-model="entity.pay.is_paid" ng-change="setDefaults()" ng-disabled="isDisabled">
                   <label class="radio-inline" for="{{prefix}}paid">Paid</label>
-                  <input type="radio" id="{{prefix}}unpaid" value="0" ng-model="entity.pay.is_paid" ng-change="resetData()" ng-disabled="isDisabled">
+                  <input type="radio" class="old-radiocheckbox-style" id="{{prefix}}unpaid" value="0" ng-model="entity.pay.is_paid" ng-change="resetData()" ng-disabled="isDisabled">
                   <label class="radio-inline" for="{{prefix}}unpaid">Unpaid</label>
                 </div>
               </div>
