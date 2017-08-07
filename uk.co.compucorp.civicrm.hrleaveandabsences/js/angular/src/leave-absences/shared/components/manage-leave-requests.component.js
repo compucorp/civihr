@@ -436,6 +436,32 @@ define([
     }
 
     /**
+     * Applies the filters when pending request is checked
+     *
+     * @param {Array} statusFilter
+     * @return {Array}
+     */
+    function preparePendingRequestOnlyFilters (statusFilter) {
+      var pendingRequestFilters = [
+        getStatusValueFromName(sharedSettings.statusNames.moreInformationRequired),
+        getStatusValueFromName(sharedSettings.statusNames.awaitingApproval)
+      ];
+
+      // Remove others filters
+      statusFilter = statusFilter.filter(function (status) {
+        return pendingRequestFilters.indexOf(status) > -1;
+      });
+
+      // When any of the pending request filters are not applied
+      if (statusFilter.length === 0) {
+        // Add pending request specific filters
+        statusFilter = statusFilter.concat(pendingRequestFilters);
+      }
+
+      return statusFilter;
+    }
+
+    /**
      * Returns the status filter to be used for leave request api
      *
      * @param {boolean} filterByStatus - if true then leave request api will be filtered using
@@ -446,18 +472,14 @@ define([
     function prepareStatusFilter (filterByStatus) {
       var filters = vm.filters.leaveRequest;
       var statusFilter = [];
-      var waitingApprovalID = getStatusValueFromName(sharedSettings.statusNames.awaitingApproval);
-      var moreInformationRequiredID = getStatusValueFromName(sharedSettings.statusNames.moreInformationRequired);
 
       // if filterByStatus is true then add the leaveStatus to be used in the leave request api
       if (filterByStatus && filters.leaveStatus && filters.leaveStatus.value) {
         statusFilter.push(filters.leaveStatus.value);
       }
 
-      // When pending_requests is true records with Awaiting Approval or More Information Requested needs to be shown
       if (filters.pending_requests) {
-        statusFilter.push(waitingApprovalID);
-        statusFilter.push(moreInformationRequiredID);
+        statusFilter = preparePendingRequestOnlyFilters(statusFilter);
       }
 
       if (statusFilter.length) {

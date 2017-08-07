@@ -733,7 +733,7 @@ define([
 
             it('filtered by waiting approval and more information required status', function () {
               expectLeaveRequestsFilteredBy({
-                status_id: { IN: [waitingApprovalValue, moreInformationRequiredID] }
+                status_id: { IN: [moreInformationRequiredID, waitingApprovalValue] }
               });
             });
           });
