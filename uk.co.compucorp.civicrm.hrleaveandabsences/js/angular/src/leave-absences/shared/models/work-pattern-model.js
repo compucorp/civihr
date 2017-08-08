@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'leave-absences/shared/modules/models',
-  'leave-absences/shared/models/instances/work-pattern-instance',
+  'leave-absences/shared/instances/work-pattern.instance',
   'leave-absences/shared/apis/work-pattern-api',
   'common/models/model'
 ], function (_, models) {

@@ -3,7 +3,7 @@
 define([
   'leave-absences/shared/modules/controllers',
   'leave-absences/shared/controllers/request.controller',
-  'leave-absences/shared/models/instances/leave-request-instance'
+  'leave-absences/shared/instances/leave-request.instance'
 ], function (controllers) {
   controllers.controller('LeaveRequestCtrl', LeaveRequestCtrl);
 

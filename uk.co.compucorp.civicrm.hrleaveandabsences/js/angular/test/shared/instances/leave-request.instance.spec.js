@@ -9,7 +9,7 @@ define([
   'common/mocks/services/file-uploader-mock',
   'mocks/apis/leave-request-api-mock',
   'mocks/apis/option-group-api-mock',
-  'leave-absences/shared/models/instances/leave-request-instance',
+  'leave-absences/shared/instances/leave-request.instance',
   'leave-absences/shared/modules/models'
 ], function (_, leaveRequestMockData, optionGroupMockData, commentsData, helper) {
   'use strict';

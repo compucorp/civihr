@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/models-instances',
   'common/models/instances/instance'
@@ -21,7 +23,7 @@ define([
             future: 0
           },
           breakdown: []
-        }
+        };
       },
 
       /**
@@ -33,11 +35,11 @@ define([
        */
       getBreakdown: function () {
         return EntitlementAPI.breakdown({
-            entitlement_id: this.id
-          })
-          .then(function (breakdown) {
-            this.breakdown = breakdown;
-          }.bind(this));
+          entitlement_id: this.id
+        })
+        .then(function (breakdown) {
+          this.breakdown = breakdown;
+        }.bind(this));
       }
     });
   }]);

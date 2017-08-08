@@ -4,7 +4,7 @@ define([
   'common/lodash',
   'leave-absences/shared/modules/controllers',
   'leave-absences/shared/controllers/request.controller',
-  'leave-absences/shared/models/instances/sickness-request-instance'
+  'leave-absences/shared/instances/sickness-request.instance'
 ], function (_, controllers) {
   controllers.controller('SicknessRequestCtrl', SicknessRequestCtrl);
 

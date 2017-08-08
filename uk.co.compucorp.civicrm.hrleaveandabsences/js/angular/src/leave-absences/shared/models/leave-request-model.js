@@ -1,8 +1,10 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/models',
-  'leave-absences/shared/models/instances/leave-request-instance',
+  'leave-absences/shared/instances/leave-request.instance',
   'leave-absences/shared/apis/leave-request-api',
-  'common/models/model',
+  'common/models/model'
 ], function (models) {
   'use strict';
 

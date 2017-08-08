@@ -2,7 +2,7 @@
 
 define([
   'leave-absences/shared/modules/models',
-  'leave-absences/shared/models/instances/absence-type-instance',
+  'leave-absences/shared/instances/absence-type.instance',
   'leave-absences/shared/apis/absence-type-api',
   'common/models/model'
 ], function (models) {

@@ -1,11 +1,13 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/models',
   'common/moment',
   'leave-absences/shared/modules/shared-settings',
-  'leave-absences/shared/models/instances/absence-period-instance',
+  'leave-absences/shared/instances/absence-period.instance',
   'leave-absences/shared/apis/absence-period-api',
   'common/models/model',
-  'common/services/hr-settings',
+  'common/services/hr-settings'
 ], function (models, moment) {
   'use strict';
 
@@ -40,17 +42,16 @@ define([
           var today = moment().format(sharedSettings.serverDateFormat);
 
           var params = {
-            "start_date": {
+            'start_date': {
               '<=': today
             },
-            "end_date": {
+            'end_date': {
               '>=': today
             }
           };
 
           return absencePeriodAPI.all(params)
             .then(function (absencePeriods) {
-
               if (absencePeriods && absencePeriods.length) {
                 return instance.init(absencePeriods[0], true);
               }

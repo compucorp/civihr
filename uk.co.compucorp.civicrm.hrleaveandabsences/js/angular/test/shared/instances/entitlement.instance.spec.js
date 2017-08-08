@@ -1,8 +1,10 @@
+/* eslint-env amd, jasmine */
+
 define([
   'mocks/apis/entitlement-api-mock',
-  'leave-absences/shared/models/instances/entitlement-instance',
+  'leave-absences/shared/instances/entitlement.instance'
 ], function () {
-  'use strict'
+  'use strict';
 
   describe('EntitlementInstance', function () {
     var $provide, EntitlementInstance, $rootScope;
@@ -12,7 +14,7 @@ define([
     }));
 
     beforeEach(inject(function (_EntitlementAPIMock_) {
-      //EntitlementAPI is internally used by Model and hence need to be mocked
+      // EntitlementAPI is internally used by Model and hence need to be mocked
       $provide.value('EntitlementAPI', _EntitlementAPIMock_);
     }));
 
@@ -24,7 +26,7 @@ define([
     }));
 
     afterEach(function () {
-      //to excute the promise force an digest
+      // to excute the promise force an digest
       $rootScope.$apply();
     });
 
@@ -42,15 +44,15 @@ define([
     });
 
     describe('getBreakdown()', function () {
-      var entitlementInstance;;
+      var entitlementInstance;
 
       beforeEach(function () {
         var entitlementAttributes = {
-          "id": "1",
-          "period_id": "1",
-          "type_id": "1",
-          "contact_id": "202",
-          "overridden": "0"
+          'id': '1',
+          'period_id': '1',
+          'type_id': '1',
+          'contact_id': '202',
+          'overridden': '0'
         };
         entitlementInstance = EntitlementInstance.init(entitlementAttributes, true);
       });
@@ -60,14 +62,13 @@ define([
       });
 
       it('makes the call', function () {
-        entitlementInstance.getBreakdown().then(function (afterBreakdown) {
+        entitlementInstance.getBreakdown().then(function () {
           expect(entitlementInstance.getBreakdown).toHaveBeenCalled();
         });
-
       });
 
       it('breakdown is populated post call', function () {
-        entitlementInstance.getBreakdown().then(function (afterBreakdown) {
+        entitlementInstance.getBreakdown().then(function () {
           expect(entitlementInstance.breakdown).not.toEqual([]);
         });
       });
