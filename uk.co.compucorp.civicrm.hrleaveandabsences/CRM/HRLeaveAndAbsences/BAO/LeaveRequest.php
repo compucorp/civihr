@@ -319,22 +319,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @return float
    */
   private static function getTotalApprovedToilForPeriod(AbsencePeriod $period, $contactID, $typeID) {
-    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
-
-    $leaveRequestStatusFilter = [
-      $leaveRequestStatuses['approved'],
-      $leaveRequestStatuses['admin_approved']
-    ];
-
-    $totalApprovedTOIL = LeaveBalanceChange::getTotalTOILBalanceChangeForContact(
-      $contactID,
-      $typeID,
-      new DateTime($period->start_date),
-      new DateTime($period->end_date),
-      $leaveRequestStatusFilter
-    );
-
-    return $totalApprovedTOIL;
+    return LeaveBalanceChange::getTotalApprovedToilForPeriod($period, $contactID, $typeID);
   }
 
   /**

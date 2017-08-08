@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculation as ContractEnt
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 
 /**
  * This class encapsulates all of the entitlement calculation logic.
@@ -494,5 +495,25 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
     }
 
     return true;
+  }
+
+  /**
+   * Returns the total Approved TOIL for the contact for
+   * the absence type and previous period.
+   *
+   * @return float
+   */
+  public function getAccruedTOILForPreviousPeriod() {
+    $previousPeriod = $this->getPreviousPeriod();
+
+    if($previousPeriod) {
+      return LeaveBalanceChange::getTotalApprovedToilForPeriod(
+        $previousPeriod,
+        $this->contact['id'],
+        $this->absenceType->id
+      );
+    }
+
+    return 0;
   }
 }
