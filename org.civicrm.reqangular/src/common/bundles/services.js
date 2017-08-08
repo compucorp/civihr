@@ -5,7 +5,7 @@ define([
   'common/services/dom-event-trigger',
   'common/services/file-mime-types',
   'common/services/hr-settings',
-  'common/services/notification',
+  'common/services/notification.service',
   'common/services/pub-sub'
 ], function () {
 

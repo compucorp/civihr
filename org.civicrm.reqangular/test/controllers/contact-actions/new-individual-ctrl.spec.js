@@ -1,16 +1,16 @@
-/* eslint angular/di: 0 */
+/* eslint-env amd, jasmine */
 
 define([
   'common/angularMocks',
   'common/controllers/contact-actions/new-individual-ctrl'
-], function() {
+], function () {
   'use strict';
 
-  describe('NewIndividualModalCtrl', function() {
+  describe('NewIndividualModalCtrl', function () {
     var ctrl, $rootScope, $q, modalInstanceSpy, contactActionsStub, resultMock;
 
     beforeEach(module('common.apis', 'common.controllers'));
-    beforeEach(inject(function(_$controller_, _$rootScope_, _$q_) {
+    beforeEach(inject(function (_$controller_, _$rootScope_, _$q_) {
       $rootScope = _$rootScope_;
       $q = _$q_;
       initSpies();
@@ -25,7 +25,7 @@ define([
     /**
      * Jasmine spies initialization
      */
-    function initSpies() {
+    function initSpies () {
       modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
       contactActionsStub = {
         save: jasmine.createSpyObj('saveSpy', ['newIndividual']),
@@ -47,26 +47,26 @@ define([
       contactActionsStub.save.newIndividual.and.returnValue($q.resolve(resultMock));
     }
 
-    describe('cancel', function() {
-      it('closes the modal instance', function() {
+    describe('cancel', function () {
+      it('closes the modal instance', function () {
         ctrl.cancel();
         expect(modalInstanceSpy.dismiss).toHaveBeenCalled();
       });
     });
 
-    describe('submit', function() {
-      beforeEach(function() {
+    describe('submit', function () {
+      beforeEach(function () {
         ctrl.formFields[0].value = 'value1';
         ctrl.formFields[1].value = 'value2';
       });
 
-      describe('when there are no errors', function() {
-        beforeEach(function() {
+      describe('when there are no errors', function () {
+        beforeEach(function () {
           spyOn($rootScope, '$broadcast');
           ctrl.submit();
         });
 
-        it('saves the new contact', function() {
+        it('saves the new contact', function () {
           $rootScope.$digest();
           expect(contactActionsStub.save.newIndividual.calls.count()).toBe(1);
           expect(contactActionsStub.save.newIndividual).toHaveBeenCalledWith({
@@ -75,42 +75,42 @@ define([
           });
         });
 
-        it('broadcasts the "newIndividualCreated" event', function() {
+        it('broadcasts the "newIndividualCreated" event', function () {
           $rootScope.$digest();
           expect($rootScope.$broadcast).toHaveBeenCalledWith('newIndividualCreated', resultMock);
         });
 
-        it('doesn\'t set the error message', function() {
+        it('doesn\'t set the error message', function () {
           $rootScope.$digest();
           expect(ctrl.errorMsg.length).toBe(0);
         });
 
-        it('changes the "loading" property', function() {
+        it('changes the "loading" property', function () {
           expect(ctrl.loading).toBeTruthy();
           $rootScope.$digest();
           expect(ctrl.loading).toBeFalsy();
         });
       });
 
-      describe('when there are errors', function() {
-        beforeEach(function() {
+      describe('when there are errors', function () {
+        beforeEach(function () {
           contactActionsStub.save.newIndividual.and.returnValue($q.reject());
           spyOn($rootScope, '$broadcast');
           ctrl.submit();
         });
 
-        it('doesn\'t broadcast events', function() {
+        it('doesn\'t broadcast events', function () {
           $rootScope.$digest();
           expect($rootScope.$broadcast).not.toHaveBeenCalled();
         });
 
-        it('sets the error message', function() {
+        it('sets the error message', function () {
           $rootScope.$digest();
           expect(contactActionsStub.save.newIndividual.calls.count()).toBe(1);
           expect(ctrl.errorMsg.length).not.toBe(0);
         });
 
-        it('changes the "loading" property', function() {
+        it('changes the "loading" property', function () {
           expect(ctrl.loading).toBeTruthy();
           $rootScope.$digest();
           expect(ctrl.loading).toBeFalsy();

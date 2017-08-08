@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angular',
   'common/angularMocks',
@@ -6,15 +8,14 @@ define([
   'use strict';
 
   describe('api', function () {
-    var api, $httpBackend, $httpParamSerializer, $rootScope,
-      entity = 'entity',
-      action = 'action';
+    var api, $httpBackend, $httpParamSerializer;
+    var entity = 'entity';
+    var action = 'action';
 
     beforeEach(module('common.apis'));
 
-    beforeEach(inject(function (_api_, _$httpBackend_, _$httpParamSerializer_, _$rootScope_) {
+    beforeEach(inject(function (_api_, _$httpBackend_, _$httpParamSerializer_) {
       api = _api_;
-      $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
       $httpParamSerializer = _$httpParamSerializer_;
     }));
@@ -33,7 +34,7 @@ define([
         };
 
         beforeEach(function () {
-          promise = expectAndSendGET(returnValue)
+          promise = expectAndSendGET(returnValue);
         });
 
         it('returns values sent from API', function () {
@@ -50,7 +51,7 @@ define([
         };
 
         beforeEach(function () {
-          promise = expectAndSendGET(returnValue)
+          promise = expectAndSendGET(returnValue);
         });
 
         it('rejects the promise with the error message provided by the API', function () {
@@ -75,11 +76,11 @@ define([
 
           it('send a GET request with original limit value', function () {
             $httpBackend.expectGET('/civicrm/ajax/rest?' + $httpParamSerializer({
-                json: {options: {limit: limit}},
-                sequential: 1,
-                action: action,
-                entity: entity
-              }));
+              json: {options: {limit: limit}},
+              sequential: 1,
+              action: action,
+              entity: entity
+            }));
           });
         });
 
@@ -90,16 +91,16 @@ define([
 
           it('send a GET request with 0 set as limit', function () {
             $httpBackend.expectGET('/civicrm/ajax/rest?' + $httpParamSerializer({
-                json: {options: {limit: 0}},
-                sequential: 1,
-                action: action,
-                entity: entity
-              }));
+              json: {options: {limit: 0}},
+              sequential: 1,
+              action: action,
+              entity: entity
+            }));
           });
         });
       });
 
-      function expectAndSendGET(returnValue, params) {
+      function expectAndSendGET (returnValue, params) {
         $httpBackend
           .whenGET(new RegExp('action=' + action + '&entity=' + entity))
           .respond(returnValue);
@@ -184,7 +185,7 @@ define([
         });
       });
 
-      function expectAndSendPOST(returnValue, params) {
+      function expectAndSendPOST (returnValue, params) {
         $httpBackend.whenPOST('/civicrm/ajax/rest').respond(returnValue);
 
         return api.sendPOST(entity, action, params);
