@@ -113,8 +113,6 @@ define([
      * @param {Boolean} forceDataReload whether the months need to force data reload
      */
     function injectAndShowMonths (forceDataReload) {
-      vm.loading.calendar = true;
-
       waitUntilMonthsAre('injected').then(function () {
         sendShowMonthsSignal(forceDataReload);
       })
@@ -286,6 +284,9 @@ define([
       source = _.includes(['contacts', 'period'], source) ? source : 'period';
 
       $q.resolve()
+        .then(function () {
+          vm.loading.calendar = true;
+        })
         .then(source === 'period' ? buildPeriodMonthsList : _.noop)
         .then(source === 'contacts' ? loadContacts : _.noop)
         .then(function () {
