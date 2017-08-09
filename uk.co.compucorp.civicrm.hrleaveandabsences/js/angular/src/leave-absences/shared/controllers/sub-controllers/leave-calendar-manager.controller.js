@@ -70,7 +70,7 @@ define([
     function prepareContactFilters () {
       return {
         department: vm.filters.userSettings.department ? vm.filters.userSettings.department.value : null,
-        level_type: vm.filters.level_type ? vm.filters.userSettings.level_type.value : null,
+        level_type: vm.filters.userSettings.level_type ? vm.filters.userSettings.level_type.value : null,
         location: vm.filters.userSettings.location ? vm.filters.userSettings.location.value : null,
         region: vm.filters.userSettings.region ? vm.filters.userSettings.region.value : null,
         id: {
