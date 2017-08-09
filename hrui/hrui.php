@@ -103,6 +103,10 @@ function hrui_civicrm_buildForm($formName, &$form) {
   if ($formName === 'CRM_Admin_Form_Options' && $form->elementExists('value')) {
     $form->removeElement('value');
   }
+
+  if ($form instanceof CRM_Admin_Form_Setting_Localization) {
+    $form->removeElement('makeMultilingual');
+  }
 }
 
 /**
@@ -701,6 +705,16 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
      });
    </script>";
   }
+
+  if ($tplName === 'CRM/Admin/Form/Setting/Localization.tpl') {
+    // hide multiple language description
+    $content = str_replace('<h3>Multiple Languages Support</h3>', '', $content);
+    $content .= sprintf(
+      '<script>%s</script>',
+      'CRM.$(".crm-localization-form-block-description").hide();'
+    );
+  }
+
 }
 
 /**

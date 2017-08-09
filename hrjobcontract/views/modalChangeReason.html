@@ -9,7 +9,7 @@
         <div class="form-group required" hrjc-validate>
           <label for="{{prefix}}change-reason" class="col-sm-4 control-label">Reason for change</label>
           <div class="col-sm-6">
-            <select id="{{prefix}}change-reason" class="form-control" name="changeReason" ng-model="change_reason" ng-options="key as value for (key, value) in options.contract.change_reason" ng-disabled="isDisabled" required>
+            <select id="{{prefix}}change-reason" class="form-control no-select2" name="changeReason" ng-model="change_reason" ng-options="key as value for (key, value) in options.contract.change_reason" ng-disabled="isDisabled" required>
               <option value="">- select -</option>
             </select>
           </div>

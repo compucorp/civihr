@@ -1,4 +1,4 @@
-/* eslint angular/di: 0, jasmine/no-spec-dupes: 0, jasmine/no-suite-dupes: 0 */
+/* eslint-env amd, jasmine */
 
 define([
   'common/angularMocks',
@@ -42,7 +42,7 @@ define([
     }));
 
     describe('refineSearch', function () {
-      describe('on change selected', function() {
+      describe('on change selected', function () {
         beforeEach(function () {
           $scope.$apply();
           spyOn($scope, '$emit');
@@ -64,38 +64,38 @@ define([
         });
       });
 
-      describe('availableFields', function() {
-        it('has "Contact Type"', function() {
+      describe('availableFields', function () {
+        it('has "Contact Type"', function () {
           expect(ctrl.refineSearch.availableFields[0].label).toEqual('Contact Type');
           expect(typeof ctrl.refineSearch.availableFields[0].getOptions === 'function').toBeTruthy();
         });
 
-        it('has "Group"', function() {
+        it('has "Group"', function () {
           expect(ctrl.refineSearch.availableFields[1].label).toEqual('Group');
           expect(typeof ctrl.refineSearch.availableFields[1].getOptions === 'function').toBeTruthy();
         });
 
-        it('has "Tag"', function() {
+        it('has "Tag"', function () {
           expect(ctrl.refineSearch.availableFields[2].label).toEqual('Tag');
           expect(typeof ctrl.refineSearch.availableFields[2].getOptions === 'function').toBeTruthy();
         });
 
-        it('has "State / Province"', function() {
+        it('has "State / Province"', function () {
           expect(ctrl.refineSearch.availableFields[3].label).toEqual('State / Province');
           expect(typeof ctrl.refineSearch.availableFields[3].getOptions === 'function').toBeTruthy();
         });
 
-        it('has "Country"', function() {
+        it('has "Country"', function () {
           expect(ctrl.refineSearch.availableFields[4].label).toEqual('Country');
           expect(typeof ctrl.refineSearch.availableFields[4].getOptions === 'function').toBeTruthy();
         });
 
-        it('has "Gender"', function() {
+        it('has "Gender"', function () {
           expect(ctrl.refineSearch.availableFields[5].label).toEqual('Gender');
           expect(typeof ctrl.refineSearch.availableFields[5].getOptions === 'function').toBeTruthy();
         });
 
-        it('has "Deceased"', function() {
+        it('has "Deceased"', function () {
           expect(ctrl.refineSearch.availableFields[6].label).toEqual('Deceased');
           expect(typeof ctrl.refineSearch.availableFields[6].getOptions === 'function').toBeTruthy();
         });
