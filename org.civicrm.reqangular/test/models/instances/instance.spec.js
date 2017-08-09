@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/lodash',
   'common/angularMocks',
@@ -8,8 +10,7 @@ define([
   describe('ModelInstance', function () {
     var ModelInstance;
     var instanceInterface = ['attributes', 'defaultCustomData', 'extend',
-      'fromAPI', 'fromAPIFilter', 'init', 'transformAttributes', 'toAPI', 'toAPIFilter'
-    ];
+      'fromAPI', 'fromAPIFilter', 'init', 'transformAttributes', 'toAPI', 'toAPIFilter'];
 
     beforeEach(module('common.models.instances'));
     beforeEach(inject(function (_ModelInstance_) {
@@ -28,15 +29,10 @@ define([
       var instance;
 
       describe('simple initialization', function () {
-        var attributes = {
-          foo: 'foo',
-          bar: 'bar'
-        };
+        var attributes = { foo: 'foo', bar: 'bar' };
 
         beforeEach(function () {
-          spyOn(ModelInstance, 'transformAttributes').and.callThrough();
           instance = ModelInstance.init(attributes);
-
         });
 
         it('create a new instance', function () {
@@ -53,38 +49,6 @@ define([
           expect(instance.foo).toEqual(attributes.foo);
           expect(instance.bar).toEqual(attributes.bar);
         });
-
-        it('calls transformAttributes', function () {
-          expect(instance.transformAttributes).toHaveBeenCalled();
-        });
-      });
-    });
-
-    describe('transformAttributes()', function () {
-      var instance;
-      var attributes = {
-        foo: 'foo',
-        bar: 'bar'
-      };
-
-      beforeEach(function () {
-        spyOn(ModelInstance, 'transformAttributes').and.callFake(function (attributes) {
-          attributes.tim = 'tam';
-          return attributes;
-        });
-        instance = ModelInstance.init(attributes);
-      });
-
-      it('has been called', function(){
-        expect(instance.transformAttributes).toHaveBeenCalled();
-      });
-
-      it('adds an attribute', function () {
-        expect(instance.tim).toBeDefined();
-      });
-
-      it('sets value of new attribute', function () {
-        expect(instance.tim).toEqual('tam');
       });
     });
 
@@ -93,21 +57,16 @@ define([
 
       beforeEach(function () {
         attributes = ModelInstance.init({
-            foo: 'foo',
-            bar: 'bar',
-            fn: function () {}
-          })
-          .attributes();
+          foo: 'foo',
+          bar: 'bar',
+          fn: function () {}
+        })
+        .attributes();
       });
 
       it('returns only the attributes, without the methods', function () {
-        expect(attributes).toEqual(jasmine.objectContaining({
-          foo: 'foo',
-          bar: 'bar'
-        }));
-        expect(attributes).not.toEqual(jasmine.objectContaining({
-          fn: jasmine.any(Function)
-        }));
+        expect(attributes).toEqual(jasmine.objectContaining({ foo: 'foo', bar: 'bar' }));
+        expect(attributes).not.toEqual(jasmine.objectContaining({ fn: jasmine.any(Function) }));
       });
 
       it('returns a plain object w/o prototype', function () {
@@ -121,7 +80,8 @@ define([
       beforeEach(function () {
         newInstance = ModelInstance.extend({
           foo: 'foo',
-          bar: function () {}
+          bar: function () {
+          }
         });
       });
 
@@ -144,10 +104,7 @@ define([
       var instance, toAPIData;
 
       beforeEach(function () {
-        instance = ModelInstance.init({
-          foo: 'foo',
-          bar: 'bar'
-        });
+        instance = ModelInstance.init({ foo: 'foo', bar: 'bar' });
         toAPIData = instance.toAPI();
       });
 

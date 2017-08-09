@@ -35,12 +35,11 @@ module.exports = function (config) {
       { pattern: extPath + 'test/mocks/**/*.js', included: false },
 
       // load tests
-      { pattern: extPath + 'test/**/*_test.js', included: false },
+      { pattern: extPath + 'test/**/*.spec.js', included: false },
 
       // the requireJS config file that bootstraps the whole test suite
       extPath + 'test/test-main.js'
     ],
-
     exclude: [
       extPath + 'src/common/angular-date/**/*.js'
     ]
