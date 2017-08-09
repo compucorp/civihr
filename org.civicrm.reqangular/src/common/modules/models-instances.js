@@ -2,7 +2,7 @@
 
 define([
   'common/angular',
-  'common/decorators/q/q-sequence',
+  'common/decorators/q/q-sequence.decorator',
   'common/modules/apis'
 ], function (angular, $qSequence) {
   'use strict';
