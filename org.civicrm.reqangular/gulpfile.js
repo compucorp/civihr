@@ -45,7 +45,7 @@ gulp.task('watch', function () {
   });
 });
 
-gulp.task('default', ['cache-templates', 'requirejs-bundle', 'requirejs-bundle-mock', 'test', 'watch']);
+gulp.task('default', ['cache-templates', 'requirejs-bundle', 'requirejs-bundle-mock', 'test']);
 
 gulp.task('test', function (done) {
   test.all(done);
@@ -80,9 +80,9 @@ var test = (function () {
     /**
      * Runs the tests for a specific source file
      *
-     * Looks for a test file (*_test.js) in `test/`, using the same path
+     * Looks for a test file (*.test.js) in `test/`, using the same path
      * of the source file in `org.civicrm.reqangular/src/`
-     *   i.e. common/models/model.js -> test/models/model_test.js
+     *   i.e. common/models/model.js -> test/models/model.spec.js
      *
      * @throw {Error}
      */
