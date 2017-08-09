@@ -74,9 +74,9 @@ trait HRJobContractTestTrait {
     for($i = $numberOfCreatedContacts; $i < $numberOfCreatedContacts + $numberOfContacts; $i++) {
       $result = civicrm_api3('Contact', 'create', [
         'contact_type' => 'Individual',
-        'first_name' => 'Name ',
+        'first_name' => 'First',
         'middle_name' => 'N. ',
-        'last_name' => $i,
+        'last_name' => 'Last' . $i,
         'email' => 'name_'.$i.'@example.org',
       ]);
 
