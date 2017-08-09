@@ -16,6 +16,10 @@ class CRM_Hrjobcontract_Import_FieldsProvider_Generic extends CRM_Hrjobcontract_
   public function provide() {
     $entityName = 'CRM_Hrjobcontract_BAO_' . $this->getEntityName();
 
+    if ($this->getEntityName() == 'HRJobLeave') {
+      return [];
+    }
+
     $importableFields = call_user_func(array(
       $entityName,
       'importableFields'

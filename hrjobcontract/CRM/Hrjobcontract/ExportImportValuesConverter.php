@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+
 class CRM_Hrjobcontract_ExportImportValuesConverter
 {
     static private $_singleton = NULL;
@@ -101,9 +103,8 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         }
 
         // leave types options:
-        $absenceType = new CRM_HRAbsence_BAO_HRAbsenceType();
-        $absenceType->find();
-        while ($absenceType->fetch()) {
+        $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
+        foreach($absenceTypes as $absenceType) {
             $absenceTypeArray = (array)$absenceType;
             $this->_leaveTypes[$absenceType->id] = $absenceTypeArray;
             $this->_leaveTypesFlipped[$absenceTypeArray['title']] = $absenceType->id;
@@ -574,5 +575,14 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         }
 
         return $contactId;
+    }
+
+    /**
+     * Returns Leave/Absence Types
+     *
+     * @return array
+     */
+    public function getLeaveTypes() {
+        return $this->_leaveTypes;
     }
 }
