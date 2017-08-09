@@ -863,6 +863,58 @@
               });
             });
           });
+
+          describe('with both new and deleted comments', function () {
+            var leaveRequestId, newComment, commentToBeDeleted;
+
+            beforeEach(function () {
+              var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+              var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+              var contactId = '204';
+
+              newComment = {
+                contact_id: contactId,
+                leave_request_id: leaveRequest.id,
+                text: 'some text'
+              };
+
+              commentToBeDeleted = {
+                comment_id: '77',
+                toBeDeleted: true,
+                contact_id: contactId,
+                leave_request_id: leaveRequest.id,
+                text: 'some text'
+              };
+
+              leaveRequestId = leaveRequest.id;
+              leaveRequest.contact_id = contactId;
+              leaveRequest.comments = [newComment, commentToBeDeleted];
+
+              initTestController({
+                contactId: leaveRequest.contact_id,
+                isSelfRecord: true,
+                leaveRequest: leaveRequest
+              });
+            });
+
+            describe('and submits', function () {
+              beforeEach(function () {
+                spyOn(LeaveRequestAPI, 'saveComment').and.callThrough();
+                spyOn(LeaveRequestAPI, 'deleteComment').and.callThrough();
+
+                $ctrl.submit();
+                $scope.$digest();
+              });
+
+              it('calls Save Comment API with correct arguments', function () {
+                expect(LeaveRequestAPI.saveComment).toHaveBeenCalledWith(leaveRequestId, newComment);
+              });
+
+              it('calls Delete Comment API with correct arguments', function () {
+                expect(LeaveRequestAPI.deleteComment).toHaveBeenCalledWith(commentToBeDeleted.comment_id);
+              });
+            });
+          });
         });
 
         describe('canSubmit()', function () {

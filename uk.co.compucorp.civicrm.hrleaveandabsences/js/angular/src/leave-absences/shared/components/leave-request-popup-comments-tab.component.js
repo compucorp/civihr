@@ -43,7 +43,6 @@ define([
     vm.addComment = function () {
       vm.request.comments.push({
         contact_id: loggedInContactId,
-        created_at: moment(new Date()).format(sharedSettings.serverDateTimeFormat),
         leave_request_id: vm.request.id,
         text: vm.comment.text
       });
@@ -56,7 +55,7 @@ define([
      * @return {String}
      */
     vm.formatDateTime = function (dateTime) {
-      return moment(dateTime, sharedSettings.serverDateTimeFormat).format(HRSettings.DATE_FORMAT.toUpperCase() + ' HH:mm');
+      return moment.utc(dateTime, sharedSettings.serverDateTimeFormat).local().format(HRSettings.DATE_FORMAT.toUpperCase() + ' HH:mm');
     };
 
     /**

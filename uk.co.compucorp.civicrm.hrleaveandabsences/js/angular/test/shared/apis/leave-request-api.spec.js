@@ -407,8 +407,7 @@ define([
         expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[2]).toEqual(_.assign({}, params, {
           leave_request_id: leaveRequestID,
           text: commentObject.text,
-          contact_id: commentObject.contact_id,
-          created_at: commentObject.created_at
+          contact_id: commentObject.contact_id
         }));
       });
 

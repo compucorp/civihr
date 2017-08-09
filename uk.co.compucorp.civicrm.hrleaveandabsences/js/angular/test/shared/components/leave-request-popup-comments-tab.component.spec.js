@@ -14,7 +14,8 @@ define([
       SessionMock;
     var managerId = '102';
     var requestId = '100';
-    var staffId = '101';
+    var contactId = '101';
+    var commentId = '12';
 
     beforeEach(module('common.mocks', 'leave-absences.templates',
     'leave-absences.mocks', 'manager-leave', function (_$provide_) {
@@ -23,7 +24,7 @@ define([
 
     beforeEach(inject(function (_SessionMock_) {
       SessionMock = _SessionMock_;
-      SessionMock.sessionObject.contactId = staffId;
+      SessionMock.sessionObject.contactId = contactId;
       $provide.value('Session', SessionMock);
     }));
 
@@ -69,13 +70,14 @@ define([
     });
 
     describe('addComment()', function () {
-      var comment = 'some text';
+      var commentText = 'some text';
 
       beforeEach(function () {
-        controller.request.contact_id = staffId;
+        controller.request.contact_id = contactId;
         controller.request.comments = [];
-        controller.request.id = requestId;
-        controller.comment.text = comment;
+        controller.comment.text = commentText;
+        controller.request.id = leaveRequest.id;
+
         controller.addComment();
       });
 
@@ -85,10 +87,9 @@ define([
 
       it('adds comment with proper values', function () {
         expect(controller.request.comments[0]).toEqual({
-          contact_id: staffId,
-          created_at: jasmine.any(String),
-          leave_request_id: requestId,
-          text: comment
+          contact_id: contactId,
+          leave_request_id: leaveRequest.id,
+          text: commentText
         });
       });
 
@@ -108,13 +109,13 @@ define([
           controller.request.comments = [];
           controller.request.id = requestId;
           controller.comment.text = managerComment;
+
           controller.addComment();
         });
 
         it('adds the manager comment to the request', function () {
           expect(controller.request.comments[0]).toEqual({
             contact_id: managerId,
-            created_at: jasmine.any(String),
             leave_request_id: requestId,
             text: managerComment
           });
@@ -127,8 +128,8 @@ define([
 
       describe('when comment author is same as logged in user', function () {
         beforeEach(function () {
-          controller.request.contact_id = staffId;
-          returnValue = controller.getCommentorName(staffId);
+          controller.request.contact_id = contactId;
+          returnValue = controller.getCommentorName(contactId);
         });
 
         it('returns "Me"', function () {
@@ -137,15 +138,14 @@ define([
       });
 
       describe('when comment author is not same as logged in user', function () {
-        var displayName = 'MR Manager';
+        var displayName = 'Mr user';
+        var commentatorId = '102';
 
         beforeEach(function () {
-          controller.request.contact_id = staffId;
+          controller.request.contact_id = contactId;
           controller.comment.contacts = {};
-          controller.comment.contacts[managerId] = {
-            display_name: displayName
-          };
-          returnValue = controller.getCommentorName(managerId);
+          controller.comment.contacts[commentatorId] = { display_name: displayName };
+          returnValue = controller.getCommentorName(commentatorId);
         });
 
         it('returns name of the comment author', function () {
@@ -174,7 +174,7 @@ define([
 
       describe('when comment id is not missing and role is either manager or admin', function () {
         beforeEach(function () {
-          comment.comment_id = jasmine.any(String);
+          comment.comment_id = commentId;
 
           compileComponent(true, leaveRequest);
 
@@ -188,7 +188,7 @@ define([
 
       describe('when comment id is not missing and role is neither manager nor admin', function () {
         beforeEach(function () {
-          comment.comment_id = jasmine.any(String);
+          comment.comment_id = commentId;
 
           compileComponent(false, leaveRequest);
 

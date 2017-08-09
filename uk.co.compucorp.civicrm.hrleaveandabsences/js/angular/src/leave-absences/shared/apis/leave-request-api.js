@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/apis',
   'common/lodash',
@@ -256,8 +257,7 @@ define([
           params = _.assign({}, params, {
             leave_request_id: leaveRequestID,
             text: comment.text,
-            contact_id: comment.contact_id,
-            created_at: comment.created_at
+            contact_id: comment.contact_id
           });
 
           return this.sendPOST('LeaveRequest', 'addcomment', params)
@@ -280,12 +280,10 @@ define([
             deferred.reject('id is mandatory field');
           }
 
-          this.sendPOST('LeaveRequest', 'create', params)
+          return this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
-            deferred.resolve(data.values[0]);
+            return data.values[0];
           });
-
-          return deferred.promise;
         }
       });
     }]);
