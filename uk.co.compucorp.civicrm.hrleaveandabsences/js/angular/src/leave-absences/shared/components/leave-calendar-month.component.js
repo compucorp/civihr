@@ -25,6 +25,7 @@ define([
     $log.debug('Component: leave-calendar-month');
 
     var dataLoaded = false;
+    var eventListeners = [];
     var calendars = {};
     var leaveRequests = {};
     var vm = this;
@@ -183,11 +184,11 @@ define([
      * Initializes the event listeners
      */
     function initListeners () {
-      $rootScope.$on('LeaveCalendar::showMonths', showMonthIfInList);
-      $rootScope.$on('LeaveRequest::new', addLeaveRequest);
-      $rootScope.$on('LeaveRequest::edit', updateLeaveRequest);
-      $rootScope.$on('LeaveRequest::updatedByManager', updateLeaveRequest);
-      $rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest);
+      eventListeners.push($rootScope.$on('LeaveCalendar::showMonths', showMonthIfInList));
+      eventListeners.push($rootScope.$on('LeaveRequest::new', addLeaveRequest));
+      eventListeners.push($rootScope.$on('LeaveRequest::edit', updateLeaveRequest));
+      eventListeners.push($rootScope.$on('LeaveRequest::updatedByManager', updateLeaveRequest));
+      eventListeners.push($rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest));
     }
 
     /**
@@ -367,6 +368,10 @@ define([
      */
     function onDestroy () {
       $rootScope.$emit('LeaveCalendar::monthDestroyed');
+
+      eventListeners.map(function (destroyListener) {
+        destroyListener();
+      });
     }
 
     /**
