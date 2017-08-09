@@ -43,7 +43,6 @@ define([
     vm.addComment = function () {
       vm.request.comments.push({
         contact_id: loggedInContactId,
-        created_at: moment(new Date()).format(sharedSettings.serverDateTimeFormat),
         leave_request_id: vm.request.id,
         text: vm.comment.text
       });

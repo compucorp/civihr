@@ -77,6 +77,7 @@ define([
         controller.request.comments = [];
         controller.comment.text = commentText;
         controller.request.id = leaveRequest.id;
+
         controller.addComment();
       });
 
@@ -87,7 +88,6 @@ define([
       it('adds comment with proper values', function () {
         expect(controller.request.comments[0]).toEqual({
           contact_id: contactId,
-          created_at: jasmine.any(String),
           leave_request_id: leaveRequest.id,
           text: commentText
         });
@@ -116,7 +116,6 @@ define([
         it('adds the manager comment to the request', function () {
           expect(controller.request.comments[0]).toEqual({
             contact_id: managerId,
-            created_at: jasmine.any(String),
             leave_request_id: requestId,
             text: managerComment
           });
