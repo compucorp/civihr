@@ -74,7 +74,7 @@ define([
         location: vm.filters.userSettings.location ? vm.filters.userSettings.location.value : null,
         region: vm.filters.userSettings.region ? vm.filters.userSettings.region.value : null,
         id: {
-          'IN': vm.filters.contact
+          'IN': vm.filters.userSettings.contact
             ? [vm.filters.userSettings.contact.id]
             : vm.lookupContacts.map(function (contact) {
               return contact.id;
