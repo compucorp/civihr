@@ -49,17 +49,6 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
    * Creates new Option Group for Cost Centres
    */
   public function installCostCentreTypes() {
-
-    function save($val, $key, $id){
-      civicrm_api3('OptionValue', 'create', array(
-          'sequential' => 1,
-          'option_group_id' => $id,
-          'label' => $val,
-          'value' => $val,
-          'name' => $val,
-      ));
-    }
-
     try{
       $result = civicrm_api3('OptionGroup', 'create', array(
           'sequential' => 1,
@@ -70,11 +59,14 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
 
       $id = $result['id'];
 
-      $options = array(
-          'Other' => 'Other'
-      );
-
-      array_walk($options, 'save', $id);
+      $val = 'Other';
+      civicrm_api3('OptionValue', 'create', array(
+        'sequential' => 1,
+        'option_group_id' => $id,
+        'label' => $val,
+        'value' => $val,
+        'name' => $val,
+      ));
 
     } catch(Exception $e){
       // OptionGroup already exists
