@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 define([
   'common/lodash',
   'leave-absences/shared/modules/models-instances',
@@ -20,8 +21,16 @@ define([
       function changeLeaveStatus (status) {
         return getOptionIDByName(status)
           .then(function (statusId) {
+            var originalStatus = this.status_id;
+
             this.status_id = statusId.value;
-            return this.update();
+            return this.update()
+              .catch(function (error) {
+                // Revert status id back in case of exception
+                this.status_id = originalStatus;
+
+                return $q.reject(error);
+              }.bind(this));
           }.bind(this));
       }
 

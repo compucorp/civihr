@@ -5,6 +5,7 @@ define([
   'common/moment',
   'leave-absences/shared/modules/components',
   'common/services/hr-settings',
+  'common/services/notification.service',
   'common/services/pub-sub'
 ], function (_, moment, components) {
   components.component('leaveRequestActions', {
@@ -26,9 +27,9 @@ define([
     controller: LeaveRequestActionsController
   });
 
-  LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog', 'pubSub', 'shared-settings'];
+  LeaveRequestActionsController.$inject = ['$log', '$q', '$rootScope', 'dialog', 'pubSub', 'shared-settings', 'notificationService'];
 
-  function LeaveRequestActionsController ($log, $rootScope, dialog, pubSub, sharedSettings) {
+  function LeaveRequestActionsController ($log, $q, $rootScope, dialog, pubSub, sharedSettings, notification) {
     $log.debug('Component: leave-request-action-dropdown');
 
     var vm = this;
@@ -120,6 +121,9 @@ define([
           return vm.leaveRequest[action]()
             .then(function () {
               publishEvents(action);
+            })
+            .catch(function (error) {
+              notification.error('Error:', error);
             });
         }
       });

@@ -43,9 +43,9 @@ define([
       $log = _$log_;
       $rootScope = _$rootScope_;
       notification = _notificationService_;
+      window.alert = function () {}; // prevent alert from being logged in console
 
       spyOn($log, 'debug');
-
       compileComponent();
     }));
 
