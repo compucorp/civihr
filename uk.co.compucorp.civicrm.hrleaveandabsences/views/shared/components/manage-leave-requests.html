@@ -118,11 +118,12 @@
             <table class="table table-clean table-hover">
               <thead>
               <tr>
-                <th>Employee Name</th>
-                <th>Type</th>
-                <th>Dates</th>
-                <th>Status</th>
-                <th class="text-center">Action</th>
+                <th width="20%">Employee Name</th>
+                <th width="16%">Type</th>
+                <th width="19%">Balance Change</th>
+                <th width="27%">Dates</th>
+                <th width="12%">Status</th>
+                <th width="6%" class="text-center">Action</th>
               </tr>
               </thead>
               <tbody>
@@ -130,11 +131,14 @@
                 class="pointer"
                 ng-click="vm.openLeavePopup(request)"
                 ng-repeat="request in vm.leaveRequests.table.list track by request.id">
-                <td style="width: 25%;">{{vm.getUserNameByID(request.contact_id)}}</td>
-                <td style="width: 20%;">{{vm.getAbsenceTypesByID(request.type_id)}}</td>
-                <td style="width: 25%;">{{request.from_date}} - {{request.to_date}}</td>
-                <td style="width: 20%;">{{vm.getLeaveStatusByValue(request.status_id)}}</td>
-                <td style="width: 10%;" class="text-center">
+                <td>{{vm.getUserNameByID(request.contact_id)}}</td>
+                <td>{{vm.getAbsenceTypesByID(request.type_id)}}</td>
+                <td>
+                  {{request.balance_change > 0 ? "+" : ""}}{{request.balance_change}}
+                </td>
+                <td>{{request.from_date}} - {{request.to_date}}</td>
+                <td>{{vm.getLeaveStatusByValue(request.status_id)}}</td>
+                <td class="text-center">
                   <leave-request-actions
                     leave-request="request"
                     role="vm.isAdmin ? 'admin' : 'manager'"
