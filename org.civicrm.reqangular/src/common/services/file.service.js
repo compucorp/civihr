@@ -1,4 +1,4 @@
-/* globals URL */
+/* globals URL, Blob */
 /* eslint-env amd */
 
 define([
@@ -18,11 +18,16 @@ define([
        * @return {promise}
        */
       openFile: function (file) {
-        return $http.get(file.url, {responseType: 'arraybuffer'})
+        return $http.get(file.url, { responseType: 'arraybuffer' })
           .success(function (data) {
             var fileBlob = new Blob([data], { type: file.fileType });
 
-            $window.open(URL.createObjectURL(fileBlob), '_blank');
+            // IE Edge and 11+ fix
+            if ($window.navigator.msSaveOrOpenBlob) {
+              $window.navigator.msSaveOrOpenBlob(fileBlob, file.name);
+            } else {
+              $window.open(URL.createObjectURL(fileBlob), '_blank');
+            }
           });
       }
     };
