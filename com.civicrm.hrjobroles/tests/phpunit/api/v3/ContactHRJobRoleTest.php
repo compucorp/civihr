@@ -70,6 +70,40 @@ class api_v3_ContactHRJobRoleTest extends PHPUnit_Framework_TestCase implements 
     $this->assertEquals($expected, $contactJobRoles);
   }
 
+  public function testTheGetActionDoesntReturnsNotAllowedFieldsEvenWhenSpecified() {
+    $contact = ContactFabricator::fabricate();
+    $contract = HRJobContractFabricator::fabricate(['contact_id' => $contact['id']]);
+    $jobRole = HRJobRolesFabricator::fabricate([
+      'title' => 'Title',
+      'description' => 'Description',
+      'start_date' => date('Y-m-d'),
+      'funder' => 'asddsa',
+      'job_contract_id' => $contract['id'],
+    ]);
+
+    $contactJobRoles = civicrm_api3(
+      $this->entity,
+      $this->action,
+      [
+        'return' => [
+          'description',
+          'start_date',
+          'funder',
+          'cost_center'
+        ]
+      ]
+    )['values'];
+
+    // Since all the fields we asked are not allowed, the response will be empty,
+    // except for the ID, which is always returned
+    $expected = [
+      $jobRole['id'] => [
+        'id' => $jobRole['id'],
+      ]
+    ];
+    $this->assertEquals($expected, $contactJobRoles);
+  }
+
   public function testTheGetActionReturnsMultipleJobRoles() {
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
