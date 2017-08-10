@@ -8,11 +8,9 @@ define([
   'mocks/data/toil-leave-request-data',
   'mocks/data/comments-data',
   'mocks/helpers/helper',
-  'mocks/data/absence-type-data',
-  'mocks/data/option-group-mock-data',
   'leave-absences/shared/apis/leave-request-api',
   'leave-absences/shared/modules/shared-settings'
-], function (_, moment, mockData, sicknessMockData, toilMockData, commentsData, helper, absenceTypeData, optionGroupMock) {
+], function (_, moment, mockData, sicknessMockData, toilMockData, commentsData, helper) {
   'use strict';
 
   describe('LeaveRequestAPI', function () {
@@ -513,6 +511,25 @@ define([
       });
     });
 
+    describe('find()', function () {
+      var id = '123';
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+        promise = LeaveRequestAPI.find(id);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls the LeaveRequest.get endpoint', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'get', { id: id });
+        });
+      });
+    });
+
     /**
      * Intercept HTTP calls to be handled by httpBackend
      */
@@ -520,6 +537,10 @@ define([
       // Intercept backend calls for LeaveRequest.all
       $httpBackend.whenGET(/action=getFull&entity=LeaveRequest/)
         .respond(mockData.all());
+
+      // Intercept backend calls for LeaveRequest.all
+      $httpBackend.whenGET(/action=get&entity=LeaveRequest/)
+        .respond(mockData.singleDataSuccess());
 
       // Intercept backend calls for LeaveRequest.balanceChangeByAbsenceType
       $httpBackend.whenGET(/action=getbalancechangebyabsencetype&entity=LeaveRequest/)

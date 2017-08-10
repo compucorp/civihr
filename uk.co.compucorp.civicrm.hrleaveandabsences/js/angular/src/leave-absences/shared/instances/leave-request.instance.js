@@ -294,6 +294,32 @@ define([
         },
 
         /**
+         * Check the role of a given contact in relationship to the leave request.
+         *
+         * @param {Object} contactId
+         *
+         * @return {Promise} resolves with an {String} - manager/none
+         */
+        roleOf: function (contactId) {
+          var deferred = $q.defer();
+
+          if (this.contact_id === contactId) {
+            deferred.resolve('owner');
+          } else {
+            LeaveRequestAPI.isManagedBy(this.id, contactId)
+              .then(function (response) {
+                if (!!response) {
+                  deferred.resolve('manager');
+                } else {
+                  deferred.resolve('none');
+                }
+              });
+          }
+
+          return deferred.promise;
+        },
+
+        /**
          * Override of parent method
          *
          * @param {object} result - The accumulator object

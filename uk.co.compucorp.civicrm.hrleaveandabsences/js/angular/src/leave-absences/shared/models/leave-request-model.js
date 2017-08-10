@@ -70,6 +70,20 @@ define([
           $log.debug('LeaveRequestAPI.calculateBalanceChange');
 
           return leaveRequestAPI.calculateBalanceChange(params);
+        },
+
+        /**
+         * Get leave request for the given id
+         *
+         * @param {object} id - leave request id
+         *
+         * @return {Promise} resolves with {Object}
+         */
+        find: function (id) {
+          return leaveRequestAPI.find(id)
+            .then(function (leaveRequest) {
+              return instance.init(leaveRequest, true);
+            });
         }
       });
     }

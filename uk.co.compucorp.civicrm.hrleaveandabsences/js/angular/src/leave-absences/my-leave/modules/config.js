@@ -37,6 +37,14 @@
             .state('my-leave.calendar', {
               url: '/calendar',
               template: '<staff-leave-calendar contact-id="myleave.contactId"></staff-leave-calendar>'
+            })
+            .state('my-leave.report.leave-request', {
+              url: '/leave-request?leave-request-id',
+              onEnter: [
+                '$stateParams', 'LeavePopupService', function ($stateParams, LeavePopupService) {
+                  LeavePopupService.openModalByID($stateParams['leave-request-id']);
+                }
+              ]
             });
         }
       ]);

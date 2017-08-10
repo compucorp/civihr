@@ -19,6 +19,7 @@ define([
   'leave-absences/shared/directives/leave-request-popup.directive',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
+  'leave-absences/shared/services/leave-popup.service',
   'leave-absences/manager-leave/modules/config',
   'leave-absences/manager-leave/components/manager-leave-container'
 ], function (angular) {
@@ -39,7 +40,8 @@ define([
     'manager-leave.components',
     'leave-absences.components',
     'leave-absences.directives',
-    'leave-absences.models'
+    'leave-absences.models',
+    'leave-absences.services'
   ])
   .run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
     $log.debug('app.run');

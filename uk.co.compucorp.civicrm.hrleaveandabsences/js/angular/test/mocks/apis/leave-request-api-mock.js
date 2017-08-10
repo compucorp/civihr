@@ -115,6 +115,11 @@ define([
           return $q(function (resolve, reject) {
             resolve(mockData.deleteAttachment().values);
           });
+        },
+        find: function (id) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.singleDataSuccess());
+          });
         }
       };
     }

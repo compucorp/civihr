@@ -28,7 +28,8 @@ define([
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/public-holiday-model',
-  'leave-absences/shared/modules/shared-settings'
+  'leave-absences/shared/modules/shared-settings',
+  'leave-absences/shared/services/leave-popup.service'
 ], function (angular) {
   angular.module('my-leave', [
     'ngResource',
@@ -46,6 +47,7 @@ define([
     'leave-absences.components',
     'leave-absences.directives',
     'leave-absences.models',
+    'leave-absences.services',
     'leave-absences.settings'
   ])
   .run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
