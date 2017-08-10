@@ -94,6 +94,7 @@ define([
      */
     function clearStaffSelection () {
       vm.filters.leaveRequest.contact_id = null;
+
       vm.refresh();
     }
 
@@ -211,6 +212,7 @@ define([
       var user = _.find(vm.filteredUsers, function (contact) {
         return contact.id === id;
       });
+
       return user ? user.display_name : null;
     }
 
@@ -259,7 +261,8 @@ define([
     function loadManageesAndLeaves () {
       vm.loading.content = true;
 
-      return (vm.isAdmin ? Contact.all(contactFilters()) : Contact.leaveManagees(vm.contactId, contactFilters()))
+      return (vm.isAdmin ? Contact.all(contactFilters())
+        : Contact.leaveManagees(vm.contactId, contactFilters()))
         .then(function (users) {
           vm.filteredUsers = vm.isAdmin ? users.list : users;
 
@@ -269,14 +272,10 @@ define([
           ]);
         })
         .then(function () {
-          /**
-           * If the Status filter is not set to "All" and
-           * there are no requests loaded, then
-           * the status filter is set to "All" and the controller is refreshed
-           *
-           * @NOTE do not confuse this with Assignee filter
-           */
-          if (vm.filters.leaveRequest.leaveStatus !== filterByAll && vm.leaveRequests.table.list.length === 0) {
+          // If Status filter is not set to "All" and no requests loaded,
+          // then Status filter is set to "All" and the controller is refreshed
+          if (vm.filters.leaveRequest.leaveStatus !== filterByAll &&
+            vm.leaveRequests.table.list.length === 0) {
             vm.filters.leaveRequest.leaveStatus = filterByAll;
 
             vm.refresh();
@@ -308,7 +307,7 @@ define([
      */
     function loadLeaveRequests (type) {
       var filterByStatus = type !== 'filter';
-      // {pagination: {size:0}} - Load all requests instead of 25
+      // {pagination: {size:0}} - Load all requests instead of a limited amount
       var pagination = type === 'filter' ? { size: 0 } : vm.pagination;
       var returnFields = type === 'filter' ? {
         return: ['status_id']
@@ -317,7 +316,8 @@ define([
       vm.leaveRequests[type].list = []; // flushes the current cached data
       // cache is set to always false as changing selection either in status menu
       // or pages or adding new requests was reverting back to older cache
-      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination, 'from_date DESC', returnFields, false)
+      return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination,
+        'from_date DESC', returnFields, false)
         .then(function (leaveRequests) {
           vm.leaveRequests[type] = leaveRequests;
         });
@@ -350,9 +350,9 @@ define([
     /**
      * Returns the filter object for leave request api
      *
-     * @param {boolean} filterByStatus - if true then leave request api will be filtered using
-     * selected leave request status in the left navigation bar, which would be used to show the
-     * numbers of different statuses
+     * @param {boolean} filterByStatus - if true, then leave request api will be
+     * filtered using selected leave request status in the left navigation bar,
+     * which would be used to show the numbers of different statuses
      * @return {Object}
      */
     function leaveRequestFilters (filterByStatus) {
@@ -363,12 +363,8 @@ define([
         managed_by: (vm.isAdmin && filters.assignedTo !== 'me' ? undefined : vm.contactId),
         status_id: prepareStatusFilter(filterByStatus),
         type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
-        from_date: {
-          from: filters.selectedPeriod.start_date
-        },
-        to_date: {
-          to: filters.selectedPeriod.end_date
-        },
+        from_date: { from: filters.selectedPeriod.start_date },
+        to_date: { to: filters.selectedPeriod.end_date },
         unassigned: (filters.assignedTo === 'unassigned' ? true : undefined)
       };
     }
@@ -403,11 +399,9 @@ define([
      * @return {Object}
      */
     function prepareContactID () {
-      /**
-       * If there are no users after applying filter, the selected contact_id
-       * should not be sent to the leave request API, as it will still load
-       * the leave requests for the selected contact id
-       */
+      // If there are no users after applying filter, the selected contact_id
+      // should not be sent to the leave request API, as it will still load
+      // the leave requests for the selected contact id
       if (vm.filteredUsers.length > 0 && vm.filters.leaveRequest.contact_id) {
         return vm.filters.leaveRequest.contact_id;
       }
@@ -436,8 +430,8 @@ define([
         return pendingRequestFilters.indexOf(status) > -1;
       });
 
-      // If statusFilter still has items, means one of pendingRequestFilters is selected on the UI
-      // Then do not add new filters
+      // If statusFilter still has items, this means one of
+      // pendingRequestFilters is selected on the UI - do not add new filters then
       if (statusFilter.length === 0) {
         // Add pending request specific filters
         statusFilter = statusFilter.concat(pendingRequestFilters);
@@ -449,9 +443,9 @@ define([
     /**
      * Returns the status filter to be used for leave request api
      *
-     * @param {boolean} filterByStatus - if true then leave request api will be filtered using
-     * selected leave request status in the left navigation bar, which would be used to show the
-     * numbers of different status's
+     * @param {boolean} filterByStatus - if true then leave request api will be
+     * filtered using selected leave request status in the left navigation bar,
+     * which would be used to show the numbers of different statuses
      * @return {Object}
      */
     function prepareStatusFilter (filterByStatus) {
@@ -480,19 +474,10 @@ define([
      * @param {int} page - page number of the pagination element
      */
     function refresh (page) {
-      /**
-       * vm.refresh is called from registerEvents and was sending events object in the function "arguments".
-       * Without the check parameter page was set to the passed event object from function "arguments" and
-       * hence the page was not getting refreshed as the below condition would always fail.
-       */
       page = typeof (page) === 'number' ? page : 1;
 
-      /**
-       * page <= vm.totalNoOfPages() - Do not load new data if the page no is more than total
-       * no of pages, this can happen when Next button is pressed on the pagination
-       * vm.totalNoOfPages() === 0 - If total no of pages is 0 then load new data
-       * This can happen when the list is empty and a new filter is applied
-       */
+      // Load data if the given page number exists OR there are no pages,
+      // for example, if the list is empty and a new filter is applied
       if (page <= vm.totalNoOfPages() || vm.totalNoOfPages() === 0) {
         vm.pagination.page = page;
 
