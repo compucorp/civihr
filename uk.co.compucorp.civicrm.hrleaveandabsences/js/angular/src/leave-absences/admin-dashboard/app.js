@@ -6,6 +6,7 @@ define([
   'common/text-angular',
   'common/modules/dialog',
   'common/services/check-permissions',
+  'common/services/angular-date/date-format',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/components/leave-balance-report.component',
@@ -15,7 +16,10 @@ define([
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/components/manager-leave-calendar',
   'leave-absences/shared/components/manage-leave-requests.component',
-  'leave-absences/shared/directives/leave-request-popup.directive',
+  'leave-absences/shared/controllers/sub-controllers/leave-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/sick-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/toil-request.controller',
+  'leave-absences/shared/services/leave-popup.service',
   'leave-absences/admin-dashboard/modules/config',
   'leave-absences/admin-dashboard/components/admin-dashboard-container'
 ], function (angular) {
@@ -26,11 +30,14 @@ define([
     'ui.router',
     'ui.select',
     'textAngular',
+    'common.angularDate',
     'common.dialog',
+    'common.mocks',
     'admin-dashboard.config',
     'admin-dashboard.components',
     'leave-absences.components',
-    'leave-absences.directives',
+    'leave-absences.controllers',
+    'leave-absences.services',
     'leave-absences.settings'
   ]).run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
     $log.debug('app.run');

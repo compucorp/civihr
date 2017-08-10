@@ -16,7 +16,9 @@ define([
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/components/manage-leave-requests.component',
   'leave-absences/shared/components/manager-leave-calendar',
-  'leave-absences/shared/directives/leave-request-popup.directive',
+  'leave-absences/shared/controllers/sub-controllers/leave-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/sick-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/toil-request.controller',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/services/leave-popup.service',
@@ -39,7 +41,7 @@ define([
     'manager-leave.config',
     'manager-leave.components',
     'leave-absences.components',
-    'leave-absences.directives',
+    'leave-absences.controllers',
     'leave-absences.models',
     'leave-absences.services'
   ])

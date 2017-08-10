@@ -7,10 +7,10 @@ define([
 ], function (services, _) {
   'use strict';
 
-  services.factory('LeavePopupService', [
+  services.factory('LeavePopup', [
     '$log', '$rootElement', '$rootScope', '$q', '$uibModal', 'notification', 'shared-settings', 'DateFormat', 'Session', 'LeaveRequest',
     function ($log, $rootElement, $rootScope, $q, $modal, notification, sharedSettings, DateFormat, Session, LeaveRequest) {
-      $log.debug('LeavePopupService');
+      $log.debug('LeavePopup');
 
       return {
         openModal: openModal,

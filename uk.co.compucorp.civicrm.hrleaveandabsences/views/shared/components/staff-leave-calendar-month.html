@@ -31,11 +31,7 @@
             <span ng-if="day.UI.isPM">PM</span>
             <span ng-if="day.UI.isAccruedTOIL">AT</span>
             <a ng-if="day.leaveRequest"
-               contact-id="calendar.contactId"
-               selected-contact-id="$root.settings.contactId"
-               is-self-record="$root.section === 'my-leave'"
-               leave-request-popup
-               leave-request="day.leaveRequest"
+               ng-click="calendar.openLeavePopup(day.leaveRequest, null, $root.settings.contactId, $root.section === 'my-leave')"
                title="Click to open this leave request">
             </a>
           </div>

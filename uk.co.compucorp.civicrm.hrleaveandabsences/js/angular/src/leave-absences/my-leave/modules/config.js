@@ -34,9 +34,9 @@
               url: '/report?leave-request-id',
               template: '<staff-leave-report contact-id="myleave.contactId"></staff-leave-report>',
               onEnter: [
-                '$stateParams', 'LeavePopupService', function ($stateParams, LeavePopupService) {
+                '$stateParams', 'LeavePopup', function ($stateParams, LeavePopup) {
                   if ($stateParams['leave-request-id']) {
-                    LeavePopupService.openModalByID($stateParams['leave-request-id']);
+                    LeavePopup.openModalByID($stateParams['leave-request-id']);
                   }
                 }
               ]

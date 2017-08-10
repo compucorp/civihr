@@ -22,14 +22,17 @@ define([
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/components/staff-leave-report',
   'leave-absences/shared/components/staff-leave-calendar',
-  'leave-absences/shared/directives/leave-request-popup.directive',
+  'leave-absences/shared/controllers/sub-controllers/leave-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/sick-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/toil-request.controller',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/calendar-model',
   'leave-absences/shared/models/leave-request-model',
   'leave-absences/shared/models/work-pattern-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/entitlement-model',
-  'leave-absences/shared/modules/shared-settings'
+  'leave-absences/shared/modules/shared-settings',
+  'leave-absences/shared/services/leave-popup.service'
 ], function (angular) {
   angular.module('absence-tab', [
     'ngResource',
@@ -49,8 +52,9 @@ define([
     'absence-tab.config',
     'absence-tab.components',
     'leave-absences.components',
-    'leave-absences.directives',
+    'leave-absences.controllers',
     'leave-absences.models',
+    'leave-absences.services',
     'leave-absences.settings'
   ]).run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
     $log.debug('app.run');

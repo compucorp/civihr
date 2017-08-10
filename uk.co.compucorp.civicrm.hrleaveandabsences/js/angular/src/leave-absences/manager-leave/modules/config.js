@@ -34,9 +34,9 @@
               url: '/requests?leave-request-id',
               template: '<manage-leave-requests contact-id="managerLeave.contactId"></manage-leave-requests>',
               onEnter: [
-                '$stateParams', 'LeavePopupService', function ($stateParams, LeavePopupService) {
+                '$stateParams', 'LeavePopup', function ($stateParams, LeavePopup) {
                   if ($stateParams['leave-request-id']) {
-                    LeavePopupService.openModalByID($stateParams['leave-request-id']);
+                    LeavePopup.openModalByID($stateParams['leave-request-id']);
                   }
                 }
               ]
