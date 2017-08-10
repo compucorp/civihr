@@ -47,13 +47,13 @@ define([
         contact_id: null,
         selectedPeriod: null,
         selectedAbsenceTypes: null,
-        assignedTo: 'all'
+        assignedTo: 'me'
       }
     };
     vm.filtersByAssignee = [
-      { type: 'all', label: 'All' },
+      { type: 'me', label: 'Assigned To Me' },
       { type: 'unassigned', label: 'Unassigned' },
-      { type: 'me', label: 'Assigned To Me' }
+      { type: 'all', label: 'All' }
     ];
     // leaveRequests.table - to handle table data
     // leaveRequests.filter - to handle left nav filter data

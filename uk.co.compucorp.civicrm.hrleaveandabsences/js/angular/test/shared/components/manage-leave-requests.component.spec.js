@@ -740,37 +740,51 @@ define([
         });
 
         describe('filter by assignee', function () {
+          var filterTypes;
           beforeEach(function () {
             role = 'admin';
+
             compileComponent();
+
+            filterTypes = controller.filtersByAssignee.map(function (filter) {
+              return filter.type;
+            });
           });
 
-          describe('when all selected', function () {
+          it('has a correctly ordered list of options', function () {
+            expect(filterTypes).toEqual(['me', 'unassigned', 'all']);
+          });
+
+          it('defaults to "Assigned to me"', function () {
+            expect(controller.filters.leaveRequest.assignedTo).toBe('me');
+          });
+
+          describe('when "All" filter is selected', function () {
             beforeEach(function () {
               executeFilterByAssignee('all');
             });
 
-            it('ignores both "managed_by" and "unassigned"', function () {
+            it('ignores both "managed_by" and "unassigned" parameters in API call', function () {
               expectLeaveRequestsFilteredBy({ managed_by: undefined, unassigned: undefined });
             });
           });
 
-          describe('when selected assigned to user only', function () {
+          describe('when "Assigned to me" filter is selected', function () {
             beforeEach(function () {
               executeFilterByAssignee('me');
             });
 
-            it('uses "managed_by" but ignores "unassigned"', function () {
+            it('calls API with "managed_by" parameter but ignores "unassigned" parameter', function () {
               expectLeaveRequestsFilteredBy({ managed_by: contactId, unassigned: undefined });
             });
           });
 
-          describe('when selected unassigned only', function () {
+          describe('when "Unassigned" filter is selected', function () {
             beforeEach(function () {
               executeFilterByAssignee('unassigned');
             });
 
-            it('uses "unassigned" but ignores "managed_by"', function () {
+            it('calls API with "unassigned" parameter but ignores "managed_by" parameter', function () {
               expectLeaveRequestsFilteredBy({ managed_by: undefined, unassigned: true });
             });
           });
