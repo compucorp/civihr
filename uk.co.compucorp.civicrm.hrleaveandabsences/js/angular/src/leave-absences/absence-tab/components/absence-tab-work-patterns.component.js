@@ -4,7 +4,7 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/absence-tab/modules/components',
-  'leave-absences/absence-tab/components/absence-tab-custom-work-pattern-modal'
+  'leave-absences/absence-tab/components/absence-tab-custom-work-pattern-modal.component'
 ], function (_, moment, components) {
   components.component('absenceTabWorkPatterns', {
     bindings: {

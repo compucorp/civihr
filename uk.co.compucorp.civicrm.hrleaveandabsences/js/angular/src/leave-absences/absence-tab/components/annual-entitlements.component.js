@@ -15,10 +15,10 @@
         return settings.pathTpl + 'components/annual-entitlements.html';
       }],
       controllerAs: 'entitlements',
-      controller: ['$log', '$q', 'AbsenceType', 'AbsencePeriod', 'Entitlement', 'Contact', controller]
+      controller: ['$log', '$q', 'AbsenceType', 'AbsencePeriod', 'Entitlement', 'Contact', 'notificationService', controller]
     });
 
-    function controller ($log, $q, AbsenceType, AbsencePeriod, Entitlement, Contact) {
+    function controller ($log, $q, AbsenceType, AbsencePeriod, Entitlement, Contact, notification) {
       $log.debug('Component: annual-entitlements');
 
       var vm = this;
@@ -53,8 +53,8 @@
        */
       vm.showComment = function (comment) {
         /*
-         * @TODO There is no support for footer in CRM.alert at the moment.
-         * This code should be refactored as soon as CRM.alert supports footer.
+         * @TODO There is no support for footer in notificationService at the moment.
+         * This code should be refactored as soon as notificationService supports footer.
          * At the moment the footer is constructed via rich HTML directly via body text
          */
         var text = comment.message +
@@ -63,7 +63,7 @@
           '<br/>Date: ' + moment.utc(comment.date).local().format('DD/M/YYYY HH:mm') +
           '</strong>';
 
-        CRM.alert(text, 'Calculation comment:', 'error');
+        notification.info('Calculation comment:', text);
       };
 
       /**

@@ -19,7 +19,7 @@ define([
 
   describe('annualEntitlements', function () {
     var contactId = 202;
-    var $componentController, $log, $rootScope, controller, $provide, ContactAPIMock;
+    var $componentController, $log, $rootScope, controller, $provide, ContactAPIMock, notification;
 
     beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -38,13 +38,14 @@ define([
         ContactAPIMock = _ContactAPIMock_;
       }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _Contact_, _AbsenceType_, _AbsencePeriod_, _Entitlement_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _notificationService_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
+      notification = _notificationService_;
+      window.alert = function () {}; // prevent alert from being logged in console
 
       spyOn($log, 'debug');
-
       compileComponent();
     }));
 
@@ -115,6 +116,17 @@ define([
             date: mockedEntitlement.comment_date
           });
         });
+      });
+    });
+
+    describe('when user wants to see a comment to an entitlement', function () {
+      beforeEach(function () {
+        spyOn(notification, 'info').and.callThrough();
+        controller.showComment('Sample comment');
+      });
+
+      it('shows the notification with a comment', function () {
+        expect(notification.info).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(String));
       });
     });
 
