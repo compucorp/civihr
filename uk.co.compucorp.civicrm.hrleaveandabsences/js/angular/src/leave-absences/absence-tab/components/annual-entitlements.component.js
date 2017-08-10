@@ -63,7 +63,7 @@
           '<br/>Date: ' + moment.utc(comment.date).local().format('DD/M/YYYY HH:mm') +
           '</strong>';
 
-        notification.error('Calculation comment:', text);
+        notification.info('Calculation comment:', text);
       };
 
       /**

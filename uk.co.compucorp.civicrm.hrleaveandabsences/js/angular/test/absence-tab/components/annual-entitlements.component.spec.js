@@ -121,12 +121,12 @@ define([
 
     describe('when user wants to see a comment to an entitlement', function () {
       beforeEach(function () {
-        spyOn(notification, 'error').and.callThrough();
+        spyOn(notification, 'info').and.callThrough();
         controller.showComment('Sample comment');
       });
 
       it('shows the notification with a comment', function () {
-        expect(notification.error).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(String));
+        expect(notification.info).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(String));
       });
     });
 

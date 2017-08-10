@@ -18,7 +18,7 @@
             <td ng-repeat="entitlement in absencePeriod.entitlements">
               {{entitlement.amount}}
               <i
-                class="fa fa-exclamation-circle text-danger pointer"
+                class="fa fa-exclamation-circle text-info pointer"
                 ng-if="entitlement.comment"
                 ng-click="entitlements.showComment(entitlement.comment)"
                 aria-hidden="true">
