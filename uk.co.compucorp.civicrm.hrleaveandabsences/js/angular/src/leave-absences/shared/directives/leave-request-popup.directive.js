@@ -22,7 +22,7 @@ define([
         },
         restrict: 'EA',
         link: function (scope, element) {
-          element.on('click', function (event) {
+          element.on('click', function () {
             LeavePopupService.openModal(scope.leaveRequest, scope.leaveType, scope.selectedContactId, scope.isSelfRecord);
           });
         }

@@ -9,9 +9,9 @@ define([
 ], function (_, instances) {
   'use strict';
 
-  instances.factory('LeaveRequestInstance', ['$q', 'OptionGroup',
+  instances.factory('LeaveRequestInstance', ['$q', 'checkPermissions', 'OptionGroup',
     'shared-settings', 'ModelInstance', 'LeaveRequestAPI',
-    function ($q, OptionGroup, sharedSettings, ModelInstance, LeaveRequestAPI) {
+    function ($q, checkPermissions, OptionGroup, sharedSettings, ModelInstance, LeaveRequestAPI) {
       /**
        * Update status ID
        *
@@ -306,14 +306,21 @@ define([
           if (this.contact_id === contactId) {
             deferred.resolve('owner');
           } else {
-            LeaveRequestAPI.isManagedBy(this.id, contactId)
-              .then(function (response) {
-                if (!!response) {
-                  deferred.resolve('manager');
-                } else {
-                  deferred.resolve('none');
-                }
-              });
+            checkPermissions(sharedSettings.permissions.admin.administer)
+              .then(function (isAdmin) {
+                  if (isAdmin) {
+                    deferred.resolve('admin');
+                  } else {
+                    LeaveRequestAPI.isManagedBy(this.id, contactId)
+                      .then(function (response) {
+                        if (!!response) {
+                          deferred.resolve('manager');
+                        } else {
+                          deferred.resolve('none');
+                        }
+                      });
+                  }
+              }.bind(this));
           }
 
           return deferred.promise;

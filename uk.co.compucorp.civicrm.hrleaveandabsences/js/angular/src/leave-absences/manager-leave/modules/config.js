@@ -31,8 +31,15 @@
               }
             })
             .state('manager-leave.requests', {
-              url: '/requests',
-              template: '<manage-leave-requests contact-id="managerLeave.contactId"></manage-leave-requests>'
+              url: '/requests?leave-request-id',
+              template: '<manage-leave-requests contact-id="managerLeave.contactId"></manage-leave-requests>',
+              onEnter: [
+                '$stateParams', 'LeavePopupService', function ($stateParams, LeavePopupService) {
+                  if ($stateParams['leave-request-id']) {
+                    LeavePopupService.openModalByID($stateParams['leave-request-id']);
+                  }
+                }
+              ]
             })
             .state('manager-leave.calendar', {
               url: '/calendar',

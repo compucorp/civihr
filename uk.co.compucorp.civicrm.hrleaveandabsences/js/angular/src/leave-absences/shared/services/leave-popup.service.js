@@ -8,8 +8,8 @@ define([
   'use strict';
 
   services.factory('LeavePopupService', [
-    '$log', '$rootElement', '$rootScope', '$q', '$uibModal', 'checkPermissions', 'notification', 'shared-settings', 'DateFormat', 'Session', 'LeaveRequest',
-    function ($log, $rootElement, $rootScope, $q, $modal, checkPermissions, notification, sharedSettings, DateFormat, Session, LeaveRequest) {
+    '$log', '$rootElement', '$rootScope', '$q', '$uibModal', 'notification', 'shared-settings', 'DateFormat', 'Session', 'LeaveRequest',
+    function ($log, $rootElement, $rootScope, $q, $modal, notification, sharedSettings, DateFormat, Session, LeaveRequest) {
       $log.debug('LeavePopupService');
 
       return {
@@ -25,21 +25,12 @@ define([
       function checkPermissionBeforeOpeningPopup (leaveRequest) {
         var deferred = $q.defer();
 
-        // check if admin
-        checkPermissions(sharedSettings.permissions.admin.administer)
-          .then(function (isAdmin) {
-            if (isAdmin) {
-              deferred.resolve(true);
-            } else {
-              // check if role is manager or owner
-              return Session.get()
-                .then(function (value) {
-                  return leaveRequest.roleOf(value.contactId);
-                })
-                .then(function (role) {
-                  deferred.resolve(role !== 'none');
-                });
-            }
+        Session.get()
+          .then(function (value) {
+            return leaveRequest.roleOf(value.contactId);
+          })
+          .then(function (role) {
+            deferred.resolve(role !== 'none');
           });
 
         return deferred.promise;

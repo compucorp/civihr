@@ -31,20 +31,19 @@
               }
             })
             .state('my-leave.report', {
-              url: '/report',
-              template: '<staff-leave-report contact-id="myleave.contactId"></staff-leave-report>'
+              url: '/report?leave-request-id',
+              template: '<staff-leave-report contact-id="myleave.contactId"></staff-leave-report>',
+              onEnter: [
+                '$stateParams', 'LeavePopupService', function ($stateParams, LeavePopupService) {
+                  if ($stateParams['leave-request-id']) {
+                    LeavePopupService.openModalByID($stateParams['leave-request-id']);
+                  }
+                }
+              ]
             })
             .state('my-leave.calendar', {
               url: '/calendar',
               template: '<staff-leave-calendar contact-id="myleave.contactId"></staff-leave-calendar>'
-            })
-            .state('my-leave.report.leave-request', {
-              url: '/leave-request?leave-request-id',
-              onEnter: [
-                '$stateParams', 'LeavePopupService', function ($stateParams, LeavePopupService) {
-                  LeavePopupService.openModalByID($stateParams['leave-request-id']);
-                }
-              ]
             });
         }
       ]);
