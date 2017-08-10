@@ -4,7 +4,9 @@
  * ContactJobRole.get API
  *
  * @param array $params
+ *
  * @return array API result descriptor
+ *
  * @throws API_Exception
  */
 function civicrm_api3_contact_hr_job_roles_get($params) {
