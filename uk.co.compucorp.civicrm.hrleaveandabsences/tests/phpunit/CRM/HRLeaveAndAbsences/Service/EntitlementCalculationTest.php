@@ -150,6 +150,32 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->assertEquals(5, $calculation->getBroughtForward());
   }
 
+  public function testBroughtForwardShouldBeTheNumberOfDaysRemainingInPreviousPeriodIfTheAbsenceTypeAllowsUnlimitedDaysToBeBroughtForward() {
+    $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
+
+    $type = AbsenceTypeFabricator::fabricate([
+      'max_number_of_days_to_carry_forward' => NULL
+    ]);
+
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => date('YmdHis', strtotime('-2 days')),
+      'end_date' => date('YmdHis', strtotime('-1 day')),
+    ]);
+
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+1 day')),
+    ], true);
+
+    $this->createEntitlement($previousPeriod, $type, 10);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+
+    // Since the absence type allows unlimited brought forward, the whole entitlement
+    // remaining in previous period is brought forward.
+    $this->assertEquals(10, $calculation->getBroughtForward());
+  }
+
   public function testBroughtForwardShouldNotBeMoreThanTheNumberOfRemainingDaysInPreviousEntitlement() {
     $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
 

@@ -107,8 +107,9 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
     }
 
     $broughtForward = $this->getNumberOfDaysRemainingInThePreviousPeriod();
-    if($broughtForward > $this->absenceType->max_number_of_days_to_carry_forward) {
-      return $this->absenceType->max_number_of_days_to_carry_forward;
+    $maxDaysToCarryForward = $this->absenceType->max_number_of_days_to_carry_forward;
+    if($maxDaysToCarryForward && ($broughtForward > $maxDaysToCarryForward)) {
+      return $maxDaysToCarryForward;
     }
 
     return $broughtForward;
