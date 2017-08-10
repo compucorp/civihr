@@ -6,9 +6,7 @@ define([
   'common/models/contact'
 ], function (_, components) {
   components.component('manageLeaveRequests', {
-    bindings: {
-      contactId: '<'
-    },
+    bindings: { contactId: '<' },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/manage-leave-requests.html';
     }],
@@ -16,12 +14,13 @@ define([
     controller: ManageLeaveRequestsController
   });
 
-  ManageLeaveRequestsController.$inject = [
-    '$log', '$q', '$rootScope', 'Contact', 'checkPermissions', 'OptionGroup',
-    'shared-settings', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest'
-  ];
+  ManageLeaveRequestsController.$inject = [ '$log', '$q', '$rootScope',
+    'Contact', 'checkPermissions', 'OptionGroup', 'shared-settings',
+    'AbsencePeriod', 'AbsenceType', 'LeaveRequest'];
 
-  function ManageLeaveRequestsController ($log, $q, $rootScope, Contact, checkPermissions, OptionGroup, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest) {
+  function ManageLeaveRequestsController ($log, $q, $rootScope,
+    Contact, checkPermissions, OptionGroup, sharedSettings,
+    AbsencePeriod, AbsenceType, LeaveRequest) {
     'use strict';
     $log.debug('Component: manage-leave-requests');
 
@@ -33,14 +32,13 @@ define([
     vm.filteredUsers = [];
     vm.isFilterExpanded = false;
     vm.isAdmin = false; // this property is updated on controller initialization
+    // vm.leaveRequests: table - to handle table data, filter - to handle nav filter data
+    vm.leaveRequests = { table: { list: [] }, filter: { list: [] } };
     vm.leaveRequestStatuses = [filterByAll];
+    vm.loading = { content: true, page: true };
+    vm.pagination = { page: 1, size: 7 };
     vm.filters = {
-      contact: {
-        department: null,
-        level_type: null,
-        location: null,
-        region: null
-      },
+      contact: { department: null, level_type: null, location: null, region: null },
       leaveRequest: {
         leaveStatus: vm.leaveRequestStatuses[0],
         pending_requests: true,
@@ -55,24 +53,6 @@ define([
       { type: 'unassigned', label: 'Unassigned' },
       { type: 'all', label: 'All' }
     ];
-    // leaveRequests.table - to handle table data
-    // leaveRequests.filter - to handle left nav filter data
-    vm.leaveRequests = {
-      table: {
-        list: []
-      },
-      filter: {
-        list: []
-      }
-    };
-    vm.loading = {
-      content: true,
-      page: true
-    };
-    vm.pagination = {
-      page: 1,
-      size: 7
-    };
 
     vm.clearStaffSelection = clearStaffSelection;
     vm.filterLeaveRequestByStatus = filterLeaveRequestByStatus;
@@ -100,11 +80,10 @@ define([
             loadLocations(),
             loadLevelTypes(),
             loadStatuses()
-          ])
-            .then(function () {
-              vm.loading.page = false;
-              loadManageesAndLeaves();
-            });
+          ]).then(function () {
+            vm.loading.page = false;
+            loadManageesAndLeaves();
+          });
 
           registerEvents();
         });
@@ -212,6 +191,7 @@ define([
 
     /**
      * Returns status value for the given name
+     *
      * @param {String} statusName
      * @return {String}
      */
@@ -289,10 +269,12 @@ define([
           ]);
         })
         .then(function () {
-          /*
-           * If the status filter is not set to "All" and
+          /**
+           * If the Status filter is not set to "All" and
            * there are no requests loaded, then
            * the status filter is set to "All" and the controller is refreshed
+           *
+           * @NOTE do not confuse this with Assignee filter
            */
           if (vm.filters.leaveRequest.leaveStatus !== filterByAll && vm.leaveRequests.table.list.length === 0) {
             vm.filters.leaveRequest.leaveStatus = filterByAll;
@@ -421,9 +403,11 @@ define([
      * @return {Object}
      */
     function prepareContactID () {
-      // If there is no users after applying filter, the selected contact_id
-      // should not be sent to the leave request API, as it will still load
-      // the leave requests for the selected contact id
+      /**
+       * If there are no users after applying filter, the selected contact_id
+       * should not be sent to the leave request API, as it will still load
+       * the leave requests for the selected contact id
+       */
       if (vm.filteredUsers.length > 0 && vm.filters.leaveRequest.contact_id) {
         return vm.filters.leaveRequest.contact_id;
       }
@@ -496,15 +480,19 @@ define([
      * @param {int} page - page number of the pagination element
      */
     function refresh (page) {
-      // vm.refresh is called from registerEvents and was sending events object in the function "arguments".
-      // Without the check parameter page was set to the passed event object from function "arguments" and
-      // hence the page was not getting refreshed as the below condition would always fail.
+      /**
+       * vm.refresh is called from registerEvents and was sending events object in the function "arguments".
+       * Without the check parameter page was set to the passed event object from function "arguments" and
+       * hence the page was not getting refreshed as the below condition would always fail.
+       */
       page = typeof (page) === 'number' ? page : 1;
 
-      // page <= vm.totalNoOfPages() - Do not load new data if the page no is more than total
-      // no of pages, this can happen when Next button is pressed on the pagination
-      // vm.totalNoOfPages() === 0 - If total no of pages is 0 then load new data
-      // This can happen when the list is empty and a new filter is applied
+      /**
+       * page <= vm.totalNoOfPages() - Do not load new data if the page no is more than total
+       * no of pages, this can happen when Next button is pressed on the pagination
+       * vm.totalNoOfPages() === 0 - If total no of pages is 0 then load new data
+       * This can happen when the list is empty and a new filter is applied
+       */
       if (page <= vm.totalNoOfPages() || vm.totalNoOfPages() === 0) {
         vm.pagination.page = page;
 
