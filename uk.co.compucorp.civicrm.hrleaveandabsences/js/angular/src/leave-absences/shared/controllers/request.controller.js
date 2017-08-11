@@ -76,7 +76,7 @@ define([
     this.pagination = {
       currentPage: 1,
       filteredbreakdown: this.balance.change.breakdown,
-      numPerPage: 5,
+      numPerPage: 7,
       totalItems: this.balance.change.breakdown.length,
       pageChanged: pageChanged
     };

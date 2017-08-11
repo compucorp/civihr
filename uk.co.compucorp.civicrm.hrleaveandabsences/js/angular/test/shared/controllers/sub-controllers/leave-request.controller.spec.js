@@ -485,6 +485,10 @@
               setTestDates(date2016, date2016);
             });
 
+            it('paginates by 7 items', function () {
+              expect($ctrl.pagination.numPerPage).toEqual(7);
+            });
+
             it('selects default page', function () {
               expect($ctrl.pagination.currentPage).toEqual(1);
             });
