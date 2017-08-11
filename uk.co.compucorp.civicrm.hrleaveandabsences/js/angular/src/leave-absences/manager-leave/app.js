@@ -7,7 +7,6 @@ define([
   'common/modules/dialog',
   'common/services/angular-date/date-format',
   'common/services/check-permissions',
-  'common/text-angular',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/components/leave-balance-report.component',
   'leave-absences/shared/components/leave-request-actions.component',

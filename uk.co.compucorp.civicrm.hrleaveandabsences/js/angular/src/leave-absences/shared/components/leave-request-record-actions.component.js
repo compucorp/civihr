@@ -40,7 +40,7 @@ define([
      * @param {Boolean} isSelfRecord
      */
     function openLeavePopup (leaveRequest, leaveType, selectedContactId, isSelfRecord) {
-      LeavePopup.openModal(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+      LeavePopup.openModal.apply(LeavePopup, arguments);
     }
   }
 });

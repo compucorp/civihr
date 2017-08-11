@@ -518,7 +518,7 @@ define([
         expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
       });
 
-      it('stops the vent from propagating', function () {
+      it('stops the event from propagating', function () {
         expect(event.stopPropagation).toHaveBeenCalled();
       });
     });

@@ -117,14 +117,10 @@ define([
           });
         },
         find: function (id) {
-          return $q(function (resolve, reject) {
-            resolve(mockData.singleDataSuccess());
-          });
+          return $q.resolve(mockData.singleDataSuccess());
         },
         isManagedBy: function (params) {
-          return $q(function (resolve, reject) {
-            resolve(mockData.isManagedBy().values);
-          });
+          return $q.resolve(mockData.isManagedBy().values);
         }
       };
     }

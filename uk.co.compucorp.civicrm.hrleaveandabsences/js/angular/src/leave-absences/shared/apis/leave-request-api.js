@@ -191,22 +191,15 @@ define([
          */
         find: function (id) {
           $log.debug('LeaveRequestAPI.find');
-          var deferred = $q.defer();
-          var params = { id: id };
 
-          this.sendGET('LeaveRequest', 'get', params)
-            .then(function (response) {
-              if (response.values.length > 0) {
-                deferred.resolve(response.values[0]);
-              } else {
-                deferred.reject('LeaveRequest not found with this ID');
-              }
-            })
-            .catch(function (errorMsg) {
-              deferred.reject(errorMsg);
-            });
+          return this.sendGET('LeaveRequest', 'get', { id: id })
+          .then(function (response) {
+            if (response.values.length === 0) {
+              return $q.reject('LeaveRequest not found with this ID');
+            }
 
-          return deferred.promise;
+            return response.values[0];
+          });
         },
 
         /**
@@ -252,21 +245,18 @@ define([
          *
          * @param {String} leaveRequestID - ID of leave request
          * @param {String} contactID - ID of contact
-         *
          * @return {Promise} resolves with an {Boolean}
          */
         isManagedBy: function (leaveRequestID, contactID) {
           $log.debug('LeaveRequestAPI.isManagedBy');
 
-          var params = {
+          return this.sendPOST('LeaveRequest', 'isManagedBy', {
             leave_request_id: leaveRequestID,
             contact_id: contactID
-          };
-
-          return this.sendPOST('LeaveRequest', 'isManagedBy', params)
-            .then(function (response) {
-              return response.values;
-            });
+          })
+          .then(function (response) {
+            return response.values;
+          });
         },
 
         /**

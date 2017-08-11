@@ -297,29 +297,20 @@ define([
          * Check the role of a given contact in relationship to the leave request.
          *
          * @param {Object} contactId
-         *
-         * @return {Promise} resolves with an {String} - manager/none
+         * @return {Promise} resolves with an {String} - owner/admin/manager/none
          */
         roleOf: function (contactId) {
-          var deferred = $q.defer();
-
-          if (this.contact_id === contactId) {
-            deferred.resolve('owner');
-          } else {
-            checkPermissions(sharedSettings.permissions.admin.administer)
+          return (this.contact_id === contactId)
+            ? $q.resolve('owner')
+            : checkPermissions(sharedSettings.permissions.admin.administer)
               .then(function (isAdmin) {
-                if (isAdmin) {
-                  deferred.resolve('admin');
-                } else {
-                  LeaveRequestAPI.isManagedBy(this.id, contactId)
-                    .then(function (response) {
-                      response ? deferred.resolve('manager') : deferred.resolve('none');
+                return isAdmin
+                  ? 'admin'
+                  : LeaveRequestAPI.isManagedBy(this.id, contactId)
+                    .then(function (isManager) {
+                      return isManager ? 'manager' : 'none';
                     });
-                }
               }.bind(this));
-          }
-
-          return deferred.promise;
         },
 
         /**

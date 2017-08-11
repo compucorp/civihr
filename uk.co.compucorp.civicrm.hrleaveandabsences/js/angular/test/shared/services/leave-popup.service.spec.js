@@ -26,7 +26,7 @@ define([
       LeaveRequestInstance = _LeaveRequestInstance_;
 
       spyOn(LeaveRequest, 'find');
-      spyOn(notification, 'alert');
+      spyOn(notification, 'error');
     }));
 
     describe('openModal()', function () {
@@ -49,7 +49,7 @@ define([
           LeavePopup.openModal({ request_type: requestType });
         });
 
-        it('initializes the leave popup with capitalizing the request type', function () {
+        it('initializes the leave popup with correct controller', function () {
           expect($uibModal.open).toHaveBeenCalledWith(jasmine.objectContaining({
             controller: requestType + 'RequestCtrl'
           }));
@@ -70,9 +70,9 @@ define([
           promise = LeavePopup.openModalByID('101');
         });
 
-        it('initializes the leave popup with LeaveRequestController', function () {
+        it('shows an error notification', function () {
           promise.then(function () {
-            expect(notification.alert).toHaveBeenCalledWith('Error', errorMessage);
+            expect(notification.error).toHaveBeenCalledWith('Error', errorMessage);
           });
         });
       });
@@ -111,7 +111,7 @@ define([
 
           it('shows an error message', function () {
             promise.then(function () {
-              expect(notification.alert).toHaveBeenCalledWith('Error', 'You dont have permission to see this leave request');
+              expect(notification.error).toHaveBeenCalledWith('Error', 'You dont have permission to see this leave request');
             });
           });
         });

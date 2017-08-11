@@ -105,12 +105,10 @@ define([
     vm.action = action;
     vm.openLeavePopup = openLeavePopup;
 
-    init();
-
-    function init () {
+    (function init () {
       indexSupportData();
       setAllowedActions();
-    }
+    }());
 
     /**
      * Performs an action on a given leave request
@@ -182,6 +180,10 @@ define([
 
     /**
      * Opens the leave request popup
+     *
+     * When leave-request-actions.component sits inside manage-request component's table rows,
+     * and the table row has a click event to open leave request, so event.stopPropagation()
+     * is necessary to prevent the parents click event from being called
      *
      * @param {Object} event
      * @param {Object} leaveRequest

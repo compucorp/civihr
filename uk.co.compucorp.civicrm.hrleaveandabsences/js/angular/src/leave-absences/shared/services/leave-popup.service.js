@@ -25,48 +25,38 @@ define([
     /**
      * Checks if the current logged in contact can see the leave request
      *
-     * @return {Boolean}
+     * @return {Promise}
      */
     function checkPermissionBeforeOpeningPopup (leaveRequest) {
-      var deferred = $q.defer();
-
-      Session.get()
-        .then(function (value) {
-          return leaveRequest.roleOf(value.contactId);
+      return Session.get()
+        .then(function (sessionData) {
+          return leaveRequest.roleOf(sessionData.contactId);
         })
         .then(function (role) {
-          deferred.resolve(role !== 'none');
+          return role !== 'none';
         });
-
-      return deferred.promise;
     }
 
     /**
      * Gets leave type.
-     * If leaveTypeParam exits then its a new request, else if request
-     * object exists then its edit request call
      *
-     * @param {String} leaveTypeParam
-     * @param {Object} request leave request for edit calls
-     *
+     * @param {String} leaveType - leave type, it is passed only for new requests
+     * @param {LeaveRequestInstance} request leave request for edit calls
+
      * @return {String} leave type
      */
-    function getLeaveType (leaveTypeParam, request) {
-      // reset for edit calls
-      if (request) {
-        return request.request_type;
-      } else if (leaveTypeParam) {
-        return leaveTypeParam;
-      }
+    function getLeaveType (leaveType, request) {
+      return request ? request.request_type : (leaveType || null);
     }
 
     /**
      * Open leave request popup for the given leave request
      *
-     * @param {Object} leaveRequest
+     * @param {LeaveRequestInstance} leaveRequest
      * @param {String} leaveType
-     * @param {String} selectedContactId
-     * @param {Boolean} isSelfRecord
+     * @param {String} selectedContactId - Contact ID for the contact dropdown
+     *                                     when the manager/admin is opening the request
+     * @param {Boolean} isSelfRecord - True If the owner is opening the leave request
      */
     function openModal (leaveRequest, leaveType, selectedContactId, isSelfRecord) {
       var controller = _.capitalize(getLeaveType(leaveType, leaveRequest)) + 'RequestCtrl';
@@ -74,7 +64,6 @@ define([
       $modal.open({
         appendTo: $rootElement.children().eq(0),
         templateUrl: sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup.html',
-        // animation: scope.animationsEnabled,
         controller: controller,
         controllerAs: '$ctrl',
         windowClass: 'chr_leave-request-modal',
@@ -102,18 +91,19 @@ define([
      * @return {Promise}
      */
     function openModalByID (leaveRequestID) {
-      // check if the leave request exist
       return LeaveRequest.find(leaveRequestID)
         .then(function (leaveRequest) {
           return checkPermissionBeforeOpeningPopup(leaveRequest)
             .then(function (hasPermission) {
-              hasPermission
-                ? openModal(leaveRequest, leaveRequest.request_type, leaveRequest.contact_id, $rootScope.section === 'my-leave')
-                : notification.alert('Error', 'You dont have permission to see this leave request');
+              if (hasPermission) {
+                openModal(leaveRequest, leaveRequest.request_type, leaveRequest.contact_id, $rootScope.section === 'my-leave');
+              } else {
+                notification.error('Error', 'You dont have permission to see this leave request');
+              }
             });
         })
         .catch(function (errorMsg) {
-          notification.alert('Error', errorMsg);
+          notification.error('Error', errorMsg);
         });
     }
   }

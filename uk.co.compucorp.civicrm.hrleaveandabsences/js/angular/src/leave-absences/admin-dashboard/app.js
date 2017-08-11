@@ -4,7 +4,6 @@ define([
   'common/angular',
   'common/angularBootstrap',
   'common/modules/dialog',
-  'common/text-angular',
   'common/services/check-permissions',
   'common/services/angular-date/date-format',
   'leave-absences/shared/ui-router',
