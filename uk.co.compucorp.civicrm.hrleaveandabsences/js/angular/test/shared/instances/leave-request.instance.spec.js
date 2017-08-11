@@ -17,9 +17,10 @@ define([
   describe('LeaveRequestInstance', function () {
     var $provide, LeaveRequestInstance, LeaveRequestAPI, $q, OptionGroup, OptionGroupAPIMock,
       $rootScope, instance, sharedSettings;
+    var isUserAdmin = false;
 
     beforeEach(module('leave-absences.models', 'leave-absences.models.instances',
-      'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
+      'leave-absences.mocks', 'common.mocks', 'leave-absences.settings', 'leave-absences.services',
       function (_$provide_) {
         $provide = _$provide_;
       }));
@@ -27,6 +28,7 @@ define([
     beforeEach(inject(function (_LeaveRequestAPIMock_, _FileUploaderMock_) {
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
       $provide.value('FileUploader', _FileUploaderMock_);
+      $provide.value('checkPermissions', function () { return $q.resolve(isUserAdmin); });
     }));
 
     afterEach(function () {
@@ -626,6 +628,88 @@ define([
       it('calls the api delete endpoint, passing its own id', function () {
         expect(LeaveRequestAPI.delete).toHaveBeenCalledWith(instance.id);
       });
+    });
+
+    describe('roleOf()', function () {
+      var promise;
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      describe('when the user is the owner of the leave request', function () {
+        beforeEach(function () {
+          setUserAsOwner();
+        });
+
+        it('returns owner', function () {
+          promise.then(function (result) {
+            expect(result).toBe('owner');
+          });
+        });
+      });
+
+      describe('when the user is the admin', function () {
+        beforeEach(function () {
+          isUserAdmin = true;
+        });
+
+        it('returns admin', function () {
+          promise.then(function (result) {
+            expect(result).toBe('admin');
+          });
+        });
+      });
+
+      describe('when the user is the manager', function () {
+        beforeEach(function () {
+          isUserAdmin = false;
+          spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
+            return setIsManagedResponseTo(true);
+          });
+          setUserAsNotOwner();
+        });
+
+        it('returns manager', function () {
+          promise.then(function (result) {
+            expect(result).toBe('manager');
+          });
+        });
+      });
+
+      describe('when the user has no relationship', function () {
+        beforeEach(function () {
+          isUserAdmin = false;
+          spyOn(LeaveRequestAPI, 'isManagedBy').and.callFake(function () {
+            return setIsManagedResponseTo(false);
+          });
+          setUserAsNotOwner();
+        });
+
+        it('returns none', function () {
+          promise.then(function (result) {
+            expect(result).toBe('none');
+          });
+        });
+      });
+
+      function setUserAsNotOwner () {
+        // dummy contact id
+        LeaveRequestInstance.contact_id = '101';
+        promise = LeaveRequestInstance.roleOf({
+          id: '102' // not same as instance.contact_id
+        });
+      }
+
+      function setUserAsOwner () {
+        // dummy contact id
+        LeaveRequestInstance.contact_id = '101';
+        promise = LeaveRequestInstance.roleOf('101');
+      }
+
+      function setIsManagedResponseTo (value) {
+        return $q.resolve(value);
+      }
     });
   });
 });

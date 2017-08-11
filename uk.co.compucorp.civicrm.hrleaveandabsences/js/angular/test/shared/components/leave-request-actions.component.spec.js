@@ -14,7 +14,7 @@ define([
   'use strict';
 
   describe('leaveRequestActions', function () {
-    var $componentController, $log, $q, $rootScope, controller, LeaveRequestInstance, dialog, sharedSettings, role, leaveRequest, notification;
+    var $componentController, $log, $q, $rootScope, controller, LeaveRequestInstance, dialog, sharedSettings, role, leaveRequest, LeavePopup, notification;
     var absenceTypes = _.indexBy(absenceTypeData.all().values, 'id');
     var leaveRequestStatuses = _.indexBy(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), 'value');
 
@@ -24,13 +24,14 @@ define([
       sharedSettings = _sharedSettings_;
     }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _dialog_, _LeaveRequestInstance_, _notificationService_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _dialog_, _LeaveRequestInstance_, _LeavePopup_, _notificationService_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
       $rootScope = _$rootScope_;
       dialog = _dialog_;
       LeaveRequestInstance = _LeaveRequestInstance_;
+      LeavePopup = _LeavePopup_;
       notification = _notificationService_;
     }));
 
@@ -497,6 +498,28 @@ define([
             expect(notification.error).toHaveBeenCalled();
           });
         });
+      });
+    });
+
+    describe('openLeavePopup()', function () {
+      var event;
+      var leaveRequest = { key: 'value' };
+      var leaveType = 'some_leave_type';
+      var selectedContactId = '101';
+      var isSelfRecord = true;
+
+      beforeEach(function () {
+        event = jasmine.createSpyObj('event', ['stopPropagation']);
+        spyOn(LeavePopup, 'openModal');
+        controller.openLeavePopup(event, leaveRequest, leaveType, selectedContactId, isSelfRecord);
+      });
+
+      it('opens the leave request popup', function () {
+        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+      });
+
+      it('stops the vent from propagating', function () {
+        expect(event.stopPropagation).toHaveBeenCalled();
       });
     });
 

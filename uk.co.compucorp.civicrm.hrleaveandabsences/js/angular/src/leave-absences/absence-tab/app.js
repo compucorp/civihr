@@ -9,13 +9,6 @@ define([
   'common/services/angular-date/date-format',
   'common/services/check-permissions',
   'common/services/notification.service',
-  'leave-absences/absence-tab/modules/config',
-  'leave-absences/absence-tab/components/absence-tab-container.component',
-  'leave-absences/absence-tab/components/absence-tab-report.component',
-  'leave-absences/absence-tab/components/absence-tab-entitlements.component',
-  'leave-absences/absence-tab/components/absence-tab-work-patterns.component',
-  'leave-absences/absence-tab/components/contract-entitlements.component',
-  'leave-absences/absence-tab/components/annual-entitlements.component',
   'leave-absences/shared/components/leave-request-actions.component',
   'leave-absences/shared/components/leave-request-popup-comments-tab.component',
   'leave-absences/shared/components/leave-request-popup-files-tab',
@@ -32,7 +25,14 @@ define([
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/modules/shared-settings',
-  'leave-absences/shared/services/leave-popup.service'
+  'leave-absences/shared/services/leave-popup.service',
+  'leave-absences/absence-tab/components/absence-tab-container.component',
+  'leave-absences/absence-tab/components/absence-tab-report.component',
+  'leave-absences/absence-tab/components/absence-tab-entitlements.component',
+  'leave-absences/absence-tab/components/absence-tab-work-patterns.component',
+  'leave-absences/absence-tab/components/contract-entitlements.component',
+  'leave-absences/absence-tab/components/annual-entitlements.component',
+  'leave-absences/absence-tab/modules/config'
 ], function (angular) {
   angular.module('absence-tab', [
     'ngResource',
@@ -41,7 +41,6 @@ define([
     'common.angularDate',
     'common.dialog',
     'common.directives',
-    'common.services',
     /*
      * @TODO Because the app requires Contact, which requires Group,
      * which requires api.group.mock and api.group-contact.mock,

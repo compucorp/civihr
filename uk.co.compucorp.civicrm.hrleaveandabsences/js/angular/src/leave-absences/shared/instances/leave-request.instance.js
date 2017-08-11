@@ -308,18 +308,14 @@ define([
           } else {
             checkPermissions(sharedSettings.permissions.admin.administer)
               .then(function (isAdmin) {
-                  if (isAdmin) {
-                    deferred.resolve('admin');
-                  } else {
-                    LeaveRequestAPI.isManagedBy(this.id, contactId)
-                      .then(function (response) {
-                        if (!!response) {
-                          deferred.resolve('manager');
-                        } else {
-                          deferred.resolve('none');
-                        }
-                      });
-                  }
+                if (isAdmin) {
+                  deferred.resolve('admin');
+                } else {
+                  LeaveRequestAPI.isManagedBy(this.id, contactId)
+                    .then(function (response) {
+                      response ? deferred.resolve('manager') : deferred.resolve('none');
+                    });
+                }
               }.bind(this));
           }
 

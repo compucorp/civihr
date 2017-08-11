@@ -24,7 +24,7 @@
 
     describe('sharedLeaveCalendar', function () {
       var $componentController, $log, $q, $rootScope, controller, $provide,
-        AbsencePeriod, AbsenceType, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest;
+        AbsencePeriod, AbsenceType, OptionGroup, OptionGroupAPIMock, Calendar, CalendarInstance, LeaveRequest, LeavePopup;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -40,9 +40,9 @@
       }));
 
       beforeEach(inject(['$componentController', '$log', '$q', '$rootScope', 'AbsencePeriod', 'AbsenceType', 'OptionGroup', 'OptionGroupAPIMock',
-        'Calendar', 'CalendarInstance', 'LeaveRequest', 'shared-settings',
+        'Calendar', 'CalendarInstance', 'LeaveRequest', 'LeavePopup',
         function (_$componentController_, _$log_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_, _OptionGroup_, _OptionGroupAPIMock_,
-          _Calendar_, _CalendarInstance_, _LeaveRequest_) {
+          _Calendar_, _CalendarInstance_, _LeaveRequest_, _LeavePopup_) {
           $componentController = _$componentController_;
           $log = _$log_;
           $q = _$q_;
@@ -54,6 +54,7 @@
           CalendarInstance = _CalendarInstance_;
           OptionGroup = _OptionGroup_;
           OptionGroupAPIMock = _OptionGroupAPIMock_;
+          LeavePopup = _LeavePopup_;
 
           spyOn($log, 'debug');
           spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
@@ -350,6 +351,22 @@
             controller.refresh();
             $rootScope.$digest();
           }
+        });
+      });
+
+      describe('openLeavePopup()', function () {
+        var leaveRequest = { key: 'value' };
+        var leaveType = 'some_leave_type';
+        var selectedContactId = '101';
+        var isSelfRecord = true;
+
+        beforeEach(function () {
+          spyOn(LeavePopup, 'openModal');
+          controller.openLeavePopup(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+        });
+
+        it('opens the leave request popup', function () {
+          expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
         });
       });
 

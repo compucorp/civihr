@@ -3,9 +3,9 @@
 define([
   'common/lodash',
   'leave-absences/shared/modules/models',
-  'leave-absences/shared/instances/calendar.instance',
+  'common/models/model',
   'leave-absences/shared/apis/work-pattern-api',
-  'common/models/model'
+  'leave-absences/shared/instances/calendar.instance'
 ], function (_, models) {
   'use strict';
 

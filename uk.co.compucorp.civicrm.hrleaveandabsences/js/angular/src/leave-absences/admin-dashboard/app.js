@@ -3,11 +3,10 @@
 define([
   'common/angular',
   'common/angularBootstrap',
-  'common/text-angular',
   'common/modules/dialog',
+  'common/text-angular',
   'common/services/check-permissions',
   'common/services/angular-date/date-format',
-  'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/components/leave-balance-report.component',
   'leave-absences/shared/components/leave-request-actions.component',
@@ -19,6 +18,7 @@ define([
   'leave-absences/shared/controllers/sub-controllers/leave-request.controller',
   'leave-absences/shared/controllers/sub-controllers/sick-request.controller',
   'leave-absences/shared/controllers/sub-controllers/toil-request.controller',
+  'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/services/leave-popup.service',
   'leave-absences/admin-dashboard/modules/config',
   'leave-absences/admin-dashboard/components/admin-dashboard-container'

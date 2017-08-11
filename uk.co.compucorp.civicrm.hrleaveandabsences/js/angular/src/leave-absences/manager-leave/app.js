@@ -3,11 +3,11 @@
 define([
   'common/angular',
   'common/angularBootstrap',
-  'common/text-angular',
   'common/directives/loading',
   'common/modules/dialog',
   'common/services/angular-date/date-format',
   'common/services/check-permissions',
+  'common/text-angular',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/components/leave-balance-report.component',
   'leave-absences/shared/components/leave-request-actions.component',
@@ -22,8 +22,8 @@ define([
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
   'leave-absences/shared/services/leave-popup.service',
-  'leave-absences/manager-leave/modules/config',
-  'leave-absences/manager-leave/components/manager-leave-container'
+  'leave-absences/manager-leave/components/manager-leave-container',
+  'leave-absences/manager-leave/modules/config'
 ], function (angular) {
   angular.module('manager-leave', [
     'ngResource',

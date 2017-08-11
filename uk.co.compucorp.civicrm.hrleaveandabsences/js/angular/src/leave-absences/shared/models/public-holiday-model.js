@@ -1,13 +1,13 @@
 /* eslint-env amd */
 
 define([
-  'leave-absences/shared/modules/models',
   'common/moment',
-  'leave-absences/shared/instances/public-holiday.instance',
-  'leave-absences/shared/apis/public-holiday-api',
+  'leave-absences/shared/modules/models',
   'common/models/model',
-  'common/services/hr-settings'
-], function (models, moment) {
+  'common/services/hr-settings',
+  'leave-absences/shared/apis/public-holiday-api',
+  'leave-absences/shared/instances/public-holiday.instance'
+], function (moment, models) {
   'use strict';
 
   models.factory('PublicHoliday', [

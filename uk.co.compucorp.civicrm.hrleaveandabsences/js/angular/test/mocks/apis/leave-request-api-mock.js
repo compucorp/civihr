@@ -120,6 +120,11 @@ define([
           return $q(function (resolve, reject) {
             resolve(mockData.singleDataSuccess());
           });
+        },
+        isManagedBy: function (params) {
+          return $q(function (resolve, reject) {
+            resolve(mockData.isManagedBy().values);
+          });
         }
       };
     }

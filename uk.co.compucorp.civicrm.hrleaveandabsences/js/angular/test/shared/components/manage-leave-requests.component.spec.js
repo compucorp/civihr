@@ -20,7 +20,7 @@ define([
   describe('manageLeaveRequests', function () {
     var $componentController, $log, $q, $provide, $rootScope, controller,
       OptionGroup, AbsenceType, AbsencePeriod, LeaveRequest,
-      Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock;
+      Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock, LeavePopup;
     var contactId = '204';
     var role = 'admin'; // change this value to set other roles
 
@@ -54,7 +54,7 @@ define([
 
     beforeEach(inject(function (
       _$componentController_, _$log_, _$rootScope_, _$q_, _OptionGroup_,
-      _OptionGroupAPIMock_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_) {
+      _OptionGroupAPIMock_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_, _LeavePopup_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -64,6 +64,7 @@ define([
       AbsenceType = _AbsenceType_;
       AbsencePeriod = _AbsencePeriod_;
       LeaveRequest = _LeaveRequest_;
+      LeavePopup = _LeavePopup_;
       Contact = _Contact_;
     }));
 
@@ -841,6 +842,22 @@ define([
 
       it('calls related contact API to update', function () {
         expect(role === 'admin' ? Contact.all : Contact.leaveManagees).toHaveBeenCalled();
+      });
+    });
+
+    describe('openLeavePopup()', function () {
+      var leaveRequest = { key: 'value' };
+      var leaveType = 'some_leave_type';
+      var selectedContactId = '101';
+      var isSelfRecord = true;
+
+      beforeEach(function () {
+        spyOn(LeavePopup, 'openModal');
+        controller.openLeavePopup(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+      });
+
+      it('opens the leave request popup', function () {
+        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
       });
     });
 
