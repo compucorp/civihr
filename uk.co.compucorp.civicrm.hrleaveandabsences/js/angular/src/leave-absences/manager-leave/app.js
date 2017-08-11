@@ -3,7 +3,6 @@
 define([
   'common/angular',
   'common/angularBootstrap',
-  'common/text-angular',
   'common/directives/loading',
   'common/modules/dialog',
   'common/services/angular-date/date-format',
@@ -16,11 +15,14 @@ define([
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/components/manage-leave-requests.component',
   'leave-absences/shared/components/manager-leave-calendar',
-  'leave-absences/shared/directives/leave-request-popup.directive',
+  'leave-absences/shared/controllers/sub-controllers/leave-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/sick-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/toil-request.controller',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
-  'leave-absences/manager-leave/modules/config',
-  'leave-absences/manager-leave/components/manager-leave-container'
+  'leave-absences/shared/services/leave-popup.service',
+  'leave-absences/manager-leave/components/manager-leave-container',
+  'leave-absences/manager-leave/modules/config'
 ], function (angular) {
   angular.module('manager-leave', [
     'ngResource',
@@ -38,8 +40,9 @@ define([
     'manager-leave.config',
     'manager-leave.components',
     'leave-absences.components',
-    'leave-absences.directives',
-    'leave-absences.models'
+    'leave-absences.controllers',
+    'leave-absences.models',
+    'leave-absences.services'
   ])
   .run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
     $log.debug('app.run');

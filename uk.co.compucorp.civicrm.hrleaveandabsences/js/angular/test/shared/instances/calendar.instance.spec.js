@@ -4,7 +4,7 @@
 define([
   'common/moment',
   'mocks/data/work-pattern-data',
-  'leave-absences/shared/models/instances/calendar-instance'
+  'leave-absences/shared/instances/calendar.instance'
 ], function (moment, workPatternMocked) {
   'use strict';
 

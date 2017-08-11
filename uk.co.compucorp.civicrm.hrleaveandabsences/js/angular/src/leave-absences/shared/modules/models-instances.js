@@ -1,8 +1,11 @@
+/* eslint-env amd */
+
 define([
   'common/angular',
   'common/models/instances/instance',
   'common/modules/services',
-  'leave-absences/shared/modules/shared-settings',
+  'common/services/check-permissions',
+  'leave-absences/shared/modules/shared-settings'
 ], function (angular) {
   'use strict';
 

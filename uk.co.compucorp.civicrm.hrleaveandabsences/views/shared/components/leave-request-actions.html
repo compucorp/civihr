@@ -7,11 +7,8 @@
     <li ng-repeat="action in actions.allowedActions"
       ng-switch="!action.isDirectAction">
       <a href
-        ng-click="$event.stopPropagation()"
-        ng-switch-when="true"
-        leave-request-popup
-        leave-request="actions.leaveRequest"
-        is-self-record="$root.section === 'my-leave'">
+        ng-click="actions.openLeavePopup($event, actions.leaveRequest, null, null, $root.section === 'my-leave')"
+        ng-switch-when="true">
         {{action.label}}
       </a>
       <a href ng-switch-default ng-click="actions.action(action.key)">

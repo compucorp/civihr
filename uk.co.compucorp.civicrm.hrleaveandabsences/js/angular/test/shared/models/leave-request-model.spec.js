@@ -28,6 +28,7 @@ define([
         return OptionGroupAPIMock.valuesOf(name);
       });
       spyOn(LeaveRequestAPI, 'all').and.callThrough();
+      spyOn(LeaveRequestAPI, 'find').and.callThrough();
       spyOn(LeaveRequestAPI, 'balanceChangeByAbsenceType').and.callThrough();
       spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
     }));
@@ -114,6 +115,26 @@ define([
       it('calls equivalent API method', function () {
         promise.then(function () {
           expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('find()', function () {
+      var leaveRequestPromise;
+
+      beforeEach(function () {
+        leaveRequestPromise = LeaveRequest.find();
+      });
+
+      it('calls equivalent API method', function () {
+        leaveRequestPromise.then(function () {
+          expect(LeaveRequestAPI.find).toHaveBeenCalled();
+        });
+      });
+
+      it('returns model instances', function () {
+        leaveRequestPromise.then(function (response) {
+          expect(('cancel' in response) && ('update' in response)).toBe(true);
         });
       });
     });

@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/models-instances',
   'common/models/instances/instance'

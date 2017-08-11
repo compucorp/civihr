@@ -9,9 +9,9 @@ define([
 ], function (_, instances) {
   'use strict';
 
-  instances.factory('LeaveRequestInstance', ['$q', 'OptionGroup',
+  instances.factory('LeaveRequestInstance', ['$q', 'checkPermissions', 'OptionGroup',
     'shared-settings', 'ModelInstance', 'LeaveRequestAPI',
-    function ($q, OptionGroup, sharedSettings, ModelInstance, LeaveRequestAPI) {
+    function ($q, checkPermissions, OptionGroup, sharedSettings, ModelInstance, LeaveRequestAPI) {
       /**
        * Update status ID
        *
@@ -291,6 +291,26 @@ define([
           }
 
           return $q.resolve();
+        },
+
+        /**
+         * Check the role of a given contact in relationship to the leave request.
+         *
+         * @param {Object} contactId
+         * @return {Promise} resolves with an {String} - owner/admin/manager/none
+         */
+        roleOf: function (contactId) {
+          return (this.contact_id === contactId)
+            ? $q.resolve('owner')
+            : checkPermissions(sharedSettings.permissions.admin.administer)
+              .then(function (isAdmin) {
+                return isAdmin
+                  ? 'admin'
+                  : LeaveRequestAPI.isManagedBy(this.id, contactId)
+                    .then(function (isManager) {
+                      return isManager ? 'manager' : 'none';
+                    });
+              }.bind(this));
         },
 
         /**

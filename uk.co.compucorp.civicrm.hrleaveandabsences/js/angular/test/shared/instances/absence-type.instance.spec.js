@@ -1,8 +1,11 @@
+/* eslint-env amd, jasmine */
+
 define([
+  'common/lodash',
   'mocks/data/absence-type-data',
-  'leave-absences/shared/models/instances/absence-type-instance',
-], function (mockData) {
-  'use strict'
+  'leave-absences/shared/instances/absence-type.instance'
+], function (_, mockData) {
+  'use strict';
 
   describe('AbsenceTypeInstance', function () {
     var AbsenceTypeInstance, ModelInstance;

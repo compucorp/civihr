@@ -14,13 +14,12 @@ define([
     controller: ManageLeaveRequestsController
   });
 
-  ManageLeaveRequestsController.$inject = [ '$log', '$q', '$rootScope',
-    'Contact', 'checkPermissions', 'OptionGroup', 'shared-settings',
-    'AbsencePeriod', 'AbsenceType', 'LeaveRequest'];
+  ManageLeaveRequestsController.$inject = [
+    '$log', '$q', '$rootScope', 'Contact', 'checkPermissions', 'OptionGroup',
+    'shared-settings', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest', 'LeavePopup'
+  ];
 
-  function ManageLeaveRequestsController ($log, $q, $rootScope,
-    Contact, checkPermissions, OptionGroup, sharedSettings,
-    AbsencePeriod, AbsenceType, LeaveRequest) {
+  function ManageLeaveRequestsController ($log, $q, $rootScope, Contact, checkPermissions, OptionGroup, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, LeavePopup) {
     'use strict';
     $log.debug('Component: manage-leave-requests');
 
@@ -62,6 +61,7 @@ define([
     vm.getNavBadge = getNavBadge;
     vm.getUserNameByID = getUserNameByID;
     vm.labelPeriod = labelPeriod;
+    vm.openLeavePopup = openLeavePopup;
     vm.refresh = refresh;
     vm.refreshWithFilter = refreshWithFilter;
     vm.refreshWithFilterByAssignee = refreshWithFilterByAssignee;
@@ -391,6 +391,18 @@ define([
         .then(function (statuses) {
           vm.leaveRequestStatuses = statuses.concat(vm.leaveRequestStatuses);
         });
+    }
+
+    /**
+     * Opens the leave request popup
+     *
+     * @param {Object} leaveRequest
+     * @param {String} leaveType
+     * @param {String} selectedContactId
+     * @param {Boolean} isSelfRecord
+     */
+    function openLeavePopup (leaveRequest, leaveType, selectedContactId, isSelfRecord) {
+      LeavePopup.openModal.apply(LeavePopup, arguments);
     }
 
     /**

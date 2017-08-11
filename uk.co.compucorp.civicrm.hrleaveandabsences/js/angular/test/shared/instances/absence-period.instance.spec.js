@@ -1,9 +1,12 @@
+/* eslint-env amd, jasmine */
+
 define([
+  'common/lodash',
   'mocks/data/absence-period-data',
-  'leave-absences/shared/models/instances/absence-period-instance',
-  'common/mocks/services/hr-settings-mock',
-], function (mockData, moment) {
-  'use strict'
+  'leave-absences/shared/instances/absence-period.instance',
+  'common/mocks/services/hr-settings-mock'
+], function (_, mockData) {
+  'use strict';
 
   describe('AbsencePeriodInstance', function () {
     var AbsencePeriodInstance, ModelInstance, $provide;
@@ -13,9 +16,9 @@ define([
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (_HR_settingsMock_) {
-      $provide.value('HR_settings', _HR_settingsMock_);
-    }));
+    beforeEach(inject(['HR_settingsMock', function (_HRSettingsMock_) {
+      $provide.value('HR_settings', _HRSettingsMock_);
+    }]));
 
     beforeEach(inject(function (_AbsencePeriodInstance_, _ModelInstance_) {
       AbsencePeriodInstance = _AbsencePeriodInstance_;
@@ -35,7 +38,7 @@ define([
       var attributes = mockData.all().values[0];
 
       beforeEach(function () {
-        //shift current date to precede mock periods
+        // shift current date to precede mock periods
         var pastDate = new Date(2013, 2, 2);
 
         jasmine.clock().mockDate(pastDate);
@@ -55,7 +58,7 @@ define([
         var attributes = mockData.all().values[0];
 
         beforeEach(function () {
-          //shift current date to precede mock periods
+          // shift current date to precede mock periods
           var currentDate = new Date(2016, 6, 6);
 
           jasmine.clock().mockDate(currentDate);
@@ -77,7 +80,7 @@ define([
           var attributes = mockData.all().values[0];
 
           beforeEach(function () {
-            //shift current date to precede mock periods
+            // shift current date to precede mock periods
             var currentDate = new Date(2016, 6, 6);
 
             jasmine.clock().mockDate(currentDate);
@@ -94,7 +97,7 @@ define([
           var attributes = mockData.all().values[0];
 
           beforeEach(function () {
-            //shift current date to precede mock periods
+            // shift current date to precede mock periods
             var pastDate = new Date(2013, 2, 2);
 
             jasmine.clock().mockDate(pastDate);
@@ -112,7 +115,7 @@ define([
       var instance;
 
       beforeEach(function () {
-        //attributes for one of current period in 2016
+        // attributes for one of current period in 2016
         var attributes = mockData.all().values[0];
 
         instance = AbsencePeriodInstance.init(attributes, true);

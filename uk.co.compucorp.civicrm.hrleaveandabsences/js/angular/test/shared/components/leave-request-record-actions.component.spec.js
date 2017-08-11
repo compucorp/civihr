@@ -1,21 +1,21 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'common/angular',
   'leave-absences/manager-leave/app'
-], function (angular) {
+], function () {
   'use strict';
 
   describe('leaveRequestRecordActions', function () {
-    var vm, $componentController, $log, $rootScope;
+    var controller, $componentController, $log, $rootScope, LeavePopup;
     var contactId = '208';
 
     beforeEach(module('manager-leave'));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _LeavePopup_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
+      LeavePopup = _LeavePopup_;
 
       spyOn($log, 'debug');
 
@@ -28,11 +28,11 @@ define([
 
     describe('on init', function () {
       it('has contact ID', function () {
-        expect(vm.contactId).toBe(contactId);
+        expect(controller.contactId).toBe(contactId);
       });
 
       it('has leave request options', function () {
-        var options = vm.leaveRequestOptions.map(function (option) {
+        var options = controller.leaveRequestOptions.map(function (option) {
           return option.type;
         });
 
@@ -40,8 +40,24 @@ define([
       });
     });
 
+    describe('openLeavePopup()', function () {
+      var leaveRequest = { key: 'value' };
+      var leaveType = 'some_leave_type';
+      var selectedContactId = '101';
+      var isSelfRecord = true;
+
+      beforeEach(function () {
+        spyOn(LeavePopup, 'openModal');
+        controller.openLeavePopup(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+      });
+
+      it('opens the leave request popup', function () {
+        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+      });
+    });
+
     function compileComponent () {
-      vm = $componentController('leaveRequestRecordActions', null, { contactId: contactId });
+      controller = $componentController('leaveRequestRecordActions', null, { contactId: contactId });
       $rootScope.$digest();
     }
   });

@@ -10,9 +10,9 @@ define([
   'use strict';
 
   controllers.controller('CalendarCtrl', ['$q', '$timeout', 'shared-settings', 'AbsencePeriod', 'AbsenceType',
-    'LeaveRequest', 'PublicHoliday', 'OptionGroup', controller]);
+    'LeaveRequest', 'PublicHoliday', 'OptionGroup', 'LeavePopup', controller]);
 
-  function controller ($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup) {
+  function controller ($q, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup, LeavePopup) {
     var dayTypes = [];
     var leaveRequestStatuses = [];
     var publicHolidays = [];
@@ -78,6 +78,18 @@ define([
      */
     this.labelPeriod = function (period) {
       return period.current ? 'Current Period (' + period.title + ')' : period.title;
+    };
+
+    /**
+     * Opens the leave request popup
+     *
+     * @param {Object} leaveRequest
+     * @param {String} leaveType
+     * @param {String} selectedContactId
+     * @param {Boolean} isSelfRecord
+     */
+    this.openLeavePopup = function (leaveRequest, leaveType, selectedContactId, isSelfRecord) {
+      LeavePopup.openModal.apply(LeavePopup, arguments);
     };
 
     /**

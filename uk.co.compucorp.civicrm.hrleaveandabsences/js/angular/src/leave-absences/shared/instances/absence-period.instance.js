@@ -1,13 +1,15 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/models-instances',
   'common/moment',
   'common/models/instances/instance',
-  'common/services/hr-settings',
+  'common/services/hr-settings'
 ], function (instances, moment) {
   'use strict';
 
   instances.factory('AbsencePeriodInstance', ['$log', 'ModelInstance', 'HR_settings',
-    function ($log, ModelInstance, HR_settings) {
+    function ($log, ModelInstance, HRSettings) {
       $log.debug('AbsencePeriodInstance');
 
       return ModelInstance.extend({
@@ -45,7 +47,7 @@ define([
          * @return true if whichDate is in this instance's period range, else false
          */
         isInPeriod: function (whichDate) {
-          var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
+          var dateFormat = HRSettings.DATE_FORMAT.toUpperCase();
           var checkDate = moment(whichDate, dateFormat);
 
           return moment(this.start_date).isSameOrBefore(checkDate) &&

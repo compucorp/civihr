@@ -27,9 +27,9 @@ define([
     controller: LeaveRequestActionsController
   });
 
-  LeaveRequestActionsController.$inject = ['$log', '$q', '$rootScope', 'dialog', 'pubSub', 'shared-settings', 'notificationService'];
+  LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog', 'LeavePopup', 'pubSub', 'shared-settings', 'notificationService'];
 
-  function LeaveRequestActionsController ($log, $q, $rootScope, dialog, pubSub, sharedSettings, notification) {
+  function LeaveRequestActionsController ($log, $rootScope, dialog, LeavePopup, pubSub, sharedSettings, notification) {
     $log.debug('Component: leave-request-action-dropdown');
 
     var vm = this;
@@ -102,12 +102,20 @@ define([
 
     vm.allowedActions = [];
 
+    vm.action = action;
+    vm.openLeavePopup = openLeavePopup;
+
+    (function init () {
+      indexSupportData();
+      setAllowedActions();
+    }());
+
     /**
      * Performs an action on a given leave request
      *
      * @param {string} action
      */
-    vm.action = function (action) {
+    function action (action) {
       var dialogParams = actions[action].dialog;
       statusIdBeforeAction = vm.leaveRequest.status_id;
 
@@ -127,13 +135,6 @@ define([
             });
         }
       });
-    };
-
-    init();
-
-    function init () {
-      indexSupportData();
-      setAllowedActions();
     }
 
     /**
@@ -175,6 +176,24 @@ define([
       if (Array.isArray(vm.absenceTypes)) {
         vm.absenceTypes = _.indexBy(vm.absenceTypes, 'id');
       }
+    }
+
+    /**
+     * Opens the leave request popup
+     *
+     * When leave-request-actions.component sits inside manage-request component's table rows,
+     * and the table row has a click event to open leave request, so event.stopPropagation()
+     * is necessary to prevent the parents click event from being called
+     *
+     * @param {Object} event
+     * @param {Object} leaveRequest
+     * @param {String} leaveType
+     * @param {String} selectedContactId
+     * @param {Boolean} isSelfRecord
+     */
+    function openLeavePopup (event, leaveRequest, leaveType, selectedContactId, isSelfRecord) {
+      event.stopPropagation();
+      LeavePopup.openModal(leaveRequest, leaveType, selectedContactId, isSelfRecord);
     }
 
     /**

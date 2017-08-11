@@ -1,8 +1,11 @@
+/* eslint-env amd, jasmine */
+
 define([
+  'common/lodash',
   'mocks/data/public-holiday-data',
-  'leave-absences/shared/models/instances/public-holiday-instance',
-], function (mockData) {
-  'use strict'
+  'leave-absences/shared/instances/public-holiday.instance'
+], function (_, mockData) {
+  'use strict';
 
   describe('PublicHolidayInstance', function () {
     var PublicHolidayInstance, ModelInstance;

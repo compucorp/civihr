@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'leave-absences/shared/modules/models-instances',
-  'leave-absences/shared/models/instances/leave-request-instance'
+  'leave-absences/shared/instances/leave-request.instance'
 ], function (_, modelInstances) {
   'use strict';
 
