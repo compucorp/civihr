@@ -65,6 +65,8 @@ define([
     /**
      * Returns the filter object for contacts api
      *
+     * @TODO This function should be a part of a Filter component, which is planned for future
+     *
      * @return {Object}
      */
     function prepareContactFilters () {

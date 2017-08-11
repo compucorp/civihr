@@ -41,9 +41,43 @@ define([
           return Contact.all()
             .then(function (contacts) {
               vm.lookupContacts = contacts.list;
+            })
+            .then(loadContacts);
+        }
+      };
+    }
 
-              return contacts.list;
-            });
+    /**
+     * Load all contacts with respect to filters
+     *
+     * @return {Promise}
+     */
+    function loadContacts () {
+      return Contact.all(prepareContactFilters(), null, 'display_name')
+        .then(function (contacts) {
+          return contacts.list;
+        });
+    }
+
+    /**
+     * Returns the filter object for contacts api
+     *
+     * @TODO This function should be a part of a Filter component, which is planned for future
+     *
+     * @return {Object}
+     */
+    function prepareContactFilters () {
+      return {
+        department: vm.filters.userSettings.department ? vm.filters.userSettings.department.value : null,
+        level_type: vm.filters.userSettings.level_type ? vm.filters.userSettings.level_type.value : null,
+        location: vm.filters.userSettings.location ? vm.filters.userSettings.location.value : null,
+        region: vm.filters.userSettings.region ? vm.filters.userSettings.region.value : null,
+        id: {
+          'IN': vm.filters.userSettings.contact
+            ? [vm.filters.userSettings.contact.id]
+            : vm.lookupContacts.map(function (contact) {
+              return contact.id;
+            })
         }
       };
     }
