@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/apis'
 ], function (apis) {

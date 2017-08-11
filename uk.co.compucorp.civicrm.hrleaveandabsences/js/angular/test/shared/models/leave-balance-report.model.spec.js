@@ -3,7 +3,7 @@
 define([
   'mocks/data/leave-balance-report-data',
   'leave-absences/shared/models/leave-balance-report.model',
-  'mocks/apis/leave-balance-report-mock'
+  'mocks/apis/leave-balance-report-api-mock'
 ], function (mockData) {
   'use strict';
 
