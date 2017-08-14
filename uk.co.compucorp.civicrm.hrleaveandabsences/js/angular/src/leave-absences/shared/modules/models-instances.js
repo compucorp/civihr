@@ -5,6 +5,7 @@ define([
   'common/models/instances/instance',
   'common/modules/services',
   'common/modules/models',
+  'common/services/check-permissions',
   'leave-absences/shared/modules/shared-settings'
 ], function (angular) {
   'use strict';

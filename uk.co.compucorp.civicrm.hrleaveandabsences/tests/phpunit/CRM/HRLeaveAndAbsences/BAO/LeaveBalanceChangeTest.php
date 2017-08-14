@@ -2274,6 +2274,58 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(3, $totalBalanceChange);
   }
 
+  public function testGetTotalApprovedToilForPeriodShouldOnlyAccountForApprovedRequests() {
+    $contactID = 1;
+    $absenceTypeID = 1;
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-06-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-06-30')
+    ]);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['approved'],
+      'from_date' => CRM_Utils_Date::processDate('2016-06-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-06-03'),
+      'toil_to_accrue' => 1,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['admin_approved'],
+      'from_date' => CRM_Utils_Date::processDate('2016-06-04'),
+      'to_date' => CRM_Utils_Date::processDate('2016-06-05'),
+      'toil_to_accrue' => 2,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
+      'from_date' => CRM_Utils_Date::processDate('2016-06-07'),
+      'to_date' => CRM_Utils_Date::processDate('2016-06-08'),
+      'toil_to_accrue' => 3,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    //only the first two TOILs have  Approved and Admin Approved status
+    $totalBalanceChange = LeaveBalanceChange::getTotalApprovedToilForPeriod(
+      $period,
+      $contactID,
+      $absenceTypeID
+    );
+    $this->assertEquals(3, $totalBalanceChange);
+  }
+
   public function testRecalculateExpiredBalanceChangesForLeaveRequestPastDates() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),

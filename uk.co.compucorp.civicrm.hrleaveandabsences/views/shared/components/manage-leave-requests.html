@@ -23,10 +23,10 @@
             </select>
             <span class="crm_custom-select__arrow"></span>
           </div>
-          <span class="chr_manage_leave_requests__filter pointer" ng-click="vm.isFilterExpanded = !vm.isFilterExpanded">
-            <i class="fa"
-               aria-hidden="true"
-               ng-class="{ 'fa-chevron-right': !vm.isFilterExpanded, ' fa-chevron-down': vm.isFilterExpanded }">
+          <span class="chr_manage_leave_requests__filter pointer"
+            ng-click="vm.isFilterExpanded = !vm.isFilterExpanded">
+            <i class="fa" aria-hidden="true"
+              ng-class="{ 'fa-chevron-right': !vm.isFilterExpanded, ' fa-chevron-down': vm.isFilterExpanded }">
             </i>
             Filter
           </span>
@@ -43,10 +43,10 @@
           </div>
         </span>
       </div>
-      <div class="panel-subheading chr_manage_leave_requests__sub-header" ng-show="vm.isFilterExpanded">
+      <div class="panel-subheading chr_manage_leave_requests__sub-header"
+        ng-show="vm.isFilterExpanded">
         <div>
-          <ui-select ng-change="vm.refresh()"
-                     ng-model="vm.filters.leaveRequest.contact_id">
+          <ui-select ng-change="vm.refresh()" ng-model="vm.filters.leaveRequest.contact_id">
             <ui-select-match placeholder="Staff Member" allow-clear>
               <span ng-bind="$select.selected.display_name"></span>
             </ui-select-match>
@@ -93,7 +93,7 @@
         </div>
         <div class="checkbox">
           <label>
-            <input type="checkbox" ng-change = "vm.refresh()"
+            <input type="checkbox" ng-change="vm.refresh(1, true)"
               ng-model="vm.filters.leaveRequest.pending_requests">Pending only
           </label>
         </div>
@@ -103,95 +103,102 @@
           class="panel-body row chr_manage_leave_requests__panel_body">
           <ul class="col-xs-3 nav nav-pills nav-stacked chr_vertical_tabs">
             <li ng-repeat="status in vm.leaveRequestStatuses track by status.value"
-                ng-hide="vm.filterLeaveRequestByStatus(status).length === 0"
-                ng-click="vm.refreshWithFilter(status)"
-                ng-class="{'active': vm.filters.leaveRequest.leaveStatus.name === status.name}">
+              ng-hide="vm.filterLeaveRequestByStatus(status).length === 0"
+              ng-click="vm.refreshWithFilter(status)"
+              ng-class="{'active': vm.filters.leaveRequest.leaveStatus.name === status.name}">
               <a>
-            <span class="active badge {{vm.getNavBadge(status.name)}} pull-right">
-              {{vm.filterLeaveRequestByStatus(status).length}}
-            </span>
+                <span class="active badge {{vm.getNavBadge(status.name)}} pull-right">
+                  {{vm.filterLeaveRequestByStatus(status).length}}
+                </span>
                 {{status.label}}
               </a>
             </li>
           </ul>
           <div class="col-xs-9">
-            <table class="table table-clean">
+            <table class="table table-clean table-hover">
               <thead>
-              <tr>
-                <th>Employee Name</th>
-                <th>Type</th>
-                <th>Dates</th>
-                <th>Status</th>
-                <th class="text-center">Action</th>
-              </tr>
+                <tr>
+                  <th width="20%">Employee Name</th>
+                  <th width="16%">Type</th>
+                  <th width="19%">Balance Change</th>
+                  <th width="27%">Dates</th>
+                  <th width="12%">Status</th>
+                  <th width="6%" class="text-center">Action</th>
+                </tr>
               </thead>
               <tbody>
-              <tr ng-repeat="request in vm.leaveRequests.table.list track by request.id">
-                <td style="width: 25%;">{{vm.getUserNameByID(request.contact_id)}}</td>
-                <td style="width: 20%;">{{vm.getAbsenceTypesByID(request.type_id)}}</td>
-                <td style="width: 25%;">{{request.from_date}} - {{request.to_date}}</td>
-                <td style="width: 20%;">{{vm.getLeaveStatusByValue(request.status_id)}}</td>
-                <td style="width: 10%;" class="text-center">
-                  <leave-request-actions
-                    leave-request="request"
-                    role="vm.isAdmin ? 'admin' : 'manager'"
-                    absence-types="vm.absenceTypes"
-                    leave-request-statuses="vm.leaveRequestStatuses">
-                  </leave-request-actions>
-                </td>
-              </tr>
+                <tr
+                  class="pointer"
+                  ng-click="vm.openLeavePopup(request)"
+                  ng-repeat="request in vm.leaveRequests.table.list track by request.id">
+                  <td>{{vm.getUserNameByID(request.contact_id)}}</td>
+                  <td>{{vm.getAbsenceTypesByID(request.type_id)}}</td>
+                  <td>
+                    {{request.balance_change > 0 ? "+" : ""}}{{request.balance_change}}
+                  </td>
+                  <td>{{request.from_date}} - {{request.to_date}}</td>
+                  <td>{{vm.getLeaveStatusByValue(request.status_id)}}</td>
+                  <td class="text-center">
+                    <leave-request-actions
+                      leave-request="request"
+                      role="vm.isAdmin ? 'admin' : 'manager'"
+                      absence-types="vm.absenceTypes"
+                      leave-request-statuses="vm.leaveRequestStatuses">
+                    </leave-request-actions>
+                  </td>
+                </tr>
               </tbody>
               <tfoot ng-show="vm.totalNoOfPages() > 1">
-              <tr>
-                <td colspan="5" class="text-center">
-                  <ul class="pagination">
-                    <li
-                      ng-click="vm.refresh(1)"
-                      ng-hide="vm.pagination.page === 1"
-                      class="active">
+                <tr>
+                  <td colspan="5" class="text-center">
+                    <ul class="pagination">
+                      <li
+                        ng-click="vm.refresh(1)"
+                        ng-hide="vm.pagination.page === 1"
+                        class="active">
                         <a class="pointer">
                           <i class="fa fa-angle-double-left" aria-hidden="true"></i> First
                         </a>
-                    </li>
-                    <li
-                      ng-click="vm.refresh(vm.pagination.page - 1)"
-                      ng-hide="vm.pagination.page === 1"
-                      class="active">
+                      </li>
+                      <li
+                        ng-click="vm.refresh(vm.pagination.page - 1)"
+                        ng-hide="vm.pagination.page === 1"
+                        class="active">
                         <a class="pointer">
                           <i class="fa fa-angle-left" aria-hidden="true"></i> Previous
                         </a>
-                    </li>
-                    <li
-                      ng-class="{'active': vm.pagination.page - 1 === $index}"
-                      ng-click="vm.refresh($index + 1)"
-                      ng-repeat="a in vm.getArrayOfSize(vm.totalNoOfPages()) track by $index">
+                      </li>
+                      <li
+                        ng-class="{'active': vm.pagination.page - 1 === $index}"
+                        ng-click="vm.refresh($index + 1)"
+                        ng-repeat="a in vm.getArrayOfSize(vm.totalNoOfPages()) track by $index">
                         <a>{{$index + 1}}</a>
-                    </li>
-                    <li
-                      ng-click="vm.refresh(vm.pagination.page + 1)"
-                      ng-hide="vm.pagination.page >= vm.totalNoOfPages()"
-                      class="active">
+                      </li>
+                      <li
+                        ng-click="vm.refresh(vm.pagination.page + 1)"
+                        ng-hide="vm.pagination.page >= vm.totalNoOfPages()"
+                        class="active">
                         <a class="pointer">
                           Next <i class="fa fa-angle-right" aria-hidden="true"></i>
                         </a>
-                    </li>
-                    <li
-                      ng-click="vm.refresh(vm.totalNoOfPages())"
-                      ng-hide="vm.pagination.page >= vm.totalNoOfPages()"
-                      class="active">
+                      </li>
+                      <li
+                        ng-click="vm.refresh(vm.totalNoOfPages())"
+                        ng-hide="vm.pagination.page >= vm.totalNoOfPages()"
+                        class="active">
                         <a class="pointer">
                           Last <i class="fa fa-angle-double-right" aria-hidden="true"></i>
                         </a>
-                    </li>
-                  </ul>
-                </td>
-              </tr>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
               </tfoot>
             </table>
           </div>
         </div>
         <div class="text-center"
-              ng-hide="vm.leaveRequests.table.list.length">
+          ng-hide="vm.leaveRequests.table.list.length">
           No Leave Requests available
         </div>
       </crm-loading>

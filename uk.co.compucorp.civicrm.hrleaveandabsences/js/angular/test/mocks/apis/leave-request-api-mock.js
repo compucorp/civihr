@@ -115,6 +115,12 @@ define([
           return $q(function (resolve, reject) {
             resolve(mockData.deleteAttachment().values);
           });
+        },
+        find: function (id) {
+          return $q.resolve(mockData.singleDataSuccess());
+        },
+        isManagedBy: function (params) {
+          return $q.resolve(mockData.isManagedBy().values);
         }
       };
     }

@@ -6,9 +6,8 @@ define([
   'common/services/file-mime-types',
   'common/services/file-upload',
   'common/services/hr-settings',
-  'common/services/notification',
-  'common/services/pub-sub',
-  'common/services/session'
+  'common/services/notification.service',
+  'common/services/pub-sub'
 ], function () {
 
 });

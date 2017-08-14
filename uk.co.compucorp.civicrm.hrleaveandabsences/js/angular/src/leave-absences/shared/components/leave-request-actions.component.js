@@ -4,7 +4,9 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
-  'common/services/hr-settings'
+  'common/services/hr-settings',
+  'common/services/notification.service',
+  'common/services/pub-sub'
 ], function (_, moment, components) {
   components.component('leaveRequestActions', {
     bindings: {
@@ -22,13 +24,16 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-request-actions.html';
     }],
     controllerAs: 'actions',
-    controller: ['$log', '$q', '$rootScope', 'OptionGroup', 'dialog', 'shared-settings', controller]
+    controller: LeaveRequestActionsController
   });
 
-  function controller ($log, $q, $rootScope, OptionGroup, dialog, sharedSettings) {
+  LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog', 'LeavePopup', 'pubSub', 'shared-settings', 'notificationService'];
+
+  function LeaveRequestActionsController ($log, $rootScope, dialog, LeavePopup, pubSub, sharedSettings, notification) {
     $log.debug('Component: leave-request-action-dropdown');
 
     var vm = this;
+    var statusIdBeforeAction;
     var statusNames = sharedSettings.statusNames;
     var actions = {
       edit: {
@@ -97,14 +102,22 @@ define([
 
     vm.allowedActions = [];
 
+    vm.action = action;
+    vm.openLeavePopup = openLeavePopup;
+
+    (function init () {
+      indexSupportData();
+      setAllowedActions();
+    }());
+
     /**
      * Performs an action on a given leave request
      *
-     * @param {LeaveRequestInstance} leaveRequest
      * @param {string} action
      */
-    vm.action = function (action) {
+    function action (action) {
       var dialogParams = actions[action].dialog;
+      statusIdBeforeAction = vm.leaveRequest.status_id;
 
       dialog.open({
         title: 'Confirm ' + dialogParams.title + '?',
@@ -115,17 +128,13 @@ define([
         onConfirm: function () {
           return vm.leaveRequest[action]()
             .then(function () {
-              $rootScope.$emit('LeaveRequest::' + (action === 'delete' ? 'deleted' : 'edit'), vm.leaveRequest);
+              publishEvents(action);
+            })
+            .catch(function (error) {
+              notification.error('Error:', error);
             });
         }
       });
-    };
-
-    init();
-
-    function init () {
-      indexSupportData();
-      setAllowedActions();
     }
 
     /**
@@ -167,6 +176,42 @@ define([
       if (Array.isArray(vm.absenceTypes)) {
         vm.absenceTypes = _.indexBy(vm.absenceTypes, 'id');
       }
+    }
+
+    /**
+     * Opens the leave request popup
+     *
+     * When leave-request-actions.component sits inside manage-request component's table rows,
+     * and the table row has a click event to open leave request, so event.stopPropagation()
+     * is necessary to prevent the parents click event from being called
+     *
+     * @param {Object} event
+     * @param {Object} leaveRequest
+     * @param {String} leaveType
+     * @param {String} selectedContactId
+     * @param {Boolean} isSelfRecord
+     */
+    function openLeavePopup (event, leaveRequest, leaveType, selectedContactId, isSelfRecord) {
+      event.stopPropagation();
+      LeavePopup.openModal(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+    }
+
+    /**
+     * Publish events
+     *
+     * @param action
+     */
+    function publishEvents (action) {
+      var awaitingApprovalStatusValue = _.find(vm.leaveRequestStatuses, function (status) {
+        return status.name === sharedSettings.statusNames.awaitingApproval;
+      }).value;
+
+      // Check if the status was "Awaiting Approval" before the action
+      if (statusIdBeforeAction === awaitingApprovalStatusValue) {
+        pubSub.publish('ManagerBadge:: Update Count');
+      }
+
+      $rootScope.$emit('LeaveRequest::' + (action === 'delete' ? 'deleted' : 'edit'), vm.leaveRequest);
     }
 
     /**

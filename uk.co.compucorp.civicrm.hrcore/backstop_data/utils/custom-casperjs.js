@@ -14,17 +14,16 @@ var overrides = {
     if (this.exists(selector)) {
       this.originalMethods.click.apply(this, arguments);
     } else {
-      this.die('The selector `' + selector + '` doesn\'t exist!', 'ERROR');
+      this.echo('The selector `' + selector + '` doesn\'t exist!', 'WARN_BAR');
     }
   }
-}
-
+};
 
 module.exports = function (_casper_) {
   casper = _casper_;
 
   if (!casper.originalMethods) {
-    casper.originalMethods = {}
+    casper.originalMethods = {};
 
     _(overrides)
       .each(function (method, name) {

@@ -803,6 +803,35 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
+   * This method returns the total sum of approved TOIL accrued for an absence type
+   * by a contact over a given absence period
+   *
+   * @param int $contactID
+   * @param int $typeID
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $period
+   *
+   * @return float
+   */
+  public static function getTotalApprovedToilForPeriod(AbsencePeriod $period, $contactID, $typeID) {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $leaveRequestStatusFilter = [
+      $leaveRequestStatuses['approved'],
+      $leaveRequestStatuses['admin_approved']
+    ];
+
+    $totalApprovedTOIL = self::getTotalTOILBalanceChangeForContact(
+      $contactID,
+      $typeID,
+      new DateTime($period->start_date),
+      new DateTime($period->end_date),
+      $leaveRequestStatusFilter
+    );
+
+    return $totalApprovedTOIL;
+  }
+
+  /**
    * This method calculates the sum of the Leave Requests of type toil (with the
    * given status) balance changes for a given contact over a given period of time.
    *

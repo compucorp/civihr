@@ -8,11 +8,9 @@ define([
   'mocks/data/toil-leave-request-data',
   'mocks/data/comments-data',
   'mocks/helpers/helper',
-  'mocks/data/absence-type-data',
-  'mocks/data/option-group-mock-data',
   'leave-absences/shared/apis/leave-request-api',
   'leave-absences/shared/modules/shared-settings'
-], function (_, moment, mockData, sicknessMockData, toilMockData, commentsData, helper, absenceTypeData, optionGroupMock) {
+], function (_, moment, mockData, sicknessMockData, toilMockData, commentsData, helper) {
   'use strict';
 
   describe('LeaveRequestAPI', function () {
@@ -407,8 +405,7 @@ define([
         expect(LeaveRequestAPI.sendPOST.calls.mostRecent().args[2]).toEqual(_.assign({}, params, {
           leave_request_id: leaveRequestID,
           text: commentObject.text,
-          contact_id: commentObject.contact_id,
-          created_at: commentObject.created_at
+          contact_id: commentObject.contact_id
         }));
       });
 
@@ -514,6 +511,55 @@ define([
       });
     });
 
+    describe('find()', function () {
+      var id = '123';
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+        promise = LeaveRequestAPI.find(id);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls the LeaveRequest.get endpoint', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'get', { id: id });
+        });
+      });
+    });
+
+    describe('isManagedBy()', function () {
+      var leaveRequestID = '101';
+      var contactID = '102';
+
+      beforeEach(function () {
+        spyOn(LeaveRequestAPI, 'sendPOST').and.callThrough();
+        promise = LeaveRequestAPI.isManagedBy(leaveRequestID, contactID);
+      });
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('calls endpoint with leaveRequestID and contactID', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.sendPOST).toHaveBeenCalledWith('LeaveRequest',
+            'isManagedBy', jasmine.objectContaining({
+              leave_request_id: leaveRequestID,
+              contact_id: contactID
+            }));
+        });
+      });
+
+      it('returns data', function () {
+        promise.then(function (result) {
+          expect(result).toEqual(mockData.isManagedBy().values);
+        });
+      });
+    });
+
     /**
      * Intercept HTTP calls to be handled by httpBackend
      */
@@ -521,6 +567,10 @@ define([
       // Intercept backend calls for LeaveRequest.all
       $httpBackend.whenGET(/action=getFull&entity=LeaveRequest/)
         .respond(mockData.all());
+
+      // Intercept backend calls for LeaveRequest.all
+      $httpBackend.whenGET(/action=get&entity=LeaveRequest/)
+        .respond(mockData.singleDataSuccess());
 
       // Intercept backend calls for LeaveRequest.balanceChangeByAbsenceType
       $httpBackend.whenGET(/action=getbalancechangebyabsencetype&entity=LeaveRequest/)
@@ -549,6 +599,8 @@ define([
             return [200, mockData.addComment()];
           } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'deleteattachment')) {
             return [200, mockData.deleteAttachment()];
+          } else if (helper.isEntityActionInPost(data, 'LeaveRequest', 'isManagedBy')) {
+            return [200, mockData.isManagedBy()];
           }
         });
     }

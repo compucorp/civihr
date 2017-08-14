@@ -11,13 +11,7 @@ module.exports = (function () {
      * @return {Object} this object
      */
     waitForReady: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.waitUntilVisible('tbody tr:nth-child(1) a');
-      });
-
-      return this;
+      this.waitUntilVisible('tbody tr:nth-child(1) a');
     },
     /**
      * Opens the dropdown for manager actions like edit/respond, cancel.

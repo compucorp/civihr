@@ -2,20 +2,13 @@ var Promise = require('es6-promise').Promise;
 var page = require('./page');
 
 module.exports = (function () {
-
   return page.extend({
     /**
      * Wait for the page to be ready
      * @return {Object} this object
      */
     waitForReady: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.waitUntilVisible('td[ng-click="report.toggleSection(\'pending\')"]');
-      });
-
-      return this;
+      this.waitUntilVisible('td[ng-click="report.toggleSection(\'pending\')"]');
     },
     /**
      * Opens the given section of my report pageName
@@ -41,7 +34,7 @@ module.exports = (function () {
 
       casper.then(function () {
         casper.waitForSelector('tr:nth-child(1)  div[uib-dropdown] a:nth-child(1)', function () {
-          casper.click('div:nth-child(2) > div > table > tbody > tr:nth-child('+ (row || 1) +')  div[uib-dropdown] a:nth-child(1)');
+          casper.click('div:nth-child(2) > div > table > tbody > tr:nth-child(' + (row || 1) + ')  div[uib-dropdown] a:nth-child(1)');
         });
       });
 
@@ -58,11 +51,11 @@ module.exports = (function () {
 
       return new Promise(function (resolve) {
         casper.then(function () {
-          casper.click('body > ul.dropdown-menu:nth-of-type('+ (row || 1) +') li:first-child a');
-          //as there are multiple spinners it takes more time to load up
+          casper.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
+          // As there are multiple spinners it takes more time to load up
           resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
         }.bind(this));
       }.bind(this));
-    },
+    }
   });
 })();

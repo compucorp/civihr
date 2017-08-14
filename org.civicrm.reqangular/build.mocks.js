@@ -10,8 +10,8 @@
     'common/mocks': 'mocks/'
   },
   include: [
+    'common/mocks/models/instances/session-mock',
     'common/mocks/services/hr-settings-mock',
-    'common/mocks/services/session-mock',
     'common/mocks/services/api/appraisal-mock',
     'common/mocks/services/api/appraisal-cycle-mock',
     'common/mocks/services/api/contact-mock',

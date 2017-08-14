@@ -1,4 +1,7 @@
 <?php
+
+use CRM_Hrjobcontract_ExportImportValuesConverter as ImportExportUtility;
+
 class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parser_BaseClass {
   protected $_entity;
   protected $_requiredFields = array();
@@ -43,14 +46,18 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       if(!isset($fieldProviders[$entity])) {
         $fieldProviders[$entity] = new CRM_Hrjobcontract_Import_FieldsProvider_Generic($entity);
       }
-      $entityFields[$entity] = $fieldProviders[$entity]->provide();
 
-      $this->handleSpecialFields($entityFields, $entity);
+      $providedFields = $fieldProviders[$entity]->provide();
+      if($providedFields) {
+        $entityFields[$entity] = $providedFields;
 
-      $this->_allFields = array_merge($entityFields[$entity], $this->_allFields);
+        $this->handleSpecialFields($entityFields, $entity);
+        $this->_allFields = array_merge($entityFields[$entity], $this->_allFields);
+      }
     }
 
     $this->_entityFields = $entityFields;
+    $this->_allFields = $this->_allFields + $this->addAbsenceTypeFields();
     $this->_fields = array_merge(array('do_not_import' => array('title' => ts('- do not import -'))), $this->_allFields);
   }
 
@@ -640,35 +647,6 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
           $errorMessage = "{$this->_fields[$key]->_title} with ID [$value] is not an existing provider";
         }
         break;
-      case 'HRJobLeave-leave_amount':
-        $convertedValue = array();
-        $leaveAmounts = explode(',', $value);
-        if (!empty($leaveAmounts))  {
-          foreach($leaveAmounts as $leave)  {
-            $typeAndAmount = explode(':', $leave);
-            if (!empty($typeAndAmount))  {
-              $leaveType = trim($typeAndAmount[0]);
-              $leaveAmount = trim($typeAndAmount[1]);
-              if ( filter_var($leaveAmount, FILTER_VALIDATE_INT) === FALSE  || $leaveAmount < 0 )  {
-                $errorMessage = "Leave Amount values should be positive integers";
-                break;
-              }
-              $typeID = $this->getOptionID('HRJobLeave-leave_type', $leaveType);
-              if ($typeID === FALSE) {
-                $errorMessage = "({$leaveType}) is not a valid leave type";
-              }
-              $convertedValue[$typeID] = $leaveAmount;
-            }
-            else {
-              $errorMessage = "{$this->_fields[$key]->_title} format is not correct";
-              break;
-            }
-          }
-        }
-        else {
-          $errorMessage = "{$this->_fields[$key]->_title} format is not correct";
-        }
-        break;
       case 'HRJobPay-annual_benefits':
       case 'HRJobPay-annual_deductions':
         $valueType = 'benefit';
@@ -679,20 +657,32 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         $convertedValue = $result['value'];
         $errorMessage = $result['error_message'];
         break;
+      default:
+        $importExportUtility = ImportExportUtility::singleton();
+        $leaveTypes = $importExportUtility->getLeaveTypes();
+        $leaveTypes = array_map(function ($value) {
+          return filter_var($value, FILTER_SANITIZE_STRING);
+        }, array_column($leaveTypes, 'title'));
+
+        if (in_array($key, $leaveTypes)) {
+          if (!is_numeric($value)) {
+            $errorMessage = "The value for {$this->_fields[$key]->_title} is not a valid amount";
+          }
+        }
     }
 
     return array('value'=>$convertedValue, 'error_message'=>$errorMessage);
   }
 
   /**
-   * Checks if given field requires returntype to be 'value', 'label' or 'id' 
+   * Checks if given field requires return type to be 'value', 'label' or 'id'
    * and obtains its value in DB for given $value.
-   * 
+   *
    * @param string $key
    *   Key of field to be resolved
    * @param string $value
    *   Value to be searched in database, corresponding to option value's label
-   * 
+   *
    * @return string
    *   Option value value
    */
@@ -852,8 +842,8 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         }
 
         // calculate FTE Numerator/Denominator Equivalence
-        if (isset($params['HRJobHour-hours_amount']) 
-          && $params['HRJobHour-hours_amount'] != '' 
+        if (isset($params['HRJobHour-hours_amount'])
+          && $params['HRJobHour-hours_amount'] != ''
           && $hourType['name'] != 'Casual'
         ) {
           $inputHourAmount = round(floatval($params['HRJobHour-hours_amount']), 2);
@@ -866,7 +856,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
           $this->_params['HRJobHour-fte_num'] = $num;
           $this->_params['HRJobHour-fte_denom'] = $denom;
           $this->_params['HRJobHour-hours_fte'] = $fte;
-        } 
+        }
       }
     }
   }
@@ -991,5 +981,30 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
 
     return array($h1,$k1);
   }
+
+  /**
+   * Format the enabled Absence Types as fields to be used in the Importer.
+   *
+   * @return array
+   */
+  private function addAbsenceTypeFields(){
+    $importExportUtility = ImportExportUtility::singleton();
+    $leaveTypes = $importExportUtility->getLeaveTypes();
+    $fields = ['- leave type amount fields -' => ['title' => '- leave type amount fields -']];
+
+    foreach($leaveTypes as $leaveType){
+      $title = $leaveType['title'];
+      $key = filter_var($title, FILTER_SANITIZE_STRING);
+      $fields[$key] = [
+        'name' => $title,
+        'title' => ts($title),
+        'type' => CRM_Utils_Type::T_STRING,
+        'headerPattern' => "#$title#i",
+      ];
+    }
+
+    return $fields;
+  }
+
 
 }

@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/apis',
   'common/lodash',
@@ -182,6 +183,26 @@ define([
         },
 
         /**
+         * Get leave request for the given id
+         *
+         * @param {object} id - leave request id
+         *
+         * @return {Promise} resolves with {Object}
+         */
+        find: function (id) {
+          $log.debug('LeaveRequestAPI.find');
+
+          return this.sendGET('LeaveRequest', 'get', { id: id })
+          .then(function (response) {
+            if (response.values.length === 0) {
+              return $q.reject('LeaveRequest not found with this ID');
+            }
+
+            return response.values[0];
+          });
+        },
+
+        /**
          * Calls the getattachments backend API.
          *
          * @param {String} leaveRequestID - ID of leave request
@@ -216,6 +237,25 @@ define([
           return this.sendGET('LeaveRequest', 'getcomment', params, false)
           .then(function (commentsData) {
             return commentsData.values;
+          });
+        },
+
+        /**
+         * Calls the isManagedBy backend API.
+         *
+         * @param {String} leaveRequestID - ID of leave request
+         * @param {String} contactID - ID of contact
+         * @return {Promise} resolves with an {Boolean}
+         */
+        isManagedBy: function (leaveRequestID, contactID) {
+          $log.debug('LeaveRequestAPI.isManagedBy');
+
+          return this.sendPOST('LeaveRequest', 'isManagedBy', {
+            leave_request_id: leaveRequestID,
+            contact_id: contactID
+          })
+          .then(function (response) {
+            return response.values;
           });
         },
 
@@ -256,8 +296,7 @@ define([
           params = _.assign({}, params, {
             leave_request_id: leaveRequestID,
             text: comment.text,
-            contact_id: comment.contact_id,
-            created_at: comment.created_at
+            contact_id: comment.contact_id
           });
 
           return this.sendPOST('LeaveRequest', 'addcomment', params)
@@ -280,12 +319,10 @@ define([
             deferred.reject('id is mandatory field');
           }
 
-          this.sendPOST('LeaveRequest', 'create', params)
+          return this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {
-            deferred.resolve(data.values[0]);
+            return data.values[0];
           });
-
-          return deferred.promise;
         }
       });
     }]);

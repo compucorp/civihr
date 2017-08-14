@@ -4,11 +4,8 @@
   </button>
   <ul class="dropdown-menu" role="menu" uib-dropdown-menu>
     <li ng-repeat="option in vm.leaveRequestOptions">
-      <a
-        leave-request-popup leave-type="{{option.type}}"
-        contact-id="vm.contactId"
-        selected-contact-id="vm.selectedContactId"
-        is-self-record="vm.isSelfRecord">
+      <a href
+         ng-click="vm.openLeavePopup(null, option.type, vm.selectedContactId, vm.isSelfRecord)">
         <i class="fa fa-{{option.icon}}" aria-hidden="true"></i> {{option.label}}
       </a>
     </li>

@@ -7,7 +7,7 @@
 
     .chr_manage_leave_requests__leave_type_filter {
       position: absolute;
-      left: 20px;
+      left: 30px;
     }
 
     .chr_manage_leave_requests__assignee_filter {
@@ -16,7 +16,7 @@
 
     .chr_manage_leave_requests__period_and_all_filters {
       position: absolute;
-      right: 20px;
+      right: 30px;
     }
   }
 
@@ -28,8 +28,9 @@
   }
 
   .chr_manage_leave_requests__header {
-    margin: 0;
     background-color: $chr-panel-header-background;
+    border-bottom: 1px solid $crm-dark-grayblue;
+    margin: 0;
 
     .crm_custom-select {
       margin-right: 20px;
@@ -54,6 +55,7 @@
   }
 
   .chr_manage_leave_requests__sub-header {
+    background-color: $chr-panel-header-background;
     padding-top: 15px;
 
     > div {
@@ -65,6 +67,7 @@
   }
 
   .chr_manage_leave_requests__panel_body {
+    border-top: 1px solid $crm-dark-grayblue;
     margin: 0;
     padding: 0;
 

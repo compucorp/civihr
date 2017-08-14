@@ -443,6 +443,12 @@ define([
       'version': 3,
       'count': 1,
       'values': true
+    },
+    isManagedByData: {
+      'is_error': 0,
+      'version': 3,
+      'count': 1,
+      'values': true
     }
   };
 
@@ -496,6 +502,9 @@ define([
     },
     delete: function () {
       return mockData.delete;
+    },
+    isManagedBy: function () {
+      return mockData.isManagedByData;
     }
   };
 });

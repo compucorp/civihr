@@ -1,0 +1,36 @@
+.chr_leave-balance-report {
+  .chr_leave-balance-report__results-value {
+    color: darken($gray-light, 45%);
+  }
+
+  .chr_leave-balance-report__overflow-scroll {
+    margin-bottom: 2em;
+    overflow-x: auto;
+  }
+
+  .chr_leave-balance-report__contact-id-column {
+    min-width: 10em;
+  }
+
+  .chr_leave-balance-report__name-column {
+    min-width: 15em;
+  }
+
+  /**
+   * Note: Bootstrap pagination needs all elements to be *a* inside *li* even
+   * if they should not behave like links. This style removes any hover effects
+   * that may confuse the user.
+   */
+  .chr_leave-balance-report__pagination li.label a:hover {
+    color: inherit;
+    background-color: inherit;
+  }
+
+  /* Media queries */
+  @media (min-width: $screen-sm-min) {
+    .chr_leave-balance-report__filters .form-group {
+      label { display: inline-block; width: 35%; }
+      .form-control { width: calc(65% - 4px); }
+    }
+  }
+}

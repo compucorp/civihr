@@ -7,13 +7,14 @@ define([
   'mocks/data/option-group-mock-data',
   'mocks/data/absence-type-data',
   'mocks/data/leave-request-data',
+  'common/services/notification.service',
   'leave-absences/shared/config',
   'leave-absences/manager-leave/app'
 ], function (angular, _, moment, optionGroupMock, absenceTypeData, leaveRequestData) {
   'use strict';
 
   describe('leaveRequestActions', function () {
-    var $componentController, $log, $q, $rootScope, controller, LeaveRequestInstance, dialog, sharedSettings, role, leaveRequest;
+    var $componentController, $log, $q, $rootScope, controller, LeaveRequestInstance, dialog, sharedSettings, role, leaveRequest, LeavePopup, notification;
     var absenceTypes = _.indexBy(absenceTypeData.all().values, 'id');
     var leaveRequestStatuses = _.indexBy(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), 'value');
 
@@ -23,24 +24,28 @@ define([
       sharedSettings = _sharedSettings_;
     }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _dialog_, _LeaveRequestInstance_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _dialog_, _LeaveRequestInstance_, _LeavePopup_, _notificationService_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
       $rootScope = _$rootScope_;
       dialog = _dialog_;
       LeaveRequestInstance = _LeaveRequestInstance_;
+      LeavePopup = _LeavePopup_;
+      notification = _notificationService_;
     }));
 
     beforeEach(function () {
+      window.alert = function () {}; // prevent alert from being logged in console
+
       spyOn($log, 'debug');
     });
 
     beforeEach(function () {
       role = 'staff';
       leaveRequest = getRequest();
-      makeRequestExpired(leaveRequest, false);
 
+      makeRequestExpired(leaveRequest, false);
       compileComponent();
     });
 
@@ -447,7 +452,6 @@ define([
         role = 'admin';
         leaveRequest = getRequest();
 
-        spyOn(leaveRequest, action).and.returnValue($q.resolve());
         spyOn($rootScope, '$emit');
         resolveDialogWith(null);
         controller.action(action);
@@ -464,18 +468,67 @@ define([
       });
 
       describe('when the user confirms the action', function () {
-        beforeEach(function () {
-          resolveDialogWith(true);
-          controller.action(action);
-          $rootScope.$digest();
+        describe('when the action is successfully executed', function () {
+          beforeEach(function () {
+            spyOn(leaveRequest, action).and.returnValue($q.resolve());
+            resolveDialogWith(true);
+            controller.action(action);
+            $rootScope.$digest();
+          });
+
+          it('emits an event', function () {
+            expect($rootScope.$emit).toHaveBeenCalled();
+          });
         });
 
-        it('emits an event', function () {
-          expect($rootScope.$emit).toHaveBeenCalled();
+        describe('when the action is rejected by server', function () {
+          beforeEach(function () {
+            spyOn(leaveRequest, action).and.returnValue($q.reject());
+            spyOn(notification, 'error').and.callThrough();
+            resolveDialogWith(true);
+            controller.action(action);
+            $rootScope.$digest();
+          });
+
+          it('does not emit an event', function () {
+            expect($rootScope.$emit).not.toHaveBeenCalled();
+          });
+
+          it('shows a notification', function () {
+            expect(notification.error).toHaveBeenCalled();
+          });
         });
       });
     });
 
+    describe('openLeavePopup()', function () {
+      var event;
+      var leaveRequest = { key: 'value' };
+      var leaveType = 'some_leave_type';
+      var selectedContactId = '101';
+      var isSelfRecord = true;
+
+      beforeEach(function () {
+        event = jasmine.createSpyObj('event', ['stopPropagation']);
+        spyOn(LeavePopup, 'openModal');
+        controller.openLeavePopup(event, leaveRequest, leaveType, selectedContactId, isSelfRecord);
+      });
+
+      it('opens the leave request popup', function () {
+        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+      });
+
+      it('stops the event from propagating', function () {
+        expect(event.stopPropagation).toHaveBeenCalled();
+      });
+    });
+
+    /**
+     * Flattens actions object into an array of actions keys
+     *
+     * @param  {Object} actions - object, containing actions keys
+     * @return {Array} actions keys
+     */
     function flattenActions (actions) {
       return _.map(actions, function (action) {
         return action.key;

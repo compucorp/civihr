@@ -22,6 +22,10 @@ define([
           .state('calendar', {
             url: '/calendar',
             template: '<leave-calendar contact-id="$root.settings.contactId"></leave-calendar>'
+          })
+          .state('balance-report', {
+            url: '/balance-report',
+            template: '<leave-balance-report></leave-balance-report>'
           });
       }
     ]);

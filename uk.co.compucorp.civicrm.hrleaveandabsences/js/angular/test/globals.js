@@ -14,7 +14,7 @@
 
   window.Drupal = {
     settings: {
-      currentCiviCRMUserId: 123
+      currentCiviCRMUserId: '202'
     }
   };
 })(CRM);
