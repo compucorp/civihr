@@ -861,6 +861,21 @@ define([
       });
     });
 
+    describe('when pending request checkbox is clicked', function () {
+      beforeEach(function () {
+        spyOn(controller, 'refresh');
+        controller.pendingRequestListener();
+      });
+
+      it('sets leave status filter to ALL', function () {
+        expect(controller.filters.leaveRequest.leaveStatus).toEqual({ name: 'all', label: 'All' });
+      });
+
+      it('refreshes the request list', function () {
+        expect(controller.refresh).toHaveBeenCalled();
+      });
+    });
+
     function compileComponent () {
       controller = $componentController('manageLeaveRequests', null, { contactId: contactId });
       $rootScope.$digest();

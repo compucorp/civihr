@@ -62,6 +62,7 @@ define([
     vm.getUserNameByID = getUserNameByID;
     vm.labelPeriod = labelPeriod;
     vm.openLeavePopup = openLeavePopup;
+    vm.pendingRequestListener = pendingRequestListener;
     vm.refresh = refresh;
     vm.refreshWithFilter = refreshWithFilter;
     vm.refreshWithFilterByAssignee = refreshWithFilterByAssignee;
@@ -406,6 +407,15 @@ define([
     }
 
     /**
+     * Listener function for the pending request checkbox
+     * It sets the status filter to ALL and refreshes the list
+     */
+    function pendingRequestListener () {
+      vm.filters.leaveRequest.leaveStatus = filterByAll;
+      vm.refresh();
+    }
+
+    /**
      * Returns the contact ID to be used for leave request api
      *
      * @return {Object}
@@ -437,12 +447,7 @@ define([
         getStatusValueFromName(sharedSettings.statusNames.awaitingApproval)
       ];
 
-      // Remove others filters
-      statusFilter = statusFilter.filter(function (status) {
-        return pendingRequestFilters.indexOf(status) > -1;
-      });
-
-      // If statusFilter still has items, this means one of
+      // If statusFilter has items, this means one of
       // pendingRequestFilters is selected on the UI - do not add new filters then
       if (statusFilter.length === 0) {
         // Add pending request specific filters
