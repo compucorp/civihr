@@ -34,7 +34,7 @@ define([
     // vm.leaveRequests: table - to handle table data, filter - to handle nav filter data
     vm.leaveRequests = { table: { list: [] }, filter: { list: [] } };
     vm.leaveRequestStatuses = [filterByAll];
-    vm.loading = { filter: true, page: true, table: true };
+    vm.loading = { content: true, page: true, table: true };
     vm.pagination = { page: 1, size: 7 };
     vm.filters = {
       contact: { department: null, level_type: null, location: null, region: null },
@@ -314,13 +314,14 @@ define([
      */
     function loadLeaveRequests (type) {
       var filterByStatus = type !== 'filter';
+      var loaderType = type === 'table' ? type : 'content';
       // {pagination: {size:0}} - Load all requests instead of a limited amount
       var pagination = type === 'filter' ? { size: 0 } : vm.pagination;
       var returnFields = type === 'filter' ? {
         return: ['status_id']
       } : {};
 
-      vm.loading[type] = true;
+      vm.loading[loaderType] = true;
       vm.leaveRequests[type].list = []; // flushes the current cached data
       // cache is set to always false as changing selection either in status menu
       // or pages or adding new requests was reverting back to older cache
@@ -330,7 +331,7 @@ define([
           vm.leaveRequests[type] = leaveRequests;
         })
         .finally(function () {
-          vm.loading[type] = false;
+          vm.loading[loaderType] = false;
         });
     }
 

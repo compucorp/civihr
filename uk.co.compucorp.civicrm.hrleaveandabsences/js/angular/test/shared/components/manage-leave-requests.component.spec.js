@@ -126,8 +126,8 @@ define([
             expect(controller.loading.page).toBe(false);
           });
 
-          it('hides the loader for filter', function () {
-            expect(controller.loading.filter).toBe(false);
+          it('hides the loader for content', function () {
+            expect(controller.loading.content).toBe(false);
           });
 
           it('hides the loader for table', function () {
