@@ -8,8 +8,8 @@ define([
   'use strict';
 
   models.factory('LeaveBalanceReport', [
-    '$log', 'Model', 'LeaveBalanceReportAPIMock',
-    function ($log, Model, LeaveBalanceReportAPI) {
+    'Model', 'LeaveBalanceReportAPI',
+    function (Model, LeaveBalanceReportAPI) {
       return Model.extend({
         all: function (filters, pagination, sort) {
           return LeaveBalanceReportAPI.getAll(filters, pagination, sort);

@@ -7,7 +7,8 @@
     // This require.config will picked up by the r.js optimizer
     require.config({
       paths: {
-        'leave-absences/shared/ui-router': 'leave-absences/shared/vendor/angular-ui-router.min'
+        'leave-absences/shared/ui-router': 'leave-absences/shared/vendor/angular-ui-router.min',
+        'mocks': '../test/mocks'
       },
       shim: {
         'leave-absences/shared/ui-router': {}

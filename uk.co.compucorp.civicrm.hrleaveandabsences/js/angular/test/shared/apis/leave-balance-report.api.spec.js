@@ -1,41 +1,37 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/leave-balance-report-data',
+  'mocks/data/leave-balance-report.data',
   'leave-absences/shared/apis/leave-balance-report.api'
 ], function (balanceReportMockData) {
   describe('LeaveBalanceReportAPI', function () {
-    var $httpBackend, LeaveBalanceReportAPI;
+    var $rootScope, LeaveBalanceReportAPI;
 
     beforeEach(module('leave-absences.apis'));
-    beforeEach(inject(function (_$httpBackend_, $q, _LeaveBalanceReportAPI_) {
-      $httpBackend = _$httpBackend_;
+    beforeEach(inject(function (_$rootScope_, _LeaveBalanceReportAPI_) {
+      $rootScope = _$rootScope_;
       LeaveBalanceReportAPI = _LeaveBalanceReportAPI_;
-
-      interceptHttp();
     }));
 
-    describe('.getAll()', function () {
-      describe('when calling .getAll()', function () {
-        var expected, result;
+    describe('getAll()', function () {
+      var expected, result;
 
-        beforeEach(function () {
-          var values = balanceReportMockData.all().values;
-          expected = {
-            list: values,
-            total: values.length,
-            allIds: jasmine.any(String)
-          };
+      beforeEach(function () {
+        var report = balanceReportMockData.all().values;
+        expected = {
+          list: report,
+          total: report.length,
+          allIds: report.map(function (r) { return r.id; }).join(',')
+        };
 
-          LeaveBalanceReportAPI.getAll().then(function (values) {
-            result = values;
-          });
-          $httpBackend.flush();
+        LeaveBalanceReportAPI.getAll().then(function (value) {
+          result = value;
         });
+        $rootScope.$digest();
+      });
 
-        it('returns a list of records from the report', function () {
-          expect(result).toEqual(expected);
-        });
+      it('returns a list of records from the report', function () {
+        expect(result).toEqual(expected);
       });
 
       describe('when passing paging parameter', function () {
@@ -43,16 +39,18 @@ define([
         var paging = { page: 2, size: 3 };
 
         beforeEach(function () {
+          var report = balanceReportMockData.all().values;
+
           expected = {
-            list: balanceReportMockData.limit(3, 3).values,
-            total: balanceReportMockData.all().values.length,
+            list: report.slice(3, 6),
+            total: report.length,
             allIds: jasmine.any(String)
           };
 
           LeaveBalanceReportAPI.getAll({}, paging).then(function (values) {
             result = values;
           });
-          $httpBackend.flush();
+          $rootScope.$digest();
         });
 
         it('returns a limited list of records starting from offset', function () {
@@ -60,25 +58,5 @@ define([
         });
       });
     });
-
-    /**
-     * Intercept HTTP requests and returns mocked values.
-     * When limit and or offset params are passed it limits the
-     * mock results accordingly.
-     */
-    function interceptHttp () {
-      $httpBackend.whenGET(/action=get&entity=LeaveBalanceReport/)
-      .respond(function (method, url, data, headers, params) {
-        var json = params.json && JSON.parse(params.json);
-        if (json && json.options) {
-          return [
-            200,
-            balanceReportMockData.limit(json.options.limit, json.options.offset)
-          ];
-        }
-
-        return [200, balanceReportMockData.all()];
-      });
-    }
   });
 });

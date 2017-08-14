@@ -2,7 +2,7 @@
 
 define([
   'mocks/module',
-  'mocks/data/leave-balance-report-data'
+  'mocks/data/leave-balance-report.data'
 ], function (mocks, mockData) {
   'use strict';
 

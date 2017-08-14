@@ -20,6 +20,7 @@ gulp.task('requirejs:clean', function () {
     'js/angular/dist/leave-absences',
     'js/angular/dist/build.txt',
     'js/angular/dist/*.js',
+    'js/angular/dist/mocks',
     '!js/angular/dist/*.min.js'
   ], {read: false})
     .pipe(clean());

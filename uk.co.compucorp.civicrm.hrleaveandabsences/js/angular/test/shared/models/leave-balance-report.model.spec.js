@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/leave-balance-report-data',
+  'mocks/data/leave-balance-report.data',
   'leave-absences/shared/models/leave-balance-report.model',
   'mocks/apis/leave-balance-report-api-mock'
 ], function (mockData) {
@@ -25,7 +25,7 @@ define([
       LeaveBalanceReport = _LeaveBalanceReport_;
     }));
 
-    describe('.all()', function () {
+    describe('all()', function () {
       var expected, result;
       var filters = { contact_id: 1 };
       var paging = { page: 1, size: 50 };

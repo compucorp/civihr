@@ -39,31 +39,31 @@
   </div>
   <div class="chr_leave-balance-report__report panel panel-default">
     <div class="panel-body">
-      <h4>Results <span class="chr_leave-balance-report__results-value">({{ vm.reportCount }})</span></h4>
+      <h4>Results <span class="chr_leave-balance-report__results-value">({{leaveBalanceTab.reportCount}})</span></h4>
       <div class="chr_leave-balance-report__overflow-scroll">
         <table class="table table-responsive">
           <tbody>
             <tr>
               <th colspan="2"></th>
-              <th colspan="4" ng-repeat="type in vm.absenceTypes">{{ type.title }}</th>
+              <th colspan="4" ng-repeat="type in leaveBalanceTab.absenceTypes">{{type.title}}</th>
             </tr>
             <tr>
               <th class="chr_leave-balance-report__contact-id-column">Contact ID</th>
               <th class="chr_leave-balance-report__name-column">Name</th>
-              <th ng-repeat-start="absenceTypes in vm.absenceTypes">Entitlement</th>
+              <th ng-repeat-start="absenceTypes in leaveBalanceTab.absenceTypes">Entitlement</th>
               <th>Used</th>
               <th>Balance</th>
               <th ng-repeat-end>Requested</th>
             </tr>
           </tbody>
           <tbody>
-            <tr ng-repeat="record in vm.report">
-              <td><a href="#">{{ record.contact_id }}</a></td>
-              <td><a href="#">{{ record.contact_display_name }}</a></td>
-              <td ng-repeat-start="values in record.absence_types">{{ values.entitlement }}</td>
-              <td>{{ values.used }}</td>
-              <td>{{ values.balance }}</td>
-              <td ng-repeat-end>{{ values.requested }}</td>
+            <tr ng-repeat="record in leaveBalanceTab.report">
+              <td><a href="#">{{record.contact_id}}</a></td>
+              <td><a href="#">{{record.contact_display_name}}</a></td>
+              <td ng-repeat-start="type in leaveBalanceTab.absenceTypes">{{record.absence_types[type.id].entitlement}}</td>
+              <td>{{record.absence_types[type.id].used}}</td>
+              <td>{{record.absence_types[type.id].balance}}</td>
+              <td ng-repeat-end>{{record.absence_types[type.id].requested}}</td>
             </tr>
           </tbody>
         </table>
@@ -72,7 +72,7 @@
         <ul class="pagination">
           <li class="label"><a>Page:</a></li>
           <li ng-repeat="i in [1,2,3,4,5,6]">
-            <a href="#">{{ i }}</a>
+            <a href="#">{{i}}</a>
           </li>
           <li class="label"><a>...</a></li>
           <li><a href="#">10</a></li>
