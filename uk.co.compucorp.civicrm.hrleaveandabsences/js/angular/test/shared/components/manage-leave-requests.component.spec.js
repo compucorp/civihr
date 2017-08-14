@@ -823,6 +823,16 @@ define([
           });
         }
       });
+
+      describe('when resetToAll parameter is true', function () {
+        beforeEach(function () {
+          controller.refresh(null, true);
+        });
+
+        it('sets leave status filter to ALL', function () {
+          expect(controller.filters.leaveRequest.leaveStatus).toEqual({ name: 'all', label: 'All' });
+        });
+      });
     });
 
     describe('when new leave request is created', function () {

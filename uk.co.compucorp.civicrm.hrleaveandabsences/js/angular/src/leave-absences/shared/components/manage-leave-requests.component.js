@@ -437,12 +437,7 @@ define([
         getStatusValueFromName(sharedSettings.statusNames.awaitingApproval)
       ];
 
-      // Remove others filters
-      statusFilter = statusFilter.filter(function (status) {
-        return pendingRequestFilters.indexOf(status) > -1;
-      });
-
-      // If statusFilter still has items, this means one of
+      // If statusFilter has items, this means one of
       // pendingRequestFilters is selected on the UI - do not add new filters then
       if (statusFilter.length === 0) {
         // Add pending request specific filters
@@ -484,10 +479,14 @@ define([
      * Refreshes the leave request data
      *
      * @param {int} page - page number of the pagination element
+     * @param {Boolean} resetToAll - If true, leave status filter is set to ALL
      */
-    function refresh (page) {
+    function refresh (page, resetToAll) {
       page = typeof (page) === 'number' ? page : 1;
 
+      if (resetToAll) {
+        vm.filters.leaveRequest.leaveStatus = filterByAll;
+      }
       // Load data if the given page number exists OR there are no pages,
       // for example, if the list is empty and a new filter is applied
       if (page <= vm.totalNoOfPages() || vm.totalNoOfPages() === 0) {
