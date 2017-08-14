@@ -254,35 +254,25 @@ define([
     }
 
     /**
-     * Loads the leave requests for the given data type
-     *
-     * @param {String} dataType - which data to load, table or filter or both
-     * @return {Promise}
-     */
-    function loadData (dataType) {
-      if (dataType) {
-        return loadLeaveRequests(dataType);
-      } else {
-        return $q.all([
-          loadLeaveRequests('table'),
-          loadLeaveRequests('filter')
-        ]);
-      }
-    }
-
-    /**
      * Loads the managees and calls loadLeaveRequests()
      *
-     * @param {String} dataType - which data to load, table or filter
+     * @param {String} section - which section's data to load, table or filter
      * @return {Promise}
      */
-    function loadManageesAndLeaves (dataType) {
+    function loadManageesAndLeaves (section) {
       return (vm.isAdmin ? Contact.all(contactFilters())
         : Contact.leaveManagees(vm.contactId, contactFilters()))
         .then(function (users) {
           vm.filteredUsers = vm.isAdmin ? users.list : users;
 
-          return loadData(dataType);
+          if (section) {
+            return loadLeaveRequests(section);
+          }
+
+          return $q.all([
+            loadLeaveRequests('table'),
+            loadLeaveRequests('filter')
+          ]);
         })
         .then(function () {
           // If Status filter is not set to "All" and no requests loaded,
@@ -309,26 +299,26 @@ define([
     /**
      * Loads all leave requests
      *
-     * @param {string} type - load leave requests for the either the filter or the table
+     * @param {string} section - load leave requests for the either the filter or the table
      * @return {Promise}
      */
-    function loadLeaveRequests (type) {
-      var filterByStatus = type !== 'filter';
-      var loaderType = type === 'table' ? type : 'content';
+    function loadLeaveRequests (section) {
+      var filterByStatus = section !== 'filter';
+      var loaderType = section === 'table' ? section : 'content';
       // {pagination: {size:0}} - Load all requests instead of a limited amount
-      var pagination = type === 'filter' ? { size: 0 } : vm.pagination;
-      var returnFields = type === 'filter' ? {
+      var pagination = section === 'filter' ? { size: 0 } : vm.pagination;
+      var returnFields = section === 'filter' ? {
         return: ['status_id']
       } : {};
 
       vm.loading[loaderType] = true;
-      vm.leaveRequests[type].list = []; // flushes the current cached data
+      vm.leaveRequests[section].list = []; // flushes the current cached data
       // cache is set to always false as changing selection either in status menu
       // or pages or adding new requests was reverting back to older cache
       return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination,
         'from_date DESC', returnFields, false)
         .then(function (leaveRequests) {
-          vm.leaveRequests[type] = leaveRequests;
+          vm.leaveRequests[section] = leaveRequests;
         })
         .finally(function () {
           vm.loading[loaderType] = false;
@@ -492,9 +482,9 @@ define([
      *
      * @param {int} page - page number of the pagination element
      * @param {Boolean} resetToAll - If true, leave status filter is set to ALL
-     * @param {String} dataType - which data to load, table or filter
+     * @param {String} section - which section's data to load, table or filter
      */
-    function refresh (page, resetToAll, dataType) {
+    function refresh (page, resetToAll, section) {
       page = typeof (page) === 'number' ? page : 1;
 
       if (resetToAll) {
@@ -505,7 +495,7 @@ define([
       if (page <= vm.totalNoOfPages() || vm.totalNoOfPages() === 0) {
         vm.pagination.page = page;
 
-        loadManageesAndLeaves(dataType);
+        loadManageesAndLeaves(section);
       }
     }
 
@@ -516,7 +506,7 @@ define([
      */
     function refreshWithFilter (status) {
       vm.filters.leaveRequest.leaveStatus = status;
-      vm.refresh(null, false, 'table');
+      vm.refresh(1, false, 'table');
     }
 
     /**
