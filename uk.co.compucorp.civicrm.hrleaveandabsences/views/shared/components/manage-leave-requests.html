@@ -98,9 +98,8 @@
           </label>
         </div>
       </div>
-      <crm-loading show="!vm.loading.content">
-        <div ng-show="vm.leaveRequests.table.list.length"
-          class="panel-body row chr_manage_leave_requests__panel_body">
+      <crm-loading show="!vm.loading.filter">
+        <div class="panel-body row chr_manage_leave_requests__panel_body">
           <ul class="col-xs-3 nav nav-pills nav-stacked chr_vertical_tabs">
             <li ng-repeat="status in vm.leaveRequestStatuses track by status.value"
               ng-hide="vm.filterLeaveRequestByStatus(status).length === 0"
@@ -115,7 +114,8 @@
             </li>
           </ul>
           <div class="col-xs-9">
-            <table class="table table-clean table-hover">
+            <crm-loading show="!vm.loading.table">
+              <table class="table table-clean table-hover">
               <thead>
                 <tr>
                   <th width="20%">Employee Name</th>
@@ -195,10 +195,11 @@
                 </tr>
               </tfoot>
             </table>
+            </crm-loading>
           </div>
         </div>
         <div class="text-center"
-          ng-hide="vm.leaveRequests.table.list.length">
+          ng-hide="vm.loading.table || vm.leaveRequests.table.list.length">
           No Leave Requests available
         </div>
       </crm-loading>
