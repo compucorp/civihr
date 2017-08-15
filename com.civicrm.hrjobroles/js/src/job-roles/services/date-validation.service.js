@@ -1,5 +1,5 @@
 define([
-    'job-roles/services/services',
+    'job-roles/modules/job-roles.services',
     'common/moment'
 ], function (module, moment) {
     /**

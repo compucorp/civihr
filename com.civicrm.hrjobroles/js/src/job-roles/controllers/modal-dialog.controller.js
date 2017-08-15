@@ -1,5 +1,5 @@
 define([
-  'job-roles/controllers/controllers'
+  'job-roles/modules/job-roles.controllers'
 ], function (controllers) {
     'use strict';
 

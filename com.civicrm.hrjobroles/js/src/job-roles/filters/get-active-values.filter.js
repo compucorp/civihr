@@ -1,6 +1,6 @@
 define([
   'common/lodash',
-  'job-roles/filters/filters'
+  'job-roles/modules/job-roles.filters'
 ], function(_,filters) {
   'use strict';
 

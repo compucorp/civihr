@@ -1,6 +1,6 @@
 define([
   'common/angular',
-  'job-roles/controllers/controllers',
+  'job-roles/modules/job-roles.controllers',
   'common/moment',
   'common/lodash',
   'common/filters/angular-date/format-date',
