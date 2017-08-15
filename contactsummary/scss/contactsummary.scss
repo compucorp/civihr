@@ -15,20 +15,4 @@
   .panel--key-details {
     margin-bottom: 0 !important;
   }
-
-  .panel--leave {
-
-    .list-unstyled {
-      margin-bottom: 0;
-    }
-  }
-
-  .panel--sickness {
-
-    @media(min-width: $screen-lg-min) {
-      .col--sickness-days {
-        text-align: right;
-      }
-    }
-  }
 }
