@@ -28,8 +28,8 @@
               </tbody>
               <tbody>
                 <tr ng-repeat="record in leaveBalanceTab.report">
-                  <td><a href="#">{{record.contact_id}}</a></td>
-                  <td><a href="#">{{record.contact_display_name}}</a></td>
+                  <td>{{record.contact_id}}</td>
+                  <td>{{record.contact_display_name}}</td>
                   <td ng-repeat-start="type in  leaveBalanceTab.selectedAbsenceTypes">{{record.absence_types[type.id].entitlement}}</td>
                   <td>{{record.absence_types[type.id].used}}</td>
                   <td>{{record.absence_types[type.id].balance}}</td>
@@ -38,16 +38,13 @@
               </tbody>
             </table>
           </div>
-          <nav class="chr_leave-balance-tab__pagination">
-            <ul class="pagination">
-              <li class="label"><a>Page:</a></li>
-              <li ng-repeat="i in [1,2,3,4,5,6]">
-                <a href="#">{{i}}</a>
-              </li>
-              <li class="label"><a>...</a></li>
-              <li><a href="#">10</a></li>
-              <li><a href="#">Next</a></li>
-            </ul>
+          <nav class="chr_leave-balance-report__pagination">
+            <uib-pagination
+              total-items="leaveBalanceTab.reportCount"
+              items-per-page="leaveBalanceTab.pagination.size"
+              ng-model="leaveBalanceTab.pagination.page"
+              ng-change="leaveBalanceTab.loadReportCurrentPage()">
+            </uib-pagination>
           </nav>
         </crm-loading>
       </div>

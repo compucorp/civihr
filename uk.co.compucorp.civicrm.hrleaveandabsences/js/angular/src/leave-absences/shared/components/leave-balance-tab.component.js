@@ -22,15 +22,17 @@ define([
   function LeaveBalanceTabController ($q, $scope, AbsencePeriod, AbsenceType,
     LeaveBalanceReport, notification, Session) {
     var filters = {};
-    var pageSize = 50;
     var vm = this;
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
     vm.loading = { component: true, report: true };
     vm.loggedInContactId = null;
+    vm.pagination = { page: 1, size: 50 };
     vm.report = [];
     vm.reportCount = 0;
+
+    vm.loadReportCurrentPage = loadReportCurrentPage;
 
     /**
      * Initializes the component. Loads dependencies needed by the component
@@ -99,13 +101,12 @@ define([
      * @param {int} [pageNumber=1] - The number of the page to retrieve. Defaults to 1.
      * @return {Promise}
      */
-    function loadReportPage (pageNumber) {
-      pageNumber = pageNumber || 1;
+    function loadReportCurrentPage () {
       vm.loading.report = true;
 
       return LeaveBalanceReport.all(
         filters,
-        { page: pageNumber, size: pageSize }
+        vm.pagination
       ).then(function (response) {
         vm.report = indexLeaveBalanceAbsenceTypes(response.list);
         vm.reportCount = response.total;
@@ -154,9 +155,10 @@ define([
      */
     function updateReportFilters (event, _filters_) {
       filters = _filters_;
+      vm.pagination.page = 1;
 
       updateSelectedAbsenceTypes();
-      loadReportPage(1);
+      vm.loadReportCurrentPage();
     }
 
     /**

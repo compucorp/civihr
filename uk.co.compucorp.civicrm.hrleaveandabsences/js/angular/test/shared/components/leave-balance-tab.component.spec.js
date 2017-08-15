@@ -14,7 +14,6 @@ define([
     var $componentController, $provide, $q, $rootScope, $scope, AbsencePeriod,
       AbsenceType, ctrl, leaveBalanceReport, notificationService, Session;
     var loggedInContactId = 101;
-    var defaultReportSize = 50;
 
     beforeEach(module('leave-absences.mocks', 'leave-absences.models',
     'leave-absences.components', function (_$provide_) {
@@ -70,6 +69,14 @@ define([
 
       it('sets the logged in contact id to null', function () {
         expect(ctrl.loggedInContactId).toBe(null);
+      });
+
+      it('sets pagination page to 1', function () {
+        expect(ctrl.pagination.page).toBe(1);
+      });
+
+      it('sets pagination size to 50', function () {
+        expect(ctrl.pagination.size).toBe(50);
       });
 
       it('sets report to an empty array', function () {
@@ -142,11 +149,37 @@ define([
     });
 
     describe('on leave balance filters updated event', function () {
-      var absencePeriod, absenceType, expectedFilters;
+      beforeEach(function () {
+        var absencePeriod = absencePeriodMock.all().values[0];
+        var absenceType = absenceTypeMock.all().values[0];
+
+        setupController();
+        $rootScope.$digest();
+
+        spyOn(ctrl, 'loadReportCurrentPage');
+
+        ctrl.pagination.page = 202;
+
+        $rootScope.$broadcast('LeaveBalanceFilters::update', {
+          absence_period: absencePeriod.id,
+          absence_type: absenceType.id,
+          managed_by: loggedInContactId
+        });
+        $rootScope.$digest();
+      });
+
+      it('loads the first page of the report', function () {
+        expect(ctrl.loadReportCurrentPage).toHaveBeenCalled();
+        expect(ctrl.pagination.page).toBe(1);
+      });
+    });
+
+    describe('loadReportCurrentPage()', function () {
+      var expectedFilters;
 
       beforeEach(function () {
-        absencePeriod = absencePeriodMock.all().values[0];
-        absenceType = absenceTypeMock.all().values[0];
+        var absencePeriod = absencePeriodMock.all().values[0];
+        var absenceType = absenceTypeMock.all().values[0];
 
         expectedFilters = {
           absence_period: absencePeriod.id,
@@ -158,27 +191,34 @@ define([
         $rootScope.$digest();
 
         $rootScope.$broadcast('LeaveBalanceFilters::update', expectedFilters);
+        $rootScope.$digest();
+
+        ctrl.pagination.currentPage = 101;
+        ctrl.loadReportCurrentPage();
       });
 
       it('sets loading report to true', function () {
         expect(ctrl.loading.report).toBe(true);
       });
 
-      it('creates a list of selected absence types', function () {
-        expect(ctrl.selectedAbsenceTypes).toEqual([absenceType]);
+      it('loads the balance report for contacts managed by the user, on selected absence period and type, on page 1, with a limited amount of records', function () {
+        expect(leaveBalanceReport.all).toHaveBeenCalledWith(
+          expectedFilters,
+          ctrl.pagination
+        );
       });
 
-      describe('loading the balance report', function () {
-        var expected, count;
+      describe('finishing loading the report page', function () {
+        var reportCount, expectedReport;
 
         beforeEach(function () {
           var balanceReport = reportMockData.all().values;
-          count = reportMockData.all().count;
+          reportCount = reportMockData.all().count;
 
           // sets the balance report in an expected manner.
           // each record's .absence_types to be an index so it can be displayed
           // on the report in a specific order.
-          expected = balanceReport.map(function (record) {
+          expectedReport = balanceReport.map(function (record) {
             record = Object.assign({}, record);
 
             record.absence_types = _.indexBy(record.absence_types, function (type) {
@@ -191,27 +231,20 @@ define([
           $rootScope.$digest();
         });
 
-        it('loads the balance report for contacts managed by the user, on selected absence period and type, on page 1, with a limited amount of records', function () {
-          expect(leaveBalanceReport.all).toHaveBeenCalledWith(
-            expectedFilters,
-            { page: 1, size: defaultReportSize }
-          );
-        });
-
         it('sets loading report to false', function () {
           expect(ctrl.loading.report).toBe(false);
         });
 
         it('stores the the total number of records', function () {
-          expect(ctrl.reportCount).toBe(count);
+          expect(ctrl.reportCount).toBe(reportCount);
         });
 
         it('stores the report', function () {
-          expect(ctrl.report.length).toEqual(expected.length);
+          expect(ctrl.report.length).toEqual(expectedReport.length);
         });
 
         it('indexes the leave balance absence types by id', function () {
-          expect(ctrl.report).toEqual(expected);
+          expect(ctrl.report).toEqual(expectedReport);
         });
       });
 
