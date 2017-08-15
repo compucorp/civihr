@@ -11,29 +11,29 @@ define([
   'use strict';
 
   describe('JobRolesController', function () {
-    var $controller, $filter, $q, $rootScope, DateValidation, HRJobRolesService, ctrl, scope, settingsData;
+    var $controller, $filter, $q, $rootScope, dateValidation, jobRoleService, ctrl, scope, settingsData;
     var contactId = '123';
 
     beforeEach(module('hrjobroles'));
-    beforeEach(inject(function ($httpBackend, _$controller_, _$filter_, _$q_, _$rootScope_, _DateValidation_, _HRJobRolesService_) {
+    beforeEach(inject(function ($httpBackend, _$controller_, _$filter_, _$q_, _$rootScope_, _dateValidation_, _jobRoleService_) {
       $controller = _$controller_;
       $filter = _$filter_;
       $q = _$q_;
       $rootScope = _$rootScope_;
 
-      DateValidation = _DateValidation_;
-      HRJobRolesService = _HRJobRolesService_;
+      dateValidation = _dateValidation_;
+      jobRoleService = _jobRoleService_;
 
       // Ignores any request for templates
       $httpBackend.expectGET(/\/views\//).respond(200);
 
       // Mock data from CiviCRM settings
-      DateValidation.dateFormats.push('DD/MM/YYYY');
+      dateValidation.dateFormats.push('DD/MM/YYYY');
     }));
 
     describe('getOptionValues', function () {
       beforeEach(function () {
-        spyOn(HRJobRolesService, 'getOptionValues').and.returnValue($q.resolve({
+        spyOn(jobRoleService, 'getOptionValues').and.returnValue($q.resolve({
           'count': 5,
           'values': [
             {
@@ -119,14 +119,14 @@ define([
 
     describe('Basic tests', function () {
       beforeEach(function () {
-        spyOn(HRJobRolesService, 'getContracts').and.callThrough();
+        spyOn(jobRoleService, 'getContracts').and.callThrough();
 
         initController();
       });
 
       describe('on init', function () {
         it('fetches the Job Contract of the contact', function () {
-          expect(HRJobRolesService.getContracts).toHaveBeenCalledWith(contactId);
+          expect(jobRoleService.getContracts).toHaveBeenCalledWith(contactId);
         });
       });
 
@@ -427,10 +427,10 @@ define([
       });
 
       beforeEach(function () {
-        spyOn(HRJobRolesService, 'getContracts').and.callFake(function () {
+        spyOn(jobRoleService, 'getContracts').and.callFake(function () {
           return fakeContractResponse(contracts);
         });
-        spyOn(HRJobRolesService, 'getAllJobRoles').and.callFake(function () {
+        spyOn(jobRoleService, 'getAllJobRoles').and.callFake(function () {
           return fakeJobRolesResponse(jobRoles);
         });
       });
@@ -445,7 +445,7 @@ define([
           });
 
           it('does not try to fetch any job role', function () {
-            expect(HRJobRolesService.getAllJobRoles).not.toHaveBeenCalled();
+            expect(jobRoleService.getAllJobRoles).not.toHaveBeenCalled();
           });
         });
 
@@ -456,7 +456,7 @@ define([
           });
 
           it('fetches the job roles', function () {
-            expect(HRJobRolesService.getAllJobRoles).toHaveBeenCalledWith(contracts.map(function (contract) {
+            expect(jobRoleService.getAllJobRoles).toHaveBeenCalledWith(contracts.map(function (contract) {
               return contract.id;
             }));
           });
@@ -474,7 +474,7 @@ define([
         beforeEach(function () {
           jobRoles = _.toArray(angular.copy(Mock.roles_data_from_api));
 
-          spyOn(HRJobRolesService, 'getContactList').and.callThrough();
+          spyOn(jobRoleService, 'getContactList').and.callThrough();
           initController();
           $rootScope.$digest();
 
@@ -482,7 +482,7 @@ define([
         });
 
         it('fetches the contact for each job role funder', function () {
-          expect(HRJobRolesService.getContactList).toHaveBeenCalledWith(null, funderContactIds);
+          expect(jobRoleService.getContactList).toHaveBeenCalledWith(null, funderContactIds);
         });
 
         /**
@@ -505,7 +505,7 @@ define([
       });
 
       /**
-       * Fakes the response that HRJobRolesService.getContracts() would get
+       * Fakes the response that jobRoleService.getContracts() would get
        *
        * @param {Array} contracts
        * @return {Promise} resolves to the response
@@ -518,7 +518,7 @@ define([
       }
 
       /**
-       * Fakes the response that HRJobRolesService.getAllJobRoles() would get
+       * Fakes the response that jobRoleService.getAllJobRoles() would get
        *
        * @param {Array} jobRoles
        * @return {Promise} resolves to the response
@@ -535,7 +535,7 @@ define([
       beforeEach(function () {
         var todaysDate = moment().format('YYYY-MM-DD');
 
-        spyOn(HRJobRolesService, 'getAllJobRoles').and.returnValue($q.resolve({
+        spyOn(jobRoleService, 'getAllJobRoles').and.returnValue($q.resolve({
           values: [{
             title: 'Test',
             id: '19',
@@ -545,7 +545,7 @@ define([
           }]
         }));
 
-        spyOn(HRJobRolesService, 'getContracts').and.returnValue($q.resolve({
+        spyOn(jobRoleService, 'getContracts').and.returnValue($q.resolve({
           count: 1,
           values: [{
             contact_id: '158',

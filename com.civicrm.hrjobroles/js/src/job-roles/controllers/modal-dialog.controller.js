@@ -5,21 +5,35 @@ define([
 ], function (controllers) {
   'use strict';
 
-  controllers.controller('ModalDialogCtrl', ['$scope', '$uibModalInstance', '$timeout', 'content', '$log',
-    function ($scope, $modalInstance, $timeout, content, $log) {
-      $log.debug('Controller: ModalDialogCtrl');
+  controllers.controller('ModalDialogCtrl', ModalDialogCtrl);
 
-      $scope.title = content.title || 'CiviHR Job Roles';
-      $scope.msg = content.msg || '';
-      $scope.copyConfirm = content.copyConfirm || 'Yes';
-      $scope.copyCancel = content.copyCancel || 'Cancel';
+  ModalDialogCtrl.$inject = ['$scope', '$uibModalInstance', '$timeout', 'content', '$log'];
 
-      $scope.confirm = function (action) {
-        $modalInstance.close(action || true);
-      };
+  function ModalDialogCtrl ($scope, $modalInstance, $timeout, content, $log) {
+    $log.debug('Controller: ModalDialogCtrl');
 
-      $scope.cancel = function () {
-        $modalInstance.dismiss('Cancel');
-      };
-    }]);
+    $scope.title = content.title || 'CiviHR Job Roles';
+    $scope.msg = content.msg || '';
+    $scope.copyConfirm = content.copyConfirm || 'Yes';
+    $scope.copyCancel = content.copyCancel || 'Cancel';
+
+    $scope.confirm = confirm;
+    $scope.cancel = cancel;
+
+    /**
+     * Confirms the dialog
+     *
+     * @param  {boolean} action
+     */
+    function confirm (action) {
+      $modalInstance.close(action || true);
+    }
+
+    /**
+     * Cancels the dialog
+     */
+    function cancel () {
+      $modalInstance.dismiss('Cancel');
+    }
+  }
 });

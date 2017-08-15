@@ -8,15 +8,15 @@ define([
 ], function (angular, Mock) {
   'use strict';
 
-  describe('HRJobRolesServiceFilters', function () {
-    var HRJobRolesServiceFilters;
+  describe('filtersService', function () {
+    var filtersService;
     var notUndefinedArray;
     var costCenters;
     var funders;
 
     beforeEach(module('hrjobroles'));
-    beforeEach(inject(function (_HRJobRolesServiceFilters_) {
-      HRJobRolesServiceFilters = _HRJobRolesServiceFilters_;
+    beforeEach(inject(function (_filtersService_) {
+      filtersService = _filtersService_;
 
       notUndefinedArray = [1, 2, 'undefined', 'test', undefined];
       costCenters = [
@@ -98,15 +98,15 @@ define([
       });
 
       it('should remove undefined values', function () {
-        expect(HRJobRolesServiceFilters.isNotUndefined(notUndefinedArray)).toEqual(expectedArray);
-        expect(HRJobRolesServiceFilters.isNotUndefined(notUndefinedArray).length).toBe(3);
+        expect(filtersService.isNotUndefined(notUndefinedArray)).toEqual(expectedArray);
+        expect(filtersService.isNotUndefined(notUndefinedArray).length).toBe(3);
       });
 
       it('should return the passed value if isn\'t an array', function () {
-        expect(HRJobRolesServiceFilters.isNotUndefined('test')).toBe('test');
-        expect(HRJobRolesServiceFilters.isNotUndefined(null)).toBeNull();
-        expect(HRJobRolesServiceFilters.isNotUndefined(true)).toBe(true);
-        expect(HRJobRolesServiceFilters.isNotUndefined(undefined)).toBe(undefined);
+        expect(filtersService.isNotUndefined('test')).toBe('test');
+        expect(filtersService.isNotUndefined(null)).toBeNull();
+        expect(filtersService.isNotUndefined(true)).toBe(true);
+        expect(filtersService.isNotUndefined(undefined)).toBe(undefined);
       });
     });
 
@@ -133,15 +133,15 @@ define([
       });
 
       it('should remove the entries which are without cost_centre_id', function () {
-        expect(HRJobRolesServiceFilters.issetCostCentre(costCenters)).toEqual(expectedArray);
-        expect(HRJobRolesServiceFilters.issetCostCentre(costCenters).length).toBe(2);
+        expect(filtersService.issetCostCentre(costCenters)).toEqual(expectedArray);
+        expect(filtersService.issetCostCentre(costCenters).length).toBe(2);
       });
 
       it('should return the passed value if isn\'t an array', function () {
-        expect(HRJobRolesServiceFilters.issetCostCentre('test')).toBe('test');
-        expect(HRJobRolesServiceFilters.issetCostCentre(null)).toBeNull();
-        expect(HRJobRolesServiceFilters.issetCostCentre(true)).toBe(true);
-        expect(HRJobRolesServiceFilters.issetCostCentre(undefined)).toBe(undefined);
+        expect(filtersService.issetCostCentre('test')).toBe('test');
+        expect(filtersService.issetCostCentre(null)).toBeNull();
+        expect(filtersService.issetCostCentre(true)).toBe(true);
+        expect(filtersService.issetCostCentre(undefined)).toBe(undefined);
       });
     });
 
@@ -174,15 +174,15 @@ define([
       });
 
       it('should remove the entries which are without funder_id', function () {
-        expect(HRJobRolesServiceFilters.issetFunder(funders)).toEqual(expectedArray);
-        expect(HRJobRolesServiceFilters.issetFunder(funders).length).toBe(2);
+        expect(filtersService.issetFunder(funders)).toEqual(expectedArray);
+        expect(filtersService.issetFunder(funders).length).toBe(2);
       });
 
       it('should return the passed value if isn\'t an array', function () {
-        expect(HRJobRolesServiceFilters.issetFunder('test')).toBe('test');
-        expect(HRJobRolesServiceFilters.issetFunder(null)).toBeNull();
-        expect(HRJobRolesServiceFilters.issetFunder(true)).toBe(true);
-        expect(HRJobRolesServiceFilters.issetFunder(undefined)).toBe(undefined);
+        expect(filtersService.issetFunder('test')).toBe('test');
+        expect(filtersService.issetFunder(null)).toBeNull();
+        expect(filtersService.issetFunder(true)).toBe(true);
+        expect(filtersService.issetFunder(undefined)).toBe(undefined);
       });
     });
   });

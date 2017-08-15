@@ -5,7 +5,7 @@ define([
 ], function (services) {
   'use strict';
 
-  services.factory('HRJobRolesServiceFilters', function () {
+  services.factory('filtersService', function () {
     return {
       /**
        * Filter items which are different than undefined

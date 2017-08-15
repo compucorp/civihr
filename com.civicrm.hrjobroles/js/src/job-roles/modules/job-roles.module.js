@@ -13,9 +13,9 @@ define([
   'job-roles/vendor/angular-filter',
   'job-roles/controllers/job-roles.controller',
   'job-roles/controllers/modal-dialog.controller',
-  'job-roles/services/hr-job-roles.service',
+  'job-roles/services/job-role.service',
   'job-roles/services/date-validation.service',
-  'job-roles/services/hr-job-roles-service-filter.service'
+  'job-roles/services/filters.service'
 ], function (angular) {
   'use strict';
 

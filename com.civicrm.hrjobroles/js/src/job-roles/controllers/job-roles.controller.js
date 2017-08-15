@@ -15,13 +15,13 @@ define([
 
   JobRolesController.$inject = ['$scope', '$log', '$routeParams', '$route',
     '$uibModal', '$rootElement', '$timeout', '$filter', '$q', 'settings', 'HR_settings',
-    'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters', 'DOMEventTrigger',
+    'jobRoleService', 'dateValidation', 'filtersService', 'DOMEventTrigger',
     'pubSub'
   ];
 
   function JobRolesController ($scope, $log, $routeParams, $route, $modal,
-    $rootElement, $timeout, $filter, $q, settings, hrSettings, HRJobRolesService,
-    DateValidation, HRJobRolesServiceFilters, DOMEventTrigger, pubSub) {
+    $rootElement, $timeout, $filter, $q, settings, hrSettings, jobRoleService,
+    dateValidation, filtersService, DOMEventTrigger, pubSub) {
     $log.debug('Controller: JobRolesController');
 
     var formatDate = $filter('formatDate');
@@ -221,7 +221,7 @@ define([
      * @return {Promise} resolves with an array of contract ids
      */
     function contractIdsFromContact (contactId) {
-      return HRJobRolesService.getContracts(contactId).then(function (data) {
+      return jobRoleService.getContracts(contactId).then(function (data) {
         var jobContractIds = [];
         var contractsData = {};
 
@@ -275,7 +275,7 @@ define([
      * @return {Promise}
      */
     function createJobRole (jobRolesData) {
-      return HRJobRolesService.createJobRole(jobRolesData).then(function (data) {
+      return jobRoleService.createJobRole(jobRolesData).then(function (data) {
         return data;
       }, function (errorMessage) {
         vm.error = errorMessage;
@@ -306,7 +306,7 @@ define([
      * @return {Promise}
      */
     function deleteJobRole (jobRoleId) {
-      return HRJobRolesService.deleteJobRole(jobRoleId).then(function (data) {
+      return jobRoleService.deleteJobRole(jobRoleId).then(function (data) {
         return data;
       },
       function (errorMessage) {
@@ -354,11 +354,11 @@ define([
     function filterEmptyData (roleId, roleType) {
       if (vm.editData.hasOwnProperty(roleId)) {
         if (roleType === 'funders') {
-          vm.editData[roleId][roleType] = HRJobRolesServiceFilters.issetFunder(vm.editData[roleId][roleType]);
+          vm.editData[roleId][roleType] = filtersService.issetFunder(vm.editData[roleId][roleType]);
         }
 
         if (roleType === 'cost_centers') {
-          vm.editData[roleId][roleType] = HRJobRolesServiceFilters.issetCostCentre(vm.editData[roleId][roleType]);
+          vm.editData[roleId][roleType] = filtersService.issetCostCentre(vm.editData[roleId][roleType]);
         }
       }
     }
@@ -414,7 +414,7 @@ define([
         vm.error = errorMessage;
       };
 
-      return HRJobRolesService.getContactList(sortName).then(successCallback, errorCallback);
+      return jobRoleService.getContactList(sortName).then(successCallback, errorCallback);
     }
 
     /**
@@ -451,7 +451,7 @@ define([
      *   and the value as the contact data
      */
     function getFundersContacts () {
-      return HRJobRolesService.getContactList(null, extractFundersContactIds()).then(function (data) {
+      return jobRoleService.getContactList(null, extractFundersContactIds()).then(function (data) {
         return _(data.values).map(function (contact) {
           return contact;
         })
@@ -486,7 +486,7 @@ define([
       // Set the option groups for which we want to get the values
       var optionGroups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
 
-      return HRJobRolesService.getOptionValues(optionGroups).then(function (data) {
+      return jobRoleService.getOptionValues(optionGroups).then(function (data) {
         if (data.is_error === 1) {
           vm.message_type = 'alert-danger';
           vm.message = 'Cannot get option values!';
@@ -611,7 +611,7 @@ define([
     function initCostCentersData (jobRole, data) {
       jobRole.cost_centers = [];
 
-      var costCenterContactIds = HRJobRolesServiceFilters.isNotUndefined(data.cost_center.split('|'));
+      var costCenterContactIds = filtersService.isNotUndefined(data.cost_center.split('|'));
       var costCenterTypes = data.cost_center_val_type.split('|');
       var percentCostCenters = data.percent_pay_cost_center.split('|');
       var amountCostCenters = data.amount_pay_cost_center.split('|');
@@ -671,7 +671,7 @@ define([
     function initFundersData (jobRole, data) {
       jobRole.funders = [];
 
-      var funderContactIds = HRJobRolesServiceFilters.isNotUndefined(data.funder.split('|'));
+      var funderContactIds = filtersService.isNotUndefined(data.funder.split('|'));
       var funderTypes = data.funder_val_type.split('|');
       var percentFunders = data.percent_pay_funder.split('|');
       var amountFunders = data.amount_pay_funder.split('|');
@@ -873,7 +873,7 @@ define([
      * @return {Promise}
      */
     function jobRolesFromContracts (contractIds) {
-      return HRJobRolesService.getAllJobRoles(contractIds)
+      return jobRoleService.getAllJobRoles(contractIds)
         .then(function (data) {
           vm.presentJobRoles = [];
           vm.pastJobRoles = [];
@@ -1110,7 +1110,7 @@ define([
      */
     function updateHeaderInfo (jobRole) {
       if (vm.contractsData[jobRole.job_contract_id].is_current) {
-        HRJobRolesService.getCurrentDepartments(jobRole.job_contract_id).then(function (departments) {
+        jobRoleService.getCurrentDepartments(jobRole.job_contract_id).then(function (departments) {
           DOMEventTrigger('updateContactHeader', {
             roles: { departments: departments }
           });
@@ -1126,7 +1126,7 @@ define([
      * @return {Promise}
      */
     function updateJobRole (roleId, jobRolesData) {
-      return HRJobRolesService.updateJobRole(roleId, jobRolesData).then(function (data) {
+      return jobRoleService.updateJobRole(roleId, jobRolesData).then(function (data) {
         return data;
       }, function (errorMessage) {
         vm.error = errorMessage;
@@ -1216,7 +1216,7 @@ define([
     function validateDates (data, errors) {
       var errorsCount = 0;
 
-      DateValidation.setErrorCallback(function (error, field) {
+      dateValidation.setErrorCallback(function (error, field) {
         errorsCount++;
         if (field.indexOf('start_date') > -1) {
           errors.start.push(error);
@@ -1225,7 +1225,7 @@ define([
           errors.end.push(error);
         }
       });
-      DateValidation.validate(data.start, data.end, data.contractStart, data.contractEnd);
+      dateValidation.validate(data.start, data.end, data.contractStart, data.contractEnd);
 
       return (errorsCount === 0);
     }

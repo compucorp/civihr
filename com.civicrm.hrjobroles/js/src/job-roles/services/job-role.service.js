@@ -6,33 +6,11 @@ define([
 ], function (_, services) {
   'use strict';
 
-  services.factory('HRJobRolesService', ['$log', '$q', '$filter', function ($log, $q, $filter) {
-    /**
-     * Extracts the contract revisions details from the chained api calls
-     * properties, then removes the current one and format the dates
-     *
-     * @param  {Object} contract
-     */
-    function processContractRevisions (contract) {
-      var contractRevisions = contract['api.HRJobContractRevision.get'].values;
-      delete (contract['api.HRJobContractRevision.get']);
+  services.factory('jobRoleService', jobRoleService);
 
-      contract.revisions = _.compact(contractRevisions
-        .map(function (revision) {
-          var details = revision['api.HRJobDetails.getsingle'];
+  jobRoleService.$inject = ['$log', '$q', '$filter'];
 
-          if (details.period_start_date === contract.period_start_date &&
-          details.period_end_date === contract.period_end_date) {
-            return null;
-          }
-
-          details.period_start_date = $filter('formatDate')(details.period_start_date);
-          details.period_end_date = $filter('formatDate')(details.period_end_date);
-
-          return details;
-        }));
-    }
-
+  function jobRoleService ($log, $q, $filter) {
     return {
 
       /**
@@ -361,5 +339,31 @@ define([
         });
       }
     };
-  }]);
+
+    /**
+     * Extracts the contract revisions details from the chained api calls
+     * properties, then removes the current one and format the dates
+     *
+     * @param  {Object} contract
+     */
+    function processContractRevisions (contract) {
+      var contractRevisions = contract['api.HRJobContractRevision.get'].values;
+      delete (contract['api.HRJobContractRevision.get']);
+
+      contract.revisions = _.compact(contractRevisions
+        .map(function (revision) {
+          var details = revision['api.HRJobDetails.getsingle'];
+
+          if (details.period_start_date === contract.period_start_date &&
+          details.period_end_date === contract.period_end_date) {
+            return null;
+          }
+
+          details.period_start_date = $filter('formatDate')(details.period_start_date);
+          details.period_end_date = $filter('formatDate')(details.period_end_date);
+
+          return details;
+        }));
+    }
+  }
 });

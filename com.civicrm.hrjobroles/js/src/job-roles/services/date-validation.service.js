@@ -1,23 +1,75 @@
 /* eslint-env amd */
 
 define([
-  'job-roles/modules/job-roles.services',
-  'common/moment'
-], function (module, moment) {
+  'common/moment',
+  'job-roles/modules/job-roles.services'
+], function (moment, module) {
   /**
    * Service responsible for validating dates in HRJobRoles
    * @constructor
    */
-  module.factory('DateValidation', ['HR_settings', function (hrSettings) {
+  module.factory('dateValidation', dateValidation);
+
+  dateValidation.$inject = ['HR_settings'];
+
+  function dateValidation (hrSettings) {
     /**
      *
      * @param errorMsg
      * @param fields
-     * @private
      */
     var _error = function (errorMsg, fields) {
       throw new Error(errorMsg, fields[0]);
     };
+
+    var Validation = {
+      dateFormats: ['x', 'YYYY-MM-DD'],
+
+      /**
+       * Set custom error callback
+       *
+       * @param {function} error
+       */
+      setErrorCallback: function (error) {
+        if (typeof error === 'function') {
+          _error = error;
+        } else {
+          throw new TypeError('Error callback must be a function.');
+        }
+      },
+
+      /**
+       * Validates Dates
+       *
+       * @param {Date|string|int} start
+       * @param {Date|string|int} end
+       * @param {Date|string|int} contractStart
+       * @param {Date|string|int} contractEnd
+       */
+      validate: function (start, end, contractStart, contractEnd) {
+        start = formatDate(start, this.dateFormats);
+
+        contractStart = formatDate(contractStart, this.dateFormats);
+        contractEnd = formatDate(contractEnd, this.dateFormats);
+
+        checkIfValuesAreValid(start, ['start_date']);
+        checkIfStartIsLowerThanContractEnd(start, contractEnd);
+        checkIfStartIsLowerThanContractStart(start, contractStart);
+
+        if (end === 0 || end) {
+          end = formatDate(end, this.dateFormats);
+
+          checkIfValuesAreValid(end, ['end_date']);
+          checkIfEndIsEqualOrLowerThanContractEnd(end, contractEnd);
+
+          checkIfStartDateIsLower(start, end);
+        }
+      }
+    };
+
+    hrSettings.DATE_FORMAT && Validation.dateFormats.push(hrSettings.DATE_FORMAT.toUpperCase());
+
+    return Validation;
 
     /**
      * Method checking whether provided date is valid
@@ -93,57 +145,5 @@ define([
 
       return moment(date, dateFormats, true).startOf('day');
     }
-
-    var Validation = {
-      dateFormats: [
-        'x',
-        'YYYY-MM-DD'
-      ],
-
-      /**
-       * Set custom error callback
-       *
-       * @param {function} error
-       */
-      setErrorCallback: function setErrorCallback (error) {
-        if (typeof error === 'function') {
-          _error = error;
-        } else {
-          throw new TypeError('Error callback must be a function.');
-        }
-      },
-
-      /**
-       * Validates Dates
-       *
-       * @param {Date|string|int} start
-       * @param {Date|string|int} end
-       * @param {Date|string|int} contractStart
-       * @param {Date|string|int} contractEnd
-       */
-      validate: function validate (start, end, contractStart, contractEnd) {
-        start = formatDate(start, this.dateFormats);
-
-        contractStart = formatDate(contractStart, this.dateFormats);
-        contractEnd = formatDate(contractEnd, this.dateFormats);
-
-        checkIfValuesAreValid(start, ['start_date']);
-        checkIfStartIsLowerThanContractEnd(start, contractEnd);
-        checkIfStartIsLowerThanContractStart(start, contractStart);
-
-        if (end === 0 || end) {
-          end = formatDate(end, this.dateFormats);
-
-          checkIfValuesAreValid(end, ['end_date']);
-          checkIfEndIsEqualOrLowerThanContractEnd(end, contractEnd);
-
-          checkIfStartDateIsLower(start, end);
-        }
-      }
-    };
-
-    hrSettings.DATE_FORMAT && Validation.dateFormats.push(hrSettings.DATE_FORMAT.toUpperCase());
-
-    return Validation;
-  }]);
+  }
 });
