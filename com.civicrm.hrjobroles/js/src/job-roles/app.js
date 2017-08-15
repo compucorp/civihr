@@ -8,7 +8,6 @@ define([
     'job-roles/vendor/angular-editable',
     'job-roles/vendor/angular-filter',
     'job-roles/controllers/controllers',
-    'job-roles/directives/directives',
     'job-roles/filters/filters',
     'job-roles/services/services',
     'job-roles/controllers/hr-job-roles.controller',
@@ -32,7 +31,6 @@ define([
         'ui.bootstrap',
         'ui.select',
         'hrjobroles.controllers',
-        'hrjobroles.directives',
         'hrjobroles.filters',
         'hrjobroles.services'
     ])
