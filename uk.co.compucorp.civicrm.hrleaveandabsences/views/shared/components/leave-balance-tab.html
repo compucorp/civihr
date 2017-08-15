@@ -1,84 +1,56 @@
 <div class="chr_leave-balance-report">
-  <div class="chr_leave-balance-report__filters panel panel-default">
-    <header class="panel-heading panel-heading-plain">
-      <h3 class="panel-title">
-        <i class="fa fa-chevron-down" aria-hidden="true"></i>
-        Show Filters
-      </h3>
-    </header>
-    <div class="panel-collapse">
-      <form class="panel-body form-inline">
-        <div class="row">
-          <div class="form-group col-sm-4">
-            <label>Periods</label>
-            <select class="form-control">
-              <option>Period 1</option>
-              <option>Period 2</option>
-              <option>Period 3</option>
-              <option>Period 4</option>
-            </select>
+  <crm-loading show="!leaveBalanceTab.loading.component">
+    <leave-balance-tab-filters
+      absence-periods="leaveBalanceTab.absencePeriods"
+      absence-types="leaveBalanceTab.absenceTypes"
+      on-filters-change="leaveBalanceTab.updateReportFilters($filters)">
+    </leave-balance-tab-filters>
+
+    <div class="chr_leave-balance-report__report panel panel-default">
+      <div class="panel-body">
+        <crm-loading show="!leaveBalanceTab.loading.report">
+          <h4>Results <span class="chr_leave-balance-report__results-value">({{leaveBalanceTab.reportCount}})</span></h4>
+          <div class="chr_leave-balance-report__overflow-scroll">
+            <table class="table table-responsive">
+              <tbody>
+                <tr>
+                  <th colspan="2"></th>
+                  <th colspan="4" ng-repeat="type in leaveBalanceTab.selectedAbsenceTypes">{{type.title}}</th>
+                </tr>
+                <tr>
+                  <th class="chr_leave-balance-report__contact-id-column">Contact ID</th>
+                  <th class="chr_leave-balance-report__name-column">Name</th>
+                  <th ng-repeat-start="absenceTypes in leaveBalanceTab.selectedAbsenceTypes">Entitlement</th>
+                  <th>Used</th>
+                  <th>Balance</th>
+                  <th ng-repeat-end>Requested</th>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr ng-repeat="record in leaveBalanceTab.report">
+                  <td><a href="#">{{record.contact_id}}</a></td>
+                  <td><a href="#">{{record.contact_display_name}}</a></td>
+                  <td ng-repeat-start="type in  leaveBalanceTab.selectedAbsenceTypes">{{record.absence_types[type.id].entitlement}}</td>
+                  <td>{{record.absence_types[type.id].used}}</td>
+                  <td>{{record.absence_types[type.id].balance}}</td>
+                  <td ng-repeat-end>{{record.absence_types[type.id].requested}}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="form-group col-sm-4">
-            <label>Leave Type</label>
-            <select class="form-control">
-              <option></option>
-              <option>Holiday</option>
-              <option>Sickness</option>
-              <option>Toil</option>
-            </select>
-          </div>
-        </div>
-        <div class="text-right">
-          <hr />
-          <button type="submit" class="btn btn-primary">
-            Filter
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-  <div class="chr_leave-balance-report__report panel panel-default">
-    <div class="panel-body">
-      <h4>Results <span class="chr_leave-balance-report__results-value">({{leaveBalanceTab.reportCount}})</span></h4>
-      <div class="chr_leave-balance-report__overflow-scroll">
-        <table class="table table-responsive">
-          <tbody>
-            <tr>
-              <th colspan="2"></th>
-              <th colspan="4" ng-repeat="type in leaveBalanceTab.absenceTypes">{{type.title}}</th>
-            </tr>
-            <tr>
-              <th class="chr_leave-balance-report__contact-id-column">Contact ID</th>
-              <th class="chr_leave-balance-report__name-column">Name</th>
-              <th ng-repeat-start="absenceTypes in leaveBalanceTab.absenceTypes">Entitlement</th>
-              <th>Used</th>
-              <th>Balance</th>
-              <th ng-repeat-end>Requested</th>
-            </tr>
-          </tbody>
-          <tbody>
-            <tr ng-repeat="record in leaveBalanceTab.report">
-              <td><a href="#">{{record.contact_id}}</a></td>
-              <td><a href="#">{{record.contact_display_name}}</a></td>
-              <td ng-repeat-start="type in leaveBalanceTab.absenceTypes">{{record.absence_types[type.id].entitlement}}</td>
-              <td>{{record.absence_types[type.id].used}}</td>
-              <td>{{record.absence_types[type.id].balance}}</td>
-              <td ng-repeat-end>{{record.absence_types[type.id].requested}}</td>
-            </tr>
-          </tbody>
-        </table>
+          <nav class="chr_leave-balance-report__pagination">
+            <ul class="pagination">
+              <li class="label"><a>Page:</a></li>
+              <li ng-repeat="i in [1,2,3,4,5,6]">
+                <a href="#">{{i}}</a>
+              </li>
+              <li class="label"><a>...</a></li>
+              <li><a href="#">10</a></li>
+              <li><a href="#">Next</a></li>
+            </ul>
+          </nav>
+        </crm-loading>
       </div>
-      <nav class="chr_leave-balance-report__pagination">
-        <ul class="pagination">
-          <li class="label"><a>Page:</a></li>
-          <li ng-repeat="i in [1,2,3,4,5,6]">
-            <a href="#">{{i}}</a>
-          </li>
-          <li class="label"><a>...</a></li>
-          <li><a href="#">10</a></li>
-          <li><a href="#">Next</a></li>
-        </ul>
-      </nav>
     </div>
-  </div>
+  </crm-loading>
 </div>

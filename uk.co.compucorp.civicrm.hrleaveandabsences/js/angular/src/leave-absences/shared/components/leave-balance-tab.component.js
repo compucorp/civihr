@@ -4,26 +4,31 @@ define([
   'common/angular',
   'common/lodash',
   'leave-absences/shared/modules/components',
+  'leave-absences/shared/components/leave-balance-tab-filters.component',
   'leave-absences/shared/models/leave-balance-report.model',
   'common/services/notification.service'
 ], function (angular, _, components) {
   components.component('leaveBalanceTab', {
-    controller: LeaveBalanceTabcontroller,
+    controller: LeaveBalanceTabController,
     controllerAs: 'leaveBalanceTab',
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/leave-balance-tab.html';
     }]
   });
 
-  LeaveBalanceTabcontroller.$inject = ['$q', 'AbsenceType', 'LeaveBalanceReport', 'notificationService', 'Session'];
+  LeaveBalanceTabController.$inject = ['$q', 'AbsencePeriod', 'AbsenceType',
+    'LeaveBalanceReport', 'notificationService', 'Session'];
 
-  function LeaveBalanceTabcontroller ($q, AbsenceType, LeaveBalanceReport, notification, Session) {
+  function LeaveBalanceTabController ($q, AbsencePeriod, AbsenceType, LeaveBalanceReport,
+    notification, Session) {
+    var filters = {};
     var loggedInContactId;
     var pageSize = 50;
     var vm = this;
 
+    vm.absencePeriods = [];
     vm.absenceTypes = [];
-    vm.loading = { report: true };
+    vm.loading = { component: true, report: true };
     vm.report = [];
     vm.reportCount = 0;
 
@@ -32,18 +37,50 @@ define([
      * the first page of the report.
      */
     (function init () {
-      vm.loading.report = true;
-      var firstPage = 1;
-
       $q.all([
+        loadAbsencePeriods(),
         loadAbsenceTypes(),
         loadLoggedInContactId()
       ])
-      .then(loadReportPage.bind(this, firstPage))
       .catch(function (error) {
         notification.error('Error', error);
+      })
+      .finally(function () {
+        vm.loading.component = false;
       });
     })();
+
+    /**
+     * Updates the leave balance report using the filters passed on as parameters.
+     * The list of absence types to display is updated and the first page of the
+     * report is loaded.
+     *
+     * @param {Object} values - The filter values to use for updating the report.
+     * @param {Object} values.absencePeriod - the absence period to filter by.
+     * @param {Object} values.absenceType - the abence type to filter by.
+     */
+    vm.updateReportFilters = function (values) {
+      filters = {
+        absence_period: values.absencePeriod.id,
+        absence_type: values.absenceType.id,
+        managed_by: loggedInContactId
+      };
+
+      updateSelectedAbsenceTypes();
+      loadReportPage(1);
+    };
+
+    /**
+     * Loads the absence periods from the AbsencePeriod model.
+     *
+     * @return {Promise}
+     */
+    function loadAbsencePeriods () {
+      return AbsencePeriod.all({options: { sort: 'title ASC' }})
+      .then(function (response) {
+        vm.absencePeriods = response;
+      });
+    }
 
     /**
      * Uses the AbsenceType model to populate a list of abesence types
@@ -78,7 +115,7 @@ define([
       vm.loading.report = true;
 
       return LeaveBalanceReport.all(
-        { managed_by: loggedInContactId },
+        filters,
         { page: pageNumber, size: pageSize }
       ).then(function (response) {
         vm.report = indexLeaveBalanceAbsenceTypes(response.list);
@@ -111,6 +148,15 @@ define([
         );
 
         return contactLeaveBalance;
+      });
+    }
+
+    /**
+     * Updates the selected absence types according to the absence type filter value.
+     */
+    function updateSelectedAbsenceTypes () {
+      vm.selectedAbsenceTypes = vm.absenceTypes.filter(function (type) {
+        return parseInt(type.id) === parseInt(filters.absence_type);
       });
     }
   }
