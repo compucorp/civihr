@@ -34,7 +34,7 @@ define([
     // vm.leaveRequests: table - to handle table data, filter - to handle nav filter data
     vm.leaveRequests = { table: { list: [] }, filter: { list: [] } };
     vm.leaveRequestStatuses = [filterByAll];
-    vm.loading = { content: true, page: true };
+    vm.loading = { content: true, page: true, table: true };
     vm.pagination = { page: 1, size: 7 };
     vm.filters = {
       contact: { department: null, level_type: null, location: null, region: null },
@@ -256,15 +256,18 @@ define([
     /**
      * Loads the managees and calls loadLeaveRequests()
      *
+     * @param {String} section - which section's data to load, table or filter
      * @return {Promise}
      */
-    function loadManageesAndLeaves () {
-      vm.loading.content = true;
-
+    function loadManageesAndLeaves (section) {
       return (vm.isAdmin ? Contact.all(contactFilters())
         : Contact.leaveManagees(vm.contactId, contactFilters()))
         .then(function (users) {
           vm.filteredUsers = vm.isAdmin ? users.list : users;
+
+          if (section) {
+            return loadLeaveRequests(section);
+          }
 
           return $q.all([
             loadLeaveRequests('table'),
@@ -276,14 +279,8 @@ define([
           // then Status filter is set to "All" and the controller is refreshed
           if (vm.filters.leaveRequest.leaveStatus !== filterByAll &&
             vm.leaveRequests.table.list.length === 0) {
-            vm.filters.leaveRequest.leaveStatus = filterByAll;
-
-            vm.refresh();
-
-            return;
+            vm.refresh(1, true);
           }
-
-          vm.loading.content = false;
         });
     }
 
@@ -302,24 +299,29 @@ define([
     /**
      * Loads all leave requests
      *
-     * @param {string} type - load leave requests for the either the filter or the table
+     * @param {string} section - load leave requests for the either the filter or the table
      * @return {Promise}
      */
-    function loadLeaveRequests (type) {
-      var filterByStatus = type !== 'filter';
+    function loadLeaveRequests (section) {
+      var filterByStatus = section !== 'filter';
+      var loaderType = section === 'table' ? section : 'content';
       // {pagination: {size:0}} - Load all requests instead of a limited amount
-      var pagination = type === 'filter' ? { size: 0 } : vm.pagination;
-      var returnFields = type === 'filter' ? {
+      var pagination = section === 'filter' ? { size: 0 } : vm.pagination;
+      var returnFields = section === 'filter' ? {
         return: ['status_id']
       } : {};
 
-      vm.leaveRequests[type].list = []; // flushes the current cached data
+      vm.loading[loaderType] = true;
+      vm.leaveRequests[section].list = []; // flushes the current cached data
       // cache is set to always false as changing selection either in status menu
       // or pages or adding new requests was reverting back to older cache
       return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination,
         'from_date DESC', returnFields, false)
         .then(function (leaveRequests) {
-          vm.leaveRequests[type] = leaveRequests;
+          vm.leaveRequests[section] = leaveRequests;
+        })
+        .finally(function () {
+          vm.loading[loaderType] = false;
         });
     }
 
@@ -480,8 +482,9 @@ define([
      *
      * @param {int} page - page number of the pagination element
      * @param {Boolean} resetToAll - If true, leave status filter is set to ALL
+     * @param {String} section - which section's data to load, table or filter
      */
-    function refresh (page, resetToAll) {
+    function refresh (page, resetToAll, section) {
       page = typeof (page) === 'number' ? page : 1;
 
       if (resetToAll) {
@@ -492,7 +495,7 @@ define([
       if (page <= vm.totalNoOfPages() || vm.totalNoOfPages() === 0) {
         vm.pagination.page = page;
 
-        loadManageesAndLeaves();
+        loadManageesAndLeaves(section);
       }
     }
 
@@ -503,7 +506,7 @@ define([
      */
     function refreshWithFilter (status) {
       vm.filters.leaveRequest.leaveStatus = status;
-      vm.refresh();
+      vm.refresh(1, false, 'table');
     }
 
     /**

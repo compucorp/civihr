@@ -122,12 +122,16 @@ define([
 
       describe('after data loading is complete', function () {
         describe('loading', function () {
-          it('loader is hidden for page', function () {
+          it('hides the loader for page', function () {
             expect(controller.loading.page).toBe(false);
           });
 
-          it('loader is hidden for content', function () {
+          it('hides the loader for content', function () {
             expect(controller.loading.content).toBe(false);
+          });
+
+          it('hides the loader for table', function () {
+            expect(controller.loading.table).toBe(false);
           });
         });
 
@@ -439,16 +443,6 @@ define([
           it('page number did not change', function () {
             expect(controller.pagination.page).toBe(oldPageNo);
           });
-        });
-      });
-
-      describe('content loading', function () {
-        beforeEach(function () {
-          controller.refresh();
-        });
-
-        it('loader is shown', function () {
-          expect(controller.loading.content).toBe(true);
         });
       });
 
