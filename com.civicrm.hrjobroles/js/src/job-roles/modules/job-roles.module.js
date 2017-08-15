@@ -7,7 +7,7 @@ define([
     'common/directives/angular-date/date-input',
     'job-roles/vendor/angular-editable',
     'job-roles/vendor/angular-filter',
-    'job-roles/controllers/hr-job-roles.controller',
+    'job-roles/controllers/job-roles.controller',
     'job-roles/controllers/modal-dialog.controller',
     'job-roles/services/hr-job-roles.service',
     'job-roles/services/date-validation.service',
@@ -54,7 +54,7 @@ define([
                 .when('/', {
                     templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html?v=1',
                     resolve: {},
-                    controller: 'HRJobRolesController',
+                    controller: 'JobRolesController',
                     controllerAs: 'jobroles'
                 })
                 .otherwise({redirectTo:'/'});

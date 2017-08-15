@@ -8,7 +8,7 @@ define([
 ], function (angular, _, moment, Mock) {
     'use strict';
 
-    describe('HRJobRolesController', function () {
+    describe('JobRolesController', function () {
         var $controller, $filter, $q, $rootScope, DateValidation, HRJobRolesService, ctrl, scope, settingsData;
         var contactId = '123';
 
@@ -592,7 +592,7 @@ define([
               "contactId": contactId
             };
 
-            ctrl = $controller('HRJobRolesController', { $scope: scope, format: 'DD/MM/YYYY', settings: settingsData });
+            ctrl = $controller('JobRolesController', { $scope: scope, format: 'DD/MM/YYYY', settings: settingsData });
         }
     });
 });

@@ -1,20 +1,26 @@
 define([
   'common/angular',
-  'job-roles/modules/job-roles.controllers',
-  'common/moment',
   'common/lodash',
+  'common/moment',
+  'job-roles/modules/job-roles.controllers',
   'common/filters/angular-date/format-date',
-  'job-roles/filters/get-active-values.filter',
-  'common/services/pub-sub'
-], function (angular, controllers, moment, _) {
+  'common/services/pub-sub',
+  'job-roles/filters/get-active-values.filter'
+], function (angular, _, moment, controllers) {
   'use strict';
 
-  controllers.controller('HRJobRolesController', [
-    '$scope', '$log', '$routeParams', '$route', '$uibModal', '$rootElement', '$timeout', '$filter', '$q','settings',
-    'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
-    'DOMEventTrigger', 'pubSub',
-    function ($scope, $log, $routeParams, $route, $modal, $rootElement, $timeout, $filter, $q, settings, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters, DOMEventTrigger, pubSub) {
-      $log.debug('Controller: HRJobRolesController');
+  controllers.controller('JobRolesController', JobRolesController);
+
+  JobRolesController.$inject = ['$scope', '$log', '$routeParams', '$route',
+    '$uibModal', '$rootElement', '$timeout', '$filter', '$q','settings', 'HR_settings',
+    'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters', 'DOMEventTrigger',
+    'pubSub'
+  ];
+
+  function JobRolesController ($scope, $log, $routeParams, $route, $modal,
+    $rootElement, $timeout, $filter, $q, settings, HR_settings, HRJobRolesService,
+    DateValidation, HRJobRolesServiceFilters, DOMEventTrigger, pubSub) {
+      $log.debug('Controller: JobRolesController');
 
       var vm = this;
       var formatDate = $filter('formatDate');
@@ -1242,5 +1248,4 @@ define([
         });
       });
     }
-  ]);
 });
