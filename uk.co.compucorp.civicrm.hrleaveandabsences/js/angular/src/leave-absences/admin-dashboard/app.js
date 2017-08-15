@@ -7,7 +7,7 @@ define([
   'common/services/check-permissions',
   'common/services/angular-date/date-format',
   'leave-absences/shared/ui-router',
-  'leave-absences/shared/components/leave-balance-report.component',
+  'leave-absences/shared/components/leave-balance-tab.component',
   'leave-absences/shared/components/leave-calendar.component',
   'leave-absences/shared/components/leave-calendar-day.component',
   'leave-absences/shared/components/leave-calendar-legend.component',

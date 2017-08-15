@@ -5,6 +5,7 @@ define([
   'leave-absences/shared/modules/apis',
   'leave-absences/shared/modules/models-instances',
   'leave-absences/shared/modules/shared-settings',
+  'mocks/apis/leave-balance-report-api-mock' // TODO: remove mock
 ], function (angular) {
   'use strict';
 
@@ -14,5 +15,6 @@ define([
     'leave-absences.apis',
     'leave-absences.models.instances',
     'leave-absences.settings',
+    'leave-absences.mocks' // TODO: remove mock
   ]);
 });

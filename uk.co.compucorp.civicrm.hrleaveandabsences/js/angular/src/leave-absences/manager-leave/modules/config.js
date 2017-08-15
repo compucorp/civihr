@@ -47,7 +47,7 @@
             })
             .state('manager-leave.balance-report', {
               url: '/balance-report',
-              template: '<leave-balance-report></leave-balance-report>'
+              template: '<leave-balance-tab></leave-balance-tab>'
             });
         }
       ]);
