@@ -2,7 +2,7 @@ define([
     'common/angular',
     'common/lodash',
     'common/moment',
-    'mocks/data/job-roles',
+    'mocks/data/job-role.data',
     'common/angularMocks',
     'job-roles/app'
 ], function (angular, _, moment, Mock) {

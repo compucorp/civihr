@@ -1,7 +1,7 @@
 define([
   'common/angular',
   'common/angularMocks',
-  'job-roles/filters/option-values-filter',
+  'job-roles/filters/get-active-values.filter',
 ], function(angular, moment) {
   'use strict';
 

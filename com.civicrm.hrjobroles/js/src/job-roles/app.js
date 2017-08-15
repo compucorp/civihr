@@ -11,12 +11,11 @@ define([
     'job-roles/directives/directives',
     'job-roles/filters/filters',
     'job-roles/services/services',
-    'job-roles/controllers/hr-job-roles-controller',
-    'job-roles/controllers/modal-dialog',
-    'job-roles/services/hr-job-roles-service',
-    'job-roles/services/date-validation',
-    'job-roles/services/hr-job-roles-service-filter',
-    'job-roles/directives/example',
+    'job-roles/controllers/hr-job-roles.controller',
+    'job-roles/controllers/modal-dialog.controller',
+    'job-roles/services/hr-job-roles.service',
+    'job-roles/services/date-validation.service',
+    'job-roles/services/hr-job-roles-service-filter.service',
 ], function () {
     'use strict';
 

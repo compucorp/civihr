@@ -4,7 +4,7 @@ define([
   'common/moment',
   'common/lodash',
   'common/filters/angular-date/format-date',
-  'job-roles/filters/option-values-filter',
+  'job-roles/filters/get-active-values.filter',
   'common/services/pub-sub'
 ], function (angular, controllers, moment, _) {
   'use strict';

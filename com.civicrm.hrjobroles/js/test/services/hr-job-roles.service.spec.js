@@ -1,6 +1,6 @@
 define([
   'common/lodash',
-  'mocks/data/job-contracts',
+  'mocks/data/job-contract.data',
   'common/angularMocks',
   'job-roles/app'
 ], function (_, mockedContracts) {
