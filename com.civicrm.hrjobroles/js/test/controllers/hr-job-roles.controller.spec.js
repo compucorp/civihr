@@ -4,7 +4,7 @@ define([
     'common/moment',
     'mocks/data/job-role.data',
     'common/angularMocks',
-    'job-roles/app'
+    'job-roles/modules/job-roles.module'
 ], function (angular, _, moment, Mock) {
     'use strict';
 

@@ -10,7 +10,7 @@
     }
   });
 
-  require(['job-roles/app'], function (app) {
+  require(['job-roles/modules/job-roles.module'], function (app) {
     'use strict';
 
     document.dispatchEvent(typeof window.CustomEvent == "function" ? new CustomEvent('hrjobrolesReady') : (function () {

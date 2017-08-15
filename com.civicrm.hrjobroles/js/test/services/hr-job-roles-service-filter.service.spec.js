@@ -2,7 +2,7 @@ define([
   'common/angular',
   'mocks/data/job-role.data',
   'common/angularMocks',
-  'job-roles/app'
+  'job-roles/modules/job-roles.module'
 ], function (angular, Mock) {
   'use strict';
 
