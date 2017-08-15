@@ -43,7 +43,7 @@
             })
             .state('my-leave.calendar', {
               url: '/calendar',
-              template: '<leave-calendar contact-id="myleave.contactId"></leave-calendar>'
+              template: '<leave-calendar contact-id="myleave.contactId" role-override="staff"></leave-calendar>'
             });
         }
       ]);
