@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'job-roles/modules/job-roles.services'
 ], function (services) {
@@ -11,7 +13,7 @@ define([
        * @param  {array} array
        * @return {array}
        */
-      isNotUndefined: function(array) {
+      isNotUndefined: function (array) {
         try {
           if (array.constructor === Array) {
             return array.filter(function (value) {
@@ -31,7 +33,7 @@ define([
        * @param  {array} roles
        * @return {array}
        */
-      issetCostCentre: function(roles) {
+      issetCostCentre: function (roles) {
         try {
           if (roles.constructor === Array) {
             return roles.filter(function (role) {
@@ -55,7 +57,7 @@ define([
        * @param  {array} roles
        * @return {array}
        */
-      issetFunder: function(roles) {
+      issetFunder: function (roles) {
         try {
           if (roles.constructor === Array) {
             return roles.filter(function (role) {
@@ -72,6 +74,6 @@ define([
           return roles;
         }
       }
-    }
+    };
   });
 });

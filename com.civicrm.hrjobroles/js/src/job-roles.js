@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 (function (CRM, require) {
   var extPath = CRM.vars.hrjobroles.baseURL + '/js/src/job-roles';
 

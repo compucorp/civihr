@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angular',
   'mocks/data/job-role.data',
@@ -8,82 +10,82 @@ define([
 
   describe('HRJobRolesServiceFilters', function () {
     var HRJobRolesServiceFilters;
-    var not_undefined_array;
-    var cost_centers;
+    var notUndefinedArray;
+    var costCenters;
     var funders;
 
     beforeEach(module('hrjobroles'));
     beforeEach(inject(function (_HRJobRolesServiceFilters_) {
       HRJobRolesServiceFilters = _HRJobRolesServiceFilters_;
 
-      not_undefined_array = [1, 2, 'undefined', 'test', undefined];
-      cost_centers = [
+      notUndefinedArray = [1, 2, 'undefined', 'test', undefined];
+      costCenters = [
         {
-          amount:"0",
-          cost_centre_id:"879",
-          id:1,
-          percentage:"1",
-          type:"1",
+          amount: '0',
+          cost_centre_id: '879',
+          id: 1,
+          percentage: '1',
+          type: '1'
         },
         {
-          amount:"0",
-          cost_centre_id:"890",
-          id:1,
-          percentage:"0",
-          type:"1",
+          amount: '0',
+          cost_centre_id: '890',
+          id: 1,
+          percentage: '0',
+          type: '1'
         },
         {
-          amount:"2",
-          cost_centre_id:"",
-          id:1,
-          percentage:"0",
-          type:"0",
+          amount: '2',
+          cost_centre_id: '',
+          id: 1,
+          percentage: '0',
+          type: '0'
         },
         {
-          amount:"2",
-          cost_centre_id:"123",
-          id:1,
-          percentage:"0",
-          type:"0",
+          amount: '2',
+          cost_centre_id: '123',
+          id: 1,
+          percentage: '0',
+          type: '0'
         }
       ];
       funders = [
         {
-          amount: "0",
-          funder_id: "",
+          amount: '0',
+          funder_id: '',
           id: 2,
-          percentage: "2",
-          type: "1"
+          percentage: '2',
+          type: '1'
         },
         {
-          amount: "0",
+          amount: '0',
           funder_id: {
-            id:"1",
-            sort_name:"Default Organization"
+            id: '1',
+            sort_name: 'Default Organization'
           },
           id: 1,
-          percentage: "1",
-          type: "1"
+          percentage: '1',
+          type: '1'
         },
         {
-          amount: "0",
+          amount: '0',
           funder_id: {
-            id:"1",
-            sort_name:"Default Organization"
+            id: '1',
+            sort_name: 'Default Organization'
           },
           id: 1,
-          percentage: "0",
-          type: "1"
+          percentage: '0',
+          type: '1'
         },
         {
-          amount: "1",
+          amount: '1',
           funder_id: {
-            id:"1",
-            sort_name:"Default Organization"
+            id: '1',
+            sort_name: 'Default Organization'
           },
           id: 1,
-          percentage: "0",
-          type: "0"
+          percentage: '0',
+          type: '0'
         }
       ];
     }));
@@ -96,8 +98,8 @@ define([
       });
 
       it('should remove undefined values', function () {
-        expect(HRJobRolesServiceFilters.isNotUndefined(not_undefined_array)).toEqual(expectedArray);
-        expect(HRJobRolesServiceFilters.isNotUndefined(not_undefined_array).length).toBe(3);
+        expect(HRJobRolesServiceFilters.isNotUndefined(notUndefinedArray)).toEqual(expectedArray);
+        expect(HRJobRolesServiceFilters.isNotUndefined(notUndefinedArray).length).toBe(3);
       });
 
       it('should return the passed value if isn\'t an array', function () {
@@ -114,25 +116,25 @@ define([
       beforeEach(function () {
         expectedArray = [
           {
-            amount:"0",
-            cost_centre_id:"879",
-            id:1,
-            percentage:"1",
-            type:"1",
+            amount: '0',
+            cost_centre_id: '879',
+            id: 1,
+            percentage: '1',
+            type: '1'
           },
           {
-            amount:"2",
-            cost_centre_id:"123",
-            id:1,
-            percentage:"0",
-            type:"0",
+            amount: '2',
+            cost_centre_id: '123',
+            id: 1,
+            percentage: '0',
+            type: '0'
           }
         ];
       });
 
       it('should remove the entries which are without cost_centre_id', function () {
-        expect(HRJobRolesServiceFilters.issetCostCentre(cost_centers)).toEqual(expectedArray);
-        expect(HRJobRolesServiceFilters.issetCostCentre(cost_centers).length).toBe(2);
+        expect(HRJobRolesServiceFilters.issetCostCentre(costCenters)).toEqual(expectedArray);
+        expect(HRJobRolesServiceFilters.issetCostCentre(costCenters).length).toBe(2);
       });
 
       it('should return the passed value if isn\'t an array', function () {
@@ -146,27 +148,27 @@ define([
     describe('issetFunder', function () {
       var expectedArray;
 
-      beforeEach(function() {
+      beforeEach(function () {
         expectedArray = [
           {
-            amount: "0",
+            amount: '0',
             funder_id: {
-              id:"1",
-              sort_name:"Default Organization"
+              id: '1',
+              sort_name: 'Default Organization'
             },
             id: 1,
-            percentage: "1",
-            type: "1"
+            percentage: '1',
+            type: '1'
           },
           {
-            amount: "1",
+            amount: '1',
             funder_id: {
-              id:"1",
-              sort_name:"Default Organization"
+              id: '1',
+              sort_name: 'Default Organization'
             },
             id: 1,
-            percentage: "0",
-            type: "0"
+            percentage: '0',
+            type: '0'
           }
         ];
       });

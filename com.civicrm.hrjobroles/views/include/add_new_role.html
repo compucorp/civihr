@@ -5,7 +5,7 @@
         <div class="col-sm-12">
           <dl class="dl-inline">
             <dt>Role / Project Name:</dt>
-            <dd>{{jobroles.edit_data['new_role_id']['title']}}</dd>
+            <dd>{{jobroles.editData['new_role_id']['title']}}</dd>
           </dl>
         </div>
       </div>
@@ -20,7 +20,7 @@
               <div class="form-group">
                 <label for="inputTitle" class="col-xs-4 control-label required-mark">Title:</label>
                 <div class="col-xs-6">
-                  <input type="text" name="title" class="form-control" id="inputTitle" placeholder="Enter role title" ng-model="jobroles.edit_data['new_role_id']['title']" ng-change="jobroles.showSave('new_role_id')" required />
+                  <input type="text" name="title" class="form-control" id="inputTitle" placeholder="Enter role title" ng-model="jobroles.editData['new_role_id']['title']" ng-change="jobroles.showSave('new_role_id')" required />
                 </div>
               </div>
               <div class="form-group">
@@ -28,7 +28,7 @@
                 <div class="col-xs-6">
                   <ui-select id="newContractId"
                     prevent-animations
-                    ng-model="jobroles.edit_data['new_role_id']['job_contract_id']"
+                    ng-model="jobroles.editData['new_role_id']['job_contract_id']"
                     theme="civihr-ui-select"
                     title="Choose a contract"
                     name="contract"
@@ -51,7 +51,7 @@
                       placeholder="{{jobroles.format}}"
                       is-open="jobroles.CalendarShow.newStartDate"
                       uib-datepicker-popup
-                      ng-model="jobroles.edit_data['new_role_id']['newStartDate']"
+                      ng-model="jobroles.editData['new_role_id']['newStartDate']"
                       ng-change="jobroles.select('newStartDate')"
                       ng-disabled="isDisabled"
                       close-text="Close"
@@ -74,7 +74,7 @@
                       placeholder="{{jobroles.format}}"
                       uib-datepicker-popup
                       is-open="jobroles.CalendarShow.newEndDate"
-                      ng-model="jobroles.edit_data['new_role_id']['newEndDate']"
+                      ng-model="jobroles.editData['new_role_id']['newEndDate']"
                       ng-change="jobroles.select('newEndDate')"
                       ng-disabled="isDisabled"
                       ng-click="jobroles.open('newEndDate')"
@@ -95,7 +95,7 @@
                 <div class="col-xs-6">
                   <ui-select
                     prevent-animations
-                    ng-model="jobroles.edit_data['new_role_id']['location']"
+                    ng-model="jobroles.editData['new_role_id']['location']"
                     theme="civihr-ui-select"
                     title="Choose a location"
                     name="newLocation">
@@ -111,7 +111,7 @@
                 <div class="col-xs-6">
                   <ui-select
                     prevent-animations
-                    ng-model="jobroles.edit_data['new_role_id']['region']"
+                    ng-model="jobroles.editData['new_role_id']['region']"
                     theme="civihr-ui-select"
                     title="Choose a Region"
                     name="newRegion">
@@ -127,7 +127,7 @@
                 <div class="col-xs-6">
                   <ui-select
                     prevent-animations
-                    ng-model="jobroles.edit_data['new_role_id']['department']"
+                    ng-model="jobroles.editData['new_role_id']['department']"
                     theme="civihr-ui-select"
                     title="Choose a Department">
                     <ui-select-match prevent-animations allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
@@ -142,7 +142,7 @@
                 <div class="col-xs-6">
                   <ui-select
                     prevent-animations
-                    ng-model="jobroles.edit_data['new_role_id']['level']"
+                    ng-model="jobroles.editData['new_role_id']['level']"
                     theme="civihr-ui-select"
                     title="Choose a Level">
                     <ui-select-match prevent-animations allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
@@ -160,7 +160,7 @@
                 <!-- job role description textarea -->
                 <label for="description" class="col-xs-2 control-label">Description:</label>
                 <div class="col-xs-10 control-label">
-                  <textarea ng-model="jobroles.edit_data['new_role_id']['description']" class="form-control" rows="5" id="description"></textarea>
+                  <textarea ng-model="jobroles.editData['new_role_id']['description']" class="form-control" rows="5" id="description"></textarea>
                 </div>
               </div>
             </div>
@@ -191,7 +191,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="(key, funder) in jobroles.edit_data['new_role_id']['funders']">
+              <tr ng-repeat="(key, funder) in jobroles.editData['new_role_id']['funders']">
                 <td>
                   <!--show funder in non-edit mode-->
                   <span ng-show="!tableform.$visible">{{funder.funder_id.sort_name}}</span>
@@ -277,7 +277,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="(key, cost_centre) in jobroles.edit_data['new_role_id']['cost_centers']">
+              <tr ng-repeat="(key, cost_centre) in jobroles.editData['new_role_id']['cost_centers']">
                 <td>
                   <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
                   <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="value.id as value.title for value in jobroles.CostCentreList | orderBy: 'weight'">

@@ -1,13 +1,15 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'job-roles/modules/job-roles.filters'
-], function(_,filters) {
+], function (_, filters) {
   'use strict';
 
-  filters.filter('getActiveValues', ['$log', function($log) {
+  filters.filter('getActiveValues', ['$log', function ($log) {
     $log.debug('Filter: getActiveValues');
 
-    return function(optionValues) {
+    return function (optionValues) {
       var filteredOptionValues = {};
 
       _.each(optionValues, function (optionValue, idValue) {
@@ -17,6 +19,6 @@ define([
       });
 
       return filteredOptionValues;
-    }
+    };
   }]);
 });

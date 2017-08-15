@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/lodash',
   'mocks/data/job-contract.data',
@@ -121,7 +123,7 @@ define([
 
         HRJobRolesService.getOptionValues(['group1', 'group2']);
         callArgs = CRM.api3.calls.argsFor(0);
-      })
+      });
 
       it('calls the OptionValue entity directly', function () {
         expect(callArgs[0]).toBe('OptionValue');
@@ -137,7 +139,7 @@ define([
 
         beforeEach(function () {
           finalResult = deferred.resolve.calls.argsFor(0)[0];
-        })
+        });
 
         it('is added to the standard response object', function () {
           expect(finalResult.optionGroupData).toBeDefined();
@@ -147,7 +149,7 @@ define([
           expect(finalResult.optionGroupData).toEqual({
             'Group 1': '11',
             'Group 2': '22'
-          })
+          });
         });
       });
 
@@ -156,7 +158,7 @@ define([
        *
        * @return {Object}
        */
-      function mockedResponse() {
+      function mockedResponse () {
         return {
           values: [
             {
@@ -194,10 +196,10 @@ define([
      *
      * @param  {Object} response the response that the mocked api3 should return
      */
-    function mockAPIResponse(response) {
+    function mockAPIResponse (response) {
       spyOn(CRM, 'api3').and.callFake(function () {
         return {
-          done: function(fn) { fn(response); return this; },
+          done: function (fn) { fn(response); return this; },
           error: function () { return this; }
         };
       });
@@ -209,12 +211,12 @@ define([
      * @param  {Object} $q
      * @return {Object} the mocked value
      */
-    function mockDeferred($q) {
+    function mockDeferred ($q) {
       var deferred = {
         promise: {},
         resolve: jasmine.createSpy('resolve'),
-        reject: jasmine.createSpy('reject'),
-      }
+        reject: jasmine.createSpy('reject')
+      };
 
       spyOn($q, 'defer').and.callFake(function () { return deferred; });
 
