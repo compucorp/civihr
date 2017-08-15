@@ -22,11 +22,11 @@ define([
     DateValidation, HRJobRolesServiceFilters, DOMEventTrigger, pubSub) {
       $log.debug('Controller: JobRolesController');
 
-      var vm = this;
       var formatDate = $filter('formatDate');
-      var getActiveValues = $filter('getActiveValues');
       var fundersContacts = {};
+      var getActiveValues = $filter('getActiveValues');
       var roles_type = ['funders', 'cost_centers'];
+      var vm = this;
 
       vm.contactId = settings.contactId;
       vm.format = HR_settings.DATE_FORMAT;
@@ -43,15 +43,58 @@ define([
       vm.LevelsData = {}; // Store the level types
       vm.LocationsData = {}; // Store the location types
       vm.RegionsData = {}; // Store the region types
-
       // Define the add new role URL
       vm.add_new_role_url = settings.pathBaseUrl + settings.pathIncludeTpl + 'add_new_role.html';
       vm.job_role_panel_url = settings.pathBaseUrl + settings.pathIncludeTpl + 'job_role_panel.html';
-
       // Select list for Row Types (used for Funders and Cost Centers)
       vm.rowTypes = {};
       vm.rowTypes[0] = { id: 0, name: 'Fixed' };
       vm.rowTypes[1] = { id: 1, name: '%' };
+
+      vm.addAdditionalRow = addAdditionalRow;
+      vm.add_new_role = add_new_role;
+      vm.cancelNewRole = cancelNewRole;
+      vm.changeTab = changeTab;
+      vm.checkIfDatesAreCustom = checkIfDatesAreCustom;
+      vm.checkNewRole = checkNewRole;
+      vm.collapseRow = collapseRow;
+      vm.deleteAdditionalRow = deleteAdditionalRow;
+      vm.dpOpen = dpOpen;
+      vm.getContactList = getContactList;
+      vm.getCostLabel = getCostLabel;
+      vm.initData = initData;
+      vm.isChanged = isChanged;
+      vm.isOpen = isOpen;
+      vm.isRowCollapsed = isRowCollapsed;
+      vm.isTab = isTab;
+      vm.onAfterSave = onAfterSave;
+      vm.onCancel = onCancel;
+      vm.onContractEdited = onContractEdited;
+      vm.onContractSelected = onContractSelected;
+      vm.open = open;
+      vm.removeRole = removeRole;
+      vm.saveNewRole = saveNewRole;
+      vm.select = select;
+      vm.showRowType = showRowType;
+      vm.showSave = showSave;
+      vm.today = today;
+      vm.updateAdditionalRowType = updateAdditionalRowType;
+      vm.updateRole = updateRole;
+      vm.validateRole = validateRole;
+      vm.validateTitle = validateTitle;
+
+      (function init() {
+        vm.today();
+
+        $q.all([
+          getOptionValues(),
+          getJobRolesList(vm.contactId),
+          vm.getContactList()
+        ])
+        .then(function () {
+          vm.loading = false;
+        });
+      }());
 
       /**
        * Add additional rows (funder or cost centres)
@@ -59,7 +102,7 @@ define([
        * @param {int} role_id
        * @param {string} row_type
        */
-      vm.addAdditionalRow = function (role_id, row_type) {
+      function addAdditionalRow (role_id, row_type) {
         // Check if we have the array already
         if (typeof vm.edit_data[role_id] === "undefined") {
           vm.edit_data[role_id] = {};
@@ -96,22 +139,32 @@ define([
             amount: "0"
           });
         }
-      };
+      }
 
       /**
        * Sets the add new job role form visibility
        */
-      vm.add_new_role = function () {
+      function add_new_role () {
         vm.add_new = true;
-      };
+      }
 
       /**
        * Hides the add new job role form and removes any data added.
        */
-      vm.cancelNewRole = function () {
+      function cancelNewRole () {
         vm.add_new = false;
         delete vm.edit_data['new_role_id'];
-      };
+      }
+
+      /**
+       * Implement angular tabs
+       *
+       * @param  {int} row_id
+       * @param  {int} tab_id
+       */
+      function changeTab (row_id, tab_id) {
+        vm.view_tab[row_id] = tab_id;
+      }
 
       /**
        * Checks if dates don't exist in any of contracts
@@ -119,7 +172,7 @@ define([
        * @param end
        * @returns {boolean}
        */
-      vm.checkIfDatesAreCustom = function (start, end) {
+      function checkIfDatesAreCustom (start, end) {
         if (isDateEmpty(start)) start = null;
         if (isDateEmpty(end)) end = null;
 
@@ -135,17 +188,7 @@ define([
         });
 
         return custom;
-      };
-
-      /**
-       * Implement angular tabs
-       *
-       * @param  {int} row_id
-       * @param  {int} tab_id
-       */
-      vm.changeTab = function (row_id, tab_id) {
-        vm.view_tab[row_id] = tab_id;
-      };
+      }
 
       /**
        * Check if we allow to submit the form
@@ -153,528 +196,21 @@ define([
        *
        * @return {boolean}
        */
-      vm.checkNewRole = function () {
+      function checkNewRole () {
         return (typeof vm.edit_data['new_role_id'] === 'undefined'
         || typeof vm.edit_data['new_role_id']['title'] === 'undefined'
         || vm.edit_data['new_role_id']['title'] === ''
         || typeof vm.edit_data['new_role_id']['job_contract_id'] === 'undefined'
         || vm.edit_data['new_role_id']['job_contract_id'] === '');
-      };
+      }
 
       /**
        * Collapse the row or Expand when clicked
        *
        * @param  {int} row_id
        */
-      vm.collapseRow = function (row_id) {
+      function collapseRow (row_id) {
         vm.collapsedRows[row_id] = !vm.collapsedRows[row_id];
-      };
-
-      /**
-       * Delete Additional rows (funder or cost centres)
-       *
-       * @param  {int} role_id
-       * @param  {string} row_type
-       * @param  {int} row_id
-       */
-      vm.deleteAdditionalRow = function (role_id, row_type, row_id) {
-        if (row_type === 'cost_centre') {
-          // Remove the cost centre row
-          vm.edit_data[role_id]['cost_centers'].splice(row_id, 1);
-        } else {
-          // Remove the funder row as default
-          vm.edit_data[role_id]['funders'].splice(row_id, 1);
-        }
-      };
-
-      /**
-       *
-       * @param  {Object} $event
-       */
-      vm.dpOpen = function ($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-
-        vm.picker.opened = true;
-      };
-
-      /**
-       *
-       * @param  {int} id
-       * @return {string}
-       */
-      vm.getCostLabel = function (id) {
-        var label = '';
-        angular.forEach(vm.CostCentreList, function (v, k) {
-          if (v.id == id) {
-            label = v.title;
-          }
-        });
-
-        return label;
-      };
-
-      /**
-       * Set the data from the webservice call
-       *
-       * @param  {int} role_id
-       * @param  {int} form_id
-       * @param  {*} data
-       */
-      vm.initData = function (role_id, form_id, data) {
-        // Check if we have the array already
-        if (typeof vm.edit_data[role_id] === "undefined") {
-          vm.edit_data[role_id] = {};
-        }
-
-        if (form_id === 'funders') {
-          initFundersData(vm.edit_data[role_id], data);
-        } else if (form_id === 'cost_centers') {
-          initCostCentersData(vm.edit_data[role_id], data);
-        } else {
-          initMiscData(vm.edit_data[role_id], form_id, data);
-        }
-
-        if (form_id === 'end_date' && !vm.edit_data[role_id].end_date) {
-          vm.edit_data[role_id].end_date = null;
-        }
-
-        if (vm.edit_data[role_id].job_contract_id
-          && vm.edit_data[role_id].start_date
-          && typeof vm.edit_data[role_id].end_date != 'undefined'
-          && (form_id === 'start_date' || form_id === 'job_contract_id' || form_id === 'end_date')) {
-
-          updateRolesWithContractData(role_id);
-        }
-      };
-
-      /**
-       * Check if the data are changed in the form (based on job role ID)
-       * @param row_id
-       * @returns {boolean}
-       */
-      vm.isChanged = function (row_id) {
-        // If there are data it means we edited the form
-        return !!(vm.edit_data[row_id]['is_edit']);
-      };
-
-      /**
-       *
-       * @param  {string}  name
-       * @return {Boolean}
-       */
-      vm.isOpen = function (name) {
-        return !!(vm.CalendarShow[name]);
-      };
-
-      /**
-       * Check for collapsed rows
-       *
-       * @param  {int}  row_id
-       * @return {Boolean}
-       */
-      vm.isRowCollapsed = function (row_id) {
-        return !!(vm.collapsedRows[row_id]);
-      };
-
-      /**
-       * Check if current tab
-       *
-       * @param  {int}  row_id
-       * @param  {int}  tab_id
-       * @return {Boolean}
-       */
-      vm.isTab = function (row_id, tab_id) {
-        return (vm.view_tab[row_id] == tab_id);
-      };
-
-      /**
-       * Called on angular-xeditable's onaftersave callback.
-       * It'll filter the rows which are without data.
-       *
-       * @param  {string|int} role_id
-       * @param  {string} role_type
-       */
-      vm.onAfterSave = function (role_id, role_type) {
-        filterEmptyData(role_id, role_type);
-      };
-
-      /**
-       * Called on angular-xeditable's cancel callback.
-       * It'll filter the rows which are without data.
-       *
-       * @param  {string|int} role_id
-       * @param  {string} role_type
-       */
-      vm.onCancel = function (role_id, role_type) {
-        if (role_type === 'both') {
-          roles_type.map(function (type) {
-            filterEmptyData(role_id, type);
-          });
-        } else {
-          filterEmptyData(role_id, role_type);
-        }
-      };
-
-      /**
-       * Method responsible for updating existing JobRole with dates from Contract
-       * @param jobContractId
-       * @param role_id
-       */
-      vm.onContractEdited = function (jobContractId, role_id) {
-        var id = jobContractId || vm.edit_data[role_id]['job_contract_id'];
-        var contract = getContractData(id);
-        var areDatesCustom = vm.checkIfDatesAreCustom(vm.edit_data[role_id]['start_date'], vm.edit_data[role_id]['end_date']);
-
-        if (contract === undefined) {
-          vm.edit_data[role_id]['job_contract_id'] = undefined;
-          vm.edit_data[role_id]['start_date'] = undefined;
-          vm.edit_data[role_id]['end_date'] = undefined;
-
-          return false;
-        }
-
-        if (!areDatesCustom) {
-          formatRoleDates(vm.edit_data[role_id], {
-            start: contract.start_date,
-            end: contract.end_date
-          });
-        } else {
-          formatRoleDates(vm.edit_data[role_id], {
-            start: vm.edit_data[role_id].start_date,
-            end: vm.edit_data[role_id].end_date
-          });
-        }
-      };
-
-      /**
-       * Method responsible for updating new JobRole with dates from Contract
-       */
-      vm.onContractSelected = function () {
-        var contract = getContractData(vm.edit_data.new_role_id.job_contract_id);
-        var areDatesCustom = vm.checkIfDatesAreCustom(vm.edit_data.new_role_id.newStartDate, vm.edit_data.new_role_id.newEndDate);
-        if(contract === undefined){
-          vm.edit_data['new_role_id']['job_contract_id'] = undefined;
-          vm.edit_data['new_role_id']['newStartDate'] = undefined;
-          vm.edit_data['new_role_id']['newEndDate'] = undefined;
-        } else {
-          formatRoleDates(vm.edit_data.new_role_id, {
-            start: areDatesCustom ? vm.edit_data.new_role_id.newStartDate : contract.start_date,
-            end: areDatesCustom ? vm.edit_data.new_role_id.newEndDate : contract.end_date
-          },
-          {
-            start: 'newStartDate',
-            end: 'newEndDate'
-          });
-        }
-      };
-
-      /**
-       *
-       * @param  {Object} event
-       */
-      vm.open = function (event) {
-        vm.CalendarShow[event] = true;
-      };
-
-      /**
-       * Removes the given Role
-       *
-       * @param {Object} jobRole
-       */
-      vm.removeRole = function (jobRole) {
-        $log.debug('Remove Role');
-
-        var modalInstance = $modal.open({
-          appendTo: $rootElement.find('div').eq(0),
-          template: '',
-          templateUrl: settings.pathApp+'views/modalDialog.html?v='+(new Date()).getTime(),
-          size: 'sm',
-          controller: 'ModalDialogCtrl',
-          resolve: {
-            content: function(){
-              return {
-                copyCancel: 'No',
-                title: 'Alert',
-                msg: 'Are you sure you want to Delete Job Role?'
-              };
-            }
-          }
-        });
-
-        // Delete job role
-        modalInstance.result.then(function (confirm) {
-          if (confirm) {
-            deleteJobRole(jobRole.id).then(function () {
-              updateHeaderInfo(jobRole);
-
-              return getJobRolesList(vm.contactId);
-            });
-          }
-        })
-      };
-
-      /**
-       * Validates Dates and saves the new Job Role
-       */
-      vm.saveNewRole = function () {
-        var newRole;
-
-        $log.debug('Add New Role');
-
-        vm.errors = {};
-        vm.errors.newStartDate = [];
-        vm.errors.newEndDate = [];
-
-        var contract = getContractData(vm.edit_data.new_role_id.job_contract_id);
-        var validateResponse = validateDates({
-          'start': vm.edit_data.new_role_id.newStartDate,
-          'end': vm.edit_data.new_role_id.newEndDate,
-          'contractStart': contract.start_date,
-          'contractEnd': contract.end_date,
-        },
-        {
-          'start': vm.errors.newStartDate,
-          'end': vm.errors.newEndDate
-        });
-
-        if (validateResponse) {
-          var newRole = angular.copy(vm.edit_data.new_role_id);
-          newRole.newStartDate = convertDateToServerFormat(newRole.newStartDate);
-
-          if (newRole.newEndDate) {
-            newRole.newEndDate = convertDateToServerFormat(newRole.newEndDate);
-          } else {
-            delete newRole.newEndDate;
-          }
-
-          if (newRole.funders && newRole.funders.length) {
-            updateFundersContactsList(newRole.funders);
-          }
-          createJobRole(newRole).then(function () {
-            updateHeaderInfo(newRole);
-
-            // Hide the add new form
-            vm.add_new = false;
-
-            // Remove if any data are added / Reset form
-            delete vm.edit_data['new_role_id'];
-
-            return getJobRolesList(vm.contactId);
-          });
-        }
-      };
-
-      /**
-       *
-       * @param  {Object} event
-       */
-      vm.select = function (event) {
-        vm.CalendarShow[event] = false;
-      };
-
-       /**
-       * Show Row Type default value
-       *
-       * @param object
-       * @returns {string}
-       */
-      vm.showRowType = function (object) {
-        var selected = '';
-
-        if (typeof object.type !== "undefined") {
-          // Get the human readable Type Value
-          selected = vm.rowTypes[object.type];
-
-          return selected.name;
-        }
-
-        return 'Not set';
-      };
-
-      /**
-       * Set the is_edit value
-       *
-       * @param {int} row_id
-       */
-      vm.showSave = function (row_id) {
-        vm.edit_data[row_id]['is_edit'] = true;
-      };
-
-      /**
-       *
-       */
-      vm.today = function () {
-        vm.CalendarShow['newStartDate'] = false;
-        vm.CalendarShow['newEndDate'] = false;
-        vm.CalendarShow['start_date'] = false;
-        vm.CalendarShow['end_date'] = false;
-      };
-
-      /**
-       * Update funder type scope on request
-       *
-       * @param  {int} role_id
-       * @param  {string} row_type
-       * @param  {string} key
-       * @param  {*} data
-       */
-      vm.updateAdditionalRowType = function (role_id, row_type, key, data) {
-        if (row_type === 'cost_centre') {
-          // Update cost centers row
-          vm.edit_data[role_id]['cost_centers'][key]['type'] = data;
-        } else {
-          // Update funder Type scope as default
-          vm.edit_data[role_id]['funders'][key]['type'] = data;
-        }
-      };
-
-      /**
-       * Prepares data and updates existing role
-       *
-       * @param {int} role_id
-       * @param {string} role_type
-       */
-      vm.updateRole = function (role_id, role_type) {
-        var updatedRole;
-
-        $log.debug('Update Role');
-
-        if (typeof role_type === 'string') {
-          filterEmptyData(role_id, role_type);
-        }
-
-        updatedRole = angular.copy(vm.edit_data[role_id]);
-        updatedRole.location = (updatedRole.location === undefined)? updatedRole.location = '' : updatedRole.location;
-        updatedRole.level = (updatedRole.level === undefined)? updatedRole.level = '' : updatedRole.level;
-        updatedRole.department = (updatedRole.department === undefined)? updatedRole.department = '' : updatedRole.department;
-        updatedRole.region = (updatedRole.region === undefined)? updatedRole.region = '' : updatedRole.region;
-        updatedRole.start_date = convertDateToServerFormat(updatedRole.start_date);
-
-        if (updatedRole.end_date) {
-          updatedRole.end_date = convertDateToServerFormat(updatedRole.end_date);
-        } else {
-          delete updatedRole.end_date;
-        }
-
-        if (updatedRole.funders && updatedRole.funders.length) {
-          updateFundersContactsList(updatedRole.funders);
-        }
-
-        updateJobRole(role_id, updatedRole).then(function () {
-          updateHeaderInfo(updatedRole);
-
-          return getJobRolesList(vm.contactId);
-        });
-      };
-
-      /**
-       * Validation method for JobRole data.
-       * If string is returned form is not submitted.
-       *
-       * @param {Object} data
-       * @return {boolean|string}
-       */
-      vm.validateRole = function (data) {
-        // Reset Error Messages
-        data.start_date.$error.custom = [];
-        data.end_date.$error.custom = [];
-        var contract = getContractData(data.contract.$viewValue);
-
-        if(contract == undefined){
-          return 'Contract is missing';
-        }
-        var validateResponse = validateDates({
-            'start': data.start_date.$viewValue,
-            'end': data.end_date.$viewValue,
-            'contractStart': contract.start_date,
-            'contractEnd': contract.end_date,
-          },
-          {
-            'start': data.start_date.$error.custom,
-            'end': data.end_date.$error.custom
-          });
-
-        return (validateResponse ? true : 'Error');
-      };
-
-      /**
-       *
-       * @param {string} title
-       * @returns {string|undefined}
-       */
-      vm.validateTitle = function (title) {
-        if (title === 'title' || title === ' ') {
-          return "Title cannot be title!";
-        }
-      };
-
-      /**
-       * Get the contact list and store the data
-       *
-       * @param  {string} sortName
-       */
-      vm.getContactList = function (sortName) {
-        var successCallback = function (data) {
-          var contactList = [], i = 0;
-
-          if (data.is_error === 1) {
-            vm.message_type = 'alert-danger';
-            vm.message = 'Cannot get contact list!';
-          } else {
-            // Pass the contact list to the scope
-            for (; i < data.count; i++) {
-              contactList.push({
-                id: data.values[i]['id'],
-                sort_name: data.values[i]['sort_name']
-              });
-            }
-
-            // Store the ContactList as Array as typeahead needs array that we can reuse later
-            vm.contactList = contactList;
-          }
-
-          // Hide the message after some seconds
-          $timeout(function () {
-            vm.message = null;
-          }, 3000);
-        };
-
-        var errorCallback = function (errorMessage) {
-          vm.error = errorMessage;
-        };
-
-        return HRJobRolesService.getContactList(sortName).then(successCallback, errorCallback);
-      };
-
-
-      // Init block
-      (function init() {
-        vm.today();
-
-        $q.all([
-          getOptionValues(),
-          getJobRolesList(vm.contactId),
-          vm.getContactList()
-        ])
-        .then(function () {
-          vm.loading = false;
-        });
-      })();
-
-
-      /**
-       * Implements the "createJobRole" service
-       *
-       * @param  {Object} job_roles_data
-       * @return {Promise}
-       */
-      function createJobRole(job_roles_data) {
-        return HRJobRolesService.createJobRole(job_roles_data).then(function (data) {
-            return data;
-          }, function (errorMessage) {
-            vm.error = errorMessage;
-          });
       }
 
       /**
@@ -734,6 +270,37 @@ define([
       }
 
       /**
+       * Implements the "createJobRole" service
+       *
+       * @param  {Object} job_roles_data
+       * @return {Promise}
+       */
+      function createJobRole(job_roles_data) {
+        return HRJobRolesService.createJobRole(job_roles_data).then(function (data) {
+            return data;
+          }, function (errorMessage) {
+            vm.error = errorMessage;
+          });
+      }
+
+      /**
+       * Delete Additional rows (funder or cost centres)
+       *
+       * @param  {int} role_id
+       * @param  {string} row_type
+       * @param  {int} row_id
+       */
+      function deleteAdditionalRow (role_id, row_type, row_id) {
+        if (row_type === 'cost_centre') {
+          // Remove the cost centre row
+          vm.edit_data[role_id]['cost_centers'].splice(row_id, 1);
+        } else {
+          // Remove the funder row as default
+          vm.edit_data[role_id]['funders'].splice(row_id, 1);
+        }
+      }
+
+      /**
        * Implements the "deleteJobRole" service
        *
        * @param  {int} job_role_id
@@ -746,6 +313,17 @@ define([
           function (errorMessage) {
             vm.error = errorMessage;
           });
+      }
+
+      /**
+       *
+       * @param  {Object} $event
+       */
+      function dpOpen ($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        vm.picker.opened = true;
       }
 
       /**
@@ -765,16 +343,6 @@ define([
             return funderIds.join('').split('|');
           })
           .compact().uniq().value();
-      }
-
-      /**
-       * Get a contract with the given contractId
-       *
-       * @param {int} contractId
-       * @returns {object}
-       */
-      function getContractData(contractId) {
-        return vm.contractsData[contractId];
       }
 
       /**
@@ -809,6 +377,70 @@ define([
 
         role[keys.start] = !!dates.start ? formatDate(dates.start, Date) : null;
         role[keys.end]   = !!dates.end   ? formatDate(dates.end, Date)   : null;
+      }
+
+      /**
+       * Get the contact list and store the data
+       *
+       * @param  {string} sortName
+       */
+      function getContactList (sortName) {
+        var successCallback = function (data) {
+          var contactList = [], i = 0;
+
+          if (data.is_error === 1) {
+            vm.message_type = 'alert-danger';
+            vm.message = 'Cannot get contact list!';
+          } else {
+            // Pass the contact list to the scope
+            for (; i < data.count; i++) {
+              contactList.push({
+                id: data.values[i]['id'],
+                sort_name: data.values[i]['sort_name']
+              });
+            }
+
+            // Store the ContactList as Array as typeahead needs array that we can reuse later
+            vm.contactList = contactList;
+          }
+
+          // Hide the message after some seconds
+          $timeout(function () {
+            vm.message = null;
+          }, 3000);
+        };
+
+        var errorCallback = function (errorMessage) {
+          vm.error = errorMessage;
+        };
+
+        return HRJobRolesService.getContactList(sortName).then(successCallback, errorCallback);
+      }
+
+      /**
+       * Get a contract with the given contractId
+       *
+       * @param {int} contractId
+       * @returns {object}
+       */
+      function getContractData(contractId) {
+        return vm.contractsData[contractId];
+      }
+
+      /**
+       *
+       * @param  {int} id
+       * @return {string}
+       */
+      function getCostLabel (id) {
+        var label = '';
+        angular.forEach(vm.CostCentreList, function (v, k) {
+          if (v.id == id) {
+            label = v.title;
+          }
+        });
+
+        return label;
       }
 
       /**
@@ -1006,6 +638,40 @@ define([
       }
 
       /**
+       * Set the data from the webservice call
+       *
+       * @param  {int} role_id
+       * @param  {int} form_id
+       * @param  {*} data
+       */
+      function initData (role_id, form_id, data) {
+        // Check if we have the array already
+        if (typeof vm.edit_data[role_id] === "undefined") {
+          vm.edit_data[role_id] = {};
+        }
+
+        if (form_id === 'funders') {
+          initFundersData(vm.edit_data[role_id], data);
+        } else if (form_id === 'cost_centers') {
+          initCostCentersData(vm.edit_data[role_id], data);
+        } else {
+          initMiscData(vm.edit_data[role_id], form_id, data);
+        }
+
+        if (form_id === 'end_date' && !vm.edit_data[role_id].end_date) {
+          vm.edit_data[role_id].end_date = null;
+        }
+
+        if (vm.edit_data[role_id].job_contract_id
+          && vm.edit_data[role_id].start_date
+          && typeof vm.edit_data[role_id].end_date != 'undefined'
+          && (form_id === 'start_date' || form_id === 'job_contract_id' || form_id === 'end_date')) {
+
+          updateRolesWithContractData(role_id);
+        }
+      }
+
+      /**
        * Initializes the funders data in the given job role
        *
        * @param  {Object} jobRole
@@ -1071,6 +737,16 @@ define([
       }
 
       /**
+       * Check if the data are changed in the form (based on job role ID)
+       * @param row_id
+       * @returns {boolean}
+       */
+      function isChanged (row_id) {
+        // If there are data it means we edited the form
+        return !!(vm.edit_data[row_id]['is_edit']);
+      }
+
+      /**
        * Checks if date should be considered empty.
        *
        * @param {String} date
@@ -1078,6 +754,125 @@ define([
        */
       function isDateEmpty(date) {
         return date === null;
+      }
+
+      /**
+       *
+       * @param  {string}  name
+       * @return {Boolean}
+       */
+      function isOpen (name) {
+        return !!(vm.CalendarShow[name]);
+      }
+
+      /**
+       * Check for collapsed rows
+       *
+       * @param  {int}  row_id
+       * @return {Boolean}
+       */
+      function isRowCollapsed (row_id) {
+        return !!(vm.collapsedRows[row_id]);
+      }
+
+      /**
+       * Check if current tab
+       *
+       * @param  {int}  row_id
+       * @param  {int}  tab_id
+       * @return {Boolean}
+       */
+      function isTab (row_id, tab_id) {
+        return (vm.view_tab[row_id] == tab_id);
+      }
+
+      /**
+       * Called on angular-xeditable's onaftersave callback.
+       * It'll filter the rows which are without data.
+       *
+       * @param  {string|int} role_id
+       * @param  {string} role_type
+       */
+      function onAfterSave (role_id, role_type) {
+        filterEmptyData(role_id, role_type);
+      }
+
+      /**
+       * Called on angular-xeditable's cancel callback.
+       * It'll filter the rows which are without data.
+       *
+       * @param  {string|int} role_id
+       * @param  {string} role_type
+       */
+      function onCancel (role_id, role_type) {
+        if (role_type === 'both') {
+          roles_type.map(function (type) {
+            filterEmptyData(role_id, type);
+          });
+        } else {
+          filterEmptyData(role_id, role_type);
+        }
+      }
+
+      /**
+       * Method responsible for updating existing JobRole with dates from Contract
+       * @param jobContractId
+       * @param role_id
+       */
+      function onContractEdited (jobContractId, role_id) {
+        var id = jobContractId || vm.edit_data[role_id]['job_contract_id'];
+        var contract = getContractData(id);
+        var areDatesCustom = vm.checkIfDatesAreCustom(vm.edit_data[role_id]['start_date'], vm.edit_data[role_id]['end_date']);
+
+        if (contract === undefined) {
+          vm.edit_data[role_id]['job_contract_id'] = undefined;
+          vm.edit_data[role_id]['start_date'] = undefined;
+          vm.edit_data[role_id]['end_date'] = undefined;
+
+          return false;
+        }
+
+        if (!areDatesCustom) {
+          formatRoleDates(vm.edit_data[role_id], {
+            start: contract.start_date,
+            end: contract.end_date
+          });
+        } else {
+          formatRoleDates(vm.edit_data[role_id], {
+            start: vm.edit_data[role_id].start_date,
+            end: vm.edit_data[role_id].end_date
+          });
+        }
+      }
+
+      /**
+       * Method responsible for updating new JobRole with dates from Contract
+       */
+      function onContractSelected () {
+        var contract = getContractData(vm.edit_data.new_role_id.job_contract_id);
+        var areDatesCustom = vm.checkIfDatesAreCustom(vm.edit_data.new_role_id.newStartDate, vm.edit_data.new_role_id.newEndDate);
+        if(contract === undefined){
+          vm.edit_data['new_role_id']['job_contract_id'] = undefined;
+          vm.edit_data['new_role_id']['newStartDate'] = undefined;
+          vm.edit_data['new_role_id']['newEndDate'] = undefined;
+        } else {
+          formatRoleDates(vm.edit_data.new_role_id, {
+            start: areDatesCustom ? vm.edit_data.new_role_id.newStartDate : contract.start_date,
+            end: areDatesCustom ? vm.edit_data.new_role_id.newEndDate : contract.end_date
+          },
+          {
+            start: 'newStartDate',
+            end: 'newEndDate'
+          });
+        }
+      }
+
+      /**
+       *
+       * @param  {Object} event
+       */
+      function open (event) {
+        vm.CalendarShow[event] = true;
       }
 
       /**
@@ -1121,6 +916,158 @@ define([
           .catch(function (errorMessage) {
             vm.error = errorMessage;
           });
+      }
+
+      /**
+       * Removes the given Role
+       *
+       * @param {Object} jobRole
+       */
+      function removeRole (jobRole) {
+        $log.debug('Remove Role');
+
+        var modalInstance = $modal.open({
+          appendTo: $rootElement.find('div').eq(0),
+          template: '',
+          templateUrl: settings.pathApp+'views/modalDialog.html?v='+(new Date()).getTime(),
+          size: 'sm',
+          controller: 'ModalDialogCtrl',
+          resolve: {
+            content: function(){
+              return {
+                copyCancel: 'No',
+                title: 'Alert',
+                msg: 'Are you sure you want to Delete Job Role?'
+              };
+            }
+          }
+        });
+
+        // Delete job role
+        modalInstance.result.then(function (confirm) {
+          if (confirm) {
+            deleteJobRole(jobRole.id).then(function () {
+              updateHeaderInfo(jobRole);
+
+              return getJobRolesList(vm.contactId);
+            });
+          }
+        })
+      }
+
+      /**
+       * Validates Dates and saves the new Job Role
+       */
+      function saveNewRole () {
+        var newRole;
+
+        $log.debug('Add New Role');
+
+        vm.errors = {};
+        vm.errors.newStartDate = [];
+        vm.errors.newEndDate = [];
+
+        var contract = getContractData(vm.edit_data.new_role_id.job_contract_id);
+        var validateResponse = validateDates({
+          'start': vm.edit_data.new_role_id.newStartDate,
+          'end': vm.edit_data.new_role_id.newEndDate,
+          'contractStart': contract.start_date,
+          'contractEnd': contract.end_date,
+        },
+        {
+          'start': vm.errors.newStartDate,
+          'end': vm.errors.newEndDate
+        });
+
+        if (validateResponse) {
+          var newRole = angular.copy(vm.edit_data.new_role_id);
+          newRole.newStartDate = convertDateToServerFormat(newRole.newStartDate);
+
+          if (newRole.newEndDate) {
+            newRole.newEndDate = convertDateToServerFormat(newRole.newEndDate);
+          } else {
+            delete newRole.newEndDate;
+          }
+
+          if (newRole.funders && newRole.funders.length) {
+            updateFundersContactsList(newRole.funders);
+          }
+          createJobRole(newRole).then(function () {
+            updateHeaderInfo(newRole);
+
+            // Hide the add new form
+            vm.add_new = false;
+
+            // Remove if any data are added / Reset form
+            delete vm.edit_data['new_role_id'];
+
+            return getJobRolesList(vm.contactId);
+          });
+        }
+      }
+
+      /**
+       *
+       * @param  {Object} event
+       */
+      function select (event) {
+        vm.CalendarShow[event] = false;
+      }
+
+      /**
+       * Show Row Type default value
+       *
+       * @param object
+       * @returns {string}
+       */
+      function showRowType (object) {
+        var selected = '';
+
+        if (typeof object.type !== "undefined") {
+          // Get the human readable Type Value
+          selected = vm.rowTypes[object.type];
+
+          return selected.name;
+        }
+
+        return 'Not set';
+      }
+
+      /**
+       * Set the is_edit value
+       *
+       * @param {int} row_id
+       */
+      function showSave (row_id) {
+        vm.edit_data[row_id]['is_edit'] = true;
+      }
+
+      /**
+       *
+       */
+      function today () {
+        vm.CalendarShow['newStartDate'] = false;
+        vm.CalendarShow['newEndDate'] = false;
+        vm.CalendarShow['start_date'] = false;
+        vm.CalendarShow['end_date'] = false;
+      }
+
+      /**
+       * Update funder type scope on request
+       *
+       * @param  {int} role_id
+       * @param  {string} row_type
+       * @param  {string} key
+       * @param  {*} data
+       */
+      function updateAdditionalRowType (role_id, row_type, key, data) {
+        if (row_type === 'cost_centre') {
+          // Update cost centers row
+          vm.edit_data[role_id]['cost_centers'][key]['type'] = data;
+        } else {
+          // Update funder Type scope as default
+          vm.edit_data[role_id]['funders'][key]['type'] = data;
+        }
       }
 
       /**
@@ -1169,6 +1116,45 @@ define([
           return data;
         }, function (errorMessage) {
           vm.error = errorMessage;
+        });
+      }
+
+      /**
+       * Prepares data and updates existing role
+       *
+       * @param {int} role_id
+       * @param {string} role_type
+       */
+      function updateRole (role_id, role_type) {
+        var updatedRole;
+
+        $log.debug('Update Role');
+
+        if (typeof role_type === 'string') {
+          filterEmptyData(role_id, role_type);
+        }
+
+        updatedRole = angular.copy(vm.edit_data[role_id]);
+        updatedRole.location = (updatedRole.location === undefined)? updatedRole.location = '' : updatedRole.location;
+        updatedRole.level = (updatedRole.level === undefined)? updatedRole.level = '' : updatedRole.level;
+        updatedRole.department = (updatedRole.department === undefined)? updatedRole.department = '' : updatedRole.department;
+        updatedRole.region = (updatedRole.region === undefined)? updatedRole.region = '' : updatedRole.region;
+        updatedRole.start_date = convertDateToServerFormat(updatedRole.start_date);
+
+        if (updatedRole.end_date) {
+          updatedRole.end_date = convertDateToServerFormat(updatedRole.end_date);
+        } else {
+          delete updatedRole.end_date;
+        }
+
+        if (updatedRole.funders && updatedRole.funders.length) {
+          updateFundersContactsList(updatedRole.funders);
+        }
+
+        updateJobRole(role_id, updatedRole).then(function () {
+          updateHeaderInfo(updatedRole);
+
+          return getJobRolesList(vm.contactId);
         });
       }
 
@@ -1228,6 +1214,47 @@ define([
         DateValidation.validate(data.start, data.end, data.contractStart, data.contractEnd);
 
         return (errorsCount === 0);
+      }
+
+      /**
+       * Validation method for JobRole data.
+       * If string is returned form is not submitted.
+       *
+       * @param {Object} data
+       * @return {boolean|string}
+       */
+      function validateRole (data) {
+        // Reset Error Messages
+        data.start_date.$error.custom = [];
+        data.end_date.$error.custom = [];
+        var contract = getContractData(data.contract.$viewValue);
+
+        if(contract == undefined){
+          return 'Contract is missing';
+        }
+        var validateResponse = validateDates({
+            'start': data.start_date.$viewValue,
+            'end': data.end_date.$viewValue,
+            'contractStart': contract.start_date,
+            'contractEnd': contract.end_date,
+          },
+          {
+            'start': data.start_date.$error.custom,
+            'end': data.end_date.$error.custom
+          });
+
+        return (validateResponse ? true : 'Error');
+      }
+
+      /**
+       *
+       * @param {string} title
+       * @returns {string|undefined}
+       */
+      function validateTitle (title) {
+        if (title === 'title' || title === ' ') {
+          return "Title cannot be title!";
+        }
       }
 
       // PubSub Events
