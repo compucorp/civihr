@@ -84,6 +84,7 @@ define([
       vm.validateTitle = validateTitle;
 
       (function init() {
+        subcribeToEvents();
         vm.today();
 
         $q.all([
@@ -1043,6 +1044,28 @@ define([
       }
 
       /**
+       * Subscribes to external events
+       */
+      function subcribeToEvents () {
+        // Triggers when a new contract is created for a contact.
+        pubSub.subscribe('contract:created', function(contactId){
+          contractIdsFromContact(contactId);
+        });
+
+        // Triggers when a contract is deleted for a contact.
+        pubSub.subscribe('contract:deleted', function(data) {
+          contractIdsFromContact(data.contactId).then(function(contractIds) {
+            if(!contractIds.length){
+              vm.present_job_roles = [];
+              vm.past_job_roles = [];
+            } else {
+              return jobRolesFromContracts(contractIds);
+            }
+          });
+        });
+      }
+
+      /**
        *
        */
       function today () {
@@ -1256,23 +1279,5 @@ define([
           return "Title cannot be title!";
         }
       }
-
-      // PubSub Events
-      // Triggers when a new contract is created for a contact.
-      pubSub.subscribe('contract:created', function(contactId){
-        contractIdsFromContact(contactId);
-      });
-
-      // Triggers when a contract is deleted for a contact.
-      pubSub.subscribe('contract:deleted', function(data) {
-        contractIdsFromContact(data.contactId).then(function(contractIds) {
-          if(!contractIds.length){
-            vm.present_job_roles = [];
-            vm.past_job_roles = [];
-          } else {
-            return jobRolesFromContracts(contractIds);
-          }
-        });
-      });
     }
 });
