@@ -8,7 +8,7 @@
       <h2>Current Roles and Projects:</h2>
     </div>
     <crm-loading show="!jobroles.loading">
-      <ul class="list-unstyled">
+      <ul class="list-unstyled" ng-if="!jobroles.loading">
         <li ng-repeat="job_roles_data in jobroles.presentJobRoles"
           ng-include src="jobroles.jobRolePanelUrl">
         </li>
@@ -20,7 +20,7 @@
       <h2>Past Roles and Projects:</h2>
     </div>
     <crm-loading show="!jobroles.loading">
-      <ul class="list-unstyled">
+      <ul class="list-unstyled" ng-if="!jobroles.loading">
         <li ng-repeat="job_roles_data in jobroles.pastJobRoles"
           ng-include src="jobroles.jobRolePanelUrl">
         </li>
