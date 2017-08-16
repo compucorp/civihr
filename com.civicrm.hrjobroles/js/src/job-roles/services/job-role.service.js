@@ -8,9 +8,9 @@ define([
 
   services.factory('jobRoleService', jobRoleService);
 
-  jobRoleService.$inject = ['$log', '$q', '$filter'];
+  jobRoleService.$inject = ['$filter', '$log', '$q'];
 
-  function jobRoleService ($log, $q, $filter) {
+  function jobRoleService ($filter, $log, $q) {
     return {
 
       /**

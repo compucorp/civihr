@@ -6,7 +6,11 @@ define([
 ], function (_, filters) {
   'use strict';
 
-  filters.filter('getActiveValues', ['$log', function ($log) {
+  filters.filter('getActiveValues', getActiveValues);
+
+  getActiveValues.$inject = ['$log'];
+
+  function getActiveValues ($log) {
     $log.debug('Filter: getActiveValues');
 
     return function (optionValues) {
@@ -20,5 +24,5 @@ define([
 
       return filteredOptionValues;
     };
-  }]);
+  }
 });

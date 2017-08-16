@@ -13,15 +13,14 @@ define([
 
   controllers.controller('JobRolesController', JobRolesController);
 
-  JobRolesController.$inject = ['$scope', '$log', '$routeParams', '$route',
-    '$uibModal', '$rootElement', '$timeout', '$filter', '$q', 'settings', 'HR_settings',
-    'jobRoleService', 'dateValidation', 'filtersService', 'DOMEventTrigger',
-    'pubSub'
+  JobRolesController.$inject = ['$filter', '$log', '$q', '$rootElement', '$route',
+    '$routeParams', '$scope', '$timeout', '$uibModal', 'DOMEventTrigger', 'settings',
+    'HR_settings', 'dateValidation', 'filtersService', 'jobRoleService', 'pubSub'
   ];
 
-  function JobRolesController ($scope, $log, $routeParams, $route, $modal,
-    $rootElement, $timeout, $filter, $q, settings, hrSettings, jobRoleService,
-    dateValidation, filtersService, DOMEventTrigger, pubSub) {
+  function JobRolesController ($filter, $log, $q, $rootElement, $route,
+    $routeParams, $scope, $timeout, $modal, DOMEventTrigger, settings,
+    hrSettings, dateValidation, filtersService, jobRoleService, pubSub) {
     $log.debug('Controller: JobRolesController');
 
     var formatDate = $filter('formatDate');
@@ -922,7 +921,8 @@ define([
         template: '',
         templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
         size: 'sm',
-        controller: 'ModalDialogCtrl',
+        controller: 'ModalDialogController',
+        controllerAs: 'dialog',
         resolve: {
           content: function () {
             return {
