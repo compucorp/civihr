@@ -201,11 +201,12 @@
                       prevent-animations
                       theme="civihr-ui-select"
                       ng-model="funder.funder_id">
-                      <ui-select-match prevent-animations allow-clear placeholder="Select a funder">
+                      <ui-select-match prevent-animations allow-clear placeholder="Select a funder" class="ui-select-match">>
                         {{$select.selected.sort_name}}
                       </ui-select-match>
                       <ui-select-choices
                         prevent-animations
+                        class="ui-select-choices"
                         repeat="contact in jobroles.contactList | filter: $select.search"
                         refresh="jobroles.getContactList($select.search)"
                         refresh-delay="500">
@@ -217,7 +218,7 @@
                 <td>
                   <!-- editable funder type (will restrict the fields to amount or percentage -->
                   <span editable-select="funder.type" e-form="tableform" e-name="funder-type" e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'funder', key, $data)">
-                    {{ jobroles.showRowType(funder) }}
+                    {{jobroles.showRowType(funder)}}
                   </span>
                 </td>
                 <td>
