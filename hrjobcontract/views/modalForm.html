@@ -41,215 +41,6 @@
                     </select>
                   </div>
                 </div>
-<<<<<<< HEAD
-            </uib-tab>
-            <uib-tab heading="Leave">
-              <div ng-controller="FormLeaveCtrl as leaveCtrl">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <h4>Leave</h4>
-                    <hr>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-xs-12">
-                    <p>Enter in here the contractual entitlement of leave of each type that the employee will receive for a full leave period. The system will automatically pro-rate this for joiners and leavers during the leave period. For employees who work flexible hours please enter the pro rata amount of leave they would receive if they worked for a full leave period.</p>
-                    <p>When entering in the amount for annual leave or vacation, you can chose to either enter the amount including public holidays or ask the system to add them automatically.</p>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-xs-12">
-                    <div class="form-group">
-                      <div class="col-sm-3 control-label">Leave type</div>
-                      <div class="col-sm-3 control-label">Basic Annual Contractual Leave Entitlement</div>
-                      <div class="col-sm-3 control-label">Add Public Holidays?</div>
-                      <div class="col-sm-3 control-label">Estimated Annual Contractual Leave Entitlement</div>
-                    </div>
-                    <div class="form-group" ng-repeat="leaveEntry in entity.leave">
-                      <label for="{{prefix}}leave-{{leaveEntry.leave_type}}" class="col-sm-3 control-label">
-                        {{options.leave.leave_type[leaveEntry.leave_type]}}
-                      </label>
-                      <div class="col-sm-3">
-                        <input type="text" id="{{prefix}}leave-{{leaveEntry.leave_type}}"
-                               name="leave-{{leaveEntry.leave_type}}"
-                               class="form-control"
-                               hrjc-number="2"
-                               hrjc-number-float="true"
-                               ng-model="leaveEntry.leave_amount" ng-disabled="isDisabled">
-                      </div>
-                      <div class="col-sm-3">
-                        <div class="btn-group">
-                          <label class="btn btn-gray" ng-model="leaveEntry.add_public_holidays" uib-btn-radio="true">Yes</label>
-                          <label class="btn btn-gray" ng-model="leaveEntry.add_public_holidays" uib-btn-radio="false">No</label>
-                        </div>
-                      </div>
-                      <div class="col-sm-3">
-                        {{ leaveEntry.getEstimatedLeaveAmount(leaveCtrl.numberOfPublicHolidays) }} Days
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </uib-tab>
-            <uib-tab heading="Insurance">
-                <div ng-controller="FormHealthCtrl">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <h4>Health Insurance</h4>
-                            <hr>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">Provider
-                                    <a tooltip-placement="right"
-                                       uib-tooltip="The name of the health insurance company.">
-                                        <i class="fa fa-question-circle"></i>
-                                    </a></label>
-                                <div class="col-sm-6">
-                                    <div class="input-group">
-                                        <ui-select
-                                                prevent-animations
-                                                allow-clear
-                                                ng-disabled="isDisabled"
-                                                ng-model="entity.health.provider">
-                                            <ui-select-match
-                                                    prevent-animations
-                                                    placeholder="Start typing a name or email...">{{$select.selected.label}}</ui-select-match>
-                                            <ui-select-choices  repeat="contact.id as contact in contacts.Health_Insurance_Provider | filter: $select.search"
-                                                                refresh="refreshContacts($select.search, 'Health_Insurance_Provider')"
-                                                                refresh-delay="0"
-                                                                prevent-animations>
-                                                <div ng-bind="contact.label"></div>
-                                                <small ng-bind="contact.description[0]"></small>
-                                            </ui-select-choices>
-                                        </ui-select>
-                                        <span class="input-group-btn">
-                                          <a ng-disabled="isDisabled"
-                                             ng-click="entity.health.provider = ''" class="btn btn-default">
-                                              <span class="fa fa-remove"></span>
-                                          </a>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="health-health-plan" class="col-sm-4 control-label">Plan Type</label>
-
-                                <div class="col-sm-4">
-                                    <div class="chr_custom-select chr_custom-select--full">
-                                        <select id="health-health-plan" class="form-control"
-                                                ng-model="entity.health.plan_type"
-                                                ng-options="key as value for (key, value) in options.health.plan_type"
-                                                ng-disabled="isDisabled">
-                                            <option value="">- select -</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="health-health-desc" class="col-sm-4 control-label">Description</label>
-
-                                <div class="col-sm-8">
-                                    <textarea id="health-health-desc" name="health-health-desc" class="form-control"
-                                              rows="3" ng-model="entity.health.description" ng-disabled="isDisabled"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="health-health-deps" class="col-sm-4 control-label">Dependents
-                                    <a tooltip-placement="right"
-                                       uib-tooltip="For a family plan, please list
-                                                           the names of all dependents who are also covered, along
-                                                           with their relationships to the individual.">
-                                        <i class="fa fa-question-circle"></i>
-                                    </a>
-                                </label>
-
-                                <div class="col-sm-8">
-                                    <textarea id="health-health-deps" name="health-health-deps" class="form-control"
-                                              rows="3" ng-model="entity.health.dependents" ng-disabled="isDisabled"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <h4>Life Insurance</h4>
-                            <hr>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">Provider</label>
-                                <div class="col-sm-6">
-                                    <div class="input-group">
-                                        <ui-select
-                                                prevent-animations
-                                                allow-clear
-                                                ng-disabled="isDisabled"
-                                                ng-model="entity.health.provider_life_insurance">
-                                            <ui-select-match
-                                                    prevent-animations
-                                                    placeholder="Start typing a name or email...">{{$select.selected.label}}</ui-select-match>
-                                            <ui-select-choices  repeat="contact.id as contact in contacts.Life_Insurance_Provider | filter: $select.search"
-                                                                refresh="refreshContacts($select.search, 'Life_Insurance_Provider')"
-                                                                refresh-delay="0"
-                                                                prevent-animations>
-                                                <div ng-bind="contact.label"></div>
-                                                <small ng-bind="contact.description[0]"></small>
-                                            </ui-select-choices>
-                                        </ui-select>
-                                        <span class="input-group-btn">
-                                          <a ng-disabled="isDisabled"
-                                             ng-click="entity.health.provider_life_insurance = ''" class="btn btn-default">
-                                              <span class="fa fa-remove"></span>
-                                          </a>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="health-life-plan" class="col-sm-4 control-label">Plan Type</label>
-
-                                <div class="col-sm-4">
-                                    <div class="chr_custom-select chr_custom-select--full">
-                                        <select id="health-life-plan" class="form-control"
-                                                ng-model="entity.health.plan_type_life_insurance"
-                                                ng-options="key as value for (key, value) in options.health.plan_type_life_insurance"
-                                                ng-disabled="isDisabled">
-                                            <option value="">- select -</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="health-life-desc" class="col-sm-4 control-label">Description</label>
-
-                                <div class="col-sm-8">
-                                    <textarea id="health-life-desc" name="health-life-desc" class="form-control"
-                                              rows="3" ng-model="entity.health.description_life_insurance" ng-disabled="isDisabled"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="health-life-deps" class="col-sm-4 control-label">Dependents
-                                    <a tooltip-placement="right"
-                                       uib-tooltip="For a family plan, please list
-                                                           the names of all dependents who are also covered, along
-                                                           with their relationships to the individual.">
-                                        <i class="fa fa-question-circle"></i>
-                                    </a>
-                                </label>
-
-                                <div class="col-sm-8">
-                                    <textarea id="health-life-deps" name="health-life-deps" class="form-control"
-                                              rows="3" ng-model="entity.health.dependents_life_insurance" ng-disabled="isDisabled"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-=======
               </div>
               <div class="form-group">
                 <label for="{{prefix}}location" class="col-sm-4 control-label">
@@ -298,7 +89,6 @@
                       required>
                     <span class="input-group-addon fa fa-calendar"></span>
                   </div>
->>>>>>> staging
                 </div>
               </div>
               <div class="form-group">
@@ -815,7 +605,10 @@
                 {{options.leave.leave_type[leaveEntry.leave_type]}}
               </label>
               <div class="col-sm-2">
-                <input type="text" id="{{prefix}}leave-{{leaveEntry.leave_type}}" name="leave-{{leaveEntry.leave_type}}" class="form-control" hrjc-number="2" ng-model="leaveEntry.leave_amount" ng-disabled="isDisabled">
+                <input type="text" id="{{prefix}}leave-{{leaveEntry.leave_type}}"
+                  name="leave-{{leaveEntry.leave_type}}" class="form-control"
+                  hrjc-number="2" ng-model="leaveEntry.leave_amount"
+                  ng-disabled="isDisabled" hrjc-number-float="true">
               </div>
             </div>
           </div>
