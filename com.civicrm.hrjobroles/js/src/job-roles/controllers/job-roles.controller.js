@@ -9,6 +9,7 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
+  JobRolesController.__name = 'JobRolesController';
   JobRolesController.$inject = [
     '$filter', '$log', '$q', '$rootElement', '$route', '$routeParams', '$scope',
     '$timeout', '$uibModal', 'DOMEventTrigger', 'settings', 'HR_settings',

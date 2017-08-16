@@ -7,5 +7,5 @@ define([
   'use strict';
 
   return angular.module('hrjobroles.filters', [])
-    .filter('getActiveValues', getActiveValues);
+    .filter(getActiveValues.__name, getActiveValues);
 });

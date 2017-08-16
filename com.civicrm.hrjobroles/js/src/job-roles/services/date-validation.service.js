@@ -7,6 +7,8 @@ define([
    * Service responsible for validating dates in HRJobRoles
    * @constructor
    */
+
+  dateValidation.__name = 'dateValidation';
   dateValidation.$inject = ['HR_settings'];
 
   function dateValidation (hrSettings) {

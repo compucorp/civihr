@@ -5,6 +5,7 @@ define([
 ], function (_) {
   'use strict';
 
+  jobRoleService.__name = 'jobRoleService';
   jobRoleService.$inject = ['$filter', '$log', '$q'];
 
   function jobRoleService ($filter, $log, $q) {

@@ -9,7 +9,7 @@ define([
   'use strict';
 
   return angular.module('hrjobroles.services', [])
-    .factory('dateValidation', dateValidation)
-    .factory('filtersService', filtersService)
-    .factory('jobRoleService', jobRoleService);
+    .factory(dateValidation.__name, dateValidation)
+    .factory(filtersService.__name, filtersService)
+    .factory(jobRoleService.__name, jobRoleService);
 });

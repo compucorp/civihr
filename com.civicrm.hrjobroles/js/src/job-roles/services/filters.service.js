@@ -3,6 +3,8 @@
 define(function () {
   'use strict';
 
+  filtersService.__name = 'filtersService';
+
   function filtersService () {
     return {
       /**

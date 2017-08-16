@@ -8,6 +8,6 @@ define([
   'use strict';
 
   return angular.module('hrjobroles.controllers', [])
-    .controller('JobRolesController', JobRolesController)
-    .controller('ModalDialogController', ModalDialogController);
+    .controller(JobRolesController.__name, JobRolesController)
+    .controller(ModalDialogController.__name, ModalDialogController);
 });
