@@ -1,11 +1,7 @@
 /* eslint-env amd */
 
-define([
-  'job-roles/modules/job-roles.controllers'
-], function (controllers) {
+define(function () {
   'use strict';
-
-  controllers.controller('ModalDialogController', ModalDialogController);
 
   ModalDialogController.$inject = ['$uibModalInstance', '$log', '$timeout', 'content'];
 
@@ -38,4 +34,6 @@ define([
       $modalInstance.close(action || true);
     }
   }
+
+  return ModalDialogController;
 });

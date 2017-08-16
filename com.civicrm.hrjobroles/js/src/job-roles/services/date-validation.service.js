@@ -1,15 +1,12 @@
 /* eslint-env amd */
 
 define([
-  'common/moment',
-  'job-roles/modules/job-roles.services'
-], function (moment, module) {
+  'common/moment'
+], function (moment) {
   /**
    * Service responsible for validating dates in HRJobRoles
    * @constructor
    */
-  module.factory('dateValidation', dateValidation);
-
   dateValidation.$inject = ['HR_settings'];
 
   function dateValidation (hrSettings) {
@@ -146,4 +143,6 @@ define([
       return moment(date, dateFormats, true).startOf('day');
     }
   }
+
+  return dateValidation;
 });

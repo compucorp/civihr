@@ -4,14 +4,10 @@ define([
   'common/angular',
   'common/lodash',
   'common/moment',
-  'job-roles/modules/job-roles.controllers',
   'common/filters/angular-date/format-date',
-  'common/services/pub-sub',
-  'job-roles/filters/get-active-values.filter'
-], function (angular, _, moment, controllers) {
+  'common/services/pub-sub'
+], function (angular, _, moment) {
   'use strict';
-
-  controllers.controller('JobRolesController', JobRolesController);
 
   JobRolesController.$inject = [
     '$filter', '$log', '$q', '$rootElement', '$route', '$routeParams', '$scope',
@@ -1273,4 +1269,6 @@ define([
       }
     }
   }
+
+  return JobRolesController;
 });

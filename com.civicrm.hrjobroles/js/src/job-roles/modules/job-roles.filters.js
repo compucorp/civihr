@@ -1,9 +1,11 @@
 /* eslint-env amd */
 
 define([
-  'common/angular'
-], function (angular) {
+  'common/angular',
+  'job-roles/filters/get-active-values.filter'
+], function (angular, getActiveValues) {
   'use strict';
 
-  return angular.module('hrjobroles.filters', []);
+  return angular.module('hrjobroles.filters', [])
+    .filter('getActiveValues', getActiveValues);
 });

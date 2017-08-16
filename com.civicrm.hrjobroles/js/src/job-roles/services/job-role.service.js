@@ -1,12 +1,9 @@
 /* eslint-env amd */
 
 define([
-  'common/lodash',
-  'job-roles/modules/job-roles.services'
-], function (_, services) {
+  'common/lodash'
+], function (_) {
   'use strict';
-
-  services.factory('jobRoleService', jobRoleService);
 
   jobRoleService.$inject = ['$filter', '$log', '$q'];
 
@@ -366,4 +363,6 @@ define([
         }));
     }
   }
+
+  return jobRoleService;
 });

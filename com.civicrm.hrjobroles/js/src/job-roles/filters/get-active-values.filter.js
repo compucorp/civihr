@@ -1,12 +1,9 @@
 /* eslint-env amd */
 
 define([
-  'common/lodash',
-  'job-roles/modules/job-roles.filters'
-], function (_, filters) {
+  'common/lodash'
+], function (_) {
   'use strict';
-
-  filters.filter('getActiveValues', getActiveValues);
 
   getActiveValues.$inject = ['$log'];
 
@@ -25,4 +22,6 @@ define([
       return filteredOptionValues;
     };
   }
+
+  return getActiveValues;
 });

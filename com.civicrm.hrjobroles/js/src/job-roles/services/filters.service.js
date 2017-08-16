@@ -1,11 +1,9 @@
 /* eslint-env amd */
 
-define([
-  'job-roles/modules/job-roles.services'
-], function (services) {
+define(function () {
   'use strict';
 
-  services.factory('filtersService', function () {
+  function filtersService () {
     return {
       /**
        * Filter items which are different than undefined
@@ -75,5 +73,7 @@ define([
         }
       }
     };
-  });
+  }
+
+  return filtersService;
 });
