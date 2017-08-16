@@ -13,9 +13,10 @@ define([
 
   controllers.controller('JobRolesController', JobRolesController);
 
-  JobRolesController.$inject = ['$filter', '$log', '$q', '$rootElement', '$route',
-    '$routeParams', '$scope', '$timeout', '$uibModal', 'DOMEventTrigger', 'settings',
-    'HR_settings', 'dateValidation', 'filtersService', 'jobRoleService', 'pubSub'
+  JobRolesController.$inject = [
+    '$filter', '$log', '$q', '$rootElement', '$route', '$routeParams', '$scope',
+    '$timeout', '$uibModal', 'DOMEventTrigger', 'settings', 'HR_settings',
+    'dateValidation', 'filtersService', 'jobRoleService', 'pubSub'
   ];
 
   function JobRolesController ($filter, $log, $q, $rootElement, $route,
