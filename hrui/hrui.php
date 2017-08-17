@@ -1040,5 +1040,5 @@ function _hrui_is_extension_enabled($key) {
     'full_name'
   );
 
-  return  !empty($isEnabled) ? true : false;
+  return !empty($isEnabled) ? true : false;
 }

@@ -43,14 +43,14 @@ trait CRM_HRUI_Upgrader_Steps_4701 {
     $createResult = civicrm_api3('CustomField', 'create', $fieldData);
     $niSSNField = array_shift($createResult['values']);
 
-    $identTableName = $this->up4701_getIdentTableName();
-    $identFieldName = $this->up4701_getIdentFieldName();
-
     $isEnabled = _hrui_is_extension_enabled('org.civicrm.hrident');
 
     if (!$isEnabled) {
       return TRUE;
     }
+
+    $identTableName = $this->up4701_getIdentTableName();
+    $identFieldName = $this->up4701_getIdentFieldName();
 
     $query = "
       UPDATE {$inlineCustomGroup['table_name']}, $identTableName
