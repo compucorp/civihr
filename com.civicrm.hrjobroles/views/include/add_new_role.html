@@ -217,7 +217,12 @@
                 </td>
                 <td>
                   <!-- editable funder type (will restrict the fields to amount or percentage -->
-                  <span editable-select="funder.type" e-form="tableform" e-name="funder-type" e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'funder', key, $data)">
+                  <span editable-select="funder.type"
+                    e-class="no-select2"
+                    e-form="tableform"
+                    e-name="funder-type"
+                    e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"
+                    e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'funder', key, $data)">
                     {{jobroles.showRowType(funder)}}
                   </span>
                 </td>
@@ -281,13 +286,22 @@
               <tr ng-repeat="(key, cost_centre) in jobroles.editData['new_role_id']['cost_centers']">
                 <td>
                   <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                  <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="value.id as value.title for value in jobroles.CostCentreList | orderBy: 'weight'">
+                  <span editable-select="cost_centre.cost_centre_id"
+                    e-class="no-select2"
+                    e-form="tableformcc"
+                    e-name="cost-centre"
+                    e-ng-options="value.id as value.title for value in jobroles.CostCentreList | orderBy: 'weight'">
                     {{jobroles.getCostLabel(cost_centre.cost_centre_id) || 'empty'}}
                   </span>
                 </td>
                 <td>
                   <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                  <span editable-select="cost_centre.type" e-form="tableformcc" e-name="cost-centre-type" e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes" e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'cost_centre', key, $data)">
+                  <span editable-select="cost_centre.type"
+                    e-class="no-select2"
+                    e-form="tableformcc"
+                    e-name="cost-centre-type"
+                    e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"
+                    e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'cost_centre', key, $data)">
                     {{ jobroles.showRowType(cost_centre) }}
                   </span>
                 </td>
