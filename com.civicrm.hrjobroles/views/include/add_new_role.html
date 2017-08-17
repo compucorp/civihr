@@ -12,7 +12,7 @@
     </header>
   </div>
   <div class="panel panel-default panel-nested">
-    <uib-tabset>
+    <uib-tabset class="job-role__tabs">
       <uib-tab heading="Basic Details">
         <form name="form" class="form-horizontal" role="form">
           <div class="row">
@@ -169,169 +169,177 @@
       </uib-tab>
       <uib-tab heading="Funding">
         <form editable-form name="tableform" onaftersave="jobroles.onAfterSave('new_role_id', 'funders')" oncancel="jobroles.onCancel('new_role_id', 'funders')">
-          <button type="button" class="btn btn-link pull-right" ng-show="!tableform.$visible" ng-click="tableform.$show()">
-            <span class="btn-icon"><i class="fa fa-pencil"></i></span>Edit
-          </button>
-          <div class="btn-group pull-right" ng-show="tableform.$visible">
-            <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-link">
-              <span class="btn-icon"><i class="fa fa-check"></i></span>Save
+          <div class="job-role__actions">
+            <button type="button" class="btn btn-link" ng-show="!tableform.$visible" ng-click="tableform.$show()">
+              <span class="btn-icon"><i class="fa fa-pencil"></i></span>Edit
             </button>
-            <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-link">
-              <span class="btn-icon"><i class="fa fa-times"></i></span>Cancel
-            </button>
+            <div class="btn-group" ng-show="tableform.$visible">
+              <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-link">
+                <span class="btn-icon"><i class="fa fa-check"></i></span>Save
+              </button>
+              <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-link">
+                <span class="btn-icon"><i class="fa fa-times"></i></span>Cancel
+              </button>
+            </div>
           </div>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th style="width:40%">Funder</th>
-                <th style="width:15%">Type</th>
-                <th style="width:15%">% Amount</th>
-                <th style="width:15%">Absolute Amount</th>
-                <th style="width:15%" ng-show="tableform.$visible">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="(key, funder) in jobroles.editData['new_role_id']['funders']">
-                <td>
-                  <!--show funder in non-edit mode-->
-                  <span ng-show="!tableform.$visible">{{funder.funder_id.sort_name}}</span>
-                  <!--show ui-select for funder in edit mode-->
-                  <span ng-show="tableform.$visible">
-                    <ui-select class="funder-select"
-                      prevent-animations
-                      theme="civihr-ui-select"
-                      ng-model="funder.funder_id">
-                      <ui-select-match prevent-animations allow-clear placeholder="Select a funder" class="ui-select-match">
-                        {{$select.selected.sort_name}}
-                      </ui-select-match>
-                      <ui-select-choices
+          <div class="table-tab">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:40%">Funder</th>
+                  <th style="width:15%">Type</th>
+                  <th style="width:15%">% Amount</th>
+                  <th style="width:15%">Absolute Amount</th>
+                  <th style="width:15%" ng-show="tableform.$visible">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="(key, funder) in jobroles.editData['new_role_id']['funders']">
+                  <td>
+                    <!--show funder in non-edit mode-->
+                    <span ng-show="!tableform.$visible">{{funder.funder_id.sort_name}}</span>
+                    <!--show ui-select for funder in edit mode-->
+                    <span ng-show="tableform.$visible">
+                      <ui-select class="funder-select"
                         prevent-animations
-                        class="ui-select-choices"
-                        repeat="contact in jobroles.contactList | filter: $select.search"
-                        refresh="jobroles.getContactList($select.search)"
-                        refresh-delay="500">
-                        <div ng-bind-html="contact.sort_name | highlight: $select.search"></div>
-                      </ui-select-choices>
-                    </ui-select>
-                  </span>
-                </td>
-                <td>
-                  <!-- editable funder type (will restrict the fields to amount or percentage -->
-                  <span editable-select="funder.type"
-                    e-class="no-select2"
-                    e-form="tableform"
-                    e-name="funder-type"
-                    e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"
-                    e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'funder', key, $data)">
-                    {{jobroles.showRowType(funder)}}
-                  </span>
-                </td>
-                <td>
-                  <span ng-show="funder.type == 1">
-                    <!-- editable funder type - percentage (show only when percentage type selected, otherwise read only -->
-                    <span editable-text="funder.percentage" e-form="tableform" e-name="funder-percent" onbeforesave="checkName($data, user.id)">
-                      {{funder.percentage || 'empty'}}
+                        theme="civihr-ui-select"
+                        ng-model="funder.funder_id">
+                        <ui-select-match prevent-animations allow-clear placeholder="Select a funder" class="ui-select-match">
+                          {{$select.selected.sort_name}}
+                        </ui-select-match>
+                        <ui-select-choices
+                          prevent-animations
+                          class="ui-select-choices"
+                          repeat="contact in jobroles.contactList | filter: $select.search"
+                          refresh="jobroles.getContactList($select.search)"
+                          refresh-delay="500">
+                          <div ng-bind-html="contact.sort_name | highlight: $select.search"></div>
+                        </ui-select-choices>
+                      </ui-select>
                     </span>
-                  </span>
-                </td>
-                <td>
-                  <span ng-show="funder.type == 0">
-                    <!-- editable funder type - amount (show only when amount type selected, otherwise read only -->
-                    <span editable-text="funder.amount" e-form="tableform" e-name="funder-amount" onbeforesave="checkName($data, user.id)">
-                      {{funder.amount || 'empty'}}
+                  </td>
+                  <td>
+                    <!-- editable funder type (will restrict the fields to amount or percentage -->
+                    <span editable-select="funder.type"
+                      e-class="no-select2"
+                      e-form="tableform"
+                      e-name="funder-type"
+                      e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"
+                      e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'funder', key, $data)">
+                      {{jobroles.showRowType(funder)}}
                     </span>
-                  </span>
-                </td>
-                <td ng-show="tableform.$visible">
-                  <button type="button" ng-click="jobroles.deleteAdditionalRow('new_role_id', 'funder', key)" class="btn btn-sm btn-danger pull-left">
-                    <i class="fa fa-times"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="{{!tableform.$visible ? 4 : 5}}">
-                  <a href ng-show="tableform.$visible" ng-disabled="tableform.$waiting" ng-click="jobroles.addAdditionalRow('new_role_id', 'funder')" class="btn btn-link">
-                    <span class="btn-icon"><i class="fa fa-plus"></i></span>Add New Funder
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                  <td>
+                    <span ng-show="funder.type == 1">
+                      <!-- editable funder type - percentage (show only when percentage type selected, otherwise read only -->
+                      <span editable-text="funder.percentage" e-form="tableform" e-name="funder-percent" onbeforesave="checkName($data, user.id)">
+                        {{funder.percentage || 'empty'}}
+                      </span>
+                    </span>
+                  </td>
+                  <td>
+                    <span ng-show="funder.type == 0">
+                      <!-- editable funder type - amount (show only when amount type selected, otherwise read only -->
+                      <span editable-text="funder.amount" e-form="tableform" e-name="funder-amount" onbeforesave="checkName($data, user.id)">
+                        {{funder.amount || 'empty'}}
+                      </span>
+                    </span>
+                  </td>
+                  <td ng-show="tableform.$visible">
+                    <button type="button" ng-click="jobroles.deleteAdditionalRow('new_role_id', 'funder', key)" class="btn btn-sm btn-danger pull-left">
+                      <i class="fa fa-times"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr ng-show="tableform.$visible">
+                  <td colspan="5">
+                    <a href ng-show="tableform.$visible" ng-disabled="tableform.$waiting" ng-click="jobroles.addAdditionalRow('new_role_id', 'funder')" class="btn btn-link">
+                      <span class="btn-icon"><i class="fa fa-plus"></i></span>Add New Funder
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </form>
       </uib-tab>
       <uib-tab heading="Cost Centres">
         <form editable-form name="tableformcc" onaftersave="jobroles.onAfterSave('new_role_id', 'cost_centers')" oncancel="jobroles.onCancel('new_role_id', 'cost_centers')">
-          <button type="button" class="btn btn-link pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
-            <span class="btn-icon"><i class="fa fa-pencil"></i></span>Edit
-          </button>
-          <div class="btn-group pull-right" ng-show="tableformcc.$visible">
-            <button type="submit" ng-disabled="tableformcc.$waiting" class="btn btn-link">
-              <span class="btn-icon"><i class="fa fa-check"></i></span>Save
+          <div class="job-role__actions">
+            <button type="button" class="btn btn-link" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
+              <span class="btn-icon"><i class="fa fa-pencil"></i></span>Edit
             </button>
-            <button type="button" ng-disabled="tableformcc.$waiting" ng-click="tableformcc.$cancel()" class="btn btn-link">
-              <span class="btn-icon"><i class="fa fa-times"></i></span>Cancel
-            </button>
+            <div class="btn-group" ng-show="tableformcc.$visible">
+              <button type="submit" ng-disabled="tableformcc.$waiting" class="btn btn-link">
+                <span class="btn-icon"><i class="fa fa-check"></i></span>Save
+              </button>
+              <button type="button" ng-disabled="tableformcc.$waiting" ng-click="tableformcc.$cancel()" class="btn btn-link">
+                <span class="btn-icon"><i class="fa fa-times"></i></span>Cancel
+              </button>
+            </div>
           </div>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th style="width:40%">Cost Centres</th>
-                <th style="width:15%">Type</th>
-                <th style="width:15%">% Amount</th>
-                <th style="width:15%">Absolute Amount</th>
-                <th style="width:15%" ng-show="tableformcc.$visible">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="(key, cost_centre) in jobroles.editData['new_role_id']['cost_centers']">
-                <td>
-                  <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                  <span editable-select="cost_centre.cost_centre_id"
-                    e-class="no-select2"
-                    e-form="tableformcc"
-                    e-name="cost-centre"
-                    e-ng-options="value.id as value.title for value in jobroles.CostCentreList | orderBy: 'weight'">
-                    {{jobroles.getCostLabel(cost_centre.cost_centre_id) || 'empty'}}
-                  </span>
-                </td>
-                <td>
-                  <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                  <span editable-select="cost_centre.type"
-                    e-class="no-select2"
-                    e-form="tableformcc"
-                    e-name="cost-centre-type"
-                    e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"
-                    e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'cost_centre', key, $data)">
-                    {{ jobroles.showRowType(cost_centre) }}
-                  </span>
-                </td>
-                <td>
-                  <span ng-show="cost_centre.type == 1">
-                    <!-- editable cost_centre type - percentage (show only when percentage type selected, otherwise read only -->
-                    <span editable-text="cost_centre.percentage" e-form="tableformcc" e-name="cost-centre-percent" onbeforesave="checkName($data, user.id)">
-                      {{cost_centre.percentage || 'empty'}}
+          <div class="table-tab">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:40%">Cost Centres</th>
+                  <th style="width:15%">Type</th>
+                  <th style="width:15%">% Amount</th>
+                  <th style="width:15%">Absolute Amount</th>
+                  <th style="width:15%" ng-show="tableformcc.$visible">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="(key, cost_centre) in jobroles.editData['new_role_id']['cost_centers']">
+                  <td>
+                    <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
+                    <span editable-select="cost_centre.cost_centre_id"
+                      e-class="no-select2"
+                      e-form="tableformcc"
+                      e-name="cost-centre"
+                      e-ng-options="value.id as value.title for value in jobroles.CostCentreList | orderBy: 'weight'">
+                      {{jobroles.getCostLabel(cost_centre.cost_centre_id) || 'empty'}}
                     </span>
-                  </span>
-                </td>
-                <td>
-                  <span ng-show="cost_centre.type == 0">
-                    <!-- editable cost_centre type - amount (show only when amount type selected, otherwise read only -->
-                    <span editable-text="cost_centre.amount" e-form="tableformcc" e-name="cost-centre-amount"  onbeforesave="checkName($data, user.id)">
-                      {{ cost_centre.amount || 'empty' }}
+                  </td>
+                  <td>
+                    <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
+                    <span editable-select="cost_centre.type"
+                      e-class="no-select2"
+                      e-form="tableformcc"
+                      e-name="cost-centre-type"
+                      e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"
+                      e-ng-change="jobroles.updateAdditionalRowType('new_role_id', 'cost_centre', key, $data)">
+                      {{ jobroles.showRowType(cost_centre) }}
                     </span>
-                  </span>
-                </td>
-                <td ng-show="tableformcc.$visible">
-                  <button type="button" ng-click="jobroles.deleteAdditionalRow('new_role_id', 'cost_centre', key)" class="btn btn-sm btn-danger pull-left"><span class="fa fa-times" aria-hidden="true"></span></button>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="{{!tableformcc.$visible ? 4 : 5}}">
-                  <a href ng-show="tableformcc.$visible" ng-disabled="tableformcc.$waiting" ng-click="jobroles.addAdditionalRow('new_role_id', 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Centre</a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                  <td>
+                    <span ng-show="cost_centre.type == 1">
+                      <!-- editable cost_centre type - percentage (show only when percentage type selected, otherwise read only -->
+                      <span editable-text="cost_centre.percentage" e-form="tableformcc" e-name="cost-centre-percent" onbeforesave="checkName($data, user.id)">
+                        {{cost_centre.percentage || 'empty'}}
+                      </span>
+                    </span>
+                  </td>
+                  <td>
+                    <span ng-show="cost_centre.type == 0">
+                      <!-- editable cost_centre type - amount (show only when amount type selected, otherwise read only -->
+                      <span editable-text="cost_centre.amount" e-form="tableformcc" e-name="cost-centre-amount"  onbeforesave="checkName($data, user.id)">
+                        {{ cost_centre.amount || 'empty' }}
+                      </span>
+                    </span>
+                  </td>
+                  <td ng-show="tableformcc.$visible">
+                    <button type="button" ng-click="jobroles.deleteAdditionalRow('new_role_id', 'cost_centre', key)" class="btn btn-sm btn-danger pull-left"><span class="fa fa-times" aria-hidden="true"></span></button>
+                  </td>
+                </tr>
+                <tr ng-show="tableformcc.$visible">
+                  <td colspan="5">
+                    <a href ng-show="tableformcc.$visible" ng-disabled="tableformcc.$waiting" ng-click="jobroles.addAdditionalRow('new_role_id', 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Centre</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </form>
       </uib-tab>
     </uib-tabset>
