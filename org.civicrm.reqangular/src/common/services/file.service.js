@@ -18,6 +18,8 @@ define([
        * @return {promise}
        */
       openFile: function (file) {
+        var downloadWindow = $window.open('about:blank');
+
         return $http.get(file.url, { responseType: 'arraybuffer' })
           .success(function (data) {
             var fileBlob = new Blob([data], { type: file.fileType });
@@ -26,7 +28,7 @@ define([
             if ($window.navigator.msSaveOrOpenBlob) {
               $window.navigator.msSaveOrOpenBlob(fileBlob, file.name);
             } else {
-              $window.open(URL.createObjectURL(fileBlob), '_blank');
+              downloadWindow.location = URL.createObjectURL(fileBlob);
             }
           });
       }
