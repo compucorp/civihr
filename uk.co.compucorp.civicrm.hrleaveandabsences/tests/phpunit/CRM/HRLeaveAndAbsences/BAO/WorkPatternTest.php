@@ -12,7 +12,10 @@ use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolid
  */
 class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
 
+  private $workDayTypeOptions;
+
   public function setUp() {
+    $this->workDayTypeOptions = array_flip(WorkDay::buildOptions('type', 'validate'));
     //Deletes the default work pattern so it doesn't interfere with the tests
     WorkPattern::del(1);
   }
@@ -486,7 +489,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   }
 
   public function testGetCalendarCanGenerateTheCalendarForAWorkPatternWithASingleWeek() {
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
     $expectedCalendar = [
       [
         'date' => '2016-01-01', // friday
@@ -533,7 +536,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   }
 
   public function testGetCalendarCanGenerateTheCalendarForAWorkPatternWithMultipleWeeks() {
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
     $expectedCalendar = [
       [
         'date' => '2016-01-01', // friday, working day on first week
@@ -605,24 +608,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     );
 
     $this->assertEquals($expectedCalendar, $calendar);
-  }
-
-  private function getWorkDayTypeOptionsArray() {
-    $result = $result = civicrm_api3('OptionValue', 'get', array(
-      'sequential' => 1,
-      'option_group_id' => "hrleaveandabsences_work_day_type",
-    ));
-
-    $options = [];
-    foreach($result['values'] as $value) {
-      $options[$value['name']] = [
-        'value' => $value['value'],
-        'name' => $value['name'],
-        'label' => $value['label']
-      ];
-    }
-
-    return $options;
   }
 
   public function testItDoesNotEnqueueTaskToUpdatePublicHolidayLeaveRequestsWhenANewWorkPatternIsCreatedAndNotSetToDefault() {

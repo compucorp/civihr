@@ -13,7 +13,7 @@
         <staff-leave-report ng-if="active === 0" contact-id="$root.settings.contactId"></staff-leave-report>
       </uib-tab>
       <uib-tab heading="Calendar" data-tabname="calendar">
-        <staff-leave-calendar ng-if="active === 1" contact-id="$root.settings.contactId"></staff-leave-calendar>
+        <leave-calendar ng-if="active === 1" contact-id="$root.settings.contactId" role-override="staff"></leave-calendar>
       </uib-tab>
       <uib-tab heading="Entitlements" data-tabname="entitlements">
         <absence-tab-entitlements ng-if="active === 2" contact-id="$root.settings.contactId"></absence-tab-entitlements>

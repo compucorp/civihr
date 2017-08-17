@@ -303,44 +303,41 @@ define([
      *
      * @param  {Date} date
      * @param  {String} dayType - set to from if from date is selected else to
-     * @return {Promise} of array with day types
+     * @return {Promise} resolves with an array of day types
      */
     function filterLeaveRequestDayTypes (date, dayType) {
-      var inCalendarList, listToReturn;
-      var deferred = $q.defer();
+      var listToReturn;
 
       if (!date) {
-        deferred.reject([]);
+        return $q.reject([]);
       }
 
       // Make a copy of the list
       listToReturn = this.requestDayTypes.slice(0);
-
       date = this._convertDateToServerFormat(date);
-      PublicHoliday.isPublicHoliday(date)
+
+      return PublicHoliday.isPublicHoliday(date)
         .then(function (result) {
           if (result) {
-            listToReturn = listToReturn.filter(function (publicHoliday) {
+            return listToReturn.filter(function (publicHoliday) {
               return publicHoliday.name === 'public_holiday';
             });
-          } else {
-            inCalendarList = getDayTypesFromDate.call(this, date, listToReturn);
-
-            if (!inCalendarList.length) {
-              // 'All day', 'Half-day AM', and 'Half-day PM' options
-              listToReturn = listToReturn.filter(function (dayType) {
-                return dayType.name === 'all_day' || dayType.name === 'half_day_am' || dayType.name === 'half_day_pm';
-              });
-            } else {
-              listToReturn = inCalendarList;
-            }
           }
 
+          return getDayTypesFromDate.call(this, date, listToReturn)
+            .then(function (inCalendarList) {
+              return inCalendarList.length
+                ? inCalendarList
+                : listToReturn.filter(function (dayType) {
+                  return _.includes(['all_day', 'half_day_am', 'half_day_pm'], dayType.name);
+                });
+            });
+        }.bind(this))
+        .then(function (listToReturn) {
           setDayType.call(this, dayType, listToReturn);
-          deferred.resolve(listToReturn);
-        }.bind(this));
 
-      return deferred.promise;
+          return listToReturn;
+        }.bind(this));
     }
 
     /**
@@ -381,19 +378,22 @@ define([
      *
      * @param {Date} date to Checks
      * @param {Array} listOfDayTypes array of day types
-     * @return {Array} non-empty if found else empty array
+     * @return {Promise} resolves with an {Array} of day types
      */
     function getDayTypesFromDate (date, listOfDayTypes) {
-      var nameFilter = null;
+      date = moment(date);
 
-      if (this.calendar.isNonWorkingDay(moment(date))) {
-        nameFilter = 'non_working_day';
-      } else if (this.calendar.isWeekend(moment(date))) {
-        nameFilter = 'weekend';
-      }
-
-      return !nameFilter ? [] : listOfDayTypes.filter(function (day) {
-        return day.name === nameFilter;
+      return $q.all([
+        this.calendar.isNonWorkingDay(date),
+        this.calendar.isWeekend(date)
+      ])
+      .then(function (results) {
+        return results[0] ? 'non_working_day' : (results[1] ? 'weekend' : null);
+      })
+      .then(function (nameFilter) {
+        return !nameFilter ? [] : listOfDayTypes.filter(function (day) {
+          return day.name === nameFilter;
+        });
       });
     }
 
@@ -1245,7 +1245,7 @@ define([
     function _loadCalendar () {
       var self = this;
 
-      return Calendar.get(self.request.contact_id, self.period.id)
+      return Calendar.get(self.request.contact_id, self.period.start_date, self.period.end_date)
         .then(function (usersCalendar) {
           self.calendar = usersCalendar;
         });

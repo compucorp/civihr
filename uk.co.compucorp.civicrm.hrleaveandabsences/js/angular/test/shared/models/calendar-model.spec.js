@@ -1,9 +1,9 @@
 /* eslint-env amd, jasmine */
-/* global inject */
 
 define([
   'common/lodash',
   'mocks/data/work-pattern-data',
+  'mocks/apis/option-group-api-mock',
   'leave-absences/shared/models/calendar-model'
 ], function (_, workPatternMocked) {
   'use strict';
@@ -11,7 +11,12 @@ define([
   describe('Calendar', function () {
     var $q, $rootScope, Calendar, WorkPatternAPI;
 
-    beforeEach(module('leave-absences.models'));
+    beforeEach(module('leave-absences.models', 'leave-absences.mocks'));
+    beforeEach(inject(function (OptionGroup, OptionGroupAPIMock) {
+      spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
+        return OptionGroupAPIMock.valuesOf(name);
+      });
+    }));
     beforeEach(inject(function (_$q_, _$rootScope_, _Calendar_, _WorkPatternAPI_) {
       $q = _$q_;
       $rootScope = _$rootScope_;
@@ -31,12 +36,17 @@ define([
       });
 
       describe('basic tests', function () {
+        var contactId = '1';
+        var startDate = '2017-01-01';
+        var endDate = '2017-12-31';
+        var params = { foo: 'foo', bar: 'bar' };
+
         beforeEach(function () {
-          Calendar.get(jasmine.any(String), jasmine.any(String));
+          Calendar.get(contactId, startDate, endDate, params);
         });
 
         it('calls the equivalent API method', function () {
-          expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
+          expect(WorkPatternAPI.getCalendar).toHaveBeenCalledWith(contactId, startDate, endDate, params);
         });
       });
 

@@ -8,11 +8,14 @@ define([
   'common/services/angular-date/date-format',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/components/leave-balance-tab.component',
+  'leave-absences/shared/components/leave-calendar.component',
+  'leave-absences/shared/components/leave-calendar-day.component',
+  'leave-absences/shared/components/leave-calendar-legend.component',
+  'leave-absences/shared/components/leave-calendar-month.component',
   'leave-absences/shared/components/leave-request-actions.component',
   'leave-absences/shared/components/leave-request-popup-comments-tab.component',
   'leave-absences/shared/components/leave-request-popup-files-tab',
   'leave-absences/shared/components/leave-request-record-actions.component',
-  'leave-absences/shared/components/manager-leave-calendar',
   'leave-absences/shared/components/manage-leave-requests.component',
   'leave-absences/shared/controllers/sub-controllers/leave-request.controller',
   'leave-absences/shared/controllers/sub-controllers/sick-request.controller',
@@ -32,12 +35,12 @@ define([
     'common.angularDate',
     'common.dialog',
     'common.mocks',
-    'admin-dashboard.config',
-    'admin-dashboard.components',
     'leave-absences.components',
     'leave-absences.controllers',
+    'leave-absences.settings',
     'leave-absences.services',
-    'leave-absences.settings'
+    'admin-dashboard.config',
+    'admin-dashboard.components'
   ]).run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
     $log.debug('app.run');
 

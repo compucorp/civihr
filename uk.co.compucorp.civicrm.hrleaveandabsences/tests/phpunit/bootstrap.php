@@ -12,7 +12,6 @@ require_once 'helpers/ContractHelpersTrait.php';
 require_once 'helpers/LeaveBalanceChangeHelpersTrait.php';
 require_once 'helpers/LeavePeriodEntitlementHelpersTrait.php';
 require_once 'helpers/LeaveRequestHelpersTrait.php';
-require_once 'helpers/WorkPatternHelpersTrait.php';
 require_once 'helpers/LeaveManagerHelpersTrait.php';
 require_once 'helpers/SessionHelpersTrait.php';
 require_once 'helpers/LeaveRequestStatusMatrixHelpersTrait.php';
