@@ -33,6 +33,7 @@
  *
  */
 
+use CRM_Hrjobcontract_Import_Parser_EntitlementUpdate as EntitlementUpdateParser;
 /**
  * This class gets the name of the file to upload
  */
@@ -315,12 +316,18 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
         $importKeys[] = $mapperPart[0];
       }
 
-      $requiredFields = array(
-        'HRJobDetails-title' => ts('Job Title'),
-        'HRJobDetails-position' => ts('Job Position'),
-        'HRJobDetails-contract_type' => ts('Job Contract Type'),
-        'HRJobDetails-period_start_date' => ts('Contract Start Date')
-      );
+      if($self->_importMode == CRM_Hrjobcontract_Import_Parser::UPDATE_ENTITLEMENTS){
+        $requiredFields = EntitlementUpdateParser::getRequiredFields();
+      }
+      else{
+        $requiredFields = array(
+          'HRJobDetails-title' => ts('Job Title'),
+          'HRJobDetails-position' => ts('Job Position'),
+          'HRJobDetails-contract_type' => ts('Job Contract Type'),
+          'HRJobDetails-period_start_date' => ts('Contract Start Date')
+        );
+      }
+
 
      if ($self->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS) {
         $requiredFields = array_merge($requiredFields, array(
@@ -495,8 +502,8 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
     }
 
     $this->set('_entity', $this->_entity);
-
-    $parser = new $this->_parser($mapperKeysMain);
+    $parser = $this->getParser();
+    $parser = new $parser($mapperKeysMain);
     $parser->setEntity($this->_entity);
     $parser->run($fileName, $separator, $mapper, $skipColumnHeader,
       CRM_Import_Parser::MODE_PREVIEW, $this->get('contactType')
