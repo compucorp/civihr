@@ -46,9 +46,9 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobLeave extends CRM_Hrjobcontrac
         'jobcontract_revision_id' => $revisionID,
         'jobcontract_id' => $contractID,
       ];
-
-      return $leaveRows;
     }
+
+    return $leaveRows;
   }
 }
 
