@@ -3,9 +3,7 @@
 define([
   'common/angular',
   'common/lodash',
-  'common/moment',
-  'common/filters/angular-date/format-date',
-  'common/services/pub-sub'
+  'common/moment'
 ], function (angular, _, moment) {
   'use strict';
 

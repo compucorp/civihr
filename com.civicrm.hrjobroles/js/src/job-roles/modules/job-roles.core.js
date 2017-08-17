@@ -6,8 +6,10 @@ define([
   'common/directives/angular-date/date-input',
   'common/modules/directives',
   'common/modules/routers/compu-ng-route',
+  'common/filters/angular-date/format-date',
   'common/services/angular-date/date-format',
   'common/services/dom-event-trigger',
+  'common/services/pub-sub',
   'job-roles/vendor/angular-editable',
   'job-roles/vendor/angular-filter'
 ], function (angular) {
