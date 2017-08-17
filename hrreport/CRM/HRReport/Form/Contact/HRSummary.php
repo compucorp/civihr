@@ -474,8 +474,6 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $customFieldsToRetain =
       array(
         'Career'         => array('Occupation Type', 'Full-time / Part-time', 'Paid / Unpaid'),
-        'Immigration'    => array('Visa Type'),
-        'Identification' => array('Type', 'Country', 'State/Province'),
         'Qualifications' => array('Category of Skill', 'Name of Skill', 'Level of Skill', 'Certification Acquired?'),
         'Medical & Disability' => array('Type', 'Special Requirements'),
       );
