@@ -63,8 +63,7 @@ individually:
  * org.civicrm.hrqual: Qualifications
  * org.civicrm.hrreport: Reporting
  * org.civicrm.hrstaffdir: Staff Directory
- * org.civicrm.hrvisa: Immigration
- * org.civicrm.hrcase: Case
+  * org.civicrm.hrcase: Case
  * org.civicrm.hrcaseutils: Case Utils
  * org.civicrm.hrim: Instant messanger link
  * org.civicrm.hrrecruitment: Recruitment

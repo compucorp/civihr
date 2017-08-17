@@ -65,7 +65,6 @@ fi
 runTest hrreport org.civicrm.hrabsence,org.civicrm.hrjob,org.civicrm.hrreport CRM_AllTests
 runTest hrjob org.civicrm.hrjob api_v3_AllTests
 runTest hrjob org.civicrm.hrjob CRM_AllTests
-runTest hrvisa org.civicrm.hrjob,org.civicrm.hrvisa CRM_AllTests
 runTest hrabsence org.civicrm.hrabsence api_v3_AllTests
 runTest hrrecruitment org.civicrm.hrrecruitment CRM_AllTests
 
