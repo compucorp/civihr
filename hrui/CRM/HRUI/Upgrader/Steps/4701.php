@@ -46,6 +46,12 @@ trait CRM_HRUI_Upgrader_Steps_4701 {
     $identTableName = $this->up4701_getIdentTableName();
     $identFieldName = $this->up4701_getIdentFieldName();
 
+    $isEnabled = _hrui_is_extension_enabled('org.civicrm.hrident');
+
+    if (!$isEnabled) {
+      return TRUE;
+    }
+
     $query = "
       UPDATE {$inlineCustomGroup['table_name']}, $identTableName
          SET {$niSSNField['column_name']} = $identFieldName

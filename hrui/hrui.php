@@ -42,7 +42,9 @@ function hrui_civicrm_pageRun($page) {
     //set government field value for individual page
     $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
 
-    if ($contactType == 'Individual') {
+    $isEnabled = _hrui_is_extension_enabled('org.civicrm.hrident');
+
+    if ($isEnabled && $contactType == 'Individual') {
       $hideGId = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
       CRM_Core_Resources::singleton()
         ->addSetting(array(
@@ -185,10 +187,13 @@ function _hrui_phone_is_empty($phoneIndex, $form) {
  * Implementation of hook_civicrm_postProcess
  */
 function hrui_civicrm_postProcess( $formName, &$form ) {
-  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrident', 'is_active', 'full_name');
+  $isEnabled = _hrui_is_extension_enabled('org.civicrm.hrident');
+
   if ($formName == 'CRM_Contact_Form_Contact'
+    && $isEnabled
     && !empty($form->_submitValues['GovernmentId'])
-    && $form->_contactType == 'Individual') {
+    && $form->_contactType == 'Individual'
+  ) {
     $govFieldId = CRM_HRIdent_Page_HRIdent::retreiveContactFieldId('Identify');
     $govFieldIds = CRM_HRIdent_Page_HRIdent::retreiveContactFieldValue($form->_contactId);
     if (!empty($govFieldId)) {
@@ -510,15 +515,13 @@ function _hrui_check_extension($extensionKey)  {
  * by taking advantage of &$tabs variable.
  * 2) we set assignments tab to 30 since it should appear
  * after appraisals tab directly which have the weight of 20.
- * 3) we jump to weight of 60 in identifications tab since 40 & 50
- * are occupied by tasks & assignments extension tabs .
- * 4) the weight increased by 10 between every tab
+ * 3) the weight increased by 10 between every tab
  * to give a large space for other tabs to be inserted
  * between any two without altering other tabs weights.
- * 5) we remove a tab if present in the $tabsToRemove list
+ * 4) we remove a tab if present in the $tabsToRemove list
  *
- * @param Array $tabs
- * @param Array $tabsToRemove
+ * @param array $tabs
+ * @param array $tabsToRemove
  */
 function _hrui_alter_tabs(&$tabs, $tabsToRemove) {
   foreach ($tabs as $i => $tab) {
@@ -530,12 +533,6 @@ function _hrui_alter_tabs(&$tabs, $tabsToRemove) {
     switch($tab['title'])  {
       case 'Assignments':
         $tabs[$i]['weight'] = 30;
-        break;
-      case 'Identification':
-        $tabs[$i]['weight'] = 60;
-        break;
-      case 'Immigration':
-        $tabs[$i]['weight'] = 70;
         break;
       case 'Emergency Contacts':
         $tabs[$i]['weight'] = 80;
@@ -1033,4 +1030,15 @@ function _hrui_createDeveloperMenu(&$menu) {
       'permission' => 'access CiviCRM',
     ]);
   }
+}
+
+function _hrui_is_extension_enabled($key) {
+  $isEnabled = CRM_Core_DAO::getFieldValue(
+    'CRM_Core_DAO_Extension',
+    $key,
+    'is_active',
+    'full_name'
+  );
+
+  return  !empty($isEnabled) ? true : false;
 }
