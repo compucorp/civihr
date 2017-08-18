@@ -34,6 +34,8 @@
  */
 
 use CRM_Hrjobcontract_Import_Parser_EntitlementUpdate as EntitlementUpdateParser;
+use CRM_Hrjobcontract_Factory_ImportParser as ImportParserFactory;
+
 /**
  * This class gets the name of the file to upload
  */
@@ -502,7 +504,7 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
     }
 
     $this->set('_entity', $this->_entity);
-    $parser = $this->getParser($this->_importMode, $mapperKeysMain);
+    $parser = ImportParserFactory::create($this->_importMode, $mapperKeysMain);
     $parser->setEntity($this->_entity);
     $parser->run($fileName, $separator, $mapper, $skipColumnHeader,
       CRM_Import_Parser::MODE_PREVIEW, $this->get('contactType')
