@@ -57,6 +57,10 @@ class CRM_Hrjobcontract_Import_Form_DataSource extends CRM_Import_Form_DataSourc
       NULL, NULL, ts('Import Contracts Revision'), CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS
     );
 
+    $importModeOptions[] = $this->createElement('radio',
+      NULL, NULL, ts('Update Current Contract Entitlements'), CRM_Hrjobcontract_Import_Parser::UPDATE_ENTITLEMENTS
+    );
+
     $this->addGroup($importModeOptions, 'importMode',
       ts('Import Mode')
     );
@@ -93,6 +97,14 @@ class CRM_Hrjobcontract_Import_Form_DataSource extends CRM_Import_Form_DataSourc
       'contactType',
     ));
 
-    $this->submitFileForMapping('CRM_Hrjobcontract_Import_Parser_Api');
+    $this->_importMode = $this->get('importMode');
+
+    if($this->_importMode == CRM_Hrjobcontract_Import_Parser::UPDATE_ENTITLEMENTS) {
+      $this->submitFileForMapping(CRM_Hrjobcontract_Import_Parser_EntitlementUpdate::class);
+    }
+    else{
+      $this->submitFileForMapping(CRM_Hrjobcontract_Import_Parser_Api::class);
+    }
+
   }
 }
