@@ -22,11 +22,14 @@ class CRM_Hrjobcontract_Import_Parser_EntitlementUpdate extends CRM_Hrjobcontrac
    * Sets the fields for the contract entitlement import.
    */
   public function setFields() {
-    $this->_fields = array_merge(['do_not_import' => ['title' => ts('- do not import -')]], $this->getFields());
+    $this->_fields = array_merge(
+      ['do_not_import' => ['title' => ts('- do not import -')]],
+      $this->getFields()
+    );
   }
 
   /**
-   * handle the values in preview mode
+   * Handle the values in preview mode
    *
    * @param array $values
    *   The array of values belonging to this line
@@ -50,7 +53,7 @@ class CRM_Hrjobcontract_Import_Parser_EntitlementUpdate extends CRM_Hrjobcontrac
   public function summary(&$values) {
     $erroneousField = NULL;
     $this->setActiveFieldValues($values, $erroneousField);
-    $params = &$this->getActiveFieldParams();
+    $params = $this->getActiveFieldParams();
     $errorMessage = NULL;
     $errorMessage .= $this->validateRequiredFields($params);
     $errorMessage .= $this->validateFieldTypes($params);
@@ -83,7 +86,7 @@ class CRM_Hrjobcontract_Import_Parser_EntitlementUpdate extends CRM_Hrjobcontrac
     if ($response != CRM_Import_Parser::VALID) {
       return $response;
     }
-    $params = &$this->getActiveFieldParams();
+    $params = $this->getActiveFieldParams();
 
     try {
       $currentContract = HRJobContract::getCurrentContract($params['contact_id']);
