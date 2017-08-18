@@ -1,4 +1,4 @@
-<div class="chr_leave-balance-report">
+<div class="chr_leave-balance-tab">
   <crm-loading show="!leaveBalanceTab.loading.component">
     <leave-balance-tab-filters
       absence-periods="leaveBalanceTab.absencePeriods"
@@ -6,11 +6,11 @@
       on-filters-change="leaveBalanceTab.updateReportFilters($filters)">
     </leave-balance-tab-filters>
 
-    <div class="chr_leave-balance-report__report panel panel-default">
+    <div class="chr_leave-balance-tab__report panel panel-default">
       <div class="panel-body">
         <crm-loading show="!leaveBalanceTab.loading.report">
-          <h4>Results <span class="chr_leave-balance-report__results-value">({{leaveBalanceTab.reportCount}})</span></h4>
-          <div class="chr_leave-balance-report__overflow-scroll">
+          <h4>Results <span class="chr_leave-balance-tab__results-value">({{leaveBalanceTab.reportCount}})</span></h4>
+          <div class="chr_leave-balance-tab__overflow-scroll">
             <table class="table table-responsive">
               <tbody>
                 <tr>
@@ -18,8 +18,8 @@
                   <th colspan="4" ng-repeat="type in leaveBalanceTab.selectedAbsenceTypes">{{type.title}}</th>
                 </tr>
                 <tr>
-                  <th class="chr_leave-balance-report__contact-id-column">Contact ID</th>
-                  <th class="chr_leave-balance-report__name-column">Name</th>
+                  <th class="chr_leave-balance-tab__contact-id-column">Contact ID</th>
+                  <th class="chr_leave-balance-tab__name-column">Name</th>
                   <th ng-repeat-start="absenceTypes in leaveBalanceTab.selectedAbsenceTypes">Entitlement</th>
                   <th>Used</th>
                   <th>Balance</th>
@@ -38,7 +38,7 @@
               </tbody>
             </table>
           </div>
-          <nav class="chr_leave-balance-report__pagination">
+          <nav class="chr_leave-balance-tab__pagination">
             <ul class="pagination">
               <li class="label"><a>Page:</a></li>
               <li ng-repeat="i in [1,2,3,4,5,6]">
