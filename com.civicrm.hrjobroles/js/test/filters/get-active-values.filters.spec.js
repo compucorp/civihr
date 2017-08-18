@@ -1,8 +1,10 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angular',
   'common/angularMocks',
-  'job-roles/filters/option-values-filter',
-], function(angular, moment) {
+  'job-roles/filters/get-active-values.filter'
+], function (angular, moment) {
   'use strict';
 
   describe('getActiveValues', function () {
@@ -21,22 +23,22 @@ define([
     describe('when filtering locations, departments, region and lavels ', function () {
       beforeEach(function () {
         locations = {
-          "Headquarters": {
-            "id": "35",
-            "title": "Headquarters",
-            "is_active": "1"
+          'Headquarters': {
+            'id': '35',
+            'title': 'Headquarters',
+            'is_active': '1'
           },
-          "Home": {
-            "id": "36",
-            "title": "Home or Home-Office",
-            "is_active": "1"
+          'Home': {
+            'id': '36',
+            'title': 'Home or Home-Office',
+            'is_active': '1'
           },
-          "Other": {
-            "id": "37",
-            "title": "Home or Home-Office",
-            "is_active": "0"
+          'Other': {
+            'id': '37',
+            'title': 'Home or Home-Office',
+            'is_active': '0'
           }
-        }
+        };
       });
 
       it('returns 2 values', function () {

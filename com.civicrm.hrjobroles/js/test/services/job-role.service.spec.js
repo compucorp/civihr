@@ -1,19 +1,21 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/lodash',
-  'mocks/data/job-contracts',
+  'mocks/data/job-contract.data',
   'common/angularMocks',
-  'job-roles/app'
+  'job-roles/modules/job-roles.module'
 ], function (_, mockedContracts) {
   'use strict';
 
-  describe('HRJobRolesService', function () {
-    var $q, HRJobRolesService, deferred;
+  describe('jobRoleService', function () {
+    var $q, jobRoleService, deferred;
 
     beforeEach(module('hrjobroles'));
-    beforeEach(inject(['$q', 'HRJobRolesService', function (_$q_, _HRJobRolesService_) {
+    beforeEach(inject(['$q', 'jobRoleService', function (_$q_, _jobRoleService_) {
       $q = _$q_;
 
-      HRJobRolesService = _HRJobRolesService_;
+      jobRoleService = _jobRoleService_;
       deferred = mockDeferred($q);
     }]));
 
@@ -23,7 +25,7 @@ define([
       beforeEach(function () {
         mockAPIResponse(_.cloneDeep(mockedContracts));
 
-        HRJobRolesService.getContracts('1');
+        jobRoleService.getContracts('1');
 
         callArgs = CRM.api3.calls.argsFor(0);
         finalResult = deferred.resolve.calls.argsFor(0)[0];
@@ -57,7 +59,7 @@ define([
         var args;
 
         beforeEach(function () {
-          HRJobRolesService.getContactList();
+          jobRoleService.getContactList();
           args = CRM.api3.calls.mostRecent().args;
         });
 
@@ -75,7 +77,7 @@ define([
 
       describe('when no specific filter is passed', function () {
         beforeEach(function () {
-          HRJobRolesService.getContactList();
+          jobRoleService.getContactList();
         });
 
         it('sets as `null` the filter properties', function () {
@@ -88,7 +90,7 @@ define([
 
       describe('when filtering by contact name', function () {
         beforeEach(function () {
-          HRJobRolesService.getContactList('foo');
+          jobRoleService.getContactList('foo');
         });
 
         it('passes the name to the api endpoint', function () {
@@ -102,7 +104,7 @@ define([
         var idsList = ['1', '2', '3', '4'];
 
         beforeEach(function () {
-          HRJobRolesService.getContactList(null, idsList);
+          jobRoleService.getContactList(null, idsList);
         });
 
         it('passes the ids as an IN parameter to the endpoint', function () {
@@ -119,9 +121,9 @@ define([
       beforeEach(function () {
         mockAPIResponse(mockedResponse());
 
-        HRJobRolesService.getOptionValues(['group1', 'group2']);
+        jobRoleService.getOptionValues(['group1', 'group2']);
         callArgs = CRM.api3.calls.argsFor(0);
-      })
+      });
 
       it('calls the OptionValue entity directly', function () {
         expect(callArgs[0]).toBe('OptionValue');
@@ -137,7 +139,7 @@ define([
 
         beforeEach(function () {
           finalResult = deferred.resolve.calls.argsFor(0)[0];
-        })
+        });
 
         it('is added to the standard response object', function () {
           expect(finalResult.optionGroupData).toBeDefined();
@@ -147,7 +149,7 @@ define([
           expect(finalResult.optionGroupData).toEqual({
             'Group 1': '11',
             'Group 2': '22'
-          })
+          });
         });
       });
 
@@ -156,7 +158,7 @@ define([
        *
        * @return {Object}
        */
-      function mockedResponse() {
+      function mockedResponse () {
         return {
           values: [
             {
@@ -194,10 +196,10 @@ define([
      *
      * @param  {Object} response the response that the mocked api3 should return
      */
-    function mockAPIResponse(response) {
+    function mockAPIResponse (response) {
       spyOn(CRM, 'api3').and.callFake(function () {
         return {
-          done: function(fn) { fn(response); return this; },
+          done: function (fn) { fn(response); return this; },
           error: function () { return this; }
         };
       });
@@ -209,12 +211,12 @@ define([
      * @param  {Object} $q
      * @return {Object} the mocked value
      */
-    function mockDeferred($q) {
+    function mockDeferred ($q) {
       var deferred = {
         promise: {},
         resolve: jasmine.createSpy('resolve'),
-        reject: jasmine.createSpy('reject'),
-      }
+        reject: jasmine.createSpy('reject')
+      };
 
       spyOn($q, 'defer').and.callFake(function () { return deferred; });
 

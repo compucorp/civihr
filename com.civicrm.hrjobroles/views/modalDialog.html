@@ -1,18 +1,18 @@
 <div class="modal-header">
-  <button type="button" class="close" ng-click="cancel()">
+  <button type="button" class="close" ng-click="dialog.cancel()">
     <span aria-hidden="true">&times;</span>
     <span class="sr-only">Close</span>
   </button>
-  <h2 class="modal-title">{{title}}</h2>
+  <h2 class="modal-title">{{dialog.title}}</h2>
 </div>
 <div class="modal-body">
-  {{msg}}
+  {{dialog.msg}}
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary-outline" ng-click="cancel()">
-    {{copyCancel}}
+  <button type="button" class="btn btn-secondary-outline" ng-click="dialog.cancel()">
+    {{dialog.copyCancel}}
   </button>
-  <button type="button" class="btn btn-primary" ng-click="confirm()">
-    {{copyConfirm}}
+  <button type="button" class="btn btn-primary" ng-click="dialog.confirm()">
+    {{dialog.copyConfirm}}
   </button>
 </div>

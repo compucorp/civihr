@@ -1,9 +1,11 @@
-define([
-  'job-roles/services/services'
-], function (services) {
+/* eslint-env amd */
+
+define(function () {
   'use strict';
 
-  services.factory('HRJobRolesServiceFilters', function () {
+  filtersService.__name = 'filtersService';
+
+  function filtersService () {
     return {
       /**
        * Filter items which are different than undefined
@@ -11,7 +13,7 @@ define([
        * @param  {array} array
        * @return {array}
        */
-      isNotUndefined: function(array) {
+      isNotUndefined: function (array) {
         try {
           if (array.constructor === Array) {
             return array.filter(function (value) {
@@ -31,7 +33,7 @@ define([
        * @param  {array} roles
        * @return {array}
        */
-      issetCostCentre: function(roles) {
+      issetCostCentre: function (roles) {
         try {
           if (roles.constructor === Array) {
             return roles.filter(function (role) {
@@ -55,7 +57,7 @@ define([
        * @param  {array} roles
        * @return {array}
        */
-      issetFunder: function(roles) {
+      issetFunder: function (roles) {
         try {
           if (roles.constructor === Array) {
             return roles.filter(function (role) {
@@ -72,6 +74,8 @@ define([
           return roles;
         }
       }
-    }
-  });
+    };
+  }
+
+  return filtersService;
 });
