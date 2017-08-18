@@ -502,8 +502,7 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
     }
 
     $this->set('_entity', $this->_entity);
-    $parser = $this->getParser();
-    $parser = new $parser($mapperKeysMain);
+    $parser = $this->getParser($this->_importMode, $mapperKeysMain);
     $parser->setEntity($this->_entity);
     $parser->run($fileName, $separator, $mapper, $skipColumnHeader,
       CRM_Import_Parser::MODE_PREVIEW, $this->get('contactType')

@@ -143,8 +143,7 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
       }
     }
     $leaveType = CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobLeave', 'leave_type');
-    $parser = $this->getParser();
-    $parser = new $parser($mapperKeys, $mapperLocTypes);
+    $parser = $this->getParser($this->_importMode, $mapperKeys, $mapperLocTypes);
     $parser->setEntity($entity);
 
     $mapFields = $this->get('fields');
