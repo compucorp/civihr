@@ -16,13 +16,13 @@
   </div>
   <div class="col-sm-4">
     <div class="override-filters">
-      <input type="radio" id="override_filter_overridden" name="override-filter" class="override-filter" value="1">
+      <input type="radio" id="override_filter_overridden" name="override-filter" class="old-radiocheckbox-style override-filter" value="1">
       <label for="override_filter_overridden">Overridden</label>
 
-      <input type="radio" id="override_filter_not_overridden" name="override-filter" class="override-filter" value="2">
+      <input type="radio" id="override_filter_not_overridden" name="override-filter" class="old-radiocheckbox-style override-filter" value="2">
       <label for="override_filter_not_overridden">Not Overridden</label>
 
-      <input type="radio" id="override_filter_both" name="override-filter" class="override-filter" value="3" checked="checked">
+      <input type="radio" id="override_filter_both" name="override-filter" class="old-radiocheckbox-style override-filter" value="3" checked="checked">
       <label for="override_filter_both">Both</label>
     </div>
   </div>
