@@ -238,11 +238,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
     private function addFieldsRules()
     {
         $positiveNumberMessage = ts('The value should be a positive number');
-        $this->addRule('default_entitlement', $positiveNumberMessage, 'positiveInteger');
-        $this->addRule('max_consecutive_leave_days', $positiveNumberMessage, 'positiveInteger');
-        $this->addRule('max_leave_accrual', $positiveNumberMessage, 'positiveInteger');
         $this->addRule('accrual_expiration_duration', $positiveNumberMessage, 'positiveInteger');
-        $this->addRule('max_number_of_days_to_carry_forward', $positiveNumberMessage, 'positiveInteger');
         $this->addRule('carry_forward_expiration_duration', $positiveNumberMessage, 'positiveInteger');
         $this->addFormRule([$this, 'formRules']);
     }
@@ -252,6 +248,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
         $errors = [];
         $this->validateToilExpiration($values, $errors);
         $this->validateCarryForwardExpiration($values, $errors);
+        $this->validatePositiveDecimals($values, $errors);
 
         return empty($errors) ? true : $errors;
     }
@@ -282,6 +279,41 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
         if($expiration_duration && !$expiration_unit) {
             $errors['carry_forward_expiration_unit'] = ts('You must also set the expiration unit');
         }
+    }
+
+    /**
+     * Validate all the fields in this form that should have a positive decimal
+     * value
+     *
+     * @param array $values
+     * @param array $errors
+     */
+    private function validatePositiveDecimals($values, &$errors) {
+      $decimalFields = [
+        'default_entitlement',
+        'max_consecutive_leave_days',
+        'max_leave_accrual',
+        'max_number_of_days_to_carry_forward'
+      ];
+
+      foreach($decimalFields as $decimalField) {
+        $value = CRM_Utils_Array::value($decimalField, $values);
+        if($value && !$this->validatePositiveDecimal($value)) {
+          $errors[$decimalField] = ts('The value should be a positive decimal number up to 1 decimal digit');
+        }
+      }
+    }
+
+    /**
+     * Validates if the given value is a positive decimal (with up to 1 decimal
+     * digit)
+     *
+     * @param number $value
+     *
+     * @return boolean
+     */
+    private function validatePositiveDecimal($value) {
+      return preg_match('/(^\d+\.\d{1}$)|(^\d+$)/', $value);
     }
 
     private function getAvailableButtons()

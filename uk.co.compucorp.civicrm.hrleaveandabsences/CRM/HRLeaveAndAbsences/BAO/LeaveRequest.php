@@ -301,7 +301,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $maxLeaveAccrual = $absenceType->max_leave_accrual;
     if ($totalProjectedToilForPeriod > $maxLeaveAccrual && !$unlimitedAccrual) {
       throw new InvalidLeaveRequestException(
-        'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual .' days. Please modify the dates of this request',
+        'The maximum amount of leave that you can accrue is '. round($maxLeaveAccrual, 1) .' days. Please modify the dates of this request',
         'leave_request_toil_amount_more_than_maximum_for_absence_type',
         'toil_to_accrue'
       );
@@ -574,7 +574,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if (!empty($maxConsecutiveLeaveDays) && $intervalInDays > $maxConsecutiveLeaveDays) {
       throw new InvalidLeaveRequestException(
-        'Only a maximum '. $maxConsecutiveLeaveDays .' days leave can be taken in one request. Please modify days of this request',
+        'Only a maximum '. round($maxConsecutiveLeaveDays, 1) .' days leave can be taken in one request. Please modify days of this request',
         'leave_request_days_greater_than_max_consecutive_days',
         'type_id'
       );

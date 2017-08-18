@@ -125,7 +125,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
 
     $type = AbsenceTypeFabricator::fabricate([
-      'max_number_of_days_to_carry_forward' => 5
+      'max_number_of_days_to_carry_forward' => 5.5
     ]);
 
     $previousPeriod = AbsencePeriodFabricator::fabricate([
@@ -147,7 +147,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     // current period, but that is more than the max number of days allowed by
     // the absence type, so the carried amount should be reduced to he maximum
     // allowed
-    $this->assertEquals(5, $calculation->getBroughtForward());
+    $this->assertEquals(5.5, $calculation->getBroughtForward());
   }
 
   public function testBroughtForwardShouldBeTheNumberOfDaysRemainingInPreviousPeriodIfTheAbsenceTypeAllowsUnlimitedDaysToBeBroughtForward() {

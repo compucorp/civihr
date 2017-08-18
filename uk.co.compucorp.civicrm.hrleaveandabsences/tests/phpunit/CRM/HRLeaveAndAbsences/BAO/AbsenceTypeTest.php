@@ -352,12 +352,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $params = [
       'title'                               => 'Title 1',
       'color'                               => '#000101',
-      'default_entitlement'                 => 21,
+      'default_entitlement'                 => 10.6,
       'allow_request_cancelation'           => 1,
       'is_active'                           => 1,
       'is_default'                          => 1,
       'allow_carry_forward'                 => 1,
-      'max_number_of_days_to_carry_forward' => 10,
+      'max_number_of_days_to_carry_forward' => 5.5,
     ];
     $entity = AbsenceTypeFabricator::fabricate($params);
     $values = AbsenceType::getValuesArray($entity->id);
