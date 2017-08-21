@@ -256,3 +256,16 @@ having value <> ''";
     }
 
 }
+
+/**
+ * Implements hook_civicrm_alterAPIPermissions to define the required
+ * permissions to this extension's APIs
+ *
+ * @param string $entity
+ * @param string $action
+ * @param array $params
+ * @param array $permissions
+ */
+function hrjobroles_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  $permissions['contact_hr_job_roles']['get'] = ['access AJAX API'];
+}

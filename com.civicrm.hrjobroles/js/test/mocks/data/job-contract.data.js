@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define(function () {
   return {
     values: [
@@ -47,4 +49,4 @@ define(function () {
       }
     ]
   };
-})
+});
