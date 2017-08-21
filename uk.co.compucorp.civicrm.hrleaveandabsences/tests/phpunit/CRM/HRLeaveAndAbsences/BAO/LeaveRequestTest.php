@@ -719,12 +719,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testNumberOfDaysOfLeaveRequestShouldNotBeGreaterMaxConsecutiveLeaveDaysForAbsenceType() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'max_consecutive_leave_days' => 2
+      'max_consecutive_leave_days' => 2.5
     ]);
 
     $this->setExpectedException(
       'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
-      'Only a maximum 2 days leave can be taken in one request. Please modify days of this request'
+      'Only a maximum 2.5 days leave can be taken in one request. Please modify days of this request'
     );
 
     LeaveRequest::create([

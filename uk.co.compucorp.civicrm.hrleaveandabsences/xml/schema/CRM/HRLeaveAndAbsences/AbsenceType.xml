@@ -61,7 +61,7 @@
   <field>
     <name>max_consecutive_leave_days</name>
     <title>Duration of consecutive leave permitted to be taken at once</title>
-    <type>int unsigned</type>
+    <type>decimal</type>
   </field>
   <field>
     <name>allow_request_cancelation</name>
@@ -85,7 +85,7 @@
   <field>
     <name>default_entitlement</name>
     <title>Default entitlement</title>
-    <type>int unsigned</type>
+    <type>decimal</type>
     <required>true</required>
     <comment>The number of days entitled for this type</comment>
   </field>
@@ -111,7 +111,7 @@
   <field>
     <name>max_leave_accrual</name>
     <title>Maximum amount of leave that can be accrued of this absence type during a period</title>
-    <type>int unsigned</type>
+    <type>decimal</type>
     <comment>Value is the number of days that can be accrued. Null means unlimited</comment>
   </field>
   <field>
@@ -140,7 +140,7 @@
   <field>
     <name>max_number_of_days_to_carry_forward</name>
     <title>Maximum number of days that can be carried forward to a new period?</title>
-    <type>int unsigned</type>
+    <type>decimal</type>
     <comments>Null means unlimited</comments>
   </field>
   <field>
