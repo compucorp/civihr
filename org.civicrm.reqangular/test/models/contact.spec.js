@@ -66,23 +66,33 @@ define([
 
     describe('all()', function () {
       describe('instances', function () {
-        it('returns a list of model instances', function (done) {
+        var resultsAreInstances;
+
+        beforeEach(function () {
           Contact.all().then(function (response) {
-            expect(response.list.every(function (contact) {
+            resultsAreInstances = response.list.every(function (contact) {
               return ContactInstanceMock.isInstance(contact);
-            })).toBe(true);
-          })
-          .finally(done) && $rootScope.$digest();
+            });
+          });
+          $rootScope.$digest();
+        });
+
+        it('returns a list of model instances', function () {
+          expect(resultsAreInstances).toBe(true);
         });
       });
 
       describe('when called without arguments', function () {
-        it('returns all contacts', function (done) {
-          Contact.all().then(function (response) {
-            expect(contactAPI.all).toHaveBeenCalled();
-            expect(response.list.length).toEqual(contacts.length);
-          })
-          .finally(done) && $rootScope.$digest();
+        var response;
+
+        beforeEach(function () {
+          Contact.all().then(function (_response_) { response = _response_; });
+          $rootScope.$digest();
+        });
+
+        it('returns all contacts', function () {
+          expect(contactAPI.all).toHaveBeenCalled();
+          expect(response.list.length).toEqual(contacts.length);
         });
       });
 
@@ -90,11 +100,13 @@ define([
         describe('when called with filters', function () {
           var partialName = 'kri';
 
-          it('passes the filters to the api', function (done) {
-            Contact.all({ display_name: partialName }).then(function (response) {
-              expect(contactAPI.all).toHaveBeenCalledWith({ display_name: partialName }, undefined);
-            })
-            .finally(done) && $rootScope.$digest();
+          beforeEach(function () {
+            Contact.all({ display_name: partialName });
+            $rootScope.$digest();
+          });
+
+          it('passes the filters to the api', function () {
+            expect(contactAPI.all).toHaveBeenCalledWith({ display_name: partialName }, undefined);
           });
         });
 
@@ -106,11 +118,7 @@ define([
 
           beforeEach(function () {
             spyOn(ContactJobRole, 'all').and.callThrough();
-
-            Contact.all(_.assign({
-              display_name: 'foo'
-            }, jobRolesFilters));
-
+            Contact.all(_.assign({ display_name: 'foo' }, jobRolesFilters));
             $rootScope.$digest();
           });
 
@@ -135,11 +143,7 @@ define([
 
           beforeEach(function () {
             spyOn(Group, 'contactIdsOf').and.callThrough();
-
-            Contact.all(_.assign({
-              display_name: 'foo'
-            }, groupIdFilter));
-
+            Contact.all(_.assign({ display_name: 'foo' }, groupIdFilter));
             $rootScope.$digest();
           });
 
@@ -165,9 +169,7 @@ define([
           beforeEach(function () {
             mixedFilters = { department: '859', group_id: '3' };
 
-            Contact.all(_.assign({
-              display_name: 'foo'
-            }, mixedFilters));
+            Contact.all(_.assign({ display_name: 'foo' }, mixedFilters));
             $rootScope.$digest();
           });
 
@@ -204,34 +206,40 @@ define([
 
       describe('when called with pagination', function () {
         var pagination = { page: 3, size: 2 };
+        var response;
 
-        it('can paginate the contacts list', function (done) {
-          Contact.all(null, pagination).then(function (response) {
-            expect(contactAPI.all).toHaveBeenCalledWith(null, pagination);
-            expect(response.list.length).toEqual(2);
-          })
-          .finally(done) && $rootScope.$digest();
+        beforeEach(function () {
+          Contact.all(null, pagination).then(function (_response_) {
+            response = _response_;
+          });
+          $rootScope.$digest();
+        });
+
+        it('can paginate the contacts list', function () {
+          expect(contactAPI.all).toHaveBeenCalledWith(null, pagination);
+          expect(response.list.length).toEqual(2);
         });
       });
     });
 
     describe('find()', function () {
+      var contact;
       var targetId = '2';
 
-      it('finds a contact by id', function (done) {
-        Contact.find(targetId).then(function (contact) {
-          expect(contactAPI.find).toHaveBeenCalledWith(targetId);
-          expect(contact.id).toBe(targetId);
-          expect(contact.display_name).toBe('jacobc82@lol.co.pl');
-        })
-        .finally(done) && $rootScope.$digest();
+      beforeEach(function () {
+        Contact.find(targetId).then(function (_contact_) {
+          contact = _contact_;
+        });
+        $rootScope.$digest();
       });
 
-      it('returns an instance of the model', function (done) {
-        Contact.find(targetId).then(function (contact) {
-          expect(ContactInstanceMock.isInstance(contact)).toBe(true);
-        })
-        .finally(done) && $rootScope.$digest();
+      it('finds a contact by id', function () {
+        expect(contactAPI.find).toHaveBeenCalledWith(targetId);
+        expect(contact.id).toBe(targetId);
+      });
+
+      it('returns an instance of the model', function () {
+        expect(ContactInstanceMock.isInstance(contact)).toBe(true);
       });
     });
   });
