@@ -1,8 +1,10 @@
 /* eslint-env amd */
+
 define([
   'common/lodash',
   'common/modules/models',
   'common/models/model',
+  'common/models/contact-job-role.model',
   'common/models/group',
   'common/models/job-role',
   'common/models/instances/contact-instance',
@@ -11,8 +13,8 @@ define([
   'use strict';
 
   models.factory('Contact', [
-    '$q', 'Model', 'api.contact.mock', 'Group', 'JobRole', 'ContactInstance',
-    function ($q, Model, contactAPI, Group, JobRole, instance) {
+    '$q', 'Model', 'api.contact.mock', 'Group', 'JobRole', 'ContactJobRole', 'ContactInstance',
+    function ($q, Model, contactAPI, Group, JobRole, ContactJobRole, instance) {
       var groupFiltersKeys = ['group_id'];
       var jobRoleFiltersKeys = ['region', 'department', 'level_type', 'location'];
 
@@ -35,10 +37,10 @@ define([
        * @return {Promise} resolve to an array of contact ids
        */
       function jobRoleContactids (filters) {
-        return JobRole.all(filters)
-          .then(function (jobRoles) {
-            return jobRoles.list.map(function (jobRole) {
-              return jobRole.contact_id;
+        return ContactJobRole.all(filters)
+          .then(function (contactJobRoles) {
+            return contactJobRoles.map(function (contactJobRole) {
+              return contactJobRole.contact_id;
             });
           });
       }
