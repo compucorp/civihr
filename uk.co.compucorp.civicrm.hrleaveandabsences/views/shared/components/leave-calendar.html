@@ -14,6 +14,7 @@
         </div>
         <div class="crm_custom-select">
           <select
+            class="no-select2"
             ng-options="region.label for region in calendar.filters.optionValues.regions track by region.id"
             ng-model="calendar.filters.userSettings.region"
             ng-change="calendar.refresh('contacts')">
@@ -23,6 +24,7 @@
         </div>
         <div class="crm_custom-select">
           <select
+            class="no-select2"
             ng-options="department.label for department in calendar.filters.optionValues.departments track by department.id"
             ng-model="calendar.filters.userSettings.department"
             ng-change="calendar.refresh('contacts')">
@@ -32,6 +34,7 @@
         </div>
         <div class="crm_custom-select">
           <select
+            class="no-select2"
             ng-options="levelType.value for levelType in calendar.filters.optionValues.levelTypes track by levelType.id"
             ng-model="calendar.filters.userSettings.level_type"
             ng-change="calendar.refresh('contacts')">
@@ -41,6 +44,7 @@
         </div>
         <div class="crm_custom-select">
           <select
+            class="no-select2"
             ng-options="location.label for location in calendar.filters.optionValues.locations track by location.id"
             ng-model="calendar.filters.userSettings.location"
             ng-change="calendar.refresh('contacts')">
@@ -69,6 +73,7 @@
           <div class="col-sm-offset-1 col-sm-3">
             <div class="crm_custom-select crm_custom-select--full">
               <select
+                class="no-select2"
                 ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
                 ng-model="calendar.selectedPeriod"
                 ng-change="calendar.refresh('period')">

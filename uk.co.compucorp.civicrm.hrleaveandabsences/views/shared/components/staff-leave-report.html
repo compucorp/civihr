@@ -8,6 +8,7 @@
           <div class="col-sm-3">
             <div class="crm_custom-select crm_custom-select--full">
               <select
+                class="no-select2"
                 ng-options="period as report.labelPeriod(period) for period in report.absencePeriods track by period.id"
                 ng-model="report.selectedPeriod"
                 ng-change="report.refresh()">
