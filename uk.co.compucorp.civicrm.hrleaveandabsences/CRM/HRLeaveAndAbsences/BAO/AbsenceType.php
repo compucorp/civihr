@@ -186,9 +186,28 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @return array An array containing the values
    */
   public static function getValuesArray($id) {
-    $result = civicrm_api3('AbsenceType', 'get', array('id' => $id));
+    $result = civicrm_api3('AbsenceType', 'get', ['id' => $id]);
     $absenceType = $result['values'][$id];
+
+    $decimalFields = [
+      'default_entitlement',
+      'max_consecutive_leave_days',
+      'max_leave_accrual',
+      'max_number_of_days_to_carry_forward'
+    ];
+    foreach($decimalFields as $decimalField) {
+      if(!empty($absenceType[$decimalField])) {
+        // The API return these values as strings, exactly the way they are stored
+        // in the BD (0.00), so we need this to:
+        // 1. Make sure the numbers will always be displayed with only 1 decimal digit
+        // 2. Make sure the number without decimal digits (10.00, for example) will
+        //    be displayed without the decimal part
+        $absenceType[$decimalField] = round($absenceType[$decimalField], 1);
+      }
+    }
+
     $absenceType['notification_receivers_ids'] = self::getNotificationReceiversIDs($id);
+
     return $absenceType;
   }
 
