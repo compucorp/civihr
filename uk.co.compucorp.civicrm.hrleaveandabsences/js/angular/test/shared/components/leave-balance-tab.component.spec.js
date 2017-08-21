@@ -11,24 +11,26 @@ define([
   'leave-absences/shared/components/leave-balance-tab.component'
 ], function (_, absencePeriodMock, absenceTypeMock, reportMockData) {
   describe('LeaveBalanceReport.component', function () {
-    var $componentController, $provide, $q, $rootScope, AbsencePeriod, AbsenceType,
-      ctrl, leaveBalanceReport, notificationService, Session;
+    var $componentController, $provide, $q, $rootScope, $scope, AbsencePeriod,
+      AbsenceType, ctrl, leaveBalanceReport, notificationService, Session;
     var loggedInContactId = 101;
     var defaultReportSize = 50;
 
-    beforeEach(module('leave-absences.mocks', 'leave-absences.models', 'leave-absences.components', function (_$provide_) {
+    beforeEach(module('leave-absences.mocks', 'leave-absences.models',
+    'leave-absences.components', function (_$provide_) {
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_, _LeaveBalanceReportAPIMock_) {
+    beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_,
+    _LeaveBalanceReportAPIMock_) {
       $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
       $provide.value('LeaveBalanceReportAPI', _LeaveBalanceReportAPIMock_);
     }));
 
     beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
-      _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _Session_,
-      _notificationService_) {
+    _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _Session_,
+    _notificationService_) {
       $componentController = _$componentController_;
       $q = _$q_;
       $rootScope = _$rootScope_;
@@ -42,7 +44,7 @@ define([
       spyOn(AbsenceType, 'all').and.callThrough();
       spyOn(leaveBalanceReport, 'all').and.callThrough();
       spyOn(notificationService, 'error');
-      spyOn(Session, 'get').and.returnValue($q.resolve({ contact_id: loggedInContactId }));
+      spyOn(Session, 'get').and.returnValue($q.resolve({ contactId: loggedInContactId }));
     }));
 
     describe('on init', function () {
@@ -64,6 +66,10 @@ define([
 
       it('sets loading report to true', function () {
         expect(ctrl.loading.report).toBe(true);
+      });
+
+      it('sets the logged in contact id to null', function () {
+        expect(ctrl.loggedInContactId).toBe(null);
       });
 
       it('sets report to an empty array', function () {
@@ -116,12 +122,18 @@ define([
         it('loads the session', function () {
           expect(Session.get).toHaveBeenCalled();
         });
+
+        describe('when finishing loading the session', function () {
+          beforeEach(function () { $rootScope.$digest(); });
+
+          it('stores the currently logged in contact id', function () {
+            expect(ctrl.loggedInContactId).toBe(loggedInContactId);
+          });
+        });
       });
 
       describe('when finished initializing', function () {
-        beforeEach(function () {
-          $rootScope.$digest();
-        });
+        beforeEach(function () { $rootScope.$digest(); });
 
         it('stops loading the component', function () {
           expect(ctrl.loading.component).toBe(false);
@@ -129,7 +141,7 @@ define([
       });
     });
 
-    describe('updateReportFilters()', function () {
+    describe('on leave balance filters updated event', function () {
       var absencePeriod, absenceType, expectedFilters;
 
       beforeEach(function () {
@@ -145,10 +157,7 @@ define([
         setupController();
         $rootScope.$digest();
 
-        ctrl.updateReportFilters({
-          absencePeriod: absencePeriod,
-          absenceType: absenceType
-        });
+        $rootScope.$broadcast('LeaveBalanceFilters::update', expectedFilters);
       });
 
       it('sets loading report to true', function () {
@@ -222,9 +231,10 @@ define([
           setupController();
           $rootScope.$digest();
 
-          ctrl.updateReportFilters({
-            absencePeriod: absencePeriod,
-            absenceType: absenceType
+          $rootScope.$broadcast('LeaveBalanceFilters::update', {
+            absence_period: absencePeriod.id,
+            absence_type: absenceType.id,
+            managed_by: loggedInContactId
           });
           $rootScope.$digest();
         });
@@ -243,7 +253,9 @@ define([
      * Setups the leaveBalanceTab controller for testing purposes.
      */
     function setupController () {
-      ctrl = $componentController('leaveBalanceTab');
+      $scope = $rootScope.$new();
+
+      ctrl = $componentController('leaveBalanceTab', { $scope: $scope });
     }
   });
 });

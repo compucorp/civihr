@@ -11,21 +11,21 @@
         <div class="form-group col-sm-4">
           <label>Periods</label>
           <select class="form-control"
-            ng-model="leaveBalanceTabFilters.filters.absencePeriod"
-            ng-options="period as period.title for period in leaveBalanceTabFilters.absencePeriods | orderBy:'title'">
+            ng-model="balanceFilters.filters.absence_period"
+            ng-options="period.id as period.title for period in balanceFilters.absencePeriods | orderBy:'title'">
           </select>
         </div>
         <div class="form-group col-sm-4">
           <label>Leave Type</label>
           <select class="form-control"
-            ng-model="leaveBalanceTabFilters.filters.absenceType"
-            ng-options="type as type.title for type in leaveBalanceTabFilters.absenceTypes | orderBy:'title'">
+            ng-model="balanceFilters.filters.absence_type"
+            ng-options="type.id as type.title for type in balanceFilters.absenceTypes | orderBy:'title'">
           </select>
         </div>
       </div>
       <div class="text-right">
         <hr />
-        <button type="submit" class="btn btn-primary" ng-click="leaveBalanceTabFilters.filter()">
+        <button type="submit" class="btn btn-primary" ng-click="balanceFilters.submitFilters()">
           Filter
         </button>
       </div>

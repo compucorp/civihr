@@ -11,9 +11,12 @@ define([
   'use strict';
 
   describe('leaveBalanceTabFilters', function () {
-    var $componentController, $provide, $rootScope, AbsencePeriod, absencePeriods, AbsenceType, absenceTypes, ctrl;
+    var $componentController, $provide, $rootScope, $scope, AbsencePeriod,
+      absencePeriods, AbsenceType, absenceTypes, ctrl;
+    var loggedInContactId = 101;
 
-    beforeEach(module('leave-absences.components', 'leave-absences.mocks', 'leave-absences.models', 'leave-absences.settings', function (_$provide_) {
+    beforeEach(module('leave-absences.components', 'leave-absences.mocks',
+    'leave-absences.models', 'leave-absences.settings', function (_$provide_) {
       $provide = _$provide_;
     }));
 
@@ -22,7 +25,8 @@ define([
       $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
     }));
 
-    beforeEach(inject(function (_$componentController_, _$rootScope_, _AbsencePeriod_, _AbsenceType_) {
+    beforeEach(inject(function (_$componentController_, _$rootScope_,
+    _AbsencePeriod_, _AbsenceType_) {
       $componentController = _$componentController_;
       $rootScope = _$rootScope_;
       AbsencePeriod = _AbsencePeriod_;
@@ -34,26 +38,27 @@ define([
     });
 
     describe('on init', function () {
-      it('sets filters object with absencePeriod and absenceType set to null', function () {
+      it('sets filters to null', function () {
         expect(ctrl.filters).toEqual({
-          absencePeriod: null,
-          absenceType: null
+          absence_period: null,
+          absence_type: null,
+          managed_by: null
         });
       });
     });
 
     describe('on changes', function () {
-      var expected;
+      describe('when absence periods change', function () {
+        var period;
 
-      describe('when absence periods are updated', function () {
         beforeEach(function () {
-          expected = absencePeriods.find(function (p) { return p.current; });
+          period = absencePeriods.find(function (p) { return p.current; });
 
           controllerOnChanges('absencePeriods', absencePeriods);
         });
 
         it('selects the current absence period', function () {
-          expect(ctrl.filters.absencePeriod).toBe(expected);
+          expect(ctrl.filters.absence_period).toBe(period.id);
         });
 
         describe('when there are no current periods', function () {
@@ -62,43 +67,56 @@ define([
               period.current = false;
             });
 
-            expected = ctrl.absencePeriods.reduce(function (a, b) {
-              return moment(a.end_date).isAfter(b.end_date) ? a : b;
+            period = ctrl.absencePeriods.reduce(function (periodA, periodB) {
+              return moment(periodA.end_date).isAfter(periodB.end_date)
+                ? periodA
+                : periodB;
             });
 
             controllerOnChanges('absencePeriods', absencePeriods);
           });
 
           it('selects the most recent absence period', function () {
-            expect(ctrl.filters.absencePeriod).toBe(expected);
+            expect(ctrl.filters.absence_period).toBe(period.id);
           });
         });
       });
 
-      describe('when absence types are updated', function () {
+      describe('when absence types change', function () {
+        var type;
+
         beforeEach(function () {
-          expected = absenceTypes.reduce(function (a, b) {
-            return a.title.localeCompare(b.title) ? a : b;
+          type = absenceTypes.reduce(function (typeA, typeB) {
+            return typeA.title.localeCompare(typeB.title) ? typeA : typeB;
           });
 
           controllerOnChanges('absenceTypes', absenceTypes);
         });
 
         it('selects the first absence type sorted by title', function () {
-          expect(ctrl.filters.absenceType).toBe(expected);
+          expect(ctrl.filters.absence_type).toBe(type.id);
         });
       });
 
-      describe('when absence periods and types are updated', function () {
+      describe('when logged in contact\'s id changes', function () {
+        beforeEach(function () {
+          controllerOnChanges('loggedInContactId', loggedInContactId);
+        });
+
+        it('sets the managed by filter to the currently logged in contact id', function () {
+          expect(ctrl.filters.managed_by).toBe(loggedInContactId);
+        });
+      });
+
+      describe('when all filters are ready', function () {
         beforeEach(function () {
           controllerOnChanges('absencePeriods', absencePeriods);
           controllerOnChanges('absenceTypes', absenceTypes);
+          controllerOnChanges('loggedInContactId', loggedInContactId);
         });
 
-        it('emits a on filter change event with the selected absence period and type', function () {
-          expect(ctrl.onFiltersChange).toHaveBeenCalledWith({
-            $filters: ctrl.filters
-          });
+        it('emits a "Filters Update" event with the selected filter values', function () {
+          expect($scope.$emit).toHaveBeenCalledWith('LeaveBalanceFilters::update', ctrl.filters);
         });
       });
 
@@ -106,25 +124,26 @@ define([
         beforeEach(function () {
           controllerOnChanges('absencePeriods', []);
           controllerOnChanges('absenceTypes', []);
+          controllerOnChanges('loggedInContactId', loggedInContactId);
         });
 
-        it('emits an on filter change event with the selected absence period and type', function () {
-          expect(ctrl.onFiltersChange).not.toHaveBeenCalled();
+        it('does not emit a filters updated event', function () {
+          expect($scope.$emit).not.toHaveBeenCalled();
         });
       });
     });
 
-    describe('filter()', function () {
+    describe('submitFilters()', function () {
       beforeEach(function () {
         controllerOnChanges('absencePeriods', absencePeriods);
         controllerOnChanges('absenceTypes', absenceTypes);
-        ctrl.onFiltersChange.calls.reset();
+        controllerOnChanges('loggedInContactId', loggedInContactId);
 
-        ctrl.filter();
+        ctrl.submitFilters();
       });
 
-      it('emits an on filters change event with the selected filters', function () {
-        expect(ctrl.onFiltersChange).toHaveBeenCalledWith({ $filters: ctrl.filters });
+      it('emits a "Filters Update" event with the selected filter values', function () {
+        expect($scope.$emit).toHaveBeenCalledWith('LeaveBalanceFilters::update', ctrl.filters);
       });
     });
 
@@ -144,19 +163,26 @@ define([
 
       $rootScope.$digest();
 
-      ctrl = $componentController('leaveBalanceTabFilters', null, {
+      $scope = $rootScope.$new();
+
+      spyOn($scope, '$emit');
+
+      ctrl = $componentController('leaveBalanceTabFilters', {
+        $scope: $scope
+      }, {
         absencePeriods: [],
         absenceTypes: [],
-        onFiltersChange: jasmine.createSpy('onFiltersChange')
+        loggedInContactId: null
       });
     }
 
     /**
      * Simulates the controller's $onChanges hook for a given field and value.
      *
-     * @param {String} fieldName - the binding's name.
-     * @param {Any} currentValue - the new value for the binding.
-     * @param {Any} [previousValue=Array] - the previous value of the binding. Defaults to an empty array.
+     * @param {String} fieldName - The binding's name.
+     * @param {Any} currentValue - The new value for the binding.
+     * @param {Any} [previousValue=Array] - The previous value of the binding.
+                                            Defaults to an empty array.
      */
     function controllerOnChanges (fieldName, currentValue, previousValue) {
       var changes = {};

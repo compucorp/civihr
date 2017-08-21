@@ -16,59 +16,32 @@ define([
     }]
   });
 
-  LeaveBalanceTabController.$inject = ['$q', 'AbsencePeriod', 'AbsenceType',
-    'LeaveBalanceReport', 'notificationService', 'Session'];
+  LeaveBalanceTabController.$inject = ['$q', '$scope', 'AbsencePeriod',
+    'AbsenceType', 'LeaveBalanceReport', 'notificationService', 'Session'];
 
-  function LeaveBalanceTabController ($q, AbsencePeriod, AbsenceType, LeaveBalanceReport,
-    notification, Session) {
+  function LeaveBalanceTabController ($q, $scope, AbsencePeriod, AbsenceType,
+    LeaveBalanceReport, notification, Session) {
     var filters = {};
-    var loggedInContactId;
     var pageSize = 50;
     var vm = this;
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
     vm.loading = { component: true, report: true };
+    vm.loggedInContactId = null;
     vm.report = [];
     vm.reportCount = 0;
 
     /**
-     * Initializes the component. Loads logged in contact information and
-     * the first page of the report.
+     * Initializes the component. Loads dependencies needed by the component
+     * and watches for events coming from child components.
      */
     (function init () {
-      $q.all([
-        loadAbsencePeriods(),
-        loadAbsenceTypes(),
-        loadLoggedInContactId()
-      ])
-      .catch(function (error) {
-        notification.error('Error', error);
-      })
-      .finally(function () {
+      initWatchers();
+      loadDependencies().then(function () {
         vm.loading.component = false;
       });
     })();
-
-    /**
-     * Updates the leave balance report using the filters passed on as parameters.
-     * The list of absence types to display is updated and the first page of the
-     * report is loaded.
-     *
-     * @param {Object} values - The filter values to use for updating the report.
-     * @param {Object} values.absencePeriod - the absence period to filter by.
-     * @param {Object} values.absenceType - the abence type to filter by.
-     */
-    vm.updateReportFilters = function (values) {
-      filters = {
-        absence_period: values.absencePeriod.id,
-        absence_type: values.absenceType.id,
-        managed_by: loggedInContactId
-      };
-
-      updateSelectedAbsenceTypes();
-      loadReportPage(1);
-    };
 
     /**
      * Loads the absence periods from the AbsencePeriod model.
@@ -76,7 +49,7 @@ define([
      * @return {Promise}
      */
     function loadAbsencePeriods () {
-      return AbsencePeriod.all({options: { sort: 'title ASC' }})
+      return AbsencePeriod.all({ options: { sort: 'title ASC' } })
       .then(function (response) {
         vm.absencePeriods = response;
       });
@@ -87,9 +60,25 @@ define([
      * sorted by title in an ascending order.
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({options: { sort: 'title ASC' }})
+      return AbsenceType.all({ options: { sort: 'title ASC' } })
       .then(function (response) {
         vm.absenceTypes = response;
+      });
+    }
+
+    /**
+     * Loads all dependencies needed by the component and its children.
+     *
+     * @return {Promise}
+     */
+    function loadDependencies () {
+      return $q.all([
+        loadAbsencePeriods(),
+        loadAbsenceTypes(),
+        loadLoggedInContactId()
+      ])
+      .catch(function (error) {
+        notification.error('Error', error);
       });
     }
 
@@ -100,7 +89,7 @@ define([
      */
     function loadLoggedInContactId () {
       return Session.get().then(function (value) {
-        loggedInContactId = value.contact_id;
+        vm.loggedInContactId = value.contactId;
       });
     }
 
@@ -152,12 +141,38 @@ define([
     }
 
     /**
+     * Updates the leave balance report using the filters passed on as parameters.
+     * The list of absence types to display is updated and the first page of the
+     * report is loaded.
+     *
+     * @param {Object} event - the component event handler.
+     * @param {Object} _filters_ - The filter values to use for updating the report.
+     * it contains the following properties:
+     * - absence_period - the absence period id to filter by.
+     * - absence_type - the abence type id to filter by.
+     * - managed_by - the ID of the manager that is retrieving the report.
+     */
+    function updateReportFilters (event, _filters_) {
+      filters = _filters_;
+
+      updateSelectedAbsenceTypes();
+      loadReportPage(1);
+    }
+
+    /**
      * Updates the selected absence types according to the absence type filter value.
      */
     function updateSelectedAbsenceTypes () {
       vm.selectedAbsenceTypes = vm.absenceTypes.filter(function (type) {
         return parseInt(type.id) === parseInt(filters.absence_type);
       });
+    }
+
+    /**
+     * Sets up watchers for events fired by child components.
+     */
+    function initWatchers () {
+      $scope.$on('LeaveBalanceFilters::update', updateReportFilters);
     }
   }
 });

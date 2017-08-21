@@ -7,21 +7,26 @@ define([
 ], function (_, moment, components) {
   components.component('leaveBalanceTabFilters', {
     controller: LeaveBalanceTabFiltersController,
-    controllerAs: 'leaveBalanceTabFilters',
+    controllerAs: 'balanceFilters',
     bindings: {
       absencePeriods: '<',
       absenceTypes: '<',
-      onFiltersChange: '&'
+      loggedInContactId: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/leave-balance-tab-filters.html';
     }]
   });
 
-  function LeaveBalanceTabFiltersController () {
+  LeaveBalanceTabFiltersController.$inject = ['$scope'];
+
+  function LeaveBalanceTabFiltersController ($scope) {
     var vm = this;
 
-    vm.filters = { absencePeriod: null, absenceType: null };
+    vm.filters = { absence_period: null, absence_type: null, managed_by: null };
+
+    vm.$onChanges = $onChanges;
+    vm.submitFilters = submitFilters;
 
     /**
      * Angular Hook that Watches over changes in the bindings for absence
@@ -31,37 +36,38 @@ define([
      *
      * @param {Object} changes - The list of changes for current digest.
      */
-    vm.$onChanges = function (changes) {
+    function $onChanges (changes) {
       if (changes.absencePeriods && vm.absencePeriods.length) {
-        vm.filters.absencePeriod = getCurrentAbsencePeriod();
+        vm.filters.absence_period = getCurrentAbsencePeriod().id;
       }
 
       if (changes.absenceTypes && vm.absenceTypes.length) {
-        vm.filters.absenceType = getFirstAbsenceTypeByTitle();
+        vm.filters.absence_type = getFirstAbsenceTypeByTitle().id;
       }
 
-      if (vm.filters.absencePeriod && vm.filters.absenceType) {
-        emitOnFiltersChange();
+      if (changes.loggedInContactId) {
+        vm.filters.managed_by = vm.loggedInContactId;
       }
-    };
+
+      if (areFiltersReady()) {
+        vm.submitFilters();
+      }
+    }
 
     /**
-     * This function is used on the view when the user clicks on *filter* button.
+     * Returns true when all filters have an initial value.
+     *
+     * @return {Boolean}
      */
-    vm.filter = function () {
-      emitOnFiltersChange();
-    };
-
-    /**
-     * Emits the on filters change event, passing the filter values.
-     */
-    function emitOnFiltersChange () {
-      vm.onFiltersChange({ $filters: vm.filters });
+    function areFiltersReady () {
+      return _.every(vm.filters, function (filterValue) {
+        return !!filterValue;
+      });
     }
 
     /**
      * Returns the current absence period. If there are none, it returns the
-     * oldest one.
+     * newest one.
      *
      * @return {Object}
      */
@@ -70,13 +76,12 @@ define([
         return period.current;
       });
 
-      if (!currentAbsencePeriod) {
-        currentAbsencePeriod = vm.absencePeriods.reduce(function (a, b) {
-          return moment(a.end_date).isAfter(b.end_date) ? a : b;
+      return currentAbsencePeriod ||
+        vm.absencePeriods.reduce(function (periodA, periodB) {
+          return moment(periodA.end_date).isAfter(periodB.end_date)
+            ? periodA
+            : periodB;
         });
-      }
-
-      return currentAbsencePeriod;
     }
 
     /**
@@ -85,9 +90,17 @@ define([
      * @return {Object}
      */
     function getFirstAbsenceTypeByTitle () {
-      return vm.absenceTypes.reduce(function (a, b) {
-        return a.title.localeCompare(b.title) ? a : b;
+      return vm.absenceTypes.reduce(function (typeA, typeB) {
+        return typeA.title.localeCompare(typeB.title) ? typeA : typeB;
       });
+    }
+
+    /**
+     * Emits the "Filters Update" event, passing the filter values to the parent
+     * component.
+     */
+    function submitFilters () {
+      $scope.$emit('LeaveBalanceFilters::update', vm.filters);
     }
   }
 });
