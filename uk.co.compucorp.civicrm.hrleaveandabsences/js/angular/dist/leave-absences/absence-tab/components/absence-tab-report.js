@@ -1,0 +1,1 @@
+define(["leave-absences/absence-tab/modules/components"],function(e){function n(e){e.debug("Component: absence-tab-report");var n={};return n}e.component("absenceTabReport",{bindings:{contactId:"<"},templateUrl:["settings",function(e){return e.pathTpl+"components/absence-tab-report.html"}],controllerAs:"report",controller:["$log",n]})});

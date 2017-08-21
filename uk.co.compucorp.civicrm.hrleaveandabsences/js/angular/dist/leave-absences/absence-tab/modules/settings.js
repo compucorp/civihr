@@ -1,0 +1,1 @@
+!function(e){define(["common/angular"],function(n){return n.module("absence-tab.settings",[]).constant("settings",{contactId:e.vars.leaveAndAbsences.contactId,debug:e.debug,pathTpl:e.vars.leaveAndAbsences.baseURL+"/views/absence-tab/"})})}(CRM);

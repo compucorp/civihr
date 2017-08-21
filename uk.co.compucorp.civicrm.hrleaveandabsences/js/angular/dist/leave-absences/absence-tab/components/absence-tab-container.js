@@ -1,0 +1,1 @@
+!function(n){define(["leave-absences/absence-tab/modules/components"],function(e){e.component("absenceTabContainer",{templateUrl:["settings",function(n){return n.pathTpl+"components/absence-tab-container.html"}],controllerAs:"absence",controller:["$log",function(e){e.debug("Component: absence-tab-container");var t=this;t.contactId=n.adminId}]})})}(CRM);

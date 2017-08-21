@@ -1,0 +1,1 @@
+define(["common/angular"],function(n){return n.module("manager-leave.components",[])});

@@ -3,55 +3,55 @@ define([
   'common/angularMocks',
   'common/models/contact',
   'common/models/group',
-  'common/models/job-role',
+  'common/models/contact-job-role.model',
   'common/mocks/services/hr-settings-mock',
   'common/mocks/services/api/contact-mock',
-  'common/mocks/services/api/job-role-mock',
+  'common/mocks/services/api/contact-job-role-api.api.mock',
   'common/mocks/models/instances/contact-instance-mock'
 ], function (_) {
   'use strict';
 
   describe('Contact', function () {
-    var $provide, $rootScope, Contact, ContactInstanceMock, Group, JobRole, $q,
-      contactAPI, contactAPIMock, jobRoleAPI, groupContactAPIMock, contacts, jobRoles, groupContacts;
+    var $provide, $q, $rootScope, Contact, ContactInstanceMock, Group, ContactJobRole,
+      contactAPI, contactAPIMock, ContactJobRoleAPI, groupContactAPIMock, contacts, contactJobRoles, groupContacts;
 
     beforeEach(function () {
       module('common.models', 'common.mocks', function (_$provide_) {
         $provide = _$provide_;
       });
       inject([
-        'api.contact.mock', 'api.job-role.mock', 'HR_settingsMock',
-        function (_contactAPIMock_, jobRoleAPIMock, HR_settingsMock) {
+        'api.contact.mock', 'ContactJobRoleAPIMock', 'HR_settingsMock',
+        function (_contactAPIMock_, ContactJobRoleAPIMock, HRSettingsMock) {
           contactAPIMock = _contactAPIMock_;
           $provide.value('api.contact', contactAPIMock);
-          $provide.value('api.job-role', jobRoleAPIMock);
-          $provide.value('HR_settings', HR_settingsMock);
+          $provide.value('ContactJobRoleAPI', ContactJobRoleAPIMock);
+          $provide.value('HR_settings', HRSettingsMock);
         }
       ]);
     });
 
     beforeEach(inject([
-      '$rootScope', '$q', 'Contact', 'Group', 'JobRole', 'ContactInstanceMock',
-      'api.job-role', 'api.contact', 'api.group-contact.mock',
-      function (_$rootScope_, _$q_, _Contact_, _Group_, _JobRole_, _ContactInstanceMock_, _jobRoleAPI_, _contactAPI_, _groupContactAPIMock_) {
+      '$rootScope', '$q', 'Contact', 'Group', 'ContactJobRole',
+      'ContactInstanceMock', 'ContactJobRoleAPI', 'api.contact',
+      'api.group-contact.mock',
+      function (_$rootScope_, _$q_, _Contact_, _Group_, _ContactJobRole_,
+        _ContactInstanceMock_, _ContactJobRoleAPI_, _contactAPI_,
+        _groupContactAPIMock_) {
         $rootScope = _$rootScope_;
-
         $q = _$q_;
         Contact = _Contact_;
         Group = _Group_;
-        JobRole = _JobRole_;
-
+        ContactJobRole = _ContactJobRole_;
         ContactInstanceMock = _ContactInstanceMock_;
-
         contactAPI = _contactAPI_;
-        jobRoleAPI = _jobRoleAPI_;
+        ContactJobRoleAPI = _ContactJobRoleAPI_;
         groupContactAPIMock = _groupContactAPIMock_;
 
         contactAPI.spyOnMethods();
-        jobRoleAPI.spyOnMethods();
+        ContactJobRoleAPI.spyOnMethods();
 
         contacts = contactAPI.mockedContacts().list;
-        jobRoles = jobRoleAPI.mockedJobRoles.list;
+        contactJobRoles = ContactJobRoleAPI.mockedContactJobRoles.list;
         groupContacts = groupContactAPIMock.mockedGroupsContacts.list;
       }
     ]));
@@ -62,23 +62,33 @@ define([
 
     describe('all()', function () {
       describe('instances', function () {
-        it('returns a list of model instances', function (done) {
+        var resultsAreInstances;
+
+        beforeEach(function () {
           Contact.all().then(function (response) {
-            expect(response.list.every(function (contact) {
+            resultsAreInstances = response.list.every(function (contact) {
               return ContactInstanceMock.isInstance(contact);
-            })).toBe(true);
-          })
-            .finally(done) && $rootScope.$digest();
+            });
+          });
+          $rootScope.$digest();
+        });
+
+        it('returns a list of model instances', function () {
+          expect(resultsAreInstances).toBe(true);
         });
       });
 
       describe('when called without arguments', function () {
-        it('returns all contacts', function (done) {
-          Contact.all().then(function (response) {
-            expect(contactAPI.all).toHaveBeenCalled();
-            expect(response.list.length).toEqual(contacts.length);
-          })
-            .finally(done) && $rootScope.$digest();
+        var response;
+
+        beforeEach(function () {
+          Contact.all().then(function (_response_) { response = _response_; });
+          $rootScope.$digest();
+        });
+
+        it('returns all contacts', function () {
+          expect(contactAPI.all).toHaveBeenCalled();
+          expect(response.list.length).toEqual(contacts.length);
         });
       });
 
@@ -104,11 +114,13 @@ define([
         describe('when called with filters', function () {
           var partialName = 'kri';
 
-          it('passes the filters to the api', function (done) {
-            Contact.all({display_name: partialName}).then(function (response) {
-              expect(contactAPI.all).toHaveBeenCalledWith({display_name: partialName}, undefined, undefined, undefined);
-            })
-              .finally(done) && $rootScope.$digest();
+          beforeEach(function () {
+            Contact.all({ display_name: partialName });
+            $rootScope.$digest();
+          });
+
+          it('passes the filters to the api', function () {
+            expect(contactAPI.all).toHaveBeenCalledWith({ display_name: partialName }, undefined, undefined, undefined);
           });
         });
 
@@ -119,43 +131,18 @@ define([
           }, groupContactIds, jobRoleContactIds;
 
           beforeEach(function () {
-            spyOn(JobRole, 'all').and.callThrough();
-
-            groupContactIds = contactAPI.mockedContacts().list.map(function (jobRole) {
-              return jobRole.contact_id;
-            });
-            jobRoleContactIds = contactAPI.mockedContacts();
-            jobRoleAPI.all.and.callFake(function () {
-              var defer = $q.defer();
-              defer.resolve(jobRoleContactIds);
-              return defer.promise;
-            });
-            spyOn(Group, 'contactIdsOf').and.callFake(function () {
-              var defer = $q.defer();
-              defer.resolve(groupContactIds);
-              return defer.promise;
-            });
-
-            Contact.all(_.assign({
-              display_name: 'foo'
-            }, jobRolesFilters));
-
+            spyOn(ContactJobRole, 'all').and.callThrough();
+            Contact.all(_.assign({ display_name: 'foo' }, jobRolesFilters));
             $rootScope.$digest();
           });
 
 
           it('passes the filters to the JobRole model', function () {
-            expect(JobRole.all).toHaveBeenCalledWith(jasmine.objectContaining(jobRolesFilters))
+            expect(ContactJobRole.all).toHaveBeenCalledWith(jasmine.objectContaining(jobRolesFilters));
           });
 
           it('does not pass the filters to its api', function () {
             expect(contactAPI.all).not.toHaveBeenCalledWith(jasmine.objectContaining(jobRolesFilters), undefined)
-          });
-
-          it('passes to its api the ids of the contacts whose job roles match the filters', function () {
-            expect(contactAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              display_name: 'foo'
-            }), undefined, undefined, undefined);
           });
         });
 
@@ -164,11 +151,7 @@ define([
 
           beforeEach(function () {
             spyOn(Group, 'contactIdsOf').and.callThrough();
-
-            Contact.all(_.assign({
-              display_name: 'foo'
-            }, groupIdFilter));
-
+            Contact.all(_.assign({ display_name: 'foo' }, groupIdFilter));
             $rootScope.$digest();
           });
 
@@ -190,82 +173,80 @@ define([
         });
 
         describe('when passing a mix of foreign model keys', function () {
-          var mixedFilters,
-            groupContactIds,
-            jobRoleContactIds;
-
+          var mixedFilters = { department: '859', group_id: '3' };
 
           beforeEach(function () {
-            groupContactIds = contactAPI.mockedContacts().list.slice(0, 5).map(function (jobRole) {
-              return jobRole.contact_id;
-            });
-            jobRoleContactIds = contactAPI.mockedContacts();
-
-            mixedFilters = {department: '859', group_id: '3'};
-
-            jobRoleAPI.all.and.callFake(function () {
-              var defer = $q.defer();
-              defer.resolve(jobRoleContactIds);
-              return defer.promise;
-            });
-            spyOn(Group, 'contactIdsOf').and.callFake(function () {
-              var defer = $q.defer();
-              defer.resolve(groupContactIds);
-              return defer.promise;
-            });
-
-            Contact.all(_.assign({
-              display_name: 'foo',
-              id: {'IN': ['1']}
-            }, mixedFilters));
+            Contact.all(_.assign({ display_name: 'foo' }, mixedFilters));
             $rootScope.$digest();
           });
 
           it('passes to its api the intersection of the contact ids returned by the models', function () {
             expect(contactAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
               display_name: 'foo',
-              id: {'IN': intersectionofContactIds()}
+              id: { 'IN': contactIdsIntersection(mixedFilters) }
             }), undefined, undefined, undefined);
           });
 
-          function intersectionofContactIds() {
-            return _.intersection(groupContactIds, jobRoleContactIds.list.map(function (jobRole) {
-              return jobRole.contact_id;
-            }));
+          /**
+           * Returns the intersection of all the contact ids returned
+           * by the models
+           *
+           * @param {object} mixedFilters
+           * @return {Array}
+           */
+          function contactIdsIntersection (mixedFilters) {
+            var groupContactIds = groupContacts.filter(function (groupContact) {
+              return groupContact.group_id === mixedFilters.group_id;
+            }).map(function (groupContact) {
+              return groupContact.contact_id;
+            });
+            var contactJobRoleContactIds = contactJobRoles.filter(function (contactJobRole) {
+              return contactJobRole.department === mixedFilters.department;
+            }).map(function (contactJobRole) {
+              return contactJobRole.contact_id;
+            });
+
+            return _.intersection(groupContactIds, contactJobRoleContactIds);
           }
         });
       });
 
       describe('when called with pagination', function () {
-        var pagination = {page: 3, size: 2};
+        var pagination = { page: 3, size: 2 };
+        var response;
 
-        it('can paginate the contacts list', function (done) {
-          Contact.all(null, pagination).then(function (response) {
-            expect(contactAPI.all).toHaveBeenCalledWith(null, pagination, undefined, undefined);
-            expect(response.list.length).toEqual(2);
-          })
-            .finally(done) && $rootScope.$digest();
+        beforeEach(function () {
+          Contact.all(null, pagination).then(function (_response_) {
+            response = _response_;
+          });
+          $rootScope.$digest();
+        });
+
+        it('can paginate the contacts list', function () {
+          expect(contactAPI.all).toHaveBeenCalledWith(null, pagination, undefined, undefined);
+          expect(response.list.length).toEqual(2);
         });
       });
     });
 
     describe('find()', function () {
+      var contact;
       var targetId = '2';
 
-      it('finds a contact by id', function (done) {
-        Contact.find(targetId).then(function (contact) {
-          expect(contactAPI.find).toHaveBeenCalledWith(targetId);
-          expect(contact.id).toBe(targetId);
-          expect(contact.display_name).toBe('jacobc82@lol.co.pl');
-        })
-          .finally(done) && $rootScope.$digest();
+      beforeEach(function () {
+        Contact.find(targetId).then(function (_contact_) {
+          contact = _contact_;
+        });
+        $rootScope.$digest();
       });
 
-      it('returns an instance of the model', function (done) {
-        Contact.find(targetId).then(function (contact) {
-          expect(ContactInstanceMock.isInstance(contact)).toBe(true);
-        })
-          .finally(done) && $rootScope.$digest();
+      it('finds a contact by id', function () {
+        expect(contactAPI.find).toHaveBeenCalledWith(targetId);
+        expect(contact.id).toBe(targetId);
+      });
+
+      it('returns an instance of the model', function () {
+        expect(ContactInstanceMock.isInstance(contact)).toBe(true);
       });
     });
 

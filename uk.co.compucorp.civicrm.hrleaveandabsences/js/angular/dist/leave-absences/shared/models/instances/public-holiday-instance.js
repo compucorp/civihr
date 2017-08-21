@@ -1,0 +1,1 @@
+define(["leave-absences/shared/modules/models-instances","common/models/instances/instance"],function(e){"use strict";e.factory("PublicHolidayInstance",["$log","ModelInstance",function(e,n){return e.debug("PublicHolidayInstance"),n.extend({})}])});

@@ -1,0 +1,1 @@
+!function(e){define(["common/angular"],function(n){return n.module("my-leave.settings",[]).constant("settings",{debug:e.debug,pathTpl:e.vars.leaveAndAbsences.baseURL+"/views/my-leave/"})})}(CRM);

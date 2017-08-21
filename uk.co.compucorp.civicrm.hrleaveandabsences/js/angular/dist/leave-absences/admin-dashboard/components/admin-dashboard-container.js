@@ -1,0 +1,1 @@
+define(["leave-absences/admin-dashboard/modules/components"],function(n){function o(n){n.debug("Component: admin-dashboard-container")}n.component("adminDashboardContainer",{templateUrl:["settings",function(n){return n.pathTpl+"components/admin-dashboard-container.html"}],controllerAs:"vm",controller:["$log",o]})});

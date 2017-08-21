@@ -1,8 +1,10 @@
 /* eslint-env amd */
 
 define([
+  'common/instances/contact-job-role-instance.instance',
   'common/models/model',
   'common/models/contact',
+  'common/models/contact-job-role.model',
   'common/models/contract',
   'common/models/group',
   'common/models/job-role',

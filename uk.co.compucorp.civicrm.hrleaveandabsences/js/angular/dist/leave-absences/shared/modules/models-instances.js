@@ -1,0 +1,1 @@
+define(["common/angular","common/models/instances/instance","common/modules/services","leave-absences/shared/modules/shared-settings"],function(e){"use strict";return e.module("leave-absences.models.instances",["common.models.instances","common.services","leave-absences.settings"])});

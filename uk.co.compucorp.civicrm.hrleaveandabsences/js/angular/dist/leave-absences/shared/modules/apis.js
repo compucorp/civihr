@@ -1,0 +1,1 @@
+define(["common/angular","common/modules/apis","leave-absences/shared/modules/shared-settings"],function(e){"use strict";return e.module("leave-absences.apis",["common.apis","leave-absences.settings"])});

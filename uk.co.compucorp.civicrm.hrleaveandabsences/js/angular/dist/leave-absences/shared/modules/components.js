@@ -1,0 +1,1 @@
+define(["common/angular"],function(e){return e.module("leave-absences.components",[])});

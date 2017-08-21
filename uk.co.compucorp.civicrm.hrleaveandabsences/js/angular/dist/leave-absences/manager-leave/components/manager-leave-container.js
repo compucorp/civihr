@@ -1,0 +1,1 @@
+define(["leave-absences/manager-leave/modules/components"],function(e){e.component("managerLeaveContainer",{bindings:{contactId:"<"},templateUrl:["settings",function(e){return e.pathTpl+"components/manager-leave-container.html"}],controller:["$log",function(e){e.debug("Component: manager-leave-container");var n=Object.create(this);return n}],controllerAs:"managerLeave"})});
