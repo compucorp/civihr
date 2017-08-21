@@ -18,7 +18,6 @@ define([
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
 
-      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
       $httpBackend.whenGET(/action=get&entity=HRJobLeave/).respond(MockContract.contractLeaves);
       $httpBackend.whenGET(/views.*/).respond({});
     }));
@@ -29,9 +28,19 @@ define([
     });
 
     describe('getOne()', function () {
+      var expected;
+
+      beforeEach(function () {
+        expected = angular.copy(MockContract.contractLeaves.values)
+        .map(function (contract) {
+          contract.add_public_holidays = contract.add_public_holidays === '1';
+          return contract;
+        });
+      });
+
       it('calls getOne() and returns expected leave types ids', function () {
         ContractLeaveService.getOne({ jobcontract_revision_id: 68 }).then(function (result) {
-          expect(result).toEqual(MockContract.contractLeaves.values);
+          expect(result).toEqual(expected);
         });
       });
     });
