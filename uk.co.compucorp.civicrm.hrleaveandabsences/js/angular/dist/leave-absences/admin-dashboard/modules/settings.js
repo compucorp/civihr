@@ -1,1 +1,0 @@
-!function(e){define(["common/angular"],function(n){return n.module("admin-dashboard.settings",[]).constant("settings",{contactId:e.vars.leaveAndAbsences.loggedInUserId,debug:e.debug,pathTpl:e.vars.leaveAndAbsences.baseURL+"/views/admin-dashboard/"})})}(CRM);

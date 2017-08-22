@@ -22,21 +22,7 @@
         }
       },
       fileUploader: {
-        queueLimit: 10,
-        allowedMimeTypes: {
-          'txt': 'plain',
-          'png': 'png',
-          'jpeg': 'jpeg',
-          'bmp': 'bmp',
-          'gif': 'gif',
-          'pdf': 'pdf',
-          'doc': 'msword',
-          'docx': 'vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'xls': 'vnd.ms-excel',
-          'xlsx': 'vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          'ppt': 'vnd.ms-powerpoint',
-          'pptx': 'vnd.openxmlformats-officedocument.presentationml.presentation'
-        }
+        queueLimit: 10
       },
       statusNames: {
         approved: 'approved',

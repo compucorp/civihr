@@ -1,1 +1,0 @@
-!function(e){define([],function(){var a=CRM.vars.leaveAndAbsences.baseURL+"/js/angular/src/leave-absences/shared";e.config({paths:{"leave-absences/shared/ui-router":"leave-absences/shared/vendor/angular-ui-router.min"},shim:{"leave-absences/shared/ui-router":{}}}),e.config({paths:{"leave-absences/shared/ui-router":a+"/vendor/angular-ui-router.min"}})})}(require);

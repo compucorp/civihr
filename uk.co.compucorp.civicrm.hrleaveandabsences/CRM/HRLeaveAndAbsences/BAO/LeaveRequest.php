@@ -85,7 +85,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params, $absenceType);
     self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params, $absenceType);
     self::validateAbsencePeriod($params, $absencePeriod);
-    self::validateWorkingDayAndBalanceChange($params, $absenceType, $absencePeriod);
+    self::validateEntitlementAndWorkingDayAndBalanceChange($params, $absenceType, $absencePeriod);
 
   }
 
@@ -301,7 +301,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $maxLeaveAccrual = $absenceType->max_leave_accrual;
     if ($totalProjectedToilForPeriod > $maxLeaveAccrual && !$unlimitedAccrual) {
       throw new InvalidLeaveRequestException(
-        'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual .' days. Please modify the dates of this request',
+        'The maximum amount of leave that you can accrue is '. round($maxLeaveAccrual, 1) .' days. Please modify the dates of this request',
         'leave_request_toil_amount_more_than_maximum_for_absence_type',
         'toil_to_accrue'
       );
@@ -319,22 +319,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @return float
    */
   private static function getTotalApprovedToilForPeriod(AbsencePeriod $period, $contactID, $typeID) {
-    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
-
-    $leaveRequestStatusFilter = [
-      $leaveRequestStatuses['approved'],
-      $leaveRequestStatuses['admin_approved']
-    ];
-
-    $totalApprovedTOIL = LeaveBalanceChange::getTotalTOILBalanceChangeForContact(
-      $contactID,
-      $typeID,
-      new DateTime($period->start_date),
-      new DateTime($period->end_date),
-      $leaveRequestStatusFilter
-    );
-
-    return $totalApprovedTOIL;
+    return LeaveBalanceChange::getTotalApprovedToilForPeriod($period, $contactID, $typeID);
   }
 
   /**
@@ -437,6 +422,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * do not allow overuse. It also validates that the leave request to be created has at least one day,
    * The logic is based on the fact that if there's no working day for a leave request
    * the returned balance change will be Zero.
+   * In case the contact does not have a period entitlement for the absence type, an
+   * appropriate exception is thrown.
    *
    * @param array $params
    *   The params array received by the create method
@@ -445,7 +432,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateWorkingDayAndBalanceChange($params, $absenceType, $period) {
+  private static function validateEntitlementAndWorkingDayAndBalanceChange($params, $absenceType, $period) {
+    $leavePeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact($params['contact_id'], $period->id, $params['type_id']);
+    if(!$leavePeriodEntitlement) {
+      throw new InvalidLeaveRequestException(
+        'Contact does not have period entitlement for the absence type',
+        'leave_request_contact_has_no_entitlement',
+        'type_id'
+      );
+    }
+
     //TOIL accrual is independent of Current Balance.
     if($params['request_type'] == self::REQUEST_TYPE_TOIL) {
       return;
@@ -460,7 +456,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       );
     }
 
-    $leavePeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact($params['contact_id'], $period->id, $params['type_id']);
     $currentBalance = $leavePeriodEntitlement->getBalance();
 
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
@@ -579,7 +574,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if (!empty($maxConsecutiveLeaveDays) && $intervalInDays > $maxConsecutiveLeaveDays) {
       throw new InvalidLeaveRequestException(
-        'Only a maximum '. $maxConsecutiveLeaveDays .' days leave can be taken in one request. Please modify days of this request',
+        'Only a maximum '. round($maxConsecutiveLeaveDays, 1) .' days leave can be taken in one request. Please modify days of this request',
         'leave_request_days_greater_than_max_consecutive_days',
         'type_id'
       );

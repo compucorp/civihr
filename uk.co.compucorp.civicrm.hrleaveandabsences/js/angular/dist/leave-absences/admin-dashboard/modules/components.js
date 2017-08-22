@@ -1,1 +1,0 @@
-define(["common/angular"],function(n){return n.module("admin-dashboard.components",[])});

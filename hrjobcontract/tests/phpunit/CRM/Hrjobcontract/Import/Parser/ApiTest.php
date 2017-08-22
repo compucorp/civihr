@@ -23,7 +23,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   public function setUpHeadless() {
     return \Civi\Test::headless()
       ->install('uk.co.compucorp.civicrm.hrcore')
-      ->install('org.civicrm.hrabsence')
+      ->install('uk.co.compucorp.civicrm.hrleaveandabsences')
       ->installMe(__DIR__)
       ->apply();
   }

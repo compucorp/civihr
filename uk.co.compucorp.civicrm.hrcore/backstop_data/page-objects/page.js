@@ -105,5 +105,16 @@ module.exports = {
         });
       });
     });
+  },
+
+  /**
+   * Waits until element is visible on the browser.
+   *
+   * @return {Promise}
+   */
+  waitUntilVisible: function (elementSelector) {
+    return this.casper.then(function () {
+      return this.casper.waitUntilVisible(elementSelector);
+    }.bind(this));
   }
 };

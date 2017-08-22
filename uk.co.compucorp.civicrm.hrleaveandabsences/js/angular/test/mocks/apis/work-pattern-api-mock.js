@@ -4,7 +4,7 @@ define([
   'common/lodash',
   'mocks/module',
   'mocks/data/work-pattern-data'
-], function (_, mocks, workPatternMocked) {
+], function (_, mocks, WorkPatternData) {
   'use strict';
 
   mocks.factory('WorkPatternAPIMock', ['$q', function ($q) {
@@ -13,13 +13,24 @@ define([
         return $q.resolve({ values: [] });
       },
       get: function (params) {
-        return $q.resolve(workPatternMocked.getAllWorkPattern.values);
+        return $q.resolve(WorkPatternData.getAllWorkPattern.values);
       },
-      getCalendar: function (params) {
-        return $q.resolve(workPatternMocked.getCalendar);
+      getCalendar: function (contactId, periodId, params) {
+        var data = _.clone(WorkPatternData.getCalendar);
+
+        if (contactId) {
+          data.values = data.values.filter(function (calendar) {
+            return _.isArray(contactId)
+              ? _.includes(contactId, calendar.contact_id)
+              : contactId === calendar.contact_id;
+          });
+          data.count = data.values.length;
+        }
+
+        return $q.resolve(data);
       },
       workPatternsOf: function (contactId, params) {
-        return $q.resolve(workPatternMocked.workPatternsOf.values.map(storeWorkPattern));
+        return $q.resolve(WorkPatternData.workPatternsOf.values.map(storeWorkPattern));
       },
       unassignWorkPattern: function (contactWorkPatternID) {
         return $q.resolve({ values: [] });

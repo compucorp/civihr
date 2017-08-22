@@ -1,8 +1,10 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/models',
-  'leave-absences/shared/models/instances/leave-request-instance',
-  'leave-absences/shared/apis/leave-request-api',
   'common/models/model',
+  'leave-absences/shared/apis/leave-request-api',
+  'leave-absences/shared/instances/leave-request.instance'
 ], function (models) {
   'use strict';
 
@@ -68,6 +70,20 @@ define([
           $log.debug('LeaveRequestAPI.calculateBalanceChange');
 
           return leaveRequestAPI.calculateBalanceChange(params);
+        },
+
+        /**
+         * Get leave request for the given id
+         *
+         * @param {object} id - leave request id
+         *
+         * @return {Promise} resolves with {Object}
+         */
+        find: function (id) {
+          return leaveRequestAPI.find(id)
+            .then(function (leaveRequest) {
+              return instance.init(leaveRequest, true);
+            });
         }
       });
     }

@@ -140,6 +140,8 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
 
   /**
    * Returns the ContactWorkPattern instance for the given contact and $date
+   * This function will only return the ContactWorkPattern instance that is
+   * linked to an active WorkPattern.
    *
    * @param int $contactID
    * @param \DateTime $date
@@ -147,25 +149,13 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
    * @return \CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern|null
    */
   public static function getForDate($contactID, DateTime $date) {
-    $tableName = self::getTableName();
+    $contactWorkPattern = self::getAllForPeriod($contactID, $date, $date);
 
-    $query = "SELECT * FROM {$tableName}
-              WHERE contact_id = %1 AND 
-                    effective_date <= %2 AND 
-                    (effective_end_date >= %2 OR effective_end_date IS NULL)";
-
-    $params = [
-      1 => [$contactID, 'Integer'],
-      2 => [$date->format('Y-m-d'), 'String']
-    ];
-
-    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
-    if($result->N == 1) {
-      $result->fetch();
-      return $result;
+    if(!$contactWorkPattern) {
+      return null;
     }
 
-    return null;
+    return $contactWorkPattern[0];
   }
 
   /**
@@ -262,6 +252,8 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
   /**
    * Returns a list of ContactWorkPattern instances for the given $contactID,
    * which overlap the period enclosed by the given $start and $end dates
+   * Only ContactWorkPattern instances linked to an active work pattern are
+   * returned.
    *
    * @param int $contactID
    * @param \DateTime $start
@@ -270,12 +262,16 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
    * @return \CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern[]
    */
   public static function getAllForPeriod($contactID, DateTime $start, DateTime $end) {
-    $tableName = self::getTableName();
+    $contactWorkPatternTable = self::getTableName();
+    $workPatternTable = WorkPattern::getTableName();
 
-    $query = "SELECT * FROM {$tableName}
-              WHERE contact_id = %1 AND 
-                    effective_date <= %2 AND 
-                    (effective_end_date >= %3 OR effective_end_date IS NULL)";
+    $query = "SELECT cwp.* FROM {$contactWorkPatternTable} cwp
+              INNER JOIN {$workPatternTable} wp 
+                ON cwp.pattern_id = wp.id
+              WHERE cwp.contact_id = %1 AND 
+              cwp.effective_date <= %2 AND 
+              (cwp.effective_end_date >= %3 OR cwp.effective_end_date IS NULL) AND
+              wp.is_active = 1";
 
     $params = [
       1 => [$contactID, 'Integer'],

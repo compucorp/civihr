@@ -107,6 +107,10 @@ define([
         }).get(function (data) {
           angular.forEach(data.values, function (value) {
             value.add_public_holiday_to_entitlement = !!parseInt(value.add_public_holiday_to_entitlement);
+            // The default_entitlement is return by the API as a string
+            // so here we cast it to a float, to make it easy to do calculations and
+            // to display the value in forms
+            value.default_entitlement = parseFloat(value.default_entitlement);
           });
 
           deffered.resolve(data.values);

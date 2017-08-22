@@ -1,1 +1,0 @@
-!function(e){define(["common/angular"],function(n){return n.module("manager-leave.settings",[]).constant("settings",{debug:e.debug,pathTpl:e.vars.leaveAndAbsences.baseURL+"/views/manager-leave/"})})}(CRM);

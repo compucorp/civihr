@@ -16,13 +16,13 @@
   </div>
   <div class="col-sm-4">
     <div class="override-filters">
-      <input type="radio" id="override_filter_overridden" name="override-filter" class="override-filter" value="1">
+      <input type="radio" id="override_filter_overridden" name="override-filter" class="old-radiocheckbox-style override-filter" value="1">
       <label for="override_filter_overridden">Overridden</label>
 
-      <input type="radio" id="override_filter_not_overridden" name="override-filter" class="override-filter" value="2">
+      <input type="radio" id="override_filter_not_overridden" name="override-filter" class="old-radiocheckbox-style override-filter" value="2">
       <label for="override_filter_not_overridden">Not Overridden</label>
 
-      <input type="radio" id="override_filter_both" name="override-filter" class="override-filter" value="3" checked="checked">
+      <input type="radio" id="override_filter_both" name="override-filter" class="old-radiocheckbox-style override-filter" value="3" checked="checked">
       <label for="override_filter_both">Both</label>
     </div>
   </div>
@@ -44,6 +44,7 @@
     <th>{ts}Employee name{/ts}</th>
     <th>{ts}Leave type{/ts}</th>
     <th>{ts}Prev. yr entitlement{/ts}</th>
+    <th>{ts}Prev. yr Accrued TOIL{/ts}</th>
     <th>{ts}Days taken{/ts}</th>
     <th>{ts}Remaining{/ts}</th>
     <th>{ts}Brought Forward from previous period{/ts}</th>
@@ -74,6 +75,7 @@
       <td>{$contact.display_name}</td>
       <td><span class="absence-type" style="background-color: {$absenceType->color};">{$absenceType->title}</span></td>
       <td>{$calculation->getPreviousPeriodProposedEntitlement()}</td>
+      <td>{$calculation->getAccruedTOILForPreviousPeriod()}</td>
       <td>{$calculation->getNumberOfDaysTakenOnThePreviousPeriod()}</td>
       <td>{$calculation->getNumberOfDaysRemainingInThePreviousPeriod()}</td>
       <td>{$calculation->getBroughtForward()}</td>

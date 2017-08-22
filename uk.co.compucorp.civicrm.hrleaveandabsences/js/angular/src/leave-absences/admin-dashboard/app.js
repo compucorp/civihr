@@ -3,16 +3,25 @@
 define([
   'common/angular',
   'common/angularBootstrap',
-  'common/text-angular',
   'common/modules/dialog',
   'common/services/check-permissions',
-  'leave-absences/shared/modules/shared-settings',
+  'common/services/angular-date/date-format',
   'leave-absences/shared/ui-router',
-  'leave-absences/shared/components/leave-request-create-dropdown',
-  'leave-absences/shared/components/leave-request-popup-comments-tab',
-  'leave-absences/shared/components/manager-leave-calendar',
-  'leave-absences/shared/components/manage-leave-requests',
-  'leave-absences/shared/directives/leave-request-popup',
+  'leave-absences/shared/components/leave-balance-tab.component',
+  'leave-absences/shared/components/leave-calendar.component',
+  'leave-absences/shared/components/leave-calendar-day.component',
+  'leave-absences/shared/components/leave-calendar-legend.component',
+  'leave-absences/shared/components/leave-calendar-month.component',
+  'leave-absences/shared/components/leave-request-actions.component',
+  'leave-absences/shared/components/leave-request-popup-comments-tab.component',
+  'leave-absences/shared/components/leave-request-popup-files-tab',
+  'leave-absences/shared/components/leave-request-record-actions.component',
+  'leave-absences/shared/components/manage-leave-requests.component',
+  'leave-absences/shared/controllers/sub-controllers/leave-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/sick-request.controller',
+  'leave-absences/shared/controllers/sub-controllers/toil-request.controller',
+  'leave-absences/shared/modules/shared-settings',
+  'leave-absences/shared/services/leave-popup.service',
   'leave-absences/admin-dashboard/modules/config',
   'leave-absences/admin-dashboard/components/admin-dashboard-container'
 ], function (angular) {
@@ -23,12 +32,15 @@ define([
     'ui.router',
     'ui.select',
     'textAngular',
+    'common.angularDate',
     'common.dialog',
-    'admin-dashboard.config',
-    'admin-dashboard.components',
+    'common.mocks',
     'leave-absences.components',
-    'leave-absences.directives',
-    'leave-absences.settings'
+    'leave-absences.controllers',
+    'leave-absences.settings',
+    'leave-absences.services',
+    'admin-dashboard.config',
+    'admin-dashboard.components'
   ]).run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
     $log.debug('app.run');
 

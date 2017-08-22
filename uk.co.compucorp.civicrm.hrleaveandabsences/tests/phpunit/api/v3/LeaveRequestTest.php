@@ -118,6 +118,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType2->id
     ]);
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement1->contact_id],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement1->contact_id,
       'type_id' => $periodEntitlement1->type_id,
@@ -189,6 +194,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1
     ]);
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     LeaveRequestFabricator::fabricateWithoutValidation([
@@ -246,6 +256,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
     ]);
 
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
 
     LeaveRequestFabricator::fabricateWithoutValidation([
@@ -295,6 +310,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'period_id' => $period->id,
       'type_id' => $this->absenceType->id,
     ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => $period->start_date]
+    );
 
     $this->createLeaveRequestBalanceChange(
       $this->absenceType->id,
@@ -349,6 +369,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'period_id' => $period->id,
       'type_id' => $this->absenceType->id,
     ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => $period->start_date]
+    );
 
     $this->createLeaveRequestBalanceChange(
       $this->absenceType->id,
@@ -416,6 +441,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'period_id' => $period->id,
       'type_id' => $this->absenceType->id,
     ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => $period->start_date]
+    );
 
     $this->createExpiredTOILRequestBalanceChange(
       $entitlement->type_id,
@@ -2225,6 +2255,32 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $errorMessage = 'Leave Request must have at least one working day to be created';
     $expectedResult = $this->getExpectedArrayForIsValidError('from_date', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenContactHasNoPeriodEntitlementForTheAbsenceType() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $contactID = 1;
+    $leaveDate = new DateTime('2016-11-15');
+    $dateType = $this->leaveRequestDayTypes['all_day']['value'];
+
+    $result = civicrm_api3('LeaveRequest', 'isvalid', [
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $leaveDate->format('YmdHis'),
+      'from_date_type' => $dateType,
+      'to_date' => $leaveDate->format('YmdHis'),
+      'to_date_type' => $dateType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+
+    $errorMessage = 'Contact does not have period entitlement for the absence type';
+    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 

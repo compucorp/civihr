@@ -1,9 +1,12 @@
+/* eslint-env amd */
+
 define([
+  'common/lodash',
   'leave-absences/shared/modules/models',
-  'leave-absences/shared/models/instances/entitlement-instance',
+  'common/models/model',
   'leave-absences/shared/apis/entitlement-api',
-  'common/models/model'
-], function (models) {
+  'leave-absences/shared/instances/entitlement.instance'
+], function (_, models) {
   'use strict';
 
   models.factory('Entitlement', [
@@ -49,7 +52,7 @@ define([
               if (entitlements) {
                 entitlements.map(function (entitlement) {
                   var foundEntitlement = _.find(breakdown, function (element) {
-                    return element.id == entitlement.id;
+                    return element.id === entitlement.id;
                   });
 
                   if (foundEntitlement) {

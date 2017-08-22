@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 define([
   'common/lodash',
   'mocks/module'
@@ -9,6 +10,44 @@ define([
    * Mocked option values, grouped by option group
    */
   var mockedOptionValues = {
+    hrleaveandabsences_work_day_type: [
+      {
+        'id': '1065',
+        'option_group_id': '143',
+        'label': 'No',
+        'value': '1',
+        'name': 'non_working_day',
+        'is_default': '0',
+        'weight': '0',
+        'is_optgroup': '0',
+        'is_reserved': '1',
+        'is_active': '1'
+      },
+      {
+        'id': '1066',
+        'option_group_id': '143',
+        'label': 'Yes',
+        'value': '2',
+        'name': 'working_day',
+        'is_default': '0',
+        'weight': '1',
+        'is_optgroup': '0',
+        'is_reserved': '1',
+        'is_active': '1'
+      },
+      {
+        'id': '1067',
+        'option_group_id': '143',
+        'label': 'Weekend',
+        'value': '3',
+        'name': 'weekend',
+        'is_default': '0',
+        'weight': '2',
+        'is_optgroup': '0',
+        'is_reserved': '1',
+        'is_active': '1'
+      }
+    ],
     hrleaveandabsences_leave_request_day_type: [{
       'id': '1113',
       'option_group_id': '142',
@@ -796,6 +835,175 @@ define([
       'filter': '0',
       'is_default': '0',
       'weight': '3',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }],
+    safe_file_extension: [{
+      'id': '296',
+      'option_group_id': '30',
+      'label': 'jpg',
+      'value': '1',
+      'name': 'jpg',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '1',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '297',
+      'option_group_id': '30',
+      'label': 'jpeg',
+      'value': '2',
+      'name': 'jpeg',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '2',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '298',
+      'option_group_id': '30',
+      'label': 'png',
+      'value': '3',
+      'name': 'png',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '3',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '299',
+      'option_group_id': '30',
+      'label': 'gif',
+      'value': '4',
+      'name': 'gif',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '4',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '300',
+      'option_group_id': '30',
+      'label': 'txt',
+      'value': '5',
+      'name': 'txt',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '5',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '301',
+      'option_group_id': '30',
+      'label': 'pdf',
+      'value': '6',
+      'name': 'pdf',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '6',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '302',
+      'option_group_id': '30',
+      'label': 'doc',
+      'value': '7',
+      'name': 'doc',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '7',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '303',
+      'option_group_id': '30',
+      'label': 'xls',
+      'value': '8',
+      'name': 'xls',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '8',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '304',
+      'option_group_id': '30',
+      'label': 'rtf',
+      'value': '9',
+      'name': 'rtf',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '9',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '305',
+      'option_group_id': '30',
+      'label': 'csv',
+      'value': '10',
+      'name': 'csv',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '10',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '306',
+      'option_group_id': '30',
+      'label': 'ppt',
+      'value': '11',
+      'name': 'ppt',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '11',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '307',
+      'option_group_id': '30',
+      'label': 'docx',
+      'value': '12',
+      'name': 'docx',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '12',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '308',
+      'option_group_id': '30',
+      'label': 'xlsx',
+      'value': '13',
+      'name': 'xlsx',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '13',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '309',
+      'option_group_id': '30',
+      'label': 'odt',
+      'value': '14',
+      'name': 'odt',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '14',
       'is_optgroup': '0',
       'is_reserved': '0',
       'is_active': '1'

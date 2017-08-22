@@ -1,9 +1,9 @@
 <div class="manager-leave-page">
   <div class="button-container">
-    <leave-request-create-dropdown
+    <leave-request-record-actions
       btn-class="btn-primary"
       contact-id="managerLeave.contactId">
-    </leave-request-create-dropdown>
+    </leave-request-record-actions>
   </div>
   <div class="tabs-container">
     <div class="container">
@@ -13,6 +13,9 @@
         </li>
         <li ui-sref-active="active">
           <a ui-sref="manager-leave.calendar">Calendar</a>
+        </li>
+        <li ui-sref-active="active">
+          <a ui-sref="manager-leave.balance-report">Leave Balance</a>
         </li>
       </ul>
       <div class="tab-content">

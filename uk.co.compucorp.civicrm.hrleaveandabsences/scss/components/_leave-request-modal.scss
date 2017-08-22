@@ -112,6 +112,13 @@ $row-margin-bottom: 15px;
   margin-top: 7px;
 }
 
+.chr_leave-request-modal__expiry-clear {
+  position: absolute;
+  right: 3.5em;
+  top: 0.6em;
+  z-index: 2;
+}
+
 /*
  * This is a temporary patch which fixes CSS in the modal
  * @TODO remove this patch when Shoreditch theme is migrated to SSP

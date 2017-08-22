@@ -54,6 +54,81 @@ class CRM_HRCore_Date_BasicDatePeriodTest extends \PHPUnit_Framework_TestCase im
     $this->assertEquals('2016-10-11', $endDate->format('Y-m-d'));
   }
 
+  public function testGetStartDateReturnsCorrectly() {
+    $startDate = new DateTime('2016-10-10');
+    $endDate = new DateTime('2016-10-11');
+
+    $period = new BasicDatePeriod($startDate, $endDate);
+    $this->assertEquals($period->getStartDate(), $startDate);
+  }
+
+  public function testGetStartDateReturnsCorrectlyWhenTheConstructorAcceptsDateAsStrings() {
+    $startDate = '2016-10-10';
+    $endDate = '2016-10-11';
+
+    $period = new BasicDatePeriod($startDate, $endDate);
+    $this->assertEquals($period->getStartDate(), new DateTime($startDate));
+  }
+
+  public function testGetEndDateReturnsCorrectlyWhenTheConstructorAcceptsDateAsStrings() {
+    $startDate = '2016-10-10';
+    $endDate = '2016-10-11';
+
+    $period = new BasicDatePeriod($startDate, $endDate);
+    $this->assertEquals($period->getEndDate(), new DateTime($endDate));
+  }
+
+  public function testGetEndDateReturnsCorrectly() {
+    $startDate = new DateTime('2016-10-10');
+    $endDate = new DateTime('2016-10-11');
+
+    $period = new BasicDatePeriod($startDate, $endDate);
+    $this->assertEquals($period->getEndDate(), $endDate);
+  }
+
+  public function testAdjustDatesToMatchPeriodDatesShouldAdjustStartDateIfItsLessThanThePeriodStartDate() {
+    $startDate = new DateTime('2016-10-10');
+    $endDate = new DateTime('2016-10-11');
+    $period = new BasicDatePeriod($startDate, $endDate);
+
+    $fromDate = '2016-10-05';
+    $toDate = '2016-10-11';
+
+    $adjustedPeriod = $period->adjustDatesToMatchPeriodDates($fromDate, $toDate);
+    //fromDate is less than the period start date therefore period start date will be returned
+    $this->assertEquals($period->getStartDate(), $adjustedPeriod->getStartDate());
+    $this->assertEquals($period->getEndDate(), $adjustedPeriod->getEndDate());
+  }
+
+  public function testAdjustDatesToMatchPeriodDatesShouldAdjustEndDateIfItsGreaterThanThePeriodEndDate() {
+    $startDate = new DateTime('2016-10-10');
+    $endDate = new DateTime('2016-10-11');
+    $period = new BasicDatePeriod($startDate, $endDate);
+
+    $fromDate = '2016-10-10';
+    $toDate = '2016-10-12';
+
+    $adjustedPeriod = $period->adjustDatesToMatchPeriodDates($fromDate, $toDate);
+    //toDate is greater than the period end date therefore period end date will be returned
+    $this->assertEquals($period->getStartDate(), $adjustedPeriod->getStartDate());
+    $this->assertEquals($period->getEndDate(), $adjustedPeriod->getEndDate());
+  }
+
+  public function testAdjustDatesShouldReturnTheDatesUnModifiedIfStartDateIsGreaterThanPeriodStartDateAndEndDateLessThanPeriodEndDate() {
+    $startDate = new DateTime('2016-10-10');
+    $endDate = new DateTime('2016-10-14');
+    $period = new BasicDatePeriod($startDate, $endDate);
+
+    $fromDate = '2016-10-12';
+    $toDate = '2016-10-13';
+
+    $adjustedPeriod = $period->adjustDatesToMatchPeriodDates($fromDate, $toDate);
+    //toDate is less than the period end date therefore toDate will be returned
+    //fromDate is greater than period start date therefore fromDate will be returned
+    $this->assertEquals($fromDate, $adjustedPeriod->getStartDate()->format('Y-m-d'));
+    $this->assertEquals($toDate, $adjustedPeriod->getEndDate()->format('Y-m-d'));
+  }
+
   private function getDatesArrayForPeriod(BasicDatePeriod $period) {
     $dates = [];
     foreach($period as $date) {

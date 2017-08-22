@@ -33,6 +33,8 @@
  *
  */
 
+use CRM_Hrjobcontract_Factory_ImportParser as ImportParserFactory;
+
 /**
  * This class previews the uploaded file and returns summary
  * statistics
@@ -53,7 +55,7 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
    */
   public function preProcess() {
     $skipColumnHeader = $this->controller->exportValue('DataSource', 'skipColumnHeader');
-
+    $this->_importMode = $this->get('importMode');
     //get the data from the session
     $dataValues       = $this->get('dataValues');
     $mapper           = $this->get('mapper');
@@ -143,7 +145,7 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
       }
     }
     $leaveType = CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobLeave', 'leave_type');
-    $parser = new $this->_parser($mapperKeys,$mapperLocTypes);
+    $parser = ImportParserFactory::create($this->_importMode, $mapperKeys, $mapperLocTypes);
     $parser->setEntity($entity);
 
     $mapFields = $this->get('fields');

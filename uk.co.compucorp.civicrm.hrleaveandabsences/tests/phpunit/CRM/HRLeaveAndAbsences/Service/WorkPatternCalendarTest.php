@@ -3,9 +3,10 @@
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRCore_Date_BasicDatePeriod as BasicDatePeriod;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_WorkPatternCalendar as WorkPatternCalendarService;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 
@@ -16,14 +17,14 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
  */
 class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadlessTest {
 
-  use CRM_HRLeaveAndAbsences_WorkPatternHelpersTrait;
-
   private $contact;
   private $jobContractService;
+  private $workDayTypeOptions;
 
   public function setUp() {
     $this->contact = ContactFabricator::fabricate();
     $this->jobContractService = new JobContractService();
+    $this->workDayTypeOptions = array_flip(WorkDay::buildOptions('type', 'validate'));
 
     // We delete everything to avoid problems with the default work pattern
     // created during the extension installation
@@ -32,12 +33,6 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testGetShouldUseTheDefaultWorkPatternIfTheContactHasNoActiveWorkPatternDuringTheContract() {
-    // 15 days absence period
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
-      'end_date'   => CRM_Utils_Date::processDate('2015-01-19'),
-    ]);
-
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
     $multipleWeekWorkPattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
 
@@ -57,9 +52,18 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       'effective_date' => CRM_Utils_Date::processDate('2015-02-05'),
     ]);
 
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    // 15 days date interval.
+    $startDate = '2015-01-05';
+    $endDate = '2015-01-19';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService
+    );
+
+    $workDayTypes = $this->workDayTypeOptions;
 
     $calendarDates = $calendar->get();
     // Asserting ALL the dates would make the test too big, so we assert the
@@ -79,12 +83,6 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testGetShouldUseTheDefaultWorkPatternIfTheAssignedWorkPatternDoesntCoverTheWholeContractPeriod() {
-    // 31 days absence period
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
-      'end_date'   => CRM_Utils_Date::processDate('2015-01-31'),
-    ]);
-
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
     $multipleWeekWorkPattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
 
@@ -104,9 +102,17 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       'effective_date' => CRM_Utils_Date::processDate('2015-01-12'),
     ]);
 
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    // 31 days date interval
+    $startDate = '2015-01-01';
+    $endDate = '2015-01-31';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService);
+
+    $workDayTypes = $this->workDayTypeOptions;
 
     $calendarDates = $calendar->get();
     // Asserting ALL the dates would make the test too big, so we assert the
@@ -143,12 +149,6 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testGetCanGenerateCalendarForAContractWhichStartedBeforeThePeriodStartDateWithDefaultWorkPattern() {
-    // 10 days absence period
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
-      'end_date'   => CRM_Utils_Date::processDate('2015-01-10'),
-    ]);
-
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
 
     HRJobContractFabricator::fabricate(
@@ -159,7 +159,15 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       ]
     );
 
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    // 10 days date interval
+    $startDate = '2015-01-01';
+    $endDate = '2015-01-10';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
+
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService);
     $calendarDates = $calendar->get();
 
     $this->assertCount(10, $calendarDates);
@@ -169,12 +177,6 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testGetCanCycleTheWeeksOfAWorkPatternEffectiveBeforeTheAbsencePeriod() {
-    // 10 days absence period
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
-      'end_date'   => CRM_Utils_Date::processDate('2015-01-10'),
-    ]);
-
     $workPattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours(['is_default' => true]);
 
     // Make the pattern effective on the previous absence period
@@ -193,10 +195,19 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       ]
     );
 
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    // 10 days date interval
+    $startDate = '2015-01-01';
+    $endDate = '2015-01-10';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
+
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService
+    );
     $calendarDates = $calendar->get();
 
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
 
     $this->assertCount(10, $calendarDates);
     // even though the period starts on 2015-01-01, the weeks cycle starts at the
@@ -220,12 +231,6 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testGetUsesTheContractStartDateToCycleWeeksIfTheWorkPatternEffectiveDateIsBeforeTheContractStartDate() {
-    // A period with 2 weeks
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
-      'end_date'   => CRM_Utils_Date::processDate('2015-01-19'),
-    ]);
-
     $workPattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours(['is_default' => true]);
 
     // this contract covers the first week of the period
@@ -254,10 +259,19 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       'effective_date' => CRM_Utils_Date::processDate('2015-01-01'),
     ]);
 
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    // 2 weeks interval
+    $startDate = '2015-01-05';
+    $endDate = '2015-01-19';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
+
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService
+    );
     $calendarDates = $calendar->get();
 
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
 
     $this->assertCount(15, $calendarDates);
     $this->assertEquals('2015-01-05', $calendarDates[0]['date']);
@@ -281,11 +295,6 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testGetUsesThePeriodEndDateWhenTheContractDoesntHaveAndEndDate() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
-      'end_date'   => CRM_Utils_Date::processDate('2015-01-05'),
-    ]);
-
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
 
     HRJobContractFabricator::fabricate(
@@ -295,7 +304,15 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       ]
     );
 
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    $startDate = '2015-01-01';
+    $endDate = '2015-01-05';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
+
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService
+    );
     $calendarDates = $calendar->get();
 
     $dates = array_column($calendarDates, 'date');
@@ -310,12 +327,6 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testItCanGenerateTheCalendarWhenThereAreMultiplesWorkPatternsWithinASingleContractStartAndEndDates() {
-    // a 19 days period
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
-      'end_date'   => CRM_Utils_Date::processDate('2015-01-23'),
-    ]);
-
     $workPattern1 = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
     $workPattern2 = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
 
@@ -339,10 +350,19 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       ]
     );
 
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    // 19 days interval
+    $startDate = '2015-01-05';
+    $endDate = '2015-01-23';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
+
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService
+    );
     $calendarDates = $calendar->get();
 
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
 
     $this->assertCount(19, $calendarDates);
 
@@ -368,11 +388,6 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testItGeneratesAccurateNumberOfCalendarDatesUsingOnlyTheContractOfTheContact() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
-    ]);
-
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
     $contact2 = ContactFabricator::fabricate();
 
@@ -390,7 +405,15 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       ]
     );
 
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    $startDate = '2016-01-01';
+    $endDate = '2016-12-31';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
+
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService
+    );
     $calendarDates = $calendar->get();
 
     //Year 2016 is a leap year, so there are 366 days.
@@ -398,11 +421,6 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testGetReturnsResultsForContactWithoutAContractAndFillsTheContactWorkPatternPeriodLapsesWithTheDefaultWorkPattern() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2016-03-03'),
-      'end_date' => CRM_Utils_Date::processDate('2016-03-09'),
-    ]);
-
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
     $workPattern1 = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
 
@@ -412,11 +430,19 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       'effective_date' => CRM_Utils_Date::processDate('2016-03-07'),
     ]);
 
-    //A contract is fabricated for the period between 2016-03-03 and 2016-03-09
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    $startDate = '2016-03-03';
+    $endDate = '2016-03-09';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
+
+    // A contract is fabricated for the period between 2016-03-03 and 2016-03-09
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService
+    );
     $calendarDates = $calendar->get();
 
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
 
     $this->assertCount(7, $calendarDates);
 
@@ -441,18 +467,20 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testGetReturnsResultsForContactWithoutAContractAndUsingTheDefaultWorkPatternOnly() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2016-03-03'),
-      'end_date' => CRM_Utils_Date::processDate('2016-03-06'),
-    ]);
-
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    $startDate = '2016-03-03';
+    $endDate = '2016-03-06';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
 
-    //A contract is fabricated period between 2016-03-03 and 2016-03-06
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    // A contract is fabricated period between 2016-03-03 and 2016-03-06
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService
+    );
     $calendarDates = $calendar->get();
 
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
 
     $this->assertCount(4, $calendarDates);
 
@@ -468,11 +496,6 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
   }
 
   public function testGetReturnsResultsForContactWithContractsAndFillsThePeriodLapsesUsingTheDefaultWorkPattern() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'end_date' => CRM_Utils_Date::processDate('2016-01-31'),
-    ]);
-
     HRJobContractFabricator::fabricate(
       ['contact_id' => $this->contact['id']],
       [
@@ -506,9 +529,17 @@ class CRM_HRLeaveAndAbsences_Service_WorkPatternCalendarTest extends BaseHeadles
       'effective_end_date' => CRM_Utils_Date::processDate('2016-01-24'),
     ]);
 
-    $calendar = new WorkPatternCalendarService($this->contact['id'], $absencePeriod, $this->jobContractService);
+    $startDate = '2016-01-01';
+    $endDate = '2016-01-31';
+    $datePeriod = new BasicDatePeriod($startDate, $endDate);
+
+    $calendar = new WorkPatternCalendarService(
+      $this->contact['id'],
+      $datePeriod,
+      $this->jobContractService
+    );
     $calendarDates = $calendar->get();
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
     $this->assertCount(31, $calendarDates);
 
     // There is no Work Pattern between the period 2016-01-01 to 2016-01-03 although a contract exists

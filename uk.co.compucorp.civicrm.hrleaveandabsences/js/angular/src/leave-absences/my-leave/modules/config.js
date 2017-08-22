@@ -31,12 +31,19 @@
               }
             })
             .state('my-leave.report', {
-              url: '/report',
-              template: '<staff-leave-report contact-id="myleave.contactId"></staff-leave-report>'
+              url: '/report?leave-request-id',
+              template: '<staff-leave-report contact-id="myleave.contactId"></staff-leave-report>',
+              onEnter: [
+                '$stateParams', 'LeavePopup', function ($stateParams, LeavePopup) {
+                  if ($stateParams['leave-request-id']) {
+                    LeavePopup.openModalByID($stateParams['leave-request-id']);
+                  }
+                }
+              ]
             })
             .state('my-leave.calendar', {
               url: '/calendar',
-              template: '<staff-leave-calendar contact-id="myleave.contactId"></staff-leave-calendar>'
+              template: '<leave-calendar contact-id="myleave.contactId" role-override="staff"></leave-calendar>'
             });
         }
       ]);

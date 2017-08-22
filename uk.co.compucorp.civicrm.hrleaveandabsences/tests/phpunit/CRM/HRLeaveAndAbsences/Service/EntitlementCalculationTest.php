@@ -11,6 +11,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabrica
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobDetails as HRJobDetailsFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobLeave as HRJobLeaveFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest
@@ -124,7 +125,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
 
     $type = AbsenceTypeFabricator::fabricate([
-      'max_number_of_days_to_carry_forward' => 5
+      'max_number_of_days_to_carry_forward' => 5.5
     ]);
 
     $previousPeriod = AbsencePeriodFabricator::fabricate([
@@ -146,7 +147,33 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     // current period, but that is more than the max number of days allowed by
     // the absence type, so the carried amount should be reduced to he maximum
     // allowed
-    $this->assertEquals(5, $calculation->getBroughtForward());
+    $this->assertEquals(5.5, $calculation->getBroughtForward());
+  }
+
+  public function testBroughtForwardShouldBeTheNumberOfDaysRemainingInPreviousPeriodIfTheAbsenceTypeAllowsUnlimitedDaysToBeBroughtForward() {
+    $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
+
+    $type = AbsenceTypeFabricator::fabricate([
+      'max_number_of_days_to_carry_forward' => NULL
+    ]);
+
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => date('YmdHis', strtotime('-2 days')),
+      'end_date' => date('YmdHis', strtotime('-1 day')),
+    ]);
+
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+1 day')),
+    ], true);
+
+    $this->createEntitlement($previousPeriod, $type, 10);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+
+    // Since the absence type allows unlimited brought forward, the whole entitlement
+    // remaining in previous period is brought forward.
+    $this->assertEquals(10, $calculation->getBroughtForward());
   }
 
   public function testBroughtForwardShouldNotBeMoreThanTheNumberOfRemainingDaysInPreviousEntitlement() {
@@ -998,5 +1025,55 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     return $contract;
   }
 
+  public function testGetAccruedTOILForPreviousPeriodReturnsZeroWhenThereIsNoPreviousPeriod() {
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $absenceType);
+
+    $this->assertEquals(0, $calculation->getAccruedTOILForPreviousPeriod());
+  }
+
+  public function testGetAccruedTOILForPreviousPeriodReturnsOnlyForPreviousPeriod() {
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
+    ]);
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate();
+
+    //Accrue TOIL (2) for previous period
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => $this->contact['id'],
+      'from_date' => CRM_Utils_Date::processDate('2015-06-02'),
+      'to_date' => CRM_Utils_Date::processDate('2015-06-03'),
+      'toil_to_accrue' => 2,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    //Accrue TOIL (1) for contact for current period
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => $this->contact['id'],
+      'from_date' => CRM_Utils_Date::processDate('2016-06-04'),
+      'to_date' => CRM_Utils_Date::processDate('2016-06-05'),
+      'toil_to_accrue' => 1,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $absenceType);
+
+    //It only returns TOIL accrued for previous period
+    $this->assertEquals(2, $calculation->getAccruedTOILForPreviousPeriod());
+  }
 
 }

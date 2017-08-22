@@ -1,42 +1,39 @@
-<div
-  class="text-center chr_leave-request-modal__comments_empty"
-  ng-show="commentsCtrl.getActiveComments().length === 0">
-  No comments available. Comments can be added below.
-</div>
-<div
-  class="chr_leave-request-modal__comments"
-  ng-hide="commentsCtrl.getActiveComments().length === 0">
+<crm-loading show="!$ctrl.loading.component">
   <div
-    class="chr_leave-request-comment"
-    ng-repeat="comment in commentsCtrl.getActiveComments() | orderBy: commentsCtrl.orderComment : true">
-    <div class="chr_leave-request-comment__meta">
-      <span class="chr_leave-request-comment__author">{{commentsCtrl.getCommentorName(comment.contact_id)}}</span>
-      <span>-</span>
-      <span class="chr_leave-request-comment__date">{{commentsCtrl.formatDateTime(comment.created_at)}}</span>
-      <button
-        class="btn btn-link"
-        ng-disabled="commentsCtrl.isMode('view')"
-        ng-click="commentsCtrl.request.deleteComment(comment)"
-        ng-show="commentsCtrl.removeCommentVisibility(comment)">Remove
-      </button>
+    class="chr_leave-request-modal__comments"
+    ng-hide="commentsCtrl.getActiveComments().length === 0">
+    <div
+      class="chr_leave-request-comment"
+      ng-repeat="comment in commentsCtrl.getActiveComments() | orderBy: commentsCtrl.id : true">
+      <div class="chr_leave-request-comment__meta">
+        <span class="chr_leave-request-comment__author">{{commentsCtrl.getCommentorName(comment.contact_id)}}</span>
+        <span>-</span>
+        <span class="chr_leave-request-comment__date">{{comment.comment_id ? commentsCtrl.formatDateTime(comment.created_at) : "Just now"}}</span>
+        <button
+          class="btn btn-link"
+          ng-disabled="commentsCtrl.isMode('view')"
+          ng-click="commentsCtrl.request.deleteComment(comment)"
+          ng-show="commentsCtrl.removeCommentVisibility(comment)">Remove
+        </button>
+      </div>
+      <div class="chr_leave-request-comment__text" ng-bind-html="comment.text"></div>
     </div>
-    <div class="chr_leave-request-comment__text" ng-bind-html="comment.text"></div>
   </div>
-</div>
-<div
-  class="chr_wysiwyg"
-  text-angular
-  prevent-animations
-  ta-disabled="commentsCtrl.isMode('view')"
-  ta-toolbar="[['bold','italics','underline']]"
-  ng-model="commentsCtrl.comment.text"></div>
-<div class="chr_wysiwyg__action">
-  <hr/>
-  <button
-    class="btn btn-link"
-    ng-click="commentsCtrl.addComment()"
-    ng-disabled="commentsCtrl.comment.text.length === 0 || commentsCtrl.isMode('view')">
-    <i class="fa fa-comment-o" aria-hidden="true"></i>
-    Add comment
-  </button>
-</div>
+  <div
+    class="chr_wysiwyg"
+    text-angular
+    prevent-animations
+    ta-disabled="commentsCtrl.isMode('view')"
+    ta-toolbar="[['bold','italics','underline']]"
+    placeholder="Start typing here..."
+    ng-model="commentsCtrl.comment.text"></div>
+  <div class="chr_wysiwyg__action">
+    <button
+      class="btn btn-link"
+      ng-click="commentsCtrl.addComment()"
+      ng-disabled="commentsCtrl.comment.text.length === 0 || commentsCtrl.isMode('view')">
+      <i class="fa fa-comment-o" aria-hidden="true"></i>
+      Add comment
+    </button>
+  </div>
+</crm-loading>

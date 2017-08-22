@@ -105,30 +105,16 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
   /**
    * @dataProvider leaveRequestStatusesDataProvider
    */
-  public function testCanChangeDatesForReturnsFalseForTOILAndLeaveRequestTypesWhenCurrentUserNotLeaveContactIrrespectiveOfStatusPassed($status) {
+  public function testCanChangeDatesForReturnsFalseForAnyRequestTypeWhenCurrentUserIsStaffAndNotLeaveContactIrrespectiveOfStatusPassed($status) {
     $contactID = 2;
-    $managerRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
-    $adminRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
     $staffRightsService = $this->getLeaveRightsService();
-
-    $this->assertFalse(
-      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_LEAVE)
-    );
-
-    $this->assertFalse(
-      $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_LEAVE)
-    );
 
     $this->assertFalse(
       $staffRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_LEAVE)
     );
 
     $this->assertFalse(
-      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_TOIL)
-    );
-
-    $this->assertFalse(
-      $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_TOIL)
+      $staffRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_SICKNESS)
     );
 
     $this->assertFalse(
@@ -139,17 +125,48 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
   /**
    * @dataProvider leaveRequestStatusesDataProvider
    */
-  public function testCanChangeDatesForReturnsTrueForSicknessRequestTypeWhenCurrentUserIsLeaveManagerOrAdminForAllStatuses($status) {
+  public function testCanChangeDatesForReturnsFalseForTOILAndLeaveRequestTypesWhenCurrentUserIsLeaveManagerIrrespectiveOfStatusPassed($status) {
     $contactID = 2;
     $managerRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
-    $adminRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
+
+    $this->assertFalse(
+      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_LEAVE)
+    );
+
+    $this->assertFalse(
+      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_TOIL)
+    );
+  }
+
+  /**
+   * @dataProvider leaveRequestStatusesDataProvider
+   */
+  public function testCanChangeDatesForReturnsTrueForSicknessRequestTypeWhenCurrentUserIsLeaveManagerIrrespectiveOfStatusPassed($status) {
+    $contactID = 2;
+    $managerRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
 
     $this->assertTrue(
       $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_SICKNESS)
     );
+  }
+
+  /**
+   * @dataProvider leaveRequestStatusesDataProvider
+   */
+  public function testCanChangeDatesForReturnsTrueForAnyRequestTypeWhenCurrentUserIsAdminIrrespectiveOfStatusPassed($status) {
+    $contactID = 2;
+    $adminRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
+
+    $this->assertTrue(
+      $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_LEAVE)
+    );
 
     $this->assertTrue(
       $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_SICKNESS)
+    );
+
+    $this->assertTrue(
+      $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_TOIL)
     );
   }
 

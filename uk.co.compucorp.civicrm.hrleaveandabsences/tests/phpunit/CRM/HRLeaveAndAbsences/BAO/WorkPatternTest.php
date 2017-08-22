@@ -12,7 +12,10 @@ use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolid
  */
 class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
 
+  private $workDayTypeOptions;
+
   public function setUp() {
+    $this->workDayTypeOptions = array_flip(WorkDay::buildOptions('type', 'validate'));
     //Deletes the default work pattern so it doesn't interfere with the tests
     WorkPattern::del(1);
   }
@@ -192,25 +195,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   public function testGetValuesArrayShouldReturnEmptyArrayWhenWorkPatternDoesntExists() {
     $values = WorkPattern::getValuesArray(1);
     $this->assertEmpty($values);
-  }
-
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
-   * @expectedExceptionMessage You cannot disable a Work Pattern if it's the last one
-   */
-  public function testCannotDisablePatternIfItIsTheLastWorkPatternEnabled() {
-    $workPattern = WorkPatternFabricator::fabricate(['is_active' => 1]);
-    $this->updateBasicWorkPattern($workPattern->id, ['is_active' => 0]);
-  }
-
-  public function testCanDisablePatternIfItIsNotTheLastWorkPatternEnabled() {
-    $workPattern1 = WorkPatternFabricator::fabricate(['is_active' => 1]);
-    WorkPatternFabricator::fabricate(['is_active' => 1]);
-
-    $this->updateBasicWorkPattern($workPattern1->id, ['is_active' => 0]);
-
-    $workPattern1 = WorkPattern::findById($workPattern1->id);
-    $this->assertEquals(0, $workPattern1->is_active);
   }
 
   public function testGetLeaveDaysForDateShouldReturnZeroIfDateIsNotGreaterThanOrEqualTheStartDate() {
@@ -505,7 +489,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   }
 
   public function testGetCalendarCanGenerateTheCalendarForAWorkPatternWithASingleWeek() {
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
     $expectedCalendar = [
       [
         'date' => '2016-01-01', // friday
@@ -552,7 +536,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   }
 
   public function testGetCalendarCanGenerateTheCalendarForAWorkPatternWithMultipleWeeks() {
-    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $workDayTypes = $this->workDayTypeOptions;
     $expectedCalendar = [
       [
         'date' => '2016-01-01', // friday, working day on first week
@@ -626,24 +610,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     $this->assertEquals($expectedCalendar, $calendar);
   }
 
-  private function getWorkDayTypeOptionsArray() {
-    $result = $result = civicrm_api3('OptionValue', 'get', array(
-      'sequential' => 1,
-      'option_group_id' => "hrleaveandabsences_work_day_type",
-    ));
-
-    $options = [];
-    foreach($result['values'] as $value) {
-      $options[$value['name']] = [
-        'value' => $value['value'],
-        'name' => $value['name'],
-        'label' => $value['label']
-      ];
-    }
-
-    return $options;
-  }
-
   public function testItDoesNotEnqueueTaskToUpdatePublicHolidayLeaveRequestsWhenANewWorkPatternIsCreatedAndNotSetToDefault() {
     WorkPatternFabricator::fabricate(['is_default' => 0]);
     $numberOfItems = 0;
@@ -712,5 +678,24 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     if($item) {
       $queue->deleteItem($item);
     }
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
+   * @expectedExceptionMessage You cannot create a new Work Pattern as default and set disabled
+   */
+  public function testCannotCreateANewDefaultWorkPatternThatIsInactive() {
+    WorkPatternFabricator::fabricate(['is_default' => 1, 'is_active' => 0]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
+   * @expectedExceptionMessage You cannot disable the default Work Pattern
+   */
+  public function testCannotDisableTheDefaultWorkPattern() {
+    $workPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
+    $params = ['id' => $workPattern->id, 'is_active' => 0];
+
+    WorkPattern::create($params);
   }
 }

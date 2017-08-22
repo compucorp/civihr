@@ -1,1 +1,0 @@
-define(["leave-absences/shared/modules/apis","common/services/api"],function(e){"use strict";e.factory("AbsencePeriodAPI",["$log","api",function(e,n){return e.debug("AbsencePeriodAPI"),n.extend({all:function(n){return e.debug("AbsencePeriodAPI"),this.sendGET("AbsencePeriod","get",n).then(function(e){return e.values})}})}])});

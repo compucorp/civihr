@@ -38,7 +38,7 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
   /**
    * Import Modes
    */
-  CONST IMPORT_CONTRACTS = 1, IMPORT_REVISIONS = 2;
+  CONST IMPORT_CONTRACTS = 1, IMPORT_REVISIONS = 2, UPDATE_ENTITLEMENTS = 3;
 
   /**
    * @access protected
@@ -299,7 +299,7 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
       }
     }
   }
-  
+
   function addField($name, $title, $type = CRM_Utils_Type::T_INT, $headerPattern = '//', $dataPattern = '//') {
     if (empty($name) || $name == "do_not_import") {
       $this->_fields['doNotImport'] = new CRM_Hrjobcontract_Import_Field($name, $title, $type, $headerPattern, $dataPattern);

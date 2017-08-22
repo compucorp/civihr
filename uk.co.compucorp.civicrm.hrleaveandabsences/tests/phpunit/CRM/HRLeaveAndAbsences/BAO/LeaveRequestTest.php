@@ -719,12 +719,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testNumberOfDaysOfLeaveRequestShouldNotBeGreaterMaxConsecutiveLeaveDaysForAbsenceType() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'max_consecutive_leave_days' => 2
+      'max_consecutive_leave_days' => 2.5
     ]);
 
     $this->setExpectedException(
       'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
-      'Only a maximum 2 days leave can be taken in one request. Please modify days of this request'
+      'Only a maximum 2.5 days leave can be taken in one request. Please modify days of this request'
     );
 
     LeaveRequest::create([
@@ -1448,6 +1448,32 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $fromType,
       'to_date' => $toDate->format('YmdHis'),
       'to_date_type' => $toType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Contact does not have period entitlement for the absence type
+   */
+  public function testLeaveRequestCanNotBeCreatedWhenContactHasNoPeriodEntitlementForTheAbsenceType() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $contactID = 1;
+    $leaveDate = new DateTime('2016-11-15');
+    $dateType = $this->leaveRequestDayTypes['all_day']['value'];
+
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $leaveDate->format('YmdHis'),
+      'from_date_type' => $dateType,
+      'to_date' => $leaveDate->format('YmdHis'),
+      'to_date_type' => $dateType,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
   }
@@ -2548,6 +2574,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'period_id' => $period->id
     ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $period->start_date]
+    );
 
     $params = [
       'type_id' => $absenceType->id,

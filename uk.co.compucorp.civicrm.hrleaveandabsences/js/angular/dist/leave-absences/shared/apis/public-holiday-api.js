@@ -1,1 +1,0 @@
-define(["leave-absences/shared/modules/apis","common/services/api"],function(e){"use strict";e.factory("PublicHolidayAPI",["$log","api",function(e,i){return e.debug("PublicHolidayAPI"),i.extend({all:function(i){return e.debug("PublicHolidayAPI"),this.sendGET("PublicHoliday","get",i).then(function(e){return e.values})}})}])});
