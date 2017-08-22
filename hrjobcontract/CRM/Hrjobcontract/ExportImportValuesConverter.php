@@ -585,4 +585,13 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     public function getLeaveTypes() {
         return $this->_leaveTypes;
     }
+
+    /**
+     * Returns the flipped leave types array.
+     *
+     * @return array
+     */
+    public function getLeaveTypesFlipped() {
+        return $this->_leaveTypesFlipped;
+    }
 }
