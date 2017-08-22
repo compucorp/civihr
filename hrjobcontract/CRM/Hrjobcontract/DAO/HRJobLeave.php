@@ -174,7 +174,7 @@ class CRM_Hrjobcontract_DAO_HRJobLeave extends CRM_Hrjobcontract_DAO_Base
               ) ,
               'hrjobcontract_leave_leave_amount' => array(
                 'name' => 'leave_amount',
-                'type' => CRM_Utils_Type::T_STRING,
+                'type' => CRM_Utils_Type::T_INT,
                 'title' => ts('Contract Leave Amount') ,
                 'import' => true,
                 'where' => 'civicrm_hrjobcontract_leave.leave_amount',
