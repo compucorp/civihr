@@ -221,7 +221,7 @@ define([
             api.getAll(entity, {});
           });
 
-          it('default options are still used in the API call', function () {
+          it('still uses default options in the API call', function () {
             expect(api.sendGET).toHaveBeenCalledWith(entity, 'get',
               jasmine.objectContaining({
                 options: jasmine.any(Object)
@@ -237,7 +237,7 @@ define([
             api.getAll(entity, { options: customOptions });
           });
 
-          it('they are used in the API call', function () {
+          it('uses them in the API call', function () {
             expect(api.sendGET).toHaveBeenCalledWith(entity, 'get',
               jasmine.objectContaining({
                 options: jasmine.objectContaining(customOptions)
