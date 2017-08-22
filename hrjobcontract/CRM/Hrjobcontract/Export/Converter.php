@@ -1,5 +1,7 @@
 <?php
 
+use CRM_Hrjobcontract_ExportImportValuesConverter as ExportImportValuesConverter;
+
 class CRM_Hrjobcontract_Export_Converter {
 
   /**
@@ -27,6 +29,21 @@ class CRM_Hrjobcontract_Export_Converter {
       $getExportFileName = 'CiviCRM Contribution Search';
     }
 
+    $leaveTypes = ExportImportValuesConverter::singleton()->getLeaveTypesFlipped();
+
+    if (array_key_exists('hrjobcontract_leave_leave_amount', $sqlColumns)) {
+      $newHeaderRows = [];
+      foreach($headerRows as $headerRow) {
+        $newHeaderRows[] = $headerRow;
+        if($headerRow == 'Contract Leave Amount') {
+          foreach ($leaveTypes as $type => $typeId) {
+            $newHeaderRows[] = $type;
+          }
+        }
+      }
+      $headerRows = $newHeaderRows;
+    }
+
     while ($offset < $total) {
       $limitQuery = $query . " LIMIT {$offset}, {$limit} ";
       $dao = CRM_Core_DAO::executeQuery($limitQuery);
@@ -42,6 +59,18 @@ class CRM_Hrjobcontract_Export_Converter {
           if (substr($column, 0, 13) === 'hrjobcontract') {
             list(, $entity, $field) = explode('_', $column, 3);
             $row[$column] = $converter->export($entity, $field, $row[$column]);
+          }
+
+          if ($column === 'hrjobcontract_leave_leave_amount') {
+            $contractEntitlementsArray = [];
+            $contractEntitlements = explode(',', $row[$column]);
+            foreach ($contractEntitlements as $contractEntitlement) {
+              list($leaveType, $entitlement) = explode(':', $contractEntitlement);
+              $contractEntitlementsArray[trim($leaveType)] = trim($entitlement);
+            }
+            foreach ($leaveTypes as $type => $typeId) {
+              $row[$type] = !empty($contractEntitlementsArray[$type]) ? $contractEntitlementsArray[$type] : '';
+            }
           }
         }
 
