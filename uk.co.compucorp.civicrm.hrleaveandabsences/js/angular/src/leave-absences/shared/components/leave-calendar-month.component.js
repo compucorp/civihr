@@ -163,8 +163,6 @@ define([
      * @return {Promise}
      */
     function indexLeaveRequests (leaveRequestsList) {
-      var deferred = $q.defer();
-
       leaveRequestsList.forEach(function (leaveRequest) {
         var days = leaveRequestDays(leaveRequest);
 
@@ -175,9 +173,7 @@ define([
         });
       });
 
-      deferred.resolve();
-
-      return deferred.promise;
+      return $q.resolve();
     }
 
     /**
@@ -248,9 +244,12 @@ define([
       var toDate = moment(leaveRequest.to_date);
 
       while (pointerDate.isSameOrBefore(toDate)) {
-        days.push(_.find(vm.month.days, function (day) {
-          return day.date === pointerDate.format('YYYY-MM-DD');
-        }));
+        // Ensure that pointerDate is in same month/year that component represents
+        if (pointerDate.month() === vm.month.index && pointerDate.year() === vm.month.year) {
+          days.push(_.find(vm.month.days, function (day) {
+            return day.date === pointerDate.format('YYYY-MM-DD');
+          }));
+        }
 
         pointerDate.add(1, 'day');
       }
@@ -315,9 +314,18 @@ define([
      * @return {Promise}
      */
     function loadMonthLeaveRequests () {
+      var range = {
+        from: vm.month.days[0].date,
+        to: vm.month.days[vm.month.days.length - 1].date
+      };
+
       return LeaveRequest.all({
-        from_date: { from: vm.month.days[0].date },
-        to_date: { to: vm.month.days[vm.month.days.length - 1].date },
+        from_date: range,
+        to_date: range,
+        // The following syntax is a valid CRM API syntax for OR operator -
+        // Ex. [['field1', 'field2'], ['field3', 'field4']] is the syntax for:
+        // (field1 OR field2) AND (field3 OR field4)
+        options: { or: [['from_date', 'to_date']] },
         status_id: {'IN': [
           leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
           leaveRequestStatusValueFromName(sharedSettings.statusNames.adminApproved),
