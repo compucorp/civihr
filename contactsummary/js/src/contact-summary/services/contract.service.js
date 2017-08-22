@@ -124,7 +124,7 @@ define([
 
     /**
      * @param id
-     * @returns {*}
+     * @returns {Promise}
      */
     function getContractDetails (id) {
       var addPay = function (details) {
@@ -156,6 +156,7 @@ define([
       };
 
       var cacheKey = 'getContractDetails_' + id;
+
       if (!promiseCache[cacheKey]) {
         promiseCache[cacheKey] = Api.post('HRJobDetails', data, 'get')
           .then(function (response) {
