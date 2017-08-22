@@ -63,6 +63,8 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
           'type'  => CRM_Utils_Type::T_INT,
           'where' => 'hrjobcontract.id'
       );
+
+      self::$_hrjobFields['hrjobcontract_leave_leave_amount']['type'] = CRM_Utils_Type::T_STRING;
     }
 
     return self::$_hrjobFields;
@@ -73,7 +75,14 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $fields = $this->getFields();
       foreach ($fields as $fldName => $params) {
         if (!empty($query->_returnProperties[$fldName])) {
-          $query->_select[$fldName]  = "{$params['where']} as $fldName";
+          if ($fldName == 'hrjobcontract_leave_leave_amount') {
+            $query->_select[$fldName] = "GROUP_CONCAT(civicrm_hrjobcontract_leave.leave_type,
+            ':', civicrm_hrjobcontract_leave.leave_amount) as $fldName";
+          }
+          else{
+            $query->_select[$fldName] = "{$params['where']} as $fldName";
+          }
+
           $query->_element[$fldName] = 1;
           list($tableName, $dnc) = explode('.', $params['where'], 2);
           $query->_tables[$tableName]  = $query->_whereTables[$tableName] = 1;
