@@ -8,51 +8,32 @@ define([
 ], function (_, controllers) {
   controllers.controller('SicknessRequestCtrl', SicknessRequestCtrl);
 
-  SicknessRequestCtrl.$inject = ['$controller', '$log', '$q', '$uibModalInstance',
-    'api.optionGroup', 'directiveOptions', 'SicknessRequestInstance'];
+  SicknessRequestCtrl.$inject = ['$log', '$q', 'api.optionGroup', 'parentCtrl'];
 
-  function SicknessRequestCtrl ($controller, $log, $q, $modalInstance,
-    OptionGroup, directiveOptions, SicknessRequestInstance) {
+  function SicknessRequestCtrl ($log, $q, OptionGroup, parentCtrl) {
     $log.debug('SicknessRequestCtrl');
+    var vm = parentCtrl;
 
-    var parentRequestCtrl = $controller('RequestCtrl');
-    var vm = Object.create(parentRequestCtrl);
-
-    vm.directiveOptions = directiveOptions;
-    vm.$modalInstance = $modalInstance;
-    vm.initParams = {
-      absenceType: {
-        is_sick: true
-      }
-    };
-
-    vm.canSubmit = canSubmit;
+    vm.checkSubmitConditions = checkSubmitConditions;
     vm.isChecked = isChecked;
     vm.isDocumentInRequest = isDocumentInRequest;
-    vm._initRequest = _initRequest;
 
-    (function init () {
-      vm.loading.absenceTypes = true;
-
-      vm._init()
-        .then(function () {
-          return $q.all([
-            loadDocuments(),
-            loadReasons()
-          ]);
-        })
-        .finally(function () {
-          vm.loading.absenceTypes = false;
-        });
-    })();
+    vm.initChildController = initChildController;
 
     /**
      * Checks if submit button can be enabled for user and returns true if successful
      *
      * @return {Boolean}
      */
-    function canSubmit () {
-      return parentRequestCtrl.canSubmit.call(this) && !!vm.request.sickness_reason;
+    function checkSubmitConditions () {
+      return vm._canCalculateChange() && vm.request.sickness_reason;
+    }
+
+    function initChildController () {
+      return $q.all([
+        loadDocuments(),
+        loadReasons()
+      ]);
     }
 
     /**
@@ -106,16 +87,5 @@ define([
           vm.sicknessReasons = _.indexBy(reasons, 'name');
         });
     }
-
-    /**
-     * Initialize leaverequest based on attributes that come from directive
-     */
-    function _initRequest () {
-      var attributes = vm._initRequestAttributes();
-
-      vm.request = SicknessRequestInstance.init(attributes);
-    }
-
-    return vm;
   }
 });

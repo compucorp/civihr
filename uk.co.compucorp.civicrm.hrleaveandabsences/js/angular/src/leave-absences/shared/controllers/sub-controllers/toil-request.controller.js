@@ -8,51 +8,24 @@ define([
 ], function (_, controllers) {
   controllers.controller('ToilRequestCtrl', ToilRequestCtrl);
 
-  ToilRequestCtrl.$inject = ['$controller', '$log', '$q', '$uibModalInstance',
-    'api.optionGroup', 'AbsenceType', 'directiveOptions', 'TOILRequestInstance'];
+  ToilRequestCtrl.$inject = ['$log', '$q', 'api.optionGroup', 'AbsenceType', 'parentCtrl'];
 
-  function ToilRequestCtrl ($controller, $log, $q, $modalInstance, OptionGroup,
-    AbsenceType, directiveOptions, TOILRequestInstance) {
+  function ToilRequestCtrl ($log, $q, OptionGroup, AbsenceType, parentCtrl) {
     $log.debug('ToilRequestCtrl');
 
-    var parentRequestCtrl = $controller('RequestCtrl');
-    var vm = Object.create(parentRequestCtrl);
+    var vm = parentCtrl;
 
     vm.requestCanExpire = true;
-    vm.directiveOptions = directiveOptions;
-    vm.$modalInstance = $modalInstance;
-    vm.initParams = {
-      absenceType: {
-        allow_accruals_request: true
-      }
-    };
 
     vm.calculateBalanceChange = calculateBalanceChange;
     vm.calculateToilExpiryDate = calculateToilExpiryDate;
-    vm.canSubmit = canSubmit;
+    vm.checkSubmitConditions = checkSubmitConditions;
     vm.changeInNoOfDays = changeInNoOfDays;
     vm.clearExpiryDate = clearExpiryDate;
+    vm.initChildController = initChildController;
     vm.loadAbsencePeriodDatesTypes = loadAbsencePeriodDatesTypes;
     vm.updateAbsencePeriodDatesTypes = updateAbsencePeriodDatesTypes;
     vm.updateExpiryDate = updateExpiryDate;
-    vm._initRequest = _initRequest;
-
-    (function init () {
-      vm.loading.absenceTypes = true;
-
-      vm._init()
-        .then(function () {
-          return initRequestCanExpire();
-        })
-        .then(function () {
-          initExpiryDate();
-
-          return loadToilAmounts();
-        })
-        .finally(function () {
-          vm.loading.absenceTypes = false;
-        });
-    })();
 
     /**
      * Calculate change in balance, it updates balance variables.
@@ -128,12 +101,9 @@ define([
      *
      * @return {Boolean}
      */
-    function canSubmit () {
-      return parentRequestCtrl.canSubmit.call(this) &&
-        !!vm.request.toil_duration &&
-        !!vm.request.toil_to_accrue &&
-        !!vm.request.from_date &&
-        !!vm.request.to_date;
+    function checkSubmitConditions () {
+      return !!vm.request.from_date && !!vm.request.to_date &&
+        !!vm.request.toil_duration && !!vm.request.toil_to_accrue;
     }
 
     /**
@@ -141,7 +111,8 @@ define([
      * number of days changes and the expiry date can be calculated.
      */
     function changeInNoOfDays () {
-      parentRequestCtrl.changeInNoOfDays.call(this);
+      vm._reset();
+      vm._calculateOpeningAndClosingBalance();
 
       if (canCalculateExpiryDate()) {
         vm.calculateToilExpiryDate();
@@ -198,6 +169,17 @@ define([
       } else {
         return $q.resolve(field.value);
       }
+    }
+
+    function initChildController () {
+      vm.request.to_date_type = vm.request.from_date_type = '1';
+
+      return initRequestCanExpire()
+        .then(function () {
+          initExpiryDate();
+
+          return loadToilAmounts();
+        });
     }
 
     /**
@@ -270,7 +252,7 @@ define([
      * @return {Promise}
      */
     function updateAbsencePeriodDatesTypes (date) {
-      return vm.loadAbsencePeriodDatesTypes()
+      return vm.loadAbsencePeriodDatesTypes(date)
         .then(function () {
           vm._setMinMaxDate();
           vm._setDates();
@@ -290,21 +272,5 @@ define([
         vm.request.toil_expiry_date = vm._convertDateToServerFormat(vm.uiOptions.expiryDate);
       }
     }
-
-    /**
-     * Initialize leaverequest based on attributes that come from directive
-     */
-    function _initRequest () {
-      var attributes = vm._initRequestAttributes();
-
-      vm.request = TOILRequestInstance.init(attributes);
-      /*
-       * toil request does not have date type but leave request requires it
-       * for validation, hence setting it to All Day's value which is 1
-       */
-      vm.request.to_date_type = vm.request.from_date_type = '1';
-    }
-
-    return vm;
   }
 });
