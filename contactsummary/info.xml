@@ -8,8 +8,8 @@
     <author>Robin Mitra</author>
     <email>robinmitra1@gmail.com</email>
   </maintainer>
-  <releaseDate>2017-07-14</releaseDate>
-  <version>1.7.0-beta3</version>
+  <releaseDate>2017-08-22</releaseDate>
+  <version>1.7.0-RC</version>
   <develStage>alpha</develStage>
   <compatibility>
     <ver>4.7</ver>
