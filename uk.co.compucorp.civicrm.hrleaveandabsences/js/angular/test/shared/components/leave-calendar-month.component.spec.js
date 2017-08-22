@@ -149,13 +149,14 @@
               }));
             });
 
-            it("uses the selected months' first and last day as date delimiters", function () {
+            it('loads all requests touching the specified month', function () {
               var month = controller.month;
+              var range = { from: month.days[0].date,
+                to: month.days[month.days.length - 1].date };
 
-              expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                from_date: { from: month.days[0].date },
-                to_date: { to: month.days[month.days.length - 1].date }
-              }));
+              expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(
+                jasmine.objectContaining({ from_date: range, to_date: range }
+              ));
             });
           });
 
