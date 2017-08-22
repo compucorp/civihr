@@ -206,6 +206,12 @@ class CRM_Export_BAO_Export {
       $groupBy = " GROUP BY civicrm_activity.id ";
     }
 
+    if ($queryMode & CRM_Contact_BAO_Query::MODE_CONTACTS &&
+      !empty($returnProperties['hrjobcontract_leave_leave_amount']))
+    {
+      $groupBy = ' GROUP BY contact_a.id';
+    }
+
     $groupBy = !empty($groupBy) ? $groupBy : '';
 
     return $groupBy;

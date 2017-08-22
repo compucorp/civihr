@@ -575,4 +575,13 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
 
         return $contactId;
     }
+
+    /**
+     * Returns the flipped leave types array.
+     *
+     * @return array
+     */
+    public function getLeaveTypesFlipped() {
+        return $this->_leaveTypesFlipped;
+    }
 }
