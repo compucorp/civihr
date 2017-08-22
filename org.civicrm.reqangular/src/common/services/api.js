@@ -78,7 +78,7 @@ define([
         return $q.all([
           (function () {
             var params = _.assign({}, filters, (additionalParams || {}), {
-              options: { sort: sort || 'id DESC' }
+              options: _.assign({}, filters.options, { sort: sort || 'id DESC' })
             });
 
             if (pagination) {
