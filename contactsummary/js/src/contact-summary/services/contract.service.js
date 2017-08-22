@@ -155,8 +155,9 @@ define([
         'api.HRJobHour.get': {'jobcontract_id': id}
       };
 
-      if (!promiseCache.getContractDetails) {
-        promiseCache.getContractDetails = Api.post('HRJobDetails', data, 'get')
+      var cacheKey = 'getContractDetails_' + id;
+      if (!promiseCache[cacheKey]) {
+        promiseCache[cacheKey] = Api.post('HRJobDetails', data, 'get')
           .then(function (response) {
             if (response.values.length === 0) {
               return $q.reject('No details found for contract revision with ID ' + id);
@@ -171,8 +172,8 @@ define([
           });
       }
 
-      return promiseCache.getContractDetails;
-    }
+      return promiseCache[cacheKey];
+    };
 
     /**
      * Get an object containing 'days', 'months' and 'years' keys with
