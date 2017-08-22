@@ -173,7 +173,7 @@ define([
         });
       });
 
-      $q.resolve();
+      return $q.resolve();
     }
 
     /**
@@ -314,12 +314,17 @@ define([
      * @return {Promise}
      */
     function loadMonthLeaveRequests () {
-      var range = { from: vm.month.days[0].date,
-        to: vm.month.days[vm.month.days.length - 1].date };
+      var range = {
+        from: vm.month.days[0].date,
+        to: vm.month.days[vm.month.days.length - 1].date
+      };
 
       return LeaveRequest.all({
         from_date: range,
         to_date: range,
+        // The following syntax is a valid CRM API syntax for OR operator -
+        // Ex. [['field1', 'field2'], ['field3', 'field4']] is the syntax for:
+        // (field1 OR field2) AND (field3 OR field4)
         options: { or: [['from_date', 'to_date']] },
         status_id: {'IN': [
           leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
