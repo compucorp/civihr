@@ -69,6 +69,9 @@ class CRM_Hrjobcontract_Export_Converter {
               $contractEntitlementsArray[trim($leaveType)] = trim($entitlement);
             }
             foreach ($leaveTypes as $type => $typeId) {
+              //The exported file will always have columns for all the absence type, so we need
+              //to add a blank value for contacts that don't have entitlement for a particular
+              //absence type.
               $row[$type] = !empty($contractEntitlementsArray[$type]) ? $contractEntitlementsArray[$type] : '';
             }
           }

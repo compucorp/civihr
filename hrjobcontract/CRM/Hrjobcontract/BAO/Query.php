@@ -63,6 +63,8 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
           'type'  => CRM_Utils_Type::T_INT,
           'where' => 'hrjobcontract.id'
       );
+
+      self::$_hrjobFields['hrjobcontract_leave_leave_amount']['type'] = CRM_Utils_Type::T_STRING;
     }
 
     return self::$_hrjobFields;
