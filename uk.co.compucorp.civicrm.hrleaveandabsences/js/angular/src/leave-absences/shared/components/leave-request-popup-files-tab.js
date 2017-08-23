@@ -16,7 +16,7 @@ define([
       request: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-files-tab.html';
+      return sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup-files-tab.html';
     }],
     controllerAs: 'filesTab',
     controller: ['$log', '$rootScope', '$q', 'HR_settings', 'shared-settings', 'OptionGroup', 'FileUpload', 'fileMimeTypes', controller]

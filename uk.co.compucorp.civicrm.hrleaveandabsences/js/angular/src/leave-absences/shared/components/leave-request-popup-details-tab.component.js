@@ -12,18 +12,17 @@ define([
       absencePeriods: '<',
       absenceTypes: '<',
       balance: '=',
-      canManage: '<',
       checkSubmitConditions: '=',
       request: '<',
       isLeaveStatus: '<',
       leaveType: '<',
-      mode: '<',
+      isMode: '<',
       period: '=',
-      role: '<',
+      isRole: '<',
       selectedAbsenceType: '='
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-details-tab.html';
+      return sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup-details-tab.html';
     }],
     controllerAs: 'detailsTab',
     controller: DetailsTabController
@@ -35,10 +34,11 @@ define([
     $log.debug('Component: leave-request-popup-details-tab');
     var vm = this;
 
-    vm.statusNames = sharedSettings.statusNames;
+    vm.canManage = false;
     vm.calendar = {};
     vm.errors = [];
     vm.requestDayTypes = [];
+    vm.statusNames = sharedSettings.statusNames;
     vm.loading = {
       tab: false,
       showBalanceChange: false,
@@ -89,8 +89,6 @@ define([
     vm.calculateBalanceChange = calculateBalanceChange;
     vm.changeInNoOfDays = changeInNoOfDays;
     vm.isLeaveType = isLeaveType;
-    vm.isMode = isMode;
-    vm.isRole = isRole;
     vm.loadAbsencePeriodDatesTypes = loadAbsencePeriodDatesTypes;
     vm.updateAbsencePeriodDatesTypes = updateAbsencePeriodDatesTypes;
     vm.updateBalance = updateBalance;
@@ -111,8 +109,12 @@ define([
       vm.initChildController();
     }());
 
+    /**
+     * After Contact selection is done, starts loading data for the details tab
+     */
     function afterContactSelection () {
       vm.loading.tab = true;
+      vm.canManage = vm.isRole('manager') || vm.isRole('admin');
 
       $q.all([
         _loadCalendar(),
@@ -290,16 +292,6 @@ define([
     }
 
     /**
-     * Checks if popup is opened in given mode
-     *
-     * @param {String} modeParam to open leave request like edit or view or create
-     * @return {Boolean}
-     */
-    function isMode (modeParam) {
-      return vm.mode === modeParam;
-    }
-
-    /**
      * Initialize from and to dates and day types.
      * It will also set the day types.
      *
@@ -322,16 +314,6 @@ define([
       } else {
         return $q.resolve();
       }
-    }
-
-    /**
-     * Checks if popup is opened in given role
-     *
-     * @param {String} roleParam like manager, staff
-     * @return {Boolean}
-     */
-    function isRole (roleParam) {
-      return vm.role === roleParam;
     }
 
     /**
@@ -473,6 +455,9 @@ define([
       vm.calculateBalanceChange();
     }
 
+    /**
+     * If change can be calculated
+     */
     function _canCalculateChange () {
       return !!vm.request.from_date && !!vm.request.to_date &&
         !!vm.request.from_date_type && !!vm.request.to_date_type;
