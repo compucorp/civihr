@@ -241,4 +241,29 @@ function civicrm_api3_leave_period_entitlement_getentitlement($params) {
   return $results;
 }
 
+function _civicrm_api3_leave_period_entitlement_getleavebalances_spec(&$spec) {
+  $spec['managed_by'] = [
+    'name' => 'managed_by',
+    'title' => 'Managed By',
+    'description' => 'Include only Leave Balances for contacts managed by the contact with the given ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0,
+    'FKClassName'  => 'CRM_Contact_DAO_Contact',
+    'FKApiName'    => 'Contact',
+  ];
+
+  $spec['period_id'] = [
+    'name' => 'period_id',
+    'title' => 'Absence Period ID',
+    'description' => 'Include only Balances from Leave Requests taken during the Period with the given ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+    'FKClassName'  => 'CRM_HRLeaveAndAbsences_BAO_AbsencePeriod',
+    'FKApiName'    => 'AbsencePeriod',
+  ];
+}
+
+function civicrm_api3_leave_period_entitlement_getleavebalances($params) {
+  return civicrm_api3_create_success((new CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect($params))->run());
+}
 
