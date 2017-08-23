@@ -23,7 +23,7 @@
     'use strict';
 
     describe('LeaveRequestCtrl', function () {
-      var $log, $rootScope, $ctrl, modalInstanceSpy, $scope, $q, dialog, $controller,
+      var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
         Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI;
       var role = 'staff'; // change this value to set other roles
@@ -114,7 +114,7 @@
         });
 
         it('getStatuses returns an array', function () {
-          expect($ctrl.getStatuses()).toEqual(jasmine.any(Array));
+          expect(controller.getStatuses()).toEqual(jasmine.any(Array));
         });
 
         describe('when initialized', function () {
@@ -123,25 +123,29 @@
               $scope.$digest();
             });
 
+            it('has leave type set to leave', function () {
+              expect(controller.isLeaveType('leave')).toBeTruthy();
+            });
+
             it('has absence period is set', function () {
-              expect($ctrl.period).toEqual(jasmine.any(Object));
+              expect(controller.period).toEqual(jasmine.any(Object));
             });
 
             it('has current period selected', function () {
-              expect($ctrl.period.current).toBeTruthy();
+              expect(controller.period.current).toBeTruthy();
             });
 
             it('has absence types loaded', function () {
-              expect($ctrl.absenceTypes).toBeDefined();
-              expect($ctrl.absenceTypes.length).toBeGreaterThan(0);
+              expect(controller.absenceTypes).toBeDefined();
+              expect(controller.absenceTypes.length).toBeGreaterThan(0);
             });
 
             it('has first absence type selected', function () {
-              expect($ctrl.request.type_id).toEqual($ctrl.absenceTypes[0].id);
+              expect(controller.request.type_id).toEqual(controller.absenceTypes[0].id);
             });
 
             it('has nil balance change amount', function () {
-              expect($ctrl.balance.change.amount).toEqual(0);
+              expect(controller.balance.change.amount).toEqual(0);
             });
 
             it('gets absence types with false sick param', function () {
@@ -152,16 +156,16 @@
 
             describe('leave request instance', function () {
               it('has new instance created', function () {
-                expect($ctrl.request).toEqual(jasmine.any(Object));
+                expect(controller.request).toEqual(jasmine.any(Object));
               });
 
               it('has contact_id set', function () {
-                expect($ctrl.request.contact_id).toBeDefined();
+                expect(controller.request.contact_id).toBeDefined();
               });
 
               it('does not have from/to dates set', function () {
-                expect($ctrl.request.from_date).toBeUndefined();
-                expect($ctrl.request.to_date).toBeUndefined();
+                expect(controller.request.from_date).toBeUndefined();
+                expect(controller.request.to_date).toBeUndefined();
               });
             });
           });
@@ -169,7 +173,7 @@
 
         describe('when user cancels dialog (clicks X), or back button', function () {
           beforeEach(function () {
-            $ctrl.dismissModal();
+            controller.dismissModal();
           });
 
           it('closes model', function () {
@@ -180,32 +184,58 @@
         describe('save leave request', function () {
           describe('does not allow multiple save', function () {
             beforeEach(function () {
-              $ctrl.submit();
+              controller.submit();
             });
 
             it('user cannot submit again', function () {
-              expect($ctrl.submitting).toBeTruthy();
+              expect(controller.submitting).toBeTruthy();
             });
 
             it('submit does not create request again', function () {
-              spyOn($ctrl.request, 'create').and.callThrough();
-              $ctrl.submit();
-              expect($ctrl.request.create).not.toHaveBeenCalled();
+              spyOn(controller.request, 'create').and.callThrough();
+              controller.submit();
+              expect(controller.request.create).not.toHaveBeenCalled();
             });
           });
 
           describe('when submit with invalid fields', function () {
             beforeEach(function () {
-              $ctrl.submit();
+              controller.submit();
               $scope.$digest();
             });
 
             it('fails with error', function () {
-              expect($ctrl.errors).toEqual(jasmine.any(Array));
+              expect(controller.errors).toEqual(jasmine.any(Array));
             });
 
             it('does not allow user to submit', function () {
-              expect($ctrl.canSubmit()).toBeFalsy();
+              expect(controller.canSubmit()).toBeFalsy();
+            });
+          });
+
+          describe('when submit with valid fields', function () {
+            beforeEach(function () {
+              spyOn($rootScope, '$emit');
+              LeaveRequestAPI.isValid.and.returnValue($q.resolve());
+              LeaveRequestAPI.create.and.returnValue($q.resolve({ id: '1' }));
+              controller.balance.closing = 1;
+
+              controller.submit();
+              $scope.$digest();
+            });
+
+            it('is successful', function () {
+              expect(controller.errors.length).toBe(0);
+              expect(controller.request.id).toBeDefined();
+            });
+
+            it('calls corresponding API end points', function () {
+              expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
+              expect(LeaveRequestAPI.create).toHaveBeenCalled();
+            });
+
+            it('sends event', function () {
+              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', controller.request);
             });
           });
         });
@@ -222,18 +252,18 @@
           });
 
           it('does not allow to submit the leave request without changes', function () {
-            expect($ctrl.canSubmit()).toBe(false);
+            expect(controller.canSubmit()).toBe(false);
           });
 
           describe('when a comment is added', function () {
             beforeEach(function () {
-              $ctrl.request.comments.push(jasmine.any(Object));
-              $ctrl.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
-              $ctrl.checkSubmitConditions.and.returnValue(true);
+              controller.request.comments.push(jasmine.any(Object));
+              controller.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
+              controller.checkSubmitConditions.and.returnValue(true);
             });
 
             it('allows to submit the leave request', function () {
-              expect($ctrl.canSubmit()).toBe(true);
+              expect(controller.canSubmit()).toBe(true);
             });
           });
         });
@@ -251,22 +281,112 @@
           });
 
           it('sets mode to view', function () {
-            expect($ctrl.isMode('view')).toBeTruthy();
+            expect(controller.isMode('view')).toBeTruthy();
           });
 
           it('sets contact id', function () {
-            expect($ctrl.request.contact_id).toEqual(leaveRequest.contact_id);
+            expect(controller.request.contact_id).toEqual(leaveRequest.contact_id);
           });
 
           describe('on submit', function () {
             beforeEach(function () {
-              spyOn($ctrl.request, 'update').and.callThrough();
-              $ctrl.submit();
+              spyOn(controller.request, 'update').and.callThrough();
+              controller.submit();
               $scope.$apply();
             });
 
             it('does not update leave request', function () {
-              expect($ctrl.request.update).not.toHaveBeenCalled();
+              expect(controller.request.update).not.toHaveBeenCalled();
+            });
+          });
+        });
+
+        describe('when user edits leave request', function () {
+          describe('without comments', function () {
+            beforeEach(function () {
+              var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+              var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+              leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+              leaveRequest.fileUploader = { queue: [] };
+
+              spyOn(controller.request, 'update').and.callThrough();
+              initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
+            });
+
+            describe('on initialization', function () {
+              var waitingApprovalStatus;
+
+              beforeEach(function () {
+                waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
+              });
+
+              it('sets all leaverequest values', function () {
+                expect(controller.request.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
+                expect(controller.request.type_id).toEqual('1');
+                expect(controller.request.status_id).toEqual(waitingApprovalStatus.value);
+                expect(controller.request.from_date).toEqual('2016-11-23');
+                expect(controller.request.from_date_type).toEqual('1');
+                expect(controller.request.to_date).toEqual('2016-11-28');
+                expect(controller.request.to_date_type).toEqual('1');
+              });
+
+              it('does not allow user to submit', function () {
+                expect(controller.canSubmit()).toBeFalsy();
+              });
+            });
+
+            describe('and submits', function () {
+              beforeEach(function () {
+                spyOn($rootScope, '$emit');
+                spyOn(controller.request, 'update').and.callThrough();
+
+                // entitlements are randomly generated so resetting them to positive here
+                if (controller.balance.closing < 0) {
+                  controller.balance.closing = 5;
+                }
+
+                controller.submit();
+                $scope.$apply();
+              });
+
+              it('calls appropriate API endpoint', function () {
+                expect(controller.request.update).toHaveBeenCalled();
+              });
+
+              it('sends edit event', function () {
+                expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::edit', controller.request);
+              });
+
+              it('has no error', function () {
+                expect(controller.errors.length).toBe(0);
+              });
+
+              it('closes model popup', function () {
+                expect(modalInstanceSpy.dismiss).toHaveBeenCalled();
+              });
+            });
+
+            describe('manager asks for more information', function () {
+              var expectedStatusValue;
+
+              beforeEach(function () {
+                var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '4');
+                var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+                leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+
+                initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
+
+                expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+                controller.balance.closing = 5;
+
+                controller.submit();
+              });
+
+              it('status changes to waiting approval before calling API', function () {
+                expect(controller.request.status_id).toEqual(expectedStatusValue);
+              });
             });
           });
         });
@@ -287,58 +407,58 @@
           var waitingApprovalStatus;
 
           beforeEach(function () {
-            $ctrl.request.fileUploader = { queue: [] };
+            controller.request.fileUploader = { queue: [] };
             waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
           });
 
           it('sets the manager role', function () {
-            expect($ctrl.isRole('manager')).toBeTruthy();
+            expect(controller.isRole('manager')).toBeTruthy();
           });
 
           it('sets all leaverequest values', function () {
-            expect($ctrl.request.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
-            expect($ctrl.request.type_id).toEqual(jasmine.any(String));
-            expect($ctrl.request.status_id).toEqual(waitingApprovalStatus.value);
-            expect($ctrl.request.from_date).toEqual(jasmine.any(String));
-            expect($ctrl.request.from_date_type).toEqual(jasmine.any(String));
-            expect($ctrl.request.to_date).toEqual(jasmine.any(String));
-            expect($ctrl.request.to_date_type).toEqual(jasmine.any(String));
+            expect(controller.request.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
+            expect(controller.request.type_id).toEqual(jasmine.any(String));
+            expect(controller.request.status_id).toEqual(waitingApprovalStatus.value);
+            expect(controller.request.from_date).toEqual(jasmine.any(String));
+            expect(controller.request.from_date_type).toEqual(jasmine.any(String));
+            expect(controller.request.to_date).toEqual(jasmine.any(String));
+            expect(controller.request.to_date_type).toEqual(jasmine.any(String));
           });
 
           it('gets contact name', function () {
-            expect($ctrl.contactName).toEqual(jasmine.any(String));
+            expect(controller.contactName).toEqual(jasmine.any(String));
           });
 
           it('does not allow user to submit', function () {
-            expect($ctrl.canSubmit()).toBeFalsy();
+            expect(controller.canSubmit()).toBeFalsy();
           });
         });
 
         describe('on submit', function () {
           beforeEach(function () {
             spyOn($rootScope, '$emit');
-            spyOn($ctrl.request, 'update').and.callThrough();
+            spyOn(controller.request, 'update').and.callThrough();
 
             // entitlements are randomly generated so resetting them to positive here
-            if ($ctrl.balance.closing < 0) {
-              $ctrl.balance.closing = 0;
+            if (controller.balance.closing < 0) {
+              controller.balance.closing = 0;
             }
             // set status id manually as manager would set it on UI
-            $ctrl.newStatusOnSave = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+            controller.newStatusOnSave = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
 
-            $ctrl.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
-            $ctrl.checkSubmitConditions.and.returnValue(true);
+            controller.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
+            controller.checkSubmitConditions.and.returnValue(true);
 
-            $ctrl.submit();
+            controller.submit();
             $scope.$apply();
           });
 
           it('allows user to submit', function () {
-            expect($ctrl.canSubmit()).toBeTruthy();
+            expect(controller.canSubmit()).toBeTruthy();
           });
 
           it('calls update method on instance', function () {
-            expect($ctrl.request.update).toHaveBeenCalled();
+            expect(controller.request.update).toHaveBeenCalled();
           });
 
           it('calls corresponding API end points', function () {
@@ -347,17 +467,17 @@
           });
 
           it('sends update event', function () {
-            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', $ctrl.request);
+            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', controller.request);
           });
         });
 
         describe('when the popup is closed', function () {
           beforeEach(function () {
-            $ctrl.closeAlert();
+            controller.closeAlert();
           });
 
           it('flushes any current errors', function () {
-            expect($ctrl.errors).toEqual([]);
+            expect(controller.errors).toEqual([]);
           });
         });
       });
@@ -373,7 +493,7 @@
         });
 
         it('does not set contact', function () {
-          expect($ctrl.contactName).toBeNull();
+          expect(controller.contactName).toBeNull();
         });
 
         it('does not initialize absence types', function () {
@@ -386,17 +506,17 @@
 
             beforeEach(function () {
               approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
-              $ctrl.request.contact_id = '204';
-              $ctrl.initAfterContactSelection();
+              controller.request.contact_id = '204';
+              controller.initAfterContactSelection();
               $scope.$digest();
             });
 
             it('sets manager role', function () {
-              expect($ctrl.isRole('manager')).toBeTruthy();
+              expect(controller.isRole('manager')).toBeTruthy();
             });
 
             it('sets create mode', function () {
-              expect($ctrl.isMode('create')).toBeTruthy();
+              expect(controller.isMode('create')).toBeTruthy();
             });
 
             it('does not initialize absence types', function () {
@@ -404,7 +524,7 @@
             });
 
             it('sets status to approved', function () {
-              expect($ctrl.newStatusOnSave).toEqual(approvalStatus);
+              expect(controller.newStatusOnSave).toEqual(approvalStatus);
             });
 
             describe('cancelled status', function () {
@@ -412,7 +532,7 @@
 
               beforeEach(function () {
                 cancelStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'name', 'cancelled');
-                availableStatuses = $ctrl.getStatuses();
+                availableStatuses = controller.getStatuses();
               });
 
               it('is not available', function () {
@@ -426,8 +546,8 @@
           var promise;
 
           beforeEach(function () {
-            $ctrl.request.contact_id = undefined;
-            promise = $ctrl.initAfterContactSelection();
+            controller.request.contact_id = undefined;
+            promise = controller.initAfterContactSelection();
             $scope.$digest();
           });
 
@@ -462,15 +582,15 @@
 
         describe('on initialization', function () {
           it('is in edit mode', function () {
-            expect($ctrl.isMode('edit')).toBeTruthy();
+            expect(controller.isMode('edit')).toBeTruthy();
           });
 
           it('has admin role', function () {
-            expect($ctrl.isRole('admin')).toBeTruthy();
+            expect(controller.isRole('admin')).toBeTruthy();
           });
 
           it('does not load contacts', function () {
-            expect($ctrl.managedContacts.length).toEqual(0);
+            expect(controller.managedContacts.length).toEqual(0);
           });
         });
       });
@@ -489,15 +609,15 @@
 
         describe('on initialization', function () {
           it('is in create mode', function () {
-            expect($ctrl.isMode('create')).toBeTruthy();
+            expect(controller.isMode('create')).toBeTruthy();
           });
 
           it('has admin role', function () {
-            expect($ctrl.isRole('admin')).toBeTruthy();
+            expect(controller.isRole('admin')).toBeTruthy();
           });
 
           it('does not contain admin in the list of managees', function () {
-            expect(_.find($ctrl.managedContacts, { 'id': adminId })).toBeUndefined();
+            expect(_.find(controller.managedContacts, { 'id': adminId })).toBeUndefined();
           });
         });
       });
@@ -518,19 +638,19 @@
 
         describe('on initialization', function () {
           it('is in create mode', function () {
-            expect($ctrl.isMode('create')).toBeTruthy();
+            expect(controller.isMode('create')).toBeTruthy();
           });
 
           it('has admin role', function () {
-            expect($ctrl.isRole('admin')).toBeTruthy();
+            expect(controller.isRole('admin')).toBeTruthy();
           });
 
           it('has pre-selected contact id', function () {
-            expect($ctrl.request.contact_id).toEqual(selectedContactId);
+            expect(controller.request.contact_id).toEqual(selectedContactId);
           });
 
           it('loads exactly one contact', function () {
-            expect($ctrl.managedContacts.length).toEqual(1);
+            expect(controller.managedContacts.length).toEqual(1);
           });
         });
       });
@@ -545,7 +665,7 @@
           leaveRequest = LeaveRequestInstance.init();
 
           initTestController({ leaveRequest: leaveRequest });
-          $ctrl.deleteLeaveRequest();
+          controller.deleteLeaveRequest();
         });
 
         it('confirms before deleting the leave request', function () {
@@ -556,10 +676,10 @@
           var promise;
 
           beforeEach(function () {
-            spyOn($ctrl, 'dismissModal');
+            spyOn(controller, 'dismissModal');
             spyOn($rootScope, '$emit');
-            $ctrl.request = jasmine.createSpyObj(['delete']);
-            $ctrl.request.delete.and.returnValue($q.resolve([]));
+            controller.request = jasmine.createSpyObj(['delete']);
+            controller.request.delete.and.returnValue($q.resolve([]));
             promise = confirmFunction();
           });
 
@@ -568,18 +688,18 @@
           });
 
           it('deletes the leave request', function () {
-            expect($ctrl.request.delete).toHaveBeenCalled();
+            expect(controller.request.delete).toHaveBeenCalled();
           });
 
           it('closes the leave modal', function () {
             promise.then(function () {
-              expect($ctrl.dismissModal).toHaveBeenCalled();
+              expect(controller.dismissModal).toHaveBeenCalled();
             });
           });
 
           it('publishes a delete event', function () {
             promise.then(function () {
-              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::deleted', $ctrl.directiveOptions.leaveRequest);
+              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::deleted', controller.directiveOptions.leaveRequest);
             });
           });
         });
@@ -599,32 +719,32 @@
 
           initTestController({ leaveRequest: leaveRequest });
 
-          $ctrl.requestStatuses = status;
+          controller.requestStatuses = status;
         });
 
         describe('when request is not defined', function () {
           beforeEach(function () {
-            delete $ctrl.request;
+            delete controller.request;
           });
 
           it('returns an empty array', function () {
-            expect($ctrl.getStatuses()).toEqual([]);
+            expect(controller.getStatuses()).toEqual([]);
           });
         });
 
         describe('when requestStatuses is empty', function () {
           beforeEach(function () {
-            $ctrl.requestStatuses = {};
+            controller.requestStatuses = {};
           });
 
           it('returns an empty array', function () {
-            expect($ctrl.getStatuses()).toEqual([]);
+            expect(controller.getStatuses()).toEqual([]);
           });
         });
 
         describe('when previous status was not defined', function () {
           it('returns *More Information Required, Approve* ', function () {
-            expect($ctrl.getStatuses()).toEqual([
+            expect(controller.getStatuses()).toEqual([
               status.more_information_required,
               status.approved
             ]);
@@ -633,11 +753,11 @@
 
         describe('when previous status is *Awaiting Approval*', function () {
           beforeEach(function () {
-            $ctrl.request.status_id = status.awaiting_approval.value;
+            controller.request.status_id = status.awaiting_approval.value;
           });
 
           it('returns *More Information Required, Approve, Reject, Cancel*', function () {
-            expect($ctrl.getStatuses()).toEqual([
+            expect(controller.getStatuses()).toEqual([
               status.more_information_required,
               status.approved,
               status.rejected,
@@ -648,11 +768,11 @@
 
         describe('when previous status is *More Information Required*', function () {
           beforeEach(function () {
-            $ctrl.request.status_id = status.more_information_required.value;
+            controller.request.status_id = status.more_information_required.value;
           });
 
           it('returns *Approve, More Information Required, Reject, Cancel* ', function () {
-            expect($ctrl.getStatuses()).toEqual([
+            expect(controller.getStatuses()).toEqual([
               status.more_information_required,
               status.approved,
               status.rejected,
@@ -663,11 +783,11 @@
 
         describe('when previous status is *Rejected*', function () {
           beforeEach(function () {
-            $ctrl.request.status_id = status.rejected.value;
+            controller.request.status_id = status.rejected.value;
           });
 
           it('returns *Approve, More Information Required, Reject, Cancel*', function () {
-            expect($ctrl.getStatuses()).toEqual([
+            expect(controller.getStatuses()).toEqual([
               status.more_information_required,
               status.approved,
               status.rejected,
@@ -678,11 +798,11 @@
 
         describe('when previous status is *Approved*', function () {
           beforeEach(function () {
-            $ctrl.request.status_id = status.approved.value;
+            controller.request.status_id = status.approved.value;
           });
 
           it('returns *Approve, More Information Required, Reject, Cancel* ', function () {
-            expect($ctrl.getStatuses()).toEqual([
+            expect(controller.getStatuses()).toEqual([
               status.more_information_required,
               status.approved,
               status.rejected,
@@ -693,11 +813,11 @@
 
         describe('when previous status is *Cancelled*', function () {
           beforeEach(function () {
-            $ctrl.request.status_id = status.cancelled.value;
+            controller.request.status_id = status.cancelled.value;
           });
 
           it('returns *Awaiting Approval , Approve, More Information Required, Reject, Cancel* ', function () {
-            expect($ctrl.getStatuses()).toEqual([
+            expect(controller.getStatuses()).toEqual([
               status.awaiting_approval,
               status.more_information_required,
               status.approved,
@@ -717,7 +837,7 @@
         $scope = $rootScope.$new();
         directiveOptions = directiveOptions || {};
 
-        $ctrl = $controller('RequestCtrl', {
+        controller = $controller('RequestCtrl', {
           $scope: $scope,
           $uibModalInstance: modalInstanceSpy,
           directiveOptions: directiveOptions

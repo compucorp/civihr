@@ -23,14 +23,13 @@ define([
 
   controllers.controller('RequestCtrl', RequestCtrl);
 
-  RequestCtrl.$inject = [
-    '$log', '$q', '$rootScope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup', 'dialog', 'pubSub', 'directiveOptions', 'Contact',
-    'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance',
-    'TOILRequestInstance'
-  ];
+  RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
+    'dialog', 'pubSub', 'directiveOptions', 'Contact', 'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
+    'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance'];
 
-  function RequestCtrl ($log, $q, $rootScope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub, directiveOptions, Contact, Session,
-    AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance) {
+  function RequestCtrl ($log, $q, $rootScope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
+    directiveOptions, Contact, Session, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
+    LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance) {
     $log.debug('RequestCtrl');
 
     var absenceTypesAndIds;
@@ -430,12 +429,8 @@ define([
     function initListeners () {
       listeners.push(
         $rootScope.$on('LeaveRequestPopup::requestObjectUpdated', setInitialAttributes),
-        $rootScope.$on('LeaveRequestPopup::handleError', function (__, errors) {
-          handleError(errors);
-        }),
-        $rootScope.$on('LeaveRequestPopup::childComponent::register', function () {
-          childComponentsCount++;
-        })
+        $rootScope.$on('LeaveRequestPopup::handleError', function (__, errors) { handleError(errors); }),
+        $rootScope.$on('LeaveRequestPopup::childComponent::register', function () { childComponentsCount++; })
       );
     }
 
@@ -488,10 +483,9 @@ define([
 
       // if set indicates self leave request is either being managed or edited
       if (vm.request) {
-        // _.deepClone or angular.copy were not uploading files correctly
         attributes = vm.request.attributes();
       } else if (!vm.canManage) {
-        attributes = {contact_id: loggedInContactId};
+        attributes = { contact_id: loggedInContactId };
       }
 
       return attributes;
@@ -683,7 +677,7 @@ define([
       return Entitlement.all({
         contact_id: vm.request.contact_id,
         period_id: vm.period.id,
-        type_id: {IN: absenceTypesAndIds.ids}
+        type_id: { IN: absenceTypesAndIds.ids }
       }, true) // `true` because we want to use the 'future' balance for calculation
         .then(function (entitlements) {
           // create a list of absence types with a `balance` property
