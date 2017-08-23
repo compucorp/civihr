@@ -2,9 +2,7 @@
 
 define([
   'common/lodash',
-  'leave-absences/shared/modules/controllers',
-  'leave-absences/shared/controllers/request.controller',
-  'leave-absences/shared/instances/toil-request.instance'
+  'leave-absences/shared/modules/controllers'
 ], function (_, controllers) {
   controllers.controller('ToilRequestCtrl', ToilRequestCtrl);
 
@@ -171,6 +169,11 @@ define([
       }
     }
 
+    /**
+     * Initialize the controller
+     *
+     * @return {Promise}
+     */
     function initChildController () {
       vm.request.to_date_type = vm.request.from_date_type = '1';
 

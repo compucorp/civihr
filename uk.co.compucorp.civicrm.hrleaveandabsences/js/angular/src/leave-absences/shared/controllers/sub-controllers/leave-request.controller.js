@@ -24,6 +24,11 @@ define([
       return vm._canCalculateChange();
     }
 
+    /**
+     * Initialize the controller
+     *
+     * @return {Promise}
+     */
     function initChildController () {
       return $q.resolve();
     }

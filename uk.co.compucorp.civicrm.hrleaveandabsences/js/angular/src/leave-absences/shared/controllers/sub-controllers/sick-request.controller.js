@@ -2,9 +2,7 @@
 
 define([
   'common/lodash',
-  'leave-absences/shared/modules/controllers',
-  'leave-absences/shared/controllers/request.controller',
-  'leave-absences/shared/instances/sickness-request.instance'
+  'leave-absences/shared/modules/controllers'
 ], function (_, controllers) {
   controllers.controller('SicknessRequestCtrl', SicknessRequestCtrl);
 
@@ -29,6 +27,11 @@ define([
       return vm._canCalculateChange() && vm.request.sickness_reason;
     }
 
+    /**
+     * Initialize the controller
+     *
+     * @return {Promise}
+     */
     function initChildController () {
       return $q.all([
         loadDocuments(),

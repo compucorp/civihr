@@ -4,22 +4,23 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
-  'common/models/session.model'
+  'common/models/session.model',
+  'leave-absences/shared/models/calendar-model'
 ], function (_, moment, components) {
   components.component('leaveRequestPopupDetailsTab', {
     bindings: {
-      isLeaveStatus: '<',
       absencePeriods: '<',
       absenceTypes: '<',
-      checkSubmitConditions: '=',
-      canManage: '<',
-      mode: '<',
-      role: '<',
-      period: '=',
       balance: '=',
-      selectedAbsenceType: '=',
+      canManage: '<',
+      checkSubmitConditions: '=',
+      request: '<',
+      isLeaveStatus: '<',
       leaveType: '<',
-      request: '<'
+      mode: '<',
+      period: '=',
+      role: '<',
+      selectedAbsenceType: '='
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-details-tab.html';
@@ -105,7 +106,7 @@ define([
     vm._setMinMaxDate = _setMinMaxDate;
 
     (function init () {
-      $rootScope.$on('ContactSelectionComplete', afterContactSelection);
+      $rootScope.$on('LeaveRequestPopup::ContactSelectionComplete', afterContactSelection);
       $controller(_.capitalize(getLeaveType(vm.leaveType, vm.request)) + 'RequestCtrl', { parentCtrl: vm });
       vm.initChildController();
     }());
@@ -224,15 +225,14 @@ define([
       return $q.all([
         vm.calendar.isNonWorkingDay(date),
         vm.calendar.isWeekend(date)
-      ])
-        .then(function (results) {
-          return results[0] ? 'non_working_day' : (results[1] ? 'weekend' : null);
-        })
-        .then(function (nameFilter) {
-          return !nameFilter ? [] : listOfDayTypes.filter(function (day) {
-              return day.name === nameFilter;
-            });
+      ]).then(function (results) {
+        return results[0] ? 'non_working_day' : (results[1] ? 'weekend' : null);
+      })
+      .then(function (nameFilter) {
+        return !nameFilter ? [] : listOfDayTypes.filter(function (day) {
+          return day.name === nameFilter;
         });
+      });
     }
 
     /**
@@ -397,10 +397,10 @@ define([
      * It filters the breakdown to obtain the ones for currently selected page.
      */
     function pageChanged () {
-      var begin = (vm.currentPage - 1) * vm.numPerPage;
-      var end = begin + vm.numPerPage;
+      var begin = (vm.pagination.currentPage - 1) * vm.pagination.numPerPage;
+      var end = begin + vm.pagination.numPerPage;
 
-      vm.filteredbreakdown = vm.balance.change.breakdown.slice(begin, end);
+      vm.pagination.filteredbreakdown = vm.balance.change.breakdown.slice(begin, end);
     }
 
     /**
