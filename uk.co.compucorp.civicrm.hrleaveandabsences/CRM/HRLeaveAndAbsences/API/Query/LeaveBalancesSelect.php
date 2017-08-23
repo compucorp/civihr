@@ -8,6 +8,7 @@ use CRM_Hrjobcontract_BAO_HRJobDetails as HRJobDetails;
 use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_API_Query_Select as SelectQuery;
+use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 
 class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
 
@@ -18,8 +19,14 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
    */
   private $absencePeriod;
 
-  public function __construct($params) {
+  /**
+   * @var CRM_HRLeaveAndAbsences_Service_LeaveManager
+   */
+  private $leaveManagerService;
+
+  public function __construct($params, LeaveManagerService $leaveManagerService) {
     $this->params = $params;
+    $this->leaveManagerService = $leaveManagerService;
     $this->buildCustomQuery();
   }
 
@@ -54,10 +61,8 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
       'INNER JOIN ' . HRJobDetails::getTableName() . ' jd ON jd.jobcontract_revision_id = jcr.details_revision_id'
     ];
 
-    if(!empty($this->params['managed_by'])) {
-      $joins[] = 'LEFT JOIN ' . Relationship::getTableName() . ' r ON r.contact_id_a = a.id';
-      $joins[] = 'LEFT JOIN ' . RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id';
-    }
+    $joins[] = 'LEFT JOIN ' . Relationship::getTableName() . ' r ON r.contact_id_a = a.id';
+    $joins[] = 'LEFT JOIN ' . RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id';
 
     $query->join(null, $joins);
   }
@@ -81,16 +86,12 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
       )"
     ];
 
-    if(!empty($this->params['managed_by'])) {
-      $managerID = (int)$this->params['managed_by'];
-
-      if(!isset($this->params['unassigned'])) {
-        $activeLeaveManagerCondition = $this->hasActiveLeaveManagerCondition();
-        $activeLeaveManagerCondition[] = "r.contact_id_b = {$managerID}";
-        $conditions = array_merge($conditions, $activeLeaveManagerCondition);
-      }
+    $managerID = $this->getManagerID();
+    if($managerID) {
+      $activeLeaveManagerCondition = $this->hasActiveLeaveManagerCondition();
+      $activeLeaveManagerCondition[] = "r.contact_id_b = {$managerID}";
+      $conditions = array_merge($conditions, $activeLeaveManagerCondition);
     }
-
 
     $customQuery->where($conditions);
   }
@@ -122,6 +123,18 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
     }
 
     return $this->absencePeriod;
+  }
+
+  private function getManagerID() {
+    $managerID = null;
+
+    if(!$this->leaveManagerService->currentUserIsAdmin()) {
+      $managerID = (int)CRM_Core_Session::getLoggedInContactID();
+    } elseif(!empty($this->params['managed_by'])) {
+      $managerID = $this->params['managed_by'];
+    }
+
+    return $managerID;
   }
 
 }
