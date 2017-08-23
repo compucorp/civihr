@@ -45,8 +45,8 @@
               url: '/calendar',
               template: '<leave-calendar contact-id="managerLeave.contactId"></leave-calendar>'
             })
-            .state('manager-leave.balance-report', {
-              url: '/balance-report',
+            .state('manager-leave.leave-balances', {
+              url: '/leave-balances',
               template: '<leave-balance-tab></leave-balance-tab>'
             });
         }
