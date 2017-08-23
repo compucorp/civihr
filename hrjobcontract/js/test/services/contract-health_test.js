@@ -20,15 +20,9 @@ define([
     }));
 
     beforeEach(function () {
-      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
       $httpBackend.whenGET(/action=get&entity=HRJobHealth/).respond(ContractMock.contractRevision);
       $httpBackend.whenGET(/action=getoptions&entity=HRJobHealth/).respond(InsuranceMock);
       $httpBackend.whenGET(/views.*/).respond({});
-    });
-
-    afterEach(function () {
-      $httpBackend.flush();
-      $rootScope.$apply();
     });
 
     describe('getOne()', function () {
@@ -38,6 +32,8 @@ define([
         }).then(function (result) {
           expect(result).toEqual(ContractMock.contractRevision.values[0]);
         });
+
+        $httpBackend.flush();
       });
     });
 
@@ -51,6 +47,8 @@ define([
           promise.then(function (healthInsurancePlanTypes) {
             expect(healthInsurancePlanTypes).toEqual(InsuranceMock.values);
           });
+
+          $httpBackend.flush();
         });
       });
 
@@ -63,6 +61,8 @@ define([
           promise.then(function (lifeInsurancePlanTypes) {
             expect(lifeInsurancePlanTypes).toEqual(InsuranceMock.values);
           });
+
+          $httpBackend.flush();
         });
       });
 
@@ -75,6 +75,8 @@ define([
           promise.then(function (result) {
             expect(result).toEqual({});
           });
+
+          $rootScope.$digest();
         });
       });
     });
