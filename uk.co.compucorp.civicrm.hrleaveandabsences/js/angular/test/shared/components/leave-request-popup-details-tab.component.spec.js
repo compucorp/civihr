@@ -17,8 +17,9 @@ define([
   describe('leaveRequestPopupDetailsTab', function () {
     var $componentController, $provide, $q, $log, $rootScope, controller, sharedSettings, LeaveRequestAPI,
       AbsenceType, leaveRequest, AbsenceTypeAPI, AbsencePeriodInstance, LeaveRequestInstance, SicknessRequestInstance,
-      TOILRequestInstance, OptionGroup, OptionGroupAPIMock, balance, selectedAbsenceType;
+      TOILRequestInstance, OptionGroup, OptionGroupAPIMock, balance, selectedAbsenceType, WorkPatternAPI, EntitlementAPI;
 
+    var date2013 = '02/02/2013';
     var date2016 = '01/12/2016';
     var date2017 = '02/02/2017';
     var dateServer2017 = '2017-02-02';
@@ -44,7 +45,7 @@ define([
     beforeEach(inject(function (
       _$componentController_, _$q_, _$log_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_, _AbsencePeriodInstance_,
       _LeaveRequestInstance_, _TOILRequestInstance_, _SicknessRequestInstance_, _OptionGroup_, _OptionGroupAPIMock_,
-      _LeaveRequestAPI_) {
+      _LeaveRequestAPI_, _WorkPatternAPI_, _EntitlementAPI_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -56,6 +57,8 @@ define([
       SicknessRequestInstance = _SicknessRequestInstance_;
       TOILRequestInstance = _TOILRequestInstance_;
       LeaveRequestAPI = _LeaveRequestAPI_;
+      WorkPatternAPI = _WorkPatternAPI_;
+      EntitlementAPI = _EntitlementAPI_;
       OptionGroupAPIMock = _OptionGroupAPIMock_;
       OptionGroup = _OptionGroup_;
 
@@ -63,6 +66,8 @@ define([
       spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
       spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
       spyOn(AbsenceType, 'canExpire').and.callThrough();
+      spyOn(EntitlementAPI, 'all').and.callThrough();
+      spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
       spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
         return OptionGroupAPIMock.valuesOf(name);
       });
@@ -102,6 +107,39 @@ define([
 
           it('has day types loaded', function () {
             expect(controller.requestDayTypes).toBeDefined();
+          });
+
+          it('has no dates selected', function () {
+            expect(controller.uiOptions.fromDate).not.toBeDefined();
+            expect(controller.uiOptions.toDate).not.toBeDefined();
+          });
+
+          it('defaults to a multiple day selection', function () {
+            expect(controller.uiOptions.multipleDays).toBe(true);
+          });
+
+          it('has no day types selected', function () {
+            expect(controller.uiOptions.selectedFromType).not.toBeDefined();
+            expect(controller.uiOptions.selectedToType).not.toBeDefined();
+          });
+
+          it('does not show balance', function () {
+            expect(controller.uiOptions.showBalance).toBeFalsy();
+            expect(controller.balance.opening).toEqual(jasmine.any(Number));
+          });
+
+          it('has balance change hidden', function () {
+            expect(controller.uiOptions.isChangeExpanded).toBeFalsy();
+          });
+
+          it('has nil total items for balance change pagination', function () {
+            expect(controller.pagination.totalItems).toEqual(0);
+          });
+
+          describe('multiple days', function () {
+            it('is selected by default', function () {
+              expect(controller.uiOptions.multipleDays).toBeTruthy();
+            });
           });
         });
 
@@ -376,6 +414,147 @@ define([
 
               it('changes filtered data', function () {
                 expect(controller.pagination.filteredbreakdown[0]).not.toEqual(beforeFilteredItems[0]);
+              });
+            });
+          });
+        });
+      });
+
+      describe('when absence period is changed', function () {
+        beforeEach(function () {
+          selectedAbsenceType = _.assign(absenceTypeData.all().values[0], {remainder: 0});
+          leaveRequest = LeaveRequestInstance.init();
+          compileComponent(leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+          $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+          $rootScope.$digest();
+          controller.request.type_id = selectedAbsenceType.id;
+        });
+
+        describe('for multiple days', function () {
+          describe('before from date is selected', function () {
+            it('disables to date and to type', function () {
+              expect(controller.request.from_date).toBeFalsy();
+            });
+          });
+
+          describe('and after from date is selected', function () {
+            beforeEach(function () {
+              setTestDates(date2017);
+            });
+
+            it('enables to date and to type', function () {
+              expect(controller.request.from_date).toBeTruthy();
+            });
+
+            it('checks if date is in any absence period without errors', function () {
+              expect(controller.errors.length).toBe(0);
+            });
+
+            it('updates calendar', function () {
+              expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
+            });
+
+            it('does not show balance', function () {
+              expect(controller.uiOptions.showBalance).toBeFalsy();
+            });
+
+            describe('from available absence period', function () {
+              var oldPeriodId;
+
+              beforeEach(function () {
+                controller.uiOptions.toDate = null;
+                oldPeriodId = controller.period.id;
+                setTestDates(date2016);
+              });
+
+              it('changes absence period', function () {
+                expect(controller.period.id).not.toEqual(oldPeriodId);
+              });
+
+              it('sets min and max to date', function () {
+                expect(controller.uiOptions.date.to.options.minDate).not.toBeNull();
+                expect(controller.uiOptions.date.to.options.maxDate).not.toBeNull();
+              });
+
+              it('does not show balance', function () {
+                expect(controller.uiOptions.showBalance).toBeFalsy();
+              });
+
+              it('resets to date', function () {
+                expect(controller.request.to_date).toBeNull();
+              });
+            });
+
+            describe('from unavailable absence period', function () {
+              beforeEach(function () {
+                setTestDates(date2013);
+              });
+
+              it('shows error', function () {
+                expect(controller.errors).toEqual(jasmine.any(Array));
+              });
+            });
+
+            describe('and to date is selected', function () {
+              beforeEach(function () {
+                setTestDates(date2016, date2016);
+              });
+
+              it('selects date from selected absence period without errors', function () {
+                expect(controller.errors.length).toBe(0);
+              });
+
+              it('updates balance', function () {
+                expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
+              });
+
+              it('shows balance', function () {
+                expect(controller.uiOptions.showBalance).toBeTruthy();
+              });
+            });
+
+            describe('and from date is changed after to date', function () {
+              var from, to, minDate;
+
+              beforeEach(function () {
+                setTestDates(date2016);
+                minDate = moment(getUTCDate(date2016)).add(1, 'd').toDate();
+              });
+
+              it('sets min date to from date', function () {
+                expect(controller.uiOptions.date.to.options.minDate).toEqual(minDate);
+              });
+
+              it('sets init date to from date', function () {
+                expect(controller.uiOptions.date.to.options.initDate).toEqual(minDate);
+              });
+
+              describe('and from date is less than to date', function () {
+                beforeEach(function () {
+                  from = '9/12/2016';
+                  to = '10/12/2016';
+
+                  setTestDates(null, to);
+                  setTestDates(from);
+                });
+
+                it('does not reset to date to equal from date', function () {
+                  expect(controller.request.to_date).not.toEqual(controller.request.from_date);
+                });
+              });
+
+              describe('and from date is greater than to date', function () {
+                beforeEach(function () {
+                  from = '11/12/2016';
+                  to = '10/12/2016';
+
+                  setTestDates(null, to);
+                  setTestDates(from);
+                });
+
+                it('changes to date to equal to date', function () {
+                  expect(controller.request.to_date).toEqual(controller.request.from_date);
+                });
               });
             });
           });
