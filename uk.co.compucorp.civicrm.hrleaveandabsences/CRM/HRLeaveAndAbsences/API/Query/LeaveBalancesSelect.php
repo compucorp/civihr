@@ -6,11 +6,17 @@ use CRM_Contact_BAO_RelationshipType as RelationshipType;
 use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
 use CRM_Hrjobcontract_BAO_HRJobDetails as HRJobDetails;
 use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_API_Query_Select as SelectQuery;
 
 class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
 
   use CRM_HRLeaveAndAbsences_Service_SettingsManagerTrait;
+
+  /**
+   * @var CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
+   */
+  private $absencePeriod;
 
   public function __construct($params) {
     $this->params = $params;
@@ -28,14 +34,23 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
   }
 
   private function addJoins(CRM_Utils_SQL_Select $query) {
+    $absencePeriod = $this->getAbsencePeriod();
+
     $joins = [
       'INNER JOIN ' . HRJobContract::getTableName() . ' jc ON a.id = jc.contact_id',
       'INNER JOIN ' . HRJobContractRevision::getTableName() . ' jcr ON jcr.id = (SELECT id
-                    FROM ' . HRJobContractRevision::getTableName() . ' jcr2
+                    FROM ' . HRJobContractRevision::getTableName() . " jcr2
                     WHERE
-                    jcr2.jobcontract_id = jc.id
-                    ORDER BY jcr2.effective_date DESC
-                    LIMIT 1)',
+                    jcr2.jobcontract_id = jc.id AND (
+                      jcr2.effective_date <= '{$absencePeriod->start_date}'
+                      OR
+                      (
+                        jcr2.effective_date >= '{$absencePeriod->start_date}' AND
+                        jcr2.effective_date <= '{$absencePeriod->end_date}' 
+                      )
+                    )
+                    ORDER BY jcr2.effective_date DESC, jcr2.id DESC
+                    LIMIT 1)",
       'INNER JOIN ' . HRJobDetails::getTableName() . ' jd ON jd.jobcontract_revision_id = jcr.details_revision_id'
     ];
 
@@ -48,9 +63,22 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
   }
 
   private function addWhere($customQuery) {
+    $absencePeriod = $this->getAbsencePeriod();
+
     $conditions = [
       'a.is_deleted = 0',
       'jc.deleted = 0',
+      "(
+        (jd.period_end_date IS NOT NULL AND jd.period_start_date <= '{$absencePeriod->end_date}' AND jd.period_end_date >= '{$absencePeriod->start_date}')
+          OR
+        (jd.period_end_date IS NULL AND 
+          (
+            (jd.period_start_date >= '{$absencePeriod->start_date}' AND jd.period_start_date <= '{$absencePeriod->end_date}')
+            OR
+            jd.period_start_date <= '{$absencePeriod->end_date}'
+          )
+        )
+      )"
     ];
 
     if(!empty($this->params['managed_by'])) {
@@ -86,6 +114,14 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
     $conditions[] = "(r.end_date IS NULL OR r.end_date >= {$today})";
 
     return $conditions;
+  }
+
+  private function getAbsencePeriod() {
+    if(!$this->absencePeriod) {
+      $this->absencePeriod = AbsencePeriod::findById($this->params['period_id']);
+    }
+
+    return $this->absencePeriod;
   }
 
 }
