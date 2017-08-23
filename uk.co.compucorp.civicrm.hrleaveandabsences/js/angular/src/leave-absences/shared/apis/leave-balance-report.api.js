@@ -1,9 +1,10 @@
 /* eslint-env amd */
 
 define([
+  'common/angular',
   'leave-absences/shared/modules/apis',
   'mocks/data/leave-balance-report.data'
-], function (apis, mockData) {
+], function (angular, apis, mockData) {
   'use strict';
 
   apis.factory('LeaveBalanceReportAPI', [
@@ -24,22 +25,31 @@ define([
         getAll: function (filters, pagination, sort) {
           $log.debug('LeaveBalanceReportAPI.all');
 
-          var values = mockData.all().values;
+          var allValues = mockData.all().values;
+          var filteredValues = angular.copy(allValues);
+
+          if (filters && filters.absence_type) {
+            filteredValues.forEach(function (contact) {
+              contact.absence_types = contact.absence_types.filter(function (type) {
+                return parseInt(type.id) === parseInt(filters.absence_type);
+              });
+            });
+          }
 
           if (pagination) {
             var limit, offset;
             pagination.page = pagination.page || 1;
-            pagination.size = pagination.size || values.length;
+            pagination.size = pagination.size || filteredValues.length;
             offset = (pagination.page - 1) * pagination.size;
             limit = offset + pagination.size;
 
-            values = values.slice(offset, limit);
+            filteredValues = filteredValues.slice(offset, limit);
           }
 
           return $q.resolve({
-            list: values,
-            total: mockData.all().values.length,
-            allIds: values.map(function (v) { return v.id; }).join(',')
+            list: filteredValues,
+            total: allValues.length,
+            allIds: filteredValues.map(function (v) { return v.id; }).join(',')
           });
         }
       });

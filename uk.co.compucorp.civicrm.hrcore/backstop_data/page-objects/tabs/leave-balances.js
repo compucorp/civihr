@@ -2,8 +2,8 @@ var tab = require('./tab');
 
 module.exports = (function () {
   return tab.extend({
-    readySelector: '.chr_leave-balance-report',
+    readySelector: '.chr_leave-balance-tab',
     tabTitle: 'Leave Balance',
-    tabUiSref: 'balance-report'
+    tabUiSref: 'leave-balances'
   });
 })();

@@ -6,7 +6,7 @@ module.exports = (function () {
      * Wait for the page to be ready
      */
     waitForReady: function () {
-      this.waitUntilVisible('.chr_leave-balance-report');
+      this.waitUntilVisible('.chr_leave-balance-tab');
     }
   });
 })();

@@ -23,8 +23,8 @@ define([
             url: '/calendar',
             template: '<leave-calendar contact-id="$root.settings.contactId"></leave-calendar>'
           })
-          .state('balance-report', {
-            url: '/balance-report',
+          .state('leave-balances', {
+            url: '/leave-balances',
             template: '<leave-balance-tab></leave-balance-tab>'
           });
       }

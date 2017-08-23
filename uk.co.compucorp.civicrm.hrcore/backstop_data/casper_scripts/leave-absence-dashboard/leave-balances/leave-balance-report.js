@@ -3,5 +3,5 @@
 var page = require('../../../page-objects/leave-absence-dashboard');
 
 module.exports = function (casper) {
-  page.init(casper).openTab('leave-balance-report');
+  page.init(casper).openTab('leave-balances');
 };

@@ -1,9 +1,10 @@
 /* eslint-env amd, jasmine */
 
 define([
+  'common/angular',
   'mocks/data/leave-balance-report.data',
   'leave-absences/shared/apis/leave-balance-report.api'
-], function (balanceReportMockData) {
+], function (angular, balanceReportMockData) {
   describe('LeaveBalanceReportAPI', function () {
     var $rootScope, LeaveBalanceReportAPI;
 
@@ -32,6 +33,41 @@ define([
 
       it('returns a list of records from the report', function () {
         expect(result).toEqual(expected);
+      });
+
+      describe('when filtering absence types', function () {
+        var expected, result;
+        var absenceType = '2';
+
+        beforeEach(function () {
+          var filteredReport, report;
+
+          report = balanceReportMockData.all().values;
+
+          filteredReport = report.map(function (contact) {
+            contact = angular.copy(contact);
+            contact.absence_types = contact.absence_types.filter(function (type) {
+              return type.id === absenceType;
+            });
+            return contact;
+          });
+
+          expected = {
+            list: filteredReport,
+            total: report.length,
+            allIds: jasmine.any(String)
+          };
+
+          LeaveBalanceReportAPI.getAll({ absence_type: absenceType })
+          .then(function (values) {
+            result = values;
+          });
+          $rootScope.$digest();
+        });
+
+        it('should return a filtered list of leave balances by absence type', function () {
+          expect(result).toEqual(expected);
+        });
       });
 
       describe('when passing paging parameter', function () {
