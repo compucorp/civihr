@@ -8,6 +8,21 @@ module.exports = (function () {
      */
     waitForReady: function () {
       this.waitUntilVisible('leave-calendar-month .chr_leave-calendar__item');
+    },
+
+    /**
+     * Toggle the calendar legend
+     *
+     * @return {Promise}
+     */
+    toggleLegend: function () {
+      var casper = this.casper;
+
+      casper.then(function () {
+        casper.click('.chr_leave-calendar__legend__title');
+      });
+
+      return this;
     }
   });
 })();
