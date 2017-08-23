@@ -1,9 +1,9 @@
 <crm-loading show="!detailsTab.loading.tab">
-  <ng-include src="$root.sharedPathTpl + 'directives/leave-request-popup/details-tab/common.html'"></ng-include>
+  <ng-include src="$root.sharedPathTpl + 'components/leave-request-popup/details-tab/common.html'"></ng-include>
 
   <!--Duration, Toil Amount Section - Only For Toil-->
   <ng-include ng-show="detailsTab.isLeaveType('toil')"
-    src="$root.sharedPathTpl + 'directives/leave-request-popup/details-tab/toil.html'"></ng-include>
+    src="$root.sharedPathTpl + 'components/leave-request-popup/details-tab/toil.html'"></ng-include>
 
   <crm-loading show="!detailsTab.loading.showBalanceChange">
     <div ng-show="detailsTab.uiOptions.showBalance">
@@ -129,6 +129,6 @@
   <!--Reason Section - Only For Sickness-->
   <ng-include
     ng-show="detailsTab.isLeaveType('sickness')"
-    src="$root.sharedPathTpl + 'directives/leave-request-popup/details-tab/sickness.html'"></ng-include>
+    src="$root.sharedPathTpl + 'components/leave-request-popup/details-tab/sickness.html'"></ng-include>
 
 </crm-loading>

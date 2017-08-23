@@ -82,7 +82,7 @@ define([
         beforeEach(function () {
           selectedAbsenceType = _.assign(absenceTypeData.all().values[0], {remainder: 0});
           leaveRequest = LeaveRequestInstance.init();
-          compileComponent(false, leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+          compileComponent(leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
@@ -390,7 +390,7 @@ define([
             var leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
 
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            compileComponent(false, leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+            compileComponent(leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
 
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
@@ -433,7 +433,7 @@ define([
               leaveRequest.from_date = leaveRequest.to_date = dateServer2017;
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
-              compileComponent(false, leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+              compileComponent(leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
 
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
@@ -457,7 +457,7 @@ define([
           leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', approvalStatus));
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
-          compileComponent(false, leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'view');
+          compileComponent(leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'view');
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
@@ -480,7 +480,7 @@ define([
         beforeEach(function () {
           selectedAbsenceType = _.assign(absenceTypeData.all().values[0], {remainder: 0});
           leaveRequest = SicknessRequestInstance.init();
-          compileComponent(false, leaveRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+          compileComponent(leaveRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
@@ -529,7 +529,7 @@ define([
             sicknessRequest.status_id = optionGroupMock.specificValue(
               'hrleaveandabsences_leave_request_status', 'value', '3');
 
-            compileComponent(false, sicknessRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+            compileComponent(sicknessRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
 
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
@@ -548,7 +548,7 @@ define([
               sicknessRequest.from_date = date2016;
               sicknessRequest.to_date = date2017;
 
-              compileComponent(false, sicknessRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+              compileComponent(sicknessRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
 
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
@@ -564,7 +564,7 @@ define([
               sicknessRequest.from_date = date2016;
               sicknessRequest.to_date = date2016;
 
-              compileComponent(false, sicknessRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+              compileComponent(sicknessRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
 
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
@@ -596,7 +596,7 @@ define([
         beforeEach(function () {
           selectedAbsenceType = _.assign(absenceTypeData.all().values[0], {remainder: 0});
           leaveRequest = TOILRequestInstance.init();
-          compileComponent(false, leaveRequest, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+          compileComponent(leaveRequest, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
@@ -657,7 +657,7 @@ define([
             toilRequest = TOILRequestInstance.init(leaveRequestData.findBy('request_type', 'toil'));
             toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
-            compileComponent(false, toilRequest, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+            compileComponent(toilRequest, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
 
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
@@ -692,7 +692,7 @@ define([
             toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             toilRequest.toil_expiry_date = expiryDate;
 
-            compileComponent(true, toilRequest, 'toil', absencePeriodData.all().values[0], 'manager', balance, selectedAbsenceType, 'create');
+            compileComponent(toilRequest, 'toil', absencePeriodData.all().values[0], 'manager', balance, selectedAbsenceType, 'create');
 
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
@@ -730,7 +730,7 @@ define([
 
             describe('and staff edits open request', function () {
               beforeEach(function () {
-                compileComponent(false, controller.request, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+                compileComponent(controller.request, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
 
                 $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
                 $rootScope.$digest();
@@ -755,7 +755,7 @@ define([
       describe('when TOIL Request does not expire', function () {
         beforeEach(function () {
           AbsenceType.canExpire.and.returnValue($q.resolve(false));
-          compileComponent(false, controller.request, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+          compileComponent(controller.request, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
@@ -784,7 +784,16 @@ define([
       });
     });
 
-    function compileComponent (canManage, request, leaveType, period, role, balance, selectedAbsenceType, mode) {
+    function compileComponent (request, leaveType, period, role, balance, selectedAbsenceType, mode) {
+      var isMode = jasmine.createSpy('isMode');
+      var isRole = jasmine.createSpy('isRole');
+      isMode.and.callFake(function (modeParam) {
+        return modeParam === mode;
+      });
+      isRole.and.callFake(function (roleParam) {
+        return roleParam === role;
+      });
+
       controller = $componentController('leaveRequestPopupDetailsTab', null, {
         absencePeriods: absencePeriodData.all().values.map(function (period) {
           return AbsencePeriodInstance.init(period);
@@ -795,11 +804,10 @@ define([
         isLeaveStatus: jasmine.any(Function),
         leaveType: leaveType,
         period: period,
-        role: role,
         selectedAbsenceType: selectedAbsenceType,
-        canManage: canManage,
-        mode: mode,
-        request: request
+        request: request,
+        isMode: isMode,
+        isRole: isRole
       });
       $rootScope.$digest();
     }

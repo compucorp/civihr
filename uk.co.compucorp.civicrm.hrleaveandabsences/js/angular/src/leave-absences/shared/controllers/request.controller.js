@@ -41,7 +41,7 @@ define([
     var loggedInContactId = '';
     var NO_ENTITLEMENT_ERROR = 'No entitlement';
     var role = '';
-    var vm = _.merge(this, directiveOptions);
+    var vm = _.assign(this, directiveOptions); // put all directive options directly in the vm
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -268,9 +268,6 @@ define([
     /**
      * Gets leave type.
      *
-     * @param {String} leaveType - leave type, it is passed only for new requests
-     * @param {LeaveRequestInstance} request leave request for edit calls
-
      * @return {String} leave type
      */
     function getLeaveType () {
@@ -464,6 +461,9 @@ define([
       }
     }
 
+    /**
+     * Initializes the leave request object
+     */
     function initRequest () {
       vm.request = vm.leaveRequest || null;
       var leaveType = getLeaveType();
@@ -547,7 +547,7 @@ define([
      * @return {Boolean}
      */
     function isLeaveType (leaveTypeParam) {
-      return vm.request.request_type === leaveTypeParam;
+      return vm.request && vm.request.request_type === leaveTypeParam;
     }
 
     /**
@@ -792,6 +792,7 @@ define([
     function updateRequest () {
       return vm.request.update()
         .then(triggerChildComponentsSubmitAndWaitForResponse)
+        .then(triggerChildComponentsSubmitAndWaitForResponse)
         .then(function () {
           if (vm.isRole('manager')) {
             postSubmit('LeaveRequest::updatedByManager');
@@ -809,8 +810,8 @@ define([
     function validateBeforeSubmit () {
       if (vm.balance.closing < 0 && vm.selectedAbsenceType.allow_overuse === '0') {
         // show an error
-        return $q.reject(['You cannot make a request for vm leave type at vm time ' +
-        'as vm would leave you with a negative balance']);
+        return $q.reject(['You cannot make a request for this leave type at this time ' +
+        'as this would leave you with a negative balance']);
       }
 
       return vm.request.isValid();

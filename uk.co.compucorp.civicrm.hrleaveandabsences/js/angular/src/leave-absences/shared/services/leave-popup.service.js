@@ -50,7 +50,7 @@ define([
     function openModal (leaveRequest, leaveType, selectedContactId, isSelfRecord) {
       $modal.open({
         appendTo: $rootElement.children().eq(0),
-        templateUrl: sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup.html',
+        templateUrl: sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup.html',
         controller: 'RequestCtrl',
         controllerAs: '$ctrl',
         windowClass: 'chr_leave-request-modal',
