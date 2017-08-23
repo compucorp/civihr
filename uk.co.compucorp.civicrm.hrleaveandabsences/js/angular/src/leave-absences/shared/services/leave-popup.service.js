@@ -3,18 +3,19 @@
 define([
   'common/lodash',
   'leave-absences/shared/modules/services',
-  'common/services/notification.service'
+  'common/services/notification.service',
+  'leave-absences/shared/controllers/request.controller'
 ], function (_, services) {
   'use strict';
 
   services.factory('LeavePopup', LeavePopupService);
 
   LeavePopupService.$inject = [
-    '$log', '$rootElement', '$rootScope', '$q', '$uibModal', 'notificationService',
+    '$log', '$rootElement', '$rootScope', '$uibModal', 'notificationService',
     'shared-settings', 'DateFormat', 'Session', 'LeaveRequest'
   ];
 
-  function LeavePopupService ($log, $rootElement, $rootScope, $q, $modal, notification, sharedSettings, DateFormat, Session, LeaveRequest) {
+  function LeavePopupService ($log, $rootElement, $rootScope, $modal, notification, sharedSettings, DateFormat, Session, LeaveRequest) {
     $log.debug('LeavePopup');
 
     return {

@@ -12,22 +12,25 @@ define([
   'common/services/pub-sub',
   'leave-absences/shared/models/absence-period-model',
   'leave-absences/shared/models/absence-type-model',
-  'leave-absences/shared/models/calendar-model',
   'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/models/leave-request-model',
-  'leave-absences/shared/models/public-holiday-model'
+  'leave-absences/shared/models/public-holiday-model',
+  'leave-absences/shared/instances/leave-request.instance',
+  'leave-absences/shared/instances/sickness-request.instance',
+  'leave-absences/shared/instances/toil-request.instance'
 ], function (angular, controllers, _) {
   'use strict';
 
   controllers.controller('RequestCtrl', RequestCtrl);
 
-  RequestCtrl.$inject = ['$log', '$q', '$rootScope', 'Contact', 'dialog', 'AbsenceType', 'api.optionGroup', 'checkPermissions',
-    'pubSub', 'Entitlement', 'Session', 'LeaveRequest', 'shared-settings', 'LeaveRequestInstance', 'SicknessRequestInstance',
-    'TOILRequestInstance', '$uibModalInstance', 'directiveOptions', 'AbsencePeriod'];
+  RequestCtrl.$inject = [
+    '$log', '$q', '$rootScope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup', 'dialog', 'pubSub', 'directiveOptions', 'Contact',
+    'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement', 'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance',
+    'TOILRequestInstance'
+  ];
 
-  function RequestCtrl ($log, $q, $rootScope, Contact, dialog,
-   AbsenceType, OptionGroup, checkPermissions, pubSub, Entitlement, Session, LeaveRequest, sharedSettings, LeaveRequestInstance,
-   SicknessRequestInstance, TOILRequestInstance, $modalInstance, directiveOptions, AbsencePeriod) {
+  function RequestCtrl ($log, $q, $rootScope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub, directiveOptions, Contact, Session,
+    AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance) {
     $log.debug('RequestCtrl');
 
     var absenceTypesAndIds;
@@ -203,10 +206,10 @@ define([
         classConfirm: 'btn-danger',
         msg: 'This cannot be undone',
         onConfirm: function () {
-          return vm.leaveRequest.delete()
+          return vm.request.delete()
             .then(function () {
               vm.dismissModal();
-              $rootScope.$emit('LeaveRequest::deleted', vm.leaveRequest);
+              $rootScope.$emit('LeaveRequest::deleted', vm.request);
             });
         }
       });
@@ -221,7 +224,11 @@ define([
       });
     }
 
-
+    /**
+     * Returns the parameters for to load Absence Type of selected leave type
+     *
+     * @return {Object}
+     */
     function getAbsenceTypeParams () {
       var leaveType = getLeaveType();
 
@@ -361,23 +368,23 @@ define([
       return $q.all([
         vm._loadAbsenceTypes()
       ])
-        .then(function () {
-          setInitialAbsenceTypes();
-          initStatus();
-          initContact();
+      .then(function () {
+        setInitialAbsenceTypes();
+        initStatus();
+        initContact();
 
-          if (vm.isMode('edit')) {
-            setInitialAttributes();
-          }
+        if (vm.isMode('edit')) {
+          setInitialAttributes();
+        }
 
-          vm.postContactSelection = false;
-          $rootScope.$broadcast('ContactSelectionComplete');
-        })
-        .catch(function (error) {
-          if (error !== NO_ENTITLEMENT_ERROR) {
-            return $q.reject(error);
-          }
-        });
+        vm.postContactSelection = false;
+        $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+      })
+      .catch(function (error) {
+        if (error !== NO_ENTITLEMENT_ERROR) {
+          return $q.reject(error);
+        }
+      });
     }
 
     /**
