@@ -18,7 +18,7 @@ define([
     $log.debug('Component: leave-calendar-legend');
 
     var vm = this;
-    vm.collapsed = false;
+    vm.legendCollapsed = true;
 
     vm.getAbsenceTypeStyle = getAbsenceTypeStyle;
 

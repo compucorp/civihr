@@ -25,8 +25,8 @@ define([
       expect($log.debug).toHaveBeenCalled();
     });
 
-    it('is not collapsed', function () {
-      expect(controller.collapsed).toBe(false);
+    it('is collapsed', function () {
+      expect(controller.legendCollapsed).toBe(true);
     });
 
     describe('getAbsenceTypeStyle()', function () {
