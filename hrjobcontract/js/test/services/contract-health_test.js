@@ -9,19 +9,20 @@ define([
   'use strict';
 
   describe('ContractHealthService', function () {
-    var $httpBackend, promise, $rootScope, ContractHealthService;
+    var $httpBackend, $rootScope, promise, ContractHealthService;
 
     beforeEach(module('hrjc'));
-    beforeEach(inject(function (_ContractHealthService_, _$httpBackend_, _$rootScope_) {
+    beforeEach(inject(function (_ContractHealthService_, _$httpBackend_,
+    _$rootScope_) {
       ContractHealthService = _ContractHealthService_;
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
     }));
 
     beforeEach(function () {
-      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(ContractMock.contractRevision);
-      $httpBackend.whenGET(/action=get&entity=HRJobHealth/).respond({});
-      $httpBackend.whenGET(/action=getoptions&entity=HRJobHealth/).respond(InsuranceMock.insurancePlanTypes);
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
+      $httpBackend.whenGET(/action=get&entity=HRJobHealth/).respond(ContractMock.contractRevision);
+      $httpBackend.whenGET(/action=getoptions&entity=HRJobHealth/).respond(InsuranceMock);
       $httpBackend.whenGET(/views.*/).respond({});
     });
 
@@ -34,9 +35,8 @@ define([
       it('returns job contract revision id', function () {
         ContractHealthService.getOne({
           jobcontract_revision_id: 68
-        }).then(function(result) {
-          expect(result.id).toEqual("47");
-          expect(result.jobcontract_revision_id).toEqual(ContractMock.contractRevision.values[0].jobcontract_revision_id);
+        }).then(function (result) {
+          expect(result).toEqual(ContractMock.contractRevision.values[0]);
         });
       });
     });
@@ -44,38 +44,36 @@ define([
     describe('getOptions()', function () {
       describe('when calling the api with paramater "hrjobcontract_health_health_plan_type"', function () {
         beforeEach(function () {
-          promise = ContractHealthService.getOptions("hrjobcontract_health_health_plan_type", true);
+          promise = ContractHealthService.getOptions('hrjobcontract_health_health_plan_type', true);
         });
 
         it('returns insurance plan types list', function () {
           promise.then(function (healthInsurancePlanTypes) {
-            expect(healthInsurancePlanTypes[0]["value"]).toEqual(InsuranceMock.insurancePlanTypes.values[0]["value"]);
-            expect(healthInsurancePlanTypes[1]["value"]).toEqual(InsuranceMock.insurancePlanTypes.values[1]["value"]);
+            expect(healthInsurancePlanTypes).toEqual(InsuranceMock.values);
           });
         });
       });
 
       describe('when calling the api with paramater "hrjobcontract_health_life_insurance_plan_type"', function () {
         beforeEach(function () {
-          promise = ContractHealthService.getOptions("hrjobcontract_health_life_insurance_plan_type", true);
+          promise = ContractHealthService.getOptions('hrjobcontract_health_life_insurance_plan_type', true);
         });
 
         it('returns life insurance plan types list', function () {
           promise.then(function (lifeInsurancePlanTypes) {
-            expect(lifeInsurancePlanTypes[0]["value"]).toEqual(InsuranceMock.insurancePlanTypes.values[0]["value"]);
-            expect(lifeInsurancePlanTypes[1]["value"]).toEqual(InsuranceMock.insurancePlanTypes.values[1]["value"]);
+            expect(lifeInsurancePlanTypes).toEqual(InsuranceMock.values);
           });
         });
       });
 
       describe('when called api with empty insurance type', function () {
         beforeEach(function () {
-          promise = ContractHealthService.getOptions("", false);
+          promise = ContractHealthService.getOptions('', false);
         });
 
         it('returns empty list insurance plan types', function () {
           promise.then(function (result) {
-            expect(result).toEqual(Object({}));
+            expect(result).toEqual({});
           });
         });
       });
