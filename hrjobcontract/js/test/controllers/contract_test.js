@@ -12,9 +12,7 @@ define([
       UtilsService;
 
     beforeEach(module('hrjc', 'job-contract.templates', function ($provide) {
-      $window = {
-        location: jasmine.createSpyObj('location', ['assign'])
-      };
+      $window = { location: jasmine.createSpyObj('location', ['assign']) };
 
       $provide.value('$window', $window);
     }));

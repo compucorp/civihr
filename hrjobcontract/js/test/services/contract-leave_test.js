@@ -28,19 +28,19 @@ define([
     });
 
     describe('getOne()', function () {
-      var expected;
+      var contractLeaves;
 
       beforeEach(function () {
-        expected = angular.copy(MockContract.contractLeaves.values)
+        contractLeaves = angular.copy(MockContract.contractLeaves.values)
         .map(function (contract) {
           contract.add_public_holidays = contract.add_public_holidays === '1';
           return contract;
         });
       });
 
-      it('calls getOne() and returns expected leave types ids', function () {
+      it('calls getOne() and returns expected contract leaves', function () {
         ContractLeaveService.getOne({ jobcontract_revision_id: 68 }).then(function (result) {
-          expect(result).toEqual(expected);
+          expect(result).toEqual(contractLeaves);
         });
       });
     });
