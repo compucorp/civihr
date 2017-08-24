@@ -12,6 +12,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+use CRM_HRCore_Test_Fabricator_RelationshipType as RelationshipTypeFabricator;
+use CRM_HRCore_Test_Fabricator_Relationship as RelationshipFabricator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 /**
@@ -1459,6 +1461,147 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(2, $resultGetFull['count']);
     $this->assertNotEmpty($resultGetFull['values'][$leaveRequest2->id]);
     $this->assertNotEmpty($resultGetFull['values'][$leaveRequest3->id]);
+  }
+
+  public function testGetAndGetFullShouldReturnNoInformationForContactWithActiveLeaveManagerAndOtherRelationshipWhenUnassignedIsTrue() {
+    $this->setLeaveApproverRelationshipTypes([
+      'has Leaves Approved By',
+    ]);
+
+    $manager = ContactFabricator::fabricate();
+    $staffMember = ContactFabricator::fabricate();
+
+    $relationshipType = RelationshipTypeFabricator::fabricate();
+
+    //Add a neutral relationship between contact and manager that is not of
+    //type leave approver.
+    RelationshipFabricator::fabricate([
+      'contact_id_a' => $staffMember['id'],
+      'contact_id_b' => $manager['id'],
+      'relationship_type_id' => $relationshipType['id']
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $this->setContactAsLeaveApproverOf($manager, $staffMember, null, null, true, 'has Leaves Approved By');
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'get', ['unassigned' => true]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['unassigned' => true]);
+
+    //No result is returned because contact has active leave approver relationship.
+    $this->assertEquals(0, $result['count']);
+
+    $this->assertEquals(0, $resultGetFull['count']);
+  }
+
+  public function testGetAndGetFullReturnsCorrectlyWhenTheContactIdIsPassedAsArrayAndUnassignedIsTrue() {
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember1['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember2['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember1['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember2['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-05-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-05-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'get',
+      ['unassigned' => true,
+        'contact_id' => ['IN' => [$staffMember1['id']]]
+      ]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull',
+      ['unassigned' => true,
+        'contact_id' => ['IN' => [$staffMember1['id']]]
+      ]);
+
+    //only leave request for staffmember1 is returned.
+    $this->assertEquals(1, $result['count']);
+    $this->assertNotEmpty($result['values'][$leaveRequest1->id]);
+
+    $this->assertEquals(1, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest1->id]);
+  }
+
+  public function testGetAndGetFullReturnsCorrectlyWhenTheContactIdIsPassedAsIntegerAndUnassignedIsTrue() {
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember1['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember2['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember1['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember2['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-05-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-05-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'get',
+      ['unassigned' => true,
+        'contact_id' => $staffMember1['id']
+      ]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull',
+      ['unassigned' => true,
+        'contact_id' => $staffMember1['id']
+      ]);
+
+    //only leave request for staffmember1 is returned.
+    $this->assertEquals(1, $result['count']);
+    $this->assertNotEmpty($result['values'][$leaveRequest1->id]);
+
+    $this->assertEquals(1, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest1->id]);
   }
 
   public function testGetAndGetFullShouldReturnInformationForContactsWithActiveLeaveManagersWhenUnassignedIsFalse() {
