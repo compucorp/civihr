@@ -473,9 +473,9 @@
             });
           });
 
-          describe('when the balance change of the leave request is positive', function () {
+          describe('when the leave request is of toil type', function () {
             beforeEach(function () {
-              leaveRequest.balance_change = 2;
+              leaveRequest.request_type = 'toil';
 
               contactData = commonSetup();
             });

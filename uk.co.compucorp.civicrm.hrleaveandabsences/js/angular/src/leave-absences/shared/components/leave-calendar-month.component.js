@@ -210,6 +210,17 @@ define([
     }
 
     /**
+     * Returns whether a leaveRequest is of the sent leave type
+     *
+     * @param  {object} leaveRequest
+     * @param  {String} leaveType
+     * @return {boolean}
+     */
+    function isLeaveType (leaveRequest, leaveType) {
+      return leaveRequest.request_type === leaveType;
+    }
+
+    /**
      * Returns whether a leaveRequest is pending approval
      *
      * @param  {object} leaveRequest
@@ -407,7 +418,7 @@ define([
         _.assign(day.contactsData[contactId], {
           leaveRequest: leaveRequest || null,
           styles: leaveRequest ? styles(leaveRequest) : null,
-          isAccruedTOIL: leaveRequest ? leaveRequest.balance_change > 0 : null,
+          isAccruedTOIL: leaveRequest ? isLeaveType(leaveRequest, 'toil') : null,
           isRequested: leaveRequest ? isPendingApproval(leaveRequest) : null,
           isAM: leaveRequest ? isDayType('half_day_am', leaveRequest, day.date) : null,
           isPM: leaveRequest ? isDayType('half_day_pm', leaveRequest, day.date) : null
