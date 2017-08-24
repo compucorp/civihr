@@ -280,7 +280,12 @@ function civicrm_api3_leave_period_entitlement_getleavebalances($params) {
 
   $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
   $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect($params, $leaveManagerService);
+  $result = $query->run();
 
-  return civicrm_api3_create_success($query->run());
+  if(empty($params['options']['is_count'])) {
+    return civicrm_api3_create_success($result);
+  }
+
+  return $result ?: 0;
 }
 
