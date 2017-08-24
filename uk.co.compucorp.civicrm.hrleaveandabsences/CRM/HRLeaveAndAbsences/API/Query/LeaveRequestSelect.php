@@ -102,9 +102,31 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     if($hasUnassignedAsTrue) {
       $conditions[] = "NOT (" . implode(' AND ', $this->hasActiveLeaveManagerCondition()) . ") 
                        OR (r.is_active IS NULL AND rt.is_active IS NULL)";
-      $conditions[] = "a.contact_id NOT IN(SELECT contact_id_a FROM civicrm_relationship r LEFT JOIN
+
+      $contactID = false;
+      $contactPassedAsArray = !empty($this->params['contact_id']['IN']);
+      $contactPassedAsID = isset($this->params['contact_id']) && is_numeric($this->params['contact_id']);
+
+      if($contactPassedAsArray) {
+        $contactID = $this->params['contact_id']['IN'];
+      }
+
+      if($contactPassedAsID) {
+        $contactID = [$this->params['contact_id']];
+      }
+
+      $query = "a.contact_id NOT IN(SELECT contact_id_a FROM civicrm_relationship r LEFT JOIN
                        civicrm_relationship_type rt ON rt.id = r.relationship_type_id WHERE
-                       ". implode(' AND ', $this->hasActiveLeaveManagerCondition()) .")";
+                       ". implode(' AND ', $this->hasActiveLeaveManagerCondition());
+
+      if ($contactID) {
+        $query .= " AND r.contact_id_a IN(" . implode(',', $contactID) . "))";
+      }
+      else{
+        $query .= ")";
+      }
+
+      $conditions[] = $query;
     }
 
     if(!empty($this->params['managed_by'])) {

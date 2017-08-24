@@ -1500,9 +1500,108 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'get', ['unassigned' => true]);
     $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['unassigned' => true]);
 
+    //No result is returned because contact has active leave approver relationship.
     $this->assertEquals(0, $result['count']);
 
     $this->assertEquals(0, $resultGetFull['count']);
+  }
+
+  public function testGetAndGetFullReturnsCorrectlyWhenTheContactIdIsPassedAsArrayAndUnassignedIsTrue() {
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember1['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember2['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember1['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember2['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-05-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-05-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'get',
+      ['unassigned' => true,
+        'contact_id' => ['IN' => [$staffMember1['id']]]
+      ]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull',
+      ['unassigned' => true,
+        'contact_id' => ['IN' => [$staffMember1['id']]]
+      ]);
+
+    //only leave request for staffmember1 is returned.
+    $this->assertEquals(1, $result['count']);
+    $this->assertNotEmpty($result['values'][$leaveRequest1->id]);
+
+    $this->assertEquals(1, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest1->id]);
+  }
+
+  public function testGetAndGetFullReturnsCorrectlyWhenTheContactIdIsPassedAsIntegerAndUnassignedIsTrue() {
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember1['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember2['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember1['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember2['id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-05-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-05-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'get',
+      ['unassigned' => true,
+        'contact_id' => $staffMember1['id']
+      ]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull',
+      ['unassigned' => true,
+        'contact_id' => $staffMember1['id']
+      ]);
+
+    //only leave request for staffmember1 is returned.
+    $this->assertEquals(1, $result['count']);
+    $this->assertNotEmpty($result['values'][$leaveRequest1->id]);
+
+    $this->assertEquals(1, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGetFull['values'][$leaveRequest1->id]);
   }
 
   public function testGetAndGetFullShouldReturnInformationForContactsWithActiveLeaveManagersWhenUnassignedIsFalse() {
