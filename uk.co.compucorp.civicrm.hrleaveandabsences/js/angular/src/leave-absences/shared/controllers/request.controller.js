@@ -48,7 +48,7 @@ define([
     vm.contactName = null; // contact name of the owner of leave request
     vm.errors = [];
     vm.fileUploader = null;
-    vm.injectChildComponents = false;
+    vm.staffMemberSelectionComplete = false;
     vm.loading = { absenceTypes: true };
     vm.managedContacts = [];
     vm.mode = ''; // can be edit, create, view
@@ -375,7 +375,7 @@ define([
         }
 
         vm.postContactSelection = false;
-        vm.injectChildComponents = true;
+        vm.staffMemberSelectionComplete = true;
       })
       .catch(function (error) {
         if (error !== NO_ENTITLEMENT_ERROR) {

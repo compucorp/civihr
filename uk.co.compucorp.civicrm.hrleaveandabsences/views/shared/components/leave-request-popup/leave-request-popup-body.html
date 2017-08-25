@@ -45,8 +45,12 @@
     <hr/>
     <div class="row">
       <div class="col-xs-12">
-        <div ng-if="!$ctrl.injectChildComponents" class="text-center">Please select the Staff Member above</div>
-        <uib-tabset class="chr_leave-request-modal__tab" ng-if="$ctrl.injectChildComponents">
+        <div
+          ng-if="!$ctrl.staffMemberSelectionComplete && ($root.section === 'manager-leave' || $root.section === 'admin-dashboard')"
+          class="text-center">
+          Please select the Staff Member above
+        </div>
+        <uib-tabset class="chr_leave-request-modal__tab" ng-if="$ctrl.staffMemberSelectionComplete">
           <uib-tab heading="Details">
             <leave-request-popup-details-tab
               request="$ctrl.request" is-self-record="$ctrl.isSelfRecord" is-mode="$ctrl.isMode" period="$ctrl.period" absence-types="$ctrl.absenceTypes"
@@ -65,7 +69,7 @@
       </div>
     </div>
     <div
-      ng-show="$ctrl.canManage && !$ctrl.isSelfRecord"
+      ng-show="$ctrl.canManage && !$ctrl.isSelfRecord && $ctrl.staffMemberSelectionComplete"
       class="row chr_leave-request-modal__response">
       <div class="col-xs-12 form-horizontal">
         <div class="form-group">
