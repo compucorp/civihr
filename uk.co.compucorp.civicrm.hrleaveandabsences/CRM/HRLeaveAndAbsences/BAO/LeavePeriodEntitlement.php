@@ -488,6 +488,54 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
+   * Returns a list of entitlements for the given Contacts and Absence Types
+   * during the given Absence Period.
+   *
+   * Important: This method DOES NOT return LeavePeriodEntitlement instances.
+   *
+   * @param array $contactIDs
+   * @param int $absencePeriodID
+   * @param int $absenceTypeID
+   *
+   * @return array
+   *  An array with this format:
+   *  [
+   *     contact_id_1 = entitlement,
+   *     contact_id_2 = entitlement,
+   *     ...
+   *  ]
+   */
+  public static function getEntitlementsForContacts($contactIDs, $absencePeriodID, $absenceTypeID) {
+    $entitlements = [];
+
+    array_walk($contactIDs, 'intval');
+
+    $query = "
+      SELECT lpe.contact_id, 
+             SUM(lbc.amount) AS entitlement
+      FROM civicrm_hrleaveandabsences_leave_period_entitlement lpe
+      INNER JOIN civicrm_hrleaveandabsences_leave_balance_change lbc
+              ON lbc.source_type = 'entitlement' AND lbc.source_id = lpe.id
+      WHERE lpe.period_id = %1 AND 
+            lpe.type_id = %2 AND
+            lpe.contact_id IN (" . implode(',', $contactIDs) . ")
+      GROUP BY lpe.id";
+
+    $params    = [
+      1 => [$absencePeriodID, 'Positive'],
+      2 => [$absenceTypeID, 'Positive'],
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+
+    while($result->fetch()) {
+      $entitlements[$result->contact_id] = $result->entitlement;
+    }
+
+    return $entitlements;
+  }
+
+  /**
    * Returns the entitlement (number of days) for this LeavePeriodEntitlement.
    *
    * This is basic the sum of the amounts of the LeaveBalanceChanges that are

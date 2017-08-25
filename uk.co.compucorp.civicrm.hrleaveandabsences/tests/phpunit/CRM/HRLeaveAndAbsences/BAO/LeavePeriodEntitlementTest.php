@@ -1354,4 +1354,122 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
     LeavePeriodEntitlement::getForLeaveRequest($leaveRequest);
   }
+
+  public function testGetEntitlementsForContactsReturnTheEntitlementsForMultipleContactsAndASpecificAbsenceTypeDuringAnAbsencePeriod() {
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => 1,
+      'type_id' =>  1
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => 1,
+      'type_id' =>  2
+    ]);
+
+    $periodEntitlement3 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 2,
+      'period_id' => 1,
+      'type_id' =>  1
+    ]);
+
+    $periodEntitlement4 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => 2,
+      'type_id' =>  1
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
+    $this->createLeaveBalanceChange($periodEntitlement2->id, 1);
+    $this->createLeaveBalanceChange($periodEntitlement3->id, 5);
+    $this->createLeaveBalanceChange($periodEntitlement4->id, 6);
+
+    $result = LeavePeriodEntitlement::getEntitlementsForContacts(
+      [$periodEntitlement1->contact_id, $periodEntitlement3->contact_id],
+      $periodEntitlement1->period_id,
+      $periodEntitlement1->type_id
+    );
+
+    // The entitlements for the Absence Type 2 and Absence Period 2 won't be
+    // included
+    $this->assertCount(2, $result);
+    $this->assertEquals(10, $result[$periodEntitlement1->contact_id]);
+    $this->assertEquals(5, $result[$periodEntitlement3->contact_id]);
+  }
+
+  public function testGetEntitlementsForContactsIncludeExpiredBalanceChangesAndBroughtForward() {
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => 1,
+      'type_id' =>  1
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement1->id, 5, 2.5);
+
+    $result = LeavePeriodEntitlement::getEntitlementsForContacts(
+      [$periodEntitlement1->contact_id],
+      $periodEntitlement1->period_id,
+      $periodEntitlement1->type_id
+    );
+
+    $expectedResult = [
+      $periodEntitlement1->contact_id => 12.5
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testGetEntitlementsForContactsIncludeOverriddenBalances() {
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => 1,
+      'type_id' =>  1
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
+    $this->createOverriddenBalanceChange($periodEntitlement1->id, 50);
+
+    $result = LeavePeriodEntitlement::getEntitlementsForContacts(
+      [$periodEntitlement1->contact_id],
+      $periodEntitlement1->period_id,
+      $periodEntitlement1->type_id
+    );
+
+    $expectedResult = [
+      $periodEntitlement1->contact_id => 60
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testGetEntitlementsForContactsDoesNotIncludeLeaveRequestBalanceChanges() {
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => 1,
+      'type_id' =>  1
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
+
+    // Deduct 3 days
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement1->contact_id,
+      'type_id' => $periodEntitlement1->type_id,
+      'from_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2017-01-03'),
+    ], true);
+
+    $result = LeavePeriodEntitlement::getEntitlementsForContacts(
+      [$periodEntitlement1->contact_id],
+      $periodEntitlement1->period_id,
+      $periodEntitlement1->type_id
+    );
+
+    $expectedResult = [
+      // The 3 days from the leave request won't be included
+      $periodEntitlement1->contact_id => 10
+    ];
+    $this->assertEquals($expectedResult, $result);
+  }
+
 }
