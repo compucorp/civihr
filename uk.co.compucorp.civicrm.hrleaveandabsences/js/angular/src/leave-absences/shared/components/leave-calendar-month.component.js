@@ -8,6 +8,7 @@ define([
   components.component('leaveCalendarMonth', {
     bindings: {
       contacts: '<',
+      contactIdsToReduceTo: '<',
       month: '<',
       period: '<',
       showContactName: '<',
@@ -142,6 +143,25 @@ define([
     function deleteLeaveRequest (__, leaveRequest) {
       removeLeaveRequestFromIndexedList(leaveRequest);
       updateLeaveRequestDaysContactData(leaveRequest);
+    }
+
+    /**
+     * If there are contacts to reduce to, reduces contacts to the list provided,
+     * plus leaves those who have leave requests at the given month period
+     *
+     * @return {Promise}
+     */
+    function reduceContacts () {
+      if (vm.contactIdsToReduceTo) {
+        vm.contacts = vm.contacts.filter(function (contact) {
+          return (_.includes(vm.contactIdsToReduceTo, contact.contact_id) ||
+            _.find(leaveRequests, function (leaveRequest) {
+              return leaveRequest.contact_id === contact.contact_id;
+            }));
+        });
+      }
+
+      return $q.resolve();
     }
 
     /**
@@ -307,9 +327,8 @@ define([
         loadMonthWorkPatternCalendars(),
         loadMonthLeaveRequests()
       ])
-      .then(function () {
-        return setMonthDaysContactData();
-      })
+      .then(reduceContacts)
+      .then(setMonthDaysContactData)
       .then(function () {
         dataLoaded = true;
       })

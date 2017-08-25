@@ -88,6 +88,7 @@
       <div ng-if="calendar.injectMonths">
         <leave-calendar-month ng-repeat="month in calendar.months track by $index"
           contacts="calendar.contacts"
+          contact-ids-to-reduce-to="calendar.contactIdsToReduceTo"
           month="month"
           period="calendar.selectedPeriod"
           show-contact-name="calendar.showContactName"

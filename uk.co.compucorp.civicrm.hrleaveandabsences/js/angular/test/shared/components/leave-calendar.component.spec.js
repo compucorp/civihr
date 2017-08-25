@@ -36,13 +36,14 @@
       }));
 
       beforeEach(inject([
-        'AbsencePeriodAPIMock', 'AbsenceTypeAPIMock', 'PublicHolidayAPIMock', 'api.contact.mock',
-        function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, PublicHolidayAPIMock, ContactAPIMock) {
+        'AbsencePeriodAPIMock', 'AbsenceTypeAPIMock', 'PublicHolidayAPIMock', 'api.contact.mock', 'api.contract.mock',
+        function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, PublicHolidayAPIMock, ContactAPIMock, ContractAPIMock) {
           $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
           $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
           $provide.value('PublicHolidayAPI', PublicHolidayAPIMock);
           $provide.value('checkPermissions', mockedCheckPermissions);
           $provide.value('api.contact', ContactAPIMock);
+          $provide.value('api.contract', ContractAPIMock);
         }
       ]));
 
@@ -95,6 +96,10 @@
       describe('on init', function () {
         it('hides the loader for the whole page', function () {
           expect(controller.loading.page).toBe(false);
+        });
+
+        it('shows only those who are taking leave by default', function () {
+          expect(controller.filters.userSettings.contacts_with_leaves).toBe(true);
         });
 
         it('loads the public holidays', function () {
@@ -178,6 +183,36 @@
 
           it('loads the contacts to display on the calendar', function () {
             expect(controller.contacts.length).not.toBe(0);
+          });
+        });
+
+        describe('additional contacts filter', function () {
+          describe('when the user is an admin', function () {
+            beforeEach(function () {
+              currentContact.role = 'admin';
+
+              compileComponent();
+            });
+
+            it('loads additional contacts IDs to filter', function () {
+              expect(controller.contactIdsToReduceTo).toEqual(jasmine.any(Array));
+            });
+          });
+
+          describe('when the user is a manager', function () {
+            beforeEach(function () {
+              currentContact.role = 'manager';
+
+              compileComponent();
+            });
+
+            it('does not load additional contacts IDs to filter', function () {
+              expect(controller.contactIdsToReduceTo).toBe(null);
+            });
+          });
+
+          afterEach(function () {
+            currentContact.role = 'staff';
           });
         });
 
@@ -453,7 +488,7 @@
       }
 
       /**
-       * Spies on the `loadContracts()` method of the sub-controller that will
+       * Spies on the `loadContacts()` method of the sub-controller that will
        * be injected in the component (it will change depending on the current role)
        *
        * @return {Function}

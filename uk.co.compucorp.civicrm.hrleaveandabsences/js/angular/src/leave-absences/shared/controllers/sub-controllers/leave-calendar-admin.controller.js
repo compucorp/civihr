@@ -3,14 +3,16 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/shared/modules/controllers'
+  'leave-absences/shared/modules/controllers',
+  'common/models/contract'
 ], function (_, moment, controllers) {
-  controllers.controller('LeaveCalendarAdminController', ['$log', 'Contact', controller]);
+  controllers.controller('LeaveCalendarAdminController', ['$log', '$q',
+    'Contact', 'Contract', controller]);
 
-  function controller ($log, Contact) {
+  function controller ($log, $q, Contact, Contract) {
     $log.debug('LeaveCalendarAdminController');
 
-    var vm;
+    var contracts, vm;
 
     return {
       /**
@@ -42,7 +44,15 @@ define([
             .then(function (contacts) {
               vm.lookupContacts = contacts.list;
             })
-            .then(loadContacts);
+            .then(function () {
+              return $q.all([
+                loadContacts(),
+                getContactIdsToReduceTo()
+              ]);
+            })
+            .then(function (results) {
+              return results[0]; // return all contacts
+            });
         }
       };
     }
@@ -57,6 +67,44 @@ define([
         .then(function (contacts) {
           return contacts.list;
         });
+    }
+
+    /**
+     * Load all contracts or retrieve them from cache
+     *
+     * @return {Promise}
+     */
+    function loadContracts () {
+      if (contracts) {
+        return $q.resolve(contracts);
+      }
+
+      return Contract.all();
+    }
+
+    /**
+     * Get contact IDs filtered according to contracts that belong
+     * to the currently selected absence period
+     *
+     * @return {Promise}
+     */
+    function getContactIdsToReduceTo () {
+      return loadContracts()
+      .then(function (contracts) {
+        var contractsInAbsencePeriod = contracts.filter(function (contract) {
+          var details = contract.info.details;
+
+          return (
+            moment(details.period_start_date).isSameOrBefore(vm.selectedPeriod.end_date) &&
+            (moment(details.period_end_date).isSameOrAfter(vm.selectedPeriod.start_date) ||
+              !details.period_end_date)
+          );
+        });
+
+        vm.contactIdsToReduceTo = _.uniq(contractsInAbsencePeriod.map(function (contract) {
+          return contract.contact_id;
+        }));
+      });
     }
 
     /**

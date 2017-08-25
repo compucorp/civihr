@@ -24,6 +24,7 @@
         LeaveRequest, OptionGroup, controller, daysInFebruary, february, leaveRequestInFebruary,
         period2016, publicHolidays;
       var currentContactId = CRM.vars.leaveAndAbsences.contactId;
+      var contactIdsToReduceTo = null;
 
       beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
         $provide = _$provide_;
@@ -161,9 +162,43 @@
             });
           });
 
+          describe('contacts', function () {
+            describe('when there are contacts to reduce to', function () {
+              var randomContactIds = [_.sample(ContactData.all.values).contact_id];
+
+              beforeEach(function () {
+                contactIdsToReduceTo = randomContactIds;
+
+                compileComponent();
+                sendShowMonthsSignal();
+                $rootScope.$digest();
+              });
+
+              it('reduces the list of contacts', function () {
+                expect(controller.contacts.length).toEqual(randomContactIds.length);
+                expect(controller.contacts[0].contact_id).toEqual(randomContactIds[0]);
+              });
+            });
+
+            describe('when there are no contacts to reduce to', function () {
+              beforeEach(function () {
+                contactIdsToReduceTo = null;
+
+                compileComponent();
+                sendShowMonthsSignal();
+                $rootScope.$digest();
+              });
+
+              it('does not reduce the list of contacts', function () {
+                expect(controller.contacts).toEqual(ContactData.all.values);
+              });
+            });
+          });
+
           describe('current page', function () {
             beforeEach(function () {
               controller.currentPage = 5;
+
               sendShowMonthsSignal();
             });
 
@@ -244,6 +279,7 @@
         describe('when the given period does not start at the beginning of the month', function () {
           beforeEach(function () {
             period2016.start_date = '2016-02-20';
+
             compileComponent();
           });
 
@@ -255,6 +291,7 @@
         describe('when the given period does not finish at the end of the month', function () {
           beforeEach(function () {
             period2016.end_date = '2016-02-20';
+
             compileComponent();
           });
 
@@ -690,7 +727,8 @@
             dayTypes: OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'),
             leaveRequestStatuses: OptionGroupData.getCollection('hrleaveandabsences_leave_request_status'),
             publicHolidays: publicHolidays
-          }
+          },
+          contactIdsToReduceTo: contactIdsToReduceTo
         });
 
         !!sendSignal && sendShowMonthsSignal();
