@@ -93,14 +93,12 @@ define([
       .then(function (contracts) {
         var contractsInAbsencePeriod = contracts.filter(function (contract) {
           var details = contract.info.details;
-          var isContractInAbsencePeriod = (
-            (!details.period_start_date ||
-            moment(details.period_start_date).diff(moment(vm.selectedPeriod.end_date)) <= 0) &&
-            (!details.period_end_date ||
-            moment(details.period_end_date).diff(moment(vm.selectedPeriod.start_date)) > 0)
-          );
 
-          return isContractInAbsencePeriod;
+          return (
+            moment(details.period_start_date).isSameOrBefore(vm.selectedPeriod.end_date) &&
+            (moment(details.period_end_date).isSameOrAfter(vm.selectedPeriod.start_date) ||
+              !details.period_end_date)
+          );
         });
 
         vm.contactIdsToReduceTo = _.uniq(contractsInAbsencePeriod.map(function (contract) {
