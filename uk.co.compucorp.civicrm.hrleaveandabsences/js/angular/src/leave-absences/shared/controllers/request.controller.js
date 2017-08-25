@@ -44,18 +44,11 @@ define([
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
-    vm.balance = {
-      closing: 0,
-      opening: 0,
-      change: {
-        amount: 0,
-        breakdown: []
-      }
-    };
     vm.canManage = false; // vm flag is set on initialisation of the controller
     vm.contactName = null; // contact name of the owner of leave request
     vm.errors = [];
     vm.fileUploader = null;
+    vm.injectChildComponents = false;
     vm.loading = { absenceTypes: true };
     vm.managedContacts = [];
     vm.mode = ''; // can be edit, create, view
@@ -65,6 +58,14 @@ define([
     vm.requestStatuses = {};
     vm.selectedAbsenceType = {};
     vm.submitting = false;
+    vm.balance = {
+      closing: 0,
+      opening: 0,
+      change: {
+        amount: 0,
+        breakdown: []
+      }
+    };
 
     vm.canSubmit = canSubmit;
     vm.closeAlert = closeAlert;
@@ -374,7 +375,7 @@ define([
         }
 
         vm.postContactSelection = false;
-        $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+        vm.injectChildComponents = true;
       })
       .catch(function (error) {
         if (error !== NO_ENTITLEMENT_ERROR) {

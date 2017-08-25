@@ -45,20 +45,21 @@
     <hr/>
     <div class="row">
       <div class="col-xs-12">
-        <uib-tabset class="chr_leave-request-modal__tab">
+        <div ng-if="!$ctrl.injectChildComponents" class="text-center">Please select the Staff Member above</div>
+        <uib-tabset class="chr_leave-request-modal__tab" ng-if="$ctrl.injectChildComponents">
           <uib-tab heading="Details">
-            <leave-request-popup-details-tab ng-if="$ctrl.request"
-              request="$ctrl.request" is-mode="$ctrl.isMode" period="$ctrl.period" absence-types="$ctrl.absenceTypes"
+            <leave-request-popup-details-tab
+              request="$ctrl.request" is-self-record="$ctrl.isSelfRecord" is-mode="$ctrl.isMode" period="$ctrl.period" absence-types="$ctrl.absenceTypes"
               is-leave-status="$ctrl.isLeaveStatus" selected-absence-type="$ctrl.selectedAbsenceType" balance="$ctrl.balance"
               absence-periods="$ctrl.absencePeriods" is-role="$ctrl.isRole" leave-type="$ctrl.leaveType"
               check-submit-conditions="$ctrl.checkSubmitConditions">
             </leave-request-popup-details-tab>
           </uib-tab>
           <uib-tab heading="Comments">
-            <leave-request-popup-comments-tab ng-if="$ctrl.request" request="$ctrl.request" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-comments-tab>
+            <leave-request-popup-comments-tab request="$ctrl.request" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-comments-tab>
           </uib-tab>
           <uib-tab heading="Files">
-            <leave-request-popup-files-tab ng-if="$ctrl.request" request="$ctrl.request" file-uploader="$ctrl.fileUploader" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-files-tab>
+            <leave-request-popup-files-tab request="$ctrl.request" file-uploader="$ctrl.fileUploader" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-files-tab>
           </uib-tab>
         </uib-tabset>
       </div>

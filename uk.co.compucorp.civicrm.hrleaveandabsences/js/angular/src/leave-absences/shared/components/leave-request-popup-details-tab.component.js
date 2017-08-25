@@ -17,6 +17,7 @@ define([
       isLeaveStatus: '<',
       leaveType: '<',
       isMode: '<',
+      isSelfRecord: '<',
       period: '=',
       isRole: '<',
       selectedAbsenceType: '='
@@ -104,34 +105,30 @@ define([
     vm._setMinMaxDate = _setMinMaxDate;
 
     (function init () {
-      $rootScope.$on('LeaveRequestPopup::ContactSelectionComplete', afterContactSelection);
       $controller(_.capitalize(getLeaveType(vm.leaveType, vm.request)) + 'RequestCtrl', { parentCtrl: vm });
-      vm.initChildController();
-    }());
 
-    /**
-     * After Contact selection is done, starts loading data for the details tab
-     */
-    function afterContactSelection () {
-      vm.loading.tab = true;
       vm.canManage = vm.isRole('manager') || vm.isRole('admin');
+      vm.loading.tab = true;
 
-      $q.all([
-        _loadCalendar(),
-        loadDayTypes()
-      ])
+      vm.initChildController()
+      .then(function () {
+        return $q.all([
+          vm._loadCalendar(),
+          loadDayTypes()
+        ]);
+      })
       .then(initDates)
       .then(function () {
         return $q.all([
           setDaySelectionMode(),
-          calculateBalanceChange()
+          vm.calculateBalanceChange()
         ]);
       })
       .catch(handleError)
       .finally(function () {
         vm.loading.tab = false;
       });
-    }
+    }());
 
     /**
      * Calculate change in balance, it updates local balance variables.
