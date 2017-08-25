@@ -7,25 +7,28 @@
     'use strict';
 
     describe('LeaveCalendarAdminController', function () {
-      var $controller, $log, $provide, $rootScope, Contact, controller;
+      var $controller, $log, $provide, $rootScope, Contact, Contract, controller;
       var contactId = CRM.vars.leaveAndAbsences.contactId;
 
       beforeEach(module('my-leave', function (_$provide_) {
         $provide = _$provide_;
       }));
 
-      beforeEach(inject(['api.contact.mock', function (ContactAPIMock) {
+      beforeEach(inject(['api.contact.mock', 'api.contract.mock', function (ContactAPIMock, ContractAPIMock) {
         $provide.value('api.contact', ContactAPIMock);
+        $provide.value('api.contract', ContractAPIMock);
       }]));
 
-      beforeEach(inject(function (_$controller_, _$log_, _$rootScope_, _Contact_) {
+      beforeEach(inject(function (_$controller_, _$log_, _$rootScope_, _Contact_, _Contract_) {
         $controller = _$controller_;
         $log = _$log_;
         $rootScope = _$rootScope_;
         Contact = _Contact_;
+        Contract = _Contract_;
 
         spyOn($log, 'debug');
         spyOn(Contact, 'all').and.callThrough();
+        spyOn(Contract, 'all').and.callThrough();
 
         initController();
       }));
@@ -40,8 +43,12 @@
           $rootScope.$digest();
         });
 
-        it('simply loads all the contacts', function () {
-          expect(Contact.all).toHaveBeenCalled();
+        it('loads all contracts', function () {
+          expect(Contract.all).toHaveBeenCalledWith();
+        });
+
+        it('loads all contacts', function () {
+          expect(Contact.all).toHaveBeenCalledWith();
         });
 
         it('filters the contact using the filters selected by the user', function () {
@@ -56,7 +63,8 @@
       function initController () {
         controller = $controller('LeaveCalendarAdminController').init({
           contactId: contactId,
-          filters: { userSettings: {} }
+          filters: { userSettings: {} },
+          selectedPeriod: { start_date: '2016-01-01', end_date: '2016-12-31' }
         });
       }
     });
