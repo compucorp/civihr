@@ -1061,4 +1061,100 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     return $numberOfRecords;
   }
+
+  /**
+   * Returns a the current balance (i.e. not including balance changes caused by
+   * open leave requests) for the given Contacts and Absence Type during
+   * the given Absence Period.
+   *
+   * @param array $contactIDs
+   * @param int $absencePeriodID
+   * @param int $absenceTypeID
+   *
+   * @return array
+   *  An array with the given format:
+   *  [
+   *    $contactID1 => 'balance',
+   *    $contactID2 => 'balance',
+   *    ...
+   *  ]
+   */
+  public static function getBalanceForContacts($contactIDs, $absencePeriodID, $absenceTypeID) {
+    $balances = [];
+
+    $absencePeriod = AbsencePeriod::findById($absencePeriodID);
+
+    array_walk($contactIDs, 'intval');
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $approvedStatuses = [
+      $leaveRequestStatuses['approved'],
+      $leaveRequestStatuses['admin_approved']
+    ];
+
+    $query = "
+        SELECT 
+               COALESCE(leave_request.contact_id, period_entitlement.contact_id) as contact_id,
+               SUM(leave_balance_change.amount) as balance
+        FROM civicrm_hrleaveandabsences_leave_balance_change leave_balance_change
+          LEFT JOIN civicrm_hrleaveandabsences_leave_period_entitlement period_entitlement
+            ON leave_balance_change.source_id = period_entitlement.id AND
+               leave_balance_change.source_type = 'entitlement'
+          LEFT JOIN civicrm_hrleaveandabsences_leave_request_date leave_request_date
+            ON leave_balance_change.source_id = leave_request_date.id AND
+               leave_balance_change.source_type = 'leave_request_day'
+          LEFT JOIN civicrm_hrleaveandabsences_leave_request leave_request
+            ON leave_request_date.leave_request_id = leave_request.id AND
+               leave_request.is_deleted = 0
+          LEFT JOIN civicrm_hrjobcontract contract
+            ON leave_request.contact_id = contract.contact_id
+          LEFT JOIN civicrm_hrjobcontract_revision contract_revision
+            ON contract_revision.id = (
+            SELECT id
+            FROM civicrm_hrjobcontract_revision contract_revision2
+            WHERE contract_revision2.jobcontract_id = contract.id
+            ORDER BY contract_revision2.effective_date DESC
+            LIMIT 1
+          )
+          LEFT JOIN civicrm_hrjobcontract_details contract_details
+            ON contract_revision.details_revision_id = contract_details.jobcontract_revision_id
+
+        WHERE ((
+          leave_request.status_id IN(" . implode(', ', $approvedStatuses) . ") AND 
+          (leave_request_date.date >= %1 AND leave_request_date.date <= %2) AND
+          contract.deleted = 0 AND
+          (
+            leave_request.from_date <= contract_details.period_end_date OR
+            contract_details.period_end_date IS NULL
+          ) AND
+          (
+            leave_request.to_date >= contract_details.period_start_date OR
+            (leave_request.to_date IS NULL AND leave_request.from_date >= contract_details.period_start_date)
+          ) AND
+          leave_request.type_id = %3 AND
+          leave_request.contact_id IN(". implode(', ', $contactIDs) .")
+        ) OR (
+            period_entitlement.contact_id IN(". implode(', ', $contactIDs) .") AND
+            period_entitlement.period_id = %4 AND
+            period_entitlement.type_id = %3
+          )
+        )
+        GROUP BY contact_id
+    ";
+
+    $params = [
+      1 => [$absencePeriod->start_date, 'String'],
+      2 => [$absencePeriod->end_date, 'String'],
+      3 => [$absenceTypeID, 'Positive'],
+      4 => [$absencePeriodID, 'Positive']
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+
+    while($result->fetch()) {
+      $balances[$result->contact_id] = $result->balance;
+    }
+
+    return $balances;
+  }
 }
