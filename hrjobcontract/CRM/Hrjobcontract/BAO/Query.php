@@ -25,6 +25,8 @@
  +--------------------------------------------------------------------+
 */
 
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+
 /**
  *
  * @package CRM
@@ -484,7 +486,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $form->add('hidden', 'hidden_hrjobcontract_leave', 1);
 
       $leaveTypeOptions = [];
-      $absenceTypes = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getEnabledAbsenceTypes();
+      $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
       foreach($absenceTypes as $absenceType) {
         $leaveTypeOptions[$absenceType->id] = $absenceType->title;
       }

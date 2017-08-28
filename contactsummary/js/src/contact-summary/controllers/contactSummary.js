@@ -1,7 +1,6 @@
 define([
     'contact-summary/modules/controllers',
-    'contact-summary/modules/settings',
-    'contact-summary/services/contact'
+    'contact-summary/modules/settings'
 ], function (controllers) {
     'use strict';
 
@@ -9,11 +8,10 @@ define([
      * @ngdoc controller
      * @name ContactSummaryCtrl
      * @param $log
-     * @param {ContactService} Contact
      * @param settings
      * @constructor
      */
-    function ContactSummaryCtrl($log, Contact, settings) {
+    function ContactSummaryCtrl($log, settings) {
         $log.debug('Controller: ContactSummaryCtrl');
 
         var templateDir = settings.pathBaseUrl + settings.pathTpl;
@@ -24,13 +22,7 @@ define([
         };
 
         this.ready = false;
-
-        // Contact.get().then(function (response) {
-        //     $log.debug('Contact', response);
-        //     this.contact = response;
-        //     this.ready = true;
-        // }.bind(this));
     }
 
-    controllers.controller('ContactSummaryCtrl', ['$log', 'ContactService', 'settings', ContactSummaryCtrl]);
+    controllers.controller('ContactSummaryCtrl', ['$log', 'settings', ContactSummaryCtrl]);
 });
