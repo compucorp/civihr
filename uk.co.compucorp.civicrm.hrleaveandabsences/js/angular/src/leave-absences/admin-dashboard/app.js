@@ -14,6 +14,7 @@ define([
   'leave-absences/shared/components/leave-calendar-month.component',
   'leave-absences/shared/components/leave-request-actions.component',
   'leave-absences/shared/components/leave-request-popup-comments-tab.component',
+  'leave-absences/shared/components/leave-request-popup-details-tab.component',
   'leave-absences/shared/components/leave-request-popup-files-tab',
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/components/manage-leave-requests.component',

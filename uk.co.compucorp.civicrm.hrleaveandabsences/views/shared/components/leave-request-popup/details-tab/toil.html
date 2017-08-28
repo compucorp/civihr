@@ -4,10 +4,10 @@
       <label class="col-xs-4 control-label">Duration</label>
       <div class="col-xs-4 chr_leave-request-modal__input-shift-left">
         <div class="crm_custom-select crm_custom-select--full">
-          <select name="hours" ng-model="$ctrl.request.toilDurationHours"
-            ng-disabled="!$ctrl.isRole('admin') &&
-              ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create')))"
-            ng-change="$ctrl.request.updateDuration()">
+          <select name="hours" ng-model="detailsTab.request.toilDurationHours"
+            ng-disabled="!detailsTab.isRole('admin') &&
+              (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create')))"
+            ng-change="detailsTab.request.updateDuration()">
             <option value="0" selected="selected">Hours</option>
             <option value="1">1h</option>
             <option value="2">2h</option>
@@ -27,10 +27,10 @@
       </div>
       <div class="col-xs-4">
         <div class="crm_custom-select crm_custom-select--full">
-          <select name="minutes" ng-model="$ctrl.request.toilDurationMinutes"
-            ng-change="$ctrl.request.updateDuration()"
-            ng-disabled="!$ctrl.isRole('admin') &&
-              ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create')))">
+          <select name="minutes" ng-model="detailsTab.request.toilDurationMinutes"
+            ng-change="detailsTab.request.updateDuration()"
+            ng-disabled="!detailsTab.isRole('admin') &&
+              (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create')))">
             <option value="0">Mins</option>
             <option value="5">5m</option>
             <option value="10">10m</option>
@@ -57,10 +57,10 @@
         <div class="crm_custom-select crm_custom-select--full">
           <select
             name="toilAmount"
-            ng-disabled="$ctrl.isMode('view')"
-            ng-options="amount.value as amount.label for amount in $ctrl.toilAmounts"
-            ng-model="$ctrl.request.toil_to_accrue"
-            ng-change="$ctrl.calculateBalanceChange()">
+            ng-disabled="detailsTab.isMode('view')"
+            ng-options="amount.value as amount.label for amount in detailsTab.toilAmounts"
+            ng-model="detailsTab.request.toil_to_accrue"
+            ng-change="detailsTab.calculateBalanceChange()">
             <option value="">- select -</option>
           </select>
           <span class="crm_custom-select__arrow"></span>

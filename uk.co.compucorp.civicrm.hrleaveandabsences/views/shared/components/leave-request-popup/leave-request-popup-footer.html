@@ -8,7 +8,7 @@
     </button>
     <a
       class="text-danger pull-left pointer chr_leave-request-modal__delete"
-      ng-if="$ctrl.isRole('admin') && $ctrl.directiveOptions.leaveRequest.id && !$ctrl.isSelfRecord"
+      ng-if="$ctrl.isRole('admin') && $ctrl.request.id && !$ctrl.isSelfRecord"
       ng-click="$ctrl.deleteLeaveRequest()">
       <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
     </a>

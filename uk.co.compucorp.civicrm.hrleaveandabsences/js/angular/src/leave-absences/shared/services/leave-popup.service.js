@@ -3,18 +3,19 @@
 define([
   'common/lodash',
   'leave-absences/shared/modules/services',
-  'common/services/notification.service'
+  'common/services/notification.service',
+  'leave-absences/shared/controllers/request.controller'
 ], function (_, services) {
   'use strict';
 
   services.factory('LeavePopup', LeavePopupService);
 
   LeavePopupService.$inject = [
-    '$log', '$rootElement', '$rootScope', '$q', '$uibModal', 'notificationService',
+    '$log', '$rootElement', '$rootScope', '$uibModal', 'notificationService',
     'shared-settings', 'DateFormat', 'Session', 'LeaveRequest'
   ];
 
-  function LeavePopupService ($log, $rootElement, $rootScope, $q, $modal, notification, sharedSettings, DateFormat, Session, LeaveRequest) {
+  function LeavePopupService ($log, $rootElement, $rootScope, $modal, notification, sharedSettings, DateFormat, Session, LeaveRequest) {
     $log.debug('LeavePopup');
 
     return {
@@ -38,18 +39,6 @@ define([
     }
 
     /**
-     * Gets leave type.
-     *
-     * @param {String} leaveType - leave type, it is passed only for new requests
-     * @param {LeaveRequestInstance} request leave request for edit calls
-
-     * @return {String} leave type
-     */
-    function getLeaveType (leaveType, request) {
-      return request ? request.request_type : (leaveType || null);
-    }
-
-    /**
      * Open leave request popup for the given leave request
      *
      * @param {LeaveRequestInstance} leaveRequest
@@ -59,17 +48,16 @@ define([
      * @param {Boolean} isSelfRecord - True If the owner is opening the leave request
      */
     function openModal (leaveRequest, leaveType, selectedContactId, isSelfRecord) {
-      var controller = _.capitalize(getLeaveType(leaveType, leaveRequest)) + 'RequestCtrl';
-
       $modal.open({
         appendTo: $rootElement.children().eq(0),
-        templateUrl: sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup.html',
-        controller: controller,
+        templateUrl: sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup.html',
+        controller: 'RequestCtrl',
         controllerAs: '$ctrl',
         windowClass: 'chr_leave-request-modal',
         resolve: {
           directiveOptions: function () {
             return {
+              leaveType: leaveType,
               leaveRequest: leaveRequest,
               selectedContactId: selectedContactId,
               isSelfRecord: isSelfRecord
