@@ -219,7 +219,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
       case 'hrjobcontract_leave_leave_type':
         $query->_qill[$grouping][]  = 'Leave Type IN ' . implode(', ', $value) . '';
-        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("civicrm_hrjobcontract_leave.leave_type", 'IN', '(' . implode(',', $value) . ')');
+        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("civicrm_hrjobcontract_leave.leave_type", 'IN', $value);
         $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("civicrm_hrjobcontract_leave.leave_amount", '>', 0);
         $query->_tables['civicrm_hrjobcontract_leave'] = $query->_whereTables['civicrm_hrjobcontract_leave'] = 1;
         return;
