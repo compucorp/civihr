@@ -115,19 +115,19 @@ define([
     }
 
     /**
-     * Filters leave requests by status
+     * Returns length of Filtered leave requests by status
      *
      * @param {Object} status - status object
-     * @return {array}
+     * @return {int}
      */
     function filterLeaveRequestByStatus (status) {
       if (status.name === 'all' || status === '') {
-        return vm.leaveRequests.filter.list;
+        return vm.leaveRequests.filter.list.length;
       }
 
       return vm.leaveRequests.filter.list.filter(function (request) {
         return request.status_id === status.value;
-      });
+      }).length;
     }
 
     /**

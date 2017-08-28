@@ -287,8 +287,8 @@ define([
           returnValue = controller.filterLeaveRequestByStatus('');
         });
 
-        it('returns all data', function () {
-          expect(returnValue).toEqual(controller.leaveRequests.filter.list);
+        it('returns length of all data', function () {
+          expect(returnValue).toEqual(controller.leaveRequests.filter.list.length);
         });
       });
 
@@ -299,8 +299,8 @@ define([
           });
         });
 
-        it('returns all data', function () {
-          expect(returnValue).toEqual(controller.leaveRequests.filter.list);
+        it('returns length of all data', function () {
+          expect(returnValue).toEqual(controller.leaveRequests.filter.list.length);
         });
       });
 
@@ -316,8 +316,8 @@ define([
           });
         });
 
-        it('returns filtered data', function () {
-          expect(returnValue).toEqual(filteredList);
+        it('returns length of filtered data', function () {
+          expect(returnValue).toEqual(filteredList.length);
         });
       });
     });
