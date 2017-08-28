@@ -68,20 +68,3 @@ function civicrm_api3_h_r_absence_entitlement_delete($params) {
 function civicrm_api3_h_r_absence_entitlement_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
-
-/**
- * HRAbsenceEntitlement.processEntitlementRecalculationQueue API endpoint
- *
- * @param array $params
- *
- * @return array
- *  API result descriptor
- */
-function civicrm_api3_h_r_absence_entitlement_processentitlementrecalculationqueue($params) {
-  return civicrm_api3_create_success(
-    CRM_HRAbsence_BAO_HRAbsenceEntitlement::processEntitlementRecalculationQueue(),
-    $params,
-    _civicrm_api3_get_BAO(__FUNCTION__),
-    'processentitlementrecalculationqueue'
-  );
-}

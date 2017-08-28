@@ -621,4 +621,15 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
     return TRUE;
   }
+
+  /**
+   * Deletes the scheduled job to process the entitlement recalculation queue.
+   *
+   * This is also done when the extensions is uninstalled, but we're also adding
+   * an upgrader here, just so we can also cover the very unlikely scenario of
+   * someone wanting to keep this extension enabled together with L&A
+   */
+  public function upgrade_1404() {
+    _hrabsence_delete_processentitlementrecalculationqueue_scheduled_job();
+  }
 }

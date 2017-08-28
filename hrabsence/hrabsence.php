@@ -294,6 +294,7 @@ function hrabsence_civicrm_uninstall() {
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_msg_template WHERE msg_title = 'Absence Email'");
 
   _hrabsence_removeRelationshipTypes();
+  _hrabsence_delete_processentitlementrecalculationqueue_scheduled_job();
 
   return _hrabsence_civix_civicrm_uninstall();
 }
@@ -628,6 +629,17 @@ function _hrabsence_add_processentitlementrecalculationqueue_scheduled_job()
     $dao->is_active = 1;
     $dao->save();
   }
+}
+
+/**
+ * Deletes the scheduled job which process the entitlement recalculation queue
+ */
+function _hrabsence_delete_processentitlementrecalculationqueue_scheduled_job()
+{
+  $dao = new CRM_Core_DAO_Job();
+  $dao->api_entity = 'HRAbsenceEntitlement';
+  $dao->api_action = 'processentitlementrecalculationqueue';
+  $dao->delete();
 }
 
 /** Remove any defined relationship type by this extension
