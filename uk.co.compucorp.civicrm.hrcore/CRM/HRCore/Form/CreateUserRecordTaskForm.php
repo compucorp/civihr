@@ -6,17 +6,16 @@ use CRM_HRCore_Form_AbstractDrupalInteractionTaskForm as AbstractDrupalInteracti
 class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteractionTaskForm {
 
   /**
-   * @var bool
-   */
-  protected $sendEmail = FALSE;
-
-  /**
    * @inheritdoc
    */
   public function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('Create User Records'));
-    $this->addDefaultButtons(ts('Create Records'));
-    $this->add('advcheckbox', 'sendEmail', ts('Send Email'));
+    CRM_Utils_System::setTitle(ts('Create User Account(s)'));
+    $this->addDefaultButtons(ts('Create'));
+    $this->add('advcheckbox', 'sendEmail', ts('Send welcome email?'));
+
+    foreach ($this->getAssignableRoles() as $role) {
+      $this->add('advcheckbox', sprintf('roles[%s]', $role), $role);
+    }
   }
 
   /**
@@ -25,8 +24,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
   public function preProcess() {
     parent::preProcess();
 
-    $haveNoAccount = $this->getContactsWithoutAttribute('uf_id');
-    $haveAccount = array_diff_key($this->contactDetails, $haveNoAccount);
+    $haveAccount = $this->getContactsWithAccount();
 
     $this->assign('invalidEmailContacts', $this->getContactsWithInvalidEmail());
     $this->assign('contactsWithAccount', $haveAccount);
@@ -38,11 +36,23 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
    * @inheritdoc
    */
   public function postProcess() {
-    $this->sendEmail = (bool) $this->getElementValue('sendEmail');
+    $sendEmail = (bool) $this->getElementValue('sendEmail');
+    $roles = array_keys(array_filter($this->getSubmitValue('roles')));
+    $roles = array_intersect($roles, $this->getAssignableRoles());
+
     $contactsToCreate = $this->getValidContactsForCreation();
 
     foreach ($contactsToCreate as $contact) {
-      $this->createAccount($contact);
+      $this->createAccount($contact, $roles);
+    }
+
+    if ($sendEmail) {
+      $haveAccount = $this->getContactsWithAccount();
+      $emailContacts = array_merge($contactsToCreate, $haveAccount);
+
+      foreach($emailContacts as $contact) {
+        $this->drupalUserService->sendActivationMail($contact['email']);
+      }
     }
 
     CRM_Core_Session::setStatus(
@@ -69,19 +79,15 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
    * Create a Drupal account for a contact
    *
    * @param array $contact
+   *   The contact to create an account for
+   * @param array $roles
+   *   The roles to be added to the new user
    *
    * @return object
    */
-  private function createAccount($contact) {
-    $id = $contact['id'];
+  private function createAccount($contact, $roles = []) {
     $email = $contact['email'];
-    $roles = ['civihr_staff'];
-
-    $user = $this->drupalUserService->createNew($id, $email, TRUE, $roles);
-
-    if ($this->sendEmail) {
-      $this->drupalUserService->sendActivationMail($id, $email);
-    }
+    $user = $this->drupalUserService->createNew($email, TRUE, $roles);
 
     return $user;
   }
@@ -102,7 +108,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
     }
 
     $newEmails = array_column($newContactsWithEmail, 'email');
-    $params = ['uf_name' => ['IN' => $newEmails], 'options' => ['limit' => 0]];
+    $params = ['uf_name' => ['IN' => $newEmails]];
     $existing = civicrm_api3('UFMatch', 'get', $params);
     $existing = ArrayHelper::value('values', $existing, []);
     $existingEmails = array_column($existing, 'uf_name');
@@ -136,6 +142,41 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
     }
 
     return $invalid;
+  }
+
+  /**
+   * @return array
+   */
+  private function getContactsWithAccount() {
+    $haveNoAccount = $this->getContactsWithoutAttribute('uf_id');
+    $haveAccount = array_diff_key($this->contactDetails, $haveNoAccount);
+
+    return $haveAccount;
+  }
+
+  /**
+   * @return array
+   */
+  private function getAssignableRoles() {
+    $roles = ['civihr_admin', 'civihr_manager', 'civihr_staff'];
+    $assignable = [];
+
+    foreach ($roles as $role) {
+      if ($this->canAssignRole($role)) {
+        $assignable[] = $role;
+      }
+    }
+
+    return $assignable;
+  }
+
+  /**
+   * @param string $role
+   *
+   * @return bool
+   */
+  private function canAssignRole($role) {
+    return CRM_Core_Permission::check(sprintf('assign %s role', $role));
   }
 
 }
