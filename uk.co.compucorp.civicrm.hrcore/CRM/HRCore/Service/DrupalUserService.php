@@ -47,7 +47,6 @@ class CRM_HRCore_Service_DrupalUserService {
      * for user_module_invoke('insert') from Drupal
      */
     $user = user_save(drupal_anonymous_user(), $params);
-    $this->createActivity($id, 'Create User Account');
 
     return $user;
   }
@@ -63,7 +62,6 @@ class CRM_HRCore_Service_DrupalUserService {
     }
 
     _user_mail_notify('status_activated', $user);
-    $this->createActivity($contactID, 'Send Onboarding Email');
   }
 
   /**
@@ -82,18 +80,6 @@ class CRM_HRCore_Service_DrupalUserService {
    */
   public function isValidEmail($email) {
     return empty(user_validate_mail($email));
-  }
-
-  /**
-   * @param int $contactID
-   * @param string $type
-   */
-  private function createActivity($contactID, $type) {
-    civicrm_api3('Activity', 'create', [
-      'activity_type_id' => $type,
-      'source_contact_id' => $this->loggedInUserID, // who did it
-      'target_id' => $contactID, // who is it for
-    ]);
   }
 
 }
