@@ -22,14 +22,13 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
-   * @param int $id
    * @param string $email
    * @param bool $active
    * @param array $roles
    *
    * @return object
    */
-  public function createNew($id, $email, $active = FALSE, $roles = []) {
+  public function createNew($email, $active = FALSE, $roles = []) {
     $params = [
       'name' => $email,
       'pass' => user_password(), // random password
@@ -52,10 +51,9 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
-   * @param int $contactID
-   * @param string $email
+   * @param $email
    */
-  public function sendActivationMail($contactID, $email) {
+  public function sendActivationMail($email) {
     $user = user_load_by_mail($email);
     if (!$user) {
       return;
