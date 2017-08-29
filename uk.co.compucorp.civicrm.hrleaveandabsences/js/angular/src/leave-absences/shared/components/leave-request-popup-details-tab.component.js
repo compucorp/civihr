@@ -478,11 +478,18 @@ define([
     }
 
     /**
-     * Calculates and updates opening and closing balances
+     * Calculates and updates opening and closing balances.
+     *
+     * For the opening balance, when in edit mode, if the selected absence type
+     * is the same as the request absence type, the opening balance is the
+     * original opening balance value, otherwise it's the leave balance
+     * remainder.
+     *
+     * The closing balance is the opening balance + change amount.
      */
     function _calculateOpeningAndClosingBalance () {
       if (originalOpeningBalance &&
-        originalOpeningBalance.absenceTypeId === vm.selectedAbsenceType.id) {
+      originalOpeningBalance.absenceTypeId === vm.selectedAbsenceType.id) {
         vm.balance.opening = originalOpeningBalance.value;
       } else {
         vm.balance.opening = vm.selectedAbsenceType.remainder;
