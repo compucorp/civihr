@@ -34,10 +34,7 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
   public function testBasicUserCreate() {
     $roleService = $this->prophesize(DrupalRoleService::class);
     $drupalUserService = new DrupalUserService($roleService->reveal());
-    $user = $drupalUserService->createNew(
-      $this->testContact['id'],
-      $this->testEmail
-    );
+    $user = $drupalUserService->createNew($this->testEmail);
 
     $this->assertEquals(0, $user->status);
     $this->assertEquals($this->testEmail, $user->mail);
@@ -49,12 +46,7 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $roleService = $this->prophesize(DrupalRoleService::class);
     $roleService->getRoleIds($roles)->willReturn($mockRids);
     $drupalUserService = new DrupalUserService($roleService->reveal());
-    $user = $drupalUserService->createNew(
-      $this->testContact['id'],
-      $this->testEmail,
-      TRUE,
-      $roles
-    );
+    $user = $drupalUserService->createNew($this->testEmail, TRUE, $roles);
 
     $this->assertEquals(1, $user->status);
     $this->assertEquals($this->testEmail, $user->mail);
