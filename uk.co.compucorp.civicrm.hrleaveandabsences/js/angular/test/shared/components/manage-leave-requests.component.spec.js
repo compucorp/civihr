@@ -751,7 +751,7 @@ define([
           });
 
           it('defaults to "Assigned to me"', function () {
-            expect(controller.filters.leaveRequest.assignedTo).toBe('me');
+            expect(controller.filters.leaveRequest.assignedTo.type).toBe('me');
           });
 
           describe('when "All" filter is selected', function () {
@@ -791,7 +791,7 @@ define([
            * @param {string} type - all|unassigned|me
            */
           function executeFilterByAssignee (type) {
-            controller.refreshWithFilterByAssignee(type);
+            controller.refreshWithFilterByAssignee({ type: type });
             defer.resolve(ContactAPIMock.mockedContacts().list);
           }
         });

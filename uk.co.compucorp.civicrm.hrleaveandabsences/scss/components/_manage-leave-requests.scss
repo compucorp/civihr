@@ -9,9 +9,8 @@
       display: inline-block;
     }
 
-    @media screen and (max-width: $screen-md-max) {
-      > span {
-        display: block;
+    @media screen and (max-width: $screen-md-min) {
+      > div:not(:last-child) {
         padding-bottom: 20px;
       }
     }
@@ -39,8 +38,16 @@
     padding-top: 15px;
 
     @media screen and (max-width: $screen-md-max) {
-      > div {
+      > div:not(:last-child) {
         padding-bottom: 20px;
+      }
+    }
+
+    @media screen and (min-width: $screen-md-min) and (max-width: $screen-md-max){
+      > div:nth-child(4),
+      > div:nth-child(5),
+      > div:nth-child(6) {
+        padding-bottom: 0;
       }
     }
   }
@@ -62,6 +69,11 @@
 
   .chr_manage_leave_requests__status_container {
     background-color: $chr-panel-header-background;
+
+    > div {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
   }
 }
 

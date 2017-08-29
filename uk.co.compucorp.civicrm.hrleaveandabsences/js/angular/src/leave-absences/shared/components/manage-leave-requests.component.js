@@ -36,6 +36,11 @@ define([
     vm.leaveRequestStatuses = [filterByAll];
     vm.loading = { content: true, page: true, table: true };
     vm.pagination = { page: 1, size: 7 };
+    vm.filtersByAssignee = [
+      { type: 'me', label: 'Assigned To Me' },
+      { type: 'unassigned', label: 'Unassigned' },
+      { type: 'all', label: 'All' }
+    ];
     vm.filters = {
       contact: { department: null, level_type: null, location: null, region: null },
       leaveRequest: {
@@ -44,14 +49,9 @@ define([
         contact_id: null,
         selectedPeriod: null,
         selectedAbsenceTypes: null,
-        assignedTo: 'me'
+        assignedTo: vm.filtersByAssignee[0]
       }
     };
-    vm.filtersByAssignee = [
-      { type: 'me', label: 'Assigned To Me' },
-      { type: 'unassigned', label: 'Unassigned' },
-      { type: 'all', label: 'All' }
-    ];
 
     vm.clearStaffSelection = clearStaffSelection;
     vm.filterLeaveRequestByStatus = filterLeaveRequestByStatus;
@@ -362,12 +362,12 @@ define([
 
       return {
         contact_id: prepareContactID(),
-        managed_by: (vm.isAdmin && filters.assignedTo !== 'me' ? undefined : vm.contactId),
+        managed_by: (vm.isAdmin && filters.assignedTo.type !== 'me' ? undefined : vm.contactId),
         status_id: prepareStatusFilter(filterByStatus),
         type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
         from_date: { from: filters.selectedPeriod.start_date },
         to_date: { to: filters.selectedPeriod.end_date },
-        unassigned: (filters.assignedTo === 'unassigned' ? true : undefined)
+        unassigned: (filters.assignedTo.type === 'unassigned' ? true : undefined)
       };
     }
 
