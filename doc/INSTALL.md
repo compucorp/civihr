@@ -56,15 +56,13 @@ individually:
  * org.civicrm.hrcareer: Career History
  * org.civicrm.hrdemog: Extended Demographics
  * org.civicrm.hremerg: Emergency Contacts
- * org.civicrm.hrident: Identification
  * org.civicrm.hrabsence: Absences
  * org.civicrm.hrjobcontract: Job Contracts
  * org.civicrm.hrmed: Medical and Disability
  * org.civicrm.hrqual: Qualifications
  * org.civicrm.hrreport: Reporting
  * org.civicrm.hrstaffdir: Staff Directory
- * org.civicrm.hrvisa: Immigration
- * org.civicrm.hrcase: Case
+  * org.civicrm.hrcase: Case
  * org.civicrm.hrcaseutils: Case Utils
  * org.civicrm.hrim: Instant messanger link
  * org.civicrm.hrrecruitment: Recruitment
