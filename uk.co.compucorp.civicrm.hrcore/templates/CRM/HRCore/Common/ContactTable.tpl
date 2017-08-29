@@ -1,8 +1,8 @@
-<table class="table table-responsive selector row-highlight">
-  <thead class="sticky">
+<table class="table table-hover">
+  <thead>
     <tr>
-      <td>Name</td>
-      <td>Email</td>
+      <th>Name</th>
+      <th>Email</th>
     </tr>
   </thead>
   <tbody>
