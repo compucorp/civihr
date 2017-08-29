@@ -1,7 +1,6 @@
 <?php
 
 use CRM_HRCore_Form_CreateUserRecordTaskForm as CreateUserRecordTaskForm;
-use CRM_HRCore_Form_SendInvitationEmailTaskForm as SendInvitationEmailTaskForm;
 
 class CRM_HRCore_SearchTask_ContactFormSearchTaskAdder {
 
@@ -10,12 +9,8 @@ class CRM_HRCore_SearchTask_ContactFormSearchTaskAdder {
    */
   public static function add(&$tasks) {
     $tasks[] = [
-      'title'  => ts('Create User Record'),
+      'title'  => ts('Create User Record(s)'),
       'class'  => CreateUserRecordTaskForm::class,
-    ];
-    $tasks[] = [
-      'title'  => ts('Send Invitation Email'),
-      'class'  => SendInvitationEmailTaskForm::class,
     ];
   }
 
