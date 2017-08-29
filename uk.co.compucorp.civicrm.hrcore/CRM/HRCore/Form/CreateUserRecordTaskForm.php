@@ -16,6 +16,8 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
     foreach ($this->getAssignableRoles() as $role) {
       $this->add('advcheckbox', sprintf('roles[%s]', $role), $role);
     }
+
+    $this->addFormRule([$this, 'validateInput']);
   }
 
   /**
@@ -55,8 +57,14 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
       }
     }
 
+    $statusMsg = '%1 new accounts were created. %2 welcome emails were sent.';
+    $msgVars = [
+      1 => count($contactsToCreate),
+      2 => empty($emailContacts) ? 'No' : count($emailContacts)
+    ];
+
     CRM_Core_Session::setStatus(
-      ts('%1 new accounts were created', [1 => count($contactsToCreate)]),
+      ts($statusMsg, $msgVars),
       ts('Updates Saved'),
       'success'
     );
@@ -177,6 +185,28 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
    */
   private function canAssignRole($role) {
     return CRM_Core_Permission::check(sprintf('assign %s role', $role));
+  }
+
+  /**
+   * @param array $fields
+   * @return array|true
+   *   Array of errors if validation fails, true if everything is fine
+   */
+  public function validateInput($fields) {
+    $errors = [];
+    $roles = array_keys(array_filter(ArrayHelper::value('roles', $fields)));
+
+    if (empty($roles)) {
+      $errors['_qf_default'] = ts('You must select at least one role') . '<br/>';
+    }
+
+    $forbiddenRoles = array_diff($roles, $this->getAssignableRoles());
+    if (!empty($forbiddenRoles)) {
+      $err = ts('You selected roles you do not have permission to assign');
+      $errors['_qf_default'] .= $err . '<br/>';
+    }
+
+    return empty($errors) ? TRUE : $errors;
   }
 
 }
