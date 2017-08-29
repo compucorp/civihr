@@ -1,15 +1,17 @@
 <div class = 'crm-container'>
 
   <h3>
-    {ts 1=$totalSelectedContacts 2=$contactsForCreation|@count}
-      From your selection of %1 contacts, %2 new user accounts are valid for creation.
+    {ts 1=$totalSelectedContacts}
+      You have selected %1 contacts
     {/ts}
   </h3>
 
   {if !empty($contactsForCreation) }
-    <p>
-      {ts}Accounts for these contacts will be created:{/ts}
-    </p>
+    <h4>
+      {ts 1=$contactsForCreation|@count}
+        %1 contacts will have user accounts(s) created
+      {/ts}
+    </h4>
     {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsForCreation}
     <br/>
   {/if}
@@ -31,7 +33,9 @@
 
   {if !empty($contactsWithAccount) }
     <p>
-      {ts 1=$contactsWithAccount|@count}%1 contact(s) already have an account:{/ts}
+      {ts 1=$contactsWithAccount|@count}
+        %1 contact(s) already have an account:
+      {/ts}
     </p>
     {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$contactsWithAccount}
     <br/>
@@ -46,7 +50,9 @@
       {/ts}
     </p>
     <p>
-      {ts 1=$emailConflictContact|@count}%1 contact(s) have email conflicts:{/ts}
+      {ts 1=$emailConflictContact|@count}
+        %1 contact(s) have email conflicts:
+      {/ts}
     </p>
     {include file="CRM/HRCore/Common/ContactTable.tpl" contacts=$emailConflictContact}
     <br/>
@@ -54,14 +60,36 @@
 
   <br/>
 
+  {if !empty($form.roles)}
+    <div class="crm-block crm-form-block" style="padding: 20px 10px">
+      <h4 class = "description">
+        {ts}
+          Select any of the following user roles to add to the new user accounts:
+        {/ts}
+      </h4>
+      <div>
+        {foreach from=$form.roles item=role}
+          {$role.html}
+          {$role.label}
+        {/foreach}
+      </div>
+    </div>
+  {/if}
+
   <div class="crm-block crm-form-block" style="padding: 20px 10px">
     <div class="checkbox">
       {$form.sendEmail.html}
       {$form.sendEmail.label}
       <br/>
       <h4 class = "description">
-          {ts}Invitation emails will be sent if this box is checked{/ts}
-        </h4>
+        {ts 1='/civicrm/tasksassignments/dashboard#/tasks'}
+          By selecting this option, a welcome email containing a link to the
+          staff onboarding wizard will be sent to all staff who already have a
+          user account and those who meet the criteria of creating a user
+          account. It is recommended to <a href="%1">create onboarding tasks</a>
+          and documents for the selected staff before this action.
+        {/ts}
+      </h4>
     </div>
   </div>
 
