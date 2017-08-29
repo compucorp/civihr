@@ -147,7 +147,6 @@ $chr-leave-calendar-legend-size:                  20px;
 }
 
 .chr_leave-calendar__legend__entry {
-  height: $chr-leave-calendar-legend-size;
   overflow: auto;
 
   & + & {
@@ -157,6 +156,7 @@ $chr-leave-calendar-legend-size:                  20px;
   > .chr_leave-calendar__item {
     float: left;
     font-size: 8px;
+    height: $chr-leave-calendar-legend-size;
     margin-right: 10px;
     width: $chr-leave-calendar-legend-size;
   }
