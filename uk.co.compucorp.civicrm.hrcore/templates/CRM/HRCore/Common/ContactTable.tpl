@@ -1,4 +1,4 @@
-<table class="selector row-highlight">
+<table class="table table-responsive selector row-highlight">
   <thead class="sticky">
     <tr>
       <td>Name</td>
