@@ -1,4 +1,4 @@
-<div class = 'crm-container'>
+<div id="bootstrap-theme">
 
   <h3>
     {ts 1=$totalSelectedContacts}
@@ -60,13 +60,17 @@
 
   <br/>
 
-  {if !empty($form.roles)}
-    <div class="crm-block crm-form-block" style="padding: 20px 10px">
-      <h4 class = "description">
+
+  <div class="panel">
+
+    {if !empty($form.roles)}
+    <div class="panel-body">
+      <label>User Roles</label>
+      <p class = "description">
         {ts}
           Select any of the following user roles to add to the new user accounts:
         {/ts}
-      </h4>
+      </p>
       <div>
         {foreach from=$form.roles item=role}
           {$role.html}
@@ -74,14 +78,13 @@
         {/foreach}
       </div>
     </div>
-  {/if}
+    {/if}
 
-  <div class="crm-block crm-form-block" style="padding: 20px 10px">
-    <div class="checkbox">
+    <div class="panel-body">
       {$form.sendEmail.html}
       {$form.sendEmail.label}
       <br/>
-      <h4 class = "description">
+      <p class = "description">
         {ts 1='/civicrm/tasksassignments/dashboard#/tasks'}
           By selecting this option, a welcome email containing a link to the
           staff onboarding wizard will be sent to all staff who already have a
@@ -89,15 +92,18 @@
           account. It is recommended to <a href="%1">create onboarding tasks</a>
           and documents for the selected staff before this action.
         {/ts}
-      </h4>
+      </p>
     </div>
+
   </div>
 
   <div class="spacer"></div>
 
-  <div class="crm-block crm-form-block">
-    <div class="crm-inline-button crm-submit-buttons">
-      {include file="CRM/common/formButtons.tpl"}
+  <div class="panel">
+    <div class="panel-body">
+      <div class="crm-inline-button crm-submit-buttons">
+        {include file="CRM/common/formButtons.tpl"}
+      </div>
     </div>
   </div>
 
