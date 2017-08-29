@@ -33,6 +33,7 @@ define([
 
   function DetailsTabController ($controller, $log, $rootScope, $q, HRSettings, sharedSettings, Calendar, OptionGroup, PublicHoliday, LeaveRequest) {
     $log.debug('Component: leave-request-popup-details-tab');
+    var originalOpeningBalance = null;
     var vm = this;
 
     vm.canManage = false;
@@ -118,6 +119,7 @@ define([
         ]);
       })
       .then(initDates)
+      .then(initOriginalOpeningBalance)
       .then(function () {
         return $q.all([
           setDaySelectionMode(),
@@ -314,6 +316,21 @@ define([
     }
 
     /**
+     * Initialize the original opening balance when in edit mode. This allows
+     * to display the opening balance before the request was created. The
+     * formula is absence type reminder + balance change (balance change is a
+     * negative number so it needs to be subtracted).
+     */
+    function initOriginalOpeningBalance () {
+      if (vm.isMode('edit')) {
+        originalOpeningBalance = {
+          absenceTypeId: vm.request.type_id,
+          value: vm.selectedAbsenceType.remainder - vm.request.balance_change
+        };
+      }
+    }
+
+    /**
      * Loads absence types and calendar data on component initialization and
      * when they need to be updated.
      *
@@ -461,10 +478,22 @@ define([
     }
 
     /**
-     * Calculates and updates opening and closing balances
+     * Calculates and updates opening and closing balances.
+     *
+     * For the opening balance, when in edit mode, if the selected absence type
+     * is the same as the request absence type, the opening balance is the
+     * original opening balance value, otherwise it's the leave balance
+     * remainder.
+     *
+     * The closing balance is the opening balance + change amount.
      */
     function _calculateOpeningAndClosingBalance () {
-      vm.balance.opening = vm.selectedAbsenceType.remainder;
+      if (originalOpeningBalance &&
+      originalOpeningBalance.absenceTypeId === vm.selectedAbsenceType.id) {
+        vm.balance.opening = originalOpeningBalance.value;
+      } else {
+        vm.balance.opening = vm.selectedAbsenceType.remainder;
+      }
       // the change is negative so adding it will actually subtract it
       vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
     }

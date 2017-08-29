@@ -86,8 +86,8 @@ define([
       describe('on initialize', function () {
         beforeEach(function () {
           selectedAbsenceType = _.assign(absenceTypeData.all().values[0], {remainder: 0});
-          leaveRequest = LeaveRequestInstance.init();
-          compileComponent(leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+
+          compileComponent();
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
@@ -422,12 +422,13 @@ define([
 
       describe('when absence period is changed', function () {
         beforeEach(function () {
-          selectedAbsenceType = _.assign(absenceTypeData.all().values[0], {remainder: 0});
-          leaveRequest = LeaveRequestInstance.init();
-          compileComponent(leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+          var params = compileComponent({
+            mode: 'create',
+            selectedAbsenceType: selectedAbsenceType
+          });
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
-          controller.request.type_id = selectedAbsenceType.id;
+          controller.request.type_id = params.selectedAbsenceType.id;
         });
 
         describe('for multiple days', function () {
@@ -564,17 +565,19 @@ define([
       describe('when user edits leave request', function () {
         describe('without comments', function () {
           beforeEach(function () {
-            selectedAbsenceType = _.assign(absenceTypeData.all().values[0], {remainder: 0});
             var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
             var leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
-
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            compileComponent(leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+
+            var params = compileComponent({
+              mode: 'edit',
+              request: leaveRequest
+            });
 
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
 
-            controller.request.type_id = selectedAbsenceType.id;
+            controller.request.type_id = params.selectedAbsenceType.id;
           });
 
           describe('on initialization', function () {
@@ -612,7 +615,11 @@ define([
               leaveRequest.from_date = leaveRequest.to_date = dateServer2017;
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
-              compileComponent(leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+              compileComponent({
+                mode: 'edit',
+                request: leaveRequest,
+                selectedAbsenceType: selectedAbsenceType
+              });
 
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
@@ -636,7 +643,11 @@ define([
           leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', approvalStatus));
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
-          compileComponent(leaveRequest, 'leave', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'view');
+          compileComponent({
+            mode: 'view',
+            request: leaveRequest,
+            selectedAbsenceType: selectedAbsenceType
+          });
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
@@ -659,7 +670,12 @@ define([
         beforeEach(function () {
           selectedAbsenceType = _.assign(absenceTypeData.all().values[0], {remainder: 0});
           leaveRequest = SicknessRequestInstance.init();
-          compileComponent(leaveRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+
+          compileComponent({
+            leaveType: 'sick',
+            request: leaveRequest,
+            selectedAbsenceType: selectedAbsenceType
+          });
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
@@ -708,7 +724,12 @@ define([
             sicknessRequest.status_id = optionGroupMock.specificValue(
               'hrleaveandabsences_leave_request_status', 'value', '3');
 
-            compileComponent(sicknessRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+            compileComponent({
+              leaveType: 'sick',
+              mode: 'edit',
+              request: sicknessRequest,
+              selectedAbsenceType: selectedAbsenceType
+            });
 
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
@@ -727,7 +748,12 @@ define([
               sicknessRequest.from_date = date2016;
               sicknessRequest.to_date = date2017;
 
-              compileComponent(sicknessRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+              compileComponent({
+                mode: 'edit',
+                leaveType: 'sick',
+                request: sicknessRequest,
+                selectedAbsenceType: selectedAbsenceType
+              });
 
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
@@ -743,7 +769,10 @@ define([
               sicknessRequest.from_date = date2016;
               sicknessRequest.to_date = date2016;
 
-              compileComponent(sicknessRequest, 'sick', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+              compileComponent({
+                request: sicknessRequest,
+                leaveType: 'sick'
+              });
 
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
@@ -773,14 +802,17 @@ define([
     describe('when request type is TOIL', function () {
       describe('on initialize', function () {
         beforeEach(function () {
-          selectedAbsenceType = _.assign(absenceTypeData.all().values[0], {remainder: 0});
           leaveRequest = TOILRequestInstance.init();
-          compileComponent(leaveRequest, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+
+          var params = compileComponent({
+            leaveType: 'toil',
+            request: leaveRequest
+          });
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
 
-          controller.request.type_id = selectedAbsenceType.id;
+          controller.request.type_id = params.selectedAbsenceType.id;
         });
 
         it('is initialized', function () {
@@ -836,7 +868,11 @@ define([
             toilRequest = TOILRequestInstance.init(leaveRequestData.findBy('request_type', 'toil'));
             toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
-            compileComponent(toilRequest, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+            compileComponent({
+              leaveType: 'toil',
+              mode: 'edit',
+              request: toilRequest
+            });
 
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
@@ -871,11 +907,15 @@ define([
             toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             toilRequest.toil_expiry_date = expiryDate;
 
-            compileComponent(toilRequest, 'toil', absencePeriodData.all().values[0], 'manager', balance, selectedAbsenceType, 'create');
+            var params = compileComponent({
+              leaveType: 'toil',
+              request: toilRequest,
+              role: 'manager'
+            });
 
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
-            controller.request.type_id = selectedAbsenceType.id;
+            controller.request.type_id = params.selectedAbsenceType.id;
             setTestDates(date2016, date2016);
             controller.calculateToilExpiryDate();
             $rootScope.$digest();
@@ -909,7 +949,11 @@ define([
 
             describe('and staff edits open request', function () {
               beforeEach(function () {
-                compileComponent(controller.request, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'edit');
+                compileComponent({
+                  leaveType: 'toil',
+                  mode: 'edit',
+                  request: controller.request
+                });
 
                 $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
                 $rootScope.$digest();
@@ -934,7 +978,10 @@ define([
       describe('when TOIL Request does not expire', function () {
         beforeEach(function () {
           AbsenceType.canExpire.and.returnValue($q.resolve(false));
-          compileComponent(controller.request, 'toil', absencePeriodData.all().values[0], 'staff', balance, selectedAbsenceType, 'create');
+          compileComponent({
+            leaveType: 'toil',
+            request: controller.request
+          });
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
@@ -963,32 +1010,138 @@ define([
       });
     });
 
-    function compileComponent (request, leaveType, period, role, balance, selectedAbsenceType, mode) {
-      var isMode = jasmine.createSpy('isMode');
-      var isRole = jasmine.createSpy('isRole');
-      isMode.and.callFake(function (modeParam) {
-        return modeParam === mode;
-      });
-      isRole.and.callFake(function (roleParam) {
-        return roleParam === role;
+    describe('when editing a request', function () {
+      var request, expectedOpeningBalance, absenceTypes;
+
+      beforeEach(function () {
+        absenceTypes = absenceTypeData.all().values;
+        request = leaveRequestData.all().values[0];
+
+        compileComponent({
+          mode: 'edit',
+          request: LeaveRequestInstance.init(request),
+          role: 'manager',
+          selectedAbsenceType: absenceTypes[0]
+        });
+
+        expectedOpeningBalance = absenceTypes[0].remainder - request.balance_change;
       });
 
-      controller = $componentController('leaveRequestPopupDetailsTab', null, {
+      it('has original opening balance', function () {
+        expect(controller.balance.opening).toBe(expectedOpeningBalance);
+      });
+
+      describe('when changing leave type', function () {
+        beforeEach(function () {
+          controller.request.type_id = absenceTypes[1].id;
+          expectedOpeningBalance = absenceTypes[1].remainder;
+          controller.updateBalance();
+        });
+
+        it('uses the opening balance for that leave type', function () {
+          expect(controller.balance.opening).toBe(absenceTypes[1].remainder);
+        });
+
+        describe('when reverting back to the original leave type', function () {
+          it('has original opening balance', function () {
+            expect(controller.balance.opening).toBe(expectedOpeningBalance);
+          });
+        });
+      });
+    });
+
+    /**
+     * Appends default values to the controller initialiation.
+     *
+     * @param {Object} params - the object to wich defaults will be appented to.
+     * properties and defaults:
+     * - {Array} absencePeriods - a list of absence periods. Defaults to all absence periods.
+     * - {Array} absenceTypes - a list of absence types. Defaults to all absence types.
+     * - {Object} balance - the request balance. Defaults to the globally defined balance.
+     * - {JasmineSpy} checkSubmitConditions - a spy to execute the checkSubmitConditions callback.
+     * - {JasmineSpy} isLeaveStatus - a spy to execute the isLeaveStatus callback.
+     * - {String} leaveType - the leave absence type. Options are "leave", "sick", "toil". Defaults to "leave".
+     * - {Object} period - the currently selected period. Defaults to first period.
+     * - {Object} selectedAbsenceType - the selected absence type. Defaults to the first absence type, and sets remainder value to 0.
+     * - {Object} request - The leave request data. Defaults to an empty leave request.
+     * - {JasmineSpy} isMode - a isMode spy function.
+     * - {JasmineSpy} isRole - a isRole spy function.
+     */
+    function addDefaultComponentParams (params) {
+      addSpyParams(params);
+
+      var defaultParams = {
         absencePeriods: absencePeriodData.all().values.map(function (period) {
           return AbsencePeriodInstance.init(period);
         }),
         absenceTypes: absenceTypeData.all().values,
-        balance: balance,
-        checkSubmitConditions: jasmine.any(Function),
-        isLeaveStatus: jasmine.any(Function),
-        leaveType: leaveType,
-        period: period,
-        selectedAbsenceType: selectedAbsenceType,
-        request: request,
-        isMode: isMode,
-        isRole: isRole
+        balance: balance, // balance is set globally
+        checkSubmitConditions: params.checkSubmitConditions,
+        isLeaveStatus: params.isLeaveStatus,
+        leaveType: 'leave',
+        period: absencePeriodData.all().values[0],
+        selectedAbsenceType: _.assign(absenceTypeData.all().values[0], {
+          remainder: 0
+        }),
+        request: LeaveRequestInstance.init(),
+        isMode: params.isMode,
+        isRole: params.isRole
+      };
+
+      _.defaults(params, defaultParams);
+    }
+
+    /**
+     * Appends default spy functions to the params object.
+     *
+     * @param {Object} params - the object which spy functions will be appened to.
+     */
+    function addSpyParams (params) {
+      var defaultParams = {
+        mode: 'create',
+        role: 'staff'
+      };
+
+      _.defaults(params, defaultParams);
+
+      params.isMode = jasmine.createSpy('isMode')
+      .and.callFake(function (mode) {
+        return mode === params.mode;
       });
+
+      params.isRole = jasmine.createSpy('isRole')
+      .and.callFake(function (role) {
+        return role === params.role;
+      });
+
+      params.checkSubmitConditions = jasmine.any(Function);
+      params.isLeaveStatus = jasmine.any(Function);
+    }
+
+    /**
+     * Compiles and initializes the component's controller. It returns the
+     * parameters used to initialize the controller plus default parameter
+     * values.
+     *
+     * @param {Object} params - the values to initialize the component. Defaults
+     * to an empty object.
+     *
+     * @return {Object}
+     */
+    function compileComponent (params) {
+      params = params || {};
+
+      addDefaultComponentParams(params);
+
+      controller = $componentController(
+        'leaveRequestPopupDetailsTab',
+        null,
+        params
+      );
+
       $rootScope.$digest();
+
+      return params;
     }
 
     /**
