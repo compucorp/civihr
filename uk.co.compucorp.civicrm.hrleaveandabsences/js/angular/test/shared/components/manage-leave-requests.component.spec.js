@@ -279,28 +279,28 @@ define([
       });
     });
 
-    describe('filterLeaveRequestByStatus', function () {
+    describe('countLeaveRequestByStatus()', function () {
       var returnValue;
 
       describe('when status is blank', function () {
         beforeEach(function () {
-          returnValue = controller.filterLeaveRequestByStatus('');
+          returnValue = controller.countLeaveRequestByStatus('');
         });
 
-        it('returns all data', function () {
-          expect(returnValue).toEqual(controller.leaveRequests.filter.list);
+        it('returns length of all data', function () {
+          expect(returnValue).toEqual(controller.leaveRequests.filter.list.length);
         });
       });
 
       describe('when status is all', function () {
         beforeEach(function () {
-          returnValue = controller.filterLeaveRequestByStatus({
+          returnValue = controller.countLeaveRequestByStatus({
             name: 'all'
           });
         });
 
-        it('returns all data', function () {
-          expect(returnValue).toEqual(controller.leaveRequests.filter.list);
+        it('returns length of all data', function () {
+          expect(returnValue).toEqual(controller.leaveRequests.filter.list.length);
         });
       });
 
@@ -310,14 +310,14 @@ define([
 
         beforeEach(function () {
           status = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
-          returnValue = controller.filterLeaveRequestByStatus(status);
+          returnValue = controller.countLeaveRequestByStatus(status);
           filteredList = controller.leaveRequests.filter.list.filter(function (request) {
             return request.status_id === status.value;
           });
         });
 
-        it('returns filtered data', function () {
-          expect(returnValue).toEqual(filteredList);
+        it('returns length of filtered data', function () {
+          expect(returnValue).toEqual(filteredList.length);
         });
       });
     });
@@ -751,7 +751,7 @@ define([
           });
 
           it('defaults to "Assigned to me"', function () {
-            expect(controller.filters.leaveRequest.assignedTo).toBe('me');
+            expect(controller.filters.leaveRequest.assignedTo.type).toBe('me');
           });
 
           describe('when "All" filter is selected', function () {
@@ -791,7 +791,7 @@ define([
            * @param {string} type - all|unassigned|me
            */
           function executeFilterByAssignee (type) {
-            controller.refreshWithFilterByAssignee(type);
+            controller.refreshWithFilterByAssignee({ type: type });
             defer.resolve(ContactAPIMock.mockedContacts().list);
           }
         });
