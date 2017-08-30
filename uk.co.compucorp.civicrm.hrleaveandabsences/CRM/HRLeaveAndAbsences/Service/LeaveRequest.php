@@ -264,10 +264,21 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    */
   protected function createRequestWithBalanceChanges($params) {
+    $skipBalanceChangeUpdate = false;
+    $updateBalanceChange = !empty($params['change_balance']);
     $leaveRequest = LeaveRequest::create($params, false);
-    $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
 
+    if(!empty($params['id'])) {
+      if(!$this->datesChanged($params) && !$updateBalanceChange) {
+        $skipBalanceChangeUpdate = true;
+      }
+    }
+
+    if(!$skipBalanceChangeUpdate) {
+      $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
+    }
     $this->recalculateExpiredBalanceChange($leaveRequest);
+
     return $leaveRequest;
   }
 

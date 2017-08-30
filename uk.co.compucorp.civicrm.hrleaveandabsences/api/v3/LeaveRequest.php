@@ -1,15 +1,18 @@
 <?php
 
 /**
- * LeaveRequest.create API specification (optional)
- * This is used for documentation and validation.
+ * LeaveRequest.create API specification
  *
- * @param array $spec description of fields supported by this API call
- * @return void
- * @see http://wiki.civicrm.org/confluence/display/CRMDOC/API+Architecture+Standards
+ * @param array $spec
  */
 function _civicrm_api3_leave_request_create_spec(&$spec) {
-  // $spec['some_parameter']['api.required'] = 1;
+  $spec['change_balance'] = [
+    'name' => 'change_balance',
+    'title' => 'Update Balance Change?',
+    'description' => 'Update Leave Request Balance Change?',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0,
+  ];
 }
 
 /**
