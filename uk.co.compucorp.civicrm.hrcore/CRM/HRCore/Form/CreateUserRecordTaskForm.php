@@ -48,11 +48,17 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
       $this->createAccount($contact, $roles);
     }
 
-    if ($sendEmail) {
-      $haveAccount = $this->getContactsWithAccount();
-      $emailContacts = array_merge($contactsToCreate, $haveAccount);
+    $haveAccount = $this->getContactsWithAccount();
 
-      foreach($emailContacts as $contact) {
+    // only need to update non-new users
+    foreach ($haveAccount as $contact) {
+      $this->drupalUserService->addRoles($contact['email'], $roles);
+    }
+
+    // send email to both new and non-new
+    $allValidContacts = array_merge($contactsToCreate, $haveAccount);
+    if ($sendEmail) {
+      foreach($allValidContacts as $contact) {
         $this->drupalUserService->sendActivationMail($contact['email']);
       }
     }
@@ -60,7 +66,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
     $statusMsg = '%1 new accounts were created. %2 welcome emails were sent.';
     $msgVars = [
       1 => count($contactsToCreate),
-      2 => empty($emailContacts) ? 'No' : count($emailContacts)
+      2 => empty($allValidContacts) ? 'No' : count($allValidContacts)
     ];
 
     CRM_Core_Session::setStatus(

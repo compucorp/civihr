@@ -63,6 +63,19 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
+   * @param string $email
+   * @param array $roles
+   */
+  public function addRoles($email, $roles) {
+    $user = user_load_by_mail($email);
+    $roles = $this->roleService->getRoleIds($roles);
+    $roles = array_unique(array_merge($roles, array_keys($user->roles)));
+    $roles = array_combine($roles, $roles);
+
+    user_save($user, ['roles' => $roles]);
+  }
+
+  /**
    * @param string $name
    *
    * @return bool
