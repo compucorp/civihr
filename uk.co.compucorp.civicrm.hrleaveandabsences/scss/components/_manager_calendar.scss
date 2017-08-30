@@ -28,6 +28,11 @@
       > div {
         width: calc( 100% - 30px );
       }
+
+      .ui-select-search {
+        display: inline;
+        width: 130px !important;
+      }
     }
   }
 }
