@@ -1092,31 +1092,39 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       $leaveRequestStatuses['admin_approved']
     ];
 
+    $balanceChangeTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+    $contractTable = HRJobContract::getTableName();
+    $contractRevisionTable = HRJobContractRevision::getTableName();
+    $contractDetailsTable = HRJobDetails::getTableName();
+    $periodEntitlementTable = LeavePeriodEntitlement::getTableName();
+
     $query = "
         SELECT 
-               COALESCE(leave_request.contact_id, period_entitlement.contact_id) as contact_id,
-               SUM(leave_balance_change.amount) as balance
-        FROM civicrm_hrleaveandabsences_leave_balance_change leave_balance_change
-          LEFT JOIN civicrm_hrleaveandabsences_leave_period_entitlement period_entitlement
+           COALESCE(leave_request.contact_id, period_entitlement.contact_id) as contact_id,
+           SUM(leave_balance_change.amount) as balance
+        FROM {$balanceChangeTable} leave_balance_change
+          LEFT JOIN {$periodEntitlementTable} period_entitlement
             ON leave_balance_change.source_id = period_entitlement.id AND
-               leave_balance_change.source_type = 'entitlement'
-          LEFT JOIN civicrm_hrleaveandabsences_leave_request_date leave_request_date
+               leave_balance_change.source_type = '" . self::SOURCE_ENTITLEMENT . "'
+          LEFT JOIN {$leaveRequestDateTable} leave_request_date
             ON leave_balance_change.source_id = leave_request_date.id AND
-               leave_balance_change.source_type = 'leave_request_day'
-          LEFT JOIN civicrm_hrleaveandabsences_leave_request leave_request
+               leave_balance_change.source_type = '" . self::SOURCE_LEAVE_REQUEST_DAY . "'
+          LEFT JOIN {$leaveRequestTable} leave_request
             ON leave_request_date.leave_request_id = leave_request.id AND
                leave_request.is_deleted = 0
-          LEFT JOIN civicrm_hrjobcontract contract
+          LEFT JOIN {$contractTable} contract
             ON leave_request.contact_id = contract.contact_id
-          LEFT JOIN civicrm_hrjobcontract_revision contract_revision
+          LEFT JOIN {$contractRevisionTable} contract_revision
             ON contract_revision.id = (
             SELECT id
-            FROM civicrm_hrjobcontract_revision contract_revision2
+            FROM {$contractRevisionTable} contract_revision2
             WHERE contract_revision2.jobcontract_id = contract.id
             ORDER BY contract_revision2.effective_date DESC
             LIMIT 1
           )
-          LEFT JOIN civicrm_hrjobcontract_details contract_details
+          LEFT JOIN {$contractDetailsTable} contract_details
             ON contract_revision.details_revision_id = contract_details.jobcontract_revision_id
 
         WHERE ((
