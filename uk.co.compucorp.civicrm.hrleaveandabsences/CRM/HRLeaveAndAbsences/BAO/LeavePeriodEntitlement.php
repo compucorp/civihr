@@ -488,48 +488,64 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
-   * Returns a list of entitlements for the given Contacts and Absence Types
-   * during the given Absence Period.
+   * Returns a list of entitlements for the given Contacts during the given
+   * Absence Period. Optionally, it can return the entitlements for a specific
+   * Absence Type.
    *
    * Important: This method DOES NOT return LeavePeriodEntitlement instances.
    *
    * @param array $contactIDs
    * @param int $absencePeriodID
-   * @param int $absenceTypeID
+   * @param int|null $absenceTypeID
    *
    * @return array
    *  An array with this format:
    *  [
-   *     contact_id_1 = entitlement,
-   *     contact_id_2 = entitlement,
+   *     contact_id_1 => [
+   *        absence_type1_id => entitlement,
+   *        absence_type2_id => entitlement,
+   *        ...
+   *     ],
+   *     contact_id_2 => [
+   *      absence_type1_id => entitlement,
+   *      ...
+   *     ]
    *     ...
    *  ]
    */
-  public static function getEntitlementsForContacts($contactIDs, $absencePeriodID, $absenceTypeID) {
+  public static function getEntitlementsForContacts($contactIDs, $absencePeriodID, $absenceTypeID = null) {
     $entitlements = [];
 
     array_walk($contactIDs, 'intval');
 
+    $whereAbsenceType = '';
+    if($absenceTypeID) {
+      $absenceTypeID = (int)$absenceTypeID;
+      $whereAbsenceType = "lpe.type_id = {$absenceTypeID} AND";
+    }
+
+    $periodEntitlementTable = self::getTableName();
+    $balanceChangeTable = LeaveBalanceChange::getTableName();
+
     $query = "
-      SELECT lpe.contact_id, 
+      SELECT lpe.contact_id,
+             lpe.type_id,
              SUM(lbc.amount) AS entitlement
-      FROM civicrm_hrleaveandabsences_leave_period_entitlement lpe
-      INNER JOIN civicrm_hrleaveandabsences_leave_balance_change lbc
+      FROM {$periodEntitlementTable} lpe
+      INNER JOIN {$balanceChangeTable} lbc
               ON lbc.source_type = 'entitlement' AND lbc.source_id = lpe.id
-      WHERE lpe.period_id = %1 AND 
-            lpe.type_id = %2 AND
+      WHERE {$whereAbsenceType} lpe.period_id = %1 AND 
             lpe.contact_id IN (" . implode(',', $contactIDs) . ")
       GROUP BY lpe.id";
 
-    $params    = [
+    $params = [
       1 => [$absencePeriodID, 'Positive'],
-      2 => [$absenceTypeID, 'Positive'],
     ];
 
     $result = CRM_Core_DAO::executeQuery($query, $params);
 
     while($result->fetch()) {
-      $entitlements[$result->contact_id] = $result->entitlement;
+      $entitlements[$result->contact_id][$result->type_id] = $result->entitlement;
     }
 
     return $entitlements;
