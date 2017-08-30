@@ -201,15 +201,16 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
   public function validateInput($fields) {
     $errors = [];
     $roles = array_keys(array_filter(ArrayHelper::value('roles', $fields)));
+    $key = '_qf_default'; // always-present, hidden element in form
 
     if (empty($roles)) {
-      $errors['_qf_default'] = ts('You must select at least one role') . '<br/>';
+      $errors[$key] = ts('You must select at least one role') . '<br/>';
     }
 
     $forbiddenRoles = array_diff($roles, $this->getAssignableRoles());
     if (!empty($forbiddenRoles)) {
       $err = ts('You selected roles you do not have permission to assign');
-      $errors['_qf_default'] .= $err . '<br/>';
+      $errors[$key] .= $err . '<br/>';
     }
 
     return empty($errors) ? TRUE : $errors;
