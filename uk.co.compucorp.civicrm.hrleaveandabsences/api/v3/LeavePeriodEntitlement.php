@@ -278,6 +278,16 @@ function _civicrm_api3_leave_period_entitlement_getleavebalances_spec(&$spec) {
     'FKClassName'  => 'CRM_Contact_DAO_Contact',
     'FKApiName'    => 'Contact',
   ];
+
+  $spec['type_id'] = [
+    'name' => 'type_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Absence Type ID',
+    'description' => 'Include only Balances for the Given Absence Type',
+    'api.required' => 0,
+    'FKClassName'  => 'CRM_HRLeaveAndAbsences_BAO_AbsenceType',
+    'FKApiName'    => 'AbsenceType',
+  ];
 }
 
 /**

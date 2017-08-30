@@ -927,4 +927,50 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
     ]);
     $this->assertEquals(1, $result);
   }
+
+  public function testGetLeaveBalanceCanReturnBalancesForASpecificAbsenceType() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contact1 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    $absenceType1ID = 1;
+    $absenceType2ID = 2;
+
+    $entitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType1ID,
+      'contact_id' => $contact1['id'],
+    ]);
+
+    $entitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType2ID,
+      'contact_id' => $contact1['id'],
+    ]);
+
+    $this->createLeaveBalanceChange($entitlement1->id, 7.75);
+    $this->createLeaveBalanceChange($entitlement2->id, 5.5);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType1ID
+    ])['values'];
+    $this->assertCount(1, $result[$contact1['id']]['absence_types']);
+    $this->assertEquals($absenceType1ID, $result[$contact1['id']]['absence_types'][0]['id']);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType2ID
+    ])['values'];
+    $this->assertCount(1, $result[$contact1['id']]['absence_types']);
+    $this->assertEquals($absenceType2ID, $result[$contact1['id']]['absence_types'][0]['id']);
+  }
 }
