@@ -241,6 +241,13 @@ function civicrm_api3_leave_period_entitlement_getentitlement($params) {
   return $results;
 }
 
+/**
+ * LeavePeriodEntitlement.getLeaveBalances specification
+ *
+ * @param array $spec
+ *
+ * @return void
+ */
 function _civicrm_api3_leave_period_entitlement_getleavebalances_spec(&$spec) {
   $spec['managed_by'] = [
     'name' => 'managed_by',
@@ -273,6 +280,54 @@ function _civicrm_api3_leave_period_entitlement_getleavebalances_spec(&$spec) {
   ];
 }
 
+/**
+ * LeavePeriodEntitlement.getLeaveBalances API
+ *
+ * This API accepts requires a period_id as a param and it will return a list of
+ * Leave Balances for this period to all the contacts with an active contract
+ * during that period.
+ *
+ * The return format is:
+ *
+ * [
+ *   'is_error' => 0,
+ *   'version' => 3,
+ *   'count' => 2,
+ *   'values' => [
+ *     [
+ *       'contact_id' => 1,
+ *       'contact_display_name' => 'Joe',
+ *       'absence_types': [
+ *          [
+ *            'id' => 1,
+ *            'entitlement' => 4,
+ *            'balance' => 2,
+ *            'used' => 2,
+ *            'requested' => 1
+ *          ],
+ *          [
+ *            'id' => 2,
+ *            'entitlement' => 10.5,
+ *            'balance' => 5.25,
+ *            'used' => 6,
+ *            'requested' => 3.5
+ *          ],
+ *          ...
+ *       ]
+ *     ],
+ *     ...
+ *   ]
+ * ]
+ *
+ * It also support filters to return only contacts with specific IDs or managed
+ * by specific managers.
+ *
+ * @param array $params
+ *
+ * @return array API result descriptor
+ *
+ * @throws CiviCRM_API3_Exception
+ */
 function civicrm_api3_leave_period_entitlement_getleavebalances($params) {
   // We need to set check_permissions to false so as to disable default Civi ACL checks for
   // this endpoint. ACL checks needed are already in the LeaveBalancesSelect Query class.
