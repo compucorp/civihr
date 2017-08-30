@@ -1,0 +1,11 @@
+.crm-form-radio + label {
+  &:before {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+  }
+
+  &:after {
+    top: 8px;
+  }
+}

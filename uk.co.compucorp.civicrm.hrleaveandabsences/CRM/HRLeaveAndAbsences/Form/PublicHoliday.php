@@ -44,6 +44,7 @@ class CRM_HRLeaveAndAbsences_Form_PublicHoliday extends CRM_Core_Form {
     $this->assign('deleteUrl', $this->getDeleteUrl());
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
+    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
     parent::buildQuickForm();
   }
 
@@ -120,7 +121,7 @@ class CRM_HRLeaveAndAbsences_Form_PublicHoliday extends CRM_Core_Form {
 
   /**
    * Return an array containing attributes of given field.
-   * 
+   *
    * @param string $field
    * @return array|null
    */

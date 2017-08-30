@@ -2,15 +2,20 @@
     {include file="CRM/HRLeaveAndAbsences/Form/AbsenceType.tpl"}
 {else}
     {if $rows}
-        <div id="ltype">
-            <div id="help">
-                <p>&nbsp;{ts}Some leave/absence types cannot be deleted because there are existing absences of that type.{/ts}</p>
+        <div id="bootstrap-theme">
+          {literal}
+          <style>
+              .btn-slide ul.panel { display: none !important; }
+          </style>
+          {/literal}
+            <div class="alert alert-warning">
+                {ts}Some leave/absence types cannot be deleted because there are existing absences of that type.{/ts}
             </div>
-            <div class="form-item">
+            <div class="panel panel-default">
                 {strip}
                     {* handle enable/disable actions*}
                     {include file="CRM/common/enableDisableApi.tpl"}
-                    <table cellpadding="0" cellspacing="0" border="0" class="hrleaveandabsences-entity-list">
+                    <table cellpadding="0" cellspacing="0" border="0" class="table table-responsive">
                         <thead class="sticky">
                             <th>{ts}Title{/ts}</th>
                             <th>{ts}Allow Accruals?{/ts}</th>
@@ -20,7 +25,7 @@
                             <th>{ts}Actions{/ts}</th>
                         </thead>
                         {foreach from=$rows item=row}
-                            <tr id="AbsenceType-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"} {$row.class}{if NOT $row.is_active} disabled{/if}">
+                            <tr id="AbsenceType-{$row.id}" class="crm-entity {if NOT $row.is_active} disabled{/if}">
                                 <td data-field="title">{$row.title}</td>
                                 <td>{if $row.allow_accruals_request eq 1} {ts}Yes{/ts} {else} {ts}No{/ts} {/if}</td>
                                 <td>{if $row.is_default eq 1}<img src="{$config->resourceBase}i/check.gif" alt="{ts}Default{/ts}" />{/if}</td>
@@ -33,10 +38,14 @@
                 {/strip}
 
                 {if $action ne 1 and $action ne 2}
-                    <div class="action-link">
-                        <a href="{crmURL q="action=add&reset=1"}" class="button"><span><div class="icon add-icon"></div>{ts}Add Leave/Absence Type{/ts}</span></a>
+                    <div class="panel-body">
+                        <a href="{crmURL q="action=add&reset=1"}" class="button btn btn-primary pull-right">
+                            <span><div class="icon add-icon"></div>
+                            {ts}Add Leave/Absence Type{/ts}</span>
+                        </a>
                     </div>
                 {/if}
+              </div>
             </div>
         </div>
         {literal}
