@@ -1,11 +1,38 @@
 .chr_manager_calendar__header {
   padding-top: 15px;
+  margin: 0;
   background-color: $chr-panel-header-background;
 
-  > div {
-    display: inline-block;
-    margin: 0 10px;
-    width: calc(16.4% - 20px);
-    vertical-align: top;
+  .checkbox {
+    margin: 0;
+  }
+
+  @media screen and (max-width: $screen-md-max) {
+    > div:not(:last-child) {
+      padding-bottom: 20px;
+    }
+  }
+}
+
+.chr_manager_calendar__sub-header {
+  margin: 0;
+
+  @media screen and (max-width: $screen-md-max) {
+    > div:not(:last-child) {
+      padding-bottom: 20px;
+    }
+
+    .ui-select-container {
+      height: auto;
+
+      > div {
+        width: calc( 100% - 30px );
+      }
+
+      .ui-select-search {
+        display: inline;
+        width: 130px !important;
+      }
+    }
   }
 }
