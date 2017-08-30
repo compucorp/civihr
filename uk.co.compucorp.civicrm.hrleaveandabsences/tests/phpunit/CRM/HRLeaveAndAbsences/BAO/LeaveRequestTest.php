@@ -2873,4 +2873,36 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $params['to_date'] = CRM_Utils_Date::processDate('2016-01-08');
     LeaveRequestFabricator::fabricate($params, true);
   }
+
+  public function testLeaveDatesAreNotDeletedAndRecreatedWhenUpdatingALeaveRequestAndLeaveDatesDidNotChange() {
+    $fromDate = CRM_Utils_Date::processDate('2016-01-08');
+    $toDate = CRM_Utils_Date::processDate('2016-01-10');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate,
+      'from_date_type' => 1,
+      'to_date' => $toDate,
+      'to_date_type' => 1,
+    ];
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $dates = $leaveRequest->getDates();
+    $beforeDatesID = [];
+    foreach($dates as $date) {
+      $beforeDatesID[] = $date->id;
+    }
+
+    //update leave request without changing the dates
+    $params['id'] = $leaveRequest->id;
+    $dates = $leaveRequest->getDates();
+    $afterDatesID = [];
+    foreach($dates as $date) {
+      $afterDatesID[] = $date->id;
+    }
+
+    //the leave dates were not deleted because the ID's are still the same.
+    $this->assertEquals($beforeDatesID, $afterDatesID);
+  }
 }

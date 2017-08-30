@@ -41,13 +41,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
     unset($params['is_deleted']);
 
+    $datesChanged = self::datesChanged($params);
     $instance = new self();
     $instance->copyValues($params);
 
     $transaction = new CRM_Core_Transaction();
     try {
       $instance->save();
-      $instance->saveDates();
+      $instance->saveDates($datesChanged);
       $transaction->commit();
     } catch(Exception $e) {
       $transaction->rollback();
@@ -752,10 +753,21 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Creates and saves LeaveRequestDates for this LeaveRequest
+   * Creates and saves LeaveRequestDates for this LeaveRequest.
+   *
+   * If its an update and the dates has not changed when comparing
+   * the values in the db to the values about to be updated, i.e
+   * dateChanged = false, the previous dates are not deleted and
+   * re-created but left as is.
+   *
+   * @param bool|null $datesChanged
    */
-  private function saveDates() {
-    $this->deleteDatesAndBalanceChanges();
+  private function saveDates($datesChanged = null) {
+    if($datesChanged === false) {
+      return;
+    }
+
+    $this->deleteDates();
 
     $datePeriod = new BasicDatePeriod($this->from_date, $this->to_date);
 
@@ -768,10 +780,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Deletes all the dates and balance changes related to this LeaveRequest
+   * Deletes all the dates related to this LeaveRequest
    */
-  private function deleteDatesAndBalanceChanges() {
-    LeaveBalanceChange::deleteAllForLeaveRequest($this);
+  private function deleteDates() {
     LeaveRequestDate::deleteDatesForLeaveRequest($this->id);
   }
 
@@ -1073,5 +1084,29 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $period = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
 
     return [$absenceType, $period];
+  }
+
+  /**
+   * Checks if the from_date or to_date of a leave request has changed by comparing the
+   * date values to be updated to the current values in the database
+   *
+   * @param array $params
+   *
+   * @return bool|null
+   *   Returns null for when a leave request is newly
+   *   created.
+   */
+  private static function datesChanged($params) {
+    if(!empty($params['id'])) {
+      $leaveRequest = self::findById($params['id']);
+      $fromDate = new DateTime($params['from_date']);
+      $toDate = new DateTime($params['to_date']);
+      $leaveRequestFromDate = new DateTime($leaveRequest->from_date);
+      $leaveRequestToDate = new DateTime($leaveRequest->to_date);
+
+      return $leaveRequestFromDate != $fromDate || $leaveRequestToDate != $toDate;
+    }
+
+    return null;
   }
 }
