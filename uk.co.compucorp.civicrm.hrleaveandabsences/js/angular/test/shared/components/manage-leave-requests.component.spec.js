@@ -279,12 +279,12 @@ define([
       });
     });
 
-    describe('filterLeaveRequestByStatus', function () {
+    describe('countLeaveRequestByStatus()', function () {
       var returnValue;
 
       describe('when status is blank', function () {
         beforeEach(function () {
-          returnValue = controller.filterLeaveRequestByStatus('');
+          returnValue = controller.countLeaveRequestByStatus('');
         });
 
         it('returns length of all data', function () {
@@ -294,7 +294,7 @@ define([
 
       describe('when status is all', function () {
         beforeEach(function () {
-          returnValue = controller.filterLeaveRequestByStatus({
+          returnValue = controller.countLeaveRequestByStatus({
             name: 'all'
           });
         });
@@ -310,7 +310,7 @@ define([
 
         beforeEach(function () {
           status = optionGroupMock.getCollection('hrleaveandabsences_leave_request_status')[0];
-          returnValue = controller.filterLeaveRequestByStatus(status);
+          returnValue = controller.countLeaveRequestByStatus(status);
           filteredList = controller.leaveRequests.filter.list.filter(function (request) {
             return request.status_id === status.value;
           });

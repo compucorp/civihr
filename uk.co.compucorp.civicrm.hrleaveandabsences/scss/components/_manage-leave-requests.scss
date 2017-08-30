@@ -5,7 +5,7 @@
     margin: 0;
 
     .panel-title {
-      margin-top: 5px;
+      margin-top: 7px;
       display: inline-block;
     }
 
@@ -44,10 +44,8 @@
     }
 
     @media screen and (min-width: $screen-md-min) and (max-width: $screen-md-max){
-      > div:nth-child(4),
-      > div:nth-child(5),
-      > div:nth-child(6) {
-        padding-bottom: 0;
+      > .no_gutter {
+        padding-bottom: 0 !important;
       }
     }
   }

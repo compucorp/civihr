@@ -2,7 +2,7 @@
   <div class="panel panel-default">
     <crm-loading show="!vm.loading.page">
       <div class="panel-heading row chr_manage_leave_requests__header">
-        <div class="col-md-5 panel-title" ng-if="!vm.isAdmin">Manager Absence Approval</div>
+        <h3 class="col-md-5 panel-title" ng-if="!vm.isAdmin">Manager Absence Approval</h3>
         <div class="col-md-3 chr_manage_leave_requests__leave_type_filter">
           <div class="crm_custom-select crm_custom-select--full">
             <select
@@ -90,7 +90,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2 no_gutter">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               ng-options="levelType.value as levelType.value for levelType in vm.levelTypes track by levelType.id"
@@ -101,7 +101,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2 no_gutter">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               ng-options="location.value as location.label for location in vm.locations track by location.id"
@@ -112,7 +112,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-4 col-lg-2 checkbox">
+        <div class="col-md-4 col-lg-2 checkbox no_gutter">
           <label>
             <input type="checkbox" ng-change="vm.refresh(1, true)"
               ng-model="vm.filters.leaveRequest.pending_requests">Pending only
@@ -124,12 +124,12 @@
            class="panel-body row chr_manage_leave_requests__panel_body">
           <ul class="visible-md visible-lg col-md-3 nav nav-pills nav-stacked chr_vertical_tabs">
             <li ng-repeat="status in vm.leaveRequestStatuses track by status.value"
-              ng-hide="vm.filterLeaveRequestByStatus(status) === 0"
+              ng-hide="vm.countLeaveRequestByStatus(status) === 0"
               ng-click="vm.refreshWithFilter(status)"
               ng-class="{'active': vm.filters.leaveRequest.leaveStatus.name === status.name}">
               <a>
                 <span class="active badge {{vm.getNavBadge(status.name)}} pull-right">
-                  {{vm.filterLeaveRequestByStatus(status)}}
+                  {{vm.countLeaveRequestByStatus(status)}}
                 </span>
                 {{status.label}}
               </a>
@@ -140,7 +140,7 @@
             <div>
               <div class="crm_custom-select crm_custom-select--full">
                 <select
-                  ng-options="status.label for status in vm.leaveRequestStatuses | filter: vm.filterLeaveRequestByStatus"
+                  ng-options="status.label for status in vm.leaveRequestStatuses | filter: vm.countLeaveRequestByStatus"
                   ng-model="vm.filters.leaveRequest.leaveStatus"
                   ng-change="vm.refresh(1, false, 'table')">
                   <option value="">Leave Status</option>

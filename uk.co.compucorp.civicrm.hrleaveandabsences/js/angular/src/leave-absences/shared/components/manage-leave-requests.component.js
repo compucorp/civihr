@@ -54,7 +54,7 @@ define([
     };
 
     vm.clearStaffSelection = clearStaffSelection;
-    vm.filterLeaveRequestByStatus = filterLeaveRequestByStatus;
+    vm.countLeaveRequestByStatus = countLeaveRequestByStatus;
     vm.getAbsenceTypesByID = getAbsenceTypesByID;
     vm.getArrayOfSize = getArrayOfSize;
     vm.getLeaveStatusByValue = getLeaveStatusByValue;
@@ -120,7 +120,7 @@ define([
      * @param {Object} status - status object
      * @return {int}
      */
-    function filterLeaveRequestByStatus (status) {
+    function countLeaveRequestByStatus (status) {
       if (status.name === 'all' || status === '') {
         return vm.leaveRequests.filter.list.length;
       }
