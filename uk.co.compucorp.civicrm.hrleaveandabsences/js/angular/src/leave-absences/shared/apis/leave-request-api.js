@@ -192,7 +192,7 @@ define([
         find: function (id) {
           $log.debug('LeaveRequestAPI.find');
 
-          return this.sendGET('LeaveRequest', 'get', { id: id })
+          return this.sendGET('LeaveRequest', 'getFull', { id: id })
           .then(function (response) {
             if (response.values.length === 0) {
               return $q.reject('LeaveRequest not found with this ID');
