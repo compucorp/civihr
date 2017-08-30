@@ -38,7 +38,7 @@ abstract class CRM_HRCore_Form_AbstractDrupalInteractionTaskForm extends CRM_Con
   /**
    * Creates an array to store contact details
    */
-  private function initContactDetails() {
+  protected function initContactDetails() {
     $emailParams = [
       'contact_id' => '$value.id',
       'return' => ['email'],

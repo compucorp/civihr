@@ -82,7 +82,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
    *
    * @return array
    */
-  private function getValidContactsForCreation() {
+  protected function getValidContactsForCreation() {
     $missingEmail = $this->getContactsWithInvalidEmail();
     $haveNoAccount = $this->getContactsWithoutAttribute('uf_id');
     $emailConflict = $this->getEmailConflictContacts();
@@ -113,7 +113,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
    *
    * @return array
    */
-  private function getEmailConflictContacts() {
+  protected function getEmailConflictContacts() {
     $newAccounts = $this->getContactsWithoutAttribute('uf_id');
     $haveNoEmail = $this->getContactsWithoutAttribute('email');
     $newContactsWithEmail = array_diff_key($newAccounts, $haveNoEmail);
@@ -144,7 +144,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
   /**
    * @return array
    */
-  private function getContactsWithInvalidEmail() {
+  protected function getContactsWithInvalidEmail() {
     $invalid = [];
 
     foreach ($this->contactDetails as $contactID => $contact) {
@@ -162,7 +162,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
   /**
    * @return array
    */
-  private function getContactsWithAccount() {
+  protected function getContactsWithAccount() {
     $haveNoAccount = $this->getContactsWithoutAttribute('uf_id');
     $haveAccount = array_diff_key($this->contactDetails, $haveNoAccount);
 
