@@ -17,7 +17,13 @@ class CRM_HRCore_Form_CreateUserRecordSingleTaskForm extends CreateUserRecordTas
    */
   public function preProcess() {
     $cid = CRM_Utils_Request::retrieve('cid', 'Integer');
-    $this->_contactIds = [$cid];
+
+    // set in session to use in post processing
+    if ($cid) {
+      $this->set('_contactIds', [$cid]);
+    }
+
+    $this->_contactIds = $this->get('_contactIds');
     $this->initContactDetails();
 
     if (empty($this->contactDetails)) {
