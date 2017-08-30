@@ -12,12 +12,12 @@ class api_v3_ApiPermissionTest extends BaseHeadlessTest {
   /**
    * @dataProvider apiPermissionsDataProvider
    */
-  public function testAPIPermissions($entity, $action) {
+  public function testAPIPermissions($entity, $action, $permission = 'access AJAX API') {
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
     CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
 
-    $this->setExpectedException('CiviCRM_API3_Exception', "API permission check failed for {$entity}/{$action} call; insufficient permission: require access AJAX API");
+    $this->setExpectedException('CiviCRM_API3_Exception', "API permission check failed for {$entity}/{$action} call; insufficient permission: require {$permission}");
 
     $payload = ['check_permissions' => true];
 
@@ -50,6 +50,7 @@ class api_v3_ApiPermissionTest extends BaseHeadlessTest {
       ['OptionGroup', 'get'],
       ['OptionValue', 'get'],
       ['LeavePeriodEntitlement', 'get'],
+      ['LeavePeriodEntitlement', 'getleavebalances', 'manage leave and absences in ssp'],
       ['PublicHoliday', 'get'],
       ['Comment', 'get'],
       ['Comment', 'create'],
