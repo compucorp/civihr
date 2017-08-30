@@ -38,6 +38,22 @@ function hrcore_civicrm_searchTasks($objectName, &$tasks) {
   }
 }
 
+function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
+  $otherActions = CRM_Utils_Array::value('otherActions', $actions, []);
+  $userAdd = CRM_Utils_Array::value('user-add', $otherActions, []);
+
+  if (empty($userAdd)) {
+    return;
+  }
+
+  // replace default action with link to custom form
+  $userAdd['title'] = ts('Create User Account');
+  $userAdd['description'] = ts('Create User Account');
+  $link = '/civicrm/user/create-account?cid=%d';
+  $userAdd['href'] = sprintf($link, $contactID);
+  $actions['otherActions']['user-add'] = $userAdd;
+}
+
 /**
  * Implements hook_civicrm_container().
  *
