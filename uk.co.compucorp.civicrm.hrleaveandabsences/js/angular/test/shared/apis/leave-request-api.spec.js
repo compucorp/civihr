@@ -525,7 +525,7 @@ define([
 
       it('calls the LeaveRequest.get endpoint', function () {
         promise.then(function () {
-          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'get', { id: id });
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getFull', { id: id });
         });
       });
     });
