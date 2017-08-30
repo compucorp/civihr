@@ -1157,4 +1157,95 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     return $balances;
   }
+
+  /**
+   * Returns a list of balances for the open Leave Requests of the Contacts with
+   * the given IDs and Absence Type, during the given Absence Period.
+   *
+   * Open Leave Requests are those where the status is either "Awaiting Approval"
+   * or "More Information Required".
+   *
+   * Given Leave Requests always deduct days, the returned value will be negative.
+   *
+   * @param array $contactIDs
+   * @param int $absencePeriodID
+   * @param int $absenceTypeID
+   *
+   * @return array
+   *  An array with the following format:
+   *  [
+   *    $contactID1 => Balance,
+   *    $contactID2 => Balance,
+   *    ...
+   *  ]
+   */
+  public static function getOpenLeaveRequestBalanceForContacts($contactIDs, $absencePeriodID, $absenceTypeID) {
+    $balances = [];
+
+    $balanceChangeTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+    $contractTable = HRJobContract::getTableName();
+    $contractRevisionTable = HRJobContractRevision::getTableName();
+    $contractDetailsTable = HRJobDetails::getTableName();
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $openStatuses = [
+      $leaveRequestStatuses['awaiting_approval'],
+      $leaveRequestStatuses['more_information_required']
+    ];
+
+    $absencePeriod = AbsencePeriod::findById($absencePeriodID);
+
+    $query = "
+      SELECT leave_request.contact_id, SUM(leave_balance_change.amount) balance
+      FROM {$balanceChangeTable} leave_balance_change
+      INNER JOIN {$leaveRequestDateTable} leave_request_date 
+        ON leave_balance_change.source_id = leave_request_date.id AND 
+                 leave_balance_change.source_type = '" . self::SOURCE_LEAVE_REQUEST_DAY . "'
+      INNER JOIN {$leaveRequestTable} leave_request 
+        ON leave_request_date.leave_request_id = leave_request.id AND
+                 leave_request.is_deleted = 0
+      INNER JOIN {$contractTable} contract 
+        ON leave_request.contact_id = contract.contact_id
+      INNER JOIN {$contractRevisionTable} contract_revision 
+        ON contract_revision.id = (
+          SELECT id FROM {$contractRevisionTable} contract_revision2
+          WHERE contract_revision2.jobcontract_id = contract.id
+          ORDER BY contract_revision2.effective_date DESC
+          LIMIT 1
+        )
+      INNER JOIN {$contractDetailsTable} contract_details 
+        ON contract_revision.details_revision_id = contract_details.jobcontract_revision_id
+             
+      WHERE contract.deleted = 0 AND
+        leave_request_date.date >= %1 AND 
+        leave_request_date.date <= %2 AND
+        ( 
+          leave_request.from_date <= contract_details.period_end_date OR
+          contract_details.period_end_date IS NULL
+        )  AND
+        ( 
+          leave_request.to_date >= contract_details.period_start_date OR
+          (leave_request.to_date IS NULL AND leave_request.from_date >= contract_details.period_start_date)
+        ) AND  
+        leave_balance_change.expired_balance_change_id IS NULL AND
+        leave_request.type_id = $absenceTypeID AND
+        leave_request.contact_id IN(" . implode(', ', $contactIDs) . ") AND
+        leave_request.status_id IN(" . implode(', ', $openStatuses) . ")
+      GROUP BY leave_request.contact_id
+    ";
+
+    $params = [
+      1 => [$absencePeriod->start_date, 'String'],
+      2 => [$absencePeriod->end_date, 'String'],
+    ];
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+
+    while($result->fetch()) {
+      $balances[$result->contact_id] = $result->balance;
+    }
+
+    return $balances;
+  }
 }

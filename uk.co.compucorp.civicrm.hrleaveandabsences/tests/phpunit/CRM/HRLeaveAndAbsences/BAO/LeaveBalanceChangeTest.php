@@ -3192,6 +3192,264 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(15, $balances[$entitlement2->contact_id]);
   }
 
+  public function testGetOpenLeaveRequestBalanceForContactsShouldIncludeOnlyTheBalanceChangesFromOpenLeaveRequests() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    $absenceTypeID = 1;
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['approved'],
+      'from_date' => date('YmdHis', strtotime('-10 days')),
+      'to_date' => date('YmdHis', strtotime('-9 days'))
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['admin_approved'],
+      'from_date' => date('YmdHis', strtotime('-8 days')),
+      'to_date' => date('YmdHis', strtotime('-7 days'))
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
+      'from_date' => date('YmdHis', strtotime('-6 days')),
+      'to_date' => date('YmdHis', strtotime('-5 days'))
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
+      'from_date' => date('YmdHis', strtotime('-4 days')),
+      'to_date' => date('YmdHis', strtotime('-3 days'))
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['cancelled'],
+      'from_date' => date('YmdHis', strtotime('-2 days')),
+      'to_date' => date('YmdHis', strtotime('-1 day'))
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['rejected'],
+      'from_date' => date('YmdHis', strtotime('+1 day')),
+      'to_date' => date('YmdHis', strtotime('+2 days'))
+    ], true);
+
+    // -2 From the awaiting approval request and -2 from the more information
+    // required request
+    $expectedResult = [$contract['contact_id'] => -4];
+
+    $this->assertEquals($expectedResult, LeaveBalanceChange::getOpenLeaveRequestBalanceForContacts(
+      [$contract['contact_id']],
+      $absencePeriod->id,
+      $absenceTypeID
+    ));
+  }
+
+  public function testGetOpenLeaveRequestBalanceForContactsShouldIncludeOnlyTheBalanceChangesRequestsOverlappingAContract() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      [
+        'period_start_date' => CRM_Utils_Date::processDate('-5 days'),
+        'period_end_date' => CRM_Utils_Date::processDate('-1 day')
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
+    );
+
+    $absenceTypeID = 1;
+
+    // before the first contract, won't be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
+      'from_date' => date('YmdHis', strtotime('-10 days')),
+      'to_date' => date('YmdHis', strtotime('-9 days'))
+    ], true);
+
+    // within first contract, will be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
+      'from_date' => date('YmdHis', strtotime('-4 days')),
+      'to_date' => date('YmdHis', strtotime('-3 days'))
+    ], true);
+
+    // within the gap between contracts, won't be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
+      'from_date' => date('YmdHis', strtotime('+2 days')),
+      'to_date' => date('YmdHis', strtotime('+4 days'))
+    ], true);
+
+    // within the second contract, will be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
+      'from_date' => date('YmdHis', strtotime('+7 days')),
+      'to_date' => date('YmdHis', strtotime('+8 days'))
+    ], true);
+
+    $expectedResult = [$contract['contact_id'] => -4];
+
+    $this->assertEquals($expectedResult, LeaveBalanceChange::getOpenLeaveRequestBalanceForContacts(
+      [$contract['contact_id']],
+      $absencePeriod->id,
+      $absenceTypeID
+    ));
+  }
+
+  public function testGetOpenLeaveRequestBalanceForContactsShouldIncludeOnlyTheBalanceChangesRequestsWithinTheGivenAbsencePeriod() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $absencePeriod1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $absencePeriod2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('+11 days'),
+      'end_date' => CRM_Utils_Date::processDate('+21 days')
+    ]);
+
+    //Contract spanning the two absence periods
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $absencePeriod1->start_date]
+    );
+
+    $absenceTypeID = 1;
+
+    //Within the first Absence Period
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
+      'from_date' => date('YmdHis', strtotime('-10 days')),
+      'to_date' => date('YmdHis', strtotime('-5 days')),
+    ], true);
+
+    //Within the second Absence Period
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
+      'from_date' => date('YmdHis', strtotime('+15 days')),
+      'to_date' => date('YmdHis', strtotime('+17 days'))
+    ], true);
+
+    // Not within any of the absence periods and it will not be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract['contact_id'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
+      'from_date' => date('YmdHis', strtotime('+40 days')),
+      'to_date' => date('YmdHis', strtotime('+41 days'))
+    ], true);
+
+    $expectedResult = [$contract['contact_id'] => -6];
+    $this->assertEquals($expectedResult, LeaveBalanceChange::getOpenLeaveRequestBalanceForContacts(
+      [$contract['contact_id']],
+      $absencePeriod1->id,
+      $absenceTypeID
+    ));
+
+    $expectedResult = [$contract['contact_id'] => -3];
+    $this->assertEquals($expectedResult, LeaveBalanceChange::getOpenLeaveRequestBalanceForContacts(
+      [$contract['contact_id']],
+      $absencePeriod2->id,
+      $absenceTypeID
+    ));
+  }
+
+  public function testGetOpenLeaveRequestBalanceForContactsShouldIncludeOnlyTheBalanceChangesForMultipleContacts() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contract1 = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      [
+        'period_start_date' => CRM_Utils_Date::processDate('-5 days'),
+        'period_end_date' => CRM_Utils_Date::processDate('-1 day')
+      ]
+    );
+
+    $contract2 = HRJobContractFabricator::fabricate(
+      ['contact_id' => 2],
+      ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
+    );
+
+    $absenceTypeID = 1;
+
+    // before the first contract, won't be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract1['contact_id'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
+      'from_date' => date('YmdHis', strtotime('-4 days')),
+      'to_date' => date('YmdHis', strtotime('-2 days'))
+    ], true);
+
+    // within first contract, will be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract2['contact_id'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
+      'from_date' => date('YmdHis', strtotime('+6 days')),
+      'to_date' => date('YmdHis', strtotime('+6 days'))
+    ], true);
+
+
+    $result = LeaveBalanceChange::getOpenLeaveRequestBalanceForContacts(
+      [$contract1['contact_id'], $contract2['contact_id']],
+      $absencePeriod->id,
+      $absenceTypeID
+    );
+
+    $this->assertCount(2, $result);
+    $this->assertEquals(-3, $result[$contract1['contact_id']]);
+    $this->assertEquals(-1, $result[$contract2['contact_id']]);
+  }
+
   private function getBalanceChangesForPeriodEntitlement($leavePeriodEntitlement) {
     $record = new LeaveBalanceChange();
     $record->source_id = $leavePeriodEntitlement->id;
