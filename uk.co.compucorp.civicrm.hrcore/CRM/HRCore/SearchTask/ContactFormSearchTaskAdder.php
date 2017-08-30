@@ -5,17 +5,19 @@ use CRM_HRCore_Form_CreateUserRecordTaskForm as CreateUserRecordTaskForm;
 class CRM_HRCore_SearchTask_ContactFormSearchTaskAdder {
 
   /**
-   * @inheritdoc
+   * @param $tasks
    */
   public static function add(&$tasks) {
     $tasks[] = [
-      'title'  => ts('Create User Record(s)'),
+      'title'  => ts('Create User Accounts(s)'),
       'class'  => CreateUserRecordTaskForm::class,
     ];
   }
 
   /**
-   * @inheritdoc
+   * @param $objectName
+   *
+   * @return bool
    */
   public static function shouldAdd($objectName) {
     $isContact = $objectName === 'contact';
