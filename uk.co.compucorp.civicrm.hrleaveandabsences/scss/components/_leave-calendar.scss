@@ -23,7 +23,8 @@ $chr-leave-calendar-legend-size:                  20px;
 }
 
 .chr_leave-calendar__day {
-  font-size: $chr-leave-calendar-cell-font-size !important;;
+  font-size: $chr-leave-calendar-cell-font-size !important;
+  line-height: 1.4em !important;
   padding: 10px !important;
   text-align: center !important;
 
@@ -137,7 +138,7 @@ $chr-leave-calendar-legend-size:                  20px;
 }
 
 .chr_leave-calendar__legend__title {
-  font-size: 12px;
+  font-size: $font-size-small;
 }
 
 .chr_leave-calendar__legend {
@@ -180,7 +181,6 @@ $chr-leave-calendar-legend-size:                  20px;
   background: $panel-default-heading-bg;
 }
 
-
 td.chr_leave-calendar__name,
 th.chr_leave-calendar__name {
   font-size: $font-size-small !important;
@@ -192,16 +192,20 @@ th.chr_leave-calendar__name {
   width: 100%;
 }
 
-th.chr_leave-calendar__name {
-  height: 49px
+th.chr_leave-calendar__name, th.chr_leave-calendar__day {
+  height: 49px;
 }
 
-
 .chr_leave-calendar__pagination {
-  padding: 5px 0;
+  display: inline;
+  font-size: $font-size-small;
 
   [class*="btn"] {
     outline: none;
+    padding: 0;
+    display: block;
+    line-height: 10px;
+    margin-left: 33px;
 
     .fa {
       color: $gray;
@@ -220,6 +224,16 @@ th.chr_leave-calendar__name {
         color: $gray-darker;
       }
     }
+  }
+}
+
+.chr_leave-calendar__pagination-next {
+  border-top: none;
+
+  th {
+    height: 24px;
+    padding-top: 4px !important;
+    padding-bottom: 6px !important;
   }
 }
 
