@@ -33,7 +33,7 @@
   <item>
     <path>civicrm/user/create-account</path>
     <page_callback>CRM_HRCore_Form_CreateUserRecordSingleTaskForm</page_callback>
-    <title>Create User Record</title>
+    <title>Create User Account</title>
     <access_arguments>create users</access_arguments>
   </item>
 </menu>
