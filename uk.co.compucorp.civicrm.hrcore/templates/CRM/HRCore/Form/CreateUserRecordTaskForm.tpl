@@ -60,7 +60,6 @@
 
   <br/>
 
-
   <div class="panel">
 
     {if !empty($form.roles)}
@@ -68,7 +67,7 @@
       <label>User Roles</label>
       <p class = "description">
         {ts}
-          Select any of the following user roles to add to the new user accounts:
+          Select any of the following user roles to add to the user accounts:
         {/ts}
       </p>
       <div>
