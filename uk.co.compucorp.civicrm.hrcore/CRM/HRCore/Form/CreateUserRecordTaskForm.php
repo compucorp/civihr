@@ -26,10 +26,8 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
   public function preProcess() {
     parent::preProcess();
 
-    $haveAccount = $this->getContactsWithAccount();
-
     $this->assign('invalidEmailContacts', $this->getContactsWithInvalidEmail());
-    $this->assign('contactsWithAccount', $haveAccount);
+    $this->assign('contactsWithAccount', $this->getContactsWithAccount());
     $this->assign('contactsForCreation', $this->getValidContactsForCreation());
     $this->assign('emailConflictContact', $this->getEmailConflictContacts());
   }
