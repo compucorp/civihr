@@ -3086,4 +3086,42 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertFalse(LeaveRequest::datesChanged($params));
   }
+
+  public function testCanReturnTheListOfAllStatuses() {
+    $leaveStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $statuses = LeaveRequest::getStatuses();
+
+    $this->assertEquals($leaveStatuses, $statuses);
+  }
+
+  public function testCanReturnTheListOfApprovedStatuses() {
+    $leaveStatuses = LeaveRequest::getStatuses();
+
+    $approvedStatuses = LeaveRequest::getApprovedStatuses();
+
+    $this->assertCount(2, $approvedStatuses);
+    $this->assertContains($leaveStatuses['approved'], $approvedStatuses);
+    $this->assertContains($leaveStatuses['admin_approved'], $approvedStatuses);
+  }
+
+  public function testCanReturnTheListOfOpenStatuses() {
+    $leaveStatuses = LeaveRequest::getStatuses();
+
+    $openStatuses = LeaveRequest::getOpenStatuses();
+
+    $this->assertCount(2, $openStatuses);
+    $this->assertContains($leaveStatuses['awaiting_approval'], $openStatuses);
+    $this->assertContains($leaveStatuses['more_information_required'], $openStatuses);
+  }
+
+  public function testCanReturnTheListOfCancelledStatuses() {
+    $leaveStatuses = LeaveRequest::getStatuses();
+
+    $cancelledStatuses = LeaveRequest::getCancelledStatuses();
+
+    $this->assertCount(2, $cancelledStatuses);
+    $this->assertContains($leaveStatuses['cancelled'], $cancelledStatuses);
+    $this->assertContains($leaveStatuses['rejected'], $cancelledStatuses);
+  }
 }

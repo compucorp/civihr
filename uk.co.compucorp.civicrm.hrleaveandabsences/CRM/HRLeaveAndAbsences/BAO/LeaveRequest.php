@@ -500,7 +500,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateNoOverlappingLeaveRequests($params) {
-    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
+    $leaveRequestStatuses = self::getStatuses();
 
     $leaveRequestStatusFilter = [
       $leaveRequestStatuses['approved'],
@@ -596,7 +596,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params, $absenceType) {
-    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
+    $leaveRequestStatuses = self::getStatuses();
     $leaveRequestIsForCurrentUser = CRM_Core_Session::getLoggedInContactID() == $params['contact_id'];
     $isACancellationRequest = ($params['status_id'] == $leaveRequestStatuses['cancelled']);
 
@@ -740,6 +740,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       $overlappingLeaveRequests[] = clone $leaveRequest;
     }
     return $overlappingLeaveRequests;
+  }
+
+  /**
+   * Returns a list of all possible statuses for a Leave Request
+   *
+   * @return array
+   */
+  public static function getStatuses() {
+    return array_flip(self::buildOptions('status_id', 'validate'));
   }
 
   /**
@@ -1018,14 +1027,36 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Returns Statuses considered to be Approval statuses for a Leave Request
+   * Returns Statuses on which a Leave Request is considered to be Approved
    *
    * @return array
    */
-  private static function getApprovalStatuses() {
-    $leaveStatuses = array_flip(self::buildOptions('status_id', 'validate'));
+  public static function getApprovedStatuses() {
+    $leaveStatuses = self::getStatuses();
 
     return [$leaveStatuses['approved'], $leaveStatuses['admin_approved']];
+  }
+
+  /**
+   * Returns Statuses on which a Leave Request is considered to be Open
+   *
+   * @return array
+   */
+  public static function getOpenStatuses() {
+    $leaveStatuses = self::getStatuses();
+
+    return [$leaveStatuses['awaiting_approval'], $leaveStatuses['more_information_required']];
+  }
+
+  /**
+   * Returns Statuses on which a Leave Request is considered to be Cancelled
+   *
+   * @return array
+   */
+  public static function getCancelledStatuses() {
+    $leaveStatuses = self::getStatuses();
+
+    return [$leaveStatuses['cancelled'], $leaveStatuses['rejected']];
   }
 
   /**
@@ -1038,7 +1069,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function isAlreadyApproved(LeaveRequest $leaveRequest) {
     $oldStatus = $leaveRequest->status_id;
 
-    return in_array($oldStatus, self::getApprovalStatuses());
+    return in_array($oldStatus, self::getApprovedStatuses());
   }
 
   /**

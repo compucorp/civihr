@@ -662,7 +662,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @return array
    */
   private static function getDatesOverlappingBalanceChangesToExpire($balanceChangesToExpire) {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $leaveRequestStatuses = LeaveRequest::getStatuses();
 
     $leaveRequestTable = LeaveRequest::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
@@ -813,12 +813,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @return float
    */
   public static function getTotalApprovedToilForPeriod(AbsencePeriod $period, $contactID, $typeID) {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-
-    $leaveRequestStatusFilter = [
-      $leaveRequestStatuses['approved'],
-      $leaveRequestStatuses['admin_approved']
-    ];
+    $leaveRequestStatusFilter = LeaveRequest::getApprovedStatuses();
 
     $totalApprovedTOIL = self::getTotalTOILBalanceChangeForContact(
       $contactID,
@@ -1092,12 +1087,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     array_walk($contactIDs, 'intval');
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    $approvedStatuses = [
-      $leaveRequestStatuses['approved'],
-      $leaveRequestStatuses['admin_approved']
-    ];
-
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
@@ -1144,7 +1133,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
         WHERE ((
           {$whereLeaveRequestAbsenceType}
-          leave_request.status_id IN(" . implode(', ', $approvedStatuses) . ") AND 
+          leave_request.status_id IN(" . implode(', ', LeaveRequest::getApprovedStatuses()) . ") AND 
           (leave_request_date.date >= %1 AND leave_request_date.date <= %2) AND
           contract.deleted = 0 AND
           (
@@ -1219,12 +1208,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $contractRevisionTable = HRJobContractRevision::getTableName();
     $contractDetailsTable = HRJobDetails::getTableName();
 
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    $openStatuses = [
-      $leaveRequestStatuses['awaiting_approval'],
-      $leaveRequestStatuses['more_information_required']
-    ];
-
     $absencePeriod = AbsencePeriod::findById($absencePeriodID);
 
     $whereAbsenceType = '';
@@ -1267,7 +1250,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
         ) AND  
         leave_balance_change.expired_balance_change_id IS NULL AND {$whereAbsenceType}
         leave_request.contact_id IN(" . implode(', ', $contactIDs) . ") AND
-        leave_request.status_id IN(" . implode(', ', $openStatuses) . ")
+        leave_request.status_id IN(" . implode(', ', LeaveRequest::getOpenStatuses()) . ")
       GROUP BY leave_request.contact_id, leave_request.type_id
     ";
 

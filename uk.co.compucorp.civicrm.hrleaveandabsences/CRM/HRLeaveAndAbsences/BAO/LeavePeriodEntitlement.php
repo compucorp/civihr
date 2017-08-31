@@ -388,11 +388,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return float
    */
   public function getBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    $filterStatuses = [
-      $leaveRequestStatus['approved'],
-      $leaveRequestStatus['admin_approved'],
-    ];
+    $filterStatuses = LeaveRequest::getApprovedStatuses();
+
     return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
   }
 
@@ -406,13 +403,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return float
    */
   public function getFutureBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    $filterStatuses = [
-      $leaveRequestStatus['approved'],
-      $leaveRequestStatus['admin_approved'],
-      $leaveRequestStatus['awaiting_approval'],
-      $leaveRequestStatus['more_information_required'],
-    ];
+    $filterStatuses = array_merge(
+      LeaveRequest::getApprovedStatuses(),
+      LeaveRequest::getOpenStatuses()
+    );
     return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
   }
 
@@ -589,11 +583,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return float
    */
   public function getLeaveRequestBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    $filterStatuses = [
-      $leaveRequestStatus['approved'],
-      $leaveRequestStatus['admin_approved'],
-    ];
+    $filterStatuses = LeaveRequest::getApprovedStatuses();
 
     return LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($this, $filterStatuses);
   }
