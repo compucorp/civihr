@@ -767,7 +767,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
 
-    $this->deleteDates();
+    $this->deleteDatesAndBalanceChanges();
 
     $datePeriod = new BasicDatePeriod($this->from_date, $this->to_date);
 
@@ -780,9 +780,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Deletes all the dates related to this LeaveRequest
+   * Deletes all the dates and balance changes related to this LeaveRequest
    */
-  private function deleteDates() {
+  private function deleteDatesAndBalanceChanges() {
+    LeaveBalanceChange::deleteAllForLeaveRequest($this);
     LeaveRequestDate::deleteDatesForLeaveRequest($this->id);
   }
 
