@@ -2896,6 +2896,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     //update leave request without changing the dates
     $params['id'] = $leaveRequest->id;
+    LeaveRequestFabricator::fabricateWithoutValidation($params);
     $dates = $leaveRequest->getDates();
     $afterDatesID = [];
     foreach($dates as $date) {
