@@ -152,9 +152,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
       return $results;
     }
 
-    $leaveBalances = $this->getLeaveBalances($results);
-
-    return $leaveBalances;
+    return $this->getLeaveBalances($results);
   }
 
   /**
@@ -175,6 +173,10 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
    */
   private function getLeaveBalances($contacts) {
     $contactIDs = array_column($contacts, 'id');
+
+    if (empty($contactIDs)) {
+      return [];
+    }
 
     $absenceTypeID = isset($this->params['type_id']) ? $this->params['type_id'] : null;
     $absencePeriodID = $this->params['period_id'];
