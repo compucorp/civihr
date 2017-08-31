@@ -46,7 +46,6 @@ class CRM_HRLeaveAndAbsences_Form_GeneralSettings extends CRM_Core_Form {
     $this->assign('elementNames', $this->getRenderableElementNames());
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
-    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
     parent::buildQuickForm();
   }
 
