@@ -23,6 +23,21 @@ module.exports = (function () {
       });
 
       return this;
+    },
+
+    /**
+     * Toggle contacts with leaves
+     *
+     * @return {Promise}
+     */
+    toggleContactsWithLeaves: function () {
+      var casper = this.casper;
+
+      casper.then(function () {
+        casper.click('.chr_leave-calendar__toggle-contacts-with-leaves');
+      });
+
+      return this;
     }
   });
 })();
