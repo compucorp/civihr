@@ -1097,15 +1097,25 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *   Returns null for when a leave request is newly
    *   created.
    */
-  private static function datesChanged($params) {
+  public static function datesChanged($params) {
     if(!empty($params['id'])) {
       $leaveRequest = self::findById($params['id']);
       $fromDate = new DateTime($params['from_date']);
+      $fromDateType = $params['from_date_type'];
       $toDate = new DateTime($params['to_date']);
+      $toDateType = $params['to_date_type'];
       $leaveRequestFromDate = new DateTime($leaveRequest->from_date);
+      $leaveRequestFromDateType = $leaveRequest->from_date_type;
       $leaveRequestToDate = new DateTime($leaveRequest->to_date);
+      $leaveRequestToDateType = $leaveRequest->to_date_type;
 
-      return $leaveRequestFromDate != $fromDate || $leaveRequestToDate != $toDate;
+      $isNotSameFromDate = $leaveRequestFromDate != $fromDate;
+      $isNotSameFromDateType = $leaveRequestFromDateType != $fromDateType;
+      $isNotSameToDate = $leaveRequestToDate != $toDate;
+      $isNotSameToDateType = $leaveRequestToDateType != $toDateType;
+
+      return ($isNotSameFromDate || $isNotSameFromDateType) ||
+        ($isNotSameToDate || $isNotSameToDateType);
     }
 
     return null;

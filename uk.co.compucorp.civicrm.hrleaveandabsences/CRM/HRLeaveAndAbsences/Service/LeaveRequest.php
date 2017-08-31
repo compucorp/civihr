@@ -37,6 +37,13 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   private $leaveStatuses;
 
   /**
+   * @var boolean|null
+   *   Stores whether the dates has changed for the
+   *   current leave request to be updated or not.
+   */
+  private $datesChanged = null;
+
+  /**
    * CRM_HRLeaveAndAbsences_Service_LeaveRequest constructor.
    *
    * @param \CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange $leaveBalanceChangeService
@@ -195,13 +202,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return bool
    */
   private function datesChanged($params) {
-    $oldLeaveRequest = $this->getOldLeaveRequest($params['id']);
-    $fromDate = new DateTime($params['from_date']);
-    $toDate = new DateTime($params['to_date']);
-    $leaveRequestFromDate = new DateTime($oldLeaveRequest->from_date);
-    $leaveRequestToDate = new DateTime($oldLeaveRequest->to_date);
-
-    return $leaveRequestFromDate != $fromDate || $leaveRequestToDate != $toDate;
+    if (is_null($this->datesChanged)) {
+      $this->datesChanged = LeaveRequest::datesChanged($params);
+    }
+    return $this->datesChanged;
   }
 
   /**
@@ -264,15 +268,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    */
   protected function createRequestWithBalanceChanges($params) {
-    $skipBalanceChangeUpdate = false;
     $updateBalanceChange = !empty($params['change_balance']);
+    $skipBalanceChangeUpdate = !empty($params['id']) &&
+      !$this->datesChanged($params) && !$updateBalanceChange;
     $leaveRequest = LeaveRequest::create($params, false);
-
-    if(!empty($params['id'])) {
-      if(!$this->datesChanged($params) && !$updateBalanceChange) {
-        $skipBalanceChangeUpdate = true;
-      }
-    }
 
     if(!$skipBalanceChangeUpdate) {
       $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);

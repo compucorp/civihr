@@ -2906,4 +2906,184 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //the leave dates were not deleted because the ID's are still the same.
     $this->assertEquals($beforeDatesID, $afterDatesID);
   }
+
+  public function testDatesChangedReturnsTrueWhenOnlyFromDateTypeChanges(){
+    $fromDate = CRM_Utils_Date::processDate('2016-01-08');
+    $toDate = CRM_Utils_Date::processDate('2016-01-10');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate,
+      'from_date_type' => 1,
+      'to_date' => $toDate,
+      'to_date_type' => 1,
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update leave request
+    $params['id'] = $leaveRequest->id;
+    $params['from_date_type'] = 2;
+
+    $this->assertTrue(LeaveRequest::datesChanged($params));
+  }
+
+  public function testDatesChangedReturnsTrueWhenOnlyToDateTypeChanges(){
+    $fromDate = CRM_Utils_Date::processDate('2016-01-08');
+    $toDate = CRM_Utils_Date::processDate('2016-01-10');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate,
+      'from_date_type' => 1,
+      'to_date' => $toDate,
+      'to_date_type' => 1,
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update leave request
+    $params['id'] = $leaveRequest->id;
+    $params['to_date_type'] = 2;
+
+    $this->assertTrue(LeaveRequest::datesChanged($params));
+  }
+
+  public function testDatesChangedReturnsTrueWhenOnlyToDateChanges(){
+    $fromDate = CRM_Utils_Date::processDate('2016-01-08');
+    $toDate = CRM_Utils_Date::processDate('2016-01-10');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate,
+      'from_date_type' => 1,
+      'to_date' => $toDate,
+      'to_date_type' => 1,
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update leave request
+    $params['id'] = $leaveRequest->id;
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-18');
+
+    $this->assertTrue(LeaveRequest::datesChanged($params));
+  }
+
+  public function testDatesChangedReturnsTrueWhenOnlyFromDateChanges(){
+    $fromDate = CRM_Utils_Date::processDate('2016-01-08');
+    $toDate = CRM_Utils_Date::processDate('2016-01-10');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate,
+      'from_date_type' => 1,
+      'to_date' => $toDate,
+      'to_date_type' => 1,
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update leave request
+    $params['id'] = $leaveRequest->id;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-09');
+
+    $this->assertTrue(LeaveRequest::datesChanged($params));
+  }
+
+  public function testDatesChangedReturnsTrueWhenAllTheDateParameterChanges(){
+    $fromDate = CRM_Utils_Date::processDate('2016-01-08');
+    $toDate = CRM_Utils_Date::processDate('2016-01-10');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate,
+      'from_date_type' => 1,
+      'to_date' => $toDate,
+      'to_date_type' => 1,
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update leave request
+    $params['id'] = $leaveRequest->id;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-09');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-15');
+    $params['to_date_type'] = 2;
+    $params['from_date_type'] = 2;
+
+    $this->assertTrue(LeaveRequest::datesChanged($params));
+  }
+
+  public function testDatesChangedReturnsTrueWhenOnlyToDateAndToDateTypeChanges(){
+    $fromDate = CRM_Utils_Date::processDate('2016-01-08');
+    $toDate = CRM_Utils_Date::processDate('2016-01-10');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate,
+      'from_date_type' => 1,
+      'to_date' => $toDate,
+      'to_date_type' => 1,
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update leave request
+    $params['id'] = $leaveRequest->id;
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-15');
+    $params['to_date_type'] = 2;
+
+    $this->assertTrue(LeaveRequest::datesChanged($params));
+  }
+
+  public function testDatesChangedReturnsTrueWhenOnlyFromDateAndFromDateTypeChanges(){
+    $fromDate = CRM_Utils_Date::processDate('2016-01-08');
+    $toDate = CRM_Utils_Date::processDate('2016-01-10');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate,
+      'from_date_type' => 1,
+      'to_date' => $toDate,
+      'to_date_type' => 1,
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update leave request
+    $params['id'] = $leaveRequest->id;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-15');
+    $params['from_date_type'] = 2;
+
+    $this->assertTrue(LeaveRequest::datesChanged($params));
+  }
+
+  public function testDatesChangedReturnsFalseWhenAllTheDateParameterDoesNotChange(){
+    $fromDate = CRM_Utils_Date::processDate('2016-01-08');
+    $toDate = CRM_Utils_Date::processDate('2016-01-10');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate,
+      'from_date_type' => 1,
+      'to_date' => $toDate,
+      'to_date_type' => 1,
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update leave request without changing any date parameter
+    $params['id'] = $leaveRequest->id;
+
+    $this->assertFalse(LeaveRequest::datesChanged($params));
+  }
 }
