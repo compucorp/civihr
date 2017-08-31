@@ -255,8 +255,8 @@ function _civicrm_api3_leave_period_entitlement_getleavebalances_spec(&$spec) {
     'description' => 'Include only Leave Balances for contacts managed by the contact with the given ID',
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 0,
-    'FKClassName'  => 'CRM_Contact_DAO_Contact',
-    'FKApiName'    => 'Contact',
+    'FKClassName' => 'CRM_Contact_DAO_Contact',
+    'FKApiName' => 'Contact',
   ];
 
   $spec['period_id'] = [
@@ -265,8 +265,8 @@ function _civicrm_api3_leave_period_entitlement_getleavebalances_spec(&$spec) {
     'description' => 'Include only Balances from Leave Requests taken during the Period with the given ID',
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 1,
-    'FKClassName'  => 'CRM_HRLeaveAndAbsences_BAO_AbsencePeriod',
-    'FKApiName'    => 'AbsencePeriod',
+    'FKClassName' => 'CRM_HRLeaveAndAbsences_BAO_AbsencePeriod',
+    'FKApiName' => 'AbsencePeriod',
   ];
 
   $spec['contact_id'] = [
@@ -275,8 +275,8 @@ function _civicrm_api3_leave_period_entitlement_getleavebalances_spec(&$spec) {
     'description' => 'Include only Leave Balances for contacts with the given ID',
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 0,
-    'FKClassName'  => 'CRM_Contact_DAO_Contact',
-    'FKApiName'    => 'Contact',
+    'FKClassName' => 'CRM_Contact_DAO_Contact',
+    'FKApiName' => 'Contact',
   ];
 
   $spec['type_id'] = [
@@ -285,8 +285,8 @@ function _civicrm_api3_leave_period_entitlement_getleavebalances_spec(&$spec) {
     'title' => 'Absence Type ID',
     'description' => 'Include only Balances for the Given Absence Type',
     'api.required' => 0,
-    'FKClassName'  => 'CRM_HRLeaveAndAbsences_BAO_AbsenceType',
-    'FKApiName'    => 'AbsenceType',
+    'FKClassName' => 'CRM_HRLeaveAndAbsences_BAO_AbsenceType',
+    'FKApiName' => 'AbsenceType',
   ];
 }
 

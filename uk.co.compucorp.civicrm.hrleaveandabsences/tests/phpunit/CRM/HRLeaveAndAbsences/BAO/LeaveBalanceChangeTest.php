@@ -2974,7 +2974,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ));
   }
 
-  public function testGetBalanceForContactsIncludesBalanceChangesFromLeaveRequestsNotOverlappingAContract() {
+  public function testGetBalanceForContactsDoesNotIncludeBalanceChangesFromLeaveRequestsNotOverlappingAContract() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
       'end_date' => CRM_Utils_Date::processDate('+10 days')
@@ -3052,7 +3052,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'to_date' => date('YmdHis', strtotime('+6 days'))
     ], true);
 
-
     // 5.25 (Entitlement) + -1 (2nd leave request) + -2 (3rd leave request) + -1 (5th leave request)
     $expectedResult = [
       $entitlement->contact_id => [
@@ -3107,7 +3106,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ));
   }
 
-  public function testGetBalanceForContactsOverriddenEntitlement() {
+  public function testGetBalanceForContactsIncludesOverriddenEntitlement() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
       'end_date' => CRM_Utils_Date::processDate('+10 days')
@@ -3596,7 +3595,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $absenceTypeID = 1;
 
-    // before the first contract, won't be included
+    // within first contract, will be included
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
       'contact_id' => $contract1['contact_id'],

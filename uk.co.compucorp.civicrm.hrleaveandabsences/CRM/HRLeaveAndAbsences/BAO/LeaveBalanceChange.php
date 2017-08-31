@@ -1063,7 +1063,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
-   * Returns a the current balance (i.e. not including balance changes caused by
+   * Returns the current balance (i.e. not including balance changes caused by
    * open leave requests) for the given Contacts during the given Absence Period.
    * Optionally, it can return balances only for a specific Absence Type.
    *
