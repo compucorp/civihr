@@ -10,7 +10,7 @@
         </div>
 
         <div class="row chr_leave-calendar__month-container">
-          <div class="col-xs-4 col-md-3 col-lg-2 chr_leave-calendar__names-container">
+          <div ng-if="month.showContactName" class="col-xs-4 col-md-3 col-lg-2 chr_leave-calendar__names-container">
             <table ng-switch-when="true" class="table table-bordered chr_leave-calendar">
               <thead>
               <tr class="chr_leave-calendar__days">
@@ -24,7 +24,7 @@
               </tbody>
             </table>
           </div>
-          <div class="col-xs-8 col-md-9 col-lg-10 chr_leave-calendar__dates-container">
+          <div ng-class="{'col-xs-8 col-md-9 col-lg-10': month.showContactName}" class="chr_leave-calendar__dates-container">
             <table ng-switch-when="true" class="table table-bordered chr_leave-calendar">
               <thead>
               <tr class="chr_leave-calendar__days">
