@@ -498,7 +498,7 @@ define([
     function initRoles () {
       role = 'staff';
 
-      if (vm.isSelfRecord) {
+      if ($rootScope.section === 'my-leave') {
         return;
       }
 

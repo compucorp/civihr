@@ -106,7 +106,7 @@
         beforeEach(inject(function () {
           leaveRequest = LeaveRequestInstance.init();
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-          initTestController({ leaveRequest: leaveRequest, isSelfRecord: true });
+          initTestController({ leaveRequest: leaveRequest });
         }));
 
         it('is called', function () {
@@ -248,7 +248,7 @@
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             leaveRequest.fileUploader = { queue: [] };
 
-            initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
+            initTestController({ leaveRequest: leaveRequest });
           });
 
           it('does not allow to submit the leave request without changes', function () {
@@ -277,7 +277,7 @@
             leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', approvalStatus));
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
-            initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
+            initTestController({ leaveRequest: leaveRequest });
           });
 
           it('sets mode to view', function () {
@@ -311,7 +311,7 @@
               leaveRequest.fileUploader = { queue: [] };
 
               spyOn(controller.request, 'update').and.callThrough();
-              initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
+              initTestController({ leaveRequest: leaveRequest });
             });
 
             describe('on initialization', function () {
@@ -376,7 +376,7 @@
 
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
-                initTestController({ isSelfRecord: true, leaveRequest: leaveRequest });
+                initTestController({ leaveRequest: leaveRequest, isSelfRecord: true });
 
                 expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
                 controller.balance.closing = 5;
@@ -833,7 +833,7 @@
 
         ['staff', 'manager', 'admin'].forEach(function (permissionsRole) {
           testRoleForSelfRecord(permissionsRole);
-        })
+        });
 
         /**
          * Tests the role for the self record and expects it to be "staff"
@@ -843,14 +843,11 @@
         function testRoleForSelfRecord (permissionsRole) {
           describe('when user is ' + permissionsRole, function () {
             beforeEach(function () {
+              $rootScope.section = 'my-leave';
               role = permissionsRole;
-
               leaveRequest = LeaveRequestInstance.init();
 
-              initTestController({
-                leaveRequest: leaveRequest,
-                isSelfRecord: true
-              });
+              initTestController({ leaveRequest: leaveRequest });
             });
 
             it('sets the staff role', function () {
