@@ -1,7 +1,10 @@
 <?php
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
@@ -526,5 +529,526 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
     $this->assertEquals(2, $result['count']);
     $this->assertEquals($contactID1, $result['values'][0]['contact_id']);
     $this->assertEquals($contactID2, $result['values'][1]['contact_id']);
+  }
+
+  public function testGetLeaveBalancesReturnsTheBalancesForAllContactsWithAContractDuringTheGivenPeriod() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+    $contact3 = ContactFabricator::fabricate();
+
+    $contract1 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => CRM_Utils_Date::processDate('-5 days'),
+        'period_end_date' => CRM_Utils_Date::processDate('-1 day')
+      ]
+    );
+
+    $contract2 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
+    );
+
+    $contract3 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact3['id']],
+      [
+        'period_start_date' => CRM_Utils_Date::processDate('-15 days'),
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact3['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('+15 days')]
+    );
+
+
+    $absenceTypeID = 1;
+
+    $entitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact1['id'],
+    ]);
+
+    $entitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact2['id'],
+    ]);
+
+    $entitlement3 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact3['id'],
+    ]);
+
+    $this->createLeaveBalanceChange($entitlement1->id, 15.25);
+    $this->createLeaveBalanceChange($entitlement2->id, 5.5);
+    $this->createLeaveBalanceChange($entitlement3->id, 7);
+
+    // within the first contract, will be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract1['contact_id'],
+      'status_id' => $leaveRequestStatuses['approved'],
+      'from_date' => date('YmdHis', strtotime('-4 days')),
+      'to_date' => date('YmdHis', strtotime('-2 days'))
+    ], true);
+
+    // within second contract, will be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract2['contact_id'],
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
+      'from_date' => date('YmdHis', strtotime('+6 days')),
+      'to_date' => date('YmdHis', strtotime('+6 days'))
+    ], true);
+
+    // within the third contract, which is starts before the absence period but
+    // doesn't have an end date and is active during the period, so it will be
+    // included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract3['contact_id'],
+      'status_id' => $leaveRequestStatuses['approved'],
+      'from_date' => date('YmdHis', strtotime('-10 days')),
+      'to_date' => date('YmdHis', strtotime('-9 days'))
+    ], true);
+
+    // within the fourth contract, which is outside the absence period, so it
+    // won't be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract2['contact_id'],
+      'status_id' => $leaveRequestStatuses['more_information_required'],
+      'from_date' => date('YmdHis', strtotime('+16 days')),
+      'to_date' => date('YmdHis', strtotime('+16 days'))
+    ], true);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id
+    ])['values'];
+
+    $this->assertCount(3, $result);
+
+    $contact1ExpectedBalances = [
+      'contact_id' => $contact1['id'],
+      'contact_display_name' => $contact1['display_name'],
+      'absence_types' => [
+        [
+          'id' => $absenceTypeID,
+          'entitlement' => 15.25,
+          'used' => 3,
+          'balance' => 12.25,
+          'requested' => 0
+        ]
+      ]
+    ];
+    $this->assertEquals($contact1ExpectedBalances, $result[$contact1['id']]);
+
+    $contact2ExpectedBalances = [
+      'contact_id' => $contact2['id'],
+      'contact_display_name' => $contact2['display_name'],
+      'absence_types' => [
+        [
+          'id' => $absenceTypeID,
+          'entitlement' => 5.5,
+          'used' => 0,
+          'balance' => 5.5,
+          'requested' => 1
+        ]
+      ]
+    ];
+    $this->assertEquals($contact2ExpectedBalances, $result[$contact2['id']]);
+
+    $contact3ExpectedBalances = [
+      'contact_id' => $contact3['id'],
+      'contact_display_name' => $contact3['display_name'],
+      'absence_types' => [
+        [
+          'id' => $absenceTypeID,
+          'entitlement' => 7,
+          'used' => 2,
+          'balance' => 5,
+          'requested' => 0
+        ]
+      ]
+    ];
+    $this->assertEquals($contact3ExpectedBalances, $result[$contact3['id']]);
+  }
+
+  public function testGetLeaveBalancesCanReturnBalancesForASpecificContact() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    $absenceTypeID = 1;
+
+    $entitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact1['id'],
+    ]);
+
+    $entitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact2['id'],
+    ]);
+
+    $this->createLeaveBalanceChange($entitlement1->id, 7.75);
+    $this->createLeaveBalanceChange($entitlement2->id, 5.5);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'contact_id' => $contact1['id']
+    ])['values'];
+
+    $this->assertCount(1, $result);
+
+    $expectedResult = [
+      'contact_id' => $contact1['id'],
+      'contact_display_name' => $contact1['display_name'],
+      'absence_types' => [
+        [
+          'id' => $absenceTypeID,
+          'entitlement' => 7.75,
+          'used' => 0,
+          'balance' => 7.75,
+          'requested' => 0
+        ]
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result[$contact1['id']]);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'contact_id' => $contact2['id']
+    ])['values'];
+
+    $this->assertCount(1, $result);
+
+    $expectedResult = [
+      'contact_id' => $contact2['id'],
+      'contact_display_name' => $contact2['display_name'],
+      'absence_types' => [
+        [
+          'id' => $absenceTypeID,
+          'entitlement' => 5.5,
+          'used' => 0,
+          'balance' => 5.5,
+          'requested' => 0
+        ]
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result[$contact2['id']]);
+  }
+
+  public function testGetLeaveBalancesCanReturnBalancesForContactsManagedByASpecificManager() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $manager1 = ContactFabricator::fabricate();
+    $manager2 = ContactFabricator::fabricate();
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $this->setContactAsLeaveApproverOf($manager1, $contact1);
+    $this->setContactAsLeaveApproverOf($manager1, $contact2);
+    $this->setContactAsLeaveApproverOf($manager2, $contact2);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    $absenceTypeID = 1;
+
+    $entitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact1['id'],
+    ]);
+
+    $entitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact2['id'],
+    ]);
+
+    $this->createLeaveBalanceChange($entitlement1->id, 7.75);
+    $this->createLeaveBalanceChange($entitlement2->id, 5.5);
+
+    // Manager 1 manages both contacts, so they all should be returned
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'managed_by' => $manager1['id']
+    ])['values'];
+
+    $this->assertCount(2, $result);
+    $this->assertNotEmpty($result[$contact1['id']]);
+    $this->assertNotEmpty($result[$contact2['id']]);
+
+    // Manager 2 manages only contact 2, so that's the only one returned
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'managed_by' => $manager2['id']
+    ])['values'];
+
+    $this->assertCount(1, $result);
+    $this->assertNotEmpty($result[$contact2['id']]);
+  }
+
+  public function testGetLeaveBalancesOnlyReturnBalancesForContactsManagedByTheCurrentUser() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $manager1 = ContactFabricator::fabricate();
+    $manager2 = ContactFabricator::fabricate();
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $this->setContactAsLeaveApproverOf($manager1, $contact1);
+    $this->setContactAsLeaveApproverOf($manager2, $contact2);
+
+    $this->registerCurrentLoggedInContactInSession($manager2['id']);
+    $this->setPermissions([]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    $absenceTypeID = 1;
+
+    $entitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact1['id'],
+    ]);
+
+    $entitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact2['id'],
+    ]);
+
+    $this->createLeaveBalanceChange($entitlement1->id, 7.75);
+    $this->createLeaveBalanceChange($entitlement2->id, 5.5);
+
+    // Currently logged in as Manager 2, so only Contact 2 should be returned
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id
+    ])['values'];
+
+    $this->assertCount(1, $result);
+    $this->assertNotEmpty($result[$contact2['id']]);
+
+    // If Manager 2 tries to get the managees of Manager 1, an empty result will
+    // be returned
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'managed_by' => $manager1['id']
+    ])['values'];
+
+    $this->assertEmpty($result);
+  }
+
+  public function testGetLeaveBalancesShouldThrowAnErrorIfAInvalidAbsencePeriodIsGiven() {
+    $randomID = rand(1, 500);
+
+    $this->setExpectedException(
+      'CiviCRM_API3_Exception',
+      "Unable to find a CRM_HRLeaveAndAbsences_BAO_AbsencePeriod with id {$randomID}."
+    );
+
+    civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $randomID
+    ]);
+  }
+
+  public function testGetLeaveBalancesShouldThrowAnErrorIfAnAbsencePeriodIsNotGiven() {
+    $this->setExpectedException(
+      'CiviCRM_API3_Exception',
+      'Mandatory key(s) missing from params array: period_id'
+    );
+
+    civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', []);
+  }
+
+  public function testGetLeaveBalanceShouldReturnTheNumberOfRecordsWhenIsCountIsPresent() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    $absenceTypeID = 1;
+
+    $entitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact1['id'],
+    ]);
+
+    $entitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contact2['id'],
+    ]);
+
+    $this->createLeaveBalanceChange($entitlement1->id, 7.75);
+    $this->createLeaveBalanceChange($entitlement2->id, 5.5);
+
+    // Balances for both contacts will be returned
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'options' => ['is_count' => 1]
+    ]);
+    $this->assertEquals(2, $result);
+
+    // There's no manager with ID 100, so count will be 0
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'managed_by' => 100,
+      'options' => ['is_count' => 1]
+    ]);
+    $this->assertEquals(0, $result);
+
+    // Querying for a single specific contact, count will be 1
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'contact_id' => $contact1['id'],
+      'options' => ['is_count' => 1]
+    ]);
+    $this->assertEquals(1, $result);
+  }
+
+  public function testGetLeaveBalanceCanReturnBalancesForASpecificAbsenceType() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contact1 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    $absenceType1ID = 1;
+    $absenceType2ID = 2;
+
+    $entitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType1ID,
+      'contact_id' => $contact1['id'],
+    ]);
+
+    $entitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType2ID,
+      'contact_id' => $contact1['id'],
+    ]);
+
+    $this->createLeaveBalanceChange($entitlement1->id, 7.75);
+    $this->createLeaveBalanceChange($entitlement2->id, 5.5);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType1ID
+    ])['values'];
+    $this->assertCount(1, $result[$contact1['id']]['absence_types']);
+    $this->assertEquals($absenceType1ID, $result[$contact1['id']]['absence_types'][0]['id']);
+
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType2ID
+    ])['values'];
+    $this->assertCount(1, $result[$contact1['id']]['absence_types']);
+    $this->assertEquals($absenceType2ID, $result[$contact1['id']]['absence_types'][0]['id']);
+  }
+
+  public function testGetLeaveBalanceReturnsAnEmptyArrayWhenNoContactsMatchTheGivenCriteria() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    $contact1 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    $entitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id,
+      'type_id' => 1,
+      'contact_id' => $contact1['id'],
+    ]);
+
+    $this->createLeaveBalanceChange($entitlement1->id, 7.75);
+
+    // Passing the ID of an non-existing, so nothing will be returned
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'contact_id' => $contact1['id'] + 1
+    ])['values'];
+    $this->assertEmpty($result);
+
+    // All the contacts (only one in this case) will be returned
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+    ])['values'];
+    $this->assertCount(1, $result);
   }
 }

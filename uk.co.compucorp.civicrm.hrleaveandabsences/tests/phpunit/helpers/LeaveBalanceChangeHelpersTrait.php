@@ -195,7 +195,8 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
       FROM {$balanceChangeTable} balance_change
       INNER JOIN {$leaveRequestDateTable} as leave_request_date 
         ON leave_request_date.id = balance_change.source_id AND balance_change.source_type = %1
-      WHERE leave_request_date.leave_request_id = %2
+      WHERE leave_request_date.leave_request_id = %2 AND
+            balance_change.expired_balance_change_id IS NULL 
       ORDER BY leave_request_date.date ASC 
       LIMIT 1
     ";
