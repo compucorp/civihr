@@ -1,8 +1,8 @@
 <div
   ng-show="$ctrl.canManage && !$ctrl.isMode('create') && !$ctrl.isSelfRecord"
   class="row chr_leave-request-modal__user-info">
-  <span class="col-xs-6">{{$ctrl.contactName}}</span>
-  <span class="col-xs-6">{{::$ctrl.getStatusFromValue($ctrl.request.status_id).label}}</span>
+  <span class="col-sm-6">{{$ctrl.contactName}}</span>
+  <span class="col-sm-6">{{::$ctrl.getStatusFromValue($ctrl.request.status_id).label}}</span>
 </div>
 <!-- ng-show is required in model as it was not showing the list of managees for ui-select-choices-->
 <div class="modal-body chr_leave-request-modal__form">
@@ -73,8 +73,8 @@
       class="row chr_leave-request-modal__response">
       <div class="col-xs-12 form-horizontal">
         <div class="form-group">
-          <label class="col-xs-4 control-label required-mark">Set status to:</label>
-          <div class="col-xs-8">
+          <label class="col-sm-4 control-label required-mark">Set status to:</label>
+          <div class="col-sm-8">
             <div class="crm_custom-select crm_custom-select--full">
               <select
                 name="statusSelect"

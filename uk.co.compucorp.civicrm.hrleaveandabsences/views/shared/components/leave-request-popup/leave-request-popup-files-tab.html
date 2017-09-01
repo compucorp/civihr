@@ -7,7 +7,7 @@
           <span class="chr_leave-request-files_date">{{filesTab.formatDateTime(file.upload_date)}}</span>
         </div>
         <div class="row">
-          <div class="chr_leave-request-files_icon text-primary col-xs-8">
+          <div class="chr_leave-request-files_icon text-primary col-xs-6 col-sm-8">
             <i
               class="fa fa-file-o"
               ng-class="{
@@ -23,7 +23,7 @@
           </div>
           <div
             ng-show="filesTab.removeAttachmentVisibility(file)"
-            class="chr_leave-request-files_delete text-danger col-xs-4">
+            class="chr_leave-request-files_delete text-danger col-xs-6 col-sm-4">
             <i class="fa fa-trash-o" aria-hidden="true"></i>
             <span
               class="btn btn-link"
