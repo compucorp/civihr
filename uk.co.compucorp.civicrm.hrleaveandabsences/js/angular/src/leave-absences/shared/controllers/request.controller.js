@@ -498,16 +498,20 @@ define([
     function initRoles () {
       role = 'staff';
 
+      if (vm.isSelfRecord) {
+        return;
+      }
+
       return checkPermissions(sharedSettings.permissions.admin.administer)
         .then(function (isAdmin) {
-          role = isAdmin ? 'admin' : role;
+          isAdmin && (role = 'admin');
         })
         .then(function () {
           // (role === 'staff') means it is not admin so need to check if manager
           return (role === 'staff') && checkPermissions(sharedSettings.permissions.ssp.manage)
-              .then(function (isManager) {
-                role = isManager ? 'manager' : role;
-              });
+            .then(function (isManager) {
+              isManager && (role = 'manager');
+            });
         })
         .finally(function () {
           vm.canManage = vm.isRole('manager') || vm.isRole('admin');

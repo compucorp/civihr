@@ -828,6 +828,38 @@
         });
       });
 
+      describe('user edits their own leave request popup', function () {
+        var leaveRequest;
+
+        ['staff', 'manager', 'admin'].forEach(function (permissionsRole) {
+          testRoleForSelfRecord(permissionsRole);
+        })
+
+        /**
+         * Tests the role for the self record and expects it to be "staff"
+         *
+         * @param {String} permissionsRole (staff|manager|admin)
+         */
+        function testRoleForSelfRecord (permissionsRole) {
+          describe('when user is ' + permissionsRole, function () {
+            beforeEach(function () {
+              role = permissionsRole;
+
+              leaveRequest = LeaveRequestInstance.init();
+
+              initTestController({
+                leaveRequest: leaveRequest,
+                isSelfRecord: true
+              });
+            });
+
+            it('sets the staff role', function () {
+              expect(controller.isRole('staff')).toBeTruthy();
+            });
+          });
+        }
+      });
+
       /**
        * Initialize the controller
        *
