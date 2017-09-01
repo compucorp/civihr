@@ -41,13 +41,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
     unset($params['is_deleted']);
 
+    $datesChanged = self::datesChanged($params);
     $instance = new self();
     $instance->copyValues($params);
 
     $transaction = new CRM_Core_Transaction();
     try {
       $instance->save();
-      $instance->saveDates();
+      $instance->saveDates($datesChanged);
       $transaction->commit();
     } catch(Exception $e) {
       $transaction->rollback();
@@ -752,9 +753,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Creates and saves LeaveRequestDates for this LeaveRequest
+   * Creates and saves LeaveRequestDates for this LeaveRequest.
+   *
+   * If its an update and the dates has not changed when comparing
+   * the values in the db to the values about to be updated, i.e
+   * dateChanged = false, the previous dates are not deleted and
+   * re-created but left as is.
+   *
+   * @param bool|null $datesChanged
    */
-  private function saveDates() {
+  private function saveDates($datesChanged = null) {
+    if($datesChanged === false) {
+      return;
+    }
+
     $this->deleteDatesAndBalanceChanges();
 
     $datePeriod = new BasicDatePeriod($this->from_date, $this->to_date);
@@ -1073,5 +1085,39 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $period = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
 
     return [$absenceType, $period];
+  }
+
+  /**
+   * Checks if the from_date or to_date of a leave request has changed by comparing the
+   * date values to be updated to the current values in the database
+   *
+   * @param array $params
+   *
+   * @return bool|null
+   *   Returns null for when a leave request is newly
+   *   created.
+   */
+  public static function datesChanged($params) {
+    if(!empty($params['id'])) {
+      $leaveRequest = self::findById($params['id']);
+      $fromDate = new DateTime($params['from_date']);
+      $fromDateType = $params['from_date_type'];
+      $toDate = new DateTime($params['to_date']);
+      $toDateType = $params['to_date_type'];
+      $leaveRequestFromDate = new DateTime($leaveRequest->from_date);
+      $leaveRequestFromDateType = $leaveRequest->from_date_type;
+      $leaveRequestToDate = new DateTime($leaveRequest->to_date);
+      $leaveRequestToDateType = $leaveRequest->to_date_type;
+
+      $isNotSameFromDate = $leaveRequestFromDate != $fromDate;
+      $isNotSameFromDateType = $leaveRequestFromDateType != $fromDateType;
+      $isNotSameToDate = $leaveRequestToDate != $toDate;
+      $isNotSameToDateType = $leaveRequestToDateType != $toDateType;
+
+      return ($isNotSameFromDate || $isNotSameFromDateType) ||
+        ($isNotSameToDate || $isNotSameToDateType);
+    }
+
+    return null;
   }
 }
