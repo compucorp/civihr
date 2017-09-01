@@ -142,14 +142,6 @@ class api_v3_ContactTest extends BaseHeadlessTest {
     $this->assertEquals($result['values'][$this->contact2['id']]['id'], $this->contact2['id']);
   }
 
-  /**
-   * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: managed_by
-   */
-  public function testGetLeaveManageesThrowsAnExceptionWhenManagedByParameterIsNotPresent() {
-    civicrm_api3('Contact', 'getleavemanagees');
-  }
-
   public function testGetLeaveManageesReturnsEmptyWhenALoggedInManagerIsTryingToAccessTheManageesOfAnotherManager() {
     $manager2 = ContactFabricator::fabricate();
 
@@ -189,5 +181,29 @@ class api_v3_ContactTest extends BaseHeadlessTest {
     $result = $this->callAPI('Contact', 'getleavemanagees', ['managed_by' => $this->manager['id']]);
 
     $this->assertEquals(0, $result['count']);
+  }
+
+  /**
+   * @expectedExceptionMessage Either unassigned must be true or managed_by parameter present
+   * @expectedException CiviCRM_API3_Exception
+   */
+  public function testGetLeaveManageesThrowsAnExceptionWhenUnassignedIsFalseAndManagedByIsAbsent() {
+    $this->callAPI('Contact', 'getleavemanagees', ['unassigned' => false]);
+  }
+
+  /**
+   * @expectedExceptionMessage Unassigned cannot be true and managed_by parameter also present
+   * @expectedException CiviCRM_API3_Exception
+   */
+  public function testGetLeaveManageesThrowsAnExceptionWhenUnassignedIsTrueAndManagedByParameterIsPresent() {
+    $this->callAPI('Contact', 'getleavemanagees', ['unassigned' => true, 'managed_by' => 1]);
+  }
+
+  /**
+   * @expectedExceptionMessage Either unassigned must be true or managed_by parameter present
+   * @expectedException CiviCRM_API3_Exception
+   */
+  public function testGetLeaveManageesThrowsAnExceptionWhenUnassignedAndManagedByParameterIsAbsent() {
+    $this->callAPI('Contact', 'getleavemanagees', []);
   }
 }
