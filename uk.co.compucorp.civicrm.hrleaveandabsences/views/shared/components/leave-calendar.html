@@ -71,9 +71,9 @@
           </div>
         </div>
       </div>
-      <div class="panel-heading chr_manager_calendar__sub-header row" ng-class="{ 'panel-heading': !calendar.showFilters, 'panel-subheading': calendar.showFilters }">
-        <div class="col-md-12 col-lg-8">
-          <ui-select multiple ng-model="calendar.selectedMonths">
+      <div class="chr_manager_calendar__sub-header row" ng-class="{ 'panel-heading': !calendar.showFilters, 'panel-subheading': calendar.showFilters }">
+        <div class="col-md-12" ng-class="{ 'col-lg-5': !!calendar.filtersByAssignee, 'col-lg-8': !calendar.filtersByAssignee }">
+          <ui-select class="chr_leave-calendar__day-selector" multiple ng-model="calendar.selectedMonths">
             <ui-select-match placeholder="Select Months">
               <span>{{$item.shortName}}</span>
             </ui-select-match>
@@ -82,17 +82,35 @@
             </ui-select-choices>
           </ui-select>
         </div>
-        <div class="col-md-12 col-lg-offset-1 col-lg-3">
-            <div class="crm_custom-select crm_custom-select--full">
-              <select
-                class="no-select2"
-                ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
-                ng-model="calendar.selectedPeriod"
-                ng-change="calendar.refresh('period')">
-              </select>
-              <span class="crm_custom-select__arrow"></span>
-            </div>
+        <div class="col-md-12 col-lg-3" ng-class="{ 'col-lg-offset-1': !calendar.filtersByAssignee }">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
+              ng-model="calendar.selectedPeriod"
+              ng-change="calendar.refresh('period')">
+            </select>
+            <span class="crm_custom-select__arrow"></span>
           </div>
+        </div>
+        <div class="col-xs-10 col-sm-10 col-md-11 col-lg-3" ng-if="!!calendar.filtersByAssignee">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="filterByAssignee.label for filterByAssignee in calendar.filtersByAssignee"
+              ng-model="calendar.filters.userSettings.assignedTo"
+              ng-change="calendar.refresh('contacts')">
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </div>
+        <div class="col-xs-2 col-sm-2 col-md-1 col-lg-1" ng-if="!!calendar.filtersByAssignee">
+          <big>
+            <i class="fa fa-question-circle chr_leave-calendar__admin-filters-hint text-info pointer"
+              aria-hidden="true"
+              ng-click="calendar.showAdminFilteringHint()"></i>
+          </big>
+        </div>
       </div>
     </div>
     <crm-loading show="!calendar.loading.calendar">
