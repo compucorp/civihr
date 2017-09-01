@@ -51,6 +51,7 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
 
     $this->addJoins($customQuery);
     $this->addWhere($customQuery);
+    $this->addGroupBy($customQuery);
     $this->filterReturnFields();
 
     $this->query = new SelectQuery('Contact', $this->params);
@@ -61,30 +62,41 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
    * Add the conditions to the query.
    *
    * This where it is ensured that only contacts managed by the contactID
-   * passed in via the managed_by parameter with the approved relationship types are returned.
+   * passed in via the managed_by parameter with the approved relationship types are returned
+   * when the managed_by parameter is present.
+   *
+   * When the unassigned parameter is present and true, only contacts without an
+   * active leave approver relationship are returned.
+   *
    * Also only contacts with is_deleted = 0 and is_deceased = 0 are returned.
    *
    * @param \CRM_Utils_SQL_Select $query
    */
   private function addWhere(CRM_Utils_SQL_Select $query) {
-    $today = date('Y-m-d');
-    $managerID = (int) CRM_Core_Session::getLoggedInContactID();
+    $hasUnassignedAsTrue = !empty($this->params['unassigned']);
+    $hasManagedBy = isset($this->params['managed_by']);
+    $activeLeaveManagerCondition = $this->activeLeaveManagerCondition();
+    $whereClauses[] = 'a.is_deleted = 0 AND a.is_deceased = 0';
 
-    if ($this->leaveManagerService->currentUserIsAdmin()) {
-      $managerID = $this->params['managed_by'];
+    if($hasUnassignedAsTrue) {
+      $whereClauses[] = '(NOT (' . implode(' AND ', $activeLeaveManagerCondition) . ')
+                        OR (r.is_active IS NULL AND rt.is_active IS NULL))';
+
+      $whereClauses[] = 'a.id NOT IN(SELECT contact_id_a FROM ' .  Relationship::getTableName() . ' r 
+                        INNER JOIN '. RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id 
+                        WHERE '. implode(' AND ', $activeLeaveManagerCondition) .')';
     }
 
-    $leaveApproverRelationships = $this->getLeaveApproverRelationshipsTypes();
+    if($hasManagedBy) {
+      if (!$this->leaveManagerService->currentUserIsAdmin()) {
+        $managerID = (int) CRM_Core_Session::getLoggedInContactID();
+        $activeLeaveManagerCondition[] = "r.contact_id_b = {$managerID}";
+      }
+      $activeLeaveManagerCondition[] = "r.contact_id_b = {$this->params['managed_by']}";
 
-    $whereClauses[] = "(
-      r.is_active = 1 AND
-      rt.is_active = 1 AND
-      rt.id IN(" . implode(',', $leaveApproverRelationships) . ") AND
-      r.contact_id_b = {$managerID} AND 
-      (r.start_date IS NULL OR r.start_date <= '$today') AND
-      (r.end_date IS NULL OR r.end_date >= '$today')
-    )";
-    $whereClauses[] = 'a.is_deleted = 0 AND a.is_deceased = 0';
+      $whereClauses = array_merge($whereClauses, $activeLeaveManagerCondition);
+    }
+
     $whereClauses = implode(' AND ', $whereClauses);
 
     $query->where($whereClauses);
@@ -96,9 +108,21 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
    * @param \CRM_Utils_SQL_Select $query
    */
   private function addJoins(CRM_Utils_SQL_Select $query) {
-    $joins[] = 'INNER JOIN ' . Relationship::getTableName() . ' r ON r.contact_id_a = a.id';
-    $joins[] = 'INNER JOIN ' . RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id';
+    $joins[] = 'LEFT JOIN ' . Relationship::getTableName() . ' r ON r.contact_id_a = a.id';
+    $joins[] = 'LEFT JOIN ' . RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id';
     $query->join(null, $joins);
+  }
+
+  /**
+   * Add a GROUP BY to the query, group the results.
+   * Since the contact table is joined to the relationship table
+   * and a contact can have multiple relationships, we may end up
+   * with duplicate contacts, hence we group by Contact ID.
+   *
+   * @param \CRM_Utils_SQL_Select $query
+   */
+  private function addGroupBy(CRM_Utils_SQL_Select $query) {
+    $query->groupBy(['a.id']);
   }
 
   /**
@@ -125,6 +149,26 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
       unset($returnFields['created_date'], $returnFields['modified_date'], $returnFields['hash']);
       $this->params['return'] = array_flip($returnFields);
     }
+  }
+
+  /**
+   * Returns the conditions needed to add to the Where clause for
+   * contacts that have active leave managers
+   *
+   * @return array
+   */
+  private function activeLeaveManagerCondition() {
+    $today = date('Y-m-d');
+    $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
+
+    $conditions = [];
+    $conditions[] = 'rt.is_active = 1';
+    $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
+    $conditions[] = 'r.is_active = 1';
+    $conditions[] = "(r.start_date IS NULL OR r.start_date <= '$today')";
+    $conditions[] = "(r.end_date IS NULL OR r.end_date >= '$today')";
+
+    return $conditions;
   }
 }
 
