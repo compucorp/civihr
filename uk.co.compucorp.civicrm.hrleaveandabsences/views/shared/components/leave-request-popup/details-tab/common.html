@@ -1,8 +1,8 @@
 <div class="row">
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
-      <label class="col-xs-4 control-label">No. of Days</label>
-      <div class="col-xs-8">
+      <label class="col-sm-4 control-label">No. of Days</label>
+      <div class="col-sm-8">
         <div class="btn-group btn-group-justified">
           <label
             ng-disabled="!detailsTab.isRole('admin') && (detailsTab.isMode('view') || (!detailsTab.isMode('create') && detailsTab.isRole('manager') && !detailsTab.isLeaveType('sickness')))"
@@ -24,8 +24,8 @@
 <div class="row">
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
-      <label class="col-xs-4 control-label required-mark">From Date</label>
-      <div class="col-xs-4">
+      <label class="col-sm-4 control-label required-mark">From Date</label>
+      <div class="col-xs-6 col-sm-4 chr_leave-request-date-picker-container">
         <div class="input-group">
           <input
             type="text"
@@ -47,7 +47,7 @@
           </span>
         </div>
       </div>
-      <div class="col-xs-4" ng-hide="detailsTab.isLeaveType('toil')">
+      <div class="col-xs-6 col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
         <crm-loading
           show="!detailsTab.loading.fromDayTypes"
           class="chr_leave-request-modal__small_spinner">
@@ -75,8 +75,8 @@
 <div class="row" ng-hide="!detailsTab.uiOptions.multipleDays">
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
-      <label class="col-xs-4 control-label required-mark">To Date</label>
-      <div class="col-xs-4">
+      <label class="col-sm-4 control-label required-mark">To Date</label>
+      <div class="col-xs-6 col-sm-4 chr_leave-request-date-picker-container">
         <div class="input-group">
           <input
             type="text"
@@ -100,7 +100,7 @@
           </span>
         </div>
       </div>
-      <div class="col-xs-4" ng-hide="detailsTab.isLeaveType('toil')">
+      <div class="col-xs-6 col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
         <crm-loading
           show="!detailsTab.loading.toDayTypes"
           class="chr_leave-request-modal__small_spinner">
