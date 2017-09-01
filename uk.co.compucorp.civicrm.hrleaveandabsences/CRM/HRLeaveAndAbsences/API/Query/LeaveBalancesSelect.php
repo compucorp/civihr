@@ -111,13 +111,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
       "(
         (jd.period_end_date IS NOT NULL AND jd.period_start_date <= '{$absencePeriod->end_date}' AND jd.period_end_date >= '{$absencePeriod->start_date}')
           OR
-        (jd.period_end_date IS NULL AND 
-          (
-            (jd.period_start_date >= '{$absencePeriod->start_date}' AND jd.period_start_date <= '{$absencePeriod->end_date}')
-            OR
-            jd.period_start_date <= '{$absencePeriod->end_date}'
-          )
-        )
+        (jd.period_end_date IS NULL AND jd.period_start_date <= '{$absencePeriod->end_date}')
       )"
     ];
 

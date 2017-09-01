@@ -556,10 +556,18 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
       ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
     );
 
+    $contract3 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact3['id']],
+      [
+        'period_start_date' => CRM_Utils_Date::processDate('-15 days'),
+      ]
+    );
+
     HRJobContractFabricator::fabricate(
       ['contact_id' => $contact3['id']],
       ['period_start_date' => CRM_Utils_Date::processDate('+15 days')]
     );
+
 
     $absenceTypeID = 1;
 
@@ -603,7 +611,18 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
       'to_date' => date('YmdHis', strtotime('+6 days'))
     ], true);
 
-    // within the third contract, which is outside the absence period, so it
+    // within the third contract, which is starts before the absence period but
+    // doesn't have an end date and is active during the period, so it will be
+    // included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceTypeID,
+      'contact_id' => $contract3['contact_id'],
+      'status_id' => $leaveRequestStatuses['approved'],
+      'from_date' => date('YmdHis', strtotime('-10 days')),
+      'to_date' => date('YmdHis', strtotime('-9 days'))
+    ], true);
+
+    // within the fourth contract, which is outside the absence period, so it
     // won't be included
     LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $absenceTypeID,
@@ -617,7 +636,7 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
       'period_id' => $absencePeriod->id
     ])['values'];
 
-    $this->assertCount(2, $result);
+    $this->assertCount(3, $result);
 
     $contact1ExpectedBalances = [
       'contact_id' => $contact1['id'],
@@ -648,6 +667,21 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
       ]
     ];
     $this->assertEquals($contact2ExpectedBalances, $result[$contact2['id']]);
+
+    $contact3ExpectedBalances = [
+      'contact_id' => $contact3['id'],
+      'contact_display_name' => $contact3['display_name'],
+      'absence_types' => [
+        [
+          'id' => $absenceTypeID,
+          'entitlement' => 7,
+          'used' => 2,
+          'balance' => 5,
+          'requested' => 0
+        ]
+      ]
+    ];
+    $this->assertEquals($contact3ExpectedBalances, $result[$contact3['id']]);
   }
 
   public function testGetLeaveBalancesCanReturnBalancesForASpecificContact() {
