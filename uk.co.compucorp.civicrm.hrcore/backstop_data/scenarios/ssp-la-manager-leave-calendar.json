@@ -9,6 +9,11 @@
       "label": "Legend expanded: Manager Leave Calendar",
       "url": "manager-leave#/manager-leave/calendar",
       "onReadyScript": "ssp-leave-absences/manager/manager-leave-calendar_legend-expanded"
+    },
+    {
+      "label": "Show all contacts: Manager Leave Calendar",
+      "url": "manager-leave#/manager-leave/calendar",
+      "onReadyScript": "ssp-leave-absences/manager/manager-leave-calendar_all-contacts"
     }
   ]
 }
