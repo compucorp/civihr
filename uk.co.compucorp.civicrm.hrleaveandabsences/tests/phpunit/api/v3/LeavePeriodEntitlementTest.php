@@ -878,6 +878,15 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
 
     $this->assertCount(1, $result);
     $this->assertNotEmpty($result[$contact2['id']]);
+
+    // If Manager 2 tries to get the managees of Manager 1, an empty result will
+    // be returned
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
+      'period_id' => $absencePeriod->id,
+      'managed_by' => $manager1['id']
+    ])['values'];
+
+    $this->assertEmpty($result);
   }
 
   public function testGetLeaveBalancesShouldThrowAnErrorIfAInvalidAbsencePeriodIsGiven() {

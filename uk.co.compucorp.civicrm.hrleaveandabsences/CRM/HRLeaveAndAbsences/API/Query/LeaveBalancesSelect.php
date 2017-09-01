@@ -86,7 +86,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
       'INNER JOIN ' . HRJobDetails::getTableName() . ' jd ON jd.jobcontract_revision_id = jcr.details_revision_id'
     ];
 
-    if($this->getManagerID()) {
+    if($this->shouldFilterByManager()) {
       $joins[] = 'LEFT JOIN ' . Relationship::getTableName() . ' r ON r.contact_id_a = a.id';
       $joins[] = 'LEFT JOIN ' . RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id';
     }
@@ -115,12 +115,8 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
       )"
     ];
 
-    $managerID = $this->getManagerID();
-    if($managerID) {
-      $activeLeaveManagerCondition = $this->hasActiveLeaveManagerCondition();
-      $activeLeaveManagerCondition[] = "r.contact_id_b = {$managerID}";
-      $conditions = array_merge($conditions, $activeLeaveManagerCondition);
-    }
+    $activeLeaveManagerCondition = $this->hasActiveLeaveManagerCondition();
+    $conditions = array_merge($conditions, $activeLeaveManagerCondition);
 
     $customQuery->where($conditions);
   }
@@ -227,15 +223,28 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
    * @return array
    */
   private function hasActiveLeaveManagerCondition() {
-    $today =  '"' . date('Y-m-d') . '"';
-    $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
-
     $conditions = [];
-    $conditions[] = 'rt.is_active = 1';
-    $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
-    $conditions[] = 'r.is_active = 1';
-    $conditions[] = "(r.start_date IS NULL OR r.start_date <= {$today})";
-    $conditions[] = "(r.end_date IS NULL OR r.end_date >= {$today})";
+
+    if($this->shouldFilterByManager()) {
+      $today =  '"' . date('Y-m-d') . '"';
+      $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
+
+      $conditions[] = 'rt.is_active = 1';
+      $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
+      $conditions[] = 'r.is_active = 1';
+      $conditions[] = "(r.start_date IS NULL OR r.start_date <= {$today})";
+      $conditions[] = "(r.end_date IS NULL OR r.end_date >= {$today})";
+
+      if(!$this->leaveManagerService->currentUserIsAdmin()) {
+        $managerID = (int)CRM_Core_Session::getLoggedInContactID();
+        $conditions[] = "r.contact_id_b = {$managerID}";
+      }
+
+      if(!empty($this->params['managed_by'])) {
+        $managerID = (int)$this->params['managed_by'];
+        $conditions[] = "r.contact_id_b = {$managerID}";
+      }
+    }
 
     return $conditions;
   }
@@ -265,16 +274,9 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
    *
    * @return int|mixed|null
    */
-  private function getManagerID() {
-    $managerID = null;
-
-    if(!$this->leaveManagerService->currentUserIsAdmin()) {
-      $managerID = (int)CRM_Core_Session::getLoggedInContactID();
-    } elseif(!empty($this->params['managed_by'])) {
-      $managerID = $this->params['managed_by'];
-    }
-
-    return $managerID;
+  private function shouldFilterByManager() {
+    return !$this->leaveManagerService->currentUserIsAdmin() ||
+           !empty($this->params['managed_by']);
   }
 
   /**
