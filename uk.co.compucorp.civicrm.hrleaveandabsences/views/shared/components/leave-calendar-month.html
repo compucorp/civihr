@@ -15,7 +15,6 @@
               <thead>
               <tr class="chr_leave-calendar__days">
                 <th class="chr_leave-calendar__name" ng-if="month.showContactName">
-                  <span>Employee Name</span>
                   <div class="chr_leave-calendar__pagination" ng-if="month.contactsList().length > month.pageSize">
                     <button class="btn-link" ng-disabled="month.currentPage == 0" ng-click="month.currentPage = (month.currentPage - 1)">
                       <i class="fa fa-lg fa-chevron-up"></i>
@@ -63,10 +62,12 @@
           <thead>
           <tr>
             <th>
-              <div class="chr_leave-calendar__pagination">
-                <button class="btn-link" ng-disabled="month.currentPage >= month.contactsList().length / month.pageSize - 1" ng-click="month.currentPage = (month.currentPage + 1)">
-                  <i class="fa fa-lg fa-chevron-down"></i>
-                </button>
+              <div class="row chr_leave-calendar__month-container">
+                <div class="col-xs-4 col-md-3 col-lg-2 chr_leave-calendar__pagination">
+                  <button class="btn-link" ng-disabled="month.currentPage >= month.contactsList().length / month.pageSize - 1" ng-click="month.currentPage = (month.currentPage + 1)">
+                    <i class="fa fa-lg fa-chevron-down"></i>
+                  </button>
+                </div>
               </div>
             </th>
           </tr>
