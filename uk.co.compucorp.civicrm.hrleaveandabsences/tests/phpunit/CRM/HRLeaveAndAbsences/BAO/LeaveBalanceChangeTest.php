@@ -3063,6 +3063,59 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ));
   }
 
+  public function testGetBalanceForContactsDoesNotIncludeBalanceChangesFromLeaveRequestsOutsideTheGivenAbsencePeriod() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days')
+    ]);
+
+    // Contract starting before the period and ending after it
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      [
+        'period_start_date' => CRM_Utils_Date::processDate('-50 days'),
+        'period_end_date' => CRM_Utils_Date::processDate('+50 days')
+      ]
+    );
+
+    $entitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contract['contact_id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => 1
+    ]);
+
+    $this->createLeaveBalanceChange($entitlement->id, 5.25);
+
+    // Within the contract, but before the Absence Period. Won't be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $entitlement->type_id,
+      'contact_id' => $entitlement->contact_id,
+      'from_date' => date('YmdHis', strtotime('-11 days')),
+      'to_date' => date('YmdHis', strtotime('-11 days'))
+    ], true);
+
+    // Within the contract, but after the Absence Period. Won't be included
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $entitlement->type_id,
+      'contact_id' => $entitlement->contact_id,
+      'from_date' => date('YmdHis', strtotime('+11 days')),
+      'to_date' => date('YmdHis', strtotime('+11 days'))
+    ], true);
+
+    $expectedResult = [
+      $entitlement->contact_id => [
+        //The original entitlement, with nothing deducted
+        $entitlement->type_id => 5.25
+      ]
+    ];
+
+    $this->assertEquals($expectedResult, LeaveBalanceChange::getBalanceForContacts(
+      [$entitlement->contact_id],
+      $entitlement->period_id,
+      $entitlement->type_id
+    ));
+  }
+
   public function testGetBalanceForContactsIncludesPublicHolidays() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
