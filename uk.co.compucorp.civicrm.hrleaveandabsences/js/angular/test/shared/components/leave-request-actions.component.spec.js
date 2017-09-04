@@ -149,8 +149,8 @@ define([
           compileComponent();
         });
 
-        it('shows actions "View" and "Delete"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view', 'delete']);
+        it('shows actions "Edit", "Cancel" and "Delete"', function () {
+          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel', 'delete']);
         });
       });
 
@@ -161,8 +161,8 @@ define([
           compileComponent();
         });
 
-        it('shows actions "View"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
+        it('shows actions "Edit"', function () {
+          expect(flattenActions(controller.allowedActions)).toEqual(['edit']);
         });
       });
 
@@ -191,8 +191,8 @@ define([
           compileComponent();
         });
 
-        it('shows actions "View" and "Delete"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view', 'delete']);
+        it('shows actions "Edit", "Cancel" and "Delete"', function () {
+          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel', 'delete']);
         });
       });
 
@@ -203,8 +203,8 @@ define([
           compileComponent();
         });
 
-        it('shows actions "View"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
+        it('shows actions "Edit"', function () {
+          expect(flattenActions(controller.allowedActions)).toEqual(['edit']);
         });
       });
 
@@ -223,7 +223,7 @@ define([
 
     describe('when leave request status is "cancelled"', function () {
       beforeEach(function () {
-        leaveRequest = getRequest('leave', 'approved');
+        leaveRequest = getRequest('leave', 'cancelled');
       });
 
       describe('when the user is admin', function () {
@@ -233,8 +233,8 @@ define([
           compileComponent();
         });
 
-        it('shows actions "View" and "Delete"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view', 'delete']);
+        it('shows actions "Edit" and "Delete"', function () {
+          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'delete']);
         });
       });
 
@@ -245,8 +245,8 @@ define([
           compileComponent();
         });
 
-        it('shows actions "View"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
+        it('shows actions "Edit"', function () {
+          expect(flattenActions(controller.allowedActions)).toEqual(['edit']);
         });
       });
 
