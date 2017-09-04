@@ -2957,7 +2957,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 20);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
 
     $result = civicrm_api3('LeaveRequest', 'create', [
       'contact_id' => $periodEntitlement->contact_id,

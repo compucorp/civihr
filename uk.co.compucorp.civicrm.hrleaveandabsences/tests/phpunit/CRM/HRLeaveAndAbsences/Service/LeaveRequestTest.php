@@ -47,7 +47,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
 
     // a 7 days leave request, from monday to sunday
     $leaveRequest = $this->getleaveRequestService()->create([
@@ -78,7 +78,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
 
     // a 7 days leave request, from friday to thursday
     $params = [
