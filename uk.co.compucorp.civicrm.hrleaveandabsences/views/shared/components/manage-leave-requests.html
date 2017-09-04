@@ -6,6 +6,7 @@
         <div class="col-md-3 chr_manage_leave_requests__leave_type_filter">
           <div class="crm_custom-select crm_custom-select--full">
             <select
+              class="no-select2"
               ng-options="types.title for types in vm.absenceTypes track by types.id"
               ng-model="vm.filters.leaveRequest.selectedAbsenceTypes"
               ng-change="vm.refresh()">
@@ -28,6 +29,7 @@
         <div class="hidden-md hidden-lg col-md-4 col-md-offset-1 chr_manage_leave_requests__assignee_filter text-center" ng-if="vm.isAdmin">
           <div class="crm_custom-select crm_custom-select--full">
             <select
+              class="no-select2"
               ng-options="filter as filter.label for filter in vm.filtersByAssignee"
               ng-model="vm.filters.leaveRequest.assignedTo"
               ng-change="vm.refresh()">
@@ -42,12 +44,13 @@
             ng-class="{ 'col-lg-8 col-lg-offset-2' : vm.isAdmin }"
             class="col-md-10 chr_manage_leave_requests__period_and_all_filters">
           <div class="crm_custom-select crm_custom-select--full">
-              <select
-                ng-options="period as vm.labelPeriod(period) for period in vm.absencePeriods track by period.id"
-                ng-model="vm.filters.leaveRequest.selectedPeriod"
-                ng-change="vm.refresh()">
-              </select>
-              <span class="crm_custom-select__arrow"></span>
+            <select
+              class="no-select2"
+              ng-options="period as vm.labelPeriod(period) for period in vm.absencePeriods track by period.id"
+              ng-model="vm.filters.leaveRequest.selectedPeriod"
+              ng-change="vm.refresh()">
+            </select>
+            <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
           <div class="col-md-2 chr_manage_leave_requests__filter pointer" ng-click="vm.isFilterExpanded = !vm.isFilterExpanded">
@@ -71,6 +74,7 @@
         <div class="col-md-4 col-lg-2">
           <div class="crm_custom-select crm_custom-select--full">
             <select
+              class="no-select2"
               ng-options="region.value as region.label for region in vm.regions track by region.id"
               ng-model="vm.filters.contact.region"
               ng-change="vm.refresh(region)">
@@ -82,6 +86,7 @@
         <div class="col-md-4 col-lg-2">
           <div class="crm_custom-select crm_custom-select--full">
             <select
+              class="no-select2"
               ng-options="department.value as department.label for department in vm.departments track by department.id"
               ng-model="vm.filters.contact.department"
               ng-change="vm.refresh()">
@@ -93,6 +98,7 @@
         <div class="col-md-4 col-lg-2 no_gutter">
           <div class="crm_custom-select crm_custom-select--full">
             <select
+              class="no-select2"
               ng-options="levelType.value as levelType.value for levelType in vm.levelTypes track by levelType.id"
               ng-model="vm.filters.contact.level_type"
               ng-change="vm.refresh()">
@@ -104,6 +110,7 @@
         <div class="col-md-4 col-lg-2 no_gutter">
           <div class="crm_custom-select crm_custom-select--full">
             <select
+              class="no-select2"
               ng-options="location.value as location.label for location in vm.locations track by location.id"
               ng-model="vm.filters.contact.location"
               ng-change="vm.refresh()">
@@ -140,6 +147,7 @@
             <div>
               <div class="crm_custom-select crm_custom-select--full">
                 <select
+                  class="no-select2"
                   ng-options="status.label for status in vm.leaveRequestStatuses | filter: vm.countLeaveRequestByStatus"
                   ng-model="vm.filters.leaveRequest.leaveStatus"
                   ng-change="vm.refresh(1, false, 'table')">
