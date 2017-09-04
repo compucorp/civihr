@@ -6,6 +6,7 @@
       <div class="col-sm-8">
         <div class="crm_custom-select crm_custom-select--full">
           <select
+            class="no-select2"
             name="reason"
             ng-disabled="!detailsTab.isRole('admin') &&
               (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isLeaveType('sickness')))"

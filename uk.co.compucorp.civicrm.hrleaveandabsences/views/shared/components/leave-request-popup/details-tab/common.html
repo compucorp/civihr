@@ -53,6 +53,7 @@
           class="chr_leave-request-modal__small_spinner">
           <div class="crm_custom-select crm_custom-select--full">
             <select
+              class="no-select2"
               name="fromDayTypeSelect"
               ng-disabled="!detailsTab.isRole('admin') &&
                 (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
@@ -106,6 +107,7 @@
           class="chr_leave-request-modal__small_spinner">
           <div class="crm_custom-select crm_custom-select--full">
             <select
+              class="no-select2"
               name="toDayTypeSelect"
               ng-disabled="!detailsTab.isRole('admin') &&
                 (detailsTab.isMode('view') || !detailsTab.request.from_date || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
