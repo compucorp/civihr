@@ -32,7 +32,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
       ['period_start_date' => '2016-01-01']
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
 
     $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
 
