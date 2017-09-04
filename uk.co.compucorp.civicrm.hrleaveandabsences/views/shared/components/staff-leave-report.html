@@ -1,11 +1,10 @@
 <div class="chr_leave-report">
   <crm-loading show="!report.loading.page">
-    <section class="panel panel-default">
-      <div class="chr_leave-report__heading panel-heading">
+    <div class="chr_leave-report__heading panel-heading">
         <div class="row">
-          <div class="col-sm-9">
+          <div class="col-sm-8 col-md-9">
           </div>
-          <div class="col-sm-3">
+          <div class="col-sm-4 col-md-3">
             <div class="crm_custom-select crm_custom-select--full">
               <select
                 class="no-select2"
@@ -18,10 +17,12 @@
           </div>
         </div>
       </div>
-      <crm-loading show="!report.loading.content">
-        <div class="chr_leave-report__table table-responsive">
-          <table class="table table-condensed-mixed">
-            <thead>
+    <div class="chr_leave-report__table-container">
+      <section class="panel panel-default">
+        <crm-loading show="!report.loading.content">
+          <div class="chr_leave-report__table">
+            <table class="table table-condensed-mixed">
+              <thead>
               <tr>
                 <th class="chr_leave-report__table__heading--label"></th>
                 <th class="chr_leave-report__table__heading--dates">Dates</th>
@@ -33,8 +34,8 @@
                 </th>
                 <th class="chr_leave-report__table__heading--action"></th>
               </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
               <tr>
                 <td
                   class="chr_leave-report__label chr_leave-report__label--toggle"
@@ -56,45 +57,45 @@
                 <td class="table-nested-cell" colspan="7">
                   <crm-loading show="!report.sections.entitlements.loading">
                     <div
-                      class="table-nested table-responsive"
+                      class="table-nested"
                       ng-show="report.sections.entitlements.open"
                       ng-switch="!!report.sections.entitlements.data.length">
                       <table class="table table-condensed" ng-switch-when="false">
                         <tbody>
-                          <tr>
-                            <td align="center">No entitlement breakdown data available</td>
-                          </tr>
+                        <tr>
+                          <td align="center">No entitlement breakdown data available</td>
+                        </tr>
                         </tbody>
                       </table>
                       <table class="table table-condensed" ng-switch-when="true">
                         <thead>
-                          <tr>
-                            <th class="chr_leave-report__table__heading--label"></th>
-                            <th class="chr_leave-report__table__heading--dates">Dates</th>
-                            <th class="chr_leave-report__table__heading--status">Status</th>
-                            <th
-                              class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{absenceType.title}}
-                            </th>
-                            <th class="chr_leave-report__table__heading--action"></th>
-                          </tr>
+                        <tr>
+                          <th class="chr_leave-report__table__heading--label"></th>
+                          <th class="chr_leave-report__table__heading--dates">Dates</th>
+                          <th class="chr_leave-report__table__heading--status">Status</th>
+                          <th
+                            class="chr_leave-report__table__heading--type"
+                            ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                            {{absenceType.title}}
+                          </th>
+                          <th class="chr_leave-report__table__heading--action"></th>
+                        </tr>
                         </thead>
                         <tbody>
-                          <tr ng-repeat="entry in report.sections.entitlements.data track by $index">
-                            <td class="chr_leave-report__label">
-                              {{entry.type.label}}
-                              <span ng-if="entry.expiry_date">
+                        <tr ng-repeat="entry in report.sections.entitlements.data track by $index">
+                          <td class="chr_leave-report__label">
+                            {{entry.type.label}}
+                            <span ng-if="entry.expiry_date">
                                 (expires {{entry.expiry_date | date:report.dateFormat}})
                               </span>
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
-                            </td>
-                            <td></td>
-                          </tr>
+                          </td>
+                          <td></td>
+                          <td></td>
+                          <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                            {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
+                          </td>
+                          <td></td>
+                        </tr>
                         </tbody>
                       </table>
                     </div>
@@ -122,40 +123,40 @@
                 <td class="table-nested-cell" colspan="7">
                   <crm-loading show="!report.sections.holidays.loading">
                     <div
-                      class="table-nested table-responsive"
+                      class="table-nested"
                       ng-show="report.sections.holidays.open"
                       ng-switch="!!report.sections.holidays.data.length">
                       <table class="table table-condensed" ng-switch-when="false">
                         <tbody>
-                          <tr>
-                            <td align="center">No leave requests for public holidays</td>
-                          </tr>
+                        <tr>
+                          <td align="center">No leave requests for public holidays</td>
+                        </tr>
                         </tbody>
                       </table>
                       <table class="table table-condensed" ng-switch-when="true">
                         <thead>
-                          <tr>
-                            <th class="chr_leave-report__table__heading--label"></th>
-                            <th class="chr_leave-report__table__heading--dates">Dates</th>
-                            <th class="chr_leave-report__table__heading--status">Status</th>
-                            <th
-                              class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{absenceType.title}}
-                            </th>
-                            <th class="chr_leave-report__table__heading--action"></th>
-                          </tr>
+                        <tr>
+                          <th class="chr_leave-report__table__heading--label"></th>
+                          <th class="chr_leave-report__table__heading--dates">Dates</th>
+                          <th class="chr_leave-report__table__heading--status">Status</th>
+                          <th
+                            class="chr_leave-report__table__heading--type"
+                            ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                            {{absenceType.title}}
+                          </th>
+                          <th class="chr_leave-report__table__heading--action"></th>
+                        </tr>
                         </thead>
                         <tbody>
-                          <tr ng-repeat="request in report.sections.holidays.data track by $index">
-                            <td class="chr_leave-report__label">Public Holiday</td>
-                            <td>{{request.from_date | date:report.dateFormat}}</td>
-                            <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{(request.type_id == absenceType.id ? request.balance_change : '')}}
-                            </td>
-                            <td></td>
-                          </tr>
+                        <tr ng-repeat="request in report.sections.holidays.data track by $index">
+                          <td class="chr_leave-report__label">Public Holiday</td>
+                          <td>{{request.from_date | date:report.dateFormat}}</td>
+                          <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
+                          <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                            {{(request.type_id == absenceType.id ? request.balance_change : '')}}
+                          </td>
+                          <td></td>
+                        </tr>
                         </tbody>
                       </table>
                     </div>
@@ -182,45 +183,45 @@
               <tr>
                 <td class="table-nested-cell" colspan="7">
                   <crm-loading show="!report.sections.approved.loading">
-                    <div ng-show="report.sections.approved.open" class="table-nested table-responsive">
+                    <div ng-show="report.sections.approved.open" class="table-nested">
                       <table class="table table-condensed">
                         <thead>
-                          <tr>
-                            <th class="chr_leave-report__table__heading--label"></th>
-                            <th class="chr_leave-report__table__heading--dates">Dates</th>
-                            <th class="chr_leave-report__table__heading--status">Status</th>
-                            <th
-                              class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{absenceType.title}}
-                            </th>
-                            <th class="chr_leave-report__table__heading--action"></th>
-                          </tr>
+                        <tr>
+                          <th class="chr_leave-report__table__heading--label"></th>
+                          <th class="chr_leave-report__table__heading--dates">Dates</th>
+                          <th class="chr_leave-report__table__heading--status">Status</th>
+                          <th
+                            class="chr_leave-report__table__heading--type"
+                            ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                            {{absenceType.title}}
+                          </th>
+                          <th class="chr_leave-report__table__heading--action"></th>
+                        </tr>
                         </thead>
                         <tbody>
-                          <tr ng-repeat="request in report.sections.approved.data track by $index">
-                            <td class="chr_leave-report__label">
-                              {{report.absenceTypes[request.type_id].title}}
-                              <span ng-if="request.toil_expiry_date">
+                        <tr ng-repeat="request in report.sections.approved.data track by $index">
+                          <td class="chr_leave-report__label">
+                            {{report.absenceTypes[request.type_id].title}}
+                            <span ng-if="request.toil_expiry_date">
                                 (expires {{request.toil_expiry_date | date:report.dateFormat}})
                               </span>
-                            </td>
-                            <td>
-                              {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
-                            </td>
-                            <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{(request.type_id == absenceType.id ? request.balance_change : '')}}
-                            </td>
-                            <td>
-                              <leave-request-actions
-                                leave-request="request"
-                                role="$root.section === 'my-leave' ? 'staff' : report.role"
-                                absence-types="report.absenceTypes"
-                                leave-request-statuses="report.leaveRequestStatuses">
-                              </leave-request-actions>
-                            </td>
-                          </tr>
+                          </td>
+                          <td>
+                            {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                          </td>
+                          <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
+                          <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                            {{(request.type_id == absenceType.id ? request.balance_change : '')}}
+                          </td>
+                          <td>
+                            <leave-request-actions
+                              leave-request="request"
+                              role="$root.section === 'my-leave' ? 'staff' : report.role"
+                              absence-types="report.absenceTypes"
+                              leave-request-statuses="report.leaveRequestStatuses">
+                            </leave-request-actions>
+                          </td>
+                        </tr>
                         </tbody>
                       </table>
                     </div>
@@ -248,45 +249,45 @@
                 <td class="table-nested-cell" colspan="7">
                   <crm-loading show="!report.sections.expired.loading">
                     <div
-                      class="table-nested table-responsive"
+                      class="table-nested"
                       ng-show="report.sections.expired.open"
                       ng-switch="!!report.sections.expired.data.length">
                       <table class="table table-condensed" ng-switch-when="false">
                         <tbody>
-                          <tr>
-                            <td align="center">There are no expired balance changes</td>
-                          </tr>
+                        <tr>
+                          <td align="center">There are no expired balance changes</td>
+                        </tr>
                         </tbody>
                       </table>
                       <table class="table table-condensed" ng-switch-when="true">
                         <thead>
-                          <tr>
-                            <th class="chr_leave-report__table__heading--label"></th>
-                            <th class="chr_leave-report__table__heading--dates">Dates</th>
-                            <th class="chr_leave-report__table__heading--status">Status</th>
-                            <th
-                              class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{absenceType.title}}
-                            </th>
-                            <th class="chr_leave-report__table__heading--action"></th>
-                          </tr>
+                        <tr>
+                          <th class="chr_leave-report__table__heading--label"></th>
+                          <th class="chr_leave-report__table__heading--dates">Dates</th>
+                          <th class="chr_leave-report__table__heading--status">Status</th>
+                          <th
+                            class="chr_leave-report__table__heading--type"
+                            ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                            {{absenceType.title}}
+                          </th>
+                          <th class="chr_leave-report__table__heading--action"></th>
+                        </tr>
                         </thead>
                         <tbody>
-                          <tr ng-repeat="entry in report.sections.expired.data track by $index">
-                            <td class="chr_leave-report__label">
-                              {{entry.type.label}}
-                              <span ng-if="entry.expiry_date">
+                        <tr ng-repeat="entry in report.sections.expired.data track by $index">
+                          <td class="chr_leave-report__label">
+                            {{entry.type.label}}
+                            <span ng-if="entry.expiry_date">
                                 (expired {{entry.expiry_date | date:report.dateFormat}})
                               </span>
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
-                            </td>
-                            <td></td>
-                          </tr>
+                          </td>
+                          <td></td>
+                          <td></td>
+                          <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                            {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
+                          </td>
+                          <td></td>
+                        </tr>
                         </tbody>
                       </table>
                     </div>
@@ -302,15 +303,15 @@
                 </td>
                 <td></td>
               </tr>
-            </tbody>
-          </table>
-        </div>
-      </crm-loading>
-    </section>
-    <section ng-show="!report.loading.content" class="panel panel-default">
-      <div class="chr_leave-report__table table-responsive">
-        <table class="table table-condensed-mixed">
-          <tbody>
+              </tbody>
+            </table>
+          </div>
+        </crm-loading>
+      </section>
+      <section ng-show="!report.loading.content" class="panel panel-default">
+        <div class="chr_leave-report__table">
+          <table class="table table-condensed-mixed">
+            <tbody>
             <tr>
               <td
                 class="chr_leave-report__label chr_leave-report__label--toggle chr_leave-report__table__heading--label"
@@ -334,54 +335,54 @@
               <td class="table-nested-cell" colspan="7">
                 <crm-loading show="!report.sections.pending.loading">
                   <div
-                    class="table-nested table-responsive"
+                    class="table-nested"
                     ng-show="report.sections.pending.open"
                     ng-switch="!!report.sections.pending.data.length">
                     <table class="table table-condensed" ng-switch-when="false">
                       <tbody>
-                        <tr>
-                          <td align="center">There are no open leave requests</td>
-                        </tr>
+                      <tr>
+                        <td align="center">There are no open leave requests</td>
+                      </tr>
                       </tbody>
                     </table>
                     <table class="table table-condensed" ng-switch-when="true">
                       <thead>
-                        <tr>
-                          <th class="chr_leave-report__table__heading--label"></th>
-                          <th class="chr_leave-report__table__heading--dates">Dates</th>
-                          <th class="chr_leave-report__table__heading--status">Status</th>
-                          <th
-                            class="chr_leave-report__table__heading--type"
-                            ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                            {{absenceType.title}}
-                          </th>
-                          <th class="chr_leave-report__table__heading--action"></th>
-                        </tr>
+                      <tr>
+                        <th class="chr_leave-report__table__heading--label"></th>
+                        <th class="chr_leave-report__table__heading--dates">Dates</th>
+                        <th class="chr_leave-report__table__heading--status">Status</th>
+                        <th
+                          class="chr_leave-report__table__heading--type"
+                          ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                          {{absenceType.title}}
+                        </th>
+                        <th class="chr_leave-report__table__heading--action"></th>
+                      </tr>
                       </thead>
                       <tbody>
-                        <tr ng-repeat="request in report.sections.pending.data track by $index">
-                          <td class="chr_leave-report__label">
-                            {{report.absenceTypes[request.type_id].title}}
-                            <span ng-if="request.toil_expiry_date">
+                      <tr ng-repeat="request in report.sections.pending.data track by $index">
+                        <td class="chr_leave-report__label">
+                          {{report.absenceTypes[request.type_id].title}}
+                          <span ng-if="request.toil_expiry_date">
                               (expires {{request.toil_expiry_date | date:report.dateFormat}})
                             </span>
-                          </td>
-                          <td>
-                            {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
-                          </td>
-                          <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                          <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                            {{(request.type_id == absenceType.id ? request.balance_change : '')}}
-                          </td>
-                          <td>
-                            <leave-request-actions
-                              leave-request="request"
-                              role="$root.section === 'my-leave' ? 'staff' : report.role"
-                              absence-types="report.absenceTypes"
-                              leave-request-statuses="report.leaveRequestStatuses">
-                            </leave-request-actions>
-                          </td>
-                        </tr>
+                        </td>
+                        <td>
+                          {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                        </td>
+                        <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
+                        <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                          {{(request.type_id == absenceType.id ? request.balance_change : '')}}
+                        </td>
+                        <td>
+                          <leave-request-actions
+                            leave-request="request"
+                            role="$root.section === 'my-leave' ? 'staff' : report.role"
+                            absence-types="report.absenceTypes"
+                            leave-request-statuses="report.leaveRequestStatuses">
+                          </leave-request-actions>
+                        </td>
+                      </tr>
                       </tbody>
                     </table>
                   </div>
@@ -397,18 +398,17 @@
               </td>
               <td></td>
             </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-    <section ng-show="!report.loading.content" class="panel panel-default">
-      <div class="chr_leave-report__table table-responsive">
-        <table class="table table-condensed-mixed">
-          <tbody>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section ng-show="!report.loading.content" class="panel panel-default">
+        <div class="chr_leave-report__table">
+          <table class="table table-condensed-mixed">
+            <tbody>
             <tr>
               <td
-                colspan="7"
-                class="chr_leave-report__label chr_leave-report__label--toggle"
+                class="chr_leave-report__label chr_leave-report__label--toggle chr_leave-report__table__heading--label"
                 ng-click="report.toggleSection('other')">
                 <i
                   class="fa"
@@ -416,68 +416,75 @@
                   ng-class="{ 'fa-chevron-down': report.sections.other.open, ' fa-chevron-right': !report.sections.other.open }"></i>
                 Cancelled and Other
               </td>
+              <td class="chr_leave-report__table__heading--dates"></td>
+              <td class="chr_leave-report__table__heading--status"></td>
+              <td
+                class="chr_leave-report__table__heading--type"
+                ng-repeat="absenceType in report.absenceTypesFiltered track by $index"></td>
+              <td class="chr_leave-report__table__heading--action"></td>
             </tr>
             <tr>
               <td class="table-nested-cell" colspan="7">
                 <crm-loading show="!report.sections.other.loading">
                   <div
-                    class="table-nested table-responsive"
+                    class="table-nested"
                     ng-show="report.sections.other.open"
                     ng-switch="!!report.sections.other.data.length">
                     <table class="table table-condensed" ng-switch-when="false">
                       <tbody>
-                        <tr>
-                          <td align="center">No requests found</td>
-                        </tr>
+                      <tr>
+                        <td align="center">No requests found</td>
+                      </tr>
                       </tbody>
                     </table>
                     <table class="table table-condensed" ng-switch-when="true">
                       <thead>
-                        <tr>
-                          <th class="chr_leave-report__table__heading--label"></th>
-                          <th class="chr_leave-report__table__heading--dates">Dates</th>
-                          <th class="chr_leave-report__table__heading--status">Status</th>
-                          <th
-                            class="chr_leave-report__table__heading--type"
-                            ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                            {{absenceType.title}}
-                          </th>
-                          <th class="chr_leave-report__table__heading--action"></th>
-                        </tr>
+                      <tr>
+                        <th class="chr_leave-report__table__heading--label"></th>
+                        <th class="chr_leave-report__table__heading--dates">Dates</th>
+                        <th class="chr_leave-report__table__heading--status">Status</th>
+                        <th
+                          class="chr_leave-report__table__heading--type"
+                          ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                          {{absenceType.title}}
+                        </th>
+                        <th class="chr_leave-report__table__heading--action"></th>
+                      </tr>
                       </thead>
                       <tbody>
-                        <tr ng-repeat="request in report.sections.other.data track by $index">
-                          <td class="chr_leave-report__label">
-                            {{report.absenceTypes[request.type_id].title}}
-                            <span ng-if="request.toil_expiry_date">
+                      <tr ng-repeat="request in report.sections.other.data track by $index">
+                        <td class="chr_leave-report__label">
+                          {{report.absenceTypes[request.type_id].title}}
+                          <span ng-if="request.toil_expiry_date">
                               (expires {{request.toil_expiry_date | date:report.dateFormat}})
                             </span>
-                          </td>
-                          <td>
-                            {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
-                          </td>
-                          <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                          <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                            {{(request.type_id == absenceType.id ? request.balance_change : '')}}
-                          </td>
-                          <td>
-                            <leave-request-actions
-                              leave-request="request"
-                              role="$root.section === 'my-leave' ? 'staff' : report.role"
-                              absence-types="report.absenceTypes"
-                              leave-request-statuses="report.leaveRequestStatuses">
-                            </leave-request-actions>
-                          </td>
-                        </tr>
+                        </td>
+                        <td>
+                          {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                        </td>
+                        <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
+                        <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+                          {{(request.type_id == absenceType.id ? request.balance_change : '')}}
+                        </td>
+                        <td>
+                          <leave-request-actions
+                            leave-request="request"
+                            role="$root.section === 'my-leave' ? 'staff' : report.role"
+                            absence-types="report.absenceTypes"
+                            leave-request-statuses="report.leaveRequestStatuses">
+                          </leave-request-actions>
+                        </td>
+                      </tr>
                       </tbody>
                     </table>
                   </div>
                 </crm-loading>
               </td>
             </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   </crm-loading>
 </div>

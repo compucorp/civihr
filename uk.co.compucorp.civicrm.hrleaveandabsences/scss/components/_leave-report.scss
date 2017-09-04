@@ -38,6 +38,7 @@
 
 
 .chr_leave-report__heading {
+  background-color: $crm-table-heading-bg;
   border-bottom: 1px solid $crm-dark-grayblue;
 
   .chr_leave-report__export-button {
@@ -105,8 +106,12 @@
   }
 }
 
+.chr_leave-report__table-container {
+  overflow: auto;
+}
+
 .chr_leave-report__table__heading--action {
-  width: 35px;
+  width: 45px;
 }
 
 .chr_leave-report__table__heading--label {
