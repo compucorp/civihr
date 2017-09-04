@@ -7,7 +7,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
 
   /**
    * Creates LeaveBalanceChange instances for each of the dates of the given
-   * LeaveRequest.
+   * LeaveRequest and sets the type property for the dates, according to the
+   * values returned by the Balance Change calculation.
    *
    * @param CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    */
@@ -33,6 +34,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
             'amount' => $balanceChange['amount'] * -1,
             'type_id' => $balanceChangeTypes['debit']
           ]);
+
+          $date->type = $balanceChange['type']['value'];
+          $date->save();
         }
       }
     }

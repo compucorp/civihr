@@ -2,11 +2,13 @@
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest
@@ -59,6 +61,64 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
     // Even though the balance is -6, we must have 9 balance changes, one for
     // each date
     $this->assertCount(9, $balanceChanges);
+  }
+
+  public function testCanSetTheTypeOfTheLeaveRequestDatesToWhichItCreatesTheBalanceChangesTo() {
+    $contact = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact['id']],
+      ['period_start_date' => '2017-09-04']
+    );
+
+    WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours(['is_default' => true]);
+
+    $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2017-09-06';
+
+    PublicHolidayLeaveRequestFabricator::fabricate(
+      $contact['id'],
+      $publicHoliday
+    );
+
+    // a 8 days leave request, from monday to monday
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contact['id'],
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2017-09-04'),
+      'from_date_type' => $leaveRequestDateTypes['half_day_pm'],
+      'to_date' => CRM_Utils_Date::processDate('2017-09-11'),
+      'to_date_type' => $leaveRequestDateTypes['all_day'],
+    ]);
+
+    $dates = $leaveRequest->getDates();
+    foreach($dates as $date) {
+      $this->assertNull($date->type);
+    }
+
+    $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
+
+    $dates = $leaveRequest->getDates();
+    // According to the work pattern, monday is a working day, but a half day
+    // was passed to the day type, so that's is what this date's type should be
+    $this->assertEquals($leaveRequestDateTypes['half_day_pm'], $dates[0]->type);
+    $this->assertEquals($leaveRequestDateTypes['non_working_day'], $dates[1]->type);
+
+    // Wednesday is a working day on the first week of the work pattern, but
+    // we have a public holiday on this date, so the date's type should be
+    // public holiday instead of all day
+    $this->assertEquals($leaveRequestDateTypes['public_holiday'], $dates[2]->type);
+    $this->assertEquals($leaveRequestDateTypes['non_working_day'], $dates[3]->type);
+    $this->assertEquals($leaveRequestDateTypes['all_day'], $dates[4]->type);
+    $this->assertEquals($leaveRequestDateTypes['weekend'], $dates[5]->type);
+    $this->assertEquals($leaveRequestDateTypes['weekend'], $dates[6]->type);
+
+    // This is a monday again, but on the second week of the pattern mondays are
+    // not working days
+    $this->assertEquals($leaveRequestDateTypes['non_working_day'], $dates[7]->type);
   }
 
   public function testItCanCreateBalanceChangesForALeaveRequestOfTypeTOIL() {
