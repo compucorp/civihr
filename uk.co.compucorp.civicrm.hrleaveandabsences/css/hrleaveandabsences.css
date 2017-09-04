@@ -40,6 +40,10 @@
   font-weight: bold;
 }
 
+.work-pattern-calendar .work-pattern-week .week-days {
+  table-layout: fixed;
+}
+
 .work-pattern-calendar .work-pattern-week .week-hours {
   float: right;
   padding: 5px 5px 15px 0;
@@ -47,14 +51,16 @@
 
 .work-pattern-calendar .work-pattern-week .week-days td { padding: 5px 10px 5px 10px; }
 
-.work-pattern-calendar .work-pattern-week .week-days input {
+#bootstrap-theme .work-pattern-calendar .work-pattern-week .week-days input {
   width: 100%;
   padding: 5px;
   margin: 2px;
   text-align: center;
 }
 
-.work-pattern-calendar .work-pattern-week .week-days select { width: 100%; }
+#bootstrap-theme .work-pattern-calendar .work-pattern-week .week-days select {
+  width: 100%;
+}
 
 .work-pattern-calendar .work-pattern-week .week-hours .number-of-hours {font-weight: bold;}
 
