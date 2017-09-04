@@ -34,6 +34,7 @@
             <div class="col-sm-8">
               <div class="crm_custom-select crm_custom-select--full">
                 <select
+                  class="no-select2"
                   ng-options="workPatterns.label for workPatterns in workPatternModal.workPatterns"
                   ng-model="workPatternModal.selected.workPattern"
                   ng-change="workPatternModal.refresh()">
@@ -52,6 +53,7 @@
             <div class="col-sm-8">
               <div class="crm_custom-select crm_custom-select--full">
                 <select
+                  class="no-select2"
                   ng-options="changeReasons.value as changeReasons.label for changeReasons in workPatternModal.changeReasons"
                   ng-model="workPatternModal.selected.changeReason"
                   ng-change="workPatternModal.refresh()">

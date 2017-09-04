@@ -5,6 +5,7 @@
       <div class="col-xs-6 col-sm-4 chr_leave-request-modal__input-shift-left">
         <div class="crm_custom-select crm_custom-select--full">
           <select name="hours" ng-model="detailsTab.request.toilDurationHours"
+            class="no-select2"
             ng-disabled="!detailsTab.isRole('admin') &&
               (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create')))"
             ng-change="detailsTab.request.updateDuration()">
@@ -28,6 +29,7 @@
       <div class="col-xs-6 col-sm-4">
         <div class="crm_custom-select crm_custom-select--full">
           <select name="minutes" ng-model="detailsTab.request.toilDurationMinutes"
+            class="no-select2"
             ng-change="detailsTab.request.updateDuration()"
             ng-disabled="!detailsTab.isRole('admin') &&
               (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create')))">
@@ -56,6 +58,7 @@
       <div class="col-xs-12">
         <div class="crm_custom-select crm_custom-select--full">
           <select
+            class="no-select2"
             name="toilAmount"
             ng-disabled="detailsTab.isMode('view')"
             ng-options="amount.value as amount.label for amount in detailsTab.toilAmounts"

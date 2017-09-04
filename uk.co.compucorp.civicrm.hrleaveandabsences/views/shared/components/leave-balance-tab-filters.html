@@ -10,14 +10,14 @@
       <div class="row">
         <div class="form-group col-sm-4">
           <label>Periods</label>
-          <select class="form-control"
+          <select class="form-control no-select2"
             ng-model="balanceFilters.filters.absence_period"
             ng-options="period.id as period.title for period in balanceFilters.absencePeriods | orderBy:'title'">
           </select>
         </div>
         <div class="form-group col-sm-4">
           <label>Leave Type</label>
-          <select class="form-control"
+          <select class="form-control no-select2"
             ng-model="balanceFilters.filters.absence_type"
             ng-options="type.id as type.title for type in balanceFilters.absenceTypes | orderBy:'title'">
           </select>
