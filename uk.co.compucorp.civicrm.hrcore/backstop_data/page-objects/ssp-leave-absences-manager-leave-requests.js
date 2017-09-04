@@ -14,6 +14,26 @@ module.exports = (function () {
       this.waitUntilVisible('tbody tr:nth-child(1) a');
     },
     /**
+     * Change the filter by Assignee
+     *
+     * @param {String} type (me|unassigned|all)
+     * @return {Object} this object
+     */
+    changeFilterByAssignee: function (type) {
+      var casper = this.casper;
+      var filters = ['me', 'unassigned', 'all'];
+
+      casper.then(function () {
+        casper.click(
+          '.chr_manage_leave_requests__assignee_filter button:nth-of-type(' +
+          (filters.indexOf(type) + 1) +
+          ')');
+        casper.waitUntilVisible('tbody tr:nth-child(1) a');
+      });
+
+      return this;
+    },
+    /**
      * Opens the dropdown for manager actions like edit/respond, cancel.
      * @param {Number} row number corresponding to leave request in the list
      * @return {Object} this object
