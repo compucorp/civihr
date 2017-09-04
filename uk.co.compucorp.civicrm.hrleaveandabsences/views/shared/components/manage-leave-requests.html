@@ -19,7 +19,7 @@
             <button
               ng-repeat="filter in vm.filtersByAssignee"
               type="button"
-              ng-click="vm.refreshWithFilterByAssignee(filter.type)"
+              ng-click="vm.refreshWithFilterByAssignee(filter)"
               ng-class="{'active': vm.filters.leaveRequest.assignedTo.type === filter.type}"
               class="btn btn-secondary-outline btn-sm">{{filter.label}}
             </button>
