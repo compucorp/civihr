@@ -158,8 +158,7 @@ define([
      * @return {Boolean}
      */
     function canLeaveRequestBeCancelled (leaveRequestStatus) {
-      var allowCancellationValue = vm.absenceTypes[vm.leaveRequest.type_id]
-        .allow_request_cancelation;
+      var allowCancellationValue = vm.absenceTypes[vm.leaveRequest.type_id].allow_request_cancelation;
 
       // Admin can always cancel
       if (vm.role === 'admin') {
