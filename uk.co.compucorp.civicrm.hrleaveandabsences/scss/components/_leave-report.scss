@@ -8,6 +8,15 @@
       background: #e6e6e6;
     }
   }
+
+  table {
+    table-layout: fixed;
+
+    thead th,
+    tbody td {
+      padding: 8px 5px;
+    }
+  }
 }
 
 .chr_leave-report__label {
@@ -26,6 +35,7 @@
 
 
 .chr_leave-report__heading {
+  background-color: $crm-table-heading-bg;
   border-bottom: 1px solid $crm-dark-grayblue;
 
   .chr_leave-report__export-button {
@@ -93,22 +103,26 @@
   }
 }
 
+.chr_leave-report__table-container {
+  overflow: auto;
+}
+
 .chr_leave-report__table__heading--action {
-  width: 3.5%;
+  width: 45px;
 }
 
 .chr_leave-report__table__heading--label {
-  width: 24.57%;
+  width: 280px;
 }
 
 .chr_leave-report__table__heading--dates {
-  width: 15.8%;
+  width: 170px;
 }
 
 .chr_leave-report__table__heading--status {
-  width: 16%;
+  width: 165px;
 }
 
 .chr_leave-report__table__heading--type {
-  width: 7.46%;
+  width: 65px;
 }
