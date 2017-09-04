@@ -510,12 +510,12 @@ define([
     }
 
     /**
-     * Refreshes the leave request data and also changes current selected leave status
+     * Refreshes the leave request data depending on the selected filter by Assignee
      *
-     * @param {string} type - by assignee type to be selected
+     * @param {Object} filter - any filter object from vm.filtersByAssignee
      */
-    function refreshWithFilterByAssignee (type) {
-      vm.filters.leaveRequest.assignedTo = type;
+    function refreshWithFilterByAssignee (filter) {
+      vm.filters.leaveRequest.assignedTo = filter;
       vm.refresh();
     }
 

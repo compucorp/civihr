@@ -27,9 +27,11 @@ define([
     controller: LeaveRequestActionsController
   });
 
-  LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog', 'LeavePopup', 'pubSub', 'shared-settings', 'notificationService'];
+  LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog',
+    'LeavePopup', 'pubSub', 'shared-settings', 'notificationService'];
 
-  function LeaveRequestActionsController ($log, $rootScope, dialog, LeavePopup, pubSub, sharedSettings, notification) {
+  function LeaveRequestActionsController ($log, $rootScope, dialog,
+    LeavePopup, pubSub, sharedSettings, notification) {
     $log.debug('Component: leave-request-action-dropdown');
 
     var vm = this;
@@ -46,7 +48,11 @@ define([
       },
       view: {
         label: 'View',
-        allowedStatuses: [statusNames.approved, statusNames.rejected, statusNames.cancelled]
+        allowedStatuses: [
+          statusNames.approved,
+          statusNames.rejected,
+          statusNames.cancelled
+        ]
       },
       approve: {
         label: 'Approve',
@@ -73,7 +79,12 @@ define([
       cancel: {
         label: 'Cancel',
         isDirectAction: true,
-        allowedStatuses: [statusNames.awaitingApproval, statusNames.moreInformationRequired],
+        allowedStatuses: [
+          statusNames.awaitingApproval,
+          statusNames.approved,
+          statusNames.rejected,
+          statusNames.moreInformationRequired
+        ],
         dialog: {
           title: 'Cancellation',
           btnClass: 'danger',
@@ -117,6 +128,7 @@ define([
      */
     function action (action) {
       var dialogParams = actions[action].dialog;
+
       statusIdBeforeAction = vm.leaveRequest.status_id;
 
       dialog.open({
@@ -138,29 +150,39 @@ define([
     }
 
     /**
+     * Checks if the given leave request can be cancelled
+     *
      * @TODO This function utilises external resource
      * vm.absenceTypes - this sould be refactored
      *
-     * Checks if the given leave request can be cancelled
-     *
-     * Allow request cancellation values refer to the following constants:
-     * 1 = REQUEST_CANCELATION_NO
-     * 2 = REQUEST_CANCELATION_ALWAYS
-     * 3 = REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE
-     *
      * @return {Boolean}
      */
-    function canLeaveRequestBeCancelled () {
+    function canLeaveRequestBeCancelled (leaveRequestStatus) {
       var allowCancellationValue = vm.absenceTypes[vm.leaveRequest.type_id].allow_request_cancelation;
 
-      if (vm.role === 'admin' || vm.role === 'manager') {
+      // Admin can always cancel
+      if (vm.role === 'admin') {
         return true;
       }
 
+      // Others but Admin can cancel if only the leave request status is
+      // either "Awaiting for Approval" or "More Information Required"
+      if (!_.includes([statusNames.awaitingApproval, statusNames.moreInformationRequired],
+        leaveRequestStatus)) {
+        return false;
+      }
+
+      // Manager can cancel disregarding the allow_request_cancelation value
+      if (vm.role === 'manager') {
+        return true;
+      }
+
+      // If request can only be cancelled in advance of start date
       if (allowCancellationValue === '3') {
         return moment().isBefore(vm.leaveRequest.from_date);
       }
 
+      // If request can always be cancelled
       return allowCancellationValue === '2';
     }
 
@@ -169,11 +191,11 @@ define([
      * if they are passed as arrays to the component
      */
     function indexSupportData () {
-      if (Array.isArray(vm.leaveRequestStatuses)) {
+      if (_.isArray(vm.leaveRequestStatuses)) {
         vm.leaveRequestStatuses = _.indexBy(vm.leaveRequestStatuses, 'value');
       }
 
-      if (Array.isArray(vm.absenceTypes)) {
+      if (_.isArray(vm.absenceTypes)) {
         vm.absenceTypes = _.indexBy(vm.absenceTypes, 'id');
       }
     }
@@ -181,9 +203,9 @@ define([
     /**
      * Opens the leave request popup
      *
-     * When leave-request-actions.component sits inside manage-request component's table rows,
-     * and the table row has a click event to open leave request, so event.stopPropagation()
-     * is necessary to prevent the parents click event from being called
+     * When the component appears inside other elements
+     * which also having click events, event.stopPropagation() is necessary
+     * to prevent the click events of parent elements from being called
      *
      * @param {Object} event
      * @param {Object} leaveRequest
@@ -199,7 +221,7 @@ define([
     /**
      * Publish events
      *
-     * @param action
+     * @param {String} action
      */
     function publishEvents (action) {
       var awaitingApprovalStatusValue = _.find(vm.leaveRequestStatuses, function (status) {
@@ -211,11 +233,12 @@ define([
         pubSub.publish('ManagerBadge:: Update Count');
       }
 
-      $rootScope.$emit('LeaveRequest::' + (action === 'delete' ? 'deleted' : 'edit'), vm.leaveRequest);
+      $rootScope.$emit('LeaveRequest::' + (action === 'delete' ? 'deleted' : 'edit'),
+        vm.leaveRequest);
     }
 
     /**
-     * @TODO This function utilises external resource
+     * @TODO This function utilises external resources:
      * vm.leaveRequestStatuses - this sould be refactored
      *
      * Sets actions that can be performed within the
@@ -228,10 +251,10 @@ define([
         return _.includes(action.allowedStatuses, leaveRequestStatus) ? actionKey : null;
       }));
 
-      (!canLeaveRequestBeCancelled()) && _.pull(allowedActions, 'cancel');
+      (!canLeaveRequestBeCancelled(leaveRequestStatus)) && _.pull(allowedActions, 'cancel');
       (vm.role !== 'admin') && _.pull(allowedActions, 'delete');
       (vm.role === 'staff') && _.pull(allowedActions, 'approve', 'reject');
-      (vm.role !== 'staff') && swapEditAndRespondActions(allowedActions);
+      (vm.role !== 'staff') && swapViewEditAndRespondActions(allowedActions);
 
       vm.allowedActions = _.map(allowedActions, function (action) {
         return {
@@ -247,10 +270,10 @@ define([
      *
      * @param {Array} actions
      */
-    function swapEditAndRespondActions (actions) {
+    function swapViewEditAndRespondActions (actions) {
       _.each(actions, function (action, actionKey) {
         (action === 'edit') && (actions[actionKey] = 'respond');
-        (action === 'respond') && (actions[actionKey] = 'edit');
+        (_.includes(['respond', 'view'], action)) && (actions[actionKey] = 'edit');
       });
     }
   }
