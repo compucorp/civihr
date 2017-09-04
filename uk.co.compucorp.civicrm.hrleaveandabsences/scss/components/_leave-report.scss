@@ -8,6 +8,18 @@
       background: #e6e6e6;
     }
   }
+
+  table {
+    table-layout: fixed;
+
+    thead th,
+    tbody td {
+      overflow:hidden;
+      padding: 8px 5px;
+      white-space: normal !important;
+      word-wrap:break-word;
+    }
+  }
 }
 
 .chr_leave-report__label {
@@ -94,21 +106,21 @@
 }
 
 .chr_leave-report__table__heading--action {
-  width: 3.5%;
+  width: 35px;
 }
 
 .chr_leave-report__table__heading--label {
-  width: 24.57%;
+  width: 280px;
 }
 
 .chr_leave-report__table__heading--dates {
-  width: 15.8%;
+  width: 170px;
 }
 
 .chr_leave-report__table__heading--status {
-  width: 16%;
+  width: 165px;
 }
 
 .chr_leave-report__table__heading--type {
-  width: 7.46%;
+  width: 65px;
 }
