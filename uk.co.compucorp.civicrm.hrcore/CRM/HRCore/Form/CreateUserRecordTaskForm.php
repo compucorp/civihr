@@ -61,11 +61,14 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
       }
     }
 
-    $statusMsg = '%1 new accounts were created. %2 welcome emails were sent.';
-    $msgVars = [
-      1 => count($contactsToCreate),
-      2 => empty($allValidContacts) ? 'No' : count($allValidContacts)
-    ];
+    $statusMsg = '%1 new accounts were created. ';
+    $msgVars = [1 => count($contactsToCreate)];
+
+    // add info on emails sent if enabled
+    if ($sendEmail) {
+      $statusMsg .= '%2 welcome emails were sent.';
+      $msgVars[2] = empty($allValidContacts) ? 'No' : count($allValidContacts);
+    }
 
     CRM_Core_Session::setStatus(
       ts($statusMsg, $msgVars),
