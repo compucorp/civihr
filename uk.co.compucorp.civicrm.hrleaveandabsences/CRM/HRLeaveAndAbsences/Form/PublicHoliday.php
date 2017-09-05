@@ -120,7 +120,7 @@ class CRM_HRLeaveAndAbsences_Form_PublicHoliday extends CRM_Core_Form {
 
   /**
    * Return an array containing attributes of given field.
-   * 
+   *
    * @param string $field
    * @return array|null
    */

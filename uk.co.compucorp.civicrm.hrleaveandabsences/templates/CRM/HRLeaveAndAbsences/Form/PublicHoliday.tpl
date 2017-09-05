@@ -1,28 +1,27 @@
-<h1 class="title">{if $action eq 1}{ts}New Public Holiday{/ts}{elseif $action eq 2}{ts}Edit Public Holiday{/ts}{/if}</h1>
-
-<div class="crm-block crm-form-block crm-public_holiday-form-block crm-leave-and-absences-form-block">
+<div id="bootstrap-theme">
+  <h1 class="title">
+    {if $action eq 1}{ts}New Public Holiday{/ts}
+    {elseif $action eq 2}{ts}Edit Public Holiday{/ts}{/if}
+  </h1>
+  <div class="panel panel-default crm-absence_type-form-block crm-leave-and-absences-form-block">
     {if $action neq 8}
-        <div class="row">
-            <div class="col-sm-6">
-                <h3>{ts}Basic Details{/ts}</h3>
-                <div class="crm-section">
-                    <div class="label">{$form.title.label}</div>
-                    <div class="content">{$form.title.html}</div>
-                    <div class="clear"></div>
-                </div>
-                <div class="crm-section">
-                    <div class="label">{$form.date.label}</div>
-                    <div class="content">{$form.date.html}</div>
-                    <div class="clear"></div>
-                </div>
-                <div class="crm-section">
-                    <div class="label">{$form.is_active.label}</div>
-                    <div class="content">{$form.is_active.html}</div>
-                    <div class="clear"></div>
-                </div>
-            </div>
+    <div class="panel-body crm-form-block">
+      <div class="col-sm-8">
+        <h3>{ts}Basic Details{/ts}</h3>
+        <div class="form-group row">
+          <div class="col-sm-6">{$form.title.label}</div>
+          <div class="col-sm-6">{$form.title.html}</div>
         </div>
-        <div class="clear"></div>
+        <div class="form-group row">
+            <div class="col-sm-6">{$form.date.label}</div>
+            <div class="col-sm-6">{$form.date.html}</div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-6">{$form.is_active.label}</div>
+            <div class="col-sm-6">{$form.is_active.html}</div>
+        </div>
+      </div>
+    </div>
     {literal}
         <script type="text/javascript">
             CRM.$(function($) {
@@ -55,5 +54,10 @@
         </script>
     {/literal}
     {/if}
-    <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="bottom"}</div>
+    <div class="panel-body">
+      <div class="pull-right">
+        {include file="CRM/common/formButtons.tpl" location="bottom"}
+      </div>
+    </div>
+  </div>
 </div>
