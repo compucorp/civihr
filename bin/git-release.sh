@@ -7,7 +7,6 @@ hrbank \
 hrcareer \
 hrcase \
 hrdemog \
-hrident \
 hrim \
 hrmed \
 hrprofile \
@@ -17,7 +16,6 @@ hrreport \
 uk.co.compucorp.civicrm.hrsampledata \
 hrstaffdir \
 hrui \
-hrvisa \
 org.civicrm.bootstrapcivihr \
 hrjobcontract \
 contactsummary \

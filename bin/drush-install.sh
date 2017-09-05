@@ -12,12 +12,10 @@ uk.co.compucorp.civicrm.hremails
 ENTITY_EXTS=\
 org.civicrm.hrbank,\
 org.civicrm.hrdemog,\
-org.civicrm.hrident,\
 org.civicrm.hrjobcontract,\
 com.civicrm.hrjobroles,\
 org.civicrm.hrmed,\
 org.civicrm.hrqual,\
-org.civicrm.hrvisa,\
 org.civicrm.hremergency,\
 org.civicrm.hrcareer,\
 uk.co.compucorp.contactaccessrights,\

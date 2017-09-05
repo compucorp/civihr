@@ -5,12 +5,10 @@ HASERROR=0
 ## List of extensions defining basic entity types
 ENTITY_EXTS=( hrbank \
 hrcareer \
-hrident \
 hrjob \
 hrmed \
 hrqual \
 hrstaffdir \
-hrvisa \
 hrrecruitment \
 )
 
