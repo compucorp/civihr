@@ -847,6 +847,76 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
   }
 
+  public function testManagerCanCancelOrRejectUserLeaveRequestEvenIfBalanceChangeIsGreaterThanPeriodEntitlementBalanceChangeWhenAllowOveruseFalse() {
+    $manager = ContactFabricator::fabricate();
+    $staff = ContactFabricator::fabricate();
+    $entitlementFromDate = CRM_Utils_Date::processDate('2016-01-01');
+    $entitlementToDate = CRM_Utils_Date::processDate('2016-12-31');
+    $requestFromDate = new DateTime('2016-06-14');
+    $requestToDate = new DateTime('2016-06-14');
+    $requestFromDateType = $this->leaveRequestDayTypes['all_day']['value'];
+    $requestToDateType = $this->leaveRequestDayTypes['all_day']['value'];
+
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $staff, null, null, true, 'has Leaves Approved By');
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => $entitlementFromDate,
+      'end_date'   => $entitlementToDate,
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_overuse' => 0
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $staff['id'],
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $entitlementBalanceChange = 0;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
+    $periodStartDate = $absencePeriod->start_date;
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $periodEntitlement->contact_id,
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $leaveRequestData = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => $leaveRequestStatuses['awaiting_approval'],
+      'from_date' => $requestFromDate->format('YmdHis'),
+      'from_date_type' => $requestFromDateType,
+      'to_date' => $requestToDate->format('YmdHis'),
+      'to_date_type' => $requestToDateType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($leaveRequestData);
+
+    $updatedLeaveRequestData = $leaveRequestData;
+    $updatedLeaveRequestData['id'] = $leaveRequest->id;
+
+    foreach (array("cancelled", "rejected") as $statusName) {
+      $requestNewStatus = $leaveRequestStatuses[$statusName];
+      $updatedLeaveRequestData['status_id'] = $requestNewStatus;
+      $cancelledLeaveRequest = LeaveRequest::create($updatedLeaveRequestData);
+
+      $this->assertEquals($cancelledLeaveRequest->status_id, $requestNewStatus);
+    }
+  }
+
   public function testFindOverlappingLeaveRequestsForMoreThanOneOverlappingLeaveRequests() {
     $contactID = 1;
     $fromDate1 = new DateTime('2016-11-02');
