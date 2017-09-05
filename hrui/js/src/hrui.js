@@ -2,7 +2,7 @@
 (function ($, _) {
 
   /**
-   * Adds the Government ID field on the Personal Details page and on the Edit 
+   * Adds the Government ID field on the Personal Details page and on the Edit
    * Contact form.
    */
   function addGovernmentIdField() {
@@ -59,15 +59,6 @@
     if ($('tr#Phone_Block_2', 'form#Contact').length < 1) {
       $('#addPhone').click();
     }
-  }
-
-  function fetchGovernmentId() {
-    return $.ajax({
-      url: CRM.url('civicrm/contact/government/detail'),
-      data: { cid: CRM.cid },
-      type: 'GET',
-      dataType: "json",
-    });
   }
 
   /**
