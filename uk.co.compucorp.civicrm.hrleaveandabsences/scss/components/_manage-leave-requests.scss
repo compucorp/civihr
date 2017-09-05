@@ -10,7 +10,8 @@
     }
 
     @media screen and (max-width: $screen-md-min) {
-      > div:not(:last-child) {
+      > div:not(:last-child),
+      .panel-title {
         padding-bottom: 20px;
       }
     }
