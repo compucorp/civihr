@@ -1,78 +1,152 @@
-.entitlement-calculation-filters {
-  text-align: center;
-  padding: 15px 0;
+&.manage-entitlements-form {
+  @mixin wider-element() {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
 
-  .override-filters label {
-    display: inline-block;
+  @mixin column-side-borders() {
+    border-left: 1px solid $table-border-color;
+    border-right: 1px solid $table-border-color;
+  }
 
-    &:before {
+  .wider-hr {
+    @include wider-element();
+
+    border-width: 2px;
+  }
+
+  .wider-row {
+    @include wider-element();
+  }
+
+  .entitlement-calculation-filters {
+    text-align: center;
+    padding: 15px 0;
+
+    .override-filters label {
+      display: inline-block;
+
+      &:before {
+        display: none;
+      }
+    }
+
+    .absence-type-filter {
+      display: inline;
+      margin-right: 10px;
+    }
+
+    .col-sm-4:last-child {
+      text-align: right;
+    }
+  }
+
+  .entitlement-calculation-list {
+    .proposed-entitlement-header {
+      .title {
+        width: 65%;
+        float: left;
+      }
+
+      .actions {
+        float: right;
+      }
+    }
+
+    tr.hidden {
+      display: none;
+    }
+
+    .absence-type {
+      display: inline-block;
+      color: $crm-white;
+      padding: 5px;
+    }
+
+    .proposed-entitlement .overridden-proposed-entitlement {
+      display: none;
+      width: 24px;
+    }
+
+    .borderless-button {
+      border: 0;
+      background-color: transparent;
+      cursor: pointer;
+    }
+
+    .add-comment {
+      font-size: 1.1em;
+    }
+
+    .comment-text {
       display: none;
     }
   }
 
-  .absence-type-filter {
-    display: inline;
-    margin-right: 10px;
+  .manage-entitlements-form__filters {
+    padding-bottom: 1em;
   }
 
-  .col-sm-4:last-child {
-    text-align: right;
-  }
-}
+  .table {
+    background: #FCFDFD;
+    margin-bottom: 2em;
+    border-top: 1px solid $table-border-color;
+    border-bottom: 1px solid $table-border-color;
 
-
-.entitlement-calculation-list {
-  .proposed-entitlement-header {
-    .title {
-      width: 65%;
-      float: left;
+    th {
+      background: #F4F7F8 !important;
     }
 
-    .actions {
-      float: right;
+    th.proposed-entitlement-header {
+      @include column-side-borders();
+
+      min-width: 200px;
+      background: #EEF3F4 !important;
+
+      .row > div {
+        float: none;
+        display: table-cell;
+        vertical-align: bottom;
+      }
+
+      .fa {
+        color: #8F99A3;
+      }
+
+      .action-button-container {
+        padding: 0;
+      }
+    }
+
+    td.proposed-entitlement {
+      @include column-side-borders();
+
+      background: white;
+    }
+
+    span.absence-type {
+      padding: 0 5px;
+      border-radius: 3px;
+    }
+
+    tbody .fa {
+      color: $brand-primary;
     }
   }
 
-  tr.hidden {
+  .crm-container .CRM_HRLeaveAndAbsences_Form_ManageEntitlements .crm-button-type-next  {
+    float: right !important;
+  }
+
+  // @at-root targets the root scope. This is needed since the #add-comment-dialog
+  // opens outside of #bootstrap-theme
+  @at-root #add-comment-dialog {
     display: none;
+
+    .calculation_comment {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 10px;
+    }
   }
-
-  .absence-type {
-    display: inline-block;
-    color: $crm-white;
-    padding: 5px;
-  }
-
-  .proposed-entitlement .overridden-proposed-entitlement {
-    display: none;
-    width: 24px;
-  }
-
-  .borderless-button {
-    border: 0;
-    background-color: transparent;
-    cursor: pointer;
-  }
-
-  .add-comment {
-    font-size: 1.1em;
-  }
-
-  .comment-text {
-    display: none;
-  }
-}
-
-#add-comment-dialog {
-  display: none;
-
-  .calculation_comment {
-    box-sizing: border-box;
-    width: 100%;
-    padding: 10px;
-  }
-}
-
-.crm-container .CRM_HRLeaveAndAbsences_Form_ManageEntitlements .crm-button-type-next  {
-  float: right !important;
 }
