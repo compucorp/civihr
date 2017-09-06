@@ -6,6 +6,16 @@ trait CRM_HRUI_Upgrader_Steps_4706 {
    * Adds "is applying for NI/SSN" field
    */
   public function upgrade_4706() {
+    $this->up4706_create_ssn_applying_field();
+    $this->up4706_create_activity_type();
+
+    return TRUE;
+  }
+
+  /**
+   * @throws Exception
+   */
+  private function up4706_create_ssn_applying_field() {
     $groupName = 'Inline_Custom_Data';
     $customGroup = civicrm_api3('CustomGroup', 'get', ['name' => $groupName]);
 
@@ -28,8 +38,14 @@ trait CRM_HRUI_Upgrader_Steps_4706 {
       'is_active' => 1
     ];
     civicrm_api3('CustomField', 'create', $fieldData);
+  }
 
-    return TRUE;
+  private function up4706_create_activity_type() {
+    civicrm_api3('OptionValue', 'create', [
+      'option_group_id' => "activity_type",
+      'component_id' => "CiviTask",
+      'name' => "Check on contact for NI/SSN",
+    ]);
   }
 
 }
