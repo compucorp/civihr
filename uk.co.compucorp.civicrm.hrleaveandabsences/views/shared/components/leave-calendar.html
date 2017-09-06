@@ -75,7 +75,7 @@
         <div class="col-md-12 col-lg-8">
           <ui-select multiple ng-model="calendar.selectedMonths">
             <ui-select-match placeholder="Select Months">
-              <span>{{$item.name}}</span>
+              <span>{{$item.shortName}}</span>
             </ui-select-match>
             <ui-select-choices repeat="month.index as month in (calendar.months | filter: $select.search)">
               <span>{{month.name}}</span>
