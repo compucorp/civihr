@@ -300,25 +300,12 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    */
   private function recalculateExpiredBalanceChange(LeaveRequest $leaveRequest) {
-    $leaveStatuses = $this->getLeaveRequestStatuses();
+    $leaveStatuses = LeaveRequest::getStatuses();
     $today = new DateTime();
     $leaveRequestDate = new DateTime($leaveRequest->from_date);
 
     if($leaveRequestDate < $today && $leaveRequest->status_id == $leaveStatuses['approved']) {
       $this->leaveBalanceChangeService->recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
     }
-  }
-
-  /**
-   * Returns the array of the option values for the LeaveRequest status_id field.
-   *
-   * @return array
-   */
-  private function getLeaveRequestStatuses() {
-    if (is_null($this->leaveStatuses)) {
-      $this->leaveStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    }
-
-    return $this->leaveStatuses;
   }
 }
