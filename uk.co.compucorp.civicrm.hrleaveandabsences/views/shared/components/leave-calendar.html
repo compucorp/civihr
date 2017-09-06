@@ -78,7 +78,7 @@
               <span>{{$item.name}}</span>
             </ui-select-match>
             <ui-select-choices repeat="month.index as month in (calendar.months | filter: $select.search)">
-              <span>{{month.name}}</span>
+              <span>{{month.nameFull}}</span>
             </ui-select-choices>
           </ui-select>
         </div>
