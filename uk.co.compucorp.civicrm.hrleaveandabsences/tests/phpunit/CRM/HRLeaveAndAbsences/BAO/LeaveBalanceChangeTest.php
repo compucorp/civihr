@@ -3675,6 +3675,33 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(-1, $result[$contract2['contact_id']][$absenceTypeID]);
   }
 
+  public function testGetForLeaveRequestDatesReturnsOnTheBalanceChangesLinkedToTheGiveLeaveRequestDates() {
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'from_date' => date('YmdHis', strtotime('-4 days')),
+      'to_date' => date('YmdHis', strtotime('-3 days'))
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'from_date' => date('YmdHis', strtotime('-5 days')),
+      'to_date' => date('YmdHis', strtotime('-5 days'))
+    ], true);
+
+    $dates = $leaveRequest1->getDates();
+    $balanceChanges = LeaveBalanceChange::getForLeaveRequestDates($dates);
+    $this->assertCount(2, $balanceChanges);
+    $this->assertNotNull($balanceChanges[$dates[0]->id]);
+    $this->assertNotNull($balanceChanges[$dates[1]->id]);
+
+    $dates = $leaveRequest2->getDates();
+    $balanceChanges = LeaveBalanceChange::getForLeaveRequestDates($dates);
+    $this->assertCount(1, $balanceChanges);
+    $this->assertNotNull($balanceChanges[$dates[0]->id]);
+  }
+
   private function getBalanceChangesForPeriodEntitlement($leavePeriodEntitlement) {
     $record = new LeaveBalanceChange();
     $record->source_id = $leavePeriodEntitlement->id;

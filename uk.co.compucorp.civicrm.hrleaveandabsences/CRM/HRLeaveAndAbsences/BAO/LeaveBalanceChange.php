@@ -1266,4 +1266,31 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     return $balances;
   }
+
+  /**
+   * Returns a list of LeaveBalanceChange instances linked to the given
+   * LeaveRequestDate instances.
+   *
+   * The results are indexed by the LeaveRequestDates ID.
+   *
+   * @param CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate[]
+   *
+   * @return CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
+   */
+  public static function getForLeaveRequestDates($dates) {
+    $balanceChanges = [];
+
+    $datesIDs = CRM_Utils_Array::collect('id', $dates);
+
+    $balanceChange = new self();
+    $balanceChange->source_type = self::SOURCE_LEAVE_REQUEST_DAY;
+    $balanceChange->whereAdd('source_id IN (' . implode(',', $datesIDs) . ')');
+    $balanceChange->find();
+
+    while($balanceChange->fetch()) {
+      $balanceChanges[$balanceChange->source_id] = clone $balanceChange;
+    }
+
+    return $balanceChanges;
+  }
 }
