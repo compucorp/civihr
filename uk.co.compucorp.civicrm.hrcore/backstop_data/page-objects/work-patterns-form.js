@@ -4,6 +4,8 @@ module.exports = (function () {
   return page.extend({
     /**
      * Displays the work pattern calendar form.
+     *
+     * @return The Page instance.
      */
     showCalendarForm: function () {
       var casper = this.casper;
