@@ -267,8 +267,8 @@ define([
       return {
         index: dateMoment.month(),
         year: dateMoment.year(),
-        name: dateMoment.format('MMM'),
-        nameFull: dateMoment.format('MMMM')
+        name: dateMoment.format('MMMM'),
+        shortName: dateMoment.format('MMM')
       };
     }
 
