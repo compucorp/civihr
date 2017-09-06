@@ -82,23 +82,36 @@ trait CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait {
    * @return string
    */
   private function getLeaveApproverRelationshipWhereClause() {
-    $loggedInUserID = (int) CRM_Core_Session::getLoggedInContactID();
-    $today = date('Y-m-d');
-
     $leaveApproverRelationships = $this->getLeaveApproverRelationshipsTypes();
+    $loggedInUserID = (int) CRM_Core_Session::getLoggedInContactID();
 
-    $clause = '';
+    $clause = [];
     if (!empty($leaveApproverRelationships)) {
-      $clause = "(
-        r.is_active = 1 AND
-        rt.is_active = 1 AND
-        rt.id IN(" . implode(',', $leaveApproverRelationships) . ") AND
-        r.contact_id_b = {$loggedInUserID} AND 
-        (r.start_date IS NULL OR r.start_date <= '$today') AND
-        (r.end_date IS NULL OR r.end_date >= '$today')
-      )";
+      $clause = $this->activeLeaveManagerCondition();
+      $clause[] = "r.contact_id_b = {$loggedInUserID}";
+      $clause = "(" . implode(' AND ', $clause) . ")";
     }
 
     return $clause;
+  }
+
+  /**
+   * Returns the conditions needed to add to the Where clause for
+   * contacts that have active leave managers
+   *
+   * @return array
+   */
+  public function activeLeaveManagerCondition() {
+    $today = date('Y-m-d');
+    $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
+
+    $conditions = [];
+    $conditions[] = 'rt.is_active = 1';
+    $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
+    $conditions[] = 'r.is_active = 1';
+    $conditions[] = "(r.start_date IS NULL OR r.start_date <= '$today')";
+    $conditions[] = "(r.end_date IS NULL OR r.end_date >= '$today')";
+
+    return $conditions;
   }
 }
