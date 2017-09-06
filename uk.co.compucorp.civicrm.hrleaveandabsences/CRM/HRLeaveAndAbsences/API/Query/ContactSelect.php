@@ -12,7 +12,7 @@ use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
  */
 class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
 
-  use CRM_HRLeaveAndAbsences_Service_SettingsManagerTrait;
+  use CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait;
 
   /**
    * @var array
@@ -149,26 +149,6 @@ class CRM_HRLeaveAndAbsences_API_Query_ContactSelect {
       unset($returnFields['created_date'], $returnFields['modified_date'], $returnFields['hash']);
       $this->params['return'] = array_flip($returnFields);
     }
-  }
-
-  /**
-   * Returns the conditions needed to add to the Where clause for
-   * contacts that have active leave managers
-   *
-   * @return array
-   */
-  private function activeLeaveManagerCondition() {
-    $today = date('Y-m-d');
-    $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
-
-    $conditions = [];
-    $conditions[] = 'rt.is_active = 1';
-    $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
-    $conditions[] = 'r.is_active = 1';
-    $conditions[] = "(r.start_date IS NULL OR r.start_date <= '$today')";
-    $conditions[] = "(r.end_date IS NULL OR r.end_date >= '$today')";
-
-    return $conditions;
   }
 }
 

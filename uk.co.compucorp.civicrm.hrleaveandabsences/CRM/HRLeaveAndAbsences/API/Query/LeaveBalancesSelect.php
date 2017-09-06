@@ -22,7 +22,7 @@ use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
  */
 class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
 
-  use CRM_HRLeaveAndAbsences_Service_SettingsManagerTrait;
+  use CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
@@ -226,14 +226,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
     $conditions = [];
 
     if($this->shouldFilterByManager()) {
-      $today =  '"' . date('Y-m-d') . '"';
-      $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
-
-      $conditions[] = 'rt.is_active = 1';
-      $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
-      $conditions[] = 'r.is_active = 1';
-      $conditions[] = "(r.start_date IS NULL OR r.start_date <= {$today})";
-      $conditions[] = "(r.end_date IS NULL OR r.end_date >= {$today})";
+      $conditions = $this->activeLeaveManagerCondition();
 
       if(!$this->leaveManagerService->currentUserIsAdmin()) {
         $managerID = (int)CRM_Core_Session::getLoggedInContactID();
@@ -264,15 +257,10 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
   }
 
   /**
-   * Returns the Manager ID that will be used by the query.
+   * If true, it means that queries for this class needs to be restricted to
+   * return result sets allowed for a leave manager.
    *
-   * If the current user is an admin, they can see all the contacts. In that
-   * case the ID will be null by default or the value passed to the managed_by
-   * param. Other users can only see their managees, so the ID will always be
-   * the ID of the current logged in user, regardless of the value passed to the
-   * managed_by param.
-   *
-   * @return int|mixed|null
+   * @return boolean
    */
   private function shouldFilterByManager() {
     return !$this->leaveManagerService->currentUserIsAdmin() ||
@@ -285,5 +273,4 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
   private function setReturnFields() {
     $this->params['return'] = ['id', 'display_name'];
   }
-
 }
