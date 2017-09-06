@@ -6,6 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
@@ -65,6 +66,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
 
   public function testCanSetTheTypeOfTheLeaveRequestDatesToWhichItCreatesTheBalanceChangesTo() {
     $contact = ContactFabricator::fabricate();
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-09-04'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31'),
+    ]);
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $contact['id']],
