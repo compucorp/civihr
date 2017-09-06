@@ -308,4 +308,43 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       $this->leaveBalanceChangeService->recalculateExpiredBalanceChangesForLeaveRequestPastDates($leaveRequest);
     }
   }
+
+  /**
+   * Returns the breakdown of the Leave Request with the given ID.
+   *
+   * The breakdown is a list of the Request's dates, together with the amount
+   * of days deducted for it.
+   *
+   * @param int $leaveRequestID
+   *
+   * @return array
+   *   An array of breakdown items, where each one is:
+   *   [
+   *     'id' => 1,
+   *     'type' => 1,
+   *     'label' => 'All Day',
+   *     'date' => '2017-09-06',
+   *     'amount' => -1
+   *   ]
+   */
+  public function getBreakdown($leaveRequestID) {
+    $leaveRequestDayTypes = LeaveRequestDate::buildOptions('type');
+
+    $dates = LeaveRequestDate::getDatesForLeaveRequest($leaveRequestID);
+    $balanceChanges = LeaveBalanceChange::getForLeaveRequestDates($dates);
+
+    $breakdown = [];
+
+    foreach($dates as $date) {
+      $breakdown[] = [
+        'id' => $date->id,
+        'type' => $date->type,
+        'label' => $date->type ? $leaveRequestDayTypes[$date->type] : '',
+        'date' => date('Y-m-d', strtotime($date->date)),
+        'amount' => $balanceChanges[$date->id]->amount
+      ];
+    }
+
+    return $breakdown;
+  }
 }
