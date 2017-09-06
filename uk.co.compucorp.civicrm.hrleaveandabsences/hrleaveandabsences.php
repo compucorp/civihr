@@ -133,6 +133,7 @@ function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$para
     'deletecomment' => ['leave_request'],
     'getattachments' => ['leave_request'],
     'deleteattachment' => ['leave_request'],
+    'getbreakdown' => ['leave_request'],
   ];
 
   foreach ($actionEntities as $action => $entities) {
