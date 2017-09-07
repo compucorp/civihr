@@ -1,7 +1,7 @@
 #calculation-details {
-  .base-contractual-entitlement { color: #42afcb; }
-  .working-days-to-work { color: #8EC68A; }
-  .working-days-in-period { color: #ECA67F; }
+  .base-contractual-entitlement { color: $brand-primary; }
+  .working-days-to-work { color: $brand-success; }
+  .working-days-in-period { color: $brand-warning; }
   /*
     It's unlikely that an employee will have more than 5 contracts
     during a single period, but if that is the case, more
