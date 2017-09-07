@@ -105,6 +105,11 @@
 
 .chr_leave-report__table-container {
   overflow: auto;
+
+  .panel {
+    display: inline-block;
+    min-width: 100%;
+  }
 }
 
 .chr_leave-report__table__heading--action {
@@ -120,7 +125,7 @@
 }
 
 .chr_leave-report__table__heading--status {
-  width: 165px;
+  width: 180px;
 }
 
 .chr_leave-report__table__heading--type {
