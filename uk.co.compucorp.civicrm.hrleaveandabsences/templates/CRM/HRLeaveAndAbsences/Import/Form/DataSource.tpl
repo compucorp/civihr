@@ -30,7 +30,6 @@
     <div class="panel-header">
       {* WizardHeader.tpl provides visual display of steps thru the wizard as well as title for current step *}
       {include file="CRM/common/WizardHeader.tpl"}
-
       <div class="action-buttons">
         {include file="CRM/common/formButtons.tpl" location="top"}
       </div>
@@ -40,9 +39,6 @@
         {ts}The Leave Request Import Wizard allows you to easily upload leave requests into CiviHR.{/ts}
         {help id="id-upload"}
       </p>
-      <div class="row">
-
-      </div>
       <div id="upload-file">
         <h3>{ts}Upload Data File{/ts}</h3>
 

@@ -76,6 +76,8 @@ class CRM_HRLeaveAndAbsences_Import_Form_MapField extends CRM_Import_Form_MapFie
    * Build the form object.
    */
   public function buildQuickForm() {
+    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
+
     // To save the current mappings.
     if (!$this->get('savedMapping')) {
       $saveDetailsName = ts('Save this field mapping');

@@ -39,4 +39,18 @@
       padding: 0;
     }
   }
+
+  // Step 2:
+  .crm-activity_map_table-form-block {
+    box-shadow: none;
+
+    #map-field table {
+      margin-bottom: 2em;
+      width: 100%;
+
+      th {
+        padding: $table-cell-padding;
+      }
+    }
+  }
 }
