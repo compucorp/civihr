@@ -1,0 +1,42 @@
+&.crm-leave-and-balance-import {
+  .panel {
+    background-color: $crm-white;
+  }
+
+  .panel-header {
+    position: relative;
+
+    h2 {
+      padding: $table-cell-padding;
+    }
+
+    .action-buttons {
+      bottom: 0;
+      position: absolute;
+      right: 20px;
+    }
+  }
+
+  .panel-body .row:not(:last-child) {
+    padding-bottom: 2em;
+  }
+
+  .panel-body input[name=uploadFile] {
+    padding-left: 0;
+  }
+
+  .table.date-formats {
+    .label {
+      display: none;
+    }
+
+    label {
+      font-weight: normal;
+    }
+
+    td {
+      border: 0;
+      padding: 0;
+    }
+  }
+}
