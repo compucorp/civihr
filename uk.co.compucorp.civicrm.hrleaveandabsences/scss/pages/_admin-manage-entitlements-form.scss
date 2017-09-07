@@ -20,8 +20,8 @@
   }
 
   .entitlement-calculation-filters {
-    text-align: center;
     padding: 15px 0;
+    text-align: center;
 
     .override-filters label {
       display: inline-block;
@@ -44,8 +44,8 @@
   .entitlement-calculation-list {
     .proposed-entitlement-header {
       .title {
-        width: 65%;
         float: left;
+        width: 65%;
       }
 
       .actions {
@@ -58,8 +58,8 @@
     }
 
     .absence-type {
-      display: inline-block;
       color: $crm-white;
+      display: inline-block;
       padding: 5px;
     }
 
@@ -69,8 +69,8 @@
     }
 
     .borderless-button {
-      border: 0;
       background-color: transparent;
+      border: 0;
       cursor: pointer;
     }
 
@@ -88,29 +88,29 @@
   }
 
   .table {
-    background: #FCFDFD;
-    margin-bottom: 2em;
+    background: $table-bg-accent;
     border-top: 1px solid $table-border-color;
     border-bottom: 1px solid $table-border-color;
+    margin-bottom: 2em;
 
     th {
-      background: #F4F7F8 !important;
+      background: $crm-table-heading-bg !important;
     }
 
     th.proposed-entitlement-header {
       @include column-side-borders();
 
+      background: darken($crm-table-heading-bg, 5%) !important;
       min-width: 200px;
-      background: #EEF3F4 !important;
 
       .row > div {
-        float: none;
         display: table-cell;
+        float: none;
         vertical-align: bottom;
       }
 
       .fa {
-        color: #8F99A3;
+        color: $gray-dark;
       }
 
       .action-button-container {
@@ -125,8 +125,8 @@
     }
 
     span.absence-type {
-      padding: 0 5px;
       border-radius: 3px;
+      padding: 0 5px;
     }
 
     tbody .fa {
@@ -145,8 +145,8 @@
 
     .calculation_comment {
       box-sizing: border-box;
-      width: 100%;
       padding: 10px;
+      width: 100%;
     }
   }
 }
