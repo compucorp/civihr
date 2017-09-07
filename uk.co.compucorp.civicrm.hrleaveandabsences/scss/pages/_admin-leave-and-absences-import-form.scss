@@ -53,4 +53,25 @@
       }
     }
   }
+
+  // Step 3:
+  #preview-counts {
+    box-shadow: none;
+    margin-bottom: 2em;
+    width: 100%;
+
+    tr.danger td {
+      background-color: $state-danger-bg !important;
+      color: $brand-danger;
+
+      a {
+        color: darken($brand-danger, 5%);
+        font-weight: bold;
+
+        &:hover {
+          color: darken($brand-primary, 5%);
+        }
+      }
+    }
+  }
 }
