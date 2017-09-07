@@ -312,13 +312,15 @@ define([
       } : {};
 
       vm.loading[loaderType] = true;
-      vm.leaveRequests[section].list = []; // flushes the current cached data
       // cache is set to always false as changing selection either in status menu
       // or pages or adding new requests was reverting back to older cache
       return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination,
         'from_date DESC', returnFields, false)
         .then(function (leaveRequests) {
           vm.leaveRequests[section] = leaveRequests;
+        })
+        .catch(function () {
+          vm.leaveRequests[section].list = []; // flushes the current cached data
         })
         .finally(function () {
           vm.loading[loaderType] = false;
