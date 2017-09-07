@@ -355,6 +355,10 @@ class CRM_Export_BAO_Export {
         if (!$fieldName) {
           continue;
         }
+
+        if($fieldName == 'hrjobcontract_leave_leave_amount') {
+          $returnProperties['contact_id'] = 1;
+        }
         // get phoneType id and IM service provider id separately
         if ($fieldName == 'phone') {
           $phoneTypeId = CRM_Utils_Array::value(3, $value);
