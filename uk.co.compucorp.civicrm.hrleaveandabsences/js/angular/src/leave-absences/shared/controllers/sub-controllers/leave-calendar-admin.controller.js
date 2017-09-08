@@ -23,7 +23,6 @@ define([
       init: function (_vm_) {
         vm = _vm_;
         vm.showContactName = true;
-        vm.showAdminFilteringHint = showAdminFilteringHint;
         vm.showFilters = true;
         vm.filtersByAssignee = [
           { type: 'me', label: 'People I approve' },
@@ -31,6 +30,8 @@ define([
           { type: 'all', label: 'All' }
         ];
         vm.filters.userSettings.assignedTo = vm.filtersByAssignee[0];
+
+        vm.showAdminFilteringHint = showAdminFilteringHint;
 
         return api();
       }
@@ -78,7 +79,7 @@ define([
 
           return lookupContacts(filterByAssignee)
             .then(function (contacts) {
-              vm.lookupContacts = filterByAssignee !== 'all' ? contacts : contacts.list;
+              vm.lookupContacts = contacts;
             })
             .then(function () {
               vm.contactIdsToReduceTo = null;
@@ -131,10 +132,12 @@ define([
         return Contact.leaveManagees(vm.contactId);
       } else if (filterByAssignee === 'unassigned') {
         return Contact.leaveManagees(undefined, {
-          unassigned: true // @TODO update this once it is supported in API!!
+          unassigned: true
         });
       } else {
-        return Contact.all();
+        return Contact.all().then(function (contacts) {
+          return contacts.list;
+        });
       }
     }
 
