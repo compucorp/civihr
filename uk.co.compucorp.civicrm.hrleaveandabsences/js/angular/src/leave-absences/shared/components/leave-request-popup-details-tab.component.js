@@ -449,10 +449,9 @@ define([
     }
 
     /**
-     * Gets called when the component is destroyed
+     * Destroys all event listeners
      */
     function unsubscribeFromEvents () {
-      // destroy all the event
       _.forEach(listeners, function (listener) {
         listener();
       });
