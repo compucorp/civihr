@@ -80,6 +80,7 @@ define([
     vm.isMode = isMode;
     vm.isRole = isRole;
     vm.submit = submit;
+    vm.updateBalance = updateBalance;
     vm._loadAbsenceTypes = _loadAbsenceTypes;
 
     /**
@@ -814,6 +815,13 @@ define([
       }
 
       return vm.request.isValid();
+    }
+
+    /**
+     * Broadcast an event to Update the Balance
+     */
+    function updateBalance () {
+      $rootScope.$broadcast('LeaveRequestPopup::updateBalance');
     }
 
     /**
