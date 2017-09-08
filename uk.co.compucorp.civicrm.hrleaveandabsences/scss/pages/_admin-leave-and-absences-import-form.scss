@@ -54,8 +54,9 @@
     }
   }
 
-  // Step 3:
-  #preview-counts {
+  // Step 3 and 4:
+  #preview-counts,
+  #summary-counts {
     box-shadow: none;
     margin-bottom: 2em;
     width: 100%;
