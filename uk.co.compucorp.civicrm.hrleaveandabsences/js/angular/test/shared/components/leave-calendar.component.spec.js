@@ -22,8 +22,8 @@
 
     describe('leaveCalendar', function () {
       var $componentController, $controller, $controllerProvider, $log, $q,
-        $rootScope, controller, $provide, AbsencePeriod, OptionGroup,
-        PublicHoliday, sharedSettings;
+        $rootScope, controller, $provide, AbsencePeriod, Contact, ContactAPIMock, Contract, OptionGroup,
+        PublicHoliday, sharedSettings, notification;
       var mockedCheckPermissions = mockCheckPermissionService();
       var currentContact = {
         id: CRM.vars.leaveAndAbsences.contactId,
@@ -37,35 +37,46 @@
 
       beforeEach(inject([
         'AbsencePeriodAPIMock', 'AbsenceTypeAPIMock', 'PublicHolidayAPIMock', 'api.contact.mock', 'api.contract.mock',
-        function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, PublicHolidayAPIMock, ContactAPIMock, ContractAPIMock) {
-          $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
-          $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
-          $provide.value('PublicHolidayAPI', PublicHolidayAPIMock);
+        function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_, _PublicHolidayAPIMock_, _ContactAPIMock_, _ContractAPIMock_) {
+          ContactAPIMock = _ContactAPIMock_;
+
+          $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
+          $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
+          $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
+          $provide.value('api.contact', _ContactAPIMock_);
+          $provide.value('api.contract', _ContractAPIMock_);
           $provide.value('checkPermissions', mockedCheckPermissions);
-          $provide.value('api.contact', ContactAPIMock);
-          $provide.value('api.contract', ContractAPIMock);
         }
       ]));
 
       beforeEach(inject([
         '$componentController', '$controller', '$log', '$q', '$rootScope',
-        'AbsencePeriod', 'OptionGroup', 'PublicHoliday', 'shared-settings', 'OptionGroupAPIMock',
+        'AbsencePeriod', 'Contact', 'Contract', 'OptionGroup', 'PublicHoliday',
+        'shared-settings', 'notificationService', 'OptionGroupAPIMock',
         function (_$componentController_, _$controller_, _$log_, _$q_, _$rootScope_,
-          _AbsencePeriod_, _OptionGroup_, _PublicHoliday_, _sharedSettings_,
-          OptionGroupAPIMock) {
+          _AbsencePeriod_, _Contact_, _Contract_, _OptionGroup_, _PublicHoliday_,
+          _sharedSettings_, _notificationService_, OptionGroupAPIMock) {
           $componentController = _$componentController_;
           $controller = _$controller_;
           $log = _$log_;
           $q = _$q_;
           $rootScope = _$rootScope_;
           AbsencePeriod = _AbsencePeriod_;
+          Contact = _Contact_;
+          Contract = _Contract_;
           PublicHoliday = _PublicHoliday_;
           OptionGroup = _OptionGroup_;
           sharedSettings = _sharedSettings_;
+          notification = _notificationService_;
 
           spyOn($log, 'debug');
           spyOn($rootScope, '$emit').and.callThrough();
           spyOn(AbsencePeriod, 'all');
+          spyOn(Contact, 'all').and.callThrough();
+          spyOn(Contact, 'leaveManagees').and.callFake(function () {
+            return ContactAPIMock.leaveManagees();
+          });
+          spyOn(Contract, 'all').and.callThrough();
           spyOn(PublicHoliday, 'all').and.callThrough();
           spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
             return OptionGroupAPIMock.valuesOf(name);
@@ -194,8 +205,24 @@
               compileComponent();
             });
 
-            it('loads additional contacts IDs to filter', function () {
-              expect(controller.contactIdsToReduceTo).toEqual(jasmine.any(Array));
+            describe('when filter by assignee is set to "Me"', function () {
+              beforeEach(function () {
+                selectFilterByAssignee('me');
+              });
+
+              it('does *not* load additional contacts IDs to filter', function () {
+                expect(controller.contactIdsToReduceTo).toEqual(null);
+              });
+            });
+
+            describe('when filter by assignee is *not* set to "Me"', function () {
+              beforeEach(function () {
+                selectFilterByAssignee('all');
+              });
+
+              it('loads additional contacts IDs to filter', function () {
+                expect(controller.contactIdsToReduceTo).toEqual(jasmine.any(Array));
+              });
             });
           });
 
@@ -208,6 +235,106 @@
 
             it('does not load additional contacts IDs to filter', function () {
               expect(controller.contactIdsToReduceTo).toBe(null);
+            });
+          });
+
+          afterEach(function () {
+            currentContact.role = 'staff';
+          });
+        });
+
+        describe('filter by assignee', function () {
+          it('does *not* have such a filter for staff', function () {
+            expect(controller.filtersByAssignee).not.toBeDefined();
+          });
+
+          describe('when user is Admin', function () {
+            beforeEach(function () {
+              currentContact.role = 'admin';
+
+              compileComponent();
+            });
+
+            it('has the filter available', function () {
+              expect(controller.filtersByAssignee).toBeDefined();
+            });
+
+            describe('when filter by assignee is set to "Me"', function () {
+              beforeEach(function () {
+                selectFilterByAssignee('me');
+              });
+
+              it('does *not* load contracts', function () {
+                expect(Contract.all).not.toHaveBeenCalledWith();
+              });
+
+              it('loads only managees', function () {
+                expect(Contact.all).not.toHaveBeenCalledWith();
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(currentContact.id);
+              });
+            });
+
+            describe('when filter by assignee is set to "Unassigned"', function () {
+              beforeEach(function () {
+                selectFilterByAssignee('unassigned');
+              });
+
+              it('loads all contracts', function () {
+                expect(Contract.all).toHaveBeenCalledWith();
+              });
+
+              it('loads all contacts', function () {
+                expect(Contact.leaveManagees).toHaveBeenCalledWith(undefined, {
+                  unassigned: true
+                });
+              });
+            });
+
+            describe('when filter by assignee is set to "All"', function () {
+              beforeEach(function () {
+                selectFilterByAssignee('all');
+              });
+
+              it('loads all contracts', function () {
+                expect(Contract.all).toHaveBeenCalledWith();
+              });
+
+              it('loads all contacts', function () {
+                expect(Contact.all).toHaveBeenCalledWith();
+              });
+            });
+          });
+
+          afterEach(function () {
+            currentContact.role = 'staff';
+          });
+        });
+
+        describe('hint for admin filtering logic', function () {
+          it('does *not* have such a hint for staff', function () {
+            expect(controller.showAdminFilteringHint).not.toBeDefined();
+          });
+
+          describe('when user is Admin', function () {
+            beforeEach(function () {
+              currentContact.role = 'admin';
+
+              compileComponent();
+            });
+
+            it('shows the hint', function () {
+              expect(controller.showAdminFilteringHint).toBeDefined();
+            });
+
+            describe('when user clicks the hint', function () {
+              beforeEach(function () {
+                spyOn(notification, 'info').and.callThrough();
+                controller.showAdminFilteringHint();
+              });
+
+              it('shows the notification with a hint message', function () {
+                expect(notification.info).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(String));
+              });
             });
           });
 
@@ -323,6 +450,19 @@
             });
           });
         });
+
+        /**
+         * Selects a filter by assignee
+         *
+         * @param {String} type (me|unassigned|all)
+         */
+        function selectFilterByAssignee (type) {
+          controller.filters.userSettings.assignedTo =
+            _.find(controller.filtersByAssignee, { type: type });
+
+          controller.refresh('contacts');
+          $rootScope.$digest();
+        }
       });
 
       describe('selected months watcher', function () {

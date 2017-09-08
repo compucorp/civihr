@@ -7,28 +7,25 @@
     'use strict';
 
     describe('LeaveCalendarAdminController', function () {
-      var $controller, $log, $provide, $rootScope, Contact, Contract, controller;
+      var $controller, $log, $provide, $rootScope, Contact, controller;
       var contactId = CRM.vars.leaveAndAbsences.contactId;
 
       beforeEach(module('my-leave', function (_$provide_) {
         $provide = _$provide_;
       }));
 
-      beforeEach(inject(['api.contact.mock', 'api.contract.mock', function (ContactAPIMock, ContractAPIMock) {
+      beforeEach(inject(['api.contact.mock', function (ContactAPIMock) {
         $provide.value('api.contact', ContactAPIMock);
-        $provide.value('api.contract', ContractAPIMock);
       }]));
 
-      beforeEach(inject(function (_$controller_, _$log_, _$rootScope_, _Contact_, _Contract_) {
+      beforeEach(inject(function (_$controller_, _$log_, _$rootScope_, _Contact_) {
         $controller = _$controller_;
         $log = _$log_;
         $rootScope = _$rootScope_;
         Contact = _Contact_;
-        Contract = _Contract_;
 
         spyOn($log, 'debug');
         spyOn(Contact, 'all').and.callThrough();
-        spyOn(Contract, 'all').and.callThrough();
 
         initController();
       }));
@@ -41,14 +38,6 @@
         beforeEach(function () {
           controller.loadContacts();
           $rootScope.$digest();
-        });
-
-        it('loads all contracts', function () {
-          expect(Contract.all).toHaveBeenCalledWith();
-        });
-
-        it('loads all contacts', function () {
-          expect(Contact.all).toHaveBeenCalledWith();
         });
 
         it('filters the contact using the filters selected by the user', function () {

@@ -4,12 +4,13 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/controllers',
-  'common/models/contract'
+  'common/models/contract',
+  'common/services/notification.service'
 ], function (_, moment, controllers) {
   controllers.controller('LeaveCalendarAdminController', ['$log', '$q',
-    'Contact', 'Contract', controller]);
+    'Contact', 'ContactInstance', 'Contract', 'notificationService', controller]);
 
-  function controller ($log, $q, Contact, Contract) {
+  function controller ($log, $q, Contact, ContactInstance, Contract, notification) {
     $log.debug('LeaveCalendarAdminController');
 
     var contracts, vm;
@@ -23,10 +24,43 @@ define([
         vm = _vm_;
         vm.showContactName = true;
         vm.showFilters = true;
+        vm.filtersByAssignee = [
+          { type: 'me', label: 'People I approve' },
+          { type: 'unassigned', label: 'People without approver' },
+          { type: 'all', label: 'All' }
+        ];
+        vm.filters.userSettings.assignedTo = vm.filtersByAssignee[0];
+
+        vm.showAdminFilteringHint = showAdminFilteringHint;
 
         return api();
       }
     };
+
+    /**
+     * Get contact IDs filtered according to contracts that belong
+     * to the currently selected absence period
+     *
+     * @return {Promise}
+     */
+    function getContactIdsToReduceTo () {
+      return loadContracts()
+      .then(function (contracts) {
+        var contractsInAbsencePeriod = contracts.filter(function (contract) {
+          var details = contract.info.details;
+
+          return (
+            moment(details.period_start_date).isSameOrBefore(vm.selectedPeriod.end_date) &&
+            (moment(details.period_end_date).isSameOrAfter(vm.selectedPeriod.start_date) ||
+              !details.period_end_date)
+          );
+        });
+
+        vm.contactIdsToReduceTo = _.uniq(contractsInAbsencePeriod.map(function (contract) {
+          return contract.contact_id;
+        }));
+      });
+    }
 
     /**
      * Returns the api of the sub-controller
@@ -37,21 +71,25 @@ define([
       return {
         /**
          * Returns all contacts
+         *
          * @return {Promise} resolves as an {Array}
          */
         loadContacts: function () {
-          return Contact.all()
+          var filterByAssignee = vm.filters.userSettings.assignedTo.type;
+
+          return lookupContacts(filterByAssignee)
             .then(function (contacts) {
-              vm.lookupContacts = contacts.list;
+              vm.lookupContacts = contacts;
             })
             .then(function () {
-              return $q.all([
-                loadContacts(),
-                getContactIdsToReduceTo()
-              ]);
+              vm.contactIdsToReduceTo = null;
+
+              (filterByAssignee !== 'me') && getContactIdsToReduceTo();
+
+              return loadContacts();
             })
-            .then(function (results) {
-              return results[0]; // return all contacts
+            .then(function (contacts) {
+              return contacts;
             });
         }
       };
@@ -83,28 +121,24 @@ define([
     }
 
     /**
-     * Get contact IDs filtered according to contracts that belong
-     * to the currently selected absence period
+     * Returns the loading contacts promise depending on the
+     * filter by assignee chosen
      *
-     * @return {Promise}
+     * @param  {String} filterByAssignee (me|unassigned|all)
+     * @return {Promise} resolved to a list of loaded contacts
      */
-    function getContactIdsToReduceTo () {
-      return loadContracts()
-      .then(function (contracts) {
-        var contractsInAbsencePeriod = contracts.filter(function (contract) {
-          var details = contract.info.details;
-
-          return (
-            moment(details.period_start_date).isSameOrBefore(vm.selectedPeriod.end_date) &&
-            (moment(details.period_end_date).isSameOrAfter(vm.selectedPeriod.start_date) ||
-              !details.period_end_date)
-          );
+    function lookupContacts (filterByAssignee) {
+      if (filterByAssignee === 'me') {
+        return Contact.leaveManagees(vm.contactId);
+      } else if (filterByAssignee === 'unassigned') {
+        return Contact.leaveManagees(undefined, {
+          unassigned: true
         });
-
-        vm.contactIdsToReduceTo = _.uniq(contractsInAbsencePeriod.map(function (contract) {
-          return contract.contact_id;
-        }));
-      });
+      } else {
+        return Contact.all().then(function (contacts) {
+          return contacts.list;
+        });
+      }
     }
 
     /**
@@ -128,6 +162,17 @@ define([
             })
         }
       };
+    }
+
+    /**
+     * Shows a hint to the filtering logic
+     */
+    function showAdminFilteringHint (comment) {
+      notification.info('', [
+        '<p>When <strong>All</strong> filter is selected, all staff members with contracts which are active in the selected absence period are displayed.</p>',
+        '<p><strong>People I approve</strong> filter displays only staff members who you approve leave for.</p>',
+        '<p><strong>People without approver</strong> filter displays all staff members with contracts which are active in the selected absence period and who do not have any leave approver assigned.</p>'
+      ].join(''));
     }
   }
 });

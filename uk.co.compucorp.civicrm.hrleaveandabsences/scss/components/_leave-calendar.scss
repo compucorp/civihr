@@ -256,3 +256,12 @@ td.chr_leave-calendar__name {
 .chr_leave-calendar__dates-container {
   overflow-x: auto;
 }
+
+.chr_leave-calendar__admin-filters-hint {
+  margin-top: 8px;
+}
+
+.chr_leave-calendar__day-selector .ui-select-search {
+  display: inline;
+  width: 100px !important;
+}
