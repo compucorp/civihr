@@ -448,6 +448,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
 
+    // Leave Request is able to be rejected or cancelled disregarding the balance
+    if (in_array($params['status_id'], self::getCancelledStatuses())) {
+      return;
+    }
+
     $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
     if ($leaveRequestBalance == 0) {
       throw new InvalidLeaveRequestException(
@@ -708,7 +713,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $query = "
       SELECT DISTINCT lr.* FROM {$leaveRequestTable} lr
-      INNER JOIN {$leaveRequestDateTable} lrd 
+      INNER JOIN {$leaveRequestDateTable} lrd
         ON lrd.leave_request_id = lr.id
       INNER JOIN {$leaveBalanceChangeTable} lbc
         ON lbc.source_id = lrd.id AND lbc.source_type = %1
@@ -955,14 +960,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $leaveRequestTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
 
-    $query = "DELETE bc, lrd, lr 
+    $query = "DELETE bc, lrd, lr
               FROM {$leaveRequestTable} lr
-              INNER JOIN {$leaveRequestDateTable} lrd 
-                ON lrd.leave_request_id = lr.id 
-              INNER JOIN {$leaveBalanceChangeTable} bc 
-                ON bc.source_id = lrd.id AND bc.source_type = %1 
-              WHERE lr.type_id = %2 AND 
-                    lr.from_date >= %3 AND 
+              INNER JOIN {$leaveRequestDateTable} lrd
+                ON lrd.leave_request_id = lr.id
+              INNER JOIN {$leaveBalanceChangeTable} bc
+                ON bc.source_id = lrd.id AND bc.source_type = %1
+              WHERE lr.type_id = %2 AND
+                    lr.from_date >= %3 AND
                     lr.request_type = %4 AND
                     lr.toil_expiry_date > %5
               ";
