@@ -34,6 +34,7 @@ define([
   function DetailsTabController ($controller, $log, $rootScope, $q, HRSettings, sharedSettings, Calendar, OptionGroup, PublicHoliday, LeaveRequest) {
     $log.debug('Component: leave-request-popup-details-tab');
     var originalOpeningBalance = null;
+    var listeners = [];
     var vm = this;
 
     vm.canManage = false;
@@ -104,12 +105,14 @@ define([
     vm._setDates = _setDates;
     vm._setDateAndTypes = _setDateAndTypes;
     vm._setMinMaxDate = _setMinMaxDate;
+    vm.$onDestroy = unsubscribeFromEvents;
 
     (function init () {
       $controller(_.capitalize(getLeaveType(vm.leaveType, vm.request)) + 'RequestCtrl', { parentCtrl: vm });
 
       vm.canManage = vm.isRole('manager') || vm.isRole('admin');
       vm.loading.tab = true;
+      initListeners();
 
       vm.initChildController()
       .then(function () {
@@ -316,6 +319,15 @@ define([
     }
 
     /**
+     * Initialises listeners
+     */
+    function initListeners () {
+      listeners.push(
+        $rootScope.$on('LeaveRequestPopup::updateBalance', vm.updateBalance)
+      );
+    }
+
+    /**
      * Initialize the original opening balance when in edit mode. This allows
      * to display the opening balance before the request was created. The
      * formula is absence type reminder + balance change (balance change is a
@@ -434,6 +446,16 @@ define([
       if (vm.isMode('create')) {
         vm.request[dayType + '_date_type'] = vm[keyForDayTypeCollection][0].value;
       }
+    }
+
+    /**
+     * Gets called when the component is destroyed
+     */
+    function unsubscribeFromEvents () {
+      // destroy all the event
+      _.forEach(listeners, function (listener) {
+        listener();
+      });
     }
 
     /**
