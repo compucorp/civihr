@@ -22,23 +22,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   const REQUEST_TYPE_TOIL = 'toil';
   const REQUEST_TYPE_PUBLIC_HOLIDAY = 'public_holiday';
 
+  //Validations Mode for the create method
+  const VALIDATIONS_ON = 1;
+  const VALIDATIONS_OFF = 2;
+  const IMPORT_VALIDATION = 3;
+
   /**
    * Create a new LeaveRequest based on array-data
    *
    * @param array $params key-value pairs
+   * @param int $validationMode
+   *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    *
    * @throws \Exception
    */
-  public static function create($params, $validate = true) {
+  public static function create($params, $validationMode = self::VALIDATIONS_ON) {
     $entityName = 'LeaveRequest';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
 
-    if($validate){
-      self::validateParams($params);
-    }
+    self::validateParams($params, $validationMode);
     unset($params['is_deleted']);
 
     $datesChanged = self::datesChanged($params);
@@ -67,10 +72,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param array $params
    *   The params array received by the create method
+   * @param int $validationMode
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  public static function validateParams($params) {
+  public static function validateParams($params, $validationMode = self::VALIDATIONS_ON) {
+    if($validationMode == self::VALIDATIONS_OFF) {
+      return;
+    }
     self::validateMandatory($params);
     self::validateLeaveRequestSoftDeleteDuringUpdate($params);
     self::validateRequestType($params);
@@ -86,7 +95,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params, $absenceType);
     self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params, $absenceType);
     self::validateAbsencePeriod($params, $absencePeriod);
-    self::validateEntitlementAndWorkingDayAndBalanceChange($params, $absenceType, $absencePeriod);
+
+    if($validationMode != self::IMPORT_VALIDATION) {
+      self::validateEntitlementAndWorkingDayAndBalanceChange($params, $absenceType, $absencePeriod);
+    }
+
 
   }
 

@@ -29,7 +29,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
    */
   public static function fabricateWithoutValidation($params = [], $withBalanceChanges = false) {
     $params = self::mergeDefaultParams($params);
-    $leaveRequest =  LeaveRequest::create($params, false);
+    $leaveRequest =  LeaveRequest::create($params, LeaveRequest::VALIDATIONS_OFF);
 
     if ($withBalanceChanges) {
       LeaveBalanceChangeFabricator::fabricateForLeaveRequest($leaveRequest);

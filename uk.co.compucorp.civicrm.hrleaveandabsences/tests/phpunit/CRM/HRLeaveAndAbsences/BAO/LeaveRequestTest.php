@@ -2439,7 +2439,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
 
-    $leaveRequest = LeaveRequest::create($params, false);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
 
     //emails redirected to the database are stored in the message spool table
     $result = $this->getEmailNotificationsFromDatabase(['staffmember@dummysite.com', 'manager1@dummysite.com']);
@@ -2471,7 +2471,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //update Leave Request
     $params['id'] = $leaveRequest->id;
     $params['from_date_type'] = 2;
-    LeaveRequest::create($params,false);
+    LeaveRequestFabricator::fabricateWithoutValidation($params);
 
     $result = $this->getEmailNotificationsFromDatabase(['staffmember@dummysite.com', 'manager1@dummysite.com']);
 
@@ -3185,5 +3185,83 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(2, $cancelledStatuses);
     $this->assertContains($leaveStatuses['cancelled'], $cancelledStatuses);
     $this->assertContains($leaveStatuses['rejected'], $cancelledStatuses);
+  }
+
+  public function testLeaveRequestIsCreatedWhenBalanceIsGreaterThanEntitlementBalanceWhenAllowOveruseFalseAndValidationModeIsImport() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_overuse' => 0
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $entitlementBalanceChange = 3;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    //four working days which will create a balance change of 4 and is greater than entitlement balance
+    $leaveRequest = LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-11-14'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-11-17'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], LeaveRequest::IMPORT_VALIDATION);
+
+    $this->assertNotNull($leaveRequest->id);
+  }
+
+  public function testLeaveRequestBeCreatedWhenLeaveRequestHasNoWorkingDayAndValidationModeIsImport() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    //both leave days are on weekends
+    $leaveRequest = LeaveRequest::create([
+      'type_id' => $periodEntitlement->type_id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-11-12'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-11-13'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], LeaveRequest::IMPORT_VALIDATION);
+
+    $this->assertNotNull($leaveRequest->id);
   }
 }
