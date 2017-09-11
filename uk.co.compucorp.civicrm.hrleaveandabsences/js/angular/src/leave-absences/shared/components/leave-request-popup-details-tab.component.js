@@ -332,7 +332,7 @@ define([
      * request is approved. This allows to display the opening balance before
      * the request was created.
      *
-     * The formula is absence type reminder + balance change. Since
+     * The formula is absence type remainder + balance change. Since
      * Balance Change is a negative number so it needs to be subtracted.
      */
     function initOriginalOpeningBalance () {
