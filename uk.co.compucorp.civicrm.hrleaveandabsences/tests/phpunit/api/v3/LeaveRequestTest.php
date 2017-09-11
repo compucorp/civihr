@@ -3749,6 +3749,162 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     civicrm_api3('LeaveRequest', 'deleteattachment', ['leave_request_id' => 1]);
   }
 
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_request_id
+   */
+  public function testGetBreakdownShouldThrowAnExceptionIfTheLeaveRequestIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'getbreakdown', []);
+  }
+
+  public function testGetBreakdownShouldReturnEmptyIfTheGiveLeaveRequestDoesnExist() {
+    $result = civicrm_api3('LeaveRequest', 'getbreakdown', ['leave_request_id' => 1]);
+
+    $this->assertEmpty($result['values']);
+  }
+
+  public function testGetBreakdownShouldReturnEmptyIfAStaffMemberTriesToGetTheBreakdownOfAnotherStaffMember() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $this->setPermissions(['access AJAX API']);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
+    );
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contact2['id'],
+      'from_date' => CRM_Utils_Date::processDate('+5 days'),
+      'to_date' =>  CRM_Utils_Date::processDate('+7 days'),
+    ], true);
+
+    $this->registerCurrentLoggedInContactInSession($contact1['id']);
+
+    // Contact1 should not be able to get the breakdown for a leave request of
+    // Contact2
+    $result = civicrm_api3('LeaveRequest', 'getBreakdown', [
+      'leave_request_id' => $leaveRequest->id,
+      'check_permissions' => true,
+    ]);
+    $this->assertEmpty($result['values']);
+
+    $this->registerCurrentLoggedInContactInSession($contact2['id']);
+
+    // Contact2 should be able to get the breakdown for their own leave request
+    $result = civicrm_api3('LeaveRequest', 'getBreakdown', [
+      'leave_request_id' => $leaveRequest->id,
+      'check_permissions' => true,
+    ]);
+    $this->assertCount(3, $result['values']);
+  }
+
+  public function testGetBreakdownShouldReturnEmptyIfAManagerTriesToGetTheBreakdownOfSomeoneWhoTheyDontManage() {
+    $manager = ContactFabricator::fabricate();
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
+    );
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contact2['id'],
+      'from_date' => CRM_Utils_Date::processDate('+5 days'),
+      'to_date' =>  CRM_Utils_Date::processDate('+7 days'),
+    ], true);
+
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $contact1);
+    $this->setPermissions(['access AJAX API']);
+
+    // Manager only manages Contact 1, so they should not be able to get the
+    // breakdown for a leave request of Contact2
+    $result = civicrm_api3('LeaveRequest', 'getBreakdown', [
+      'leave_request_id' => $leaveRequest->id,
+      'check_permissions' => true,
+    ]);
+    $this->assertEmpty($result['values']);
+  }
+
+  public function testGetBreakdownShouldNotReturnEmptyIfAManagerTriesToGetTheBreakdownOfSomeoneTheyManage() {
+    $manager = ContactFabricator::fabricate();
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
+    );
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contact2['id'],
+      'from_date' => CRM_Utils_Date::processDate('+5 days'),
+      'to_date' =>  CRM_Utils_Date::processDate('+7 days'),
+    ], true);
+
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $contact2);
+    $this->setPermissions(['access AJAX API']);
+
+    $result = civicrm_api3('LeaveRequest', 'getBreakdown', [
+      'leave_request_id' => $leaveRequest->id,
+      'check_permissions' => true,
+    ]);
+    $this->assertCount(3, $result['values']);
+  }
+
+  public function testGetBreakdownReturnsResultsIfAnAdminTriesToAccessTheBreakdownOfAnyLeaveRequest() {
+    $admin = ContactFabricator::fabricate();
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contact1['id'],
+      'from_date' => CRM_Utils_Date::processDate('+5 days'),
+      'to_date' =>  CRM_Utils_Date::processDate('+7 days'),
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $contact2['id'],
+      'from_date' => CRM_Utils_Date::processDate('+8 days'),
+      'to_date' =>  CRM_Utils_Date::processDate('+8 days'),
+    ], true);
+
+    $this->registerCurrentLoggedInContactInSession($admin['id']);
+    // Admins have the view all contacts permission
+    $this->setPermissions(['access AJAX API', 'view all contacts']);
+
+    $result = civicrm_api3('LeaveRequest', 'getBreakdown', [
+      'leave_request_id' => $leaveRequest1->id,
+      'check_permissions' => true,
+    ]);
+    $this->assertCount(3, $result['values']);
+
+    $result = civicrm_api3('LeaveRequest', 'getBreakdown', [
+      'leave_request_id' => $leaveRequest2->id,
+      'check_permissions' => true,
+    ]);
+    $this->assertCount(1, $result['values']);
+  }
+
   private function getExpectedArrayForIsValidError($field, $code) {
     return [
       'is_error' => 0,

@@ -693,3 +693,41 @@ function civicrm_api3_leave_request_deleteattachment($params) {
   $leaveRequestAttachmentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachment();
   return $leaveRequestAttachmentService->delete($params);
 }
+
+/**
+ * LeaveRequest.getBreakdown API spec
+ *
+ * @param array $spec
+ */
+function _civicrm_api3_leave_request_getbreakdown_spec(&$spec) {
+  $spec['leave_request_id'] = [
+    'name' => 'leave_request_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'LeaveRequest ID',
+    'description' => 'The Leave Request ID to get the breakdown for',
+    'api.required' => 1
+  ];
+}
+
+/**
+ * LeaveRequest.getBreakdown API
+ *
+ * @param array $params
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_getbreakdown($params) {
+  $params['id'] = $params['leave_request_id'];
+  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params);
+  $leaveRequest = $query->run();
+  $leaveRequest = reset($leaveRequest);
+
+  if(empty($leaveRequest)) {
+    return civicrm_api3_create_success([]);
+  }
+
+  $leaveRequestService = CRM_HRLeaveAndAbsences_Factory_LeaveRequestService::create();
+  $breakdown = $leaveRequestService->getBreakdown($leaveRequest['id']);
+
+  return civicrm_api3_create_success($breakdown);
+}

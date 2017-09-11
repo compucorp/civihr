@@ -634,4 +634,46 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     $this->assertEquals($balanceAfterDateChange, $balance);
   }
+
+  public function testGetBreakdownIncludeOnlyTheLeaveBalanceChangesOfTheLeaveRequestDates() {
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-03'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-03'),
+    ], true);
+
+    $expectedBreakdown = $this->getExpectedBreakdownForLeaveRequest($leaveRequest1);
+    $breakdown = $this->getLeaveRequestService()->getBreakdown($leaveRequest1->id);
+    $this->assertEquals($expectedBreakdown, $breakdown);
+
+    $expectedBreakdown = $this->getExpectedBreakdownForLeaveRequest($leaveRequest2);
+    $breakdown = $this->getLeaveRequestService()->getBreakdown($leaveRequest2->id);
+    $this->assertEquals($expectedBreakdown, $breakdown);
+  }
+
+  private function getExpectedBreakdownForLeaveRequest(LeaveRequest $leaveRequest) {
+    $leaveRequestDayTypes = LeaveRequest::buildOptions('from_date_type');
+
+    $dates = $leaveRequest->getDates();
+    $expectedBreakdown = [];
+    foreach($dates as $date) {
+      $expectedBreakdown[] = [
+        'id' => $date->id,
+        'date' => date('Y-m-d', strtotime($date->date)),
+        'type' => $date->type,
+        'label' => $leaveRequestDayTypes[$date->type],
+        'amount' => -1
+      ];
+    }
+
+    return $expectedBreakdown;
+  }
 }
