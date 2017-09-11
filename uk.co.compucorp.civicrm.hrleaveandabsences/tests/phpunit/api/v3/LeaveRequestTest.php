@@ -3859,7 +3859,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(3, $result['values']);
   }
 
-  public function testGetBreakdownShouldNotReturnIfAnAdminTriesToAccessTheBreakdownOfAnyLeaveRequest() {
+  public function testGetBreakdownReturnsResultsIfAnAdminTriesToAccessTheBreakdownOfAnyLeaveRequest() {
     $admin = ContactFabricator::fabricate();
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
