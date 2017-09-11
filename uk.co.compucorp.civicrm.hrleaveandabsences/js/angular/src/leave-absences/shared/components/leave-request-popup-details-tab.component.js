@@ -328,13 +328,18 @@ define([
     }
 
     /**
-     * Initialize the original opening balance when in edit mode. This allows
-     * to display the opening balance before the request was created. The
-     * formula is absence type reminder + balance change (balance change is a
-     * negative number so it needs to be subtracted).
+     * Initialize the original opening balance when in edit mode and the
+     * request is approved. This allows to display the opening balance before
+     * the request was created.
+     *
+     * The formula is absence type reminder + balance change. Since
+     * Balance Change is a negative number so it needs to be subtracted.
      */
     function initOriginalOpeningBalance () {
-      if (vm.isMode('edit')) {
+      if (vm.isMode('edit') && (
+        vm.isLeaveStatus(sharedSettings.statusNames.approved) ||
+        vm.isLeaveStatus(sharedSettings.statusNames.adminApproved)
+      )) {
         originalOpeningBalance = {
           absenceTypeId: vm.request.type_id,
           value: vm.selectedAbsenceType.remainder - vm.request.balance_change
