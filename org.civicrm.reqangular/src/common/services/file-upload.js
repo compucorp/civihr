@@ -68,7 +68,7 @@ define([
          */
         uploader: function (customSettings) {
           var uploader, oldUploadAll;
-          var deferred = $q.defer();
+          var deferred;
           var results = [];
 
           if (!customSettings) {
@@ -112,6 +112,7 @@ define([
             oldUploadAll = uploader.uploadAll;
 
             return function (additionalFormData) {
+              deferred = $q.defer();
               /**
                * FileUploader callback that gets fired before each file item gets
                * uploaded, useful to insert additional form params like entityId
