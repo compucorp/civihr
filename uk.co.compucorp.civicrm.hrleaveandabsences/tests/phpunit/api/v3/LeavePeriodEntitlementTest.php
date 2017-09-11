@@ -633,55 +633,55 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
     ], true);
 
     $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
-      'period_id' => $absencePeriod->id
+      'period_id' => $absencePeriod->id,
+      // sort by id to make sure the contacts will be returned in the expected order
+      'options' => ['sort' => 'id ASC']
     ])['values'];
 
     $this->assertCount(3, $result);
 
-    $contact1ExpectedBalances = [
-      'contact_id' => $contact1['id'],
-      'contact_display_name' => $contact1['display_name'],
-      'absence_types' => [
-        [
-          'id' => $absenceTypeID,
-          'entitlement' => 15.25,
-          'used' => 3,
-          'balance' => 12.25,
-          'requested' => 0
+    $expectedBalances = [
+      [
+        'contact_id' => $contact1['id'],
+        'contact_display_name' => $contact1['display_name'],
+        'absence_types' => [
+          [
+            'id' => $absenceTypeID,
+            'entitlement' => 15.25,
+            'used' => 3,
+            'balance' => 12.25,
+            'requested' => 0
+          ]
+        ]
+      ],
+      [
+        'contact_id' => $contact2['id'],
+        'contact_display_name' => $contact2['display_name'],
+        'absence_types' => [
+          [
+            'id' => $absenceTypeID,
+            'entitlement' => 5.5,
+            'used' => 0,
+            'balance' => 5.5,
+            'requested' => 1
+          ]
+        ]
+      ],
+      [
+        'contact_id' => $contact3['id'],
+        'contact_display_name' => $contact3['display_name'],
+        'absence_types' => [
+          [
+            'id' => $absenceTypeID,
+            'entitlement' => 7,
+            'used' => 2,
+            'balance' => 5,
+            'requested' => 0
+          ]
         ]
       ]
     ];
-    $this->assertEquals($contact1ExpectedBalances, $result[$contact1['id']]);
-
-    $contact2ExpectedBalances = [
-      'contact_id' => $contact2['id'],
-      'contact_display_name' => $contact2['display_name'],
-      'absence_types' => [
-        [
-          'id' => $absenceTypeID,
-          'entitlement' => 5.5,
-          'used' => 0,
-          'balance' => 5.5,
-          'requested' => 1
-        ]
-      ]
-    ];
-    $this->assertEquals($contact2ExpectedBalances, $result[$contact2['id']]);
-
-    $contact3ExpectedBalances = [
-      'contact_id' => $contact3['id'],
-      'contact_display_name' => $contact3['display_name'],
-      'absence_types' => [
-        [
-          'id' => $absenceTypeID,
-          'entitlement' => 7,
-          'used' => 2,
-          'balance' => 5,
-          'requested' => 0
-        ]
-      ]
-    ];
-    $this->assertEquals($contact3ExpectedBalances, $result[$contact3['id']]);
+    $this->assertEquals($expectedBalances, $result);
   }
 
   public function testGetLeaveBalancesCanReturnBalancesForASpecificContact() {
@@ -740,7 +740,7 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
         ]
       ]
     ];
-    $this->assertEquals($expectedResult, $result[$contact1['id']]);
+    $this->assertEquals($expectedResult, $result[0]);
 
     $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
       'period_id' => $absencePeriod->id,
@@ -762,7 +762,7 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
         ]
       ]
     ];
-    $this->assertEquals($expectedResult, $result[$contact2['id']]);
+    $this->assertEquals($expectedResult, $result[0]);
   }
 
   public function testGetLeaveBalancesCanReturnBalancesForContactsManagedByASpecificManager() {
@@ -810,12 +810,14 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
     // Manager 1 manages both contacts, so they all should be returned
     $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
       'period_id' => $absencePeriod->id,
-      'managed_by' => $manager1['id']
+      'managed_by' => $manager1['id'],
+      // sort by id to make sure the contacts will be returned in the expected order
+      'options' => ['sort' => 'id ASC']
     ])['values'];
 
     $this->assertCount(2, $result);
-    $this->assertNotEmpty($result[$contact1['id']]);
-    $this->assertNotEmpty($result[$contact2['id']]);
+    $this->assertEquals($contact1['id'], $result[0]['contact_id']);
+    $this->assertEquals($contact2['id'], $result[1]['contact_id']);
 
     // Manager 2 manages only contact 2, so that's the only one returned
     $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
@@ -824,7 +826,7 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
     ])['values'];
 
     $this->assertCount(1, $result);
-    $this->assertNotEmpty($result[$contact2['id']]);
+    $this->assertEquals($contact2['id'], $result[0]['contact_id']);
   }
 
   public function testGetLeaveBalancesOnlyReturnBalancesForContactsManagedByTheCurrentUser() {
@@ -877,7 +879,7 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
     ])['values'];
 
     $this->assertCount(1, $result);
-    $this->assertNotEmpty($result[$contact2['id']]);
+    $this->assertEquals($contact2['id'], $result[0]['contact_id']);
 
     // If Manager 2 tries to get the managees of Manager 1, an empty result will
     // be returned
@@ -1006,15 +1008,15 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
       'period_id' => $absencePeriod->id,
       'type_id' => $absenceType1ID
     ])['values'];
-    $this->assertCount(1, $result[$contact1['id']]['absence_types']);
-    $this->assertEquals($absenceType1ID, $result[$contact1['id']]['absence_types'][0]['id']);
+    $this->assertCount(1, $result[0]['absence_types']);
+    $this->assertEquals($absenceType1ID, $result[0]['absence_types'][0]['id']);
 
     $result = civicrm_api3('LeavePeriodEntitlement', 'getLeaveBalances', [
       'period_id' => $absencePeriod->id,
       'type_id' => $absenceType2ID
     ])['values'];
-    $this->assertCount(1, $result[$contact1['id']]['absence_types']);
-    $this->assertEquals($absenceType2ID, $result[$contact1['id']]['absence_types'][0]['id']);
+    $this->assertCount(1, $result[0]['absence_types']);
+    $this->assertEquals($absenceType2ID, $result[0]['absence_types'][0]['id']);
   }
 
   public function testGetLeaveBalanceReturnsAnEmptyArrayWhenNoContactsMatchTheGivenCriteria() {
