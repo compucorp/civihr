@@ -1,0 +1,23 @@
+{
+  "scenarios": [
+    {
+      "label": "Leave & Absences Import - Step 1",
+      "url": "civicrm/admin/leaveandabsences/import"
+    },
+    {
+      "label": "Leave & Absences Import - Step 2",
+      "url": "civicrm/admin/leaveandabsences/import",
+      "onReadyScript": "leave-absence-dashboard/import/step-2"
+    },
+    {
+      "label": "Leave & Absences Import - Step 3",
+      "url": "civicrm/admin/leaveandabsences/import",
+      "onReadyScript": "leave-absence-dashboard/import/step-3"
+    },
+    {
+      "label": "Leave & Absences Import - Step 4",
+      "url": "civicrm/admin/leaveandabsences/import",
+      "onReadyScript": "leave-absence-dashboard/import/step-4"
+    }
+  ]
+}
