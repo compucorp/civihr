@@ -206,7 +206,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect {
     }
 
     foreach ($contacts as $i => $result) {
-      $newResults[$i] = [
+      $newResults[] = [
         'contact_id' => $result['id'],
         'contact_display_name' => $result['display_name'],
         'absence_types' => $payload[$result['id']]
