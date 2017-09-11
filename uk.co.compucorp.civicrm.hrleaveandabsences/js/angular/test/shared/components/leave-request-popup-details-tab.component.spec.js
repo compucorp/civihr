@@ -1010,12 +1010,13 @@ define([
       });
     });
 
-    describe('when editing a request', function () {
+    describe('when editing an open request', function () {
       var request, expectedOpeningBalance, absenceTypes;
 
       beforeEach(function () {
         absenceTypes = absenceTypeData.all().values;
         request = leaveRequestData.all().values[0];
+        request.status_id = getStatusValueFromName(sharedSettings.statusNames.approved);
 
         compileComponent({
           mode: 'edit',
@@ -1046,6 +1047,36 @@ define([
           it('has original opening balance', function () {
             expect(controller.balance.opening).toBe(expectedOpeningBalance);
           });
+        });
+      });
+
+      describe('when status is admin approved', function () {
+        beforeEach(function () {
+          request = leaveRequestData.all().values[0];
+          request.status_id = getStatusValueFromName(sharedSettings.statusNames.adminApproved);
+
+          compileComponent({
+            mode: 'edit',
+            request: LeaveRequestInstance.init(request),
+            role: 'manager',
+            selectedAbsenceType: absenceTypes[0]
+          });
+        });
+
+        it('has original opening balance', function () {
+          expect(controller.balance.opening).toBe(expectedOpeningBalance);
+        });
+      });
+
+      describe('when status is not approved', function () {
+        beforeEach(function () {
+          controller.request.status_id = getStatusValueFromName(sharedSettings.statusNames.awaitingApproval);
+          expectedOpeningBalance = absenceTypes[0].remainder;
+          controller.updateBalance();
+        });
+
+        it('has absence type remainder as opening balance', function () {
+          expect(controller.balance.opening).toBe(expectedOpeningBalance);
         });
       });
     });
@@ -1114,8 +1145,11 @@ define([
         return role === params.role;
       });
 
-      params.checkSubmitConditions = jasmine.any(Function);
-      params.isLeaveStatus = jasmine.any(Function);
+      params.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
+      params.isLeaveStatus = jasmine.createSpy('isLeaveStatus')
+        .and.callFake(function (statusName) {
+          return getStatusValueFromName(statusName) === params.request.status_id;
+        });
     }
 
     /**
@@ -1163,9 +1197,31 @@ define([
       }
     }
 
+    /**
+     * Returns a UTC Date object from a string.
+     *
+     * @param {String} date - the date to convert to UTC Date object.
+     * @return {Date}
+     */
     function getUTCDate (date) {
       var now = new Date(date);
       return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+    }
+
+    /**
+     * Returns the id for a specific status by filtering using the status name.
+     *
+     * @param {String} statusName - The name of the status to filter by.
+     * @return {Number}
+     */
+    function getStatusValueFromName (statusName) {
+      var status = optionGroupMock.specificObject(
+        'hrleaveandabsences_leave_request_status',
+        'name',
+        statusName
+      );
+
+      return status.value;
     }
 
     /**
