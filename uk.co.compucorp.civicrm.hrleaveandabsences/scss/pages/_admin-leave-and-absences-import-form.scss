@@ -50,6 +50,11 @@
 
       th {
         padding: $table-cell-padding;
+        border-right: none;
+      }
+
+      th, td {
+        padding: 5px;
       }
     }
   }

@@ -25,15 +25,9 @@
 *}
 {* Leave Request Import Wizard - Step 1 (upload data file) *}
 {* @var $form Contains the array for the form elements and other form associated information assigned to the template by the controller *}
-<div id="bootstrap-theme" class="crm-leave-and-balance-import crm-activity-import-uploadfile-form-block">
-  <div class="panel panel-default">
-    <div class="panel-header">
-      {* WizardHeader.tpl provides visual display of steps thru the wizard as well as title for current step *}
-      {include file="CRM/common/WizardHeader.tpl"}
-      <div class="action-buttons">
-        {include file="CRM/common/formButtons.tpl" location="top"}
-      </div>
-    </div>
+<div id="bootstrap-theme" class="crm_wizard crm-leave-and-balance-import crm-activity-import-uploadfile-form-block">
+  {include file="CRM/HRUI/common/WizardHeader.tpl"}
+  <div class="panel panel-default crm_wizard__body">
     <div class="panel-body">
       <p class="alert alert-info">
         {ts}The Leave Request Import Wizard allows you to easily upload leave requests into CiviHR.{/ts}
@@ -41,7 +35,6 @@
       </p>
       <div id="upload-file">
         <h3>{ts}Upload Data File{/ts}</h3>
-
         <div class="form-control-group row crm-activity-import-uploadfile-form-block-uploadFile">
           <div class="col-sm-3">{$form.uploadFile.label}</div>
           <div class="col-sm-6">{$form.uploadFile.html}</div>
@@ -51,7 +44,6 @@
             <span>{ts 1=$uploadSize}Maximum Upload File Size: %1 MB{/ts}</span>
           </div>
         </div>
-
         <div class="form-control-group row crm-activity-import-uploadfile-form-block-skipColumnHeader">
           <div class="col-sm-6 col-sm-offset-3">
             {$form.skipColumnHeader.html}{$form.skipColumnHeader.label}
@@ -62,7 +54,6 @@
             </span>
           </div>
         </div>
-
         <div class="form-control-group row crm-import-datasource-form-block-fieldSeparator">
           <div class="col-sm-3">
             {$form.fieldSeparator.label}
@@ -72,12 +63,10 @@
             {$form.fieldSeparator.html}
           </div>
         </div>
-
         <div class="form-control-group row">
           <div class="col-sm-3">
             <label>{ts}Date Format{/ts}</label>
           </div>
-
           <div class="col-sm-6">
             <table class="table date-formats">
               <tr>
@@ -86,7 +75,6 @@
             </table>
           </div>
         </div>
-
         {if $savedMapping}
           <div class="form-control-group row crm-activity-import-uploadfile-form-block-savedMapping">
             <div class="col-sm-3">
@@ -96,11 +84,9 @@
                 {ts}Load Saved Field Mapping{/ts}
               {/if}
             </div>
-
             <div class="col-sm-4">
               {$form.savedMapping.html}
             </div>
-
             <div class="col-sm-6 col-sm-offset-3">
               <span class="description">
                 {ts}Select Saved Mapping or Leave blank to create a new One.{/ts}
@@ -110,8 +96,9 @@
         {/if}
       </div>
     </div>
-
-    <div class="panel-footer">
+  </div>
+  <div class="panel panel-default crm_wizard__footer">
+    <div class="panel-body">
       <div class="row">
         <div class="action-buttons pull-right">
           {include file="CRM/common/formButtons.tpl" location="bottom"}
