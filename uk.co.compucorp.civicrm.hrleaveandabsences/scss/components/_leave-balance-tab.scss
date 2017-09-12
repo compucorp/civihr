@@ -1,42 +1,15 @@
 .chr_leave-balance-tab {
-  .chr_leave-balance-tab__results-value {
-    color: darken($gray-light, 45%);
-  }
-
-  .chr_leave-balance-tab__overflow-scroll {
-    margin-bottom: 2em;
-    overflow-x: auto;
-  }
-
-  .chr_leave-balance-tab__contact-id-column {
-    min-width: 10em;
-  }
-
-  .chr_leave-balance-tab__name-column {
-    min-width: 15em;
-  }
-
-  .chr_leave-balance-tab__filters {
-    .panel-body {
-      padding-top: 15px;
+  @media (max-width: $screen-md-min) {
+    .chr_leave-balance-tab__filter:not(:last-child) {
       padding-bottom: 15px;
-    }
-
-    hr {
-      margin-top: 15px;
-      margin-bottom: 15px;
-    }
-
-    @media (min-width: $screen-sm-min) {
-      .form-group {
-        label { display: inline-block; width: 35%; }
-        .form-control { width: calc(65% - 4px); }
-      }
     }
   }
 }
 
-// removes panel heading padding on SSP only
-.page-manager-leave .chr_leave-balance-tab__filters .panel-heading {
-  padding-bottom: 0;
+.chr_leave-balance-tab__body {
+  padding: 0;
+
+  table, .table-responsive {
+    margin-bottom: 0;
+  }
 }
