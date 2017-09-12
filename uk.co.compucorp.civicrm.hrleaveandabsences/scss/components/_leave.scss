@@ -2,12 +2,29 @@
   margin-right: 5px;
   position: relative;
   top: 1px;
-  width: calc(100% - 75px);
+  width: calc(100% - 80px);
+
+  select {
+    height: 40px;
+  }
+
+  .crm_custom-select__arrow {
+    line-height: 40px;
+    width: 40px;
+  }
 }
 
 leave-request-record-actions {
   .dropdown-menu {
     left: auto;
     right: 0;
+  }
+
+  .dropdown-toggle {
+    height: 40px;
+  }
+
+  i.fa-plus {
+    margin-right: 8px;
   }
 }
