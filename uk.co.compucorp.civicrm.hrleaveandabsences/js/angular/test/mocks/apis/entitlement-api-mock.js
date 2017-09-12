@@ -4,8 +4,9 @@ define([
   'common/lodash',
   'mocks/module',
   'mocks/data/entitlement-data',
+  'mocks/data/leave-balance-report.data',
   'common/angularMocks'
-], function (_, mocks, mockData) {
+], function (_, mocks, mockData, leaveBalanceReportMockData) {
   'use strict';
 
   mocks.factory('EntitlementAPIMock', ['$q', function ($q) {
@@ -58,6 +59,17 @@ define([
       breakdown: function (params) {
         return $q(function (resolve, reject) {
           resolve(mockData.breakdown().values);
+        });
+      },
+      getLeaveBalances: function (params) {
+        var data = leaveBalanceReportMockData.all().values;
+
+        return $q(function (resolve, reject) {
+          resolve({
+            list: data,
+            allIds: [],
+            total: data.length
+          });
         });
       }
     };

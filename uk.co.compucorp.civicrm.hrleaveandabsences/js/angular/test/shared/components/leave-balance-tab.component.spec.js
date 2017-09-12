@@ -6,8 +6,8 @@ define([
   'mocks/data/absence-type-data',
   'mocks/data/leave-balance-report.data',
   'mocks/apis/absence-type-api-mock',
-  'mocks/apis/leave-balance-report-api-mock',
-  'leave-absences/shared/models/leave-balance-report.model',
+  'mocks/apis/entitlement-api-mock',
+  'leave-absences/shared/models/entitlement-model',
   'leave-absences/shared/components/leave-balance-tab.component'
 ], function (_, absencePeriodMock, absenceTypeMock, reportMockData) {
   describe('LeaveBalanceReport.component', function () {
@@ -21,10 +21,10 @@ define([
     }));
 
     beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_,
-    _LeaveBalanceReportAPIMock_) {
+    _EntitlementAPIMock_) {
       $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
-      $provide.value('LeaveBalanceReportAPI', _LeaveBalanceReportAPIMock_);
+      $provide.value('EntitlementAPI', _EntitlementAPIMock_);
     }));
 
     beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
@@ -176,11 +176,10 @@ define([
 
     describe('loadReportCurrentPage()', function () {
       var expectedFilters;
+      var absencePeriod = absencePeriodMock.all().values[0];
+      var absenceType = absenceTypeMock.all().values[0];
 
       beforeEach(function () {
-        var absencePeriod = absencePeriodMock.all().values[0];
-        var absenceType = absenceTypeMock.all().values[0];
-
         expectedFilters = {
           absence_period: absencePeriod.id,
           absence_type: absenceType.id,
@@ -203,7 +202,11 @@ define([
 
       it('loads the balance report for contacts managed by the user, on selected absence period and type, on page 1, with a limited amount of records', function () {
         expect(leaveBalanceReport.all).toHaveBeenCalledWith(
-          expectedFilters,
+          {
+            period_id: absencePeriod.id,
+            type_id: absenceType.id,
+            managed_by: loggedInContactId
+          },
           ctrl.pagination
         );
       });
@@ -218,7 +221,7 @@ define([
           // sets the balance report in an expected manner.
           // each record's .absence_types to be an index so it can be displayed
           // on the report in a specific order.
-          expectedReport = balanceReport.map(function (record) {
+          expectedReport = _.values(balanceReport).map(function (record) {
             record = Object.assign({}, record);
 
             record.absence_types = _.indexBy(record.absence_types, function (type) {
@@ -256,9 +259,6 @@ define([
         };
 
         beforeEach(function () {
-          var absencePeriod = absencePeriodMock.all().values[0];
-          var absenceType = absenceTypeMock.all().values[0];
-
           leaveBalanceReport.all.and.returnValue($q.reject(error));
 
           setupController();

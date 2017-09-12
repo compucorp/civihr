@@ -30,7 +30,6 @@ define([
   function createMockRecords () {
     return contactsMock.all.values.map(function (contact) {
       return {
-        id: contact.id,
         contact_id: contact.contact_id,
         contact_display_name: contact.display_name,
         absence_types: absenceTypeMock.all().values.map(function (type) {

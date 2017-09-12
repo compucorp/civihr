@@ -98,15 +98,17 @@ define([
     /**
      * Loads a specific page of the report.
      *
-     * @param {int} [pageNumber=1] - The number of the page to retrieve. Defaults to 1.
      * @return {Promise}
      */
     function loadReportCurrentPage () {
       vm.loading.report = true;
 
       return LeaveBalanceReport.all(
-        filters,
-        vm.pagination
+        {
+          period_id: filters.absence_period,
+          type_id: filters.absence_type,
+          managed_by: filters.managed_by
+        }, vm.pagination
       ).then(function (response) {
         vm.report = indexLeaveBalanceAbsenceTypes(response.list);
         vm.reportCount = response.total;
@@ -166,7 +168,7 @@ define([
      */
     function updateSelectedAbsenceTypes () {
       vm.selectedAbsenceTypes = vm.absenceTypes.filter(function (type) {
-        return parseInt(type.id) === parseInt(filters.absence_type);
+        return +type.id === +filters.absence_type;
       });
     }
 
