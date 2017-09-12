@@ -1,3 +1,5 @@
+$leave-taller-input-height: 40px;
+
 .chr_leave__page-selector-dropdown {
   margin-right: 5px;
   position: relative;
@@ -5,12 +7,12 @@
   width: calc(100% - 80px);
 
   select {
-    height: 40px;
+    height: $leave-taller-input-height;
   }
 
   .crm_custom-select__arrow {
-    line-height: 40px;
-    width: 40px;
+    line-height: $leave-taller-input-height;
+    width: $leave-taller-input-height;
   }
 }
 
@@ -21,10 +23,10 @@ leave-request-record-actions {
   }
 
   .dropdown-toggle {
-    height: 40px;
+    height: $leave-taller-input-height;
   }
 
-  i.fa-plus {
+  i.fa {
     margin-right: 8px;
   }
 }
