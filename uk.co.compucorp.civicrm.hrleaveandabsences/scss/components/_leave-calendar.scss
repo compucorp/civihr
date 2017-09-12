@@ -164,21 +164,27 @@ $chr-leave-calendar-legend-size:                  20px;
   }
 
   > .chr_leave-calendar__item {
-    float: left;
     font-size: 8px;
     height: $chr-leave-calendar-legend-size;
     margin-right: 10px;
+    position: absolute;
     width: $chr-leave-calendar-legend-size;
   }
 }
 
 .chr_leave-calendar__legend__label {
+  display: inline-block;
   font-size: $font-size-small;
+  margin-left: 26px;
 }
 
 
 .chr_leave-calendar__month-header {
   background: $panel-default-heading-bg;
+
+  .panel-title {
+    font-size: 16px;
+  }
 }
 
 td.chr_leave-calendar__name,
