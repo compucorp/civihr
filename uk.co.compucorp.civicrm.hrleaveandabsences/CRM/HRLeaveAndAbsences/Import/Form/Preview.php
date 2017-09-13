@@ -100,6 +100,8 @@ class CRM_HRLeaveAndAbsences_Import_Form_Preview extends CRM_Import_Form_Preview
     foreach ($properties as $property) {
       $this->assign($property, $this->get($property));
     }
+
+    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
   }
 
   /**
