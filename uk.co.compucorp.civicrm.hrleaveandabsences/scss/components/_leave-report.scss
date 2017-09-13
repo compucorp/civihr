@@ -50,7 +50,6 @@
   .table {
     @include table-first-row-border();
 
-    margin-bottom: 0;
     // Fix for a rendering bug in firefox and chrome, where the background
     // is painted over the cell borders
     border-collapse: separate;

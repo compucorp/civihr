@@ -26,6 +26,7 @@ define([
     vm.filters = { absence_period: null, absence_type: null, managed_by: null };
 
     vm.$onChanges = $onChanges;
+    vm.labelPeriod = labelPeriod;
     vm.submitFilters = submitFilters;
 
     /**
@@ -93,6 +94,16 @@ define([
       return vm.absenceTypes.reduce(function (typeA, typeB) {
         return typeA.title.localeCompare(typeB.title) ? typeA : typeB;
       });
+    }
+
+    /**
+     * Labels the given period according to whether it's current or not
+     *
+     * @param  {AbsencePeriodInstance} period
+     * @return {string}
+     */
+    function labelPeriod (period) {
+      return period.current ? 'Current Period (' + period.title + ')' : period.title;
     }
 
     /**
