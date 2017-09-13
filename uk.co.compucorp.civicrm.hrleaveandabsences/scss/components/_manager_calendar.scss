@@ -2,6 +2,7 @@
   padding-top: 15px;
   margin: 0;
   background-color: $chr-panel-header-background;
+  border-bottom: 1px solid $chr-panel-border;
 
   .checkbox {
     margin: 0;
@@ -12,9 +13,12 @@
       padding-bottom: 20px;
     }
   }
+
+  @include uniform-padding(20px);
 }
 
 .chr_manager_calendar__sub-header {
+  background-color: $chr-panel-header-background;
   margin: 0;
 
   @media screen and (max-width: $screen-md-max) {
@@ -30,4 +34,6 @@
       }
     }
   }
+
+  @include uniform-padding(20px);
 }

@@ -1,6 +1,6 @@
 <section>
   <crm-loading show="!calendar.loading.page">
-    <div class="panel panel-default">
+    <div class="panel">
       <div ng-if="calendar.showFilters" class="panel-heading chr_manager_calendar__header row">
         <div class="col-md-4 col-lg-2">
           <ui-select ng-change="calendar.refresh('contacts')" ng-model="calendar.filters.userSettings.contact">
@@ -72,7 +72,7 @@
         </div>
       </div>
       <div class="chr_manager_calendar__sub-header row" ng-class="{ 'panel-heading': !calendar.showFilters, 'panel-subheading': calendar.showFilters }">
-        <div class="col-md-12" ng-class="{ 'col-lg-5': !!calendar.filtersByAssignee, 'col-lg-8': !calendar.filtersByAssignee }">
+        <div class="col-md-12" ng-class="{ 'col-lg-6': !!calendar.filtersByAssignee, 'col-lg-8': !calendar.filtersByAssignee }">
           <ui-select class="chr_leave-calendar__day-selector" multiple ng-model="calendar.selectedMonths">
             <ui-select-match placeholder="Select Months">
               <span>{{$item.shortName}}</span>
@@ -93,8 +93,8 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-xs-10 col-sm-10 col-md-11 col-lg-3" ng-if="!!calendar.filtersByAssignee">
-          <div class="crm_custom-select crm_custom-select--full">
+        <div class="col-md-12 col-lg-3" ng-if="!!calendar.filtersByAssignee">
+          <div class="crm_custom-select crm_custom-select--full chr_leave-calendar__admin-filters-select">
             <select
               class="no-select2"
               ng-options="filterByAssignee.label for filterByAssignee in calendar.filtersByAssignee"
@@ -103,13 +103,10 @@
             </select>
             <span class="crm_custom-select__arrow"></span>
           </div>
-        </div>
-        <div class="col-xs-2 col-sm-2 col-md-1 col-lg-1" ng-if="!!calendar.filtersByAssignee">
-          <big>
-            <i class="fa fa-question-circle chr_leave-calendar__admin-filters-hint text-info pointer"
-              aria-hidden="true"
-              ng-click="calendar.showAdminFilteringHint()"></i>
-          </big>
+
+          <i class="fa fa-question-circle chr_leave-calendar__admin-filters-hint text-info pointer"
+             aria-hidden="true"
+             ng-click="calendar.showAdminFilteringHint()"></i>
         </div>
       </div>
     </div>

@@ -264,7 +264,15 @@ td.chr_leave-calendar__name {
 }
 
 .chr_leave-calendar__admin-filters-hint {
-  margin-top: 8px;
+  display: inline-block;
+  font-size: 20px;
+  vertical-align: middle;
+}
+
+.chr_leave-calendar__admin-filters-select {
+  width: calc( 100% - 40px);
+  display: inline-block;
+  margin-right: 20px;
 }
 
 .chr_leave-calendar__day-selector .ui-select-search {

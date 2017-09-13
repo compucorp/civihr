@@ -1,7 +1,7 @@
 .chr_manage_leave_requests {
   .chr_manage_leave_requests__header {
     background-color: $chr-panel-header-background;
-    border-bottom: 1px solid $crm-dark-grayblue;
+    border-bottom: 1px solid $chr-panel-border;
     margin: 0;
 
     .panel-title {
@@ -15,6 +15,8 @@
         padding-bottom: 20px;
       }
     }
+
+    @include uniform-padding(20px);
   }
 
   .chr_manage_leave_requests__filter {
@@ -36,6 +38,7 @@
 
   .chr_manage_leave_requests__sub-header {
     background-color: $chr-panel-header-background;
+    border-bottom: 1px solid $chr-panel-border;
     margin: 0;
     padding-top: 15px;
 
@@ -50,10 +53,11 @@
         padding-bottom: 0 !important;
       }
     }
+
+    @include uniform-padding(20px);
   }
 
   .chr_manage_leave_requests__panel_body {
-    border-top: 1px solid $crm-dark-grayblue;
     margin: 0;
     padding: 0;
 
@@ -74,6 +78,8 @@
       padding-left: 15px;
       padding-right: 15px;
     }
+
+    @include uniform-padding(20px);
   }
 }
 
