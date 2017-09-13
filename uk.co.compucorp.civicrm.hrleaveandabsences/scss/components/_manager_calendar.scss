@@ -1,4 +1,6 @@
 .chr_manager_calendar__header {
+  @include uniform-padding(20px);
+
   padding-top: 15px;
   margin: 0;
   background-color: $chr-panel-header-background;
@@ -13,11 +15,11 @@
       padding-bottom: 20px;
     }
   }
-
-  @include uniform-padding(20px);
 }
 
 .chr_manager_calendar__sub-header {
+  @include uniform-padding(20px);
+
   background-color: $chr-panel-header-background;
   margin: 0;
 
@@ -34,6 +36,4 @@
       }
     }
   }
-
-  @include uniform-padding(20px);
 }
