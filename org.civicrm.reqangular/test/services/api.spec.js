@@ -247,5 +247,22 @@ define([
         });
       });
     });
+
+    describe('when API returns values without "id" property', function () {
+      var returnValue = { values: [ {}, {}, {} ], is_error: 0 };
+      var promiseResult;
+
+      beforeEach(function () {
+        spyOn(api, 'sendGET').and.returnValue(returnValue);
+        api.getAll(entity, {}).then(function (result) {
+          promiseResult = result;
+        });
+        $rootScope.$digest();
+      });
+
+      it('sets allIds property as an empty string', function () {
+        expect(promiseResult.allIds).toEqual('');
+      });
+    });
   });
 });
