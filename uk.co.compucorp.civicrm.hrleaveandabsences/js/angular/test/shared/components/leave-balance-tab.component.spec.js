@@ -175,12 +175,12 @@ define([
     });
 
     describe('loadReportCurrentPage()', function () {
-      var expectedFilters;
+      var filters;
       var absencePeriod = absencePeriodMock.all().values[0];
       var absenceType = absenceTypeMock.all().values[0];
 
       beforeEach(function () {
-        expectedFilters = {
+        filters = {
           absence_period: absencePeriod.id,
           absence_type: absenceType.id,
           managed_by: loggedInContactId
@@ -189,7 +189,7 @@ define([
         setupController();
         $rootScope.$digest();
 
-        $rootScope.$broadcast('LeaveBalanceFilters::update', expectedFilters);
+        $rootScope.$broadcast('LeaveBalanceFilters::update', filters);
         $rootScope.$digest();
 
         ctrl.pagination.currentPage = 101;
