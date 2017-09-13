@@ -632,7 +632,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
 
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
       throw new InvalidLeaveRequestException(
-        'There are only '. $currentBalance .' days leave available. This request cannot be made or approved',
+        'There are only '. $currentBalance .' days leave available. This request cannot be imported',
         'leave_request_balance_change_greater_than_remaining_balance',
         'type_id'
       );

@@ -105,36 +105,31 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseTest extends BaseHeadlessTest {
     $this->assertEquals($expectedCommentDate, $commentDate);
   }
 
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage Contact does not have period entitlement for the absence type
-   */
-  public function testValidateLeaveParamsThrowsExceptionWhenContactHasNoPeriodEntitlementForTheAbsenceType() {
+  public function testImportLeaveRequestReturnsErrorWhenContactHasNoPeriodEntitlementForTheAbsenceType() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    $contactId = 1;
     $row1 = [
-      'contact_id' => $contactId,
+      'contact_id' => 1,
       'absence_id' => 1,
-      'type_id' => $this->absenceType->id,
+      'absence_type' => $this->absenceType->title,
       'absence_date' => '2016-01-01',
       'qty' => 2,
       'start_date' => '2016-01-01',
       'end_date' => '2016-01-01',
       'total_qty' => 3,
-      'status_id' => 1,
-      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'status' => 'Approved',
     ];
 
     $fields = array_keys($row1);
+    $values = array_values($row1);
     $importObject = $this->getImportObject($fields);
-    $importObject->validateLeaveParams($row1);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importObject->import(NULL, $values));
   }
 
-  public function testValidateLeaveParamsThrowsExceptionWhenBalanceIsGreaterThanEntitlementBalanceAndAllowOveruseFalse() {
+  public function testImportLeaveRequestReturnsErrorWhenBalanceIsGreaterThanEntitlementBalanceAndAllowOveruseFalse() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
@@ -166,27 +161,22 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseTest extends BaseHeadlessTest {
     $row1 = [
       'contact_id' => $periodEntitlement->contact_id,
       'absence_id' => 1,
-      'type_id' => $absenceType->id,
+      'absence_type' => $absenceType->title,
       'absence_date' => '2016-01-01',
       'qty' => 4,
       'start_date' => '2016-01-01',
       'end_date' => '2016-01-01',
       'total_qty' => 4,
-      'status_id' => 1,
-      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'status' => 'Approved',
     ];
 
-    $this->setExpectedException(
-      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
-      'There are only '. $entitlementBalanceChange. ' days leave available. This request cannot be made or approved'
-    );
-
     $fields = array_keys($row1);
+    $values = array_values($row1);
     $importObject = $this->getImportObject($fields);
-    $importObject->validateLeaveParams($row1);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importObject->import(NULL, $values));
   }
 
-  public function testValidateLeaveParamsDoesNotThrowsExceptionWhenBalanceIsGreaterThanEntitlementBalanceWhenAllowOveruseFalseAndRequestTypeIsToil() {
+  public function testImportLeaveRequestDoesNotReturnErrorWhenBalanceIsGreaterThanEntitlementBalanceWhenAllowOveruseFalseAndRequestTypeIsToil() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
@@ -194,7 +184,9 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseTest extends BaseHeadlessTest {
 
     $absenceType = AbsenceTypeFabricator::fabricate([
       'title' => 'Type 1',
-      'allow_overuse' => 0
+      'allow_overuse' => 0,
+      'allow_accruals_request' => 1,
+      'allow_accrue_in_the_past' => 1
     ]);
 
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
@@ -203,7 +195,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseTest extends BaseHeadlessTest {
       'period_id' => $period->id
     ]);
 
-    $entitlementBalanceChange = 3;
+    $entitlementBalanceChange = 1;
     $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
 
     HRJobContractFabricator::fabricate(
@@ -218,24 +210,25 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseTest extends BaseHeadlessTest {
     $row1 = [
       'contact_id' => $periodEntitlement->contact_id,
       'absence_id' => 1,
-      'type_id' => $absenceType->id,
+      'absence_type' => $absenceType->title. ' (Credit)',
       'absence_date' => '2016-01-01',
-      'qty' => 4,
+      'qty' => 2,
       'start_date' => '2016-01-01',
       'end_date' => '2016-01-01',
-      'total_qty' => 4,
-      'status_id' => 1,
-      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'total_qty' => 2,
+      'status' => 'Approved',
     ];
 
     $fields = array_keys($row1);
-    $importObject = $this->getImportObject($fields);
+    $values = array_values($row1);
+
     //Since the request type is TOIL, balance change validation will not
     //be taken into account.
-    $importObject->validateLeaveParams($row1);
+    $importObject = $this->getImportObject($fields);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importObject->import(NULL, $values));
   }
 
-  public function testValidateLeaveParamsDoesNotThrowsExceptionWhenBalanceIsGreaterThanEntitlementBalanceWhenAllowOveruseFalseAndRequestIsCancelled() {
+  public function testImportLeaveRequestDoesNotReturnErrorWhenBalanceIsGreaterThanEntitlementBalanceWhenAllowOveruseFalseAndRequestIsCancelled() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
@@ -267,22 +260,23 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseTest extends BaseHeadlessTest {
     $row1 = [
       'contact_id' => $periodEntitlement->contact_id,
       'absence_id' => 1,
-      'type_id' => $absenceType->id,
+      'absence_type' => $absenceType->title,
       'absence_date' => '2016-01-01',
       'qty' => 4,
       'start_date' => '2016-01-01',
       'end_date' => '2016-01-01',
-      'total_qty' => 4,
-      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'total_qty' => 4
     ];
 
+    $leaveStatuses = self::buildOptions('status_id');
     $fields = array_keys($row1);
     $importObject = $this->getImportObject($fields);
     //Since the request type is TOIL, balance change validation will not
     //be taken into account.
     foreach(LeaveRequest::getCancelledStatuses() as $status) {
-      $row1['status_id'] = $status;
-      $importObject->validateLeaveParams($row1);
+      $row1['status'] = $leaveStatuses[$status];
+      $values = array_values($row1);
+      $this->assertEquals(CRM_Import_Parser::VALID, $importObject->import(NULL, $values));
     }
   }
 }
