@@ -23,7 +23,7 @@ define([
   function LeaveBalanceTabFiltersController ($scope) {
     var vm = this;
 
-    vm.filters = { absence_period: null, absence_type: null, managed_by: null };
+    vm.filters = { absence_period: null, absence_type: null };
 
     vm.$onChanges = $onChanges;
     vm.labelPeriod = labelPeriod;
@@ -44,10 +44,6 @@ define([
 
       if (changes.absenceTypes && vm.absenceTypes.length) {
         vm.filters.absence_type = getFirstAbsenceTypeByTitle().id;
-      }
-
-      if (changes.loggedInContactId) {
-        vm.filters.managed_by = vm.loggedInContactId;
       }
 
       if (areFiltersReady()) {

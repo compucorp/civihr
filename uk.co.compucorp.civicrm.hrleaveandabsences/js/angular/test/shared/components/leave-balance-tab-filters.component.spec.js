@@ -41,8 +41,7 @@ define([
       it('sets filters to null', function () {
         expect(ctrl.filters).toEqual({
           absence_period: null,
-          absence_type: null,
-          managed_by: null
+          absence_type: null
         });
       });
     });
@@ -101,10 +100,6 @@ define([
       describe('when logged in contact\'s id changes', function () {
         beforeEach(function () {
           controllerOnChanges('loggedInContactId', loggedInContactId);
-        });
-
-        it('sets the managed by filter to the currently logged in contact id', function () {
-          expect(ctrl.filters.managed_by).toBe(loggedInContactId);
         });
       });
 

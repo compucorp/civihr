@@ -17,12 +17,15 @@ define([
   });
 
   LeaveBalanceTabController.$inject = ['$q', '$scope', 'AbsencePeriod',
-    'AbsenceType', 'LeaveBalanceReport', 'notificationService', 'Session'];
+    'AbsenceType', 'LeaveBalanceReport', 'notificationService', 'Session',
+    'shared-settings', 'checkPermissions'];
 
-  function LeaveBalanceTabController ($q, $scope, AbsencePeriod, AbsenceType,
-    LeaveBalanceReport, notification, Session) {
+  function LeaveBalanceTabController ($q, $scope, AbsencePeriod,
+    AbsenceType, LeaveBalanceReport, notification, Session,
+    sharedSettings, checkPermissions) {
     var filters = {};
     var vm = this;
+    var userRole = '';
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -40,7 +43,9 @@ define([
      */
     (function init () {
       initWatchers();
-      loadDependencies().then(function () {
+      setUserRole()
+      .then(loadDependencies)
+      .then(function () {
         vm.loading.component = false;
       });
     })();
@@ -101,15 +106,17 @@ define([
      * @return {Promise}
      */
     function loadReportCurrentPage () {
+      var params = {
+        period_id: filters.absence_period,
+        type_id: filters.absence_type
+      };
+
+      (userRole === 'manager') && (params.managed_by = vm.loggedInContactId);
+
       vm.loading.report = true;
 
-      return LeaveBalanceReport.all(
-        {
-          period_id: filters.absence_period,
-          type_id: filters.absence_type,
-          managed_by: filters.managed_by
-        }, vm.pagination
-      ).then(function (response) {
+      return LeaveBalanceReport.all(params, vm.pagination)
+      .then(function (response) {
         vm.report = indexLeaveBalanceAbsenceTypes(response.list);
         vm.reportCount = response.total;
       })
@@ -144,6 +151,18 @@ define([
     }
 
     /**
+     * Sets the user's role based on their permissions
+     *
+     * @return {Promise}
+     */
+    function setUserRole () {
+      return checkPermissions(sharedSettings.permissions.admin.administer)
+        .then(function (isAdmin) {
+          userRole = isAdmin ? 'admin' : 'manager';
+        });
+    }
+
+    /**
      * Updates the leave balance report using the filters passed on as parameters.
      * The list of absence types to display is updated and the first page of the
      * report is loaded.
@@ -153,7 +172,6 @@ define([
      * it contains the following properties:
      * - absence_period - the absence period id to filter by.
      * - absence_type - the abence type id to filter by.
-     * - managed_by - the ID of the manager that is retrieving the report.
      */
     function updateReportFilters (event, _filters_) {
       filters = _filters_;
