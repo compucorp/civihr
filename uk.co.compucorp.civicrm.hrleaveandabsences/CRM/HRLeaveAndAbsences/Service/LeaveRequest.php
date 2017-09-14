@@ -271,7 +271,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $updateBalanceChange = !empty($params['change_balance']);
     $skipBalanceChangeUpdate = !empty($params['id']) &&
       !$this->datesChanged($params) && !$updateBalanceChange;
-    $leaveRequest = LeaveRequest::create($params, false);
+    $leaveRequest = LeaveRequest::create($params, LeaveRequest::VALIDATIONS_OFF);
 
     if(!$skipBalanceChangeUpdate) {
       $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
