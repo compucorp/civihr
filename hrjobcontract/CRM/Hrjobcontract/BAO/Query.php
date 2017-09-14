@@ -336,11 +336,15 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
   function from($name, $mode, $side) {
     $from = '';
-    $todayDate = date('Y-m-d');
     switch ($name) {
       case 'civicrm_contact':
         $from .= " $side JOIN civicrm_hrjobcontract hrjobcontract ON hrjobcontract.contact_id = contact_a.id AND hrjobcontract.deleted = 0 ";
-        $from .= " $side JOIN civicrm_hrjobcontract_revision rev ON rev.jobcontract_id = hrjobcontract.id ";
+        $from .= " $side JOIN civicrm_hrjobcontract_revision rev ON rev.id = (SELECT id
+                    FROM civicrm_hrjobcontract_revision jcr2
+                    WHERE
+                    jcr2.jobcontract_id = hrjobcontract.id
+                    ORDER BY jcr2.effective_date DESC
+                    LIMIT 1)";
       break;
       case 'civicrm_hrjobcontract_details':
         $from .= " $side JOIN civicrm_hrjobcontract_details ON rev.details_revision_id = civicrm_hrjobcontract_details.jobcontract_revision_id ";
