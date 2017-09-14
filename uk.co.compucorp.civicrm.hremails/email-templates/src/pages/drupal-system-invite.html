@@ -1,0 +1,22 @@
+---
+layout: civihr-default
+title: Please sign in to CiviHR
+description:
+---
+
+<div class="request">
+  <row class="collapse">
+    <columns>
+      {{> callout-header title="Invitation to CiviHR"}}
+      <callout class="invitataion-content">
+        A request to reset the password for your account has been made at {$siteName}.
+
+        You may now log in by clicking this link.
+      </callout>
+      <spacer></spacer>
+      <button href="{$invitationLink}" class="expanded alert">Log In</button>
+
+    </columns>
+  </row>
+  {{> la-footer}}
+</div>
