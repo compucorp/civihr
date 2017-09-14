@@ -1,7 +1,7 @@
 {if $action eq 1 or $action eq 2 or $action eq 8}
   {include file="CRM/HRLeaveAndAbsences/Form/PublicHoliday.tpl"}
 {else}
-  <div id="bootstrap-theme">
+  <div id="bootstrap-theme" class="crm-leave-and-absences-list-block">
   {if $rows}
     <div class="panel panel-default">
       {strip}
@@ -27,8 +27,8 @@
       {if $action ne 1 and $action ne 2}
         <div class="panel-body">
           <a href="{crmURL q="action=add&reset=1"}" class="button btn btn-primary pull-right">
-            <span><div class="icon add-icon"></div>
-            {ts}Add Public Holiday{/ts}</span>
+            <i class="fa fa-plus"></i>
+            <span>{ts}Add Public Holiday{/ts}</span>
           </a>
         </div>
       {/if}

@@ -23,7 +23,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-<div id="bootstrap-theme" class="crm_wizard crm-leave-and-balance-import crm-activity-import-mapfield-form-block">
+<div id="bootstrap-theme" class="crm_wizard crm-form-block crm-leave-and-balance-import crm-activity-import-mapfield-form-block">
   {include file="CRM/HRUI/common/WizardHeader.tpl"}
   <div class="panel panel-default crm_wizard__body">
     <div class="panel-body">

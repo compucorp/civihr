@@ -1,8 +1,18 @@
-#crm-container .crm-leave-and-absences-form-block {
-  .crm-submit-buttons {
-    .crm-button-type-next,
-    .crm-button-type-cancel {
-      float: right !important;
+.crm-leave-and-absences-form-block {
+  .panel-body {
+    padding-top: $crm-panel-nested-indent;
+    padding-bottom: $crm-panel-nested-indent;
+
+    .row:first-child h3 {
+      margin-top: 0;
     }
+
+    h3 {
+      margin-bottom: $crm-panel-nested-indent;
+    }
+  }
+
+  .panel-footer .crm-button:last-child {
+    margin-right: 0;
   }
 }

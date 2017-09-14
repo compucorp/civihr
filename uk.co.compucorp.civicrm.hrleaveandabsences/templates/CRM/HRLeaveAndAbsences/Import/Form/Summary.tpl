@@ -25,7 +25,7 @@
 *}
 {* Leave Request Import Wizard - Step 4 (summary of import results AFTER actual data loading) *}
 {* @var $form Contains the array for the form elements and other form associated information assigned to the template by the controller *}
-<div id="bootstrap-theme" class="crm_wizard crm-leave-and-balance-import crm-activity-import-summary-form-block">
+<div id="bootstrap-theme" class="crm_wizard crm-form-block crm-leave-and-balance-import crm-activity-import-summary-form-block">
   {include file="CRM/HRUI/common/WizardHeader.tpl"}
   <div class="panel panel-default crm_wizard__body">
     <div class="panel-body">

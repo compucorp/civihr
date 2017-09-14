@@ -2,7 +2,7 @@
   {include file="CRM/HRLeaveAndAbsences/Form/AbsencePeriod.tpl"}
 {else}
   {if $rows}
-    <div id="bootstrap-theme">
+    <div id="bootstrap-theme" class="crm-leave-and-absences-list-block">
       <div class="panel panel-default">
         {strip}
           <table cellpadding="0" cellspacing="0" border="0" class="table table-responsive hrleaveandabsences-entity-list">
@@ -28,8 +28,8 @@
         {if $action ne 1 and $action ne 2}
           <div class="panel-body">
             <a href="{crmURL q="action=add&reset=1"}" class="button btn btn-primary pull-right">
-              <span><div class="icon add-icon"></div>
-              {ts}Add new entitlement period{/ts}</span>
+              <i class="fa fa-plus"></i>
+              <span>{ts}Add new entitlement period{/ts}</span>
             </a>
           </div>
         {/if}

@@ -1,4 +1,4 @@
-<div id="bootstrap-theme">
+<div id="bootstrap-theme" class="crm-leave-and-absences-list-block">
   <div id="calculation-details">
     <p>For each contract the default calculation is as follows:</p>
 
