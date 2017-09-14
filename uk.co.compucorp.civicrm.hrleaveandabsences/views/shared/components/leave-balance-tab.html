@@ -10,7 +10,7 @@
       </div>
       <div class="panel-body chr_leave-balance-tab__body">
         <crm-loading show="!leaveBalanceTab.loading.report">
-          <div class="table-responsive">
+          <div class="table-responsive" ng-if="leaveBalanceTab.report.length > 0">
             <table class="table">
               <thead>
                 <tr>
@@ -45,6 +45,9 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div class="text-center" ng-if="leaveBalanceTab.report.length === 0">
+            No records found
           </div>
         </crm-loading>
       </div>
