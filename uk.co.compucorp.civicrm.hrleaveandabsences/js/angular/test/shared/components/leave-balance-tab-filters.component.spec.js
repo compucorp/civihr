@@ -14,6 +14,7 @@ define([
     var $componentController, $provide, $rootScope, $scope, AbsencePeriod,
       absencePeriods, AbsenceType, absenceTypes, ctrl;
     var loggedInContactId = 101;
+    var userRole = 'admin';
 
     beforeEach(module('leave-absences.components', 'leave-absences.mocks',
     'leave-absences.models', 'leave-absences.settings', function (_$provide_) {
@@ -40,8 +41,8 @@ define([
     describe('on init', function () {
       it('sets filters to null', function () {
         expect(ctrl.filters).toEqual({
-          absence_period: null,
-          absence_type: null,
+          period_id: null,
+          type_id: null,
           managed_by: null
         });
       });
@@ -58,7 +59,7 @@ define([
         });
 
         it('selects the current absence period', function () {
-          expect(ctrl.filters.absence_period).toBe(period.id);
+          expect(ctrl.filters.period_id).toBe(period.id);
         });
 
         describe('when there are no current periods', function () {
@@ -77,7 +78,7 @@ define([
           });
 
           it('selects the most recent absence period', function () {
-            expect(ctrl.filters.absence_period).toBe(period.id);
+            expect(ctrl.filters.period_id).toBe(period.id);
           });
         });
       });
@@ -94,17 +95,31 @@ define([
         });
 
         it('selects the first absence type sorted by title', function () {
-          expect(ctrl.filters.absence_type).toBe(type.id);
+          expect(ctrl.filters.type_id).toBe(type.id);
         });
       });
 
-      describe('when logged in contact\'s id changes', function () {
-        beforeEach(function () {
-          controllerOnChanges('loggedInContactId', loggedInContactId);
+      describe('when logged in contact\'s id or user role change', function () {
+        describe('when user role is "admin"', function () {
+          beforeEach(function () {
+            controllerOnChanges('loggedInContactId', loggedInContactId);
+            controllerOnChanges('userRole', 'admin');
+          });
+
+          it('does not set managed_by filter', function () {
+            expect(ctrl.filters.managed_by).toBe(undefined);
+          });
         });
 
-        it('sets the managed by filter to the currently logged in contact id', function () {
-          expect(ctrl.filters.managed_by).toBe(loggedInContactId);
+        describe('when user role is "manager"', function () {
+          beforeEach(function () {
+            controllerOnChanges('loggedInContactId', loggedInContactId);
+            controllerOnChanges('userRole', 'manager');
+          });
+
+          it('sets managed_by filter as the currently logged in user\'s ID', function () {
+            expect(ctrl.filters.managed_by).toBe(loggedInContactId);
+          });
         });
       });
 
@@ -113,6 +128,7 @@ define([
           controllerOnChanges('absencePeriods', absencePeriods);
           controllerOnChanges('absenceTypes', absenceTypes);
           controllerOnChanges('loggedInContactId', loggedInContactId);
+          controllerOnChanges('userRole', userRole);
         });
 
         it('emits a "Filters Update" event with the selected filter values', function () {
@@ -172,7 +188,8 @@ define([
       }, {
         absencePeriods: [],
         absenceTypes: [],
-        loggedInContactId: null
+        loggedInContactId: null,
+        userRole: userRole
       });
     }
 
@@ -186,14 +203,14 @@ define([
      */
     function controllerOnChanges (fieldName, currentValue, previousValue) {
       var changes = {};
-      previousValue = previousValue || [];
 
+      previousValue = previousValue || [];
       changes[fieldName] = {
         currentValue: currentValue,
         previousValue: previousValue
       };
-
       ctrl[fieldName] = currentValue;
+
       ctrl.$onChanges(changes);
     }
   });

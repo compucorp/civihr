@@ -327,6 +327,8 @@ define([
 
     /**
      * Sets the user's role based on his permissions
+     *
+     * @return {Promise}
      */
     function setUserRole () {
       if (vm.roleOverride) {

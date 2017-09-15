@@ -11,7 +11,8 @@ define([
     bindings: {
       absencePeriods: '<',
       absenceTypes: '<',
-      loggedInContactId: '<'
+      loggedInContactId: '<',
+      userRole: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/leave-balance-tab-filters.html';
@@ -23,7 +24,7 @@ define([
   function LeaveBalanceTabFiltersController ($scope) {
     var vm = this;
 
-    vm.filters = { absence_period: null, absence_type: null, managed_by: null };
+    vm.filters = { period_id: null, type_id: null, managed_by: null };
 
     vm.$onChanges = $onChanges;
     vm.labelPeriod = labelPeriod;
@@ -32,22 +33,23 @@ define([
     /**
      * Angular Hook that Watches over changes in the bindings for absence
      * periods and types, and selects the default values for the filter.
-     * It also emits an a filters change event when the filters have value for
-     * the first time.
+     * It also emits an the filters change event when the filters have
+     * value for the first time.
      *
      * @param {Object} changes - The list of changes for current digest.
      */
     function $onChanges (changes) {
       if (changes.absencePeriods && vm.absencePeriods.length) {
-        vm.filters.absence_period = getCurrentAbsencePeriod().id;
+        vm.filters.period_id = getCurrentAbsencePeriod().id;
       }
 
       if (changes.absenceTypes && vm.absenceTypes.length) {
-        vm.filters.absence_type = getFirstAbsenceTypeByTitle().id;
+        vm.filters.type_id = getFirstAbsenceTypeByTitle().id;
       }
 
-      if (changes.loggedInContactId) {
-        vm.filters.managed_by = vm.loggedInContactId;
+      if (changes.loggedInContactId || changes.userRole) {
+        vm.filters.managed_by = (vm.userRole === 'manager'
+          ? vm.loggedInContactId : undefined);
       }
 
       if (areFiltersReady()) {
@@ -62,7 +64,7 @@ define([
      */
     function areFiltersReady () {
       return _.every(vm.filters, function (filterValue) {
-        return !!filterValue;
+        return filterValue !== null;
       });
     }
 
