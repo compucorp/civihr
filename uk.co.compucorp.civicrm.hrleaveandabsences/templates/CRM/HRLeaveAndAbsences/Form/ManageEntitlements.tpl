@@ -3,7 +3,7 @@
     <div class="panel-body">
       <p>{ts}<strong>WARNING:</strong> Please note that any currently stored annual entitlement allowance for the selected staff member(s) will be overwritten by this process{/ts}</p>
       <hr class="wider-hr" />
-      <div class="manage-entitlements-form__filters row">
+      <div class="manage-entitlements-form__filters row entitlement-calculation-filters">
         {* These hidden fields are used when we submit the form to export the CSV file *}
         {* The id is used so we know from which period we are exporting the CSV *}
         {* The cid is used so can export calculations only for the specified contacts *}
@@ -16,15 +16,15 @@
         <div class="col-sm-4 col-sm-offset-4">
           <div class="btn-group btn-group-sm" data-toggle="buttons">
             <label class="btn btn-default">
-              <input type="radio" name="override-filter" value="1">
+              <input type="radio" class="override-filter" name="override-filter" value="1">
               <span>Overriden</span>
             </label>
             <label class="btn btn-default">
-              <input type="radio" name="override-filter" value="2">
+              <input type="radio" class="override-filter" name="override-filter" value="2">
               <span>Not Overridden</span>
             </label>
             <label class="btn btn-default">
-              <input type="radio" name="override-filter" value="3">
+              <input type="radio" class="override-filter" name="override-filter" value="3">
               <span>Both</span>
             </label>
           </div>
@@ -33,7 +33,7 @@
         <div class="col-sm-4">
           <div class="absence-type-filter row">
             <div class="col-md-9">
-              <select name="absence-type-filter" id="absence_type_filter" class="crm-select2 form-control" multiple="multiple" data-placeholder="{ts}Leave Type{/ts}">
+              <select name="absence-type-filter" id="absence_type_filter" class="crm-select2 form-control absence-type-filter" multiple="multiple" data-placeholder="{ts}Leave Type{/ts}">
                 {foreach from=$enabledAbsenceTypes item=absenceType}
                   <option value="{$absenceType->id}">{$absenceType->title}</option>
                 {/foreach}
