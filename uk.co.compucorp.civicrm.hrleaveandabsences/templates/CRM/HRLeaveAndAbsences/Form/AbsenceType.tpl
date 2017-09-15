@@ -1,10 +1,12 @@
 <div id="bootstrap-theme">
-  <h1 class="title">
-    {if $action eq 1}{ts}New Leave/Absence Type{/ts}
-    {elseif $action eq 2}{ts}Edit Leave/Absence Type{/ts}{/if}
-  </h1>
-  <div class="panel panel-default crm-absence_type-form-block crm-leave-and-absences-form-block">
-    <div class="panel-body crm-form-block">
+  <div class="panel panel-default crm-form-block crm-absence_type-form-block crm-leave-and-absences-form-block">
+    <div class="panel-heading">
+      <h1 class="panel-title">
+        {if $action eq 1}{ts}New Leave/Absence Type{/ts}
+        {elseif $action eq 2}{ts}Edit Leave/Absence Type{/ts}{/if}
+      </h1>
+    </div>
+    <div class="panel-body">
       {if $action neq 8}
         <div class="row">
           <div class="col-sm-8">
@@ -279,10 +281,10 @@
           </script>
         {/literal}
       {/if}
-      <div class="panel-footer">
-        <div class="pull-right">
-          {include file="CRM/common/formButtons.tpl" location="bottom"}
-        </div>
+    </div>
+    <div class="panel-footer clearfix">
+      <div class="pull-right">
+        {include file="CRM/common/formButtons.tpl" location="bottom"}
       </div>
     </div>
   </div>

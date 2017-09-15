@@ -2,7 +2,7 @@
   {include file="CRM/HRLeaveAndAbsences/Form/AbsenceType.tpl"}
 {else}
   {if $rows}
-    <div id="bootstrap-theme">
+    <div id="bootstrap-theme" class="crm-leave-and-absences-list-block">
       {literal}
         <style>
           .btn-slide ul.panel { display: none !important; }
@@ -28,7 +28,7 @@
               <tr id="AbsenceType-{$row.id}" class="crm-entity {if NOT $row.is_active} disabled{/if}">
                 <td data-field="title">{$row.title}</td>
                 <td>{if $row.allow_accruals_request eq 1} {ts}Yes{/ts} {else} {ts}No{/ts} {/if}</td>
-                <td>{if $row.is_default eq 1}<img src="{$config->resourceBase}i/check.gif" alt="{ts}Default{/ts}" />{/if}</td>
+                <td>{if $row.is_default eq 1}<i class="fa fa-check"></i>{/if}</td>
                 <td>{$row.weight}</td>
                 <td>{if $row.is_active eq 1} {ts}Enabled{/ts} {else} {ts}Disabled{/ts} {/if}</td>
                 <td>{$row.action|replace:'xx':$row.id}</td>
@@ -39,8 +39,8 @@
         {if $action ne 1 and $action ne 2}
           <div class="panel-body">
             <a href="{crmURL q="action=add&reset=1"}" class="button btn btn-primary pull-right">
-              <span><div class="icon add-icon"></div>
-              {ts}Add Leave/Absence Type{/ts}</span>
+              <i class="fa fa-plus"></i>
+              <span>{ts}Add Leave/Absence Type{/ts}</span>
             </a>
           </div>
         {/if}

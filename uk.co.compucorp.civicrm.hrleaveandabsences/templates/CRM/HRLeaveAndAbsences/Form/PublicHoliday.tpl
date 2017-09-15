@@ -1,11 +1,13 @@
 <div id="bootstrap-theme">
-  <h1 class="title">
-    {if $action eq 1}{ts}New Public Holiday{/ts}
-    {elseif $action eq 2}{ts}Edit Public Holiday{/ts}{/if}
-  </h1>
-  <div class="panel panel-default crm-absence_type-form-block crm-leave-and-absences-form-block">
+  <div class="panel panel-default crm-form-block crm-absence_type-form-block crm-leave-and-absences-form-block">
+    <div class="panel-heading">
+      <h1 class="panel-title">
+        {if $action eq 1}{ts}New Public Holiday{/ts}
+        {elseif $action eq 2}{ts}Edit Public Holiday{/ts}{/if}
+      </h1>
+    </div>
     {if $action neq 8}
-    <div class="panel-body crm-form-block">
+    <div class="panel-body">
       <div class="col-sm-8">
         <h3>{ts}Basic Details{/ts}</h3>
         <div class="form-group row">
@@ -54,7 +56,7 @@
         </script>
     {/literal}
     {/if}
-    <div class="panel-body">
+    <div class="panel-footer clearfix">
       <div class="pull-right">
         {include file="CRM/common/formButtons.tpl" location="bottom"}
       </div>
