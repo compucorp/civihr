@@ -25,8 +25,8 @@
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
       <label class="col-sm-4 control-label required-mark">From Date</label>
-      <div class="col-xs-6 col-sm-4 chr_leave-request-date-picker-container">
-        <div class="input-group">
+      <div class="col-sm-4 chr_leave-request-date-picker-container">
+        <div class="input-group chr_leave-request-uib-date-picker">
           <input
             type="text"
             class="form-control"
@@ -46,8 +46,23 @@
             <i class="fa fa-calendar"></i>
           </span>
         </div>
+        <div class="chr_leave-request-html5-date-picker">
+          <input
+          required
+          ng-disabled="!detailsTab.isRole('admin') && (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
+          class="form-control chr_leave-request-html5-date-picker"
+          ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.fromDate, 'from')"
+          ng-model="detailsTab.uiOptions.fromDate"
+          type="date">
+          <span
+            class="input-group-addon"
+            ng-disabled="!detailsTab.isRole('admin') &&
+            (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))">
+              <i class="fa fa-calendar"></i>
+            </span>
+        </div>
       </div>
-      <div class="col-xs-6 col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
+      <div class="col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
         <crm-loading
           show="!detailsTab.loading.fromDayTypes"
           class="chr_leave-request-modal__small_spinner">
@@ -77,8 +92,8 @@
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
       <label class="col-sm-4 control-label required-mark">To Date</label>
-      <div class="col-xs-6 col-sm-4 chr_leave-request-date-picker-container">
-        <div class="input-group">
+      <div class="col-sm-4 chr_leave-request-date-picker-container">
+        <div class="input-group chr_leave-request-uib-date-picker">
           <input
             type="text"
             class="form-control"
@@ -100,8 +115,25 @@
             <i class="fa fa-calendar"></i>
           </span>
         </div>
+        <div class="chr_leave-request-html5-date-picker">
+          <input
+            required
+            ng-disabled="!detailsTab.isRole('admin') && (detailsTab.isMode('view') || !detailsTab.request.from_date || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
+            min="{{detailsTab.convertToHTML5DatepickerFormat(detailsTab.uiOptions.date.to.options.minDate)}}"
+            max="{{detailsTab.convertToHTML5DatepickerFormat(detailsTab.uiOptions.date.to.options.maxDate)}}"
+            class="form-control"
+            ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.toDate, 'to')"
+            ng-model="detailsTab.uiOptions.toDate"
+            type="date">
+          <span
+            class="input-group-addon"
+            ng-disabled="!detailsTab.isRole('admin') &&
+            (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))">
+              <i class="fa fa-calendar"></i>
+            </span>
+        </div>
       </div>
-      <div class="col-xs-6 col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
+      <div class="col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
         <crm-loading
           show="!detailsTab.loading.toDayTypes"
           class="chr_leave-request-modal__small_spinner">

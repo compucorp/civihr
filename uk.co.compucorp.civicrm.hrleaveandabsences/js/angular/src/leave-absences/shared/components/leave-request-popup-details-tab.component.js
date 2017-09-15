@@ -91,6 +91,7 @@ define([
 
     vm.calculateBalanceChange = calculateBalanceChange;
     vm.changeInNoOfDays = changeInNoOfDays;
+    vm.convertToHTML5DatepickerFormat = convertToHTML5DatepickerFormat;
     vm.isLeaveType = isLeaveType;
     vm.loadAbsencePeriodDatesTypes = loadAbsencePeriodDatesTypes;
     vm.updateAbsencePeriodDatesTypes = updateAbsencePeriodDatesTypes;
@@ -167,6 +168,16 @@ define([
     function changeInNoOfDays () {
       vm._reset();
       vm._calculateOpeningAndClosingBalance();
+    }
+
+    /**
+     * Coverts a Date object into HTML5 Datepicker format
+     *
+     * @param  {Date} date
+     * @return {String}
+     */
+    function convertToHTML5DatepickerFormat (date) {
+      return date ? moment(date).format('Y-MM-D') : '';
     }
 
     /**
