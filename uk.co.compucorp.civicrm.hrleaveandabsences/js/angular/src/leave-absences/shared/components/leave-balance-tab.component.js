@@ -16,11 +16,11 @@ define([
     }]
   });
 
-  LeaveBalanceTabController.$inject = ['$q', '$scope', 'AbsencePeriod',
+  LeaveBalanceTabController.$inject = ['$q', '$scope', '$rootScope', 'AbsencePeriod',
     'AbsenceType', 'LeaveBalanceReport', 'notificationService', 'Session',
     'shared-settings', 'checkPermissions'];
 
-  function LeaveBalanceTabController ($q, $scope, AbsencePeriod,
+  function LeaveBalanceTabController ($q, $scope, $rootScope, AbsencePeriod,
     AbsenceType, LeaveBalanceReport, notification, Session,
     sharedSettings, checkPermissions) {
     var filters = {};
@@ -108,7 +108,7 @@ define([
     function loadReportCurrentPage () {
       vm.loading.report = true;
 
-      return LeaveBalanceReport.all(filters, vm.pagination)
+      return LeaveBalanceReport.all(filters, vm.pagination, undefined, undefined, false)
       .then(function (response) {
         vm.report = indexLeaveBalanceAbsenceTypes(response.list);
         vm.reportCount = response.total;
@@ -148,6 +148,7 @@ define([
      */
     function initWatchers () {
       $scope.$on('LeaveBalanceFilters::update', updateReportFilters);
+      $rootScope.$on('LeaveRequest::new', refresh);
     }
 
     /**
@@ -160,6 +161,13 @@ define([
         .then(function (isAdmin) {
           vm.userRole = isAdmin ? 'admin' : 'manager';
         });
+    }
+
+    /**
+     * Refreshes component with current filters
+     */
+    function refresh (event) {
+      updateReportFilters(event, filters);
     }
 
     /**

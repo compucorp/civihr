@@ -228,7 +228,8 @@ define([
       });
 
       it('loads the balance report for contacts, on selected absence period and type, on page 1, with a limited amount of records', function () {
-        expect(leaveBalanceReport.all).toHaveBeenCalledWith(filters, ctrl.pagination);
+        expect(leaveBalanceReport.all).toHaveBeenCalledWith(
+          filters, ctrl.pagination, undefined, undefined, false);
       });
 
       describe('finishing loading the report page', function () {
@@ -293,6 +294,20 @@ define([
         it('throws an error notification', function () {
           expect(notificationService.error).toHaveBeenCalledWith('Error', error.error_message);
         });
+      });
+    });
+
+    describe('when a new leave request is created', function () {
+      beforeEach(function () {
+        setupController();
+        spyOn(ctrl, 'loadReportCurrentPage');
+        $rootScope.$digest();
+        $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+        $rootScope.$digest();
+      });
+
+      it('reloads the report', function () {
+        expect(ctrl.loadReportCurrentPage).toHaveBeenCalled();
       });
     });
 
