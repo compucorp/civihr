@@ -730,7 +730,7 @@ define([
       vm.submitting = true;
       changeStatusBeforeSave();
 
-      return validateBeforeSubmit()
+      return vm.request.isValid()
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
         })
@@ -800,21 +800,6 @@ define([
             postSubmit('LeaveRequest::edit');
           }
         });
-    }
-
-    /**
-     * Validates a Leave request before submitting
-     *
-     * @returns {Promise}
-     */
-    function validateBeforeSubmit () {
-      if (vm.balance.closing < 0 && vm.selectedAbsenceType.allow_overuse === '0') {
-        // show an error
-        return $q.reject(['You cannot make a request for this leave type at this time ' +
-        'as this would leave you with a negative balance']);
-      }
-
-      return vm.request.isValid();
     }
 
     /**
