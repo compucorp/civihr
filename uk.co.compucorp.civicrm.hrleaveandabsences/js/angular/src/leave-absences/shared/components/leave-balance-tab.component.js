@@ -16,11 +16,11 @@ define([
     }]
   });
 
-  LeaveBalanceTabController.$inject = ['$q', '$scope', '$rootScope', 'AbsencePeriod',
+  LeaveBalanceTabController.$inject = ['$q', '$rootScope', 'AbsencePeriod',
     'AbsenceType', 'LeaveBalanceReport', 'notificationService', 'Session',
     'shared-settings', 'checkPermissions'];
 
-  function LeaveBalanceTabController ($q, $scope, $rootScope, AbsencePeriod,
+  function LeaveBalanceTabController ($q, $rootScope, AbsencePeriod,
     AbsenceType, LeaveBalanceReport, notification, Session,
     sharedSettings, checkPermissions) {
     var filters = {};
@@ -147,7 +147,7 @@ define([
      * Sets up watchers for events fired by child components.
      */
     function initWatchers () {
-      $scope.$on('LeaveBalanceFilters::update', updateReportFilters);
+      $rootScope.$on('LeaveBalanceFilters::update', updateReportFilters);
       $rootScope.$on('LeaveRequest::new', refresh);
     }
 

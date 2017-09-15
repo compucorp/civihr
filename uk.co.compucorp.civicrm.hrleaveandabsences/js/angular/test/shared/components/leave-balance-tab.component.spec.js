@@ -227,7 +227,7 @@ define([
         expect(ctrl.loading.report).toBe(true);
       });
 
-      it('loads the balance report for contacts, on selected absence period and type, on page 1, with a limited amount of records', function () {
+      it('loads the balance report for contacts, on selected absence period and type, on page 1, with a limited amount of records, without caching', function () {
         expect(leaveBalanceReport.all).toHaveBeenCalledWith(
           filters, ctrl.pagination, undefined, undefined, false);
       });
