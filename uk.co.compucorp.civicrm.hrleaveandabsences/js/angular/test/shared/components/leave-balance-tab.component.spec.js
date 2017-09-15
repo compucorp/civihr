@@ -16,7 +16,7 @@ define([
       AbsenceType, ctrl, leaveBalanceReport, notificationService, Session,
       sharedSettings;
     var loggedInContactId = 101;
-    var filters = {};
+    var filters = { any_filter: 'any value' };
     var userRole = 'admin';
 
     beforeEach(module('leave-absences.mocks', 'leave-absences.models',
@@ -107,6 +107,34 @@ define([
         expect(ctrl.reportCount).toBe(0);
       });
 
+      describe('on user role load', function () {
+        describe('when user is Admin', function () {
+          beforeEach(function () {
+            userRole = 'admin';
+
+            setupController();
+            $rootScope.$digest();
+          });
+
+          it('sets Admin role', function () {
+            expect(ctrl.userRole).toBe('admin');
+          });
+        });
+
+        describe('when user is Manager', function () {
+          beforeEach(function () {
+            userRole = 'manager';
+
+            setupController();
+            $rootScope.$digest();
+          });
+
+          it('sets Manager role', function () {
+            expect(ctrl.userRole).toBe('manager');
+          });
+        });
+      });
+
       describe('absence types', function () {
         beforeEach(function () {
           setupController();
@@ -174,10 +202,7 @@ define([
 
     describe('on leave balance filters updated event', function () {
       beforeEach(function () {
-        setFilters();
-
         setupController();
-
         spyOn(ctrl, 'loadReportCurrentPage');
 
         ctrl.pagination.page = 202;
@@ -195,7 +220,6 @@ define([
       beforeEach(function () {
         setupController();
         $rootScope.$digest();
-
         $rootScope.$broadcast('LeaveBalanceFilters::update', filters);
       });
 
@@ -203,36 +227,8 @@ define([
         expect(ctrl.loading.report).toBe(true);
       });
 
-      it('loads the balance report for contacts managed by the user, on selected absence period and type, on page 1, with a limited amount of records', function () {
-        expect(leaveBalanceReport.all).toHaveBeenCalledWith(
-          {
-            period_id: filters.absence_period,
-            type_id: filters.absence_type
-          },
-          ctrl.pagination
-        );
-      });
-
-      describe('when user is manager', function () {
-        beforeEach(function () {
-          userRole = 'manager';
-
-          setupController();
-          $rootScope.$digest();
-
-          $rootScope.$broadcast('LeaveBalanceFilters::update', filters);
-        });
-
-        it('loads the balance report for contacts managed by the user, on selected absence period and type, on page 1, with a limited amount of records', function () {
-          expect(leaveBalanceReport.all).toHaveBeenCalledWith(
-            {
-              period_id: filters.absence_period,
-              type_id: filters.absence_type,
-              managed_by: loggedInContactId
-            },
-            ctrl.pagination
-          );
-        });
+      it('loads the balance report for contacts, on selected absence period and type, on page 1, with a limited amount of records', function () {
+        expect(leaveBalanceReport.all).toHaveBeenCalledWith(filters, ctrl.pagination);
       });
 
       describe('finishing loading the report page', function () {
@@ -284,10 +280,8 @@ define([
 
         beforeEach(function () {
           leaveBalanceReport.all.and.returnValue($q.reject(error));
-
           setupController();
           $rootScope.$digest();
-
           $rootScope.$broadcast('LeaveBalanceFilters::update', filters);
           $rootScope.$digest();
         });
@@ -301,16 +295,6 @@ define([
         });
       });
     });
-
-    /**
-     * Sets the filters
-     */
-    function setFilters () {
-      filters = {
-        absence_period: absencePeriodMock.all().values[0],
-        absence_type: absenceTypeMock.all().values[0]
-      };
-    }
 
     /**
      * Setups the leaveBalanceTab controller for testing purposes.

@@ -5,7 +5,8 @@
         <leave-balance-tab-filters
           absence-periods="leaveBalanceTab.absencePeriods"
           absence-types="leaveBalanceTab.absenceTypes"
-          logged-in-contact-id="leaveBalanceTab.loggedInContactId">
+          logged-in-contact-id="leaveBalanceTab.loggedInContactId"
+          user-role="leaveBalanceTab.userRole">
         </leave-balance-tab-filters>
       </div>
       <div class="panel-body chr_leave-balance-tab__body">
@@ -26,7 +27,7 @@
                 <tr ng-repeat="record in leaveBalanceTab.report">
                   <td>{{record.contact_id}}</td>
                   <td>{{record.contact_display_name}}</td>
-                  <td ng-repeat-start="type in  leaveBalanceTab.selectedAbsenceTypes">{{record.absence_types[type.id].entitlement}}</td>
+                  <td ng-repeat-start="type in leaveBalanceTab.selectedAbsenceTypes">{{record.absence_types[type.id].entitlement}}</td>
                   <td>{{record.absence_types[type.id].used}}</td>
                   <td>{{record.absence_types[type.id].balance}}</td>
                   <td ng-repeat-end>{{record.absence_types[type.id].requested}}</td>

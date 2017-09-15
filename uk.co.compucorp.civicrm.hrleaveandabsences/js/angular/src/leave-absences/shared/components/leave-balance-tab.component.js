@@ -25,7 +25,6 @@ define([
     sharedSettings, checkPermissions) {
     var filters = {};
     var vm = this;
-    var userRole = '';
 
     vm.absencePeriods = [];
     vm.absenceTypes = [];
@@ -34,6 +33,7 @@ define([
     vm.pagination = { page: 1, size: 50 };
     vm.report = [];
     vm.reportCount = 0;
+    vm.userRole = null;
 
     vm.loadReportCurrentPage = loadReportCurrentPage;
 
@@ -43,8 +43,7 @@ define([
      */
     (function init () {
       initWatchers();
-      setUserRole()
-      .then(loadDependencies)
+      loadDependencies()
       .then(function () {
         vm.loading.component = false;
       });
@@ -82,7 +81,8 @@ define([
       return $q.all([
         loadAbsencePeriods(),
         loadAbsenceTypes(),
-        loadLoggedInContactId()
+        loadLoggedInContactId(),
+        loadUserRole()
       ])
       .catch(function (error) {
         notification.error('Error', error);
@@ -106,16 +106,9 @@ define([
      * @return {Promise}
      */
     function loadReportCurrentPage () {
-      var params = {
-        period_id: filters.absence_period,
-        type_id: filters.absence_type
-      };
-
-      (userRole === 'manager') && (params.managed_by = vm.loggedInContactId);
-
       vm.loading.report = true;
 
-      return LeaveBalanceReport.all(params, vm.pagination)
+      return LeaveBalanceReport.all(filters, vm.pagination)
       .then(function (response) {
         vm.report = indexLeaveBalanceAbsenceTypes(response.list);
         vm.reportCount = response.total;
@@ -151,14 +144,21 @@ define([
     }
 
     /**
-     * Sets the user's role based on their permissions
+     * Sets up watchers for events fired by child components.
+     */
+    function initWatchers () {
+      $scope.$on('LeaveBalanceFilters::update', updateReportFilters);
+    }
+
+    /**
+     * Loads the user's role based on their permissions
      *
      * @return {Promise}
      */
-    function setUserRole () {
+    function loadUserRole () {
       return checkPermissions(sharedSettings.permissions.admin.administer)
         .then(function (isAdmin) {
-          userRole = isAdmin ? 'admin' : 'manager';
+          vm.userRole = isAdmin ? 'admin' : 'manager';
         });
     }
 
@@ -170,8 +170,9 @@ define([
      * @param {Object} event - the component event handler.
      * @param {Object} _filters_ - The filter values to use for updating the report.
      * it contains the following properties:
-     * - absence_period - the absence period id to filter by.
-     * - absence_type - the abence type id to filter by.
+     * - period_id - the absence period ID to filter by.
+     * - type_id - the abence type ID to filter by.
+     * - managed_by - the managing user ID to filter by.
      */
     function updateReportFilters (event, _filters_) {
       filters = _filters_;
@@ -186,15 +187,8 @@ define([
      */
     function updateSelectedAbsenceTypes () {
       vm.selectedAbsenceTypes = vm.absenceTypes.filter(function (type) {
-        return +type.id === +filters.absence_type;
+        return +type.id === +filters.type_id;
       });
-    }
-
-    /**
-     * Sets up watchers for events fired by child components.
-     */
-    function initWatchers () {
-      $scope.$on('LeaveBalanceFilters::update', updateReportFilters);
     }
   }
 });
