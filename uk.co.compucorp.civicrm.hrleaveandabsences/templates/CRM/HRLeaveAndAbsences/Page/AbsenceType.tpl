@@ -3,11 +3,6 @@
 {else}
   {if $rows}
     <div id="bootstrap-theme" class="crm-leave-and-absences-list-block">
-      {literal}
-        <style>
-          .btn-slide ul.panel { display: none !important; }
-        </style>
-      {/literal}
       <div class="alert alert-info">
         {ts}Some leave/absence types cannot be deleted because there are existing absences of that type.{/ts}
       </div>
