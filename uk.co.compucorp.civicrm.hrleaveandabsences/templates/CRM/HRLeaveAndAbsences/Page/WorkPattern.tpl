@@ -24,7 +24,11 @@
               <td>{$row.description}</td>
               <td>{$row.number_of_weeks}</td>
               <td>{$row.number_of_hours}</td>
-              <td>{if $row.is_default eq 1}<img src="{$config->resourceBase}i/check.gif" alt="{ts}Default{/ts}" />{/if}</td>
+              <td>
+                {if $row.is_default eq 1}
+                  <i class="fa fa-check"></i>
+                {/if}
+              </td>
               <td>{$row.weight}</td>
               <td>{if $row.is_active eq 1} {ts}Enabled{/ts} {else} {ts}Disabled{/ts} {/if}</td>
               <td>{$row.action|replace:'xx':$row.id}</td>

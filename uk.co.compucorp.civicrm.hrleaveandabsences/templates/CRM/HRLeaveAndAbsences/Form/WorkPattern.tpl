@@ -1,9 +1,11 @@
 <div id="bootstrap-theme">
-  <h1 class="title">
-    {if $action eq 1}{ts}New Work Pattern{/ts}
-    {elseif $action eq 2}{ts}Edit Work Pattern{/ts}{/if}
-  </h1>
-  <div class="work-pattern-form panel panel-default">
+  <div class="work-pattern-form panel panel-default crm-form-block crm-leave-and-absences-form-block">
+    <div class="panel-heading">
+      <h1 class="panel-title">
+        {if $action eq 1}{ts}New Work Pattern{/ts}
+        {elseif $action eq 2}{ts}Edit Work Pattern{/ts}{/if}
+      </h1>
+    </div>
     {if $action neq 8}
       <ul class="nav nav-tabs">
         <li class="active"><a href="#work-pattern-details" data-toggle="tab">{ts}Details{/ts}</a></li>
@@ -18,7 +20,7 @@
         </div>
       </div>
     {/if}
-    <div class="panel-body">
+    <div class="panel-footer clearfix">
       <div class="pull-right">
         {include file="CRM/common/formButtons.tpl" location="bottom"}
       </div>
