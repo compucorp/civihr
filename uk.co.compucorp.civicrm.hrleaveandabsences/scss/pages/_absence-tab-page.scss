@@ -1,5 +1,19 @@
 .absence-tab-page {
 
+  /**
+   * This is a temporary fix.
+   * It provides a consistency to paddings and at the same time
+   * preserves the same maximum width for larger screens.
+   * @TODO this fix should be removed once all other
+   * screens on admin have consistent layout
+  */
+  >.container-fluid {
+    width: 84vw;
+    padding-right: calc(8px + 1vw);
+    max-width: 1156px;
+  }
+
+
   .btn-group {
     margin-bottom: 20px;
 
