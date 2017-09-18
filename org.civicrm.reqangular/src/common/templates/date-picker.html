@@ -14,7 +14,7 @@
   <span
     class="input-group-addon pointer"
     ng-disabled="datePicker.ngDisabled"
-    ng-click="datePicker.customNgClick ? datePicker.customNgClick : datePicker.isOpen = true">
+    ng-click="datePicker.isOpen = true">
     <i class="fa fa-calendar"></i>
   </span>
 </div>
@@ -29,14 +29,14 @@
     max="{{datePicker.convertToHTML5DatepickerFormat(datePicker.datepickerOptions.maxDate)}}"
     type="date">
   <span
-    class="input-group-addon"
+    class="calendar-icon input-group-addon"
     ng-disabled="datePicker.ngDisabled">
-      <i class="fa fa-calendar"></i>
-    </span>
+    <i class="fa fa-calendar"></i>
+  </span>
 </div>
 <span
-  class="{{datePicker.clearBtnClass}} pointer"
+  class="clear-date-btn pointer"
   ng-if="datePicker.showClearBtn"
-  ng-click="datePicker.clearBtnClick()">
-    <i class="fa fa-times"></i>
+  ng-click="datePicker.clearButtonClick()">
+  <i class="fa fa-times"></i>
 </span>

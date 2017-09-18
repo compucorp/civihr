@@ -7,10 +7,8 @@ define([
   components.component('datePicker', {
     require: { ngModelCtrl: 'ngModel' },
     bindings: {
-      clearBtnClass: '@',
       showClearBtn: '<',
-      clearBtnClick: '&',
-      customNgClick: '&',
+      clearBtnClick: '&?',
       datepickerOptions: '=',
       isOpen: '=',
       ngChange: '&',
@@ -27,11 +25,25 @@ define([
   function datePickerController () {
     var vm = this;
 
+    vm.clearButtonClick = clearButtonClick;
     vm.convertToHTML5DatepickerFormat = convertToHTML5DatepickerFormat;
     vm.ngModelChange = ngModelChange;
 
     /**
-     * Coverts a Date object into HTML5 Datepicker format
+     * Calls the clear button click event if it is passed,
+     * Otherwise clears the ng-model
+     */
+    function clearButtonClick () {
+      if (vm.clearBtnClick) {
+        vm.clearBtnClick()
+      } else {
+        vm.ngModel = false;
+        vm.ngModelCtrl.$setViewValue(vm.ngModel);
+      }
+    }
+
+    /**
+     * Converts a Date object into HTML5 Datepicker format
      *
      * @param  {Date} date
      * @return {String}
@@ -41,8 +53,8 @@ define([
     }
 
     function ngModelChange () {
-      this.ngModelCtrl.$setViewValue(this.ngModel);
-      this.ngChange();
+      vm.ngModelCtrl.$setViewValue(vm.ngModel);
+      vm.ngChange();
     }
   }
 });
