@@ -3264,4 +3264,174 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertNotNull($leaveRequest->id);
   }
+
+  public function testAnAlreadyApprovedLeaveRequestCanBeUpdatedWhenEntitlementBalanceIsZero() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    //3 working days. balance change of -3
+    $params = [
+      'type_id' => $periodEntitlement->type_id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-11-14'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-11-16'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricate($params, true);
+
+    $this->assertNotNull($leaveRequest->id);
+    //Entitlement balance is Zero. The three leave days have been deducted.
+    $this->assertEquals(0, $periodEntitlement->getBalance());
+
+    $params['id'] = $leaveRequest->id;
+    $params['status'] = 3;
+
+    //Update Leave Request status
+    $leaveRequest = LeaveRequest::create($params);
+    $this->assertNotNull($leaveRequest->id);
+  }
+
+  public function testAlreadyApprovedLeaveRequestCanNotBeUpdatedWhenDatesChangeAndLeaveBalanceGreaterPreviousLeaveBalanceAndEntitlementBalanceIsZero() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $entitlementBalance = 3;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalance);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    //3 working days. Balance change of -3
+    $params = [
+      'type_id' => $periodEntitlement->type_id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-11-14'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-11-16'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricate($params, true);
+
+    $this->assertNotNull($leaveRequest->id);
+    //Entitlement balance is Zero. The three leave days have been deducted.
+    $this->assertEquals(0, $periodEntitlement->getBalance());
+
+    //Update leave request and add one more day to the request so that
+    //It will now create a balance change of -4 as opposed to -3 previously.
+    $params['id'] = $leaveRequest->id;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-11-14');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-11-17');
+
+    //Since the dates as changed, the request is treated as a fresh request as if it is just being requested
+    //with entitlement balance change being same as it was before it was requested.
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'There are only ' . $entitlementBalance .' days leave available. This request cannot be made or approved'
+    );
+    LeaveRequest::create($params);
+  }
+
+  public function testUpdatingAlreadyApprovedLeaveThrowsExceptionWhenLeaveDatesNotInSamePeriodAsPreviouslyApprovedLeaveAndLeaveBalanceIsGreaterThanEntitlementBalanceForThatPeriod() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-01-30'),
+    ]);
+
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-02-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-02-28'),
+    ]);
+
+    $contactId = 1;
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactId],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactId,
+      'period_id' => $period1->id
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactId,
+      'period_id' => $period2->id
+    ]);
+
+    $entitlement1Balance = 3;
+    $entitlement2Balance = 0;
+    $this->createLeaveBalanceChange($periodEntitlement1->id, $entitlement1Balance);
+    $this->createLeaveBalanceChange($periodEntitlement2->id, $entitlement2Balance);
+
+    $params = [
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactId,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricate($params, true);
+
+    $this->assertNotNull($leaveRequest->id);
+    //Entitlement balance is Zero. The three leave days have been deducted.
+    $this->assertEquals(0, $periodEntitlement1->getBalance());
+
+    //Update Leave Request dates with dates being in the second period.
+    //The balance deducted when leave request was made will not be added to the entitlement balance
+    //since the leave request was not initially approved in the second period.
+    //But the entitlement balance is Zero in second period, so an exception will be thrown.
+    $params['id'] = $leaveRequest->id;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-02-09');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-02-10');
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'There are only '. $entitlement2Balance .' days leave available. This request cannot be made or approved'
+    );
+    LeaveRequest::create($params);
+  }
 }

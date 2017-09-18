@@ -477,6 +477,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $currentBalance = $leavePeriodEntitlement->getBalance();
 
+    if (!empty($params['id'])) {
+      $oldLeaveRequest = self::findById($params['id']);
+
+      if ($oldLeaveRequest && $oldLeaveRequest->id && self::isAlreadyApproved($oldLeaveRequest)) {
+        $periodContainingOldLeaveDates = self::getPeriodContainingDates($oldLeaveRequest);
+        $isSamePeriodWithOldLeave = $periodContainingOldLeaveDates->id == $period->id;
+
+        if ($isSamePeriodWithOldLeave) {
+          $oldLeaveRequestBalance = abs(LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($oldLeaveRequest));
+          $currentBalance += $oldLeaveRequestBalance;
+        }
+      }
+    }
+
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
       throw new InvalidLeaveRequestException(
         'There are only '. $currentBalance .' days leave available. This request cannot be made or approved',
