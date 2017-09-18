@@ -265,10 +265,11 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseTest extends BaseHeadlessTest {
       'qty' => 4,
       'start_date' => '2016-01-01',
       'end_date' => '2016-01-01',
-      'total_qty' => 4
+      'total_qty' => 4,
+      'status' => 1
     ];
 
-    $leaveStatuses = self::buildOptions('status_id');
+    $leaveStatuses = LeaveRequest::buildOptions('status_id');
     $fields = array_keys($row1);
     $importObject = $this->getImportObject($fields);
     //Since the request type is TOIL, balance change validation will not
