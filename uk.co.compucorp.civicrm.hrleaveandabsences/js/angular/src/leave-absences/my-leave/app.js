@@ -6,7 +6,7 @@ define([
   'common/text-angular',
   'common/modules/dialog',
   'common/models/option-group',
-  'common/components/date-picker',
+  'common/components/date-picker.component',
   'common/directives/loading',
   'common/services/check-permissions',
   'common/services/angular-date/date-format',

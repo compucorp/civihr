@@ -4,7 +4,7 @@ define([
   'common/angular',
   'common/angularBootstrap',
   'common/text-angular',
-  'common/components/date-picker',
+  'common/components/date-picker.component',
   'common/modules/dialog',
   'common/services/check-permissions',
   'common/services/angular-date/date-format',

@@ -75,8 +75,7 @@
           ng-readonly="true"
           ng-disabled="!detailsTab.isRole('admin') &&
               (detailsTab.isMode('view') || !detailsTab.request.from_date || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
-          ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.toDate, 'to')"
-          custom-ng-click = "detailsTab.uiOptions.date.to.show = detailsTab.request.from_date ? true : false"">
+          ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.toDate, 'to')">
         </date-picker>
       </div>
       <div class="col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
