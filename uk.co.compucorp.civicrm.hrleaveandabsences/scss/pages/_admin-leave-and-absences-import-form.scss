@@ -21,10 +21,6 @@
     padding-bottom: 2em;
   }
 
-  .panel-body input[name=uploadFile] {
-    padding-left: 0;
-  }
-
   .table.date-formats {
     .label {
       display: none;
@@ -43,6 +39,7 @@
   // Step 2:
   .crm-activity_map_table-form-block {
     box-shadow: none;
+    padding: 0;
 
     #map-field table {
       margin-bottom: 2em;
