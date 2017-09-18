@@ -6,8 +6,8 @@
    * preserves the same maximum width for larger screens.
    * @TODO this fix should be removed once all other
    * screens on admin have consistent layout
-  */
-  >.container-fluid {
+   */
+  > .container-fluid {
     width: 84vw;
     padding-right: calc(8px + 1vw);
     max-width: 1156px;
