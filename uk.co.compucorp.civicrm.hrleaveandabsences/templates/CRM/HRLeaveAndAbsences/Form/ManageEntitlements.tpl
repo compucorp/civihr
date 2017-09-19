@@ -1,5 +1,5 @@
 <div id="bootstrap-theme" class="manage-entitlements-form">
-  <div class="panel panel-default">
+  <div class="panel panel-default crm-form-block">
     <div class="panel-body">
       <p>{ts}<strong>WARNING:</strong> Please note that any currently stored annual entitlement allowance for the selected staff member(s) will be overwritten by this process{/ts}</p>
       <hr class="wider-hr" />

@@ -259,7 +259,8 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
         '',
         [
           'class' => 'overridden-proposed-entitlement',
-          'maxlength' => 4
+          'maxlength' => 4,
+          'size' => 4
         ]
       );
 
