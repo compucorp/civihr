@@ -58,10 +58,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *   When this param is set to true, the method will consider only the expired
    *   Balance Changes. Otherwise, it will consider all the Balance Changes,
    *   including the expired ones.
+   * @param array $excludeLeaveIds
+   *   An array of Leave request ID's to be excluded from
+   *   the entitlement balance calculation.
    *
    * @return float
    */
-  public static function getBalanceForEntitlement(LeavePeriodEntitlement $periodEntitlement, $leaveRequestStatus = [], $expiredOnly = false) {
+  public static function getBalanceForEntitlement(LeavePeriodEntitlement $periodEntitlement, $leaveRequestStatus = [], $expiredOnly = false, $excludeLeaveIds = []) {
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
@@ -75,6 +78,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     if(is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
       array_walk($leaveRequestStatus, 'intval');
       $whereLeaveRequestStatus = ' AND leave_request.status_id IN('. implode(', ', $leaveRequestStatus) .')';
+    }
+
+    $whereExcludeLeaveRequestIds = '';
+    if(is_array($excludeLeaveIds) && !empty($excludeLeaveIds)) {
+      $whereExcludeLeaveRequestIds = ' AND leave_request.id NOT IN('. implode(', ', $excludeLeaveIds) .')';
     }
 
     $query = "
@@ -112,6 +120,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
               leave_request.type_id = {$periodEntitlement->type_id} AND
               leave_request.contact_id = {$periodEntitlement->contact_id}
               $whereLeaveRequestStatus
+              $whereExcludeLeaveRequestIds
             )
             OR
             (

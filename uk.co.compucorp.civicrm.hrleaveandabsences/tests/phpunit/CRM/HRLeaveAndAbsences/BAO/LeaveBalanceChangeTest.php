@@ -227,6 +227,71 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(10, LeaveBalanceChange::getBalanceForEntitlement($entitlement, $statusesToInclude));
   }
 
+  public function testBalanceForEntitlementDoesNotSumForExcludedLeaveRequests() {
+    $leaveRequestStatuses = LeaveRequest::getStatuses();
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('-10 days'),
+      new DateTime('+10 days')
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('-10 days')]
+    );
+
+    $this->createLeaveBalanceChange($entitlement->id, 10);
+
+    //Balance change -1
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $entitlement->type_id,
+      'contact_id' => $entitlement->contact_id,
+      'status_id' => $leaveRequestStatuses['approved'],
+      'from_date' => date('YmdHis', strtotime('-8 days')),
+      'to_date' => date('YmdHis', strtotime('-8 days'))
+    ], true);
+
+    //Balance change -2
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $entitlement->type_id,
+      'contact_id' => $entitlement->contact_id,
+      'status_id' => $leaveRequestStatuses['approved'],
+      'from_date' => date('YmdHis', strtotime('-7 days')),
+      'to_date' => date('YmdHis', strtotime('-6 days'))
+    ], true);
+
+    //Balance change -1
+    $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $entitlement->type_id,
+      'contact_id' => $entitlement->contact_id,
+      'status_id' => $leaveRequestStatuses['more_information_required'],
+      'from_date' => date('YmdHis', strtotime('-5 days')),
+      'to_date' => date('YmdHis', strtotime('-5 days'))
+    ], true);
+
+    $leaveStatuses = array_values($leaveRequestStatuses);
+    //Balance change after leave balances has been deducted
+    $this->assertEquals(6, LeaveBalanceChange::getBalanceForEntitlement($entitlement));
+
+    //Exclude the balance for leaveRequest1
+    //Balances for leaveRequest2 and leaveRequest3 will be deducted
+    //10 - (2+1) = 7
+    $this->assertEquals(7, LeaveBalanceChange::getBalanceForEntitlement(
+      $entitlement,
+      $leaveStatuses,
+      false,
+      [$leaveRequest1->id])
+    );
+
+    //Exclude the balance for leaveRequest1 and leaveRequest2
+    //Only balance to be deducted is $leaveRequest3 (10 - (1) = 9)
+    $this->assertEquals(9, LeaveBalanceChange::getBalanceForEntitlement(
+      $entitlement,
+      $leaveStatuses,
+      false,
+      [$leaveRequest2->id, $leaveRequest1->id]
+    ));
+  }
+
   public function testBalanceForEntitlementDoesNotSumForLeaveRequestsNotOverlappingAContract() {
     $leaveRequestStatuses = LeaveRequest::getStatuses();
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(

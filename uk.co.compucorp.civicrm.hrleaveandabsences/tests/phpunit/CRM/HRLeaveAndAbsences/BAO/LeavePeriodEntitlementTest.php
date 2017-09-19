@@ -1520,4 +1520,42 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($expectedResult, $result);
   }
 
+  public function testGetBalanceShouldNotIncludeBalanceForExcludedLeaveRequests() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => 4,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 5);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $params = [
+      'type_id' => $periodEntitlement->type_id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => $this->leaveRequestStatuses['approved'],
+      'from_date' => CRM_Utils_Date::processDate('2016-11-14'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2016-11-16'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //The entitlement balance is 2
+    $this->assertEquals(2, $periodEntitlement->getBalance());
+
+    //When the leave request is excluded, the entitlement balance is 5.
+    $this->assertEquals(5, $periodEntitlement->getBalance([$leaveRequest->id]));
+  }
 }

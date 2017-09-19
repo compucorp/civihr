@@ -385,12 +385,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * - Expired Balance Changes
    * - Approved Leave Requests
    *
+   * @param array $excludeLeaveIds
+   *   An array of Leave request ID's to be excluded from
+   *   the entitlement balance calculation.
+   *
    * @return float
    */
-  public function getBalance() {
+  public function getBalance($excludeLeaveIds = []) {
     $filterStatuses = LeaveRequest::getApprovedStatuses();
 
-    return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
+    return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses, false, $excludeLeaveIds);
   }
 
   /**
