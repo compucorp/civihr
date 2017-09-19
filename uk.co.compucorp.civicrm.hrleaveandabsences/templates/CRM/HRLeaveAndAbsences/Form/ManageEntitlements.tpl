@@ -120,12 +120,12 @@
           </tbody>
         </table>
       </div>
+    </div>
 
-      <div class="row">
-        <div class="pull-right">
-          <a href="{$returnUrl}" class="button"><span>{ts}Back{/ts}</span></a>
-          {include file="CRM/common/formButtons.tpl" location="bottom"}
-        </div>
+    <div class="panel-footer clearfix">
+      <div class="pull-right">
+        <a href="{$returnUrl}" class="button"><span>{ts}Back{/ts}</span></a>
+        {include file="CRM/common/formButtons.tpl" location="bottom"}
       </div>
     </div>
 

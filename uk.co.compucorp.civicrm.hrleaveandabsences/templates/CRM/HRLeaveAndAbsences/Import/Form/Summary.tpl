@@ -121,11 +121,9 @@
     </div>
   </div>
   <div class="panel panel-default crm_wizard__footer">
-    <div class="panel-body">
-      <div class="row">
-        <div class="action-buttons pull-right">
-          {include file="CRM/common/formButtons.tpl" location="bottom"}
-        </div>
+    <div class="panel-footer clearfix">
+      <div class="pull-right">
+        {include file="CRM/common/formButtons.tpl" location="bottom"}
       </div>
     </div>
   </div>

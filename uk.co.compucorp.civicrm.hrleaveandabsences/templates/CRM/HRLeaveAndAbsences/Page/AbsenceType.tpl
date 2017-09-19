@@ -32,11 +32,13 @@
           </table>
         {/strip}
         {if $action ne 1 and $action ne 2}
-          <div class="panel-body">
-            <a href="{crmURL q="action=add&reset=1"}" class="button btn btn-primary pull-right">
-              <i class="fa fa-plus"></i>
-              <span>{ts}Add Leave/Absence Type{/ts}</span>
-            </a>
+          <div class="panel-footer clearfix">
+            <div class="pull-right">
+              <a href="{crmURL q="action=add&reset=1"}" class="button btn btn-primary pull-right">
+                <i class="fa fa-plus"></i>
+                <span>{ts}Add Leave/Absence Type{/ts}</span>
+              </a>
+            </div>
           </div>
         {/if}
       </div>
