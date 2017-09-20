@@ -40,7 +40,9 @@
     }
   }
 
-  .entitlement-calculation-list {
+  .table.entitlement-calculation-list {
+    margin-bottom: 0;
+
     .proposed-entitlement-header {
       .title {
         float: left;
@@ -64,7 +66,6 @@
 
     .proposed-entitlement .overridden-proposed-entitlement {
       display: none;
-      width: 24px;
     }
 
     .borderless-button {
@@ -135,6 +136,10 @@
 
   .crm-container .CRM_HRLeaveAndAbsences_Form_ManageEntitlements .crm-button-type-next  {
     float: right !important;
+  }
+
+  .panel-footer {
+    border-top: none;
   }
 
   // @at-root targets the root scope. This is needed since the #add-comment-dialog

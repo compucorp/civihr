@@ -1,5 +1,5 @@
 <div id="bootstrap-theme" class="manage-entitlements-form">
-  <div class="panel panel-default">
+  <div class="panel panel-default crm-form-block">
     <div class="panel-body">
       <p>{ts}<strong>WARNING:</strong> Please note that any currently stored annual entitlement allowance for the selected staff member(s) will be overwritten by this process{/ts}</p>
       <hr class="wider-hr" />
@@ -120,12 +120,12 @@
           </tbody>
         </table>
       </div>
+    </div>
 
-      <div class="row">
-        <div class="pull-right">
-          <a href="{$returnUrl}" class="button"><span>{ts}Back{/ts}</span></a>
-          {include file="CRM/common/formButtons.tpl" location="bottom"}
-        </div>
+    <div class="panel-footer clearfix">
+      <div class="pull-right">
+        <a href="{$returnUrl}" class="button"><span>{ts}Back{/ts}</span></a>
+        {include file="CRM/common/formButtons.tpl" location="bottom"}
       </div>
     </div>
 
