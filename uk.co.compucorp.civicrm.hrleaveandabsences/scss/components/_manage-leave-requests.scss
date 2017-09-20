@@ -1,73 +1,63 @@
 .chr_manage_leave_requests {
-  &[data-role="admin"] {
-    .chr_manage_leave_requests__header {
-      text-align: center;
-      position: relative;
-    }
-
-    .chr_manage_leave_requests__leave_type_filter {
-      position: absolute;
-      left: 30px;
-    }
-
-    .chr_manage_leave_requests__assignee_filter {
-      margin-left: -10%;
-    }
-
-    .chr_manage_leave_requests__period_and_all_filters {
-      position: absolute;
-      right: 30px;
-    }
-  }
-
-  &[data-role="manager"] {
-    .chr_manage_leave_requests__leave_type_filter,
-    .chr_manage_leave_requests__period_and_all_filters {
-      float: right;
-    }
-  }
-
   .chr_manage_leave_requests__header {
+    @include uniform-padding(20px);
+
     background-color: $chr-panel-header-background;
-    border-bottom: 1px solid $crm-dark-grayblue;
+    border-bottom: 1px solid $chr-panel-border;
     margin: 0;
 
-    .crm_custom-select {
-      margin-right: 20px;
-      padding: 0;
+    .panel-title {
+      margin-top: 7px;
+      display: inline-block;
     }
 
-    .panel-title {
-      margin-top: 5px;
-      display: inline-block;
+    @media screen and (max-width: $screen-md-min) {
+      > div:not(:last-child),
+      .panel-title {
+        padding-bottom: 20px;
+      }
     }
   }
 
   .chr_manage_leave_requests__filter {
-    margin-top: 5px;
     display: inline-block;
+    margin-top: 7px;
+    white-space: nowrap;
 
     .fa {
       font-size: 0.6em;
-      vertical-align: middle;
       margin-right: 5px;
+      margin-top: -2px;
+      vertical-align: middle;
+    }
+
+    @media screen and (max-width: $screen-sm-max) {
+      margin-top: 15px;
     }
   }
 
   .chr_manage_leave_requests__sub-header {
+    @include uniform-padding(20px);
+
     background-color: $chr-panel-header-background;
+    border-bottom: 1px solid $chr-panel-border;
+    margin: 0;
     padding-top: 15px;
 
-    > div {
-      display: inline-block;
-      margin: 0 10px;
-      width: calc(16.4% - 20px);
-      vertical-align: top;
+    @media screen and (max-width: $screen-md-max) {
+      > div:not(:last-child) {
+        padding-bottom: 20px;
+      }
+    }
+
+    @media screen and (min-width: $screen-md-min) and (max-width: $screen-md-max){
+      > .no_gutter {
+        padding-bottom: 0 !important;
+      }
     }
   }
 
   .chr_manage_leave_requests__panel_body {
-    border-top: 1px solid $crm-dark-grayblue;
     margin: 0;
     padding: 0;
 
@@ -78,6 +68,17 @@
 
     a {
       cursor: pointer;
+    }
+  }
+
+  .chr_manage_leave_requests__status_container {
+    @include uniform-padding(20px);
+
+    background-color: $chr-panel-header-background;
+
+    > div {
+      padding-left: 15px;
+      padding-right: 15px;
     }
   }
 }
@@ -113,7 +114,7 @@
   }
 
   .chr_manage_leave_requests__sub-header .checkbox {
-    padding-top: 5px;
+    margin-top: 5px;
   }
 }
 

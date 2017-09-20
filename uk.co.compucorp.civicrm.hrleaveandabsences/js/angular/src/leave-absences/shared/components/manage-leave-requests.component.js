@@ -36,6 +36,11 @@ define([
     vm.leaveRequestStatuses = [filterByAll];
     vm.loading = { content: true, page: true, table: true };
     vm.pagination = { page: 1, size: 7 };
+    vm.filtersByAssignee = [
+      { type: 'me', label: 'Assigned To Me' },
+      { type: 'unassigned', label: 'Unassigned' },
+      { type: 'all', label: 'All' }
+    ];
     vm.filters = {
       contact: { department: null, level_type: null, location: null, region: null },
       leaveRequest: {
@@ -44,17 +49,12 @@ define([
         contact_id: null,
         selectedPeriod: null,
         selectedAbsenceTypes: null,
-        assignedTo: 'me'
+        assignedTo: vm.filtersByAssignee[0]
       }
     };
-    vm.filtersByAssignee = [
-      { type: 'me', label: 'Assigned To Me' },
-      { type: 'unassigned', label: 'Unassigned' },
-      { type: 'all', label: 'All' }
-    ];
 
     vm.clearStaffSelection = clearStaffSelection;
-    vm.filterLeaveRequestByStatus = filterLeaveRequestByStatus;
+    vm.countLeaveRequestByStatus = countLeaveRequestByStatus;
     vm.getAbsenceTypesByID = getAbsenceTypesByID;
     vm.getArrayOfSize = getArrayOfSize;
     vm.getLeaveStatusByValue = getLeaveStatusByValue;
@@ -115,19 +115,19 @@ define([
     }
 
     /**
-     * Filters leave requests by status
+     * Returns length of Filtered leave requests by status
      *
      * @param {Object} status - status object
-     * @return {array}
+     * @return {int}
      */
-    function filterLeaveRequestByStatus (status) {
+    function countLeaveRequestByStatus (status) {
       if (status.name === 'all' || status === '') {
-        return vm.leaveRequests.filter.list;
+        return vm.leaveRequests.filter.list.length;
       }
 
       return vm.leaveRequests.filter.list.filter(function (request) {
         return request.status_id === status.value;
-      });
+      }).length;
     }
 
     /**
@@ -312,13 +312,15 @@ define([
       } : {};
 
       vm.loading[loaderType] = true;
-      vm.leaveRequests[section].list = []; // flushes the current cached data
       // cache is set to always false as changing selection either in status menu
       // or pages or adding new requests was reverting back to older cache
       return LeaveRequest.all(leaveRequestFilters(filterByStatus), pagination,
         'from_date DESC', returnFields, false)
         .then(function (leaveRequests) {
           vm.leaveRequests[section] = leaveRequests;
+        })
+        .catch(function () {
+          vm.leaveRequests[section].list = []; // flushes the current cached data
         })
         .finally(function () {
           vm.loading[loaderType] = false;
@@ -362,12 +364,12 @@ define([
 
       return {
         contact_id: prepareContactID(),
-        managed_by: (vm.isAdmin && filters.assignedTo !== 'me' ? undefined : vm.contactId),
+        managed_by: (vm.isAdmin && filters.assignedTo.type !== 'me' ? undefined : vm.contactId),
         status_id: prepareStatusFilter(filterByStatus),
         type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
         from_date: { from: filters.selectedPeriod.start_date },
         to_date: { to: filters.selectedPeriod.end_date },
-        unassigned: (filters.assignedTo === 'unassigned' ? true : undefined)
+        unassigned: (filters.assignedTo.type === 'unassigned' ? true : undefined)
       };
     }
 
@@ -510,12 +512,12 @@ define([
     }
 
     /**
-     * Refreshes the leave request data and also changes current selected leave status
+     * Refreshes the leave request data depending on the selected filter by Assignee
      *
-     * @param {string} type - by assignee type to be selected
+     * @param {Object} filter - any filter object from vm.filtersByAssignee
      */
-    function refreshWithFilterByAssignee (type) {
-      vm.filters.leaveRequest.assignedTo = type;
+    function refreshWithFilterByAssignee (filter) {
+      vm.filters.leaveRequest.assignedTo = filter;
       vm.refresh();
     }
 

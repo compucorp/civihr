@@ -8,6 +8,9 @@ use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest
@@ -44,7 +47,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
 
     // a 7 days leave request, from monday to sunday
     $leaveRequest = $this->getleaveRequestService()->create([
@@ -75,7 +78,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default']);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
 
     // a 7 days leave request, from friday to thursday
     $params = [
@@ -363,5 +366,314 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
     return array_merge($defaultParams, $params);
+  }
+
+  public function testBalanceChangeIsUpdatedForAnExistingLeaveRequestWhenChangeBalanceParameterIsTrueAndDatesDidNotChange() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    //Leave dates on Monday to Friday, all working days
+    $leaveDates = [
+      'from_date' => CRM_Utils_Date::processDate('2016-02-08'),
+      'to_date' => CRM_Utils_Date::processDate('2016-02-12')
+    ];
+
+    $params = $this->getDefaultParams($leaveDates);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //Just to make sure that we have the expected balance change for the leave request
+    $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    $this->assertEquals(-5, $previousBalance);
+
+    //Add a work pattern for the contact with effective date before the leave dates
+    $workPattern1 = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $this->leaveContact,
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-02-01')
+    ]);
+
+    //If the leave request is to be updated with new balance change, the balance would have changed.
+    $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
+      new DateTime($params['from_date']),
+      $params['from_date_type'],
+      new DateTime($params['to_date']),
+      $params['to_date_type']
+    );
+
+    $newBalance = $result['amount'];
+
+    //The balance for leave request has changed since the contact work pattern has
+    //been changed for the date range that the leave was initially requested.
+    $this->assertNotEquals($previousBalance, $newBalance);
+
+    //update leave request and request a change in balance to the new balance
+    $params['id'] = $leaveRequest->id;
+    $params['change_balance'] = 1;
+
+    $leaveRequest = $this->getleaveRequestService()->create(
+      $params,
+      false
+    );
+
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    $this->assertEquals($newBalance, $balance);
+  }
+
+  public function testBalanceChangeIsNotUpdatedForAnExistingLeaveRequestWhenChangeBalanceParameterIsFalseAndDatesDidNotChange() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    //Leave dates on Monday to Friday, all working days
+    $leaveDates = [
+      'from_date' => CRM_Utils_Date::processDate('2016-02-08'),
+      'to_date' => CRM_Utils_Date::processDate('2016-02-12')
+    ];
+
+    $params = $this->getDefaultParams($leaveDates);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //Just to make sure that we have the expected balance change for the leave request
+    $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    $this->assertEquals(-5, $previousBalance);
+
+    //Add a work pattern for the contact with effective date before the leave dates
+    $workPattern1 = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $this->leaveContact,
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-02-01')
+    ]);
+
+    //If the leave request is to be updated with new balance change, the balance would have changed.
+    $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
+      new DateTime($params['from_date']),
+      $params['from_date_type'],
+      new DateTime($params['to_date']),
+      $params['to_date_type']
+    );
+    $newBalance = $result['amount'];
+
+    //The balance for leave request has changed since the contact work pattern has
+    //been changed for the date range that the leave was initially requested.
+    $this->assertNotEquals($previousBalance, $newBalance);
+
+    //update leave request and request that the previous balance be retained
+    //even though the balance has changed
+    $params['id'] = $leaveRequest->id;
+    $params['change_balance'] = 0;
+
+    $leaveRequest = $this->getleaveRequestService()->create(
+      $params,
+      false
+    );
+
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    $this->assertEquals($previousBalance, $balance);
+  }
+
+  public function testBalanceChangeIsUpdatedForAnExistingLeaveRequestWhenChangeBalanceParameterIsTrueAndDatesChanged() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    //Leave dates on Monday to Friday, all working days
+    $leaveDates = [
+      'from_date' => CRM_Utils_Date::processDate('2016-02-08'),
+      'to_date' => CRM_Utils_Date::processDate('2016-02-12')
+    ];
+
+    $params = $this->getDefaultParams($leaveDates);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //Just to make sure that we have the expected balance change for the leave request
+    $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    $this->assertEquals(-5, $previousBalance);
+
+    //Add a work pattern for the contact with effective date before the leave dates
+    $workPattern1 = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $this->leaveContact,
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-02-01')
+    ]);
+
+    //If the leave request is to be updated with new balance change, the balance would have changed.
+    $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
+      new DateTime($params['from_date']),
+      $params['from_date_type'],
+      new DateTime($params['to_date']),
+      $params['to_date_type']
+    );
+
+    $newBalance = $result['amount'];
+
+    //The balance for leave request has changed since the contact work pattern has
+    //been changed for the date range that the leave was initially requested.
+    $this->assertNotEquals($previousBalance, $newBalance);
+
+    //update leave request date and request a change in balance to the new balance
+    $params['id'] = $leaveRequest->id;
+    $params['change_balance'] = 1;
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-02-15');
+
+    //The expected balance change after changing the dates.
+    $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
+      new DateTime($params['from_date']),
+      $params['from_date_type'],
+      new DateTime($params['to_date']),
+      $params['to_date_type']
+    );
+    $balanceAfterDateChange = $result['amount'];
+
+    $leaveRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
+      $params,
+      false
+    );
+
+    //The leave request balance has been updated to pick from the current work pattern
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    $this->assertEquals($balanceAfterDateChange, $balance);
+  }
+
+  public function testBalanceChangeIsUpdatedForAnExistingLeaveRequestWhenChangeBalanceParameterIsFalseAndDatesChanged() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    //Leave dates on Monday to Friday, all working days
+    $leaveDates = [
+      'from_date' => CRM_Utils_Date::processDate('2016-02-08'),
+      'to_date' => CRM_Utils_Date::processDate('2016-02-12')
+    ];
+
+    $params = $this->getDefaultParams($leaveDates);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //Just to make sure that we have the expected balance change for the leave request
+    $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    $this->assertEquals(-5, $previousBalance);
+
+    //Add a work pattern for the contact with effective date before the leave dates
+    $workPattern1 = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $this->leaveContact,
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-02-01')
+    ]);
+
+    //If the leave request is to be updated with new balance change, the balance would have changed.
+    $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
+      new DateTime($params['from_date']),
+      $params['from_date_type'],
+      new DateTime($params['to_date']),
+      $params['to_date_type']
+    );
+
+    $newBalance = $result['amount'];
+
+    //The balance for leave request has changed since the contact work pattern has
+    //been changed for the date range that the leave was initially requested.
+    $this->assertNotEquals($previousBalance, $newBalance);
+
+    //update leave request date and request the old balance to be retained
+    $params['id'] = $leaveRequest->id;
+    $params['change_balance'] = 0;
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-02-15');
+
+    //The expected balance change after changing the dates.
+    $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
+      new DateTime($params['from_date']),
+      $params['from_date_type'],
+      new DateTime($params['to_date']),
+      $params['to_date_type']
+    );
+    $balanceAfterDateChange = $result['amount'];
+
+    $leaveRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
+      $params,
+      false
+    );
+
+    //The leave request balance has been updated to pick from the current work pattern
+    //even though the old balance was asked to be retained.
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    $this->assertEquals($balanceAfterDateChange, $balance);
+  }
+
+  public function testGetBreakdownIncludeOnlyTheLeaveBalanceChangesOfTheLeaveRequestDates() {
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-03'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-03'),
+    ], true);
+
+    $expectedBreakdown = $this->getExpectedBreakdownForLeaveRequest($leaveRequest1);
+    $breakdown = $this->getLeaveRequestService()->getBreakdown($leaveRequest1->id);
+    $this->assertEquals($expectedBreakdown, $breakdown);
+
+    $expectedBreakdown = $this->getExpectedBreakdownForLeaveRequest($leaveRequest2);
+    $breakdown = $this->getLeaveRequestService()->getBreakdown($leaveRequest2->id);
+    $this->assertEquals($expectedBreakdown, $breakdown);
+  }
+
+  private function getExpectedBreakdownForLeaveRequest(LeaveRequest $leaveRequest) {
+    $leaveRequestDayTypes = LeaveRequest::buildOptions('from_date_type');
+
+    $dates = $leaveRequest->getDates();
+    $expectedBreakdown = [];
+    foreach($dates as $date) {
+      $expectedBreakdown[] = [
+        'id' => $date->id,
+        'date' => date('Y-m-d', strtotime($date->date)),
+        'type' => $date->type,
+        'label' => $leaveRequestDayTypes[$date->type],
+        'amount' => -1
+      ];
+    }
+
+    return $expectedBreakdown;
   }
 }

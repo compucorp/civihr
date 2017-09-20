@@ -1,6 +1,9 @@
 <?php
 
+use CRM_Contact_BAO_Contact as Contact;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_HRCore_Test_Fabricator_RelationshipType as RelationshipTypeFabricator;
+use CRM_HRCore_Test_Fabricator_Relationship as RelationshipFabricator;
 
 /**
  * Class api_v3_LeaveRequestTest
@@ -23,6 +26,8 @@ class api_v3_ContactTest extends BaseHeadlessTest {
 
   public function setUp() {
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
+    $tableName = Contact::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
 
     $this->contact1 = ContactFabricator::fabricate(['first_name' => 'ContactA']);
     $this->contact2 = ContactFabricator::fabricate(['first_name' => 'ContactB']);
@@ -142,18 +147,10 @@ class api_v3_ContactTest extends BaseHeadlessTest {
     $this->assertEquals($result['values'][$this->contact2['id']]['id'], $this->contact2['id']);
   }
 
-  /**
-   * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: managed_by
-   */
-  public function testGetLeaveManageesThrowsAnExceptionWhenManagedByParameterIsNotPresent() {
-    civicrm_api3('Contact', 'getleavemanagees');
-  }
-
   public function testGetLeaveManageesReturnsEmptyWhenALoggedInManagerIsTryingToAccessTheManageesOfAnotherManager() {
     $manager2 = ContactFabricator::fabricate();
 
-    $this->setContactAsLeaveApproverOf($manager2, $this->contact2, null, null, true, 'has things managed by');
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact2, null, null, true, 'has things managed by');
     $this->setContactAsLeaveApproverOf($manager2, $this->contact1, null, null, true, 'has leaves approved by');
 
     //the logged in manager can't access the the managees of another manager.
@@ -189,5 +186,128 @@ class api_v3_ContactTest extends BaseHeadlessTest {
     $result = $this->callAPI('Contact', 'getleavemanagees', ['managed_by' => $this->manager['id']]);
 
     $this->assertEquals(0, $result['count']);
+  }
+
+  /**
+   * @expectedExceptionMessage Either unassigned must be true or managed_by parameter present
+   * @expectedException CiviCRM_API3_Exception
+   */
+  public function testGetLeaveManageesThrowsAnExceptionWhenUnassignedIsFalseAndManagedByIsAbsent() {
+    $this->callAPI('Contact', 'getleavemanagees', ['unassigned' => false]);
+  }
+
+  /**
+   * @expectedExceptionMessage Unassigned cannot be true and managed_by parameter also present
+   * @expectedException CiviCRM_API3_Exception
+   */
+  public function testGetLeaveManageesThrowsAnExceptionWhenUnassignedIsTrueAndManagedByParameterIsPresent() {
+    $this->callAPI('Contact', 'getleavemanagees', ['unassigned' => true, 'managed_by' => 1]);
+  }
+
+  /**
+   * @expectedExceptionMessage Either unassigned must be true or managed_by parameter present
+   * @expectedException CiviCRM_API3_Exception
+   */
+  public function testGetLeaveManageesThrowsAnExceptionWhenUnassignedAndManagedByParameterIsAbsent() {
+    $this->callAPI('Contact', 'getleavemanagees', []);
+  }
+
+  public function testGetLeaveManageesReturnsOnlyContactsWithoutActiveLeaveApproverRelationshipWhenUnassignedTrue() {
+    $contact3 = ContactFabricator::fabricate();
+
+    $relationshipType = RelationshipTypeFabricator::fabricate();
+    //Contact3 has a relationship with manager but the relationship is not
+    //of type leave approver.
+    RelationshipFabricator::fabricate([
+      'contact_id_a' => $contact3['id'],
+      'contact_id_b' => $this->manager['id'],
+      'relationship_type_id' => $relationshipType['id']
+    ]);
+
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1);
+
+    $result = $this->callAPI('Contact', 'getleavemanagees', ['unassigned' => true]);
+
+    //The manager, contact2 and contact3 does not have an active leave approver
+    //relationship.
+    $this->assertEquals(3, $result['count']);
+    $this->assertEquals($result['values'][$this->contact2['id']]['id'], $this->contact2['id']);
+    $this->assertEquals($result['values'][$contact3['id']]['id'], $contact3['id']);
+    $this->assertEquals($result['values'][$this->manager['id']]['id'], $this->manager['id']);
+  }
+
+  public function testGetLeaveManageesReturnsNoInformationForContactWithActiveLeaveManagerAndOtherRelationshipWhenUnassignedIsTrue() {
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1);
+    $relationshipType = RelationshipTypeFabricator::fabricate();
+
+    //Add a neutral relationship between contact1 and manager that is not of
+    //type leave approver.
+    RelationshipFabricator::fabricate([
+      'contact_id_a' => $this->contact1['id'],
+      'contact_id_b' => $this->manager['id'],
+      'relationship_type_id' => $relationshipType['id']
+    ]);
+
+    $result = $this->callAPI('Contact', 'getleavemanagees', ['unassigned' => true]);
+
+    //contact2 and manager will be returned because they are without active leave
+    //approver relationship.
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($result['values'][$this->contact2['id']]['id'], $this->contact2['id']);
+    $this->assertEquals($result['values'][$this->manager['id']]['id'], $this->manager['id']);
+  }
+
+
+  public function testGetLeaveManageesReturnsOnlyContactsWithoutActiveLeaveApproverRelationshipForAdminWhenUnassignedTrue() {
+    $adminID = 1;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['access AJAX API', 'administer leave and absences']);
+
+    $contact3 = ContactFabricator::fabricate();
+
+    $relationshipType = RelationshipTypeFabricator::fabricate();
+    //Contact3 has a relationship with manager but the relationship is not
+    //of type leave approver.
+    RelationshipFabricator::fabricate([
+      'contact_id_a' => $contact3['id'],
+      'contact_id_b' => $this->manager['id'],
+      'relationship_type_id' => $relationshipType['id']
+    ]);
+
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1);
+
+    $result = $this->callAPI('Contact', 'getleavemanagees', ['unassigned' => true]);
+
+    //The manager, contact2 and contact3 does not have an active leave approver
+    //relationship.
+    $this->assertEquals(3, $result['count']);
+    $this->assertEquals($result['values'][$this->contact2['id']]['id'], $this->contact2['id']);
+    $this->assertEquals($result['values'][$contact3['id']]['id'], $contact3['id']);
+    $this->assertEquals($result['values'][$this->manager['id']]['id'], $this->manager['id']);
+  }
+
+  public function testGetLeaveManageesReturnsNoInformationForContactWithActiveLeaveManagerAndOtherRelationshipForAdminWhenUnassignedIsTrue() {
+    $adminID = 1;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $this->setPermissions(['access AJAX API', 'administer leave and absences']);
+    $this->setContactAsLeaveApproverOf($this->manager, $this->contact1);
+
+    $relationshipType = RelationshipTypeFabricator::fabricate();
+
+    //Add a neutral relationship between contact1 and manager that is not of
+    //type leave approver.
+    RelationshipFabricator::fabricate([
+      'contact_id_a' => $this->contact1['id'],
+      'contact_id_b' => $this->manager['id'],
+      'relationship_type_id' => $relationshipType['id']
+    ]);
+
+    $result = $this->callAPI('Contact', 'getleavemanagees', ['unassigned' => true]);
+
+    //contact2 and manager will be returned because they are without active leave
+    //approver relationship.
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($result['values'][$this->contact2['id']]['id'], $this->contact2['id']);
+    $this->assertEquals($result['values'][$this->manager['id']]['id'], $this->manager['id']);
   }
 }

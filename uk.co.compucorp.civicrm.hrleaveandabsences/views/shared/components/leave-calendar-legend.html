@@ -1,6 +1,6 @@
 <section class="panel panel-default" ng-class="{ 'is-collapsed': legend.legendCollapsed }">
   <header class="panel-heading panel-heading-plain">
-    <h2 class="panel-title" role="button" ng-click="legend.legendCollapsed = !legend.legendCollapsed">
+    <h2 class="panel-title chr_leave-calendar__legend__title" role="button" ng-click="legend.legendCollapsed = !legend.legendCollapsed">
       <i class="fa"
         aria-hidden="true"
         ng-class="{ 'fa-chevron-right': legend.legendCollapsed, ' fa-chevron-down': !legend.legendCollapsed }"></i>
@@ -10,14 +10,14 @@
   <div class="panel-collapse" uib-collapse="legend.legendCollapsed">
     <div class="panel-body chr_leave-calendar__legend" ng-show="!legend.legendCollapsed">
       <div class="row" ng-repeat-start="absenceType in legend.absenceTypes">
-        <div class="col-sm-3">
+        <div class="col-xs-6 col-md-3">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item"
                ng-style="legend.getAbsenceTypeStyle(absenceType)"></div>
             <span class="chr_leave-calendar__legend__label">{{absenceType.title}}</span>
           </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-xs-6 col-md-3">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item"
                  ng-style="legend.getAbsenceTypeStyle(absenceType)"><span>AM</span>
@@ -31,14 +31,14 @@
             <span class="chr_leave-calendar__legend__label">{{absenceType.title}} PM Only</span>
           </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-xs-6 col-md-3">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
                ng-style="legend.getAbsenceTypeStyle(absenceType)"></div>
             <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}}</span>
           </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-xs-6 col-md-3">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
                ng-style="legend.getAbsenceTypeStyle(absenceType)"><span>AM</span>
@@ -54,7 +54,7 @@
         </div>
       </div>
       <div class="row" ng-repeat-end ng-if="absenceType.allow_accruals_request == 1">
-        <div class="col-sm-3">
+        <div class="col-xs-6 col-md-3">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item chr_leave-calendar__item--alt"
                ng-style="{borderColor: absenceType.color}">
@@ -63,7 +63,7 @@
             <span class="chr_leave-calendar__legend__label">Accrued TOIL</span>
           </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-xs-6 col-md-3">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item chr_leave-calendar__item--alt chr_leave-calendar__item--toil-requested"
                ng-style="{borderColor: absenceType.color}">
@@ -74,19 +74,19 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-xs-6 col-md-3">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item chr_leave-calendar__item--type--weekend"></div>
             <span class="chr_leave-calendar__legend__label">Weekend</span>
           </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-xs-6 col-md-3">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item chr_leave-calendar__item--type--public-holiday"></div>
             <span class="chr_leave-calendar__legend__label">Public Holiday</span>
           </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-xs-6 col-md-3">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item chr_leave-calendar__item--type--non-working"></div>
             <span class="chr_leave-calendar__legend__label">Non Working Day</span>

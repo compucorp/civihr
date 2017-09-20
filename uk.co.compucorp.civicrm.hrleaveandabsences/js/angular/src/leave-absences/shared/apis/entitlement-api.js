@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'leave-absences/shared/modules/apis',
   'common/lodash',
@@ -15,7 +17,7 @@ define([
      * @param  {Object} entitlement
      * @return {Object}
      */
-    function storeRemainder(entitlement) {
+    function storeRemainder (entitlement) {
       var clone = _.clone(entitlement);
       var remainderValues = clone['api.LeavePeriodEntitlement.getremainder']['values'];
 
@@ -35,7 +37,7 @@ define([
      * @param  {Object} entitlement
      * @return {Object}
      */
-    function storeValue(entitlement) {
+    function storeValue (entitlement) {
       var clone = _.clone(entitlement);
       var value = clone['api.LeavePeriodEntitlement.getentitlement'].values[0].entitlement;
 
@@ -71,7 +73,7 @@ define([
           params['api.LeavePeriodEntitlement.getremainder'] = {
             'entitlement_id': '$value.id',
             'include_future': true
-          }
+          };
         }
 
         return this.sendGET('LeavePeriodEntitlement', 'get', params, false)
@@ -102,6 +104,22 @@ define([
           .then(function (data) {
             return data.values;
           });
+      },
+      /**
+       * This method returns the balance report
+       *
+       * @param  {Object}  filters
+       * @param  {Object}  pagination
+       * @param  {Object}  sort
+       * @param  {Object}  additionalParams
+       * @param  {Boolean} cache
+       * @return {Promise} resolves contacts with absence types with balances
+       */
+      getLeaveBalances: function (filters, pagination, sort, additionalParams, cache) {
+        $log.debug('EntitlementAPI.getLeaveBalances');
+
+        return this.getAll('LeavePeriodEntitlement', filters, pagination, sort,
+          additionalParams, 'getLeaveBalances', cache);
       }
     });
   }]);

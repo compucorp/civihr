@@ -1,0 +1,35 @@
+.crm-absence_type-form-block {
+  .crm-section {
+    .label {
+      width: 35%;
+    }
+
+    .content {
+      margin-left: 40%;
+    }
+  }
+
+  .toil-option,
+  .carry-forward-option,
+  .toil-expiration,
+  .carry-forward-expiration-duration,
+  .carry-forward-expiration-date {
+    display: none;
+  }
+
+  // Color picker customizations:
+  .sp-replacer {
+    padding: 2px;
+  }
+
+  .sp-preview {
+    height: 15px;
+    width: 15px;
+  }
+
+  .sp-dd {
+    height: 0;
+    line-height: 15px;
+    font-size: 9px;
+  }
+}

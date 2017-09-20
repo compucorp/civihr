@@ -1,0 +1,74 @@
+&.crm-leave-and-balance-import {
+  .panel {
+    background-color: $crm-white;
+  }
+
+  .panel-header {
+    position: relative;
+
+    h2 {
+      padding: $table-cell-padding;
+    }
+  }
+
+  .panel-body .row:not(:last-child) {
+    padding-bottom: 2em;
+  }
+
+  .table.date-formats {
+    .label {
+      display: none;
+    }
+
+    label {
+      font-weight: normal !important;
+    }
+
+    td {
+      border: 0;
+      padding: 0;
+    }
+  }
+
+  // Step 2:
+  .crm-activity_map_table-form-block {
+    box-shadow: none;
+    padding: 0;
+
+    #map-field table {
+      margin-bottom: 2em;
+      width: 100%;
+
+      th {
+        padding: $table-cell-padding;
+        border-right: none;
+      }
+
+      th, td {
+        padding: 5px;
+      }
+    }
+  }
+
+  // Step 3 and 4:
+  #preview-counts,
+  #summary-counts {
+    box-shadow: none;
+    margin-bottom: 2em;
+    width: 100%;
+
+    tr.danger td {
+      background-color: $state-danger-bg !important;
+      color: $brand-danger;
+
+      a {
+        color: darken($brand-danger, 5%);
+        font-weight: bold;
+
+        &:hover {
+          color: darken($brand-primary, 5%);
+        }
+      }
+    }
+  }
+}

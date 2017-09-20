@@ -32,6 +32,7 @@ define([
 
     vm.absencePeriods = [];
     vm.contacts = [];
+    vm.contactIdsToReduceTo = null;
     vm.injectMonths = false;
     vm.months = [];
     vm.selectedMonths = null;
@@ -44,7 +45,7 @@ define([
       optionValues: {},
       userSettings: {
         contact: null,
-        contacts_with_leaves: false,
+        contacts_with_leaves: true,
         department: null,
         level_type: null,
         location: null,
@@ -59,10 +60,10 @@ define([
       setUserRole()
       .then(initWatchers)
       .then(injectSubController)
+      .then(loadAbsencePeriods)
       .then(function () {
         return $q.all([
           loadContacts(),
-          loadAbsencePeriods(),
           loadSupportData()
         ]);
       })
@@ -266,7 +267,8 @@ define([
       return {
         index: dateMoment.month(),
         year: dateMoment.year(),
-        name: dateMoment.format('MMM')
+        name: dateMoment.format('MMMM'),
+        shortName: dateMoment.format('MMM')
       };
     }
 
@@ -290,7 +292,13 @@ define([
         .then(source === 'period' ? buildPeriodMonthsList : _.noop)
         .then(source === 'contacts' ? loadContacts : _.noop)
         .then(function () {
-          injectAndShowMonths((source === 'contacts'));
+          if (vm.contactIdsToReduceTo) {
+            subController.loadContacts().then(function () {
+              injectAndShowMonths(true);
+            });
+          } else {
+            injectAndShowMonths((source === 'contacts'));
+          }
         });
     }
 
@@ -319,6 +327,8 @@ define([
 
     /**
      * Sets the user's role based on his permissions
+     *
+     * @return {Promise}
      */
     function setUserRole () {
       if (vm.roleOverride) {

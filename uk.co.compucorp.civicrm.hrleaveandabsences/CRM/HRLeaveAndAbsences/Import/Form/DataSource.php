@@ -61,6 +61,8 @@ class CRM_HRLeaveAndAbsences_Import_Form_DataSource extends CRM_Import_Form_Data
     $this->addGroup($duplicateOptions, 'onDuplicate',
       ts('On duplicate entries')
     );
+
+    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
   }
 
   /**

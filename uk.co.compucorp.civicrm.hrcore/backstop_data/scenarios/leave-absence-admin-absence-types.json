@@ -1,0 +1,12 @@
+{
+  "scenarios": [
+    {
+      "label": "Absence Types list",
+      "url": "civicrm/admin/leaveandabsences/types?action=browse"
+    },
+    {
+      "label": "Absence Types form",
+      "url": "civicrm/admin/leaveandabsences/types?action=add"
+    }
+  ]
+}

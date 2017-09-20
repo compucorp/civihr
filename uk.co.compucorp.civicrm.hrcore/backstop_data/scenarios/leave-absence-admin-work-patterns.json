@@ -1,0 +1,17 @@
+{
+  "scenarios": [
+    {
+      "label": "Work Patterns list",
+      "url": "civicrm/admin/leaveandabsences/work_patterns?action=browse"
+    },
+    {
+      "label": "Work Pattern description form",
+      "url": "civicrm/admin/leaveandabsences/work_patterns?action=add"
+    },
+    {
+      "label": "Work Pattern calendar form",
+      "url": "civicrm/admin/leaveandabsences/work_patterns?action=add",
+      "onReadyScript": "work-patterns/show-calendar-form"
+    }
+  ]
+}

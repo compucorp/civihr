@@ -3,7 +3,10 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
+use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException as InvalidLeaveRequestException;
 
 /**
  * Class to parse activity csv files.
@@ -459,8 +462,13 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
 
   /**
    * Creates a leave request from the params array.
+   * Also it validates the balance change and entitlement
+   * before making the call to LeaveRequest::create with
+   * the validation mode being of type IMPORT.
    *
    * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    *
    * @return LeaveRequest
    */
@@ -492,7 +500,9 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
       $payload['sickness_reason'] = $sicknessReasons['other'];
     }
 
-    return LeaveRequest::create($payload);
+    $params['request_type'] = $payload['request_type'];
+    $this->validateLeaveParams($params);
+    return LeaveRequest::create($payload, LeaveRequest::IMPORT_VALIDATION);
   }
 
   /**
@@ -562,5 +572,82 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
     $oldAbsenceStatusesMap = ['Requested' => $absenceStatuses['Awaiting Approval']];
 
     return array_merge($oldAbsenceStatusesMap, $absenceStatuses);
+  }
+
+  /**
+   * Returns the calculated entitlement for a Contact within
+   * the AbsencePeriod for the AbsenceType.
+   *
+   * @param array $params
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement|null
+   */
+  private function getPeriodEntitlementForContact($params) {
+    $startDate = CRM_Utils_Date::formatDate($params['start_date'], $this->dateFormatType);
+    $endDate = CRM_Utils_Date::formatDate($params['end_date'], $this->dateFormatType);
+    $period = AbsencePeriod::getPeriodContainingDates(new DateTime($startDate), new DateTime($endDate));
+
+    $leavePeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+      $params['contact_id'],
+      $period->id,
+      $params['type_id']
+    );
+
+    return $leavePeriodEntitlement;
+  }
+
+  /**
+   * This method checks and ensures that the balance change for the leave request to
+   * be created is not greater than the remaining balance of the period if the
+   * Request’s AbsenceType do not allow overuse.
+   * In case the contact does not have a period entitlement for the absence type, an
+   * appropriate exception is thrown.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   **/
+  private function validateEntitlementAndBalanceChange($params) {
+    $isToil = $params['request_type'] == LeaveRequest::REQUEST_TYPE_TOIL;
+    $isCancelled = in_array($params['status_id'], LeaveRequest::getCancelledStatuses());
+
+    //TOIL accrual is independent of Current Balance.
+    //Leave Request is able to be rejected or cancelled disregarding the balance
+    if($isToil || $isCancelled) {
+      return;
+    }
+
+    $leavePeriodEntitlement = $this->getPeriodEntitlementForContact($params);
+    if(!$leavePeriodEntitlement) {
+      throw new InvalidLeaveRequestException(
+        'Contact does not have period entitlement for the absence type',
+        'leave_request_contact_has_no_entitlement',
+        'type_id'
+      );
+    }
+
+    $leaveRequestBalance = $params['total_qty'];
+    $currentBalance = $leavePeriodEntitlement->getBalance();
+    $absenceType = AbsenceType::findById($params['type_id']);
+
+    if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
+      throw new InvalidLeaveRequestException(
+        'There are only '. $currentBalance .' days leave available. This request cannot be imported',
+        'leave_request_balance_change_greater_than_remaining_balance',
+        'type_id'
+      );
+    }
+  }
+
+  /**
+   * A method for validating the params before creating the Leave Request
+   * from the CSV parameters.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  public function validateLeaveParams($params) {
+    $this->validateEntitlementAndBalanceChange($params);
   }
 }

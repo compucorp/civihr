@@ -241,4 +241,116 @@ function civicrm_api3_leave_period_entitlement_getentitlement($params) {
   return $results;
 }
 
+/**
+ * LeavePeriodEntitlement.getLeaveBalances specification
+ *
+ * @param array $spec
+ *
+ * @return void
+ */
+function _civicrm_api3_leave_period_entitlement_getleavebalances_spec(&$spec) {
+  $spec['managed_by'] = [
+    'name' => 'managed_by',
+    'title' => 'Managed By',
+    'description' => 'Include only Leave Balances for contacts managed by the contact with the given ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0,
+    'FKClassName' => 'CRM_Contact_DAO_Contact',
+    'FKApiName' => 'Contact',
+  ];
+
+  $spec['period_id'] = [
+    'name' => 'period_id',
+    'title' => 'Absence Period ID',
+    'description' => 'Include only Balances from Leave Requests taken during the Period with the given ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+    'FKClassName' => 'CRM_HRLeaveAndAbsences_BAO_AbsencePeriod',
+    'FKApiName' => 'AbsencePeriod',
+  ];
+
+  $spec['contact_id'] = [
+    'name' => 'contact_id',
+    'title' => 'Contact ID',
+    'description' => 'Include only Leave Balances for contacts with the given ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0,
+    'FKClassName' => 'CRM_Contact_DAO_Contact',
+    'FKApiName' => 'Contact',
+  ];
+
+  $spec['type_id'] = [
+    'name' => 'type_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'Absence Type ID',
+    'description' => 'Include only Balances for the Given Absence Type',
+    'api.required' => 0,
+    'FKClassName' => 'CRM_HRLeaveAndAbsences_BAO_AbsenceType',
+    'FKApiName' => 'AbsenceType',
+  ];
+}
+
+/**
+ * LeavePeriodEntitlement.getLeaveBalances API
+ *
+ * This API accepts requires a period_id as a param and it will return a list of
+ * Leave Balances for this period to all the contacts with an active contract
+ * during that period.
+ *
+ * The return format is:
+ *
+ * [
+ *   'is_error' => 0,
+ *   'version' => 3,
+ *   'count' => 2,
+ *   'values' => [
+ *     [
+ *       'contact_id' => 1,
+ *       'contact_display_name' => 'Joe',
+ *       'absence_types': [
+ *          [
+ *            'id' => 1,
+ *            'entitlement' => 4,
+ *            'balance' => 2,
+ *            'used' => 2,
+ *            'requested' => 1
+ *          ],
+ *          [
+ *            'id' => 2,
+ *            'entitlement' => 10.5,
+ *            'balance' => 5.25,
+ *            'used' => 6,
+ *            'requested' => 3.5
+ *          ],
+ *          ...
+ *       ]
+ *     ],
+ *     ...
+ *   ]
+ * ]
+ *
+ * It also support filters to return only contacts with specific IDs or managed
+ * by specific managers.
+ *
+ * @param array $params
+ *
+ * @return array API result descriptor
+ *
+ * @throws CiviCRM_API3_Exception
+ */
+function civicrm_api3_leave_period_entitlement_getleavebalances($params) {
+  // We need to set check_permissions to false so as to disable default Civi ACL checks for
+  // this endpoint. ACL checks needed are already in the LeaveBalancesSelect Query class.
+  $params['check_permissions'] = false;
+
+  $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
+  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveBalancesSelect($params, $leaveManagerService);
+  $result = $query->run();
+
+  if(empty($params['options']['is_count'])) {
+    return civicrm_api3_create_success($result);
+  }
+
+  return $result ?: 0;
+}
 

@@ -133,6 +133,7 @@ function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$para
     'deletecomment' => ['leave_request'],
     'getattachments' => ['leave_request'],
     'deleteattachment' => ['leave_request'],
+    'getbreakdown' => ['leave_request'],
   ];
 
   foreach ($actionEntities as $action => $entities) {
@@ -140,6 +141,8 @@ function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$para
       $permissions[$entity][$action] = ['access AJAX API'];
     }
   }
+
+  $permissions['leave_period_entitlement']['getleavebalances'][] = 'manage leave and absences in ssp';
 }
 
 /**

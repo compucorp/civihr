@@ -3,6 +3,7 @@
 define([
   'common/angular',
   'common/angularBootstrap',
+  'common/components/date-picker.component',
   'common/modules/dialog',
   'common/services/check-permissions',
   'common/services/angular-date/date-format',
@@ -14,6 +15,7 @@ define([
   'leave-absences/shared/components/leave-calendar-month.component',
   'leave-absences/shared/components/leave-request-actions.component',
   'leave-absences/shared/components/leave-request-popup-comments-tab.component',
+  'leave-absences/shared/components/leave-request-popup-details-tab.component',
   'leave-absences/shared/components/leave-request-popup-files-tab',
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/components/manage-leave-requests.component',
@@ -33,6 +35,7 @@ define([
     'ui.select',
     'textAngular',
     'common.angularDate',
+    'common.components',
     'common.dialog',
     'common.mocks',
     'leave-absences.components',

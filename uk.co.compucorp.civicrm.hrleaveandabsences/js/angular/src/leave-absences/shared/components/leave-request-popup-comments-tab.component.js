@@ -14,7 +14,7 @@ define([
       request: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sharedPathTpl + 'directives/leave-request-popup/leave-request-popup-comments-tab.html';
+      return sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup-comments-tab.html';
     }],
     controllerAs: 'commentsCtrl',
     controller: ['$log', '$rootScope', 'HR_settings', 'shared-settings', 'Contact', 'Session', controller]

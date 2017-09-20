@@ -58,10 +58,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *   When this param is set to true, the method will consider only the expired
    *   Balance Changes. Otherwise, it will consider all the Balance Changes,
    *   including the expired ones.
+   * @param array $excludeLeaveIds
+   *   An array of Leave request ID's to be excluded from
+   *   the entitlement balance calculation.
    *
    * @return float
    */
-  public static function getBalanceForEntitlement(LeavePeriodEntitlement $periodEntitlement, $leaveRequestStatus = [], $expiredOnly = false) {
+  public static function getBalanceForEntitlement(LeavePeriodEntitlement $periodEntitlement, $leaveRequestStatus = [], $expiredOnly = false, $excludeLeaveIds = []) {
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
@@ -75,6 +78,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     if(is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
       array_walk($leaveRequestStatus, 'intval');
       $whereLeaveRequestStatus = ' AND leave_request.status_id IN('. implode(', ', $leaveRequestStatus) .')';
+    }
+
+    $whereExcludeLeaveRequestIds = '';
+    if(is_array($excludeLeaveIds) && !empty($excludeLeaveIds)) {
+      $whereExcludeLeaveRequestIds = ' AND leave_request.id NOT IN('. implode(', ', $excludeLeaveIds) .')';
     }
 
     $query = "
@@ -112,6 +120,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
               leave_request.type_id = {$periodEntitlement->type_id} AND
               leave_request.contact_id = {$periodEntitlement->contact_id}
               $whereLeaveRequestStatus
+              $whereExcludeLeaveRequestIds
             )
             OR
             (
@@ -662,7 +671,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @return array
    */
   private static function getDatesOverlappingBalanceChangesToExpire($balanceChangesToExpire) {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $leaveRequestStatuses = LeaveRequest::getStatuses();
 
     $leaveRequestTable = LeaveRequest::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
@@ -813,12 +822,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @return float
    */
   public static function getTotalApprovedToilForPeriod(AbsencePeriod $period, $contactID, $typeID) {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-
-    $leaveRequestStatusFilter = [
-      $leaveRequestStatuses['approved'],
-      $leaveRequestStatuses['admin_approved']
-    ];
+    $leaveRequestStatusFilter = LeaveRequest::getApprovedStatuses();
 
     $totalApprovedTOIL = self::getTotalTOILBalanceChangeForContact(
       $contactID,
@@ -1060,5 +1064,242 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     }
 
     return $numberOfRecords;
+  }
+
+  /**
+   * Returns the current balance (i.e. not including balance changes caused by
+   * open leave requests) for the given Contacts during the given Absence Period.
+   * Optionally, it can return balances only for a specific Absence Type.
+   *
+   * @param array $contactIDs
+   * @param int $absencePeriodID
+   * @param int|null $absenceTypeID
+   *
+   * @return array
+   *  [
+   *     contact_id_1 => [
+   *        absence_type1_id => balance,
+   *        absence_type2_id => balance,
+   *        ...
+   *     ],
+   *     contact_id_2 => [
+   *      absence_type1_id => balance,
+   *      ...
+   *     ]
+   *     ...
+   *  ]
+   */
+  public static function getBalanceForContacts($contactIDs, $absencePeriodID, $absenceTypeID = null) {
+    $balances = [];
+
+    $absencePeriod = AbsencePeriod::findById($absencePeriodID);
+
+    array_walk($contactIDs, 'intval');
+
+    $balanceChangeTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+    $contractTable = HRJobContract::getTableName();
+    $contractRevisionTable = HRJobContractRevision::getTableName();
+    $contractDetailsTable = HRJobDetails::getTableName();
+    $periodEntitlementTable = LeavePeriodEntitlement::getTableName();
+
+    $whereLeaveRequestAbsenceType = '';
+    $wherePeriodEntitlementAbsenceType = '';
+    if($absenceTypeID) {
+      $absenceTypeID = (int)$absenceTypeID;
+      $whereLeaveRequestAbsenceType = "leave_request.type_id = {$absenceTypeID} AND";
+      $wherePeriodEntitlementAbsenceType = "period_entitlement.type_id = {$absenceTypeID} AND";
+    }
+
+    $query = "
+        SELECT 
+           COALESCE(leave_request.contact_id, period_entitlement.contact_id) as contact_id,
+           COALESCE(leave_request.type_id, period_entitlement.type_id) as type_id,
+           SUM(leave_balance_change.amount) as balance
+        FROM {$balanceChangeTable} leave_balance_change
+          LEFT JOIN {$periodEntitlementTable} period_entitlement
+            ON leave_balance_change.source_id = period_entitlement.id AND
+               leave_balance_change.source_type = '" . self::SOURCE_ENTITLEMENT . "'
+          LEFT JOIN {$leaveRequestDateTable} leave_request_date
+            ON leave_balance_change.source_id = leave_request_date.id AND
+               leave_balance_change.source_type = '" . self::SOURCE_LEAVE_REQUEST_DAY . "'
+          LEFT JOIN {$leaveRequestTable} leave_request
+            ON leave_request_date.leave_request_id = leave_request.id AND
+               leave_request.is_deleted = 0
+          LEFT JOIN {$contractTable} contract
+            ON leave_request.contact_id = contract.contact_id
+          LEFT JOIN {$contractRevisionTable} contract_revision
+            ON contract_revision.id = (
+            SELECT id
+            FROM {$contractRevisionTable} contract_revision2
+            WHERE contract_revision2.jobcontract_id = contract.id
+            ORDER BY contract_revision2.effective_date DESC
+            LIMIT 1
+          )
+          LEFT JOIN {$contractDetailsTable} contract_details
+            ON contract_revision.details_revision_id = contract_details.jobcontract_revision_id
+
+        WHERE ((
+          {$whereLeaveRequestAbsenceType}
+          leave_request.status_id IN(" . implode(', ', LeaveRequest::getApprovedStatuses()) . ") AND 
+          (leave_request_date.date >= %1 AND leave_request_date.date <= %2) AND
+          contract.deleted = 0 AND
+          (
+            leave_request.from_date <= contract_details.period_end_date OR
+            contract_details.period_end_date IS NULL
+          ) AND
+          (
+            leave_request.to_date >= contract_details.period_start_date OR
+            (leave_request.to_date IS NULL AND leave_request.from_date >= contract_details.period_start_date)
+          ) AND
+          leave_request.contact_id IN(". implode(', ', $contactIDs) .")
+        ) OR (
+            {$wherePeriodEntitlementAbsenceType}
+            period_entitlement.contact_id IN(". implode(', ', $contactIDs) .") AND
+            period_entitlement.period_id = %3
+          )
+        )
+        GROUP BY contact_id, type_id
+    ";
+
+    $params = [
+      1 => [$absencePeriod->start_date, 'String'],
+      2 => [$absencePeriod->end_date, 'String'],
+      3 => [$absencePeriodID, 'Positive']
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+
+    while($result->fetch()) {
+      $balances[$result->contact_id][$result->type_id] = $result->balance;
+    }
+
+    return $balances;
+  }
+
+  /**
+   * Returns a list of balances for the open Leave Requests of the Contacts with
+   * the given IDs during the given Absence Period. Optionally, it can return
+   * only the balances for the given Absence Type.
+   *
+   * Open Leave Requests are those where the status is either "Awaiting Approval"
+   * or "More Information Required".
+   *
+   * Given Leave Requests always deduct days, the returned value will be negative.
+   *
+   * @param array $contactIDs
+   * @param int $absencePeriodID
+   * @param int|null $absenceTypeID
+   *
+   * @return array
+   *  An array with the following format:
+   *  [
+   *     contact_id_1 => [
+   *        absence_type1_id => balance,
+   *        absence_type2_id => balance,
+   *        ...
+   *     ],
+   *     contact_id_2 => [
+   *      absence_type1_id => balance,
+   *      ...
+   *     ]
+   *     ...
+   *  ]
+   */
+  public static function getOpenLeaveRequestBalanceForContacts($contactIDs, $absencePeriodID, $absenceTypeID = null) {
+    $balances = [];
+
+    $balanceChangeTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+    $contractTable = HRJobContract::getTableName();
+    $contractRevisionTable = HRJobContractRevision::getTableName();
+    $contractDetailsTable = HRJobDetails::getTableName();
+
+    $absencePeriod = AbsencePeriod::findById($absencePeriodID);
+
+    $whereAbsenceType = '';
+    if($absenceTypeID) {
+      $absenceTypeID = (int)$absenceTypeID;
+      $whereAbsenceType = "leave_request.type_id = {$absenceTypeID} AND";
+    }
+
+    $query = "
+      SELECT leave_request.contact_id, leave_request.type_id, SUM(leave_balance_change.amount) balance
+      FROM {$balanceChangeTable} leave_balance_change
+      INNER JOIN {$leaveRequestDateTable} leave_request_date 
+        ON leave_balance_change.source_id = leave_request_date.id AND 
+                 leave_balance_change.source_type = '" . self::SOURCE_LEAVE_REQUEST_DAY . "'
+      INNER JOIN {$leaveRequestTable} leave_request 
+        ON leave_request_date.leave_request_id = leave_request.id AND
+                 leave_request.is_deleted = 0
+      INNER JOIN {$contractTable} contract 
+        ON leave_request.contact_id = contract.contact_id
+      INNER JOIN {$contractRevisionTable} contract_revision 
+        ON contract_revision.id = (
+          SELECT id FROM {$contractRevisionTable} contract_revision2
+          WHERE contract_revision2.jobcontract_id = contract.id
+          ORDER BY contract_revision2.effective_date DESC
+          LIMIT 1
+        )
+      INNER JOIN {$contractDetailsTable} contract_details 
+        ON contract_revision.details_revision_id = contract_details.jobcontract_revision_id
+             
+      WHERE contract.deleted = 0 AND
+        leave_request_date.date >= %1 AND 
+        leave_request_date.date <= %2 AND
+        ( 
+          leave_request.from_date <= contract_details.period_end_date OR
+          contract_details.period_end_date IS NULL
+        )  AND
+        ( 
+          leave_request.to_date >= contract_details.period_start_date OR
+          (leave_request.to_date IS NULL AND leave_request.from_date >= contract_details.period_start_date)
+        ) AND  
+        leave_balance_change.expired_balance_change_id IS NULL AND {$whereAbsenceType}
+        leave_request.contact_id IN(" . implode(', ', $contactIDs) . ") AND
+        leave_request.status_id IN(" . implode(', ', LeaveRequest::getOpenStatuses()) . ")
+      GROUP BY leave_request.contact_id, leave_request.type_id
+    ";
+
+    $params = [
+      1 => [$absencePeriod->start_date, 'String'],
+      2 => [$absencePeriod->end_date, 'String'],
+    ];
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+
+    while($result->fetch()) {
+      $balances[$result->contact_id][$result->type_id] = $result->balance;
+    }
+
+    return $balances;
+  }
+
+  /**
+   * Returns a list of LeaveBalanceChange instances linked to the given
+   * LeaveRequestDate instances.
+   *
+   * The results are indexed by the LeaveRequestDates ID.
+   *
+   * @param CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate[]
+   *
+   * @return CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
+   */
+  public static function getForLeaveRequestDates($dates) {
+    $balanceChanges = [];
+
+    $datesIDs = CRM_Utils_Array::collect('id', $dates);
+
+    $balanceChange = new self();
+    $balanceChange->source_type = self::SOURCE_LEAVE_REQUEST_DAY;
+    $balanceChange->whereAdd('source_id IN (' . implode(',', $datesIDs) . ')');
+    $balanceChange->find();
+
+    while($balanceChange->fetch()) {
+      $balanceChanges[$balanceChange->source_id] = clone $balanceChange;
+    }
+
+    return $balanceChanges;
   }
 }

@@ -1,7 +1,23 @@
 $row-margin-bottom: 15px;
 
-.chr_leave-request-modal .modal-title{
-  font-size: 18px !important;
+.chr_leave-request-files_delete {
+  margin-top: -7px;
+}
+
+.chr_leave-request-modal {
+  .modal-title {
+    font-size: 18px !important;
+  }
+
+  .table-responsive {
+    border: 0;
+  }
+
+  @media screen and (max-width: $screen-xs-max) {
+    .chr_leave-request-date-picker-container {
+      margin-bottom: 20px;
+    }
+  }
 }
 
 .chr_leave-request-modal__chevron {
@@ -101,8 +117,13 @@ $row-margin-bottom: 15px;
     }
 
     &:nth-child(2) {
-      border-left: 1px solid $gray-light;
       color: $gray;
+    }
+
+    @media screen and (min-width: $screen-xs-min) {
+      &:nth-child(2) {
+        border-left: 1px solid $gray-light;
+      }
     }
   }
 }
@@ -110,13 +131,6 @@ $row-margin-bottom: 15px;
 .chr_leave-request-modal__span-expiry {
   display: inline-block;
   margin-top: 7px;
-}
-
-.chr_leave-request-modal__expiry-clear {
-  position: absolute;
-  right: 3.5em;
-  top: 0.6em;
-  z-index: 2;
 }
 
 /*

@@ -8,6 +8,7 @@ define([
   components.component('leaveCalendarMonth', {
     bindings: {
       contacts: '<',
+      contactIdsToReduceTo: '<',
       month: '<',
       period: '<',
       showContactName: '<',
@@ -145,6 +146,25 @@ define([
     }
 
     /**
+     * If there are contacts to reduce to, reduces contacts to the list provided,
+     * plus leaves those who have leave requests at the given month period
+     *
+     * @return {Promise}
+     */
+    function reduceContacts () {
+      if (vm.contactIdsToReduceTo) {
+        vm.contacts = vm.contacts.filter(function (contact) {
+          return (_.includes(vm.contactIdsToReduceTo, contact.contact_id) ||
+            _.find(leaveRequests, function (leaveRequest) {
+              return leaveRequest.contact_id === contact.contact_id;
+            }));
+        });
+      }
+
+      return $q.resolve();
+    }
+
+    /**
      * Indexes for easy access the data that the component needs
      */
     function indexData () {
@@ -163,8 +183,6 @@ define([
      * @return {Promise}
      */
     function indexLeaveRequests (leaveRequestsList) {
-      var deferred = $q.defer();
-
       leaveRequestsList.forEach(function (leaveRequest) {
         var days = leaveRequestDays(leaveRequest);
 
@@ -175,9 +193,7 @@ define([
         });
       });
 
-      deferred.resolve();
-
-      return deferred.promise;
+      return $q.resolve();
     }
 
     /**
@@ -211,6 +227,17 @@ define([
       if (moment(date).isSame(leaveRequest.to_date)) {
         return dayType.value === leaveRequest.to_date_type;
       }
+    }
+
+    /**
+     * Returns whether a leaveRequest is of the sent leave type
+     *
+     * @param  {object} leaveRequest
+     * @param  {String} leaveType
+     * @return {boolean}
+     */
+    function isLeaveType (leaveRequest, leaveType) {
+      return leaveRequest.request_type === leaveType;
     }
 
     /**
@@ -248,9 +275,12 @@ define([
       var toDate = moment(leaveRequest.to_date);
 
       while (pointerDate.isSameOrBefore(toDate)) {
-        days.push(_.find(vm.month.days, function (day) {
-          return day.date === pointerDate.format('YYYY-MM-DD');
-        }));
+        // Ensure that pointerDate is in same month/year that component represents
+        if (pointerDate.month() === vm.month.index && pointerDate.year() === vm.month.year) {
+          days.push(_.find(vm.month.days, function (day) {
+            return day.date === pointerDate.format('YYYY-MM-DD');
+          }));
+        }
 
         pointerDate.add(1, 'day');
       }
@@ -297,9 +327,8 @@ define([
         loadMonthWorkPatternCalendars(),
         loadMonthLeaveRequests()
       ])
-      .then(function () {
-        return setMonthDaysContactData();
-      })
+      .then(reduceContacts)
+      .then(setMonthDaysContactData)
       .then(function () {
         dataLoaded = true;
       })
@@ -316,8 +345,8 @@ define([
      */
     function loadMonthLeaveRequests () {
       return LeaveRequest.all({
-        from_date: { from: vm.month.days[0].date },
-        to_date: { to: vm.month.days[vm.month.days.length - 1].date },
+        from_date: { to: vm.month.days[vm.month.days.length - 1].date },
+        to_date: { from: vm.month.days[0].date },
         status_id: {'IN': [
           leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
           leaveRequestStatusValueFromName(sharedSettings.statusNames.adminApproved),
@@ -408,7 +437,7 @@ define([
         _.assign(day.contactsData[contactId], {
           leaveRequest: leaveRequest || null,
           styles: leaveRequest ? styles(leaveRequest) : null,
-          isAccruedTOIL: leaveRequest ? leaveRequest.balance_change > 0 : null,
+          isAccruedTOIL: leaveRequest ? isLeaveType(leaveRequest, 'toil') : null,
           isRequested: leaveRequest ? isPendingApproval(leaveRequest) : null,
           isAM: leaveRequest ? isDayType('half_day_am', leaveRequest, day.date) : null,
           isPM: leaveRequest ? isDayType('half_day_pm', leaveRequest, day.date) : null

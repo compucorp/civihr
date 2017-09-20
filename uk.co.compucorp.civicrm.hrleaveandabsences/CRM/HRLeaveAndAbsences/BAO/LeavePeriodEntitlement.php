@@ -385,15 +385,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * - Expired Balance Changes
    * - Approved Leave Requests
    *
+   * @param array $excludeLeaveIds
+   *   An array of Leave request ID's to be excluded from
+   *   the entitlement balance calculation.
+   *
    * @return float
    */
-  public function getBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    $filterStatuses = [
-      $leaveRequestStatus['approved'],
-      $leaveRequestStatus['admin_approved'],
-    ];
-    return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
+  public function getBalance($excludeLeaveIds = []) {
+    $filterStatuses = LeaveRequest::getApprovedStatuses();
+
+    return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses, false, $excludeLeaveIds);
   }
 
   /**
@@ -406,13 +407,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return float
    */
   public function getFutureBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    $filterStatuses = [
-      $leaveRequestStatus['approved'],
-      $leaveRequestStatus['admin_approved'],
-      $leaveRequestStatus['awaiting_approval'],
-      $leaveRequestStatus['more_information_required'],
-    ];
+    $filterStatuses = array_merge(
+      LeaveRequest::getApprovedStatuses(),
+      LeaveRequest::getOpenStatuses()
+    );
     return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
   }
 
@@ -488,6 +486,70 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
+   * Returns a list of entitlements for the given Contacts during the given
+   * Absence Period. Optionally, it can return the entitlements for a specific
+   * Absence Type.
+   *
+   * Important: This method DOES NOT return LeavePeriodEntitlement instances.
+   *
+   * @param array $contactIDs
+   * @param int $absencePeriodID
+   * @param int|null $absenceTypeID
+   *
+   * @return array
+   *  An array with this format:
+   *  [
+   *     contact_id_1 => [
+   *        absence_type1_id => entitlement,
+   *        absence_type2_id => entitlement,
+   *        ...
+   *     ],
+   *     contact_id_2 => [
+   *      absence_type1_id => entitlement,
+   *      ...
+   *     ]
+   *     ...
+   *  ]
+   */
+  public static function getEntitlementsForContacts($contactIDs, $absencePeriodID, $absenceTypeID = null) {
+    $entitlements = [];
+
+    array_walk($contactIDs, 'intval');
+
+    $whereAbsenceType = '';
+    if($absenceTypeID) {
+      $absenceTypeID = (int)$absenceTypeID;
+      $whereAbsenceType = "lpe.type_id = {$absenceTypeID} AND";
+    }
+
+    $periodEntitlementTable = self::getTableName();
+    $balanceChangeTable = LeaveBalanceChange::getTableName();
+
+    $query = "
+      SELECT lpe.contact_id,
+             lpe.type_id,
+             SUM(lbc.amount) AS entitlement
+      FROM {$periodEntitlementTable} lpe
+      INNER JOIN {$balanceChangeTable} lbc
+              ON lbc.source_type = 'entitlement' AND lbc.source_id = lpe.id
+      WHERE {$whereAbsenceType} lpe.period_id = %1 AND 
+            lpe.contact_id IN (" . implode(',', $contactIDs) . ")
+      GROUP BY lpe.id";
+
+    $params = [
+      1 => [$absencePeriodID, 'Positive'],
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+
+    while($result->fetch()) {
+      $entitlements[$result->contact_id][$result->type_id] = $result->entitlement;
+    }
+
+    return $entitlements;
+  }
+
+  /**
    * Returns the entitlement (number of days) for this LeavePeriodEntitlement.
    *
    * This is basic the sum of the amounts of the LeaveBalanceChanges that are
@@ -525,11 +587,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return float
    */
   public function getLeaveRequestBalance() {
-    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    $filterStatuses = [
-      $leaveRequestStatus['approved'],
-      $leaveRequestStatus['admin_approved'],
-    ];
+    $filterStatuses = LeaveRequest::getApprovedStatuses();
 
     return LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($this, $filterStatuses);
   }

@@ -1,3 +1,6 @@
+$navigation-column-width: 170px;
+$content-container-margin: 16px;
+
 @at-root {
   .page-civicrm-leaveandabsences-dashboard {
     h1.page-title,
@@ -12,6 +15,8 @@
   }
 
   .admin-dashboard-page {
+    position: relative;
+
     .crm_page__topbar {
       height: 65px;
 
@@ -26,13 +31,21 @@
 
     .chr_admin-dashboard_side-nav {
       overflow: hidden;
-      width: 15%;
-      float: left;
+      width: $navigation-column-width;
+      position: absolute;
+      height: calc(100% - 12px);
+      background-color: $crm-white;
+
+      li.active {
+        background: $gray-light;
+      }
     }
 
     .chr_admin-dashboard_content {
       float: right;
-      width: 84%;
+      width: calc(100% - #{$navigation-column-width} - #{$content-container-margin} * 2);
+      margin: $content-container-margin;
+      margin-bottom: 0;
     }
   }
 }

@@ -33,6 +33,8 @@
  *
  */
 
+use CRM_Hrjobcontract_Import_Parser as Import_Parser;
+
 /**
  * This class summarizes the import results
  */
@@ -53,6 +55,7 @@ class CRM_Hrjobcontract_Import_Form_SummaryBaseClass extends CRM_Import_Form_Sum
   public function preProcess() {
     // set the error message path to display
     $errorFile = $this->assign('errorFile', $this->get('errorFile'));
+    $this->_importMode = $this->get('importMode');
 
     $totalRowCount = $this->get('totalRowCount');
     $relatedCount = $this->get('relatedCount');
@@ -104,5 +107,12 @@ class CRM_Hrjobcontract_Import_Form_SummaryBaseClass extends CRM_Import_Form_Sum
     foreach ($properties as $property) {
       $this->assign($property, $this->get($property));
     }
+
+    $isEntitlementUpdate = $this->_importMode == Import_Parser::UPDATE_ENTITLEMENTS;
+    $entitlementPageUrl = CRM_Utils_System::url(
+      'civicrm/admin/leaveandabsences/periods/manage_entitlements'
+    );
+    $this->assign('isEntitlementUpdate', $isEntitlementUpdate);
+    $this->assign('entitlementPageUrl', $entitlementPageUrl);
   }
 }

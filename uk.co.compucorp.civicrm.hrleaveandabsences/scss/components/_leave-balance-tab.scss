@@ -1,0 +1,11 @@
+.chr_leave-balance-tab {
+  @media (max-width: $screen-md-min) {
+    .chr_leave-balance-tab__filter:not(:last-child) {
+      padding-bottom: 15px;
+    }
+  }
+}
+
+.chr_leave-balance-tab__body {
+  padding: 0;
+}

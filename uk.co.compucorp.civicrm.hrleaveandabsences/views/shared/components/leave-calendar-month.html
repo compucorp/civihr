@@ -4,45 +4,75 @@
   </header>
   <crm-loading show="!month.month.loading">
     <div class="chr_leave-calendar__month-body">
-      <div class="table-responsive" ng-switch="!!month.contactsList().length">
+      <div ng-switch="!!month.contactsList().length">
         <div class="text-center" ng-switch-when="false">
           Sorry No Contacts
         </div>
-        <table ng-switch-when="true" class="table table-bordered chr_leave-calendar">
-          <thead>
-            <tr class="chr_leave-calendar__days">
-              <th class="chr_leave-calendar__name" ng-if="month.showContactName">Employee Name</th>
-              <th class="chr_leave-calendar__day"
-                ng-repeat="day in month.month.days track by day.date"
-                ng-class="{
+
+        <div class="row chr_leave-calendar__month-container">
+          <div ng-if="month.showContactName" class="col-xs-4 col-md-3 col-lg-2 chr_leave-calendar__names-container">
+            <table ng-switch-when="true" class="table table-bordered chr_leave-calendar">
+              <thead>
+              <tr class="chr_leave-calendar__days">
+                <th class="chr_leave-calendar__name" ng-if="month.showContactName">
+                  <div class="chr_leave-calendar__pagination" ng-if="month.contactsList().length > month.pageSize">
+                    <button class="btn-link" ng-disabled="month.currentPage == 0" ng-click="month.currentPage = (month.currentPage - 1)">
+                      <i class="fa fa-lg fa-chevron-up"></i>
+                    </button>
+                  </div>
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr class="chr_leave-calendar__items" ng-repeat="contact in month.contactsList() | limitTo: month.pageSize: month.currentPage * month.pageSize">
+                <td class="chr_leave-calendar__name" ng-if="month.showContactName">{{contact.display_name}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <div ng-class="{'col-xs-8 col-md-9 col-lg-10': month.showContactName}" class="chr_leave-calendar__dates-container">
+            <table ng-switch-when="true" class="table table-bordered chr_leave-calendar">
+              <thead>
+              <tr class="chr_leave-calendar__days">
+                <th class="chr_leave-calendar__day"
+                    ng-repeat="day in month.month.days track by day.date"
+                    ng-class="{
                   'chr_leave-calendar__day--current': day.current,
                   'chr_leave-calendar__day--disabled': !day.enabled
                 }">
-                {{day.name}}
-                <div>{{day.index}}</div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="chr_leave-calendar__items" ng-repeat="contact in month.contactsList() | limitTo: month.pageSize: month.currentPage * month.pageSize">
-              <td class="chr_leave-calendar__name" ng-if="month.showContactName">{{contact.display_name}}</td>
-              <td ng-repeat="day in month.month.days track by day.date">
-                <leave-calendar-day
-                  contact-data="day.contactsData[contact.id]"
-                  ng-class="{ 'chr_leave-calendar__item--disabled': !day.enabled }"
-                ></leave-calendar-day>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="chr_leave-calendar__pagination text-center" ng-if="month.contactsList().length > month.pageSize">
-          <button class="btn-link" ng-disabled="month.currentPage == 0" ng-click="month.currentPage = (month.currentPage - 1)">
-            <i class="fa fa-lg fa-arrow-left"></i>
-          </button>
-          <button class="btn-link" ng-disabled="month.currentPage >= month.contactsList().length / month.pageSize - 1" ng-click="month.currentPage = (month.currentPage + 1)">
-            <i class="fa fa-lg fa-arrow-right"></i>
-          </button>
+                  {{day.name}}
+                  <div>{{day.index}}</div>
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr class="chr_leave-calendar__items" ng-repeat="contact in month.contactsList() | limitTo: month.pageSize: month.currentPage * month.pageSize">
+                <td ng-repeat="day in month.month.days track by day.date">
+                  <leave-calendar-day
+                    contact-data="day.contactsData[contact.id]"
+                    ng-class="{ 'chr_leave-calendar__item--disabled': !day.enabled }"
+                  ></leave-calendar-day>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+        <table class="table table-bordered chr_leave-calendar__pagination-next" ng-if="month.contactsList().length > month.pageSize">
+          <thead>
+          <tr>
+            <th>
+              <div class="row chr_leave-calendar__month-container">
+                <div class="col-xs-4 col-md-3 col-lg-2 chr_leave-calendar__pagination">
+                  <button class="btn-link" ng-disabled="month.currentPage >= month.contactsList().length / month.pageSize - 1" ng-click="month.currentPage = (month.currentPage + 1)">
+                    <i class="fa fa-lg fa-chevron-down"></i>
+                  </button>
+                </div>
+              </div>
+            </th>
+          </tr>
+          </thead>
+        </table>
       </div>
     </div>
   </crm-loading>

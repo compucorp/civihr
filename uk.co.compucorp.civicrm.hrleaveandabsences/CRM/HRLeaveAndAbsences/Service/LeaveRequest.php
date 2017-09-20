@@ -37,6 +37,13 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   private $leaveStatuses;
 
   /**
+   * @var boolean|null
+   *   Stores whether the dates has changed for the
+   *   current leave request to be updated or not.
+   */
+  private $datesChanged = null;
+
+  /**
    * CRM_HRLeaveAndAbsences_Service_LeaveRequest constructor.
    *
    * @param \CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange $leaveBalanceChangeService
@@ -195,13 +202,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return bool
    */
   private function datesChanged($params) {
-    $oldLeaveRequest = $this->getOldLeaveRequest($params['id']);
-    $fromDate = new DateTime($params['from_date']);
-    $toDate = new DateTime($params['to_date']);
-    $leaveRequestFromDate = new DateTime($oldLeaveRequest->from_date);
-    $leaveRequestToDate = new DateTime($oldLeaveRequest->to_date);
-
-    return $leaveRequestFromDate != $fromDate || $leaveRequestToDate != $toDate;
+    if (is_null($this->datesChanged)) {
+      $this->datesChanged = LeaveRequest::datesChanged($params);
+    }
+    return $this->datesChanged;
   }
 
   /**
@@ -264,10 +268,16 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    */
   protected function createRequestWithBalanceChanges($params) {
-    $leaveRequest = LeaveRequest::create($params, false);
-    $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
+    $updateBalanceChange = !empty($params['change_balance']);
+    $skipBalanceChangeUpdate = !empty($params['id']) &&
+      !$this->datesChanged($params) && !$updateBalanceChange;
+    $leaveRequest = LeaveRequest::create($params, LeaveRequest::VALIDATIONS_OFF);
 
+    if(!$skipBalanceChangeUpdate) {
+      $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
+    }
     $this->recalculateExpiredBalanceChange($leaveRequest);
+
     return $leaveRequest;
   }
 
@@ -290,7 +300,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    */
   private function recalculateExpiredBalanceChange(LeaveRequest $leaveRequest) {
-    $leaveStatuses = $this->getLeaveRequestStatuses();
+    $leaveStatuses = LeaveRequest::getStatuses();
     $today = new DateTime();
     $leaveRequestDate = new DateTime($leaveRequest->from_date);
 
@@ -300,15 +310,41 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   }
 
   /**
-   * Returns the array of the option values for the LeaveRequest status_id field.
+   * Returns the breakdown of the Leave Request with the given ID.
+   *
+   * The breakdown is a list of the Request's dates, together with the amount
+   * of days deducted for it.
+   *
+   * @param int $leaveRequestID
    *
    * @return array
+   *   An array of breakdown items, where each one is:
+   *   [
+   *     'id' => 1,
+   *     'type' => 1,
+   *     'label' => 'All Day',
+   *     'date' => '2017-09-06',
+   *     'amount' => -1
+   *   ]
    */
-  private function getLeaveRequestStatuses() {
-    if (is_null($this->leaveStatuses)) {
-      $this->leaveStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+  public function getBreakdown($leaveRequestID) {
+    $leaveRequestDayTypes = LeaveRequestDate::buildOptions('type');
+
+    $dates = LeaveRequestDate::getDatesForLeaveRequest($leaveRequestID);
+    $balanceChanges = LeaveBalanceChange::getForLeaveRequestDates($dates);
+
+    $breakdown = [];
+
+    foreach($dates as $date) {
+      $breakdown[] = [
+        'id' => $date->id,
+        'type' => $date->type,
+        'label' => $date->type ? $leaveRequestDayTypes[$date->type] : '',
+        'date' => date('Y-m-d', strtotime($date->date)),
+        'amount' => $balanceChanges[$date->id]->amount
+      ];
     }
 
-    return $this->leaveStatuses;
+    return $breakdown;
   }
 }

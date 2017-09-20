@@ -25,8 +25,6 @@
 +--------------------------------------------------------------------+
 */
 
-use CRM_HRAbsence_Queue_EntitlementRecalculation as EntitlementRecalculationQueue;
-
 class CRM_HRAbsence_BAO_HRAbsencePeriod extends CRM_HRAbsence_DAO_HRAbsencePeriod {
 
   public static function create($params) {
@@ -48,8 +46,6 @@ class CRM_HRAbsence_BAO_HRAbsencePeriod extends CRM_HRAbsence_DAO_HRAbsencePerio
     }
 
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
-
-    self::enqueueEntitlementRecalculation($instance);
 
     return $instance;
   }
@@ -135,22 +131,5 @@ class CRM_HRAbsence_BAO_HRAbsencePeriod extends CRM_HRAbsence_DAO_HRAbsencePerio
     }
 
     return $data;
-  }
-
-  /**
-   * Add a new task to the Entitlement Recalculation queue to recalculate it for
-   * the given absence period
-   *
-   * @param \CRM_HRAbsence_BAO_HRAbsencePeriod $period
-   */
-  private static function enqueueEntitlementRecalculation(CRM_HRAbsence_BAO_HRAbsencePeriod $period) {
-    $queue = EntitlementRecalculationQueue::getQueue();
-
-    $task = new CRM_Queue_Task(
-      ['CRM_HRAbsence_Queue_Task_RecalculateContactsEntitlementForPeriod', 'run'],
-      [$period->id]
-    );
-
-    $queue->createItem($task);
   }
 }

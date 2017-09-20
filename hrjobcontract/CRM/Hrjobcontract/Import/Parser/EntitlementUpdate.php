@@ -1,7 +1,6 @@
 <?php
 
 use CRM_Hrjobcontract_ExportImportValuesConverter as ImportExportUtility;
-use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
 use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
 use CRM_Hrjobcontract_Import_EntityHandler_HRJobLeave as HRJobLeaveHandler;
 
@@ -89,17 +88,17 @@ class CRM_Hrjobcontract_Import_Parser_EntitlementUpdate extends CRM_Hrjobcontrac
     $params = $this->getActiveFieldParams();
 
     try {
-      $currentContract = HRJobContract::getCurrentContract($params['contact_id']);
+      $currentRevisionId = $this->getCurrentRevisionIdForContract($params['contract_id']);
 
-      if (!$currentContract) {
-        array_unshift($values, 'Contact does not have a valid contract');
+      if (!$currentRevisionId) {
+        array_unshift($values, 'The Contract is not valid');
 
         return CRM_Import_Parser::ERROR;
       }
 
       $contractRevision = new HRJobContractRevision();
-      $contractRevision->jobcontract_id = $currentContract->id;
-      $contractRevision->id = $currentContract->jobcontract_revision_id;
+      $contractRevision->jobcontract_id = $params['contract_id'];
+      $contractRevision->id = $currentRevisionId;
 
       $handler = new HRJobLeaveHandler();
       $previousRevision = [];
@@ -177,11 +176,11 @@ class CRM_Hrjobcontract_Import_Parser_EntitlementUpdate extends CRM_Hrjobcontrac
     $importExportUtility = ImportExportUtility::singleton();
     $leaveTypes = $importExportUtility->getLeaveTypes();
 
-    $fields['contact_id'] = [
-      'name' => 'contact_id',
-      'title' => ts('Contact ID'),
+    $fields['contract_id'] = [
+      'name' => 'contract_id',
+      'title' => ts('Contract ID'),
       'type' => CRM_Utils_Type::T_INT,
-      'headerPattern' => '/Contact ID/i',
+      'headerPattern' => '/Contract ID/i',
     ];
 
     $fields['- leave type amount fields -'] = ['title' => '- leave type amount fields -'];
@@ -206,7 +205,7 @@ class CRM_Hrjobcontract_Import_Parser_EntitlementUpdate extends CRM_Hrjobcontrac
    * @return array
    */
   public static function getRequiredFields() {
-    return ['contact_id' => 'Contact ID'];
+    return ['contract_id' => 'Contract ID'];
   }
 
   /**
@@ -225,5 +224,20 @@ class CRM_Hrjobcontract_Import_Parser_EntitlementUpdate extends CRM_Hrjobcontrac
     else {
       $errorMessage = $error;
     }
+  }
+
+  /**
+   * Get the latest revision ID for the contract ID
+   *
+   * @param int $contractID
+   *
+   * @return int|null
+   */
+  private function getCurrentRevisionIdForContract($contractID) {
+    $result = civicrm_api3('HRJobContractRevision', 'getcurrentrevision', [
+      'jobcontract_id' => $contractID
+    ]);
+
+    return isset($result['values']['id']) ? $result['values']['id'] : null;
   }
 }

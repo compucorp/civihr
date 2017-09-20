@@ -30,30 +30,14 @@ define([
     }));
 
     describe('openModal()', function () {
-      describe('when called without a Leave request and with a leave type parameter', function () {
-        beforeEach(function () {
-          LeavePopup.openModal(null, 'Leave');
-        });
-
-        it('initializes the leave popup with LeaveRequestController', function () {
-          expect($uibModal.open).toHaveBeenCalledWith(jasmine.objectContaining({
-            controller: 'LeaveRequestCtrl'
-          }));
-        });
+      beforeEach(function () {
+        LeavePopup.openModal(null, 'Leave');
       });
 
-      describe('when called with a Leave request', function () {
-        var requestType = 'SomeValue';
-
-        beforeEach(function () {
-          LeavePopup.openModal({ request_type: requestType });
-        });
-
-        it('initializes the leave popup with correct controller', function () {
-          expect($uibModal.open).toHaveBeenCalledWith(jasmine.objectContaining({
-            controller: requestType + 'RequestCtrl'
-          }));
-        });
+      it('initializes the leave popup with RequestCtrl', function () {
+        expect($uibModal.open).toHaveBeenCalledWith(jasmine.objectContaining({
+          controller: 'RequestCtrl'
+        }));
       });
     });
 

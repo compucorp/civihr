@@ -24,6 +24,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
   }
 
   private static function fabricateForTOILRequest(LeaveRequest $leaveRequest) {
+    LeaveBalanceChange::deleteAllForLeaveRequest($leaveRequest);
     $dates = $leaveRequest->getDates();
     $firstDate = array_shift($dates);
 
@@ -47,9 +48,15 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
   }
 
   private static function fabricateForLeaveRequestDates(LeaveRequest $leaveRequest) {
+    $leaveRequestDayTypes = array_flip(LeaveRequestDate::buildOptions('type', 'validate'));
+
+    LeaveBalanceChange::deleteAllForLeaveRequest($leaveRequest);
     $dates = $leaveRequest->getDates();
     foreach($dates as $date) {
       self::fabricateForLeaveRequestDate($date);
+
+      $date->type = $leaveRequestDayTypes['all_day'];
+      $date->save();
     }
   }
 

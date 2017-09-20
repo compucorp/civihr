@@ -34,6 +34,10 @@
 <div id="help">
     <p>
     <strong>{ts}Import has completed successfully.{/ts}</strong> {ts}The information below summarizes the results.{/ts}
+      {if $isEntitlementUpdate }
+        <br/>
+        <strong>{ts 1=$entitlementPageUrl}Please Visit the Entitlement Calculation Page <a href="%1">HERE</a> to update Period Entitlements{/ts}</strong>
+      {/if}
     </p>
 
    {if $unMatchCount }

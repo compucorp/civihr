@@ -1,5 +1,16 @@
 <div class="manager-leave-page">
   <div class="button-container">
+    <div class="hidden-sm hidden-md hidden-lg chr_leave__page-selector-dropdown crm_custom-select">
+      <select
+        class="no-select2"
+        ng-model="managerLeave.tabName"
+        ng-change="managerLeave.changeTab()">
+        <option value="manager-leave.requests">Leave Requests</option>
+        <option value="manager-leave.calendar">Calendar</option>
+        <option value="manager-leave.leave-balances">Leave Balance</option>
+      </select>
+      <span class="crm_custom-select__arrow"></span>
+    </div>
     <leave-request-record-actions
       btn-class="btn-primary"
       contact-id="managerLeave.contactId">
@@ -7,7 +18,7 @@
   </div>
   <div class="tabs-container">
     <div class="container">
-      <ul class="nav nav-tabs nav-justified nav-tabs-header">
+      <ul class="visible-sm visible-md visible-lg nav nav-tabs nav-justified nav-tabs-header">
         <li ui-sref-active="active">
           <a ui-sref="manager-leave.requests">Leave Requests</a>
         </li>
@@ -15,7 +26,7 @@
           <a ui-sref="manager-leave.calendar">Calendar</a>
         </li>
         <li ui-sref-active="active">
-          <a ui-sref="manager-leave.balance-report">Leave Balance</a>
+          <a ui-sref="manager-leave.leave-balances">Leave Balance</a>
         </li>
       </ul>
       <div class="tab-content">

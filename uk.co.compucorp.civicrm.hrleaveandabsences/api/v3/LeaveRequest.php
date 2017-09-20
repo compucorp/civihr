@@ -1,15 +1,18 @@
 <?php
 
 /**
- * LeaveRequest.create API specification (optional)
- * This is used for documentation and validation.
+ * LeaveRequest.create API specification
  *
- * @param array $spec description of fields supported by this API call
- * @return void
- * @see http://wiki.civicrm.org/confluence/display/CRMDOC/API+Architecture+Standards
+ * @param array $spec
  */
 function _civicrm_api3_leave_request_create_spec(&$spec) {
-  // $spec['some_parameter']['api.required'] = 1;
+  $spec['change_balance'] = [
+    'name' => 'change_balance',
+    'title' => 'Update Balance Change?',
+    'description' => 'Update Leave Request Balance Change?',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0,
+  ];
 }
 
 /**
@@ -689,4 +692,42 @@ function _civicrm_api3_leave_request_deleteattachment_spec(&$spec) {
 function civicrm_api3_leave_request_deleteattachment($params) {
   $leaveRequestAttachmentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachment();
   return $leaveRequestAttachmentService->delete($params);
+}
+
+/**
+ * LeaveRequest.getBreakdown API spec
+ *
+ * @param array $spec
+ */
+function _civicrm_api3_leave_request_getbreakdown_spec(&$spec) {
+  $spec['leave_request_id'] = [
+    'name' => 'leave_request_id',
+    'type' => CRM_Utils_Type::T_INT,
+    'title' => 'LeaveRequest ID',
+    'description' => 'The Leave Request ID to get the breakdown for',
+    'api.required' => 1
+  ];
+}
+
+/**
+ * LeaveRequest.getBreakdown API
+ *
+ * @param array $params
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_getbreakdown($params) {
+  $params['id'] = $params['leave_request_id'];
+  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params);
+  $leaveRequest = $query->run();
+  $leaveRequest = reset($leaveRequest);
+
+  if(empty($leaveRequest)) {
+    return civicrm_api3_create_success([]);
+  }
+
+  $leaveRequestService = CRM_HRLeaveAndAbsences_Factory_LeaveRequestService::create();
+  $breakdown = $leaveRequestService->getBreakdown($leaveRequest['id']);
+
+  return civicrm_api3_create_success($breakdown);
 }

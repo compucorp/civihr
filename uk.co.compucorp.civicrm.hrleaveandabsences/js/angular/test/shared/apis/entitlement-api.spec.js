@@ -1,37 +1,44 @@
+/* eslint-env amd, jasmine */
+
 define([
   'mocks/data/entitlement-data',
-  'leave-absences/shared/apis/entitlement-api',
-], function (mockData) {
+  'mocks/data/leave-balance-report.data',
+  'leave-absences/shared/apis/entitlement-api'
+], function (mockData, leaveBalanceReportMockData) {
   'use strict';
 
   describe('EntitlementAPI', function () {
-    var EntitlementAPI, $httpBackend;
+    var EntitlementAPI, $httpBackend, $rootScope;
 
     beforeEach(module('leave-absences.apis'));
 
-    beforeEach(inject(function (_EntitlementAPI_, _$httpBackend_) {
+    beforeEach(inject(function (_EntitlementAPI_, _$httpBackend_, _$rootScope_) {
       EntitlementAPI = _EntitlementAPI_;
       $httpBackend = _$httpBackend_;
+      $rootScope = _$rootScope_;
 
-      //when the URL has this pattern
-      //GET /civicrm/ajax/rest?action=get&entity=LeavePeriodEntitlement&json={"sequential":1,"api.LeavePeriodEntitlement.getremainder":{"entitlement_id":"$value.id","include_future":true}}&sequential=1
-      $httpBackend.whenGET(/action\=get&entity\=LeavePeriodEntitlement/)
+      // when the URL has this pattern
+      // GET /civicrm/ajax/rest?action=get&entity=LeavePeriodEntitlement&json={"sequential":1,"api.LeavePeriodEntitlement.getremainder":{"entitlement_id":"$value.id","include_future":true}}&sequential=1
+      $httpBackend.whenGET(/action=get&entity=LeavePeriodEntitlement/)
         .respond(function (method, url, data, headers, params) {
           var jsonFromParams = JSON.parse(params.json);
-          //intercept same get call when chaining with withremainder call
+          // intercept same get call when chaining with withremainder call
           if ('api.LeavePeriodEntitlement.getremainder' in jsonFromParams) {
             return [200, mockData.all(true)];
           }
           return [200, mockData.all()];
         });
 
-      ///civicrm/ajax/rest?action=getbreakdown&entity=LeavePeriodEntitlement&json={}&sequential=1
+      /// civicrm/ajax/rest?action=getbreakdown&entity=LeavePeriodEntitlement&json={}&sequential=1
       $httpBackend.whenGET(/action=getbreakdown&entity=LeavePeriodEntitlement/)
         .respond(mockData.breakdown());
+
+      $httpBackend.whenGET(/action=getLeaveBalances&entity=LeavePeriodEntitlement/)
+        .respond(leaveBalanceReportMockData.all());
     }));
 
     it('has expected end points', function () {
-      expect(Object.keys(EntitlementAPI)).toEqual(['all', 'breakdown']);
+      expect(Object.keys(EntitlementAPI)).toEqual(['all', 'breakdown', 'getLeaveBalances']);
     });
 
     describe('all()', function () {
@@ -114,7 +121,7 @@ define([
 
       beforeEach(function () {
         breakdownPromise = EntitlementAPI.breakdown();
-      })
+      });
 
       afterEach(function () {
         $httpBackend.flush();
@@ -124,7 +131,7 @@ define([
         breakdownPromise.then(function (breakdowns) {
           expect(breakdowns.length).toEqual(mockData.breakdown().values.length);
         });
-      })
+      });
 
       it('contains breakdown data', function () {
         breakdownPromise.then(function (allBreakdowns) {
@@ -152,6 +159,21 @@ define([
             'amount': jasmine.any(String)
           }));
         });
+      });
+    });
+
+    describe('getLeaveBalances()', function () {
+      beforeEach(function () {
+        spyOn(EntitlementAPI, 'getAll').and.callThrough();
+        EntitlementAPI.getLeaveBalances({});
+        $rootScope.$apply();
+      });
+
+      it('calls the getLeaveBalances() method of LeavePeriodEntitlement entity', function () {
+        expect(EntitlementAPI.getAll).toHaveBeenCalledWith(
+          'LeavePeriodEntitlement', jasmine.any(Object), undefined, undefined,
+          undefined, 'getLeaveBalances', undefined
+        );
       });
     });
   });

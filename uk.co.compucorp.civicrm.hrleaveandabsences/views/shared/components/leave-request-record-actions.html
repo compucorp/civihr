@@ -1,6 +1,7 @@
 <div class="btn-group" uib-dropdown>
   <button type="button" class="btn {{vm.btnClass}} dropdown-toggle" uib-dropdown-toggle>
-    <i class="fa fa-plus-circle" aria-hidden="true"></i> Record New Absence
+    <span class="visible-sm visible-md visible-lg"><i class="fa fa-plus-circle" aria-hidden="true"></i> Record New Absence</span>
+    <span class="hidden-sm hidden-md hidden-lg"><i class="fa fa-plus" aria-hidden="true"></i> New</span>
   </button>
   <ul class="dropdown-menu" role="menu" uib-dropdown-menu>
     <li ng-repeat="option in vm.leaveRequestOptions">

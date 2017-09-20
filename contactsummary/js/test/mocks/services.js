@@ -152,14 +152,6 @@ define([
     return factory;
   }
 
-  function LeaveServiceMock(Base) {
-    var factory = Base.createInstance();
-
-    factory.response = {};
-
-    return factory;
-  }
-
   function KeyDetailsServiceMock(Base) {
     var factory = Base.createInstance();
 
@@ -203,7 +195,6 @@ define([
     .factory('ModelServiceMock', ['ItemServiceMock', 'BaseServiceMock', ModelServiceMock])
     .factory('ApiServiceMock', ['BaseServiceMock', '$q', ApiServiceMock])
     .factory('ContactDetailsServiceMock', ['BaseServiceMock', ContactDetailsServiceMock])
-    .factory('LeaveServiceMock', ['BaseServiceMock', LeaveServiceMock])
     .factory('KeyDetailsServiceMock', ['BaseServiceMock', 'settingsMock', KeyDetailsServiceMock])
     .factory('KeyDatesServiceMock', ['BaseServiceMock', KeyDatesServiceMock])
     .factory('ContractServiceMock', ['BaseServiceMock', ContractServiceMock])

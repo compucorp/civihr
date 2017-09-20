@@ -70,6 +70,8 @@ class CRM_HRLeaveAndAbsences_Import_Form_MapField extends CRM_Import_Form_MapFie
       $highlightedFields[] = $val;
     }
     $this->assign('highlightedFields', $highlightedFields);
+
+    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
   }
 
   /**

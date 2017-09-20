@@ -1,0 +1,106 @@
+<crm-loading show="filesTab.filesLoaded">
+  <div>
+    <ul class="chr_leave-request-files_list container-fluid" ng-if="filesTab.getFilesCount() > 0">
+      <li ng-repeat="file in filesTab.request.files | filter: {toBeDeleted: '!'}">{{file.toBeDeleted}}
+        <div class="chr_leave-request-files_meta">
+          <span class="chr_leave-request-files_author">{{filesTab.getAuthorName(file.contact_id)}}</span>
+          <span class="chr_leave-request-files_date">{{filesTab.formatDateTime(file.upload_date)}}</span>
+        </div>
+        <div class="row">
+          <div class="chr_leave-request-files_icon text-primary col-xs-6 col-sm-8">
+            <i
+              class="fa fa-file-o"
+              ng-class="{
+                'fa fa-file-pdf-o': file.mime_type === 'application/pdf',
+                'fa fa-file-image-o': file.mime_type === 'image/png' || file.mime_type === 'image/jpeg' || file.mime_type === 'image/gif',
+                'fa fa-file-excel-o': file.mime_type === 'application/excel',
+                'fa fa-file-word-o': file.mime_type === 'application/msword'
+              }"
+              aria-hidden="true"></i>
+            <span class="chr_leave-request-files_file-name">
+              <a href="{{file.url}}" target="_blank">{{file.name}}</a>
+            </span>
+          </div>
+          <div
+            ng-show="filesTab.removeAttachmentVisibility(file)"
+            class="chr_leave-request-files_delete text-danger col-xs-6 col-sm-4">
+            <i class="fa fa-trash-o" aria-hidden="true"></i>
+            <span
+              class="btn btn-link"
+              ng-disabled="filesTab.isMode('view')"
+              ng-click="filesTab.request.deleteAttachment(file)">
+              Remove
+            </span>
+          </div>
+        </div>
+        <hr/>
+      </li>
+      <span ng-if="filesTab.fileUploader" ng-disabled="filesTab.isMode('view')">
+        <li ng-repeat="file in filesTab.fileUploader.queue">
+          <div class="chr_leave-request-files_meta">
+            <span class="chr_leave-request-files_author">Me</span>
+            <span>-</span>
+            <span class="chr_leave-request-files_date">{{filesTab.today | date: filesTab.userDateFormatWithTime}}</span>
+          </div>
+          <div class="row">
+            <div class="chr_leave-request-files_icon text-primary col-xs-8">
+              <i
+                class="fa fa-file-o"
+                ng-class="{
+                  'fa fa-file-pdf-o': file.file.type == 'application/pdf',
+                  'fa fa-file-image-o': file.file.type == 'image/png' || file.file.type == 'image/jpeg' || file.file.type == 'image/gif',
+                  'fa fa-file-excel-o': file.file.type == 'application/excel',
+                  'fa fa-file-word-o': file.file.type == 'application/msword'
+                }"
+                aria-hidden="true"></i>
+              <span class="chr_leave-request-files_file-name">{{file.file.name}}</span>
+            </div>
+            <div
+              ng-show="filesTab.removeAttachmentVisibility(file)"
+              class="chr_leave-request-files_delete text-danger col-xs-4">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+              <span
+                class="btn btn-link"
+                ng-disabled="filesTab.isMode('view')"
+                ng-click="filesTab.fileUploader.removeFromQueue(file)">
+                Remove</span>
+            </div>
+          </div>
+          <hr/>
+        </li>
+      </span>
+    </ul>
+  </div>
+  <div
+    ng-if="filesTab.fileUploader"
+    class="chr_leave-request-files_upload"
+    ng-class="{'chr_disabled': !filesTab.canUploadMore() || filesTab.isMode('view')}">
+    <div
+      nv-file-drop
+      uploader="filesTab.fileUploader"
+      ng-disabled="!filesTab.fileUploader">
+      <div class="chr_leave-request-files_upload_action row text-center">
+        Drag and drop file here
+      </div>
+      <div class="chr_leave-request-files_upload_action row text-center">
+        or
+      </div>
+      <div class="chr_leave-request-files_upload_action row text-center">
+        <label class="btn btn-primary btn-file">
+          Browse
+          <input
+            type="file"
+            nv-file-select
+            uploader="filesTab.fileUploader"
+            class="hidden">
+        </label>
+      </div>
+    </div>
+    <div class="chr_leave-request-files_upload_action row text-warning" ng-if="filesTab.canUploadMore()">
+      You can upload up to 10 files. The supported file extensions are {{ filesTab.listFileTypes() }}.
+    </div>
+    <div class="chr_leave-request-files_upload_action row text-warning text-center" ng-if="!(filesTab.canUploadMore())">
+      You have reached the limit of 10 uploaded files.
+    </div>
+  </div>
+</crm-loading>

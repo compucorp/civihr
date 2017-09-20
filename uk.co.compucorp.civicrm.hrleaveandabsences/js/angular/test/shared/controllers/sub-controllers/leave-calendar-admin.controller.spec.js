@@ -40,10 +40,6 @@
           $rootScope.$digest();
         });
 
-        it('simply loads all the contacts', function () {
-          expect(Contact.all).toHaveBeenCalled();
-        });
-
         it('filters the contact using the filters selected by the user', function () {
           expect(Object.keys(Contact.all.calls.mostRecent().args[0])).toContain('department');
           expect(Object.keys(Contact.all.calls.mostRecent().args[0])).toContain('level_type');
@@ -56,7 +52,8 @@
       function initController () {
         controller = $controller('LeaveCalendarAdminController').init({
           contactId: contactId,
-          filters: { userSettings: {} }
+          filters: { userSettings: {} },
+          selectedPeriod: { start_date: '2016-01-01', end_date: '2016-12-31' }
         });
       }
     });

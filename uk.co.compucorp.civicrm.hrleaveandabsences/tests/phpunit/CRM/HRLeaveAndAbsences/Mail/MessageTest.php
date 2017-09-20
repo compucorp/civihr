@@ -139,32 +139,38 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
   }
 
   public function testGetTemplateParametersForLeaveContact() {
+    $leaveRequestId = 1;
     $templateParameters = [
       'status' => 'Mock Status',
       'date' => 'Test Date'
     ];
-    $expectedUrl = ['leaveRequestLink' => CRM_Utils_System::url('my-leave', [], true)];
+    $expectedUrl = ['leaveRequestLink' => CRM_Utils_System::url(
+      'my-leave#/my-leave/report?leave-request-id=' . $leaveRequestId, [], true)];
     $expectedParameters = array_merge($templateParameters, $expectedUrl);
     $leaveTemplate = $this->createLeaveTemplateMock($templateParameters);
     $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock($leaveTemplate);
 
     $leaveRequest = new LeaveRequest();
+    $leaveRequest->id = $leaveRequestId;
     $leaveRequest->contact_id = 1;
     $message = new Message($leaveRequest, $notificationTemplateFactory);
     $this->assertEquals($expectedParameters, $message->getTemplateParameters($leaveRequest->contact_id));
   }
 
   public function testGetTemplateParametersForManager() {
+    $leaveRequestId = 1;
     $templateParameters = [
       'status' => 'Mock Status',
       'date' => 'Test Date'
     ];
-    $expectedUrl = ['leaveRequestLink' => CRM_Utils_System::url('manager-leave', [], true)];
+    $expectedUrl = ['leaveRequestLink' => CRM_Utils_System::url(
+      'manager-leave#/manager-leave/requests?leave-request-id=' . $leaveRequestId, [], true)];
     $expectedParameters = array_merge($templateParameters, $expectedUrl);
     $leaveTemplate = $this->createLeaveTemplateMock($templateParameters);
     $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock($leaveTemplate);
 
     $leaveRequest = new LeaveRequest();
+    $leaveRequest->id = $leaveRequestId;
     $leaveRequest->contact_id = 1;
     $managerID = 2;
     $message = new Message($leaveRequest, $notificationTemplateFactory);

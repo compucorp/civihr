@@ -1,50 +1,36 @@
 /* eslint-env amd */
 
 define([
-  'leave-absences/shared/modules/controllers',
-  'leave-absences/shared/controllers/request.controller',
-  'leave-absences/shared/instances/leave-request.instance'
+  'leave-absences/shared/modules/controllers'
 ], function (controllers) {
   controllers.controller('LeaveRequestCtrl', LeaveRequestCtrl);
 
-  LeaveRequestCtrl.$inject = ['$controller', '$log', '$uibModalInstance',
-    'directiveOptions', 'LeaveRequestInstance'];
+  LeaveRequestCtrl.$inject = ['$log', '$q', 'parentCtrl'];
 
-  function LeaveRequestCtrl ($controller, $log, $modalInstance,
-    directiveOptions, LeaveRequestInstance) {
+  function LeaveRequestCtrl ($log, $q, parentCtrl) {
     $log.debug('LeaveRequestCtrl');
 
-    var parentRequestCtrl = $controller('RequestCtrl');
-    var vm = Object.create(parentRequestCtrl);
+    var vm = parentCtrl;
 
-    vm.directiveOptions = directiveOptions;
-    vm.$modalInstance = $modalInstance;
-    vm.initParams = {
-      absenceType: {
-        is_sick: false
-      }
-    };
-
-    vm._initRequest = _initRequest;
-
-    (function init () {
-      vm.loading.absenceTypes = true;
-
-      vm._init()
-        .finally(function () {
-          vm.loading.absenceTypes = false;
-        });
-    })();
+    vm.checkSubmitConditions = checkSubmitConditions;
+    vm.initChildController = initChildController;
 
     /**
-     * Initialize leaverequest based on attributes that come from directive
+     * Checks if submit button can be enabled for user and returns true if successful
+     *
+     * @return {Boolean}
      */
-    function _initRequest () {
-      var attributes = vm._initRequestAttributes();
-
-      vm.request = LeaveRequestInstance.init(attributes);
+    function checkSubmitConditions () {
+      return vm._canCalculateChange();
     }
 
-    return vm;
+    /**
+     * Initialize the controller
+     *
+     * @return {Promise}
+     */
+    function initChildController () {
+      return $q.resolve();
+    }
   }
 });

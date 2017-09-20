@@ -2,38 +2,11 @@
   <div class="panel panel-default">
     <crm-loading show="!vm.loading.page">
       <div class="panel-heading row chr_manage_leave_requests__header">
-        <span class="panel-title" ng-if="!vm.isAdmin">Manager Absence Approval</span>
-        <span class="chr_manage_leave_requests__assignee_filter">
-          <div class="btn-group" ng-if="vm.isAdmin">
-            <button
-              ng-repeat="filter in vm.filtersByAssignee"
-              type="button"
-              ng-click="vm.refreshWithFilterByAssignee(filter.type)"
-              ng-class="{'active': vm.filters.leaveRequest.assignedTo === filter.type}"
-              class="btn btn-secondary-outline btn-sm">{{filter.label}}
-            </button>
-          </div>
-        </span>
-        <span class="chr_manage_leave_requests__period_and_all_filters">
-          <div class="crm_custom-select">
+        <h3 class="col-md-5 panel-title" ng-if="!vm.isAdmin">Manager Absence Approval</h3>
+        <div class="col-md-3 chr_manage_leave_requests__leave_type_filter">
+          <div class="crm_custom-select crm_custom-select--full">
             <select
-              ng-options="period as vm.labelPeriod(period) for period in vm.absencePeriods track by period.id"
-              ng-model="vm.filters.leaveRequest.selectedPeriod"
-              ng-change="vm.refresh()">
-            </select>
-            <span class="crm_custom-select__arrow"></span>
-          </div>
-          <span class="chr_manage_leave_requests__filter pointer"
-            ng-click="vm.isFilterExpanded = !vm.isFilterExpanded">
-            <i class="fa" aria-hidden="true"
-              ng-class="{ 'fa-chevron-right': !vm.isFilterExpanded, ' fa-chevron-down': vm.isFilterExpanded }">
-            </i>
-            Filter
-          </span>
-        </span>
-        <span class="chr_manage_leave_requests__leave_type_filter">
-          <div class="crm_custom-select">
-            <select
+              class="no-select2"
               ng-options="types.title for types in vm.absenceTypes track by types.id"
               ng-model="vm.filters.leaveRequest.selectedAbsenceTypes"
               ng-change="vm.refresh()">
@@ -41,11 +14,54 @@
             </select>
             <span class="crm_custom-select__arrow"></span>
           </div>
-        </span>
+        </div>
+        <div class="visible-md visible-lg col-md-4 col-md-offset-1 chr_manage_leave_requests__assignee_filter text-center" ng-if="vm.isAdmin">
+          <div class="btn-group">
+            <button
+              ng-repeat="filter in vm.filtersByAssignee"
+              type="button"
+              ng-click="vm.refreshWithFilterByAssignee(filter)"
+              ng-class="{'active': vm.filters.leaveRequest.assignedTo.type === filter.type}"
+              class="btn btn-secondary-outline btn-sm">{{filter.label}}
+            </button>
+          </div>
+        </div>
+        <div class="hidden-md hidden-lg col-md-4 col-md-offset-1 chr_manage_leave_requests__assignee_filter text-center" ng-if="vm.isAdmin">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="filter as filter.label for filter in vm.filtersByAssignee"
+              ng-model="vm.filters.leaveRequest.assignedTo"
+              ng-change="vm.refresh()">
+              <option value="">Set Assigned to</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </div>
+
+        <div class="col-md-4 row">
+          <div
+            ng-class="{ 'col-lg-8 col-lg-offset-2' : vm.isAdmin }"
+            class="col-md-10 chr_manage_leave_requests__period_and_all_filters">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="period as vm.labelPeriod(period) for period in vm.absencePeriods track by period.id"
+              ng-model="vm.filters.leaveRequest.selectedPeriod"
+              ng-change="vm.refresh()">
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </div>
+          <div class="col-md-2 chr_manage_leave_requests__filter pointer" ng-click="vm.isFilterExpanded = !vm.isFilterExpanded">
+          <i class="fa" aria-hidden="true" ng-class="{ 'fa-chevron-right': !vm.isFilterExpanded, ' fa-chevron-down': vm.isFilterExpanded }"></i>
+          Filter
+        </div>
+        </div>
       </div>
-      <div class="panel-subheading chr_manage_leave_requests__sub-header"
+      <div class="panel-subheading row chr_manage_leave_requests__sub-header"
         ng-show="vm.isFilterExpanded">
-        <div>
+        <div class="col-md-4 col-lg-2">
           <ui-select ng-change="vm.refresh()" ng-model="vm.filters.leaveRequest.contact_id">
             <ui-select-match placeholder="Staff Member" allow-clear>
               <span ng-bind="$select.selected.display_name"></span>
@@ -55,43 +71,55 @@
             </ui-select-choices>
           </ui-select>
         </div>
-        <div class="crm_custom-select">
-          <select
-            ng-options="region.value as region.label for region in vm.regions track by region.id"
-            ng-model="vm.filters.contact.region"
-            ng-change="vm.refresh(region)">
-            <option value="">Region</option>
-          </select>
-          <span class="crm_custom-select__arrow"></span>
+        <div class="col-md-4 col-lg-2">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="region.value as region.label for region in vm.regions track by region.id"
+              ng-model="vm.filters.contact.region"
+              ng-change="vm.refresh(region)">
+              <option value="">Region</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
         </div>
-        <div class="crm_custom-select">
-          <select
-            ng-options="department.value as department.label for department in vm.departments track by department.id"
-            ng-model="vm.filters.contact.department"
-            ng-change="vm.refresh()">
-            <option value="">Department</option>
-          </select>
-          <span class="crm_custom-select__arrow"></span>
+        <div class="col-md-4 col-lg-2">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="department.value as department.label for department in vm.departments track by department.id"
+              ng-model="vm.filters.contact.department"
+              ng-change="vm.refresh()">
+              <option value="">Department</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
         </div>
-        <div class="crm_custom-select">
-          <select
-            ng-options="levelType.value as levelType.value for levelType in vm.levelTypes track by levelType.id"
-            ng-model="vm.filters.contact.level_type"
-            ng-change="vm.refresh()">
-            <option value="">Level Type</option>
-          </select>
-          <span class="crm_custom-select__arrow"></span>
+        <div class="col-md-4 col-lg-2 no_gutter">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="levelType.value as levelType.value for levelType in vm.levelTypes track by levelType.id"
+              ng-model="vm.filters.contact.level_type"
+              ng-change="vm.refresh()">
+              <option value="">Level Type</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
         </div>
-        <div class="crm_custom-select">
-          <select
-            ng-options="location.value as location.label for location in vm.locations track by location.id"
-            ng-model="vm.filters.contact.location"
-            ng-change="vm.refresh()">
-            <option value="">Locations</option>
-          </select>
-          <span class="crm_custom-select__arrow"></span>
+        <div class="col-md-4 col-lg-2 no_gutter">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="location.value as location.label for location in vm.locations track by location.id"
+              ng-model="vm.filters.contact.location"
+              ng-change="vm.refresh()">
+              <option value="">Locations</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
         </div>
-        <div class="checkbox">
+        <div class="col-md-4 col-lg-2 checkbox no_gutter">
           <label>
             <input type="checkbox" ng-change="vm.refresh(1, true)"
               ng-model="vm.filters.leaveRequest.pending_requests">Pending only
@@ -101,101 +129,119 @@
       <crm-loading show="!vm.loading.content">
         <div ng-hide="!vm.loading.table && !vm.leaveRequests.table.list.length"
            class="panel-body row chr_manage_leave_requests__panel_body">
-          <ul class="col-xs-3 nav nav-pills nav-stacked chr_vertical_tabs">
+          <ul class="visible-md visible-lg col-md-3 nav nav-pills nav-stacked chr_vertical_tabs">
             <li ng-repeat="status in vm.leaveRequestStatuses track by status.value"
-              ng-hide="vm.filterLeaveRequestByStatus(status).length === 0"
+              ng-hide="vm.countLeaveRequestByStatus(status) === 0"
               ng-click="vm.refreshWithFilter(status)"
               ng-class="{'active': vm.filters.leaveRequest.leaveStatus.name === status.name}">
               <a>
                 <span class="active badge {{vm.getNavBadge(status.name)}} pull-right">
-                  {{vm.filterLeaveRequestByStatus(status).length}}
+                  {{vm.countLeaveRequestByStatus(status)}}
                 </span>
                 {{status.label}}
               </a>
             </li>
           </ul>
-          <div class="col-xs-9">
+
+          <div class="hidden-md hidden-lg panel-heading chr_manage_leave_requests__status_container">
+            <div>
+              <div class="crm_custom-select crm_custom-select--full">
+                <select
+                  class="no-select2"
+                  ng-options="status.label for status in vm.leaveRequestStatuses | filter: vm.countLeaveRequestByStatus"
+                  ng-model="vm.filters.leaveRequest.leaveStatus"
+                  ng-change="vm.refresh(1, false, 'table')">
+                  <option value="">Leave Status</option>
+                </select>
+                <span class="crm_custom-select__arrow"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-9">
             <crm-loading show="!vm.loading.table">
-              <table class="table table-clean table-hover">
-              <thead>
-                <tr>
-                  <th width="20%">Employee Name</th>
-                  <th width="16%">Type</th>
-                  <th width="19%">Balance Change</th>
-                  <th width="27%">Dates</th>
-                  <th width="12%">Status</th>
-                  <th width="6%" class="text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  class="pointer"
-                  ng-click="vm.openLeavePopup(request)"
-                  ng-repeat="request in vm.leaveRequests.table.list track by request.id">
-                  <td>{{vm.getUserNameByID(request.contact_id)}}</td>
-                  <td>{{vm.getAbsenceTypesByID(request.type_id)}}</td>
-                  <td>
-                    {{request.balance_change > 0 ? "+" : ""}}{{request.balance_change}}
-                  </td>
-                  <td>{{request.from_date}} - {{request.to_date}}</td>
-                  <td>{{vm.getLeaveStatusByValue(request.status_id)}}</td>
-                  <td class="text-center">
-                    <leave-request-actions
-                      leave-request="request"
-                      role="vm.isAdmin ? 'admin' : 'manager'"
-                      absence-types="vm.absenceTypes"
-                      leave-request-statuses="vm.leaveRequestStatuses">
-                    </leave-request-actions>
-                  </td>
-                </tr>
-              </tbody>
-              <tfoot ng-show="vm.totalNoOfPages() > 1">
-                <tr>
-                  <td colspan="5" class="text-center">
-                    <ul class="pagination">
-                      <li
-                        ng-click="vm.refresh(1)"
-                        ng-hide="vm.pagination.page === 1"
-                        class="active">
-                        <a class="pointer">
-                          <i class="fa fa-angle-double-left" aria-hidden="true"></i> First
-                        </a>
-                      </li>
-                      <li
-                        ng-click="vm.refresh(vm.pagination.page - 1)"
-                        ng-hide="vm.pagination.page === 1"
-                        class="active">
-                        <a class="pointer">
-                          <i class="fa fa-angle-left" aria-hidden="true"></i> Previous
-                        </a>
-                      </li>
-                      <li
-                        ng-class="{'active': vm.pagination.page - 1 === $index}"
-                        ng-click="vm.refresh($index + 1)"
-                        ng-repeat="a in vm.getArrayOfSize(vm.totalNoOfPages()) track by $index">
-                        <a>{{$index + 1}}</a>
-                      </li>
-                      <li
-                        ng-click="vm.refresh(vm.pagination.page + 1)"
-                        ng-hide="vm.pagination.page >= vm.totalNoOfPages()"
-                        class="active">
-                        <a class="pointer">
-                          Next <i class="fa fa-angle-right" aria-hidden="true"></i>
-                        </a>
-                      </li>
-                      <li
-                        ng-click="vm.refresh(vm.totalNoOfPages())"
-                        ng-hide="vm.pagination.page >= vm.totalNoOfPages()"
-                        class="active">
-                        <a class="pointer">
-                          Last <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                        </a>
-                      </li>
-                    </ul>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+              <div class="table-responsive">
+                <table class="table table-clean table-hover">
+                <thead>
+                  <tr>
+                    <th>Employee Name</th>
+                    <th>Type</th>
+                    <th>Balance Change</th>
+                    <th>Dates</th>
+                    <th>Status</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    class="pointer"
+                    ng-click="vm.openLeavePopup(request)"
+                    ng-repeat="request in vm.leaveRequests.table.list track by request.id">
+                    <td>{{vm.getUserNameByID(request.contact_id)}}</td>
+                    <td>{{vm.getAbsenceTypesByID(request.type_id)}}</td>
+                    <td>
+                      {{request.balance_change > 0 ? "+" : ""}}{{request.balance_change}}
+                    </td>
+                    <td>{{request.from_date}} - {{request.to_date}}</td>
+                    <td>{{vm.getLeaveStatusByValue(request.status_id)}}</td>
+                    <td class="text-center">
+                      <leave-request-actions
+                        leave-request="request"
+                        role="vm.isAdmin ? 'admin' : 'manager'"
+                        absence-types="vm.absenceTypes"
+                        leave-request-statuses="vm.leaveRequestStatuses">
+                      </leave-request-actions>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot ng-show="vm.totalNoOfPages() > 1">
+                  <tr>
+                    <td colspan="5" class="text-center">
+                      <ul class="pagination">
+                        <li
+                          ng-click="vm.refresh(1)"
+                          ng-hide="vm.pagination.page === 1"
+                          class="active">
+                          <a class="pointer">
+                            <i class="fa fa-angle-double-left" aria-hidden="true"></i> First
+                          </a>
+                        </li>
+                        <li
+                          ng-click="vm.refresh(vm.pagination.page - 1)"
+                          ng-hide="vm.pagination.page === 1"
+                          class="active">
+                          <a class="pointer">
+                            <i class="fa fa-angle-left" aria-hidden="true"></i> Previous
+                          </a>
+                        </li>
+                        <li
+                          ng-class="{'active': vm.pagination.page - 1 === $index}"
+                          ng-click="vm.refresh($index + 1)"
+                          ng-repeat="a in vm.getArrayOfSize(vm.totalNoOfPages()) track by $index">
+                          <a>{{$index + 1}}</a>
+                        </li>
+                        <li
+                          ng-click="vm.refresh(vm.pagination.page + 1)"
+                          ng-hide="vm.pagination.page >= vm.totalNoOfPages()"
+                          class="active">
+                          <a class="pointer">
+                            Next <i class="fa fa-angle-right" aria-hidden="true"></i>
+                          </a>
+                        </li>
+                        <li
+                          ng-click="vm.refresh(vm.totalNoOfPages())"
+                          ng-hide="vm.pagination.page >= vm.totalNoOfPages()"
+                          class="active">
+                          <a class="pointer">
+                            Last <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                          </a>
+                        </li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tfoot>
+                </table>
+              </div>
             </crm-loading>
           </div>
         </div>

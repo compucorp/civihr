@@ -43,6 +43,18 @@
     <onDelete>CASCADE</onDelete>
   </foreignKey>
 
+  <field>
+    <name>type</name>
+    <type>varchar</type>
+    <length>512</length>
+    <label>Type</label>
+    <comment>The type of this day, according to the values on the Leave Request Day Types Option Group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_request_day_type</optionGroupName>
+    </pseudoconstant>
+  </field>
+
   <index>
     <name>unique_leave_request_date</name>
     <fieldName>date</fieldName>

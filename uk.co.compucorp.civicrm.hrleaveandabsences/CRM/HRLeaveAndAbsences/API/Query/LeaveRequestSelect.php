@@ -25,7 +25,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
  */
 class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
 
-  use CRM_HRLeaveAndAbsences_Service_SettingsManagerTrait;
+  use CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait;
 
   /**
    * @var array
@@ -96,12 +96,26 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     ];
 
     if($hasUnassignedAsFalse) {
-      $conditions = array_merge($conditions, $this->hasActiveLeaveManagerCondition());
+      $conditions = array_merge($conditions, $this->activeLeaveManagerCondition());
     }
 
     if($hasUnassignedAsTrue) {
-      $conditions[] = "NOT (" . implode(' AND ', $this->hasActiveLeaveManagerCondition()) . ") 
+      $conditions[] = "NOT (" . implode(' AND ', $this->activeLeaveManagerCondition()) . ") 
                        OR (r.is_active IS NULL AND rt.is_active IS NULL)";
+
+      $query = "a.contact_id NOT IN(SELECT contact_id_a FROM civicrm_relationship r LEFT JOIN
+                       civicrm_relationship_type rt ON rt.id = r.relationship_type_id WHERE
+                       ". implode(' AND ', $this->activeLeaveManagerCondition());
+
+      $contactID = $this->getContactIdFromParams();
+      if ($contactID) {
+        $query .= " AND r.contact_id_a IN(" . implode(',', $contactID) . "))";
+      }
+      else{
+        $query .= ")";
+      }
+
+      $conditions[] = $query;
     }
 
     if(!empty($this->params['managed_by'])) {
@@ -112,7 +126,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       }
 
       if(!isset($this->params['unassigned'])) {
-        $activeLeaveManagerCondition = $this->hasActiveLeaveManagerCondition();
+        $activeLeaveManagerCondition = $this->activeLeaveManagerCondition();
         $activeLeaveManagerCondition[] = "r.contact_id_b = {$managerID}";
         $conditions = array_merge($conditions, $activeLeaveManagerCondition);
       }
@@ -294,22 +308,24 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
   }
 
   /**
-   * Returns the conditions needed to add to the Where clause for
-   * contacts that have active leave managers
+   * Gets the contactID from the params array and
+   * returns it as an array.
    *
    * @return array
    */
-  private function hasActiveLeaveManagerCondition() {
-    $today =  '"' . date('Y-m-d') . '"';
-    $leaveApproverRelationshipTypes = $this->getLeaveApproverRelationshipsTypesForWhereIn();
+  private function getContactIdFromParams() {
+    $contactID = [];
+    $contactPassedAsArray = !empty($this->params['contact_id']['IN']);
+    $contactPassedAsID = isset($this->params['contact_id']) && is_numeric($this->params['contact_id']);
 
-    $conditions = [];
-    $conditions[] = 'rt.is_active = 1';
-    $conditions[] = 'rt.id IN(' . implode(',', $leaveApproverRelationshipTypes) . ')';
-    $conditions[] = 'r.is_active = 1';
-    $conditions[] = "(r.start_date IS NULL OR r.start_date <= {$today})";
-    $conditions[] = "(r.end_date IS NULL OR r.end_date >= {$today})";
+    if($contactPassedAsArray) {
+      $contactID = $this->params['contact_id']['IN'];
+    }
 
-    return $conditions;
+    if($contactPassedAsID) {
+      $contactID = [$this->params['contact_id']];
+    }
+
+    return $contactID;
   }
 }

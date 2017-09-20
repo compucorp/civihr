@@ -140,10 +140,13 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
    * @return string
    */
   private function getLeaveRequestURL($contactID) {
-    $leaveUrl = CRM_Utils_System::url('my-leave', [], true);
+    $queryString = '?leave-request-id=' . $this->leaveRequest->id;
+    $leaveUrl = CRM_Utils_System::url('my-leave#/my-leave/report' .
+      $queryString, [], true);
 
     if ($this->leaveRequest->contact_id != $contactID) {
-      $leaveUrl = CRM_Utils_System::url('manager-leave', [], true);
+      $leaveUrl = CRM_Utils_System::url('manager-leave#/manager-leave/requests' .
+        $queryString, [], true);
     }
 
     return $leaveUrl;
@@ -195,10 +198,10 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
       SELECT r.contact_id_b
       FROM {$relationshipTable} r
       LEFT JOIN {$relationshipTypeTable} rt ON rt.id = r.relationship_type_id
-      WHERE r.is_active = 1 AND rt.is_active = 1 
+      WHERE r.is_active = 1 AND rt.is_active = 1
       AND rt.id IN(" . implode(',', $leaveApproverRelationships) . ")
       AND r.contact_id_a = {$this->leaveRequest->contact_id}
-      AND (r.start_date IS NULL OR r.start_date <= '$today') 
+      AND (r.start_date IS NULL OR r.start_date <= '$today')
       AND (r.end_date IS NULL OR r.end_date >= '$today')
     ";
 

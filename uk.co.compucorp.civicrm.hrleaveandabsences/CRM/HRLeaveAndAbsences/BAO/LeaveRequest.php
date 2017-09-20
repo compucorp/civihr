@@ -22,32 +22,38 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   const REQUEST_TYPE_TOIL = 'toil';
   const REQUEST_TYPE_PUBLIC_HOLIDAY = 'public_holiday';
 
+  //Validations Mode for the create method
+  const VALIDATIONS_ON = 1;
+  const VALIDATIONS_OFF = 2;
+  const IMPORT_VALIDATION = 3;
+
   /**
    * Create a new LeaveRequest based on array-data
    *
    * @param array $params key-value pairs
+   * @param int $validationMode
+   *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    *
    * @throws \Exception
    */
-  public static function create($params, $validate = true) {
+  public static function create($params, $validationMode = self::VALIDATIONS_ON) {
     $entityName = 'LeaveRequest';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
 
-    if($validate){
-      self::validateParams($params);
-    }
+    self::validateParams($params, $validationMode);
     unset($params['is_deleted']);
 
+    $datesChanged = self::datesChanged($params);
     $instance = new self();
     $instance->copyValues($params);
 
     $transaction = new CRM_Core_Transaction();
     try {
       $instance->save();
-      $instance->saveDates();
+      $instance->saveDates($datesChanged);
       $transaction->commit();
     } catch(Exception $e) {
       $transaction->rollback();
@@ -66,10 +72,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param array $params
    *   The params array received by the create method
+   * @param int $validationMode
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  public static function validateParams($params) {
+  public static function validateParams($params, $validationMode = self::VALIDATIONS_ON) {
+    if($validationMode == self::VALIDATIONS_OFF) {
+      return;
+    }
     self::validateMandatory($params);
     self::validateLeaveRequestSoftDeleteDuringUpdate($params);
     self::validateRequestType($params);
@@ -85,7 +95,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params, $absenceType);
     self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params, $absenceType);
     self::validateAbsencePeriod($params, $absencePeriod);
-    self::validateEntitlementAndWorkingDayAndBalanceChange($params, $absenceType, $absencePeriod);
+
+    if($validationMode != self::IMPORT_VALIDATION) {
+      self::validateEntitlementAndWorkingDayAndBalanceChange($params, $absenceType, $absencePeriod);
+    }
+
 
   }
 
@@ -447,7 +461,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
 
-    $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
+    // Leave Request is able to be rejected or cancelled disregarding the balance
+    if (in_array($params['status_id'], self::getCancelledStatuses())) {
+      return;
+    }
+
+    $leaveRequestBalance = self::getLeaveRequestBalance($params);
     if ($leaveRequestBalance == 0) {
       throw new InvalidLeaveRequestException(
         'Leave Request must have at least one working day to be created',
@@ -456,7 +475,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       );
     }
 
-    $currentBalance = $leavePeriodEntitlement->getBalance();
+    $requestsToExcludeFromBalance = [];
+    if (!empty($params['id'])) {
+      $oldLeaveRequest = self::findById($params['id']);
+
+      if (self::isAlreadyApproved($oldLeaveRequest)) {
+        $requestsToExcludeFromBalance[] = $oldLeaveRequest->id;
+      }
+    }
+
+    $currentBalance = $leavePeriodEntitlement->getBalance($requestsToExcludeFromBalance);
 
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
       throw new InvalidLeaveRequestException(
@@ -499,7 +527,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateNoOverlappingLeaveRequests($params) {
-    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
+    $leaveRequestStatuses = self::getStatuses();
 
     $leaveRequestStatusFilter = [
       $leaveRequestStatuses['approved'],
@@ -595,7 +623,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params, $absenceType) {
-    $leaveRequestStatuses = array_flip(self::buildOptions('status_id', 'validate'));
+    $leaveRequestStatuses = self::getStatuses();
     $leaveRequestIsForCurrentUser = CRM_Core_Session::getLoggedInContactID() == $params['contact_id'];
     $isACancellationRequest = ($params['status_id'] == $leaveRequestStatuses['cancelled']);
 
@@ -707,7 +735,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $query = "
       SELECT DISTINCT lr.* FROM {$leaveRequestTable} lr
-      INNER JOIN {$leaveRequestDateTable} lrd 
+      INNER JOIN {$leaveRequestDateTable} lrd
         ON lrd.leave_request_id = lr.id
       INNER JOIN {$leaveBalanceChangeTable} lbc
         ON lbc.source_id = lrd.id AND lbc.source_type = %1
@@ -742,6 +770,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
+   * Returns a list of all possible statuses for a Leave Request
+   *
+   * @return array
+   */
+  public static function getStatuses() {
+    return array_flip(self::buildOptions('status_id', 'validate'));
+  }
+
+  /**
    * Returns all the LeaveRequestDate instances related to this LeaveRequest.
    *
    * @return CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate[]
@@ -752,9 +789,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Creates and saves LeaveRequestDates for this LeaveRequest
+   * Creates and saves LeaveRequestDates for this LeaveRequest.
+   *
+   * If its an update and the dates has not changed when comparing
+   * the values in the db to the values about to be updated, i.e
+   * dateChanged = false, the previous dates are not deleted and
+   * re-created but left as is.
+   *
+   * @param bool|null $datesChanged
    */
-  private function saveDates() {
+  private function saveDates($datesChanged = null) {
+    if($datesChanged === false) {
+      return;
+    }
+
     $this->deleteDatesAndBalanceChanges();
 
     $datePeriod = new BasicDatePeriod($this->from_date, $this->to_date);
@@ -934,14 +982,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $leaveRequestTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
 
-    $query = "DELETE bc, lrd, lr 
+    $query = "DELETE bc, lrd, lr
               FROM {$leaveRequestTable} lr
-              INNER JOIN {$leaveRequestDateTable} lrd 
-                ON lrd.leave_request_id = lr.id 
-              INNER JOIN {$leaveBalanceChangeTable} bc 
-                ON bc.source_id = lrd.id AND bc.source_type = %1 
-              WHERE lr.type_id = %2 AND 
-                    lr.from_date >= %3 AND 
+              INNER JOIN {$leaveRequestDateTable} lrd
+                ON lrd.leave_request_id = lr.id
+              INNER JOIN {$leaveBalanceChangeTable} bc
+                ON bc.source_id = lrd.id AND bc.source_type = %1
+              WHERE lr.type_id = %2 AND
+                    lr.from_date >= %3 AND
                     lr.request_type = %4 AND
                     lr.toil_expiry_date > %5
               ";
@@ -1006,14 +1054,36 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Returns Statuses considered to be Approval statuses for a Leave Request
+   * Returns Statuses on which a Leave Request is considered to be Approved
    *
    * @return array
    */
-  private static function getApprovalStatuses() {
-    $leaveStatuses = array_flip(self::buildOptions('status_id', 'validate'));
+  public static function getApprovedStatuses() {
+    $leaveStatuses = self::getStatuses();
 
     return [$leaveStatuses['approved'], $leaveStatuses['admin_approved']];
+  }
+
+  /**
+   * Returns Statuses on which a Leave Request is considered to be Open
+   *
+   * @return array
+   */
+  public static function getOpenStatuses() {
+    $leaveStatuses = self::getStatuses();
+
+    return [$leaveStatuses['awaiting_approval'], $leaveStatuses['more_information_required']];
+  }
+
+  /**
+   * Returns Statuses on which a Leave Request is considered to be Cancelled
+   *
+   * @return array
+   */
+  public static function getCancelledStatuses() {
+    $leaveStatuses = self::getStatuses();
+
+    return [$leaveStatuses['cancelled'], $leaveStatuses['rejected']];
   }
 
   /**
@@ -1026,7 +1096,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function isAlreadyApproved(LeaveRequest $leaveRequest) {
     $oldStatus = $leaveRequest->status_id;
 
-    return in_array($oldStatus, self::getApprovalStatuses());
+    return in_array($oldStatus, self::getApprovedStatuses());
   }
 
   /**
@@ -1073,5 +1143,63 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $period = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
 
     return [$absenceType, $period];
+  }
+
+  /**
+   * Checks if the from_date or to_date of a leave request has changed by comparing the
+   * date values to be updated to the current values in the database
+   *
+   * @param array $params
+   *
+   * @return bool|null
+   *   Returns null for when a leave request is newly
+   *   created.
+   */
+  public static function datesChanged($params) {
+    if(!empty($params['id'])) {
+      $leaveRequest = self::findById($params['id']);
+      $fromDate = new DateTime($params['from_date']);
+      $fromDateType = $params['from_date_type'];
+      $toDate = new DateTime($params['to_date']);
+      $toDateType = $params['to_date_type'];
+      $leaveRequestFromDate = new DateTime($leaveRequest->from_date);
+      $leaveRequestFromDateType = $leaveRequest->from_date_type;
+      $leaveRequestToDate = new DateTime($leaveRequest->to_date);
+      $leaveRequestToDateType = $leaveRequest->to_date_type;
+
+      $isNotSameFromDate = $leaveRequestFromDate != $fromDate;
+      $isNotSameFromDateType = $leaveRequestFromDateType != $fromDateType;
+      $isNotSameToDate = $leaveRequestToDate != $toDate;
+      $isNotSameToDateType = $leaveRequestToDateType != $toDateType;
+
+      return ($isNotSameFromDate || $isNotSameFromDateType) ||
+        ($isNotSameToDate || $isNotSameToDateType);
+    }
+
+    return null;
+  }
+
+  /**
+   * Returns the balance change for the leave request.
+   *
+   * If its an already created leave request and the dates did not change
+   * and the change_balance parameter is false, the balance change as of
+   * when the leave request was created is returned.
+   *
+   * @param array $params
+   *
+   * @return float
+   */
+  private static function getLeaveRequestBalance($params) {
+    $useNewBalance = !empty($params['change_balance']);
+    $useOldBalance = !empty($params['id']) &&
+      !self::datesChanged($params) && !$useNewBalance;
+
+    if($useOldBalance) {
+      $leaveRequest = self::findById($params['id']);
+      return LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    }
+
+    return self::calculateBalanceChangeFromCreateParams($params);
   }
 }
