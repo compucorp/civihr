@@ -475,15 +475,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       );
     }
 
-    $currentBalance = $leavePeriodEntitlement->getBalance();
-
+    $requestsToExcludeFromBalance = [];
     if (!empty($params['id'])) {
       $oldLeaveRequest = self::findById($params['id']);
 
-      if ($oldLeaveRequest && $oldLeaveRequest->id && self::isAlreadyApproved($oldLeaveRequest)) {
-        $currentBalance = $leavePeriodEntitlement->getBalance([$oldLeaveRequest->id]);
+      if (self::isAlreadyApproved($oldLeaveRequest)) {
+        $requestsToExcludeFromBalance[] = $oldLeaveRequest->id;
       }
     }
+
+    $currentBalance = $leavePeriodEntitlement->getBalance($requestsToExcludeFromBalance);
 
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
       throw new InvalidLeaveRequestException(

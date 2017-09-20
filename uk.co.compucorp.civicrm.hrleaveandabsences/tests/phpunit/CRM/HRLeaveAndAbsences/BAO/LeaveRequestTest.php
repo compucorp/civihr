@@ -3313,7 +3313,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertNotNull($leaveRequest->id);
   }
 
-  public function testAlreadyApprovedLeaveRequestCanNotBeUpdatedWhenDatesChangeAndLeaveBalanceGreaterPreviousLeaveBalanceAndEntitlementBalanceIsZero() {
+  public function testApprovedRequestCanNotBeUpdatedWhenCurrentBalanceIsZeroAndDatesChangeAndBalanceChangeIsGreaterThanPreviousBalanceChange() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
@@ -3359,7 +3359,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $params['from_date'] = CRM_Utils_Date::processDate('2016-11-14');
     $params['to_date'] = CRM_Utils_Date::processDate('2016-11-17');
 
-    //Since the dates as changed, the request is treated as a fresh request as if it is just being requested
+    //Since the dates are changed, the request is treated as a fresh request as if it is just being requested
     //with entitlement balance change being same as it was before it was requested.
     $this->setExpectedException(
       'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
@@ -3422,7 +3422,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(0, $periodEntitlement1->getBalance());
 
     //Update Leave Request dates with dates being in the second period.
-    //The balance deducted when leave request was made will not be added to the entitlement balance
+    //The balance deducted when leave request was made will not be added to $entitlement2Balance
     //since the leave request was not initially approved in the second period.
     //But the entitlement balance is Zero in second period, so an exception will be thrown.
     $params['id'] = $leaveRequest->id;
