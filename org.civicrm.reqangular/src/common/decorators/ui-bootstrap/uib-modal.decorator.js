@@ -4,7 +4,7 @@ define(function () {
   'use strict';
 
   return ['$delegate', '$document', function ($delegate, $document) {
-    var openFunction = $delegate.open;
+    var originalOpenFunction = $delegate.open;
 
     $delegate.open = open;
 
@@ -17,15 +17,15 @@ define(function () {
      */
     function open () {
       var modalInstance;
-      var lockScrollStyle = 'overflow: hidden;height: 100%;width: 100%;';
+      var lockScrollStyle = 'overflow: hidden; height: 100%; width: 100%;';
       var elements = [
         {
           node: $document[0].body,
           originalStyle: $document[0].body.getAttribute('style')
         },
         {
-          node: document.getElementsByTagName('html')[0],
-          originalStyle: document.getElementsByTagName('html')[0].getAttribute('style')
+          node: $document[0].getElementsByTagName('html')[0],
+          originalStyle: $document[0].getElementsByTagName('html')[0].getAttribute('style')
         }
       ];
 
@@ -34,7 +34,7 @@ define(function () {
         element.node.setAttribute('style', element.style + ';' + lockScrollStyle);
       });
 
-      modalInstance = openFunction.apply(this, arguments);
+      modalInstance = originalOpenFunction.apply(this, arguments);
 
       modalInstance.closed.then(function () {
         elements.forEach(function (element) {
