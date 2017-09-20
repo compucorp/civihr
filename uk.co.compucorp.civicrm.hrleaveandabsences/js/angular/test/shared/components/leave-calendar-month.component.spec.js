@@ -171,6 +171,7 @@
 
                 compileComponent();
                 sendShowMonthsSignal();
+                controller.contactsList();
                 $rootScope.$digest();
               });
 
