@@ -466,7 +466,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
 
-    $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
+    $leaveRequestBalance = self::getLeaveRequestBalance($params);
     if ($leaveRequestBalance == 0) {
       throw new InvalidLeaveRequestException(
         'Leave Request must have at least one working day to be created',
@@ -475,7 +475,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       );
     }
 
-    $currentBalance = $leavePeriodEntitlement->getBalance();
+    $requestsToExcludeFromBalance = [];
+    if (!empty($params['id'])) {
+      $oldLeaveRequest = self::findById($params['id']);
+
+      if (self::isAlreadyApproved($oldLeaveRequest)) {
+        $requestsToExcludeFromBalance[] = $oldLeaveRequest->id;
+      }
+    }
+
+    $currentBalance = $leavePeriodEntitlement->getBalance($requestsToExcludeFromBalance);
 
     if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
       throw new InvalidLeaveRequestException(
@@ -1168,5 +1177,29 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     return null;
+  }
+
+  /**
+   * Returns the balance change for the leave request.
+   *
+   * If its an already created leave request and the dates did not change
+   * and the change_balance parameter is false, the balance change as of
+   * when the leave request was created is returned.
+   *
+   * @param array $params
+   *
+   * @return float
+   */
+  private static function getLeaveRequestBalance($params) {
+    $useNewBalance = !empty($params['change_balance']);
+    $useOldBalance = !empty($params['id']) &&
+      !self::datesChanged($params) && !$useNewBalance;
+
+    if($useOldBalance) {
+      $leaveRequest = self::findById($params['id']);
+      return LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    }
+
+    return self::calculateBalanceChangeFromCreateParams($params);
   }
 }
