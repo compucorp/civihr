@@ -27,8 +27,8 @@
       {if $action ne 1 and $action ne 2}
         <div class="panel-footer clearfix">
           <div class="pull-right">
-            <a href="{crmURL q="action=add&reset=1"}" class="button btn btn-primary pull-right">
-              <i class="fa fa-plus"></i>
+            <a href="{crmURL q="action=add&reset=1"}" class="btn btn-primary">
+              <i class="fa fa-plus btn-icon"></i>
               <span>{ts}Add Public Holiday{/ts}</span>
             </a>
           </div>
