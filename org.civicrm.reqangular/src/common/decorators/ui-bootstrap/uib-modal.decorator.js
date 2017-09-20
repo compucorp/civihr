@@ -1,6 +1,6 @@
 /* eslint-env amd */
 
-define([], function () {
+define(function () {
   'use strict';
 
   return ['$delegate', '$document', function ($delegate, $document) {
@@ -16,23 +16,29 @@ define([], function () {
      * @return {Object} Modal Instance
      */
     function open () {
-      var lockScrollStyling = ';overflow: hidden;height: 100%;width: 100%;';
       var modalInstance;
+      var lockScrollStyle = 'overflow: hidden;height: 100%;width: 100%;';
       var elements = [
-        { node: $document[0].body },
-        { node: $document[0].getElementsByTagName('html')[0] }
+        {
+          node: $document[0].body,
+          originalStyle: $document[0].body.getAttribute('style')
+        },
+        {
+          node: document.getElementsByTagName('html')[0],
+          originalStyle: document.getElementsByTagName('html')[0].getAttribute('style')
+        }
       ];
 
       elements.forEach(function (element) {
         element.style = element.node.getAttribute('style');
-        element.node.setAttribute('style', element.style + lockScrollStyling);
+        element.node.setAttribute('style', element.style + ';' + lockScrollStyle);
       });
 
       modalInstance = openFunction.apply(this, arguments);
 
       modalInstance.closed.then(function () {
         elements.forEach(function (element) {
-          element.node.setAttribute('style', element.style);
+          element.node.setAttribute('style', element.originalStyle);
         });
       });
 
