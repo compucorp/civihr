@@ -16,7 +16,7 @@
             <th>{ts}Is Default{/ts}</th>
             <th>{ts}Order{/ts}</th>
             <th>{ts}Enabled/Disabled{/ts}</th>
-            <th></th>
+            <th>&nbsp;</th>
           </thead>
           {foreach from=$rows item=row}
             <tr id="WorkPattern-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}">

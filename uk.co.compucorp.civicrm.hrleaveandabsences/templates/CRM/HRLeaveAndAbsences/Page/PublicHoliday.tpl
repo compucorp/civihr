@@ -12,7 +12,7 @@
             <th>{ts}Title{/ts}</th>
             <th>{ts}Date{/ts}</th>
             <th>{ts}Enabled/Disabled{/ts}</th>
-            <th></th>
+            <th>&nbsp;</th>
           </thead>
           {foreach from=$rows item=row}
             <tr id="PublicHoliday-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}">
