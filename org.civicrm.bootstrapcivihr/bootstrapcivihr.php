@@ -117,3 +117,9 @@ function bootstrapcivihr_civicrm_pageRun($page) {
     CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivihr', 'css/civihr.css');
   }
 }
+/**
+ * Implements hook_civicrm_buildForm().
+ */
+function bootstrapcivihr_civicrm_buildForm($formName, &$form) {
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivihr', 'css/civihr.css');
+}
