@@ -292,13 +292,7 @@ define([
         .then(source === 'period' ? buildPeriodMonthsList : _.noop)
         .then(source === 'contacts' ? loadContacts : _.noop)
         .then(function () {
-          if (vm.contactIdsToReduceTo) {
-            subController.loadContacts().then(function () {
-              injectAndShowMonths(true);
-            });
-          } else {
-            injectAndShowMonths((source === 'contacts'));
-          }
+          injectAndShowMonths((source === 'contacts'));
         });
     }
 

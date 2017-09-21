@@ -120,8 +120,6 @@ define([
      * @return {Array}
      */
     function contactsList () {
-      reduceContacts();
-
       return !vm.showOnlyWithLeaveRequests ? vm.contacts : vm.contacts.filter(function (contact) {
         return _.includes(Object.keys(leaveRequests), contact.id);
       });
@@ -150,6 +148,8 @@ define([
     /**
      * If there are contacts to reduce to, reduces contacts to the list provided,
      * plus leaves those who have leave requests at the given month period
+     *
+     * @return {Promise}
      */
     function reduceContacts () {
       if (vm.contactIdsToReduceTo) {
@@ -160,6 +160,8 @@ define([
             }));
         });
       }
+
+      return $q.resolve();
     }
 
     /**
@@ -325,6 +327,7 @@ define([
         loadMonthWorkPatternCalendars(),
         loadMonthLeaveRequests()
       ])
+      .then(reduceContacts)
       .then(setMonthDaysContactData)
       .then(function () {
         dataLoaded = true;
