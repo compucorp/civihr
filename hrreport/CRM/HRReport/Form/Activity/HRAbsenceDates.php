@@ -142,6 +142,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
               'activity_type_id' =>
                 [
                   'title' => ts('Absence Type'),
+                  'alias' => 'parent_activity',
                   'required' => TRUE,
                   'type' => CRM_Utils_Type::T_STRING,
                 ],
@@ -167,6 +168,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
                   'title' => ts('Status'),
                   'default' => TRUE,
                   'type' => CRM_Utils_Type::T_STRING,
+                  'alias' => 'parent_activity',
                   'required' => TRUE,
                 ],
               'details' =>
@@ -174,6 +176,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
                   'title' => ts('Comments'),
                   'default' => TRUE,
                   'type' => CRM_Utils_Type::T_STRING,
+                  'alias' => 'parent_activity',
                   'required' => TRUE,
                 ],
             ],
@@ -182,6 +185,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
               'status_id' =>
                 [
                   'title' => ts('Status'),
+                  'alias' => 'parent_activity',
                   'operatorType' => CRM_Report_Form::OP_MULTISELECT,
                   'options' => $this->activityStatus,
                   'type' => CRM_Utils_Type::T_STRING,
@@ -297,6 +301,8 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
                        {$this->_aliases['civicrm_activity_contact']}.record_type_id = {$targetID}
              INNER JOIN civicrm_contact civicrm_contact_target
                     ON {$this->_aliases['civicrm_activity_contact']}.contact_id = civicrm_contact_target.id
+             INNER JOIN civicrm_activity parent_activity 
+                    ON {$this->_aliases['civicrm_activity']}.source_record_id = parent_activity.id
              {$this->_aclFrom}";
 
       if ($this->isTableSelected('civicrm_email')) {
@@ -316,6 +322,8 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
                        {$this->_aliases['civicrm_activity_contact']}.record_type_id = {$assigneeID}
              INNER JOIN civicrm_contact civicrm_contact_assignee
                     ON {$this->_aliases['civicrm_activity_contact']}.contact_id = civicrm_contact_assignee.id
+             INNER JOIN civicrm_activity parent_activity 
+                    ON {$this->_aliases['civicrm_activity']}.source_record_id = parent_activity.id
              {$this->_aclFrom}";
 
       if ($this->isTableSelected('civicrm_email')) {
@@ -335,6 +343,8 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
                        {$this->_aliases['civicrm_activity_contact']}.record_type_id = {$sourceID}
              INNER JOIN civicrm_contact civicrm_contact_source
                     ON {$this->_aliases['civicrm_activity_contact']}.contact_id = civicrm_contact_source.id
+             INNER JOIN civicrm_activity parent_activity 
+                    ON {$this->_aliases['civicrm_activity']}.source_record_id = parent_activity.id
              {$this->_aclFrom}";
 
       if ($this->isTableSelected('civicrm_email')) {
@@ -593,17 +603,6 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
     }
 
     if (!empty($rows)) {
-      $IN = 'activity_type_id IN('. implode(', ', array_keys($this->activityTypes)) .')';
-      $sql = "SELECT id, source_record_id, activity_type_id, details FROM civicrm_activity
-        WHERE source_record_id IS NULL AND $IN";
-
-      $data = [];
-      $dao = CRM_Core_DAO::executeQuery($sql);
-      while ($dao->fetch()) {
-        $data[$dao->id]['absence_type_id'] = $dao->activity_type_id;
-        $data[$dao->id]['details'] = $dao->details;
-      }
-
       $IN = 'activity_type_id IN('. implode(', ', array_keys($this->absenceActivityType)) .')';
       $sql = "SELECT source_record_id, SUM(duration) as total_qty, 
               MIN(activity_date_time) as start_date, MAX(activity_date_time) as end_date 
@@ -628,8 +627,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
 
       if (array_key_exists('civicrm_activity_activity_type_id', $row)) {
         if ($value = $row['civicrm_activity_activity_type_id']) {
-          $activityTypeID = $data[$row['civicrm_activity_source_record_id']]['absence_type_id'];
-          $rows[$rowNum]['civicrm_activity_activity_type_id'] = $this->activityTypes[$activityTypeID];
+          $rows[$rowNum]['civicrm_activity_activity_type_id'] = $this->activityTypes[$value];
         }
       }
 
@@ -643,11 +641,6 @@ class CRM_HRReport_Form_Activity_HRAbsenceDates extends CRM_Report_Form {
         if ($value = $row['civicrm_activity_duration']) {
           $rows[$rowNum]['civicrm_activity_duration'] = $value/480;
         }
-      }
-
-      if (array_key_exists('civicrm_activity_details', $row)) {
-        $value = $row['civicrm_activity_details'];
-        $rows[$rowNum]['civicrm_activity_details'] = $value ? $value : $data[$row['civicrm_activity_source_record_id']]['details'];
       }
 
       if (array_key_exists('civicrm_activity_activity_date_time', $row) && array_key_exists('civicrm_activity_status_id', $row)) {
