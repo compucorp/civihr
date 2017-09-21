@@ -19,6 +19,7 @@ define([
        */
       init: function (_vm_) {
         vm = _vm_;
+        vm.filters.userSettings.contacts_with_leaves = false;
 
         return api();
       }
