@@ -494,11 +494,19 @@ define([
     }
 
     /**
-     * Initialises roles
+     * Initialises the user role to either *admin*, *manager*, or *staff*
+     * depending on the user permissions and whether they are managing their own
+     * leave or not.
+     *
+     * @return {Promise}
      */
     function initRoles () {
       role = 'staff';
 
+      /**
+       * If the user is creating or editing their own leave, they will be
+       * treated as a staff regardless of their actual role.
+       */
       if ($rootScope.section === 'my-leave') {
         return;
       }
