@@ -7,11 +7,11 @@
         {strip}
           <table cellpadding="0" cellspacing="0" border="0" class="table table-responsive hrleaveandabsences-entity-list">
             <thead class="sticky">
-            <th>{ts}Title{/ts}</th>
-            <th>{ts}Start Date{/ts}</th>
-            <th>{ts}End Date{/ts}</th>
-            <th>{ts}Order{/ts}</th>
-            <th></th>
+              <th>{ts}Title{/ts}</th>
+              <th>{ts}Start Date{/ts}</th>
+              <th>{ts}End Date{/ts}</th>
+              <th>{ts}Order{/ts}</th>
+              <th>&nbsp;</th>
             </thead>
             {foreach from=$rows item=row}
               <tr id="AbsencePeriod-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}">

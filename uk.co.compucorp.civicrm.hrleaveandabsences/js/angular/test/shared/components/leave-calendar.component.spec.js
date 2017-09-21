@@ -109,10 +109,6 @@
           expect(controller.loading.page).toBe(false);
         });
 
-        it('shows only those who are taking leave by default', function () {
-          expect(controller.filters.userSettings.contacts_with_leaves).toBe(true);
-        });
-
         it('loads the public holidays', function () {
           expect(PublicHoliday.all).toHaveBeenCalled();
         });
@@ -122,6 +118,28 @@
             'hrleaveandabsences_leave_request_status',
             'hrleaveandabsences_leave_request_day_type'
           ]);
+        });
+
+        describe('taking leave filter', function () {
+          beforeEach(function () {
+            // skip digest to see the default filter settings
+            // before child controller is invoked
+            compileComponent(true);
+          });
+
+          it('sets the filter to *on* by default', function () {
+            expect(controller.filters.userSettings.contacts_with_leaves).toBe(true);
+          });
+
+          describe('when role is staff', function () {
+            beforeEach(function () {
+              compileComponent();
+            });
+
+            it('sets the filter to *off* by default', function () {
+              expect(controller.filters.userSettings.contacts_with_leaves).toBe(false);
+            });
+          });
         });
 
         describe('permissions', function () {

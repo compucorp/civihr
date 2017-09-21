@@ -41,9 +41,9 @@ define([
      * Get contact IDs filtered according to contracts that belong
      * to the currently selected absence period
      *
-     * @return {Promise}
+     * @return {Promise} resolved to contacts list
      */
-    function getContactIdsToReduceTo () {
+    function loadContactIdsToReduceTo () {
       return loadContracts()
       .then(function (contracts) {
         var contractsInAbsencePeriod = contracts.filter(function (contract) {
@@ -56,7 +56,7 @@ define([
           );
         });
 
-        vm.contactIdsToReduceTo = _.uniq(contractsInAbsencePeriod.map(function (contract) {
+        return _.uniq(contractsInAbsencePeriod.map(function (contract) {
           return contract.contact_id;
         }));
       });
@@ -82,9 +82,11 @@ define([
               vm.lookupContacts = contacts;
             })
             .then(function () {
-              vm.contactIdsToReduceTo = null;
-
-              (filterByAssignee !== 'me') && getContactIdsToReduceTo();
+              return (filterByAssignee !== 'me'
+                ? loadContactIdsToReduceTo() : $q.resolve(null));
+            })
+            .then(function (contactIdsToReduceTo) {
+              vm.contactIdsToReduceTo = contactIdsToReduceTo;
 
               return loadContacts();
             })
@@ -113,11 +115,7 @@ define([
      * @return {Promise}
      */
     function loadContracts () {
-      if (contracts) {
-        return $q.resolve(contracts);
-      }
-
-      return Contract.all();
+      return contracts ? $q.resolve(contracts) : Contract.all();
     }
 
     /**

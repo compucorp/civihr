@@ -39,7 +39,10 @@
       });
 
       function initController () {
-        controller = $controller('LeaveCalendarStaffController').init({ contactId: contactId });
+        controller = $controller('LeaveCalendarStaffController').init({
+          contactId: contactId,
+          filters: { userSettings: {} }
+        });
       }
     });
   });
