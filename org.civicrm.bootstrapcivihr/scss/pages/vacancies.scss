@@ -1,0 +1,404 @@
+.page-civicrm-vacancy {
+  .crm-container {
+    .form-layout-compressed {
+      .advmultiselect {
+        input[type='button'] {
+          bottom: 0 !important;
+          position: relative;
+          margin: 0 20px !important;
+          height: 35px;
+          padding: 0 12px;
+
+          &:first-child {
+            margin-right: 0 !important;
+          }
+        }
+
+        .crm-form-multiselect {
+          margin: 0 !important;
+        }
+
+        tr:first-child td:nth-child(2) {
+          vertical-align: bottom;
+          padding-bottom: 4px;
+        }
+      }
+    }
+
+    .crm-block.crm-form-block .form-layout-compressed .crm-profile-selector-preview {
+      @extend .btn-primary;
+      height: 30px;
+      line-height: 16px;
+      margin-left: 20px;
+
+      .crm-i {
+        display: none;
+      }
+    }
+  }
+
+  .CRM_HRRecruitment_Form_HRVacancy {
+    .crm-block {
+      padding-top: 20px;
+
+      > table.form-layout-compressed,
+      > fieldset {
+        margin: 20px;
+      }
+
+      > table.form-layout-compressed {
+        margin-top: 0;
+
+        td {
+          &.label {
+            text-align: left !important;
+          }
+
+          > .select2-container,
+          > .crm-form-text,
+          > .crm-form-date-wrapper .crm-form-text:nth-child(2) {
+            min-width: 200px !important;
+            width: 200px !important;
+
+            &.hasDatePicker {
+              min-width: 169px !important;
+              width: 169px !important;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 1340px) {
+      #s2id_permission_1 {
+        min-width: 200px !important;
+      }
+
+      .crm-form-multiselect {
+        min-width: 230px !important;
+        width: 230px !important;
+      }
+    }
+
+    @media (max-width: 1100px) and (min-width: 861px) {
+      .crm-form-multiselect {
+        min-width: 160px !important;
+        width: 160px !important;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .advmultiselect td:nth-child(2) {
+        vertical-align: middle !important;
+        padding-bottom: 15px !important;
+
+        > input:first-child {
+          margin: 0 0 10px 0 !important;
+        }
+      }
+    }
+  }
+
+  #addMorePermission {
+    @extend .btn-primary;
+    padding: 7px 6px;
+    color: $crm-white !important;
+
+    > .add-icon {
+      background-image: none;
+      text-indent: 0;
+      margin-right: 3px;
+
+      &:after {
+        @include fa-icon($font-size-base, '\f067');
+        position: relative;
+        top: -1px;
+        color: $crm-white !important;
+      }
+    }
+  }
+
+  table.vacancy-popup {
+    margin-bottom: 20px;
+  }
+
+  .view-hrvacancies {
+    .description {
+      margin-bottom: 20px;
+    }
+
+    td > a {
+      color: $brand-primary;
+    }
+  }
+
+  .CRM_HRRecruitment_Form_Search {
+    table .action-item {
+      border: 0 !important;
+    }
+
+    .crm-search-form-block {
+      margin-bottom: 20px;
+    }
+  }
+
+  #searchForm {
+    padding: 20px;
+
+    td {
+      padding: 0;
+    }
+
+    tr:nth-child(2) td {
+      padding: 20px 0;
+    }
+
+    #_qf_Search_refresh {
+      margin-bottom: 0 !important;
+    }
+
+    .listing-box {
+      background-color: transparent;
+      border-color: $crm-copy;
+
+      > div {
+        background-color: transparent;
+
+        label {
+          color: $crm-copy !important;
+          font-weight: normal !important;
+          padding: 5px;
+        }
+      }
+    }
+
+    .font-size12pt {
+      font-size: 1em;
+    }
+
+    .crm-form-text {
+      width: 312px !important;
+    }
+  }
+
+  &.page-civicrm-vacancy-dashboard .ui-dialog {
+    padding: 0;
+
+    &-content {
+      padding: 0;
+
+      .crm-block {
+        box-shadow: none;
+      }
+    }
+
+    table tr {
+      border-bottom: 0;
+
+      td {
+        padding-left: 0 !important;
+        border-bottom: 0;
+      }
+    }
+
+    label[for^="dp"] {
+      &:after {
+        top: 2px !important;
+        left: 332px !important;
+      }
+
+      &:before {
+        top: 2px !important;
+        left: 322px !important;
+      }
+    }
+
+    .advmultiselect tr:first-child td:nth-child(2) {
+      vertical-align: top !important;
+
+      input[type='button']:first-child {
+        margin-left: 0 !important;
+        margin-bottom: 15px !important;
+        width: 71px;
+        display: block;
+      }
+    }
+
+    .crm-submit-buttons  > .crm-button:first-of-type {
+      margin-left: 0;
+    }
+    
+    .ui-dialog-buttonpane {
+      margin: 0;
+    }
+  }
+
+  .hr-pipeline-tab {
+    .crm-accordion-header h2 {
+      color: $gray-darker !important;
+      display: inline-block;
+    }
+
+    .hr-vacancy {
+      width: 49%;
+      margin-bottom: 20px;
+      border: 1px solid $crm-background;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      overflow: hidden;
+
+      > div {
+        padding: 0;
+        font-size: $font-size-base;
+        font-family: 'Open Sans';
+        font-weight: normal;
+
+        > table {
+          width: 101%;
+          background-color: $crm-white;
+          border: 0;
+
+          tr {
+            &:nth-child(2) {
+              td {
+                line-height: 25px;
+              }
+            }
+
+            td {
+              color: $crm-dark-blue;
+              padding: 0 15px;
+
+              &:not(:first-child) {
+                padding: 10px 15px;
+              }
+
+              h3 {
+                background-color: $crm-copy;
+                font-weight: bold;
+                padding: 8px 15px;
+
+                > a {
+                  color: $crm-white !important;
+                  border: 0;
+
+                  &:hover {
+                    border: 0;
+
+                    .edit-icon {
+                      background-image: none;
+                    }
+                  }
+
+                  .edit-icon {
+                    background-image: none;
+                    text-indent: 0;
+                    top: -3px;
+                    margin: 0;
+
+                    &:after {
+                      @include fa-icon($font-size-base, '\f040', $crm-white);
+                      font-weight: normal;
+                    }
+
+                    &:hover:after {
+                      opacity: .8;
+                    }
+                  }
+                }
+              }
+
+              .hr-stage {
+                border-left: 0 !important;
+                width: auto !important;
+                display: none;
+
+                &:first-child {
+                  display: block;
+                }
+
+                a {
+                  font-weight: 600;
+                  color: $brand-primary;
+                  right: 0;
+                  left: -3px;
+                }
+              }
+            }
+
+            &:first-child td {
+              padding: 0;
+            }
+
+            &:nth-child(2) {
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+
+    .hr-dashboard-recent-activity {
+      border: 1px solid $crm-background;
+      overflow: hidden;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+
+      .hr-recent-activity-title {
+        background-color: $crm-copy;
+        font-weight: bold;
+        padding: 8px 15px;
+        border-color: $crm-copy;
+        line-height: 24px;
+      }
+
+      .row-highlight {
+        border: 0;
+
+        tr {
+          background-color: $crm-white !important;
+          border-bottom: 1px solid $crm-background;
+
+          .hr-recent-activity-block {
+            font-size: $font-size-base;
+            color: $crm-dark-blue;
+          }
+        }
+      }
+    }
+  }
+
+  .CRM_HRRecruitment_Form_Application {
+    .crm-profile-name-application_profile {
+      padding: 20px;
+
+      .label {
+        text-align: left !important;
+      }
+
+      .select2-container,
+      .crm-form-text {
+        width: 173px !important;
+      }
+
+      legend {
+        @extend .collapsible-title;
+        padding-top: 20px;
+      }
+
+      label[data-file="true"] {
+        @extend %label-input-file;
+      }
+
+      input[type=file] {
+        @extend %input-file;
+      }
+
+      #editrow-custom_92 .content label {
+        margin-right: 15px;
+      }
+    }
+  }
+}

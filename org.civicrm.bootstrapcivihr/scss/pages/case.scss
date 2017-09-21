@@ -1,0 +1,97 @@
+.page-civicrm-case {
+  .font-size12pt {
+    font-size: $font-size-base;
+
+    label {
+      width: 212px;
+      display: inline-block;
+    }
+  }
+
+  .crm-case-search-form-block {
+    tr {
+      td {
+        padding: 0 !important;
+
+        &.label {
+          text-align: left !important;
+        }
+
+        &.crm-submit-buttons {
+          padding: 12.5px 20px !important;
+        }
+      }
+
+      &:first-child > td {
+        padding-top: 20px !important;
+      }
+
+      &:nth-child(n+1):nth-child(-n+4) > td {
+        padding: 5px 20px !important;
+
+        &:first-child {
+          width: 220px;
+          box-sizing: border-box;
+        }
+      }
+
+      &.crm-case-search-form-block-sort_name > td {
+        .crm-button_qf_Search_refresh {
+          float: right !important;
+        }
+
+        #_qf_Search_refresh-top {
+          margin-right: 0 !important;
+        }
+      }
+
+      .crm-i {
+        display: none;
+      }
+    }
+
+    #Application {
+      margin-top: 20px;
+
+      .crm-accordion-body {
+        padding: 20px !important;
+
+        td {
+          padding-left: 0 !important;
+        }
+      }
+    }
+  }
+
+  .crm-search-tasks {
+    @extend %search-filter-block;
+  }
+
+  .caseSelector > tbody  > tr {
+    > td:first-child,
+    > th:first-child {
+      width: 50px;
+      text-align: center;
+    }
+
+    th {
+      color: $gray-darker !important;
+
+      a {
+        color: $gray-darker !important;
+      }
+    }
+
+    .crm-hover-button {
+      @extend %group-buttons;
+    }
+
+    .nestedActivitySelector td:nth-child(8) {
+      text-align: left;
+    }
+
+    .ui-buttonset .ui-button {
+      padding: 5px 10px;
+    }
+  }
+}
