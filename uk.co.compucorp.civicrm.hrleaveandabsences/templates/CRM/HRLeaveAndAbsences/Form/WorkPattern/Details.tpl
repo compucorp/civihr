@@ -8,8 +8,8 @@
     <div class="col-sm-3">{$form.description.html}</div>
   </div>
   <div class="form-group row">
-    <div class="col-sm-3">{$form.label.label}</div>
-    <div class="col-sm-3">{$form.label.html}</div>
+    <div class="col-sm-3">{$form.is_active.label}</div>
+    <div class="col-sm-3">{$form.is_active.html}</div>
   </div>
   <div class="form-group row">
     <div class="col-sm-3">{$form.is_default.label}</div>
