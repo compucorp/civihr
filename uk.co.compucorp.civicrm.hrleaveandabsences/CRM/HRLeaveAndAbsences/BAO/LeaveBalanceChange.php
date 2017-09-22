@@ -88,32 +88,32 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $query = "
       SELECT SUM(leave_balance_change.amount) balance
       FROM {$balanceChangeTable} leave_balance_change
-      LEFT JOIN {$leaveRequestDateTable} leave_request_date 
-             ON leave_balance_change.source_id = leave_request_date.id AND 
+      LEFT JOIN {$leaveRequestDateTable} leave_request_date
+             ON leave_balance_change.source_id = leave_request_date.id AND
                 leave_balance_change.source_type = '". self::SOURCE_LEAVE_REQUEST_DAY ."'
-      LEFT JOIN {$leaveRequestTable} leave_request 
+      LEFT JOIN {$leaveRequestTable} leave_request
              ON leave_request_date.leave_request_id = leave_request.id AND
                 leave_request.is_deleted = 0
-      LEFT JOIN {$contractTable} contract 
+      LEFT JOIN {$contractTable} contract
              ON leave_request.contact_id = contract.contact_id
-      LEFT JOIN {$contractRevisionTable} contract_revision 
+      LEFT JOIN {$contractRevisionTable} contract_revision
             ON contract_revision.id = (
               SELECT id FROM {$contractRevisionTable} contract_revision2
               WHERE contract_revision2.jobcontract_id = contract.id
               ORDER BY contract_revision2.effective_date DESC
               LIMIT 1
             )
-      LEFT JOIN {$contractDetailsTable} contract_details 
+      LEFT JOIN {$contractDetailsTable} contract_details
              ON contract_revision.details_revision_id = contract_details.jobcontract_revision_id
-      
+
       WHERE ((
               $whereLeaveRequestDates AND
               contract.deleted = 0 AND
-              ( 
+              (
                 leave_request.from_date <= contract_details.period_end_date OR
                 contract_details.period_end_date IS NULL
               )  AND
-              ( 
+              (
                 leave_request.to_date >= contract_details.period_start_date OR
                 (leave_request.to_date IS NULL AND leave_request.from_date >= contract_details.period_start_date)
               )  AND
@@ -124,7 +124,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
             )
             OR
             (
-              leave_balance_change.source_id = {$periodEntitlement->id} AND 
+              leave_balance_change.source_id = {$periodEntitlement->id} AND
               leave_balance_change.source_type = '" . self::SOURCE_ENTITLEMENT . "'
             ))
     ";
@@ -272,34 +272,34 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $query = "
       SELECT SUM(leave_balance_change.amount) balance
       FROM {$balanceChangeTable} leave_balance_change
-      INNER JOIN {$leaveRequestDateTable} leave_request_date 
-              ON leave_balance_change.source_id = leave_request_date.id AND 
+      INNER JOIN {$leaveRequestDateTable} leave_request_date
+              ON leave_balance_change.source_id = leave_request_date.id AND
                  leave_balance_change.source_type = '" . self::SOURCE_LEAVE_REQUEST_DAY . "'
-      INNER JOIN {$leaveRequestTable} leave_request 
+      INNER JOIN {$leaveRequestTable} leave_request
               ON leave_request_date.leave_request_id = leave_request.id AND
                  leave_request.is_deleted = 0
-      INNER JOIN {$contractTable} contract 
+      INNER JOIN {$contractTable} contract
              ON leave_request.contact_id = contract.contact_id
-      INNER JOIN {$contractRevisionTable} contract_revision 
+      INNER JOIN {$contractRevisionTable} contract_revision
             ON contract_revision.id = (
               SELECT id FROM {$contractRevisionTable} contract_revision2
               WHERE contract_revision2.jobcontract_id = contract.id
               ORDER BY contract_revision2.effective_date DESC
               LIMIT 1
             )
-      INNER JOIN {$contractDetailsTable} contract_details 
+      INNER JOIN {$contractDetailsTable} contract_details
              ON contract_revision.details_revision_id = contract_details.jobcontract_revision_id
-             
+
       WHERE {$whereLeaveRequestDates} AND
             contract.deleted = 0 AND
-            ( 
+            (
               leave_request.from_date <= contract_details.period_end_date OR
               contract_details.period_end_date IS NULL
             )  AND
-            ( 
+            (
               leave_request.to_date >= contract_details.period_start_date OR
               (leave_request.to_date IS NULL AND leave_request.from_date >= contract_details.period_start_date)
-            ) AND  
+            ) AND
             leave_balance_change.expired_balance_change_id IS NULL AND
             leave_request.type_id = {$periodEntitlement->type_id} AND
             leave_request.contact_id = {$periodEntitlement->contact_id}
@@ -348,7 +348,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $query = "
       SELECT bc.*
       FROM {$balanceChangeTable} bc
-      INNER JOIN {$leaveRequestDateTable} lrd 
+      INNER JOIN {$leaveRequestDateTable} lrd
         ON bc.source_id = lrd.id AND bc.source_type = %1
       INNER JOIN {$leaveRequestTable} lr
         ON lrd.leave_request_id = lr.id
@@ -697,16 +697,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
           leave_request_date.date,
           leave_request.type_id,
           balance_change.amount
-        FROM {$leaveRequestDateTable} leave_request_date 
-        INNER JOIN {$leaveBalanceChangeTable} balance_change 
+        FROM {$leaveRequestDateTable} leave_request_date
+        INNER JOIN {$leaveBalanceChangeTable} balance_change
             ON balance_change.source_id = leave_request_date.id AND balance_change.source_type = %1
         INNER JOIN {$leaveRequestTable} leave_request
-            ON leave_request_date.leave_request_id = leave_request.id AND 
+            ON leave_request_date.leave_request_id = leave_request.id AND
                (leave_request.request_type IN(%2, %3, %9) AND leave_request.is_deleted = 0)
-        WHERE ({$wherePeriodEntitlementDates}) AND 
+        WHERE ({$wherePeriodEntitlementDates}) AND
               (leave_request_date.date BETWEEN %4 AND %5) AND
-              (leave_request.status_id IN (%6, %10)) AND 
-              (leave_request.contact_id = %7) AND 
+              (leave_request.status_id IN (%6, %10)) AND
+              (leave_request.contact_id = %7) AND
               (leave_request.type_id = %8)
       ";
 
@@ -764,7 +764,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $absencePeriodTable     = AbsencePeriod::getTableName();
 
     $query = "
-      SELECT 
+      SELECT
         balance_to_expire.*,
         coalesce(absence_period.start_date, leave_request.from_date) as start_date,
         coalesce(leave_request.contact_id, period_entitlement.contact_id) as contact_id,
@@ -858,15 +858,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     $query = "SELECT SUM(bc.amount) balance
               FROM {$leaveBalanceChangeTable} bc
-              INNER JOIN {$leaveRequestDateTable} lrd 
+              INNER JOIN {$leaveRequestDateTable} lrd
                 ON bc.source_id = lrd.id AND bc.source_type = %1
-              INNER JOIN {$leaveRequestTable} lr 
+              INNER JOIN {$leaveRequestTable} lr
                 ON lrd.leave_request_id = lr.id AND lr.is_deleted = 0
-              WHERE 
+              WHERE
                 lr.contact_id = %2 AND
-                lr.from_date >= %3 AND 
-                lr.to_date <= %4 AND 
-                lr.type_id = %5 AND 
+                lr.from_date >= %3 AND
+                lr.to_date <= %4 AND
+                lr.type_id = %5 AND
                 lr.request_type = %6";
 
     if (is_array($statuses) && !empty($statuses)) {
@@ -943,7 +943,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     );
 
     $query = "
-      SELECT 
+      SELECT
         bc.*,
         coalesce(absence_period.start_date, leave_request.from_date) as start_date
       FROM {$balanceChangeTable} bc
@@ -957,10 +957,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
             ON period_entitlement.period_id = absence_period.id
       WHERE bc.expiry_date IS NOT NULL AND
             (bc.expiry_date BETWEEN %3 AND %4) AND
-            bc.expiry_date >= %5 AND  
+            bc.expiry_date >= %5 AND
             bc.expired_balance_change_id IS NULL AND
             (leave_request.contact_id = %6 OR period_entitlement.contact_id = %6) AND
-            (leave_request.type_id = %7 OR period_entitlement.type_id = %7)    
+            (leave_request.type_id = %7 OR period_entitlement.type_id = %7)
       ORDER BY bc.expiry_date ASC, bc.id ASC";
 
     $params = [
@@ -1113,7 +1113,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     }
 
     $query = "
-        SELECT 
+        SELECT
            COALESCE(leave_request.contact_id, period_entitlement.contact_id) as contact_id,
            COALESCE(leave_request.type_id, period_entitlement.type_id) as type_id,
            SUM(leave_balance_change.amount) as balance
@@ -1142,7 +1142,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
         WHERE ((
           {$whereLeaveRequestAbsenceType}
-          leave_request.status_id IN(" . implode(', ', LeaveRequest::getApprovedStatuses()) . ") AND 
+          leave_request.status_id IN(" . implode(', ', LeaveRequest::getApprovedStatuses()) . ") AND
           (leave_request_date.date >= %1 AND leave_request_date.date <= %2) AND
           contract.deleted = 0 AND
           (
@@ -1228,35 +1228,35 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $query = "
       SELECT leave_request.contact_id, leave_request.type_id, SUM(leave_balance_change.amount) balance
       FROM {$balanceChangeTable} leave_balance_change
-      INNER JOIN {$leaveRequestDateTable} leave_request_date 
-        ON leave_balance_change.source_id = leave_request_date.id AND 
+      INNER JOIN {$leaveRequestDateTable} leave_request_date
+        ON leave_balance_change.source_id = leave_request_date.id AND
                  leave_balance_change.source_type = '" . self::SOURCE_LEAVE_REQUEST_DAY . "'
-      INNER JOIN {$leaveRequestTable} leave_request 
+      INNER JOIN {$leaveRequestTable} leave_request
         ON leave_request_date.leave_request_id = leave_request.id AND
                  leave_request.is_deleted = 0
-      INNER JOIN {$contractTable} contract 
+      INNER JOIN {$contractTable} contract
         ON leave_request.contact_id = contract.contact_id
-      INNER JOIN {$contractRevisionTable} contract_revision 
+      INNER JOIN {$contractRevisionTable} contract_revision
         ON contract_revision.id = (
           SELECT id FROM {$contractRevisionTable} contract_revision2
           WHERE contract_revision2.jobcontract_id = contract.id
           ORDER BY contract_revision2.effective_date DESC
           LIMIT 1
         )
-      INNER JOIN {$contractDetailsTable} contract_details 
+      INNER JOIN {$contractDetailsTable} contract_details
         ON contract_revision.details_revision_id = contract_details.jobcontract_revision_id
-             
+
       WHERE contract.deleted = 0 AND
-        leave_request_date.date >= %1 AND 
+        leave_request_date.date >= %1 AND
         leave_request_date.date <= %2 AND
-        ( 
+        (
           leave_request.from_date <= contract_details.period_end_date OR
           contract_details.period_end_date IS NULL
         )  AND
-        ( 
+        (
           leave_request.to_date >= contract_details.period_start_date OR
           (leave_request.to_date IS NULL AND leave_request.from_date >= contract_details.period_start_date)
-        ) AND  
+        ) AND
         leave_balance_change.expired_balance_change_id IS NULL AND {$whereAbsenceType}
         leave_request.contact_id IN(" . implode(', ', $contactIDs) . ") AND
         leave_request.status_id IN(" . implode(', ', LeaveRequest::getOpenStatuses()) . ")
