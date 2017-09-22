@@ -405,7 +405,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       }
     }
 
-    return $balance;
+    return abs($balance);
   }
 
   /**
