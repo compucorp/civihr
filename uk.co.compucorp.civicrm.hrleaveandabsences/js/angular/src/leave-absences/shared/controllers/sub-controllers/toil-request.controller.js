@@ -11,9 +11,10 @@ define([
   function ToilRequestCtrl ($log, $q, OptionGroup, AbsenceType, parentCtrl) {
     $log.debug('ToilRequestCtrl');
 
+    var requestCanExpire = true;
     var vm = parentCtrl;
 
-    vm.requestCanExpire = true;
+    vm.displayExpiryDateField = null;
 
     vm.calculateBalanceChange = calculateBalanceChange;
     vm.calculateToilExpiryDate = calculateToilExpiryDate;
@@ -61,7 +62,7 @@ define([
        * skips calculation of expiration date if request never expires
        * according to admin setting.
        */
-      if (!vm.requestCanExpire) {
+      if (!requestCanExpire) {
         vm.request.toil_expiry_date = false;
         return $q.resolve(false);
       }
@@ -179,10 +180,34 @@ define([
 
       return initRequestCanExpire()
         .then(function () {
+          initDisplayExpiryDateField();
           initExpiryDate();
 
           return loadToilAmounts();
         });
+    }
+
+    /**
+     * Initializes displayExpiryDateField according to the following rules:
+     *
+     * - If the user can manage the request (Admin or Manager) they can modify
+     *   the request expire date, even if it's not automatically calculated.
+     * - If the request is being edited and the expiry date was previously
+     *   defined.
+     * - If it's a new request and TOIL requests can expire according to admin
+     *   setting.
+     */
+    function initDisplayExpiryDateField () {
+      if (vm.canManage) {
+        vm.displayExpiryDateField = true;
+        return;
+      }
+
+      if (vm.isMode('edit')) {
+        vm.displayExpiryDateField = !!vm.request.toil_expiry_date;
+      } else {
+        vm.displayExpiryDateField = requestCanExpire;
+      }
     }
 
     /**
@@ -197,12 +222,13 @@ define([
     /**
      * Initialize requestCanExpire according to admin setting
      * and request type.
+     *
      * @return {Promise}
      */
     function initRequestCanExpire () {
       return AbsenceType.canExpire(vm.request.type_id)
       .then(function (canExpire) {
-        vm.requestCanExpire = canExpire;
+        requestCanExpire = canExpire;
       });
     }
 

@@ -987,10 +987,6 @@ define([
           $rootScope.$digest();
         });
 
-        it('should set requestCanExpire to false', function () {
-          expect(controller.requestCanExpire).toBe(false);
-        });
-
         describe('when request date changes', function () {
           beforeEach(function () {
             spyOn(AbsenceType, 'calculateToilExpiryDate');
@@ -1005,6 +1001,96 @@ define([
 
           it('should set expiry date to false', function () {
             expect(controller.request.toil_expiry_date).toBe(false);
+          });
+        });
+      });
+
+      describe('Displaying the expiry date field', function () {
+        describe('when the user can manage the request', function () {
+          beforeEach(function () {
+            compileComponent({
+              leaveType: 'toil',
+              request: TOILRequestInstance.init(),
+              role: 'manager'
+            });
+          });
+
+          it('displays the expiry date field', function () {
+            expect(controller.displayExpiryDateField).toBe(true);
+          });
+        });
+
+        describe('when the user is staff', function () {
+          describe('creating a new request', function () {
+            describe('TOIL requests can expire', function () {
+              beforeEach(function () {
+                compileComponent({
+                  leaveType: 'toil',
+                  request: TOILRequestInstance.init(),
+                  role: 'staff'
+                });
+              });
+
+              it('displays the expiry date field', function () {
+                expect(controller.displayExpiryDateField).toBe(true);
+              });
+            });
+
+            describe('TOIL requests don\'t expire', function () {
+              beforeEach(function () {
+                AbsenceType.canExpire.and.returnValue($q.resolve(false));
+
+                compileComponent({
+                  leaveType: 'toil',
+                  request: TOILRequestInstance.init(),
+                  role: 'staff'
+                });
+              });
+
+              it('doesn\'t displays the expiry date field', function () {
+                expect(controller.displayExpiryDateField).toBe(false);
+              });
+            });
+          });
+
+          describe('when editing an existing request', function () {
+            describe('expiry date was previously defined', function () {
+              beforeEach(function () {
+                var request = TOILRequestInstance.init();
+                request.id = 1;
+                request.toil_expiry_date = new Date();
+
+                compileComponent({
+                  leaveType: 'toil',
+                  request: request,
+                  mode: 'edit',
+                  role: 'staff'
+                });
+              });
+
+              it('displays the expiry date field', function () {
+                expect(controller.displayExpiryDateField).toBe(true);
+              });
+            });
+
+            describe('expiry date was previously undefined', function () {
+              beforeEach(function () {
+                var request = TOILRequestInstance.init();
+                request.id = 1;
+                request.toil_expiry_date = undefined;
+
+                compileComponent({
+                  leaveType: 'toil',
+                  request: request,
+                  mode: 'edit',
+                  role: 'staff'
+                });
+              });
+
+              it('displays the expiry date field', function () {
+                expect(controller.displayExpiryDateField).toBe(false);
+              });
+            });
           });
         });
       });
