@@ -899,7 +899,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     // Testing leave request rejection and cancelling
     foreach (LeaveRequest::getCancelledStatuses() as $statusId) {
       // Create new request with Awaiting Approval status
-      $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($leaveRequestData);
+      $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($leaveRequestData, true);
       // Change status of the leave request
       $updatedLeaveRequestData = $leaveRequestData;
       $updatedLeaveRequestData['id'] = $leaveRequest->id;
