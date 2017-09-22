@@ -3730,4 +3730,75 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $leaveRequest = LeaveRequest::create($params);
     $this->assertNotNull($leaveRequest->id);
   }
+
+  public function testToilToAccrueChangedReturnsTrueWhenToilToAccrueChanges(){
+    $date = CRM_Utils_Date::processDate('2016-01-10');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'from_date' => $date,
+      'to_date' => $date,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => 2
+    ];
+
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update Toil request
+    $params['id'] = $toilRequest->id;
+    $params['toil_to_accrue'] = 1;
+
+    $this->assertTrue(LeaveRequest::toilToAccrueChanged($params));
+  }
+
+  public function testToilToAccrueChangedReturnsFalseWhenToilToAccrueDoesNotChange(){
+    $date = CRM_Utils_Date::processDate('2016-01-08');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'from_date' => $date,
+      'to_date' => $date,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => 1
+    ];
+
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update Toil request
+    $params['id'] = $toilRequest->id;
+
+    $this->assertFalse(LeaveRequest::toilToAccrueChanged($params));
+  }
+
+  public function testToilToAccrueChangedReturnsNullWhenRequestTypeIsNotToil(){
+    $date = CRM_Utils_Date::processDate('2016-01-08');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'from_date' => $date,
+      'to_date' => $date,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+    ];
+
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //update Toil request
+    $params['id'] = $toilRequest->id;
+
+    $this->assertNUll(LeaveRequest::toilToAccrueChanged($params));
+  }
+
+  public function testToilToAccrueChangedReturnsNullWhenCreatingANewRequest(){
+    $date = CRM_Utils_Date::processDate('2016-01-08');
+    $params = [
+      'type_id' => 1,
+      'contact_id' => 1,
+      'from_date' => $date,
+      'to_date' => $date,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => 1
+    ];
+
+    $this->assertNull(LeaveRequest::toilToAccrueChanged($params));
+  }
 }
