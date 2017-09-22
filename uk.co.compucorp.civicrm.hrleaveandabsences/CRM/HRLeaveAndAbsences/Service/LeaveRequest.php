@@ -268,9 +268,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    */
   protected function createRequestWithBalanceChanges($params) {
-    $updateBalanceChange = !empty($params['change_balance']);
-    $skipBalanceChangeUpdate = !empty($params['id']) &&
-      !$this->datesChanged($params) && !$updateBalanceChange;
+    $skipBalanceChangeUpdate = $this->skipBalanceChangeUpdate($params);
     $leaveRequest = LeaveRequest::create($params, LeaveRequest::VALIDATIONS_OFF);
 
     if(!$skipBalanceChangeUpdate) {
@@ -346,5 +344,23 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     }
 
     return $breakdown;
+  }
+
+  /**
+   * A set of logic to determine whether to skip balance change update
+   * for the leave request being updated or not.
+   *
+   * @param array $params
+   *
+   * @return bool
+   */
+  private function skipBalanceChangeUpdate($params) {
+    $isToilRequest = $params['request_type'] == LeaveRequest::REQUEST_TYPE_TOIL;
+    $datesDidNotChange = $this->datesChanged($params) === false;
+    $leaveRequestDatesNotChanged = !$isToilRequest && $datesDidNotChange;
+    $toilDatesAndToAccrueNotChanged = LeaveRequest::toilToAccrueChanged($params) === false && $datesDidNotChange;
+    $updateBalanceChange = !empty($params['change_balance']);
+
+    return ($leaveRequestDatesNotChanged || $toilDatesAndToAccrueNotChanged) && !$updateBalanceChange;
   }
 }
