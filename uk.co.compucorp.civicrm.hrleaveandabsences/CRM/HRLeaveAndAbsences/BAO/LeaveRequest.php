@@ -1180,6 +1180,29 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
+   * Checks If the toil_to_accrue value for a TOIL request to be updated
+   * changed since when it was created.
+   *
+   * Returns NULL for a freshly created Leave request or a request type
+   * is not a TOIL type.
+   *
+   * @param array $params
+   *
+   * @return bool|null
+   */
+  public static function toilToAccrueChanged($params) {
+    if($params['request_type'] != self::REQUEST_TYPE_TOIL || empty($params['id'])) {
+      return null;
+    }
+
+    $toilRequest = self::findById($params['id']);
+    $toilToAccrue = $toilRequest->toil_to_accrue;
+    $newToilToAccrue = $params['toil_to_accrue'];
+
+    return $toilToAccrue != $newToilToAccrue;
+  }
+
+  /**
    * Returns the balance change for the leave request.
    *
    * If its an already created leave request and the dates did not change
