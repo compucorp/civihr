@@ -14,6 +14,8 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
   }
 
   public function install() {
+    set_time_limit(0);
+
     $this->cleanTablesData();
     $this->importSampleData();
     $this->copyContactPhotos();
@@ -21,6 +23,8 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
   }
 
   public function uninstall() {
+    set_time_limit(0);
+    
     $this->cleanTablesData();
   }
 
