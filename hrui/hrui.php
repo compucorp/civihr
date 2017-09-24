@@ -43,12 +43,15 @@ function hrui_civicrm_pageRun($page) {
     $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
 
     if ($contactType == 'Individual') {
-      $hideGId = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
-      CRM_Core_Resources::singleton()
-        ->addSetting(array(
-          'cid' => CRM_Utils_Request::retrieve('cid', 'Integer'),
-          'hideGId' => $hideGId)
-        );
+      $isHRIdenExtensionEnabled = _hrui_isExtensionEnabled('org.civicrm.hriden');
+      if ($isHRIdenExtensionEnabled) {
+        $hideGId = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
+        CRM_Core_Resources::singleton()
+          ->addSetting(array(
+              'cid' => CRM_Utils_Request::retrieve('cid', 'Integer'),
+              'hideGId' => $hideGId)
+          );
+      }
     }
   }
 
@@ -180,11 +183,15 @@ function _hrui_phone_is_empty($phoneIndex, $form) {
 /**
  * Implementation of hook_civicrm_postProcess
  */
-function hrui_civicrm_postProcess( $formName, &$form ) {
-  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrident', 'is_active', 'full_name');
+function hrui_civicrm_postProcess($formName, &$form) {
   if ($formName == 'CRM_Contact_Form_Contact'
     && !empty($form->_submitValues['GovernmentId'])
     && $form->_contactType == 'Individual') {
+    $isHRIdenExtensionEnabled = _hrui_isExtensionEnabled('org.civicrm.hriden');
+    if (!$isHRIdenExtensionEnabled) {
+      return;
+    }
+
     $govFieldId = CRM_HRIdent_Page_HRIdent::retreiveContactFieldId('Identify');
     $govFieldIds = CRM_HRIdent_Page_HRIdent::retreiveContactFieldValue($form->_contactId);
     if (!empty($govFieldId)) {
@@ -1019,4 +1026,23 @@ function _hrui_createDeveloperMenu(&$menu) {
       'permission' => 'access CiviCRM',
     ]);
   }
+}
+
+/**
+ * Checks if an extension is installed and enabled
+ *
+ * @param String $key
+ *   Extension unique key
+ *
+ * @return boolean
+ */
+function _hrui_isExtensionEnabled($key)  {
+  $isEnabled = CRM_Core_DAO::getFieldValue(
+    'CRM_Core_DAO_Extension',
+    $key,
+    'is_active',
+    'full_name'
+  );
+
+  return  !empty($isEnabled) ? true : false;
 }
