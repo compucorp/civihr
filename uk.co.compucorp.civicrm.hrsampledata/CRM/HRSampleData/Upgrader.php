@@ -47,9 +47,9 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0");
     $contactsWithAttachedUsers = $this->getContactsWithAttachedUsers();
     $contactsWithAttachedUsers = implode(',', $contactsWithAttachedUsers);
-    $contactsDeleteQuery = "DELETE FROM civicrm_contact WHERE id != 1 OR id NOT IN ({$contactsWithAttachedUsers})";
+    $contactsDeleteQuery = "DELETE FROM civicrm_contact WHERE id != 1 AND id NOT IN ({$contactsWithAttachedUsers})";
     CRM_Core_DAO::executeQuery($contactsDeleteQuery);
-    $emailDeleteQuery = "DELETE FROM civicrm_email WHERE contact_id != 1 OR contact_id NOT IN ({$contactsWithAttachedUsers})";
+    $emailDeleteQuery = "DELETE FROM civicrm_email WHERE contact_id != 1 AND contact_id NOT IN ({$contactsWithAttachedUsers})";
     CRM_Core_DAO::executeQuery($emailDeleteQuery);
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 1");
   }
