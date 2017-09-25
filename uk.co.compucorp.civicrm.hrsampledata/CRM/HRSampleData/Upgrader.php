@@ -180,7 +180,6 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
     ];
 
     foreach($usersToNewContacts as $originalEmail => $newContactEmail) {
-
       $userToChangeID = $this->getCMSUserIDByEmail($originalEmail);
       if ($userToChangeID) {
         $this->updateCMSUserEmail($userToChangeID, $newContactEmail);
@@ -231,11 +230,12 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
   private function updateMappedContactID($cmsID, $newEmail) {
     $newEmailData = civicrm_api3('Email', 'get', [
       'sequential' => 1,
+      'return' => ['contact_id'],
       'email' => $newEmail,
-      'limit' => '1',
+      'options' => ['limit' => 1, 'sort' => 'id DESC'],
     ]);
-    if (!empty($newEmailData['id'])) {
-      $newContactID = $newEmailData['id'];
+    if ($newEmailData['count']) {
+      $newContactID = $newEmailData['values'][0]['contact_id'];
       civicrm_api3('UFMatch', 'get', [
         'uf_id' => $cmsID,
         'api.UFMatch.create' => ['id' => '$value.id', 'contact_id' => $newContactID],
