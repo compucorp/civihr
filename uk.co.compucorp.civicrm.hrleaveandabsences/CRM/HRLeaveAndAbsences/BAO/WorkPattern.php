@@ -156,18 +156,21 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    */
   private static function validateWorkPatternTitle($params) {
     $label = CRM_Utils_Array::value('label', $params);
-    $workPattern = new self();
-    $workPattern->label = $label;
-    $workPattern->find(true);
-
-    if (!$workPattern->id) {
+    if (!$label) {
       return;
     }
 
-    $isCreate = empty($params['id']);
-    $isSeparateUpdate = !empty($params['id']) && $workPattern->id != $params['id'];
+    $workPattern = new self();
+    $workPattern->label = $label;
 
-    if ($isCreate || $isSeparateUpdate) {
+    if (!empty($params['id'])) {
+      $id = (int) $params['id'];
+      $workPattern->whereAdd("id <> $id");
+    }
+
+    $workPattern->find(true);
+
+    if ($workPattern->id) {
       throw new InvalidWorkPatternException(
         'Work Pattern with same label already exists!'
       );

@@ -711,7 +711,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     try{
       $workPattern = WorkPatternFabricator::fabricate($params);
       $this->assertEquals($workPattern->description, $params['description']);
-    }catch(CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException $e) {
+    } catch(CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException $e) {
       $this->fail($e->getMessage());
     }
   }
