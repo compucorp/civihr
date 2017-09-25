@@ -21,7 +21,7 @@ gulp.task('sass', ['sass:sync'], function () {
     .pipe(gulp.dest('css/'));
 });
 
-gulp.task('sass:sync', function(){
+gulp.task('sass:sync', function () {
   civicrmScssRoot.updateSync();
 });
 
@@ -35,7 +35,7 @@ gulp.task('requirejs-bundle', function (done) {
 gulp.task('watch', function () {
   gulp.watch('scss/**/*.scss', ['sass']);
   gulp.watch('js/src/**/*.js', ['requirejs-bundle']).on('change', function (file) {
-    try { test.for(file.path); } catch (ex) { test.all(); };
+    try { test.for(file.path); } catch (ex) { test.all(); }
   });
   gulp.watch(['js/test/**/*.js', '!js/test/mocks/**/*.js', '!js/test/test-main.js']).on('change', function (file) {
     test.single(file.path);
@@ -48,19 +48,16 @@ gulp.task('test', function (done) {
 
 gulp.task('default', ['requirejs-bundle', 'sass', 'test', 'watch']);
 
-
-
 var test = (function () {
-
   /**
    * Runs the karma server which does a single run of the test/s
    *
    * @param {string} configFile - The full path to the karma config file
    * @param {Function} cb - The callback to call when the server closes
    */
-  function runServer(configFile, cb) {
+  function runServer (configFile, cb) {
     new karma.Server({
-      configFile: __dirname + '/js/' + configFile,
+      configFile: path.join(__dirname, '/js/', configFile),
       singleRun: true
     }, function () {
       cb && cb();
@@ -79,9 +76,9 @@ var test = (function () {
     /**
      * Runs the tests for a specific source file
      *
-     * Looks for a test file (*_test.js) in `test/`, using the same path
+     * Looks for a test file (*.spec.js) in `test/`, using the same path
      * of the source file in `src/job-roles/`
-     *   i.e. src/job-roles/models/model.js -> test/models/model_test.js
+     *   i.e. src/job-roles/models/model.js -> test/models/model.spec.js
      *
      * @param {string} srcFile
      */
@@ -89,7 +86,7 @@ var test = (function () {
       var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
       var testFile = srcFile
         .replace('src/job-roles/', 'test/')
-        .replace(srcFileNoExt + '.js', srcFileNoExt + '_test.js');
+        .replace(srcFileNoExt + '.js', srcFileNoExt + '.spec.js');
 
       fs.statSync(testFile).isFile() && this.single(testFile);
     },
@@ -103,16 +100,16 @@ var test = (function () {
      * @param {string} testFile - The full path of a test file
      */
     single: function (testFile) {
-      var configFile = 'karma.' + path.basename(testFile, path.extname(testFile))  + '.conf.temp.js';
+      var configFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
       gulp
-        .src(__dirname + '/js/karma.conf.js')
-        .pipe(replace('*_test.js', path.basename(testFile)))
+        .src(path.join(__dirname, '/js/karma.conf.js'))
+        .pipe(replace('*.spec.js', path.basename(testFile)))
         .pipe(rename(configFile))
-        .pipe(gulp.dest(__dirname + '/js'))
+        .pipe(gulp.dest(path.join(__dirname, '/js')))
         .on('end', function () {
           runServer(configFile, function () {
-            gulp.src(__dirname + '/js/' + configFile, { read: false }).pipe(clean());
+            gulp.src(path.join(__dirname, '/js/', configFile), { read: false }).pipe(clean());
           });
         });
     }
