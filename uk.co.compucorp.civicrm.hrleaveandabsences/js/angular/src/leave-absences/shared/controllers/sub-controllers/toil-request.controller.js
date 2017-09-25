@@ -287,6 +287,7 @@ define([
           vm._setDates();
           vm.updateBalance();
           vm.calculateToilExpiryDate();
+          updateExpiryDateFieldVisibility();
         })
         .catch(function (error) {
           vm.errors = [error];
@@ -294,12 +295,21 @@ define([
     }
 
     /**
-     * Updates expiry date when user changes it on ui
+     * Updates expiry date value when the user changes it on the UI
      */
     function updateExpiryDate () {
       if (vm.uiOptions.expiryDate) {
         vm.request.toil_expiry_date = vm._convertDateToServerFormat(vm.uiOptions.expiryDate);
       }
+    }
+
+    /**
+     * Updates the visibility of the expiry date field when the request
+     * dates change in case the *Can Expire* admin setting has changed after
+     * this request has been created:
+     */
+    function updateExpiryDateFieldVisibility () {
+      vm.displayExpiryDateField = requestCanExpire;
     }
   }
 });

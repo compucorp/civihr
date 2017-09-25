@@ -1093,6 +1093,49 @@ define([
             });
           });
         });
+
+        describe('when the request dates are updated', function () {
+          describe('when request expiry date is not defined and TOIL requests can expire', function () {
+            beforeEach(function () {
+              var request = createToilRequest();
+
+              compileComponent({
+                leaveType: 'toil',
+                mode: 'edit',
+                request: request,
+                role: 'staff'
+              });
+
+              setTestDates(date2016);
+            });
+
+            it('displays the expiry date field', function () {
+              expect(controller.displayExpiryDateField).toBe(true);
+            });
+          });
+
+          describe('when request expiry date is defined and TOIL requests don\'t expire', function () {
+            beforeEach(function () {
+              var request = createToilRequest();
+
+              AbsenceType.canExpire.and.returnValue($q.resolve(false));
+
+              compileComponent({
+                leaveType: 'toil',
+                mode: 'edit',
+                request: request,
+                role: 'staff'
+              });
+
+              setTestDates(date2016);
+            });
+
+            it('doesn\'t displays the expiry date field', function () {
+              expect(controller.displayExpiryDateField).toBe(false);
+            });
+          });
+          //
+        });
       });
     });
 
@@ -1262,6 +1305,30 @@ define([
       $rootScope.$digest();
 
       return params;
+    }
+
+    /**
+     * Creates a new TOIL leave request for the 2016 period.
+     *
+     * @return {LeaveRequestInstance}
+     */
+    function createToilRequest () {
+      var date = moment(getUTCDate(date2016))
+      .format(sharedSettings.serverDateFormat);
+      var request = TOILRequestInstance.init();
+      var toilAbsenceType = _.find(
+        absenceTypeData.all().values,
+        function (absenceType) {
+          return absenceType.title === 'TOIL';
+        }
+      );
+
+      request.from_date = date;
+      request.to_date = date;
+      request.toil_expiry_date = undefined;
+      request.type_id = toilAbsenceType.id;
+
+      return request;
     }
 
     /**
