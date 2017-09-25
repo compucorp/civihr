@@ -20,7 +20,8 @@ class CRM_HRSampleData_Cleaner_OptionValue extends CRM_HRSampleData_CSVCleanerVi
 
     $this->deleteRecord(
       'OptionValue',
-      ['name' => $row['name'], 'option_group_id' => $row['option_group_id']]
+      ['name' => $row['name'], 'option_group_id' => $row['option_group_id']],
+      $row['delete_on_uninstall']
     );
   }
 

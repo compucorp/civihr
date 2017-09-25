@@ -11,11 +11,13 @@ abstract class CRM_HRSampleData_CSVCleanerVisitor extends CSVProcessingVisitor {
    *
    * @param string $entity
    * @param array $searchParams
+   * @param boolean $deleteOnUninstall
    */
-  protected function deleteRecord($entity, $searchParams) {
-    if (empty($searchParams['delete_on_uninstall'])) {
+  protected function deleteRecord($entity, $searchParams, $deleteOnUninstall = TRUE) {
+    if (!$deleteOnUninstall) {
       return;
     }
+
     $searchParams['options'] = ['limit' => 0];
     $entityResult = $this->callAPI($entity, 'get', $searchParams);
     if (!empty($entityResult['id'])) {
@@ -23,5 +25,4 @@ abstract class CRM_HRSampleData_CSVCleanerVisitor extends CSVProcessingVisitor {
       $this->callAPI($entity, 'delete', ['id' => $entityID]);
     }
   }
-
 }

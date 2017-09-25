@@ -14,22 +14,38 @@ class CRM_HRSampleData_Cleaner_HRPayScaleTest extends CRM_HRSampleData_BaseCSVPr
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testProcess() {
-    $payScale = PayScaleFabricator::fabricate();
-    $testPayScale = $this->apiGet('HRPayScale', ['pay_scale' => $payScale['pay_scale']]);
-    $this->assertEquals($payScale['pay_scale'], $testPayScale['pay_scale']);
+  public function testProcessWithDeleteOnUninstallOn() {
+    $testPayScale = PayScaleFabricator::fabricate();
 
     $this->rows[] = [
-      $payScale['pay_scale'],
+      $testPayScale['pay_scale'],
       'USD',
       '35000',
       'Year',
+      1,
     ];
 
     $this->runProcessor('CRM_HRSampleData_Cleaner_HRPayScale', $this->rows);
 
-    $payScale = $this->apiGet('HRPayScale', ['pay_scale' => $payScale['pay_scale']]);
+    $payScale = $this->apiGet('HRPayScale', ['pay_scale' => $testPayScale['pay_scale']]);
     $this->assertEmpty($payScale);
+  }
+
+  public function testProcessWithDeleteOnUninstallOff() {
+    $testPayScale = PayScaleFabricator::fabricate();
+
+    $this->rows[] = [
+      $testPayScale['pay_scale'],
+      'USD',
+      '35000',
+      'Year',
+      0,
+    ];
+
+    $this->runProcessor('CRM_HRSampleData_Cleaner_HRPayScale', $this->rows);
+
+    $payScale = $this->apiGet('HRPayScale', ['pay_scale' => $testPayScale['pay_scale']]);
+    $this->assertEquals($testPayScale['pay_scale'], $payScale['pay_scale']);
   }
 
   private function importHeadersFixture() {
@@ -38,7 +54,7 @@ class CRM_HRSampleData_Cleaner_HRPayScaleTest extends CRM_HRSampleData_BaseCSVPr
       'currency',
       'amount',
       'pay_frequency',
+      'delete_on_uninstall',
     ];
   }
-
 }
