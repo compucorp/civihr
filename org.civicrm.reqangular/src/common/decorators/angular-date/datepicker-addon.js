@@ -61,12 +61,12 @@ define([
         element.after(calendarIcon);
       }
 
-      element.on('click', onClick);
-      scope.$on('$destroy', function () {
-        element.off('click', onClick);
-      });
-
       if (!isMobile) {
+        element.on('click', onClick);
+        scope.$on('$destroy', function () {
+          element.off('click', onClick);
+        });
+
         var inputGroupAddon = element.siblings('.input-group-addon');
 
         if (inputGroupAddon.length) {
