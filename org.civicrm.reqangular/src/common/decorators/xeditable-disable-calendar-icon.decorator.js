@@ -5,6 +5,7 @@ define([], function () {
 
   /**
    * Decorates the xeditable directive
+   * Disables the show calendar button, as it is already added by uib-datepicker-popup
    */
   return ['$delegate', function ($delegate) {
     var directive = $delegate[0];
