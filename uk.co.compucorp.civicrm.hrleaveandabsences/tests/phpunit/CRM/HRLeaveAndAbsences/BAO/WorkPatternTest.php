@@ -29,15 +29,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     $this->assertEquals($firstEntity->weight + 1, $secondEntity->weight);
   }
 
-  /**
-   * @expectedException PEAR_Exception
-   * @expectedExceptionMessage DB Error: already exists
-   */
-  public function testWorkPatternLabelsShouldBeUnique() {
-    WorkPatternFabricator::fabricate(['label' => 'Pattern 1']);
-    WorkPatternFabricator::fabricate(['label' => 'Pattern 1']);
-  }
-
   public function testThereShouldBeOnlyOneDefaultTypeOnCreate() {
     $basicEntity = WorkPatternFabricator::fabricate(['is_default' => true]);
     $entity1 = WorkPattern::findById($basicEntity->id);
@@ -697,5 +688,50 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     $params = ['id' => $workPattern->id, 'is_active' => 0];
 
     WorkPattern::create($params);
+  }
+
+  public function testWorkPatternLabelsShouldBeUnique() {
+    WorkPatternFabricator::fabricate(['label' => 'WorkPattern 1']);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException',
+      'Work Pattern with same label already exists!'
+    );
+    WorkPatternFabricator::fabricate(['label' => 'WorkPattern 1']);
+  }
+
+  public function testNoExceptionIsThrownWhenUpdatingAWorkPatternWithoutChangingTheLabel() {
+    $params = ['label' => 'WorkPattern 1'];
+    $workPattern = WorkPatternFabricator::fabricate($params);
+
+    //update the work pattern
+    $params['id'] = $workPattern->id;
+    $params['description'] = 'This is a cool Work Pattern';
+
+    try{
+      $workPattern = WorkPatternFabricator::fabricate($params);
+      $this->assertEquals($workPattern->description, $params['description']);
+    }catch(CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException $e) {
+      $this->fail($e->getMessage());
+    }
+  }
+
+  public function testExceptionIsThrownWhenUpdatingAWorkPatternWithLabelOfAnotherExistingWorkPattern() {
+    $params1 = ['label' => 'WorkPattern 1'];
+    $workPattern1 = WorkPatternFabricator::fabricate($params1);
+
+    $params2 = ['label' => 'WorkPattern 2'];
+    $workPattern2 = WorkPatternFabricator::fabricate($params2);
+
+    //update the second work pattern with the label of the first pattern
+    $params['id'] = $workPattern2->id;
+    $params['label'] = $params1['label'];
+
+    $this->setExpectedException(
+      CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException::class,
+      'Work Pattern with same label already exists!'
+    );
+
+    WorkPatternFabricator::fabricate($params);
   }
 }

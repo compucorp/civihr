@@ -5,6 +5,7 @@ use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 use CRM_HRLeaveAndAbsences_BAO_WorkWeek as WorkWeek;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
+use CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException as InvalidWorkPatternException;
 
 
 class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_WorkPattern {
@@ -111,6 +112,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    */
   public static function validateParams($params) {
     self::validateDefaultWorkPattern($params);
+    self::validateWorkPatternTitle($params);
   }
 
   /**
@@ -141,6 +143,34 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
           'You cannot disable the default Work Pattern'
         );
       }
+    }
+  }
+
+  /**
+   * Checks if another Work Pattern exists with same title as
+   * the Work Pattern being created/updated and throws an exception if found.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
+   */
+  private static function validateWorkPatternTitle($params) {
+    $label = CRM_Utils_Array::value('label', $params);
+    $workPattern = new self();
+    $workPattern->label = $label;
+    $workPattern->find(true);
+
+    if (!$workPattern->id) {
+      return;
+    }
+
+    $isCreate = empty($params['id']);
+    $isSeparateUpdate = !empty($params['id']) && $workPattern->id != $params['id'];
+
+    if ($isCreate || $isSeparateUpdate) {
+      throw new InvalidWorkPatternException(
+        'Work Pattern with same label already exists!'
+      );
     }
   }
 
