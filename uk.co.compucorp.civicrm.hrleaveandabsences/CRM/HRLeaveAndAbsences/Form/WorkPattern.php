@@ -304,7 +304,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       $breakField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'break');
 
       if (!$hasTimeFrom) {
-        $errors[$timeFromField] = ts('Please inform the Time From');
+        $errors[$timeFromField] = ts('Please fill in the Time From');
       } else {
         if (!$this->isValidHour($day['time_from'])) {
           $errors[$timeFromField] = ts('Invalid hour');
@@ -312,7 +312,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       }
 
       if (!$hasTimeTo) {
-        $errors[$timeToField] = ts('Please inform the Time To');
+        $errors[$timeToField] = ts('Please fill in the Time To');
       } else {
         if (!$this->isValidHour($day['time_to'])) {
           $errors[$timeToField] = ts('Invalid hour');
@@ -320,7 +320,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       }
 
       if (!$hasBreak) {
-        $errors[$breakField] = ts('Please inform the Break');
+        $errors[$breakField] = ts('Please fill in the Break');
       } else {
         if (!is_numeric($day['break'])) {
           $errors[$breakField] = ts('Break should be a valid number');
