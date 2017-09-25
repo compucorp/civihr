@@ -3,7 +3,7 @@
     <tr>
       <th>
         <button type="button" class="btn btn-default btn-sm pull-left" ng-click="move(-1)" tabindex="-1">
-          <strong> < </strong>
+          <strong> &lt; </strong>
         </button>
       </th>
       <th colspan="{{ 5 + showWeeks }}">
@@ -14,7 +14,7 @@
       </th>
       <th>
         <button type="button" class="btn btn-default btn-sm pull-right" ng-click="move(1)" tabindex="-1">
-          <strong> > </strong>
+          <strong> &gt; </strong>
         </button>
       </th>
     </tr>
@@ -42,7 +42,6 @@
           ng-click="select(dt.date)"
           ng-disabled="dt.disabled"
           tabindex="-1">
-          <!--'text-muted': dt.secondary, -->
           <span ng-class="{ 'out-of-scope': dt.secondary, 'text-info': dt.current }">{{ dt.label }}</span>
         </button>
       </td>
