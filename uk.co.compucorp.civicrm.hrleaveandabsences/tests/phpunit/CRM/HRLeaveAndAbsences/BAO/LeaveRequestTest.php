@@ -899,7 +899,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     // Testing leave request rejection and cancelling
     foreach (LeaveRequest::getCancelledStatuses() as $statusId) {
       // Create new request with Awaiting Approval status
-      $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($leaveRequestData);
+      $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($leaveRequestData, true);
       // Change status of the leave request
       $updatedLeaveRequestData = $leaveRequestData;
       $updatedLeaveRequestData['id'] = $leaveRequest->id;
@@ -908,6 +908,57 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
       $this->assertEquals($updatedLeaveRequest->status_id, $statusId);
     }
+  }
+
+  public function testLeaveRequestCannotBeUpdatedIfBalanceChangeIsMoreThanEntitlementBalanceWhenAllowOveruseFalse() {
+    $contactId = 1;
+    $requestDate = CRM_Utils_Date::processDate('2016-06-14');
+    $requestDateType = $this->leaveRequestDayTypes['all_day']['value'];
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-06-14'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_overuse' => 0]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    // Current balance must be less than the balance change
+    $entitlementBalance = 0;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalance);
+
+    $leaveRequestStatuses = LeaveRequest::getStatuses();
+
+    // Balance change is 1 since this is a single day leave request
+    $leaveRequestData = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => $leaveRequestStatuses['approved'],
+      'from_date' => $requestDate,
+      'from_date_type' => $requestDateType,
+      'to_date' => $requestDate,
+      'to_date_type' => $requestDateType,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ];
+
+    // Create new request
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($leaveRequestData, true);
+
+    // Attempt to change leave request status
+    $leaveRequestData['id'] = $leaveRequest->id;
+    $leaveRequestData['status_id'] = $leaveRequestStatuses['awaiting_approval'];
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'There are only '. $entitlementBalance .' days leave available. This request cannot be made or approved'
+    );
+
+    LeaveRequest::create($leaveRequestData);
   }
 
   public function testFindOverlappingLeaveRequestsForMoreThanOneOverlappingLeaveRequests() {
