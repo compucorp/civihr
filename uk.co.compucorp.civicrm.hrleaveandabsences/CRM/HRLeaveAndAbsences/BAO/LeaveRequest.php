@@ -486,7 +486,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $currentBalance = $leavePeriodEntitlement->getBalance($requestsToExcludeFromBalance);
 
-    if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
+    if(!$absenceType->allow_overuse && ($currentBalance + $leaveRequestBalance) < 0) {
       throw new InvalidLeaveRequestException(
         'There are only '. $currentBalance .' days leave available. This request cannot be made or approved',
         'leave_request_balance_change_greater_than_remaining_balance',
@@ -513,7 +513,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       $params['to_date_type']
     );
 
-    return abs($leaveRequestBalance['amount']);
+    return $leaveRequestBalance['amount'];
   }
 
   /**

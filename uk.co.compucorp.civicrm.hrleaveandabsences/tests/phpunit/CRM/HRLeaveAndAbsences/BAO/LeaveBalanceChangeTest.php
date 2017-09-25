@@ -1120,7 +1120,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     // The balance changes created by the fabricator deduct 1 day for each date,
     // so the total for the 4 days should be 4
-    $this->assertEquals(4, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+    $this->assertEquals(-4, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
 
   public function testTheTotalBalanceChangeForALeaveRequestWithoutBalanceChangesShouldBeZero() {
@@ -1151,7 +1151,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createExpiryBalanceChangeForTOILRequest($leaveRequest->id, $numberOfExpiredDays);
 
     $expiredOnly = true;
-    $this->assertEquals(3, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest, $expiredOnly));
+    $this->assertEquals(-3, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest, $expiredOnly));
   }
 
   public function testTheTotalBalanceChangeForALeaveRequestShouldBeTheOriginalAmountWhenExpiredOnlyIsFalse() {
