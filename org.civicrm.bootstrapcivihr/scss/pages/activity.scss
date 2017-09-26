@@ -12,7 +12,7 @@
 
     tr {
       &:not(#activityCustom) td {
-        padding: 10px 20px !important;
+        padding: 10px 20px;
       }
 
       &:nth-child(n+8):nth-child(-n+9) {
@@ -21,7 +21,7 @@
 
       td {
         border: 0 !important;
-        padding: 0 !important;
+        padding: 0;
 
         &.font-size12pt {
           font-size: $font-size-base;
@@ -39,8 +39,7 @@
         .select2-choices,
         .select2-choice,
         #activity_subject {
-          width: 329px !important;
-          min-width: 329px !important;
+          min-width: 329px;
         }
       }
     }
@@ -56,42 +55,37 @@
     }
 
     table tr {
-      border-bottom: 0 !important;
-
-      td {
-        border-bottom: 0 !important;
-      }
+      border-bottom: 0;
     }
 
     #Activity_Custom_Fields__1 {
-      padding: 0 !important;
+      border-bottom: none;
+      padding: 0;
 
-      .crm-accordion-body {
-        padding-right: 0 !important;
+      td.label {
+        display: table-cell;
+      }
+
+      .crm-accordion-wrapper {
+        margin-left: 5px;
+        margin-right: 0;
       }
     }
 
-    .CRM_Activity_Form_Activity {
-      .crm-block {
-        box-shadow: none;
-      }
+    .CRM_Activity_Form_Activity .crm-block {
+      box-shadow: none;
+    }
 
-      .crm-activity-form-block {
-        &-custom_data,
-        &-attachment,
-        &-recurring_activity,
-        &-schedule_followup {
-          padding: 0;
+    .CRM_Activity_Form_Activity .crm-activity-form-block-custom_data,
+    .CRM_Activity_Form_Activity .crm-activity-form-block-attachment,
+    .CRM_Activity_Form_Activity .crm-activity-form-block-recurring_activity,
+    .CRM_Activity_Form_Activity .crm-activity-form-block-schedule_followup {
+      padding: 0;
+      margin-bottom: 0;
 
-          > td,
-          #Activity_Custom_Fields__ {
-            padding: 0 20px !important;
-          }
-        }
-
-        &-schedule_followup > td {
-          padding-bottom: 20px !important;
-        }
+      > td,
+      #Activity_Custom_Fields__ {
+        padding: 0 20px;
       }
     }
   }

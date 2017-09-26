@@ -53,14 +53,13 @@
   }
 
   .caseSelector > tbody  > tr {
-    > td:first-child,
-    > th:first-child {
-      width: 50px;
+    .dataTable tr > td:first-child,
+    .dataTable tr > th:first-child {
       text-align: center;
     }
 
     th a {
-      color: $gray-darker !important;
+      color: $gray-darker;
     }
 
     .crm-hover-button {
@@ -72,7 +71,7 @@
     }
 
     .paginate_button {
-      line-height: normal !important;
+      line-height: normal;
     }
 
     .ui-buttonset .ui-button {

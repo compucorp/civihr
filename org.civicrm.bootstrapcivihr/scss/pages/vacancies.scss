@@ -2,15 +2,11 @@
   .crm-container {
     .form-layout-compressed .advmultiselect {
       input[type='button'] {
-        margin: 0 20px !important;
+        margin: 8px 20px !important;
 
         &:first-child {
           margin-right: 0 !important;
         }
-      }
-
-      .crm-form-multiselect {
-        margin: 0 !important;
       }
 
       tr:first-child td:nth-child(2) {
@@ -29,44 +25,27 @@
     }
   }
 
+  .CRM_HRRecruitment_Form_HRVacancy .crm-block {
+    padding-top: 20px;
+
+    > table.form-layout-compressed,
+    > fieldset {
+      margin: 20px;
+    }
+
+    > table.form-layout-compressed {
+      margin-top: 0;
+
+      td > .select2-container,
+      td > .crm-form-text,
+      td > .crm-form-date-wrapper .crm-form-text:nth-child(2) {
+        min-width: 200px;
+      }
+    }
+  }
+
   .CRM_HRRecruitment_Form_HRVacancy {
-    .crm-block {
-      padding-top: 20px;
-
-      > table.form-layout-compressed,
-      > fieldset {
-        margin: 20px;
-      }
-
-      > table.form-layout-compressed {
-        margin-top: 0;
-
-        td {
-          &.label {
-            text-align: left !important;
-          }
-
-          > .select2-container,
-          > .crm-form-text,
-          > .crm-form-date-wrapper .crm-form-text:nth-child(2) {
-            min-width: 200px !important;
-          }
-        }
-      }
-    }
-
-    @media (max-width: 1340px) {
-      #s2id_permission_1 {
-        min-width: 200px !important;
-      }
-
-      .crm-form-multiselect {
-        min-width: 230px;
-        width: 230px;
-      }
-    }
-
-    @media (max-width: 1100px) and (min-width: 861px) {
+    @media (max-width: $screen-lg-min) and (min-width: $screen-sm-min) {
       .crm-form-multiselect {
         min-width: 160px;
         width: 160px;
@@ -94,7 +73,7 @@
       margin-right: 3px;
 
       &:after {
-        @include fa-icon($font-size-base, '\f067',$crm-white);
+        @include fa-icon($font-size-base, $fa-var-plus, $crm-white);
         position: relative;
         top: -1px;
       }
@@ -182,7 +161,6 @@
 
       input[type='button']:first-child {
         margin-left: 0 !important;
-        margin-bottom: 15px !important;
         width: 71px;
         display: block;
       }
@@ -194,6 +172,10 @@
   }
 
   .hr-pipeline-tab {
+    .hr-dashboard-vacancy-summary > div:not(.collapsed) .crm-accordion-header::before{
+      content: $fa-var-angle-down;
+    }
+
     .crm-accordion-header h2 {
       color: $gray-darker !important;
       display: inline-block;
@@ -203,8 +185,8 @@
       width: 49%;
       margin-bottom: 20px;
       border: 1px solid $crm-background;
-      border-top-left-radius: 3px;
-      border-top-right-radius: 3px;
+      border-top-left-radius: $border-radius-child;
+      border-top-right-radius: $border-radius-child;
       overflow: hidden;
 
       > div {
@@ -216,68 +198,65 @@
           background-color: $crm-white;
           border: 0;
 
-          tr {
-            &:nth-child(2) {
-              td {
-                line-height: 25px;
-              }
-            }
+          tr:nth-child(2) td {
+            line-height: 2em;
+          }
 
-            td {
-              color: $crm-dark-blue;
-              padding: 0 15px;
+          tr td {
+            color: $crm-dark-blue;
+            padding: 0 15px;
+          }
 
-              &:not(:first-child) {
-                padding: 10px 15px;
-              }
+          tr td:not(:first-child) {
+            padding: 10px 15px;
+          }
 
-              h3 {
-                background-color: $crm-copy;
-                padding: 8px 15px;
+          h3 {
+            background-color: $crm-copy;
+            padding: 8px 15px;
+          }
 
-                > a {
-                  color: $crm-white;
+          h3 > a {
+            color: $crm-white;
+          }
 
-                  .edit-icon {
-                    background-image: none;
-                    text-indent: 0;
-                    top: -3px;
-                    margin: 0;
+          h3  > a .edit-icon {
+            background-image: none;
+            text-indent: 0;
+            top: -3px;
+            margin: 0;
+          }
 
-                    &:after {
-                      @include fa-icon($font-size-base, '\f040', $crm-white);
-                    }
+          h3  > a .edit-icon:after {
+            @include fa-icon($font-size-base, $fa-var-pencil, $crm-white);
+          }
 
-                    &:hover:after {
-                      opacity: .8;
-                    }
-                  }
-                }
-              }
+          h3  > a .edit-icon:hover:after {
+            opacity: .8;
+          }
 
-              .hr-stage {
-                border-left: 0 !important;
-                width: auto;
-                display: none;
+          .hr-stage {
+            border-left: 0 !important;
+            width: auto;
+            display: none;
+          }
 
-                &:first-child {
-                  display: block;
-                }
+          .hr-stage:first-child {
+            display: block;
+          }
 
-                a {
-                  font-weight: 600;
-                  color: $brand-primary;
-                }
-              }
-            }
+          .hr-stage a {
+            font-weight: $crm-font-weight-h3;
+            color: $brand-primary;
+            right: 0;
+          }
 
-            &:first-child td {
-              padding: 0;
-            }
+          tr:first-child td {
+            padding: 0;
+          }
 
-            &:nth-child(2) {
-              font-weight: 600;
-            }
+          tr:nth-child(2) {
+            font-weight: $crm-font-weight-h3;
           }
         }
       }
@@ -291,7 +270,7 @@
       .hr-recent-activity-title {
         background-color: $crm-copy;
         padding: 8px 15px;
-        line-height: 24px;
+        line-height: 2em;
       }
 
       .row-highlight {
