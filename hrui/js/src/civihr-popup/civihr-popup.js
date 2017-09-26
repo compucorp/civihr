@@ -6,15 +6,17 @@ Prevent Popups to overflow tables.
 
   // .btn-slide is a continer of popup and a button triggering it
   $('.btn-slide').attrchange(function (e) {
-    var $button = $(this), $body = $('body'), $popup, buttonOffset, $closestEntity;
+    var $body = $('body');
+    var $button = $(this);
+    var $closestEntity, $popup, buttonOffset;
 
     // check if popup is open
     if ($button.hasClass('btn-slide-active')) {
       $popup = $button.children('ul.panel');
       $closestEntity = $button.closest('.crm-entity')[0];
 
-      $popup.attr("id",$closestEntity.id);
-      $popup.addClass($($closestEntity).attr("class"));
+      $popup.attr('id', $closestEntity.id);
+      $popup.addClass($($closestEntity).attr('class'));
 
       $popup
         .appendTo($body)
@@ -28,7 +30,6 @@ Prevent Popups to overflow tables.
 
       $body.addClass('civihr-popup-open');
     } else {
-
       $body
         .children('.civihr-popup')
         .appendTo($button)
@@ -36,6 +37,5 @@ Prevent Popups to overflow tables.
 
       $body.removeClass('civihr-popup-open');
     }
-
   });
 })(CRM.$);
