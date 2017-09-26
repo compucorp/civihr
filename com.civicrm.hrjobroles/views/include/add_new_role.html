@@ -55,11 +55,7 @@
                       ng-change="jobroles.select('newStartDate')"
                       ng-disabled="isDisabled"
                       close-text="Close"
-                      ng-click="jobroles.open('newStartDate')"
                       required>
-                    <span class="input-group-addon">
-                      <i class="fa fa-calendar"></i>
-                    </span>
                     <div ng-show="jobroles.errors.newStartDate" class="form-error-message">
                       <span class="label label-danger">{{jobroles.errors.newStartDate[0]}}</span>
                     </div>
@@ -77,11 +73,7 @@
                       ng-model="jobroles.editData['new_role_id']['newEndDate']"
                       ng-change="jobroles.select('newEndDate')"
                       ng-disabled="isDisabled"
-                      ng-click="jobroles.open('newEndDate')"
                       close-text="Close">
-                    <span class="input-group-addon">
-                      <i class="fa fa-calendar"></i>
-                    </span>
                     <div ng-show="jobroles.errors.newEndDate" class="form-error-message">
                       <span class="label label-danger">{{jobroles.errors.newEndDate[0]}}</span>
                     </div>

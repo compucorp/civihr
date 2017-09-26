@@ -1,23 +1,28 @@
 /* eslint-env amd */
 define([
   'common/angular',
-  'common/decorators/angular-date/datepicker-addon',
+  'common/decorators/uib-datepicker-calendar-icon.decorator',
+  'common/decorators/uib-datepicker-mobile-version.decorator',
+  'common/decorators/xeditable-disable-calendar-icon.decorator',
   'common/decorators/ui-bootstrap/uib-tabset',
   'common/decorators/ui-bootstrap/uib-modal.decorator',
   'common/angularBootstrap',
+  'common/angularXeditable',
   'common/ui-select',
   'common/modules/templates',
   'common/modules/controllers',
   'common/modules/services',
   'common/modules/apis'
-], function (angular, datepickerAddon, uibTabset, uibModalDecorator) {
+], function (angular, uibCalendarIconDecorator, uibCalendarMobileVersion, xeditableDisableCalendarIcon, uibTabset, uibModalDecorator) {
   'use strict';
   return angular.module('common.directives', ['common.templates', 'common.controllers',
-    'ui.select', 'ui.bootstrap'])
+    'ui.select', 'ui.bootstrap', 'xeditable'])
     .config(['$provide', function ($provide) {
-      $provide.decorator('uibDatepickerPopupDirective', datepickerAddon);
+      $provide.decorator('uibDatepickerPopupDirective', uibCalendarMobileVersion);
+      $provide.decorator('uibDatepickerPopupDirective', uibCalendarIconDecorator);
       $provide.decorator('uibTabsetDirective', uibTabset);
       $provide.decorator('$uibModal', uibModalDecorator);
+      $provide.decorator('editableBsdateDirective', xeditableDisableCalendarIcon);
     }])
     .run(['$templateCache', function ($templateCache) {
       // Update uib-tabset HTML with header class

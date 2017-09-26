@@ -68,7 +68,6 @@
   include: [
     'common/bundles/vendors',
     'common/bundles/apis',
-    'common/bundles/components',
     'common/bundles/services',
     'common/bundles/directives',
     'common/bundles/angular-date',

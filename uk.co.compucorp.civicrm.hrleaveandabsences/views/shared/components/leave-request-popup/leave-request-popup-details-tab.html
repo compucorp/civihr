@@ -98,17 +98,31 @@
             ng-if="!detailsTab.canManage || detailsTab.isSelfRecord">
             {{detailsTab.request.toil_expiry_date | date: detailsTab.uiOptions.userDateFormat}}
           </span>
-          <date-picker
-            ng-if="detailsTab.canManage && !detailsTab.isSelfRecord"
-            datepicker-options="detailsTab.uiOptions.date.expiry.options"
-            show-button-bar="false"
-            ng-model="detailsTab.uiOptions.expiryDate"
-            is-open="detailsTab.uiOptions.date.expiry.show"
-            ng-readonly="true"
-            ng-change="detailsTab.updateExpiryDate()"
-            show-clear-btn="!detailsTab.requestCanExpire && detailsTab.request.toil_expiry_date"
-            clear-btn-click="detailsTab.clearExpiryDate()">
-          </date-picker>
+          <div ng-if="detailsTab.canManage && !detailsTab.isSelfRecord" class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              uib-datepicker-popup
+              ng-readonly="true"
+              datepicker-options="detailsTab.uiOptions.date.expiry.options"
+              show-button-bar="false"
+              ng-model="detailsTab.uiOptions.expiryDate"
+              ng-click="detailsTab.uiOptions.date.expiry.show = true"
+              ng-change="detailsTab.updateExpiryDate()"
+              is-open="detailsTab.uiOptions.date.expiry.show"/>
+            <span
+              class="chr_leave-request-modal__expiry-clear pointer"
+              ng-if="!detailsTab.requestCanExpire && detailsTab.request.toil_expiry_date"
+              ng-click="detailsTab.clearExpiryDate()">
+              <i class="fa fa-times"></i>
+            </span>
+            <span
+              class="input-group-addon pointer"
+              class="btn btn-default fa fa-calendar"
+              ng-click="detailsTab.uiOptions.date.expiry.show = true">
+              <i class="fa fa-calendar"></i>
+            </span>
+          </div>
         </div>
       </div>
     </div>

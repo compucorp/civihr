@@ -40,6 +40,9 @@ require.config({
     'common/angularUiRouter': {
       deps: ['common/angular']
     },
+    'common/angularXeditable': {
+      deps: ['common/angular']
+    },
     'common/ui-select': {
       deps: [
         'common/angular',
@@ -57,6 +60,7 @@ require.config({
     'common/moment': srcPath + '/vendor/moment.min',
     'common/angularRoute': srcPath + '/vendor/angular/angular-route.min',
     'common/angularUiRouter': srcPath + '/vendor/angular/angular-ui-router.min',
+    'common/angularXeditable': srcPath + '/vendor/angular/xeditable',
     'common/angularMocks': srcPath + '/vendor/angular/angular-mocks',
     'common/angularBootstrap': srcPath + '/vendor/angular/ui-bootstrap',
     'common/lodash': srcPath + '/vendor/lodash.min',

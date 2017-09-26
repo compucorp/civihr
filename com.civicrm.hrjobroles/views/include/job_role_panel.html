@@ -111,11 +111,7 @@
                       ng-change="select('start_date')"
                       ng-disabled="isDisabled"
                       close-text="Close"
-                      ng-click="jobroles.open('start_date')"
                       required>
-                    <span class="input-group-addon">
-                      <i class="fa fa-calendar"></i>
-                    </span>
                   </div>
                   <div ng-show="editableForm.start_date.$error.custom">
                     <div ng-repeat="error in editableForm.start_date.$error.custom" class="form-error-message">
@@ -142,11 +138,7 @@
                       ng-model="jobroles.editData[job_roles_data.id]['end_date']"
                       ng-change="select('end_date')"
                       ng-disabled="isDisabled"
-                      ng-click="jobroles.open('end_date')"
                       close-text="Close">
-                    <span class="input-group-addon">
-                      <i class="fa fa-calendar"></i>
-                    </span>
                   </div>
                   <div ng-show="editableForm.end_date.$error.custom">
                     <div ng-repeat="error in editableForm.end_date.$error.custom" class="form-error-message">

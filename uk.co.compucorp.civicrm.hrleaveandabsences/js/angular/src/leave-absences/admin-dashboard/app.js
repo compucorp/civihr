@@ -3,7 +3,6 @@
 define([
   'common/angular',
   'common/angularBootstrap',
-  'common/components/date-picker.component',
   'common/modules/dialog',
   'common/services/check-permissions',
   'common/services/angular-date/date-format',
@@ -35,7 +34,6 @@ define([
     'ui.select',
     'textAngular',
     'common.angularDate',
-    'common.components',
     'common.dialog',
     'common.mocks',
     'leave-absences.components',
