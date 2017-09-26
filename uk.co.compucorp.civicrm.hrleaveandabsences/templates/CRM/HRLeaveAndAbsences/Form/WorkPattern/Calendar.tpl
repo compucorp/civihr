@@ -1,4 +1,4 @@
-<div class="work-pattern-calendar">
+<div class="work-pattern-calendar no-select2">
   <div class="number-of-weeks form-inline">
     <div class="form-group">
       <label for="number_of_weeks">{ts}No. of Weeks{/ts}: </label>
