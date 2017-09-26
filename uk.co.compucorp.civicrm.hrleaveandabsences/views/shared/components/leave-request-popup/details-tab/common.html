@@ -37,14 +37,7 @@
             is-open="detailsTab.uiOptions.date.from.show"
             ng-readonly="true"
             ng-disabled="!detailsTab.isRole('admin') && (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
-            ng-click="detailsTab.uiOptions.date.from.show = true"
             ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.fromDate, 'from')"/>
-          <span
-            class="input-group-addon pointer"
-            ng-disabled="!detailsTab.isRole('admin') && (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
-            ng-click="detailsTab.uiOptions.date.from.show = true">
-            <i class="fa fa-calendar"></i>
-          </span>
         </div>
       </div>
       <div class="col-xs-6 col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
@@ -67,11 +60,11 @@
             </select>
             <span class="crm_custom-select__arrow"></span>
           </div>
-          </crm-loading>
-        </div>
+        </crm-loading>
       </div>
     </div>
   </div>
+</div>
 </div>
 <div class="row" ng-hide="!detailsTab.uiOptions.multipleDays">
   <div class="col-xs-12 form-horizontal">
@@ -90,15 +83,7 @@
             ng-readonly="true"
             ng-disabled="!detailsTab.isRole('admin') &&
               (detailsTab.isMode('view') || !detailsTab.request.from_date || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
-            ng-click="detailsTab.uiOptions.date.to.show = true"
             ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.toDate, 'to')"/>
-          <span
-            class="input-group-addon pointer"
-            ng-disabled="!detailsTab.isRole('admin') &&
-              (detailsTab.isMode('view') || !detailsTab.request.from_date || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
-            ng-click="detailsTab.uiOptions.date.to.show = detailsTab.request.from_date ? true : false">
-            <i class="fa fa-calendar"></i>
-          </span>
         </div>
       </div>
       <div class="col-xs-6 col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
