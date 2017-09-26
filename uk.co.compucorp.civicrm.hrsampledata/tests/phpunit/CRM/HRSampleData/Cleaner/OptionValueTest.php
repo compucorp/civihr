@@ -19,7 +19,7 @@ class CRM_HRSampleData_Cleaner_OptionValueTest extends CRM_HRSampleData_BaseCSVP
     $this->testOptionGroup = OptionGroupFabricator::fabricate();
   }
 
-  public function testProcessWithOptionGroupName() {
+  public function testProcessWithOptionGroupNameAndDeleteOnUninstallOn() {
     $testOptionValue = OptionValueFabricator::fabricate(['option_group_id' => $this->testOptionGroup['name']]);
 
     $this->rows[] = [
@@ -46,7 +46,7 @@ class CRM_HRSampleData_Cleaner_OptionValueTest extends CRM_HRSampleData_BaseCSVP
     $this->assertEmpty($optionValue);
   }
 
-  public function testProcessWithDeleteOnUninstallOff() {
+  public function testProcessWithOptionGroupNameAndDeleteOnUninstallOff() {
     $testOptionValue = OptionValueFabricator::fabricate(['option_group_id' => $this->testOptionGroup['name']]);
 
     $this->rows[] = [
@@ -73,7 +73,7 @@ class CRM_HRSampleData_Cleaner_OptionValueTest extends CRM_HRSampleData_BaseCSVP
     $this->assertEquals($testOptionValue['name'], $optionValue['name']);
   }
 
-  public function testProcessWithOptionGroupTitle() {
+  public function testProcessWithOptionGroupTitleAndDeleteOnUninstallOn() {
     $testOptionValue = OptionValueFabricator::fabricate(['option_group_id' => $this->testOptionGroup['name']]);
 
     $this->rows[] = [
@@ -98,6 +98,33 @@ class CRM_HRSampleData_Cleaner_OptionValueTest extends CRM_HRSampleData_BaseCSVP
       ['name' => $testOptionValue['name'], 'option_group_id' => $this->testOptionGroup['name']]
     );
     $this->assertEmpty($optionValue);
+  }
+
+  public function testProcessWithOptionGroupTitleAndDeleteOnUninstallOff() {
+    $testOptionValue = OptionValueFabricator::fabricate(['option_group_id' => $this->testOptionGroup['name']]);
+
+    $this->rows[] = [
+      'title',
+      $this->testOptionGroup['title'],
+      $testOptionValue['name'],
+      $testOptionValue['name'],
+      $testOptionValue['name'],
+      '',
+      '',
+      0,
+      0,
+      0,
+      '',
+      0,
+    ];
+
+    $this->runProcessor('CRM_HRSampleData_Cleaner_OptionValue', $this->rows);
+
+    $optionValue = $this->apiGet(
+      'OptionValue',
+      ['name' => $testOptionValue['name'], 'option_group_id' => $this->testOptionGroup['name']]
+    );
+    $this->assertEquals($testOptionValue['name'], $optionValue['name']);
   }
 
   private function importHeadersFixture() {

@@ -33,7 +33,6 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
    */
   private function cleanTablesData() {
     $this->cleanContactTables();
-
     $this->executeSqlFile('sql/uninstall.sql');
     $this->cleanCustomFieldsValues();
     $this->cleanSampleDataValues();
@@ -44,18 +43,18 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
    * related ones
    */
   private function cleanContactTables() {
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0');
     $contactsWithAttachedUsers = $this->getContactsWithAttachedUsers();
     $contactsWithAttachedUsers = implode(',', $contactsWithAttachedUsers);
     $contactsDeleteQuery = "DELETE FROM civicrm_contact WHERE id != 1 AND id NOT IN ({$contactsWithAttachedUsers})";
     CRM_Core_DAO::executeQuery($contactsDeleteQuery);
     $emailDeleteQuery = "DELETE FROM civicrm_email WHERE contact_id != 1 AND contact_id NOT IN ({$contactsWithAttachedUsers})";
     CRM_Core_DAO::executeQuery($emailDeleteQuery);
-    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 1");
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 1');
   }
 
   /**
-   * Gets contacts IDs in case they are
+   * Gets contacts IDs
    * associated (connected) with a CMS user
    *
    * @return array
@@ -70,6 +69,7 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
     if ($ufMatchRecords['count'] > 0) {
       $contactIDs = array_column($ufMatchRecords['values'], 'contact_id');
     }
+
     return $contactIDs;
   }
 
@@ -224,8 +224,8 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
    * Updates the mapped contact ID in uf_match table
    * given the CMS user ID and the new contact email
    *
-   * @param $cmsID
-   * @param $newEmail
+   * @param int $cmsID
+   * @param string $newEmail
    */
   private function updateMappedContactID($cmsID, $newEmail) {
     $newEmailData = civicrm_api3('Email', 'get', [
