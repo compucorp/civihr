@@ -18,8 +18,15 @@
           <label for="{{prefix}}date-effective" class="col-sm-4 control-label">Effective date</label>
           <div class="col-sm-6">
             <div class="input-group input-group-unstyled">
-              <input type="text" class="form-control" id="{{prefix}}date-effective" name="dateEffective" uib-datepicker-popup is-open="dpDateEffectiveOpen" ng-model="effective_date" ng-click="dpOpen($event, 'dpDateEffectiveOpen')" required>
-              <span class="input-group-addon fa fa-calendar"></span>
+              <input
+                type="text"
+                class="form-control"
+                id="{{prefix}}date-effective"
+                name="dateEffective"
+                uib-datepicker-popup
+                is-open="dpDateEffectiveOpen"
+                ng-model="effective_date"
+                required>
             </div>
             <span class="help-block" ng-show="isPast && contractChangeReason.dateEffective.$dirty">Note: The Effective Date that you have selected is in the past. Are you sure you wish to continue?</span>
           </div>
