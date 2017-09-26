@@ -5,6 +5,12 @@
  */
 class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
 
+  const EXTENSION_INSTALLATION_TIMEOUT = 600;
+
+  /**
+   * @var string
+   *   The directory of CSV files to import
+   */
   private $csvDir;
 
   public function __construct($extensionName, $extensionDir) {
@@ -14,7 +20,7 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
   }
 
   public function install() {
-    set_time_limit(0);
+    set_time_limit(self::EXTENSION_INSTALLATION_TIMEOUT);
 
     $this->cleanTablesData();
     $this->importSampleData();
@@ -23,7 +29,7 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
   }
 
   public function uninstall() {
-    set_time_limit(0);
+    set_time_limit(self::EXTENSION_INSTALLATION_TIMEOUT);
     
     $this->cleanTablesData();
   }
