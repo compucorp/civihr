@@ -32,9 +32,9 @@ class WebTest_WorkPattern_FormTest extends CiviSeleniumTestCase {
         $this->submitAndWait('WorkPattern');
         $this->assertTrue($this->isTextPresent('Label is a required field.'));
         $this->clickOnTheCalendarTab();
-        $this->assertTrue($this->isTextPresent('Please inform the Time From'));
-        $this->assertTrue($this->isTextPresent('Please inform the Time To'));
-        $this->assertTrue($this->isTextPresent('Please inform the Break'));
+        $this->assertTrue($this->isTextPresent('Please fill in the Time From'));
+        $this->assertTrue($this->isTextPresent('Please fill in the Time To'));
+        $this->assertTrue($this->isTextPresent('Please fill in the Break'));
     }
 
     public function testCanAddTypeWithMinimumRequiredFields()
