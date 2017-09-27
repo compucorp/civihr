@@ -1,5 +1,5 @@
 define([
-  'leave-absences/shared/models/public-holiday-model',
+  'leave-absences/shared/models/public-holiday.model',
   'mocks/apis/public-holiday-api-mock',
   'common/mocks/services/hr-settings-mock',
 ], function () {

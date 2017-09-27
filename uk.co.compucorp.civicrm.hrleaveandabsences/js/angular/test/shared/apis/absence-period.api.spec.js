@@ -1,7 +1,7 @@
 define([
   'mocks/data/absence-period-data',
   'common/moment',
-  'leave-absences/shared/apis/absence-period-api',
+  'leave-absences/shared/apis/absence-period.api',
   'leave-absences/shared/modules/shared-settings',
 ], function (mockData, moment) {
   'use strict'

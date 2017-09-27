@@ -1,5 +1,5 @@
 define([
-  'leave-absences/shared/models/entitlement-model',
+  'leave-absences/shared/models/entitlement.model',
   'mocks/apis/entitlement-api-mock',
 ], function () {
   'use strict'

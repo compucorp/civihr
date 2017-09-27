@@ -3,7 +3,7 @@
 define([
   'leave-absences/shared/modules/models',
   'common/models/model',
-  'leave-absences/shared/apis/absence-type-api',
+  'leave-absences/shared/apis/absence-type.api',
   'leave-absences/shared/instances/absence-type.instance'
 ], function (models) {
   'use strict';

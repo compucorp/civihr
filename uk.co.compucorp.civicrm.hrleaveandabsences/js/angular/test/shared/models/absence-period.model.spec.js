@@ -1,5 +1,5 @@
 define([
-  'leave-absences/shared/models/absence-period-model',
+  'leave-absences/shared/models/absence-period.model',
   'mocks/apis/absence-period-api-mock',
   'common/mocks/services/hr-settings-mock',
 ], function () {

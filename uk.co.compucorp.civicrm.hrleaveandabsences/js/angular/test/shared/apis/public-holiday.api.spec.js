@@ -1,7 +1,7 @@
 define([
   'mocks/data/public-holiday-data',
   'common/moment',
-  'leave-absences/shared/apis/public-holiday-api',
+  'leave-absences/shared/apis/public-holiday.api',
   'leave-absences/shared/modules/shared-settings',
 ], function (mockData, moment) {
   'use strict'

@@ -8,7 +8,7 @@ define([
   'mocks/data/toil-leave-request-data',
   'mocks/data/comments-data',
   'mocks/helpers/helper',
-  'leave-absences/shared/apis/leave-request-api',
+  'leave-absences/shared/apis/leave-request.api',
   'leave-absences/shared/modules/shared-settings'
 ], function (_, moment, mockData, sicknessMockData, toilMockData, commentsData, helper) {
   'use strict';

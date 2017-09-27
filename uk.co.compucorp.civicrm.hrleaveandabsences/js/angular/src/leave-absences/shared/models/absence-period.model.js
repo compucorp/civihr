@@ -5,7 +5,7 @@ define([
   'common/moment',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/instances/absence-period.instance',
-  'leave-absences/shared/apis/absence-period-api',
+  'leave-absences/shared/apis/absence-period.api',
   'common/models/model',
   'common/services/hr-settings'
 ], function (models, moment) {

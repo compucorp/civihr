@@ -5,7 +5,7 @@ define([
   'common/moment',
   'leave-absences/shared/modules/components',
   'common/models/session.model',
-  'leave-absences/shared/models/calendar-model'
+  'leave-absences/shared/models/calendar.model'
 ], function (_, moment, components) {
   components.component('leaveRequestPopupDetailsTab', {
     bindings: {
