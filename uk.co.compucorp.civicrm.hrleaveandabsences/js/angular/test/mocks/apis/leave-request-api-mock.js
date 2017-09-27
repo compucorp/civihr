@@ -62,6 +62,9 @@ define([
         delete: function (id) {
           return $q.resolve(mockData.delete());
         },
+        getBalanceChangeBreakdown: function (id) {
+          return $q.resolve(mockData.balanceChangeBreakdown());
+        },
         update: function (params) {
           return $q(function (resolve, reject) {
             var newAttributes;

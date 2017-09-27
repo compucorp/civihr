@@ -187,6 +187,27 @@ define([
       });
     });
 
+    describe('getBalanceChangeBreakdown()', function () {
+      describe('basic tests', function () {
+        var leaveRequestId = 1;
+
+        beforeEach(function () {
+          spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+          LeaveRequestAPI.getBalanceChangeBreakdown(leaveRequestId);
+          $rootScope.$digest();
+        });
+
+        afterEach(function () {
+          $httpBackend.flush();
+        });
+
+        it('calls the LeaveRequest.getBalanceChangeBreakdown endpoint', function () {
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith(
+            'LeaveRequest', 'getBreakdown', { leave_request_id: leaveRequestId }, false);
+        });
+      });
+    });
+
     describe('create()', function () {
       var requestData;
 
@@ -583,6 +604,10 @@ define([
       // Intercept backend calls for LeaveRequest.getAttachments
       $httpBackend.whenGET(/action=getattachments&entity=LeaveRequest/)
         .respond(mockData.getAttachments());
+
+      // Intercept backend calls for LeaveRequest.getBreakdown
+      $httpBackend.whenGET(/action=getBreakdown&entity=LeaveRequest/)
+        .respond(mockData.all());
 
       // Intercept backend calls for LeaveRequest.create in POST
       $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)
