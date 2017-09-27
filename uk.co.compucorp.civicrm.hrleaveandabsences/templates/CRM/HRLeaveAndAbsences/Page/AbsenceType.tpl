@@ -10,7 +10,7 @@
         {strip}
           {* handle enable/disable actions*}
           {include file="CRM/common/enableDisableApi.tpl"}
-          <table cellpadding="0" cellspacing="0" border="0" class="table table-responsive">
+          <table cellpadding="0" cellspacing="0" border="0" class="table table-responsive hrleaveandabsences-entity-list">
             <thead class="sticky">
               <th>{ts}Title{/ts}</th>
               <th>{ts}Allow Accruals?{/ts}</th>
