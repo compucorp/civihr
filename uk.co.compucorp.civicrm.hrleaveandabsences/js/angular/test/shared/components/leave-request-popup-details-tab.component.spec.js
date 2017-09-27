@@ -64,6 +64,7 @@ define([
 
       spyOn($log, 'debug');
       spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
+      spyOn(LeaveRequestAPI, 'getBalanceChangeBreakdown').and.callThrough();
       spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
       spyOn(AbsenceType, 'canExpire').and.callThrough();
       spyOn(EntitlementAPI, 'all').and.callThrough();
@@ -597,7 +598,11 @@ define([
               expect(controller.request.to_date_type).toEqual('1');
             });
 
-            it('does show balance', function () {
+            it('retrieves balance', function () {
+              expect(LeaveRequestAPI.getBalanceChangeBreakdown).toHaveBeenCalled();
+            });
+
+            it('shows balance', function () {
               expect(controller.uiOptions.showBalance).toBeTruthy();
             });
 

@@ -126,7 +126,7 @@ define([
       .then(function () {
         return $q.all([
           setDaySelectionMode(),
-          vm.calculateBalanceChange()
+          calculateBalanceChange(vm.isMode('edit'))
         ]);
       })
       .catch(handleError)
@@ -138,23 +138,28 @@ define([
     /**
      * Calculate change in balance, it updates local balance variables.
      *
-     * @return {Promise} empty promise if all required params are not set otherwise promise from server
+     * @param  {Boolean} toGetOriginalBreakdown
+     * @return {Promise} empty promise if all required params are not set
+     *   otherwise promise from server
      */
-    function calculateBalanceChange () {
+    function calculateBalanceChange (toGetOriginalBreakdown) {
       vm._setDateAndTypes();
 
-      if (!vm._canCalculateChange()) {
-        return $q.resolve();
-      }
+      if (!vm._canCalculateChange()) { return $q.resolve(); }
 
       vm.loading.showBalanceChange = true;
-      return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange())
+
+      return (toGetOriginalBreakdown
+        ? vm.request.getBalanceChangeBreakdown()
+        : LeaveRequest.calculateBalanceChange(getParamsForBalanceChange()))
         .then(function (balanceChange) {
           if (balanceChange) {
             vm.balance.change = balanceChange;
+
             vm._calculateOpeningAndClosingBalance();
             rePaginate();
           }
+
           vm.loading.showBalanceChange = false;
         })
         .catch(handleError);
