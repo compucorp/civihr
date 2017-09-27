@@ -59,6 +59,7 @@ define([
         spyOn(LeaveRequestAPI, 'deleteComment').and.callThrough();
         spyOn(LeaveRequestAPI, 'getAttachments').and.callThrough();
         spyOn(LeaveRequestAPI, 'deleteAttachment').and.callThrough();
+        spyOn(LeaveRequestAPI, 'getBalanceChangeBreakdown').and.callThrough();
       }
     ]));
 
@@ -316,6 +317,38 @@ define([
             });
           });
         });
+      });
+    });
+
+    describe('getBalanceChangeBreakdown()', function () {
+      var leaveRequest, instance, promiseResult;
+
+      beforeEach(function () {
+        leaveRequest = helper.createRandomLeaveRequest();
+        instance = LeaveRequestInstance.init(leaveRequest);
+        instance.getBalanceChangeBreakdown().then(function (_promiseResult_) {
+          promiseResult = _promiseResult_;
+        });
+        $rootScope.$digest();
+      });
+
+      it('calls getBalanceChangeBreakdown endpoint with Instance ID as a parameter', function () {
+        expect(LeaveRequestAPI.getBalanceChangeBreakdown).toHaveBeenCalledWith(instance.id);
+      });
+
+      it('returns data with the same structure as LeaveRequestAPI.calculateBalanceChange() endpoint', function () {
+        expect(promiseResult).toEqual(jasmine.objectContaining({
+          amount: jasmine.any(Number),
+          breakdown: jasmine.arrayContaining([{
+            type: jasmine.objectContaining({
+              id: jasmine.any(String),
+              value: jasmine.any(String),
+              label: jasmine.any(String)
+            }),
+            date: jasmine.any(String),
+            amount: jasmine.any(Number)
+          }])
+        }));
       });
     });
 

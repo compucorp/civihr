@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'leave-absences/shared/models/leave-request-model',
+  'leave-absences/shared/models/leave-request.model',
   'mocks/apis/leave-request-api-mock'
 ], function () {
   'use strict';

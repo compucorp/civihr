@@ -223,6 +223,33 @@ define([
         },
 
         /**
+         * Gets the balance change breakdown of the leave request
+         *
+         * @return {Promise}
+         */
+        getBalanceChangeBreakdown: function () {
+          return LeaveRequestAPI.getBalanceChangeBreakdown(this.id)
+            .then(function (response) {
+              return {
+                amount: _.reduce(response.values, function (sum, entry) {
+                  return sum + parseFloat(entry.amount);
+                }, 0),
+                breakdown: response.values.map(function (entry) {
+                  return {
+                    amount: parseFloat(entry.amount),
+                    date: entry.date,
+                    type: {
+                      id: entry.id,
+                      value: entry.type,
+                      label: entry.label
+                    }
+                  };
+                })
+              };
+            });
+        },
+
+        /**
          * Validate leave request instance attributes.
          *
          * @return {Promise} empty array if no error found otherwise an object

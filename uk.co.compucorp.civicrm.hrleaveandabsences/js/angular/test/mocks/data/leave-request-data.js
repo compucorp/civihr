@@ -2,9 +2,10 @@
 
 define([
   'common/lodash',
+  'common/moment',
   'mocks/data/option-group-mock-data',
   'mocks/data/absence-type-data'
-], function (_, optionGroupMock, absenceTypeData) {
+], function (_, moment, optionGroupMock, absenceTypeData) {
   var mockData = {
     allData: {
       'is_error': 0,
@@ -319,6 +320,35 @@ define([
         }]
       }
     },
+    /**
+     * Generates random balance change breakdown
+     *
+     * @return {Object} mocking a response from LeaveRequest.getBreakdown API
+     */
+    balanceChangeBreakdown: (function () {
+      var breakdown = [];
+      var days = optionGroupMock.getCollection('hrleaveandabsences_leave_request_day_type');
+      var dateFrom = moment('2017-06-09');
+
+      for (var i = 1; i <= Math.ceil(Math.random() * 20); i++) {
+        var day = _.sample(days);
+
+        breakdown.push({
+          id: i.toString(),
+          type: day.value,
+          label: day.label,
+          date: dateFrom.add(1, 'days').format('YYYY-MM-DD'),
+          amount: (-(Math.round(Math.random() * 4) / 4).toFixed(2)).toString()
+        });
+      }
+
+      return {
+        is_error: 0,
+        version: 3,
+        count: breakdown.length,
+        values: breakdown
+      };
+    })(),
     isValidData: {
       'is_error': 0,
       'count': 0,
@@ -484,6 +514,9 @@ define([
       return _.find(mockData.allData.values, function (leaveRequest) {
         return leaveRequest[key] === value;
       });
+    },
+    balanceChangeBreakdown: function () {
+      return mockData.balanceChangeBreakdown;
     },
     getComments: function () {
       return mockData.getComments;
