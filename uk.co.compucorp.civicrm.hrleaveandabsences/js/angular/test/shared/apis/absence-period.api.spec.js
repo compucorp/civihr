@@ -4,33 +4,33 @@ define([
   'mocks/data/absence-period-data',
   'common/moment',
   'leave-absences/shared/apis/absence-period.api',
-  'leave-absences/shared/modules/shared-settings',
+  'leave-absences/shared/modules/shared-settings'
 ], function (mockData, moment) {
-  'use strict'
+  'use strict';
 
-  describe("AbsencePeriodAPI", function () {
+  describe('AbsencePeriodAPI', function () {
     var AbsencePeriodAPI, $httpBackend, sharedSettings;
 
     beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
 
     beforeEach(inject(['AbsencePeriodAPI', '$httpBackend', 'shared-settings',
       function (_AbsencePeriodAPI_, _$httpBackend_, _sharedSettings_) {
-      AbsencePeriodAPI = _AbsencePeriodAPI_;
-      $httpBackend = _$httpBackend_;
-      sharedSettings = _sharedSettings_;
-    }]));
+        AbsencePeriodAPI = _AbsencePeriodAPI_;
+        $httpBackend = _$httpBackend_;
+        sharedSettings = _sharedSettings_;
+      }]));
 
-    it("has expected interface", function () {
-      expect(Object.keys(AbsencePeriodAPI)).toContain("all");
+    it('has expected interface', function () {
+      expect(Object.keys(AbsencePeriodAPI)).toContain('all');
     });
 
-    describe("all()", function () {
+    describe('all()', function () {
       var absenceTypePromise, totalAbsencePeriods;
 
       beforeEach(function () {
         $httpBackend.whenGET(/action=get&entity=AbsencePeriod/)
           .respond(mockData.all());
-      })
+      });
 
       beforeEach(function () {
         totalAbsencePeriods = mockData.all().values.length;
@@ -38,17 +38,17 @@ define([
       });
 
       afterEach(function () {
-        //enforce flush to make calls to httpBackend
+        // enforce flush to make calls to httpBackend
         $httpBackend.flush();
       });
 
-      it("returns all the absence periods", function () {
+      it('returns all the absence periods', function () {
         absenceTypePromise.then(function (result) {
           expect(result.length).toEqual(totalAbsencePeriods);
         });
       });
 
-      it("returns absence period with all attributes keys", function () {
+      it('returns absence period with all attributes keys', function () {
         absenceTypePromise.then(function (result) {
           var firstAbsencePeriod = result[0];
 
@@ -60,7 +60,7 @@ define([
         });
       });
 
-      it("returns absence period with all attributes values", function () {
+      it('returns absence period with all attributes values', function () {
         absenceTypePromise.then(function (result) {
           var firstAbsencePeriod = result[0];
 

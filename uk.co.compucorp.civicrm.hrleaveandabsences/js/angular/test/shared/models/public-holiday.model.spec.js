@@ -3,9 +3,9 @@
 define([
   'leave-absences/shared/models/public-holiday.model',
   'mocks/apis/public-holiday-api-mock',
-  'common/mocks/services/hr-settings-mock',
+  'common/mocks/services/hr-settings-mock'
 ], function () {
-  'use strict'
+  'use strict';
 
   describe('PublicHoliday', function () {
     var $provide, PublicHoliday, PublicHolidayAPI, $rootScope;
@@ -40,7 +40,7 @@ define([
       });
 
       afterEach(function () {
-        //to excute the promise force an digest
+        // to excute the promise force an digest
         $rootScope.$apply();
       });
 
@@ -61,14 +61,15 @@ define([
 
     describe('isPublicHoliday()', function () {
       describe('when given date is public holiday', function () {
-        var promise, testDate = '2016-01-01';
+        var promise;
+        var testDate = '2016-01-01';
 
         beforeEach(function () {
           promise = PublicHoliday.isPublicHoliday(testDate);
         });
 
         afterEach(function () {
-          //to excute the promise force an digest
+          // to excute the promise force an digest
           $rootScope.$apply();
         });
 
@@ -86,14 +87,15 @@ define([
       });
 
       describe('when given date is not a public holiday', function () {
-        var promise, testDate = '2016-01-02';
+        var promise;
+        var testDate = '2016-01-02';
 
         beforeEach(function () {
           promise = PublicHoliday.isPublicHoliday(testDate);
         });
 
         afterEach(function () {
-          //to excute the promise force an digest
+          // to excute the promise force an digest
           $rootScope.$apply();
         });
 

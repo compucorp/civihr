@@ -3,9 +3,9 @@
 define([
   'leave-absences/shared/models/absence-period.model',
   'mocks/apis/absence-period-api-mock',
-  'common/mocks/services/hr-settings-mock',
+  'common/mocks/services/hr-settings-mock'
 ], function () {
-  'use strict'
+  'use strict';
 
   describe('AbsencePeriod', function () {
     var $provide, AbsencePeriod, AbsencePeriodAPI, $rootScope;
@@ -40,7 +40,7 @@ define([
       });
 
       afterEach(function () {
-        //to excute the promise force an digest
+        // to excute the promise force an digest
         $rootScope.$apply();
       });
 
@@ -63,7 +63,7 @@ define([
       var promise;
 
       beforeEach(function () {
-        //shift current date to precede mock periods
+        // shift current date to precede mock periods
         var currentDate = new Date(2016, 6, 6);
 
         jasmine.clock().mockDate(currentDate);
@@ -71,7 +71,7 @@ define([
       });
 
       afterEach(function () {
-        //to excute the promise force an digest
+        // to excute the promise force an digest
         $rootScope.$apply();
         jasmine.clock().uninstall();
       });
@@ -92,7 +92,7 @@ define([
         var promise;
 
         beforeEach(function () {
-          //shift current date to precede mock periods
+          // shift current date to precede mock periods
           var pastDate = new Date(2013, 1, 1);
 
           jasmine.clock().mockDate(pastDate);
@@ -100,7 +100,7 @@ define([
         });
 
         afterEach(function () {
-          //to excute the promise force an digest
+          // to excute the promise force an digest
           $rootScope.$apply();
         });
 
