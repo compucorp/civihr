@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'leave-absences/shared/models/absence-period.model',
   'mocks/apis/absence-period-api-mock',

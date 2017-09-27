@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'leave-absences/shared/models/entitlement.model',
   'mocks/apis/entitlement-api-mock',

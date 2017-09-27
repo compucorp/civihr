@@ -1,5 +1,4 @@
 /* eslint-env amd, jasmine */
-/* global inject */
 
 define([
   'common/lodash',

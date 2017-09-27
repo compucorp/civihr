@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'mocks/data/public-holiday-data',
   'common/moment',

@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'mocks/data/absence-period-data',
   'common/moment',
