@@ -105,7 +105,7 @@ define([
          * Gets the balance change breakdown
          * @NOTE: This breakdown is not affected by a work pattern change
          *
-         * @param  {Number} leaveRequestId Leave Request ID
+         * @param  {Integer} leaveRequestId Leave Request ID
          * @return {Promise} resolves with the detailed balance breakdown
          */
         getBalanceChangeBreakdown: function (leaveRequestId) {

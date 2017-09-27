@@ -598,8 +598,9 @@ define([
               expect(controller.request.to_date_type).toEqual('1');
             });
 
-            it('retrieves balance', function () {
+            it('retrieves original balance breakdown', function () {
               expect(LeaveRequestAPI.getBalanceChangeBreakdown).toHaveBeenCalled();
+              expect(controller.loading.showBalanceChange).toBe(false);
             });
 
             it('shows balance', function () {

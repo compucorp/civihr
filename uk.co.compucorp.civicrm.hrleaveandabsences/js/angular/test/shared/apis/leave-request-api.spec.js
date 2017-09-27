@@ -15,6 +15,7 @@ define([
 
   describe('LeaveRequestAPI', function () {
     var LeaveRequestAPI, $httpBackend, $rootScope, $q, promise;
+    var balanceChangeBreakdownMock = mockData.balanceChangeBreakdown();
 
     beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
     beforeEach(inject(['$httpBackend', '$q', '$rootScope', 'LeaveRequestAPI',
@@ -193,17 +194,22 @@ define([
 
         beforeEach(function () {
           spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
-          LeaveRequestAPI.getBalanceChangeBreakdown(leaveRequestId);
-          $rootScope.$digest();
+          promise = LeaveRequestAPI.getBalanceChangeBreakdown(leaveRequestId);
         });
 
         afterEach(function () {
           $httpBackend.flush();
         });
 
-        it('calls the LeaveRequest.getBalanceChangeBreakdown endpoint', function () {
+        it('calls the LeaveRequest.getBreakdown endpoint', function () {
           expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith(
             'LeaveRequest', 'getBreakdown', { leave_request_id: leaveRequestId }, false);
+        });
+
+        it('returns the api data as is', function () {
+          promise.then(function (result) {
+            expect(result).toEqual(balanceChangeBreakdownMock);
+          });
         });
       });
     });
@@ -607,7 +613,7 @@ define([
 
       // Intercept backend calls for LeaveRequest.getBreakdown
       $httpBackend.whenGET(/action=getBreakdown&entity=LeaveRequest/)
-        .respond(mockData.all());
+        .respond(balanceChangeBreakdownMock);
 
       // Intercept backend calls for LeaveRequest.create in POST
       $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)

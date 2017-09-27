@@ -126,7 +126,7 @@ define([
       .then(function () {
         return $q.all([
           setDaySelectionMode(),
-          calculateBalanceChange(vm.isMode('edit'))
+          initBalanceChange()
         ]);
       })
       .catch(handleError)
@@ -138,30 +138,18 @@ define([
     /**
      * Calculate change in balance, it updates local balance variables.
      *
-     * @param  {Boolean} toGetOriginalBreakdown
      * @return {Promise} empty promise if all required params are not set
      *   otherwise promise from server
      */
-    function calculateBalanceChange (toGetOriginalBreakdown) {
+    function calculateBalanceChange () {
       vm._setDateAndTypes();
 
       if (!vm._canCalculateChange()) { return $q.resolve(); }
 
       vm.loading.showBalanceChange = true;
 
-      return (toGetOriginalBreakdown
-        ? vm.request.getBalanceChangeBreakdown()
-        : LeaveRequest.calculateBalanceChange(getParamsForBalanceChange()))
-        .then(function (balanceChange) {
-          if (balanceChange) {
-            vm.balance.change = balanceChange;
-
-            vm._calculateOpeningAndClosingBalance();
-            rePaginate();
-          }
-
-          vm.loading.showBalanceChange = false;
-        })
+      return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange())
+        .then(setBalanceChange)
         .catch(handleError);
     }
 
@@ -276,6 +264,22 @@ define([
     }
 
     /**
+     * Gets original balance change breakdown that cannot be affected by,
+     * for example, work pattern changes.
+     *
+     * @return {Promise}
+     */
+    function getOriginalBalanceChange () {
+      vm._setDateAndTypes();
+
+      vm.loading.showBalanceChange = true;
+
+      return vm.request.getBalanceChangeBreakdown()
+        .then(setBalanceChange)
+        .catch(handleError);
+    }
+
+    /**
      * Handles errors
      *
      * @param {Array|Object}
@@ -286,6 +290,15 @@ define([
       vm.loading.showBalanceChange = false;
       vm.loading.tab = false;
       vm.loading.toDayTypes = false;
+    }
+
+    /**
+     * Initiates the balance change breakdown
+     *
+     * @return {Promise}
+     */
+    function initBalanceChange () {
+      return (vm.isMode('edit') ? getOriginalBalanceChange() : calculateBalanceChange());
     }
 
     /**
@@ -428,6 +441,22 @@ define([
       vm.pagination.totalItems = vm.balance.change.breakdown.length;
       vm.pagination.filteredbreakdown = vm.balance.change.breakdown;
       vm.pagination.pageChanged();
+    }
+
+    /**
+     * Sets balance change breakdown after it was retrieved or calculated
+     *
+     * @param {Object} balanceChange
+     */
+    function setBalanceChange (balanceChange) {
+      if (balanceChange) {
+        vm.balance.change = balanceChange;
+
+        vm._calculateOpeningAndClosingBalance();
+        rePaginate();
+      }
+
+      vm.loading.showBalanceChange = false;
     }
 
     /**
