@@ -21,6 +21,11 @@
   }
 }
 
+body {
+  padding-top: 60px !important;
+}
+
+
 [class^="icon-"], [class*=" icon-"] {
   font-family: 'icomoon';
   speak: none;
@@ -42,10 +47,6 @@
 .icon-logo-full:before {
   color: #727f8a;
   font-size: 22px;
-}
-
-body:not(.toolbar-drawer) {
-  padding-top: 30px;
 }
 
 #civicrm-footer {
