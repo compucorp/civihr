@@ -170,6 +170,27 @@ pipeline {
 					}
 				}
 			}
+			post {
+                always {
+                	// XUnit
+					step([
+	                    $class: 'XUnitBuilder',
+                    	thresholds: [
+	                    	[$class: 'FailedThreshold',
+	                          failureNewThreshold: '5',
+	                          failureThreshold: '5',
+	                          unstableNewThreshold: '1',
+	                          unstableThreshold: '1'],
+	                        [$class: 'SkippedThreshold',
+	                          failureNewThreshold: '0',
+	                          failureThreshold: '0',
+	                          unstableNewThreshold: '0',
+	                          unstableThreshold: '0']
+                    	],
+	                    tools: [[$class: 'JUnitType', pattern: 'reports/js-karma/*.xml']]
+	                ])
+            	}
+            }
 	    }
   	}
 
