@@ -90,6 +90,7 @@ define([
      */
     (function init () {
       vm.loading.absenceTypes = true;
+
       initAvailableStatusesMatrix();
       initListeners();
 
@@ -469,15 +470,16 @@ define([
      * Initialises open mode of the dialog
      */
     function initOpenMode () {
-      if (vm.request.id) {
-        vm.mode = 'edit';
+      var viewModeStatuses;
 
-        var viewModeStatuses = [
+      if (vm.request.id) {
+        viewModeStatuses = [
           vm.requestStatuses[sharedSettings.statusNames.approved].value,
           vm.requestStatuses[sharedSettings.statusNames.adminApproved].value,
           vm.requestStatuses[sharedSettings.statusNames.rejected].value,
           vm.requestStatuses[sharedSettings.statusNames.cancelled].value
         ];
+        vm.mode = 'edit';
 
         if (vm.isRole('staff') && viewModeStatuses.indexOf(vm.request.status_id) > -1) {
           vm.mode = 'view';
@@ -491,9 +493,11 @@ define([
      * Initializes the leave request object
      */
     function initRequest () {
+      var leaveType, attributes;
+
       vm.request = vm.leaveRequest || null;
-      var leaveType = getLeaveType();
-      var attributes = vm.initRequestAttributes();
+      leaveType = getLeaveType();
+      attributes = vm.initRequestAttributes();
 
       if (leaveType === 'leave') {
         vm.request = LeaveRequestInstance.init(attributes);
@@ -532,10 +536,8 @@ define([
     function initRoles () {
       role = 'staff';
 
-      /**
-       * If the user is creating or editing their own leave, they will be
-       * treated as a staff regardless of their actual role.
-       */
+      // If the user is creating or editing their own leave, they will be
+      // treated as a staff regardless of their actual role.
       if ($rootScope.section === 'my-leave') {
         return;
       }
@@ -681,8 +683,10 @@ define([
      * @return {Array} of filtered absence types for given entitlements
      */
     function mapAbsenceTypesWithBalance (absenceTypes, entitlements) {
+      var absenceType;
+
       return entitlements.map(function (entitlementItem) {
-        var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
+        absenceType = _.find(absenceTypes, function (absenceTypeItem) {
           return absenceTypeItem.id === entitlementItem.type_id;
         });
 
@@ -705,7 +709,7 @@ define([
       $rootScope.$emit(eventName, vm.request);
 
       vm.errors = [];
-      // close the modal
+
       vm.dismissModal();
     }
 
@@ -743,6 +747,7 @@ define([
         .then(function (entitlements) {
           // create a list of absence types with a `balance` property
           vm.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
+
           if (!vm.absenceTypes.length) {
             return $q.reject(NO_ENTITLEMENT_ERROR);
           }
@@ -783,6 +788,7 @@ define([
       }
 
       vm.submitting = true;
+
       changeStatusBeforeSave();
 
       return vm.request.isValid()
@@ -832,10 +838,11 @@ define([
     }
 
     /**
-     * Gets called when the component is destroyed
+     * Unsubscribes from events
+     * @NOTE: Gets called when the component is destroyed
      */
     function unsubscribeFromEvents () {
-      // destroy all the event
+      // Destroy all events
       _.forEach(listeners, function (listener) {
         listener();
       });
@@ -848,7 +855,6 @@ define([
      */
     function updateRequest () {
       return vm.request.update()
-        .then(triggerChildComponentsSubmitAndWaitForResponse)
         .then(triggerChildComponentsSubmitAndWaitForResponse)
         .then(function () {
           if (vm.isRole('manager')) {
@@ -875,13 +881,11 @@ define([
     function _loadAbsenceTypes () {
       return AbsenceType.all(getAbsenceTypeParams())
         .then(function (absenceTypes) {
-          var absenceTypesIds = absenceTypes.map(function (absenceType) {
-            return absenceType.id;
-          });
-
           absenceTypesAndIds = {
             types: absenceTypes,
-            ids: absenceTypesIds
+            ids: absenceTypes.map(function (absenceType) {
+              return absenceType.id;
+            })
           };
 
           return setAbsenceTypesFromEntitlements(absenceTypesAndIds);
