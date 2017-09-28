@@ -177,6 +177,25 @@ define([
     }
 
     /**
+     * Checks if the balance change has changed since this leave request was saved
+     *
+     * @return {Promise}
+     */
+    function checkIfBalanceChangeHasChanged () {
+      if (!vm.isMode('edit') || vm.isRole('staff')) { return; }
+
+      return LeaveRequest.calculateBalanceChange(_.pick(vm.request,
+        ['contact_id', 'from_date', 'from_date_type', 'to_date', 'to_date_type']))
+        .then(function (balanceChange) {
+          if (+vm.balance.change.amount !== +balanceChange.amount) {
+            promptBalanceChangeRecalculation(balanceChange);
+
+            return $q.reject();
+          }
+        });
+    }
+
+    /**
      * Closes the error alerts if any
      */
     function closeAlert () {
@@ -194,6 +213,16 @@ define([
         .then(function () {
           postSubmit('LeaveRequest::new');
         });
+    }
+
+    /**
+     * Sets the "change_balance" attribute to the leave request
+     * if a force balance change recalculation is needed
+     */
+    function decideIfBalanceChangeNeedsAForceRecalculation () {
+      if (!vm.isRole('staff')) {
+        vm.request.change_balance = true;
+      }
     }
 
     /**
@@ -681,6 +710,24 @@ define([
     }
 
     /**
+     * Prompts to confirm the recalculation of the balance change via a dialog
+     */
+    function promptBalanceChangeRecalculation (balanceChange) {
+      dialog.open({
+        title: 'Recalculate Balance Change?',
+        copyCancel: 'Cancel',
+        copyConfirm: 'Yes',
+        classConfirm: 'btn-warning',
+        msg: 'The leave balance change has changed since ' +
+          'this leave request was created. ' +
+          'Do you want to recalculate the balance change?',
+        onConfirm: function () {
+          $rootScope.$emit('LeaveRequestPopup::updateBalance');
+        }
+      });
+    }
+
+    /**
      * Sets entitlements and sets the absences type available for the user.
      * It depends on absenceTypesAndIds to be set to list of absence types and ids
      *
@@ -739,6 +786,8 @@ define([
       changeStatusBeforeSave();
 
       return vm.request.isValid()
+        .then(checkIfBalanceChangeHasChanged)
+        .then(decideIfBalanceChangeNeedsAForceRecalculation)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
         })

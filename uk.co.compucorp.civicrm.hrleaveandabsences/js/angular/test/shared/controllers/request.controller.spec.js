@@ -25,7 +25,7 @@
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
-        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI;
+        Contact, ContactAPIMock, EntitlementAPI, LeaveRequest, LeaveRequestAPI, WorkPatternAPI;
       var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
@@ -67,7 +67,7 @@
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_, _dialog_,
         _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
-        _LeaveRequestInstance_, _LeaveRequestAPI_, _WorkPatternAPI_) {
+        _LeaveRequestInstance_, _LeaveRequest_, _LeaveRequestAPI_, _WorkPatternAPI_) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
@@ -76,6 +76,7 @@
 
         Contact = _Contact_;
         EntitlementAPI = _EntitlementAPI_;
+        LeaveRequest = _LeaveRequest_;
         LeaveRequestAPI = _LeaveRequestAPI_;
         WorkPatternAPI = _WorkPatternAPI_;
         AbsenceTypeAPI = _AbsenceTypeAPI_;
@@ -350,6 +351,10 @@
                 $scope.$apply();
               });
 
+              it('does not force balance change to be recalculated', function () {
+                expect(controller.request.change_balance).not.toBeDefined();
+              });
+
               it('calls appropriate API endpoint', function () {
                 expect(controller.request.update).toHaveBeenCalled();
               });
@@ -436,8 +441,13 @@
 
         describe('on submit', function () {
           beforeEach(function () {
+            controller.balance.change.amount = controller.request.balance_change;
+
             spyOn($rootScope, '$emit');
             spyOn(controller.request, 'update').and.callThrough();
+            // Pretending original balance change has not been changed
+            spyOn(LeaveRequest, 'calculateBalanceChange').and.returnValue(
+              $q.resolve({ amount: controller.balance.change.amount }));
 
             // entitlements are randomly generated so resetting them to positive here
             if (controller.balance.closing < 0) {
@@ -450,24 +460,67 @@
             controller.checkSubmitConditions.and.returnValue(true);
 
             controller.submit();
-            $scope.$apply();
           });
 
-          it('allows user to submit', function () {
-            expect(controller.canSubmit()).toBeTruthy();
+          describe('if balance change has not been changed', function () {
+            beforeEach(function () {
+              $scope.$apply();
+            });
+
+            it('allows user to submit', function () {
+              expect(controller.canSubmit()).toBeTruthy();
+            });
+
+            it('forces balance change to be recalculated', function () {
+              expect(controller.request.change_balance).toBeTruthy();
+            });
+
+            it('calls update method on instance', function () {
+              expect(controller.request.update).toHaveBeenCalled();
+            });
+
+            it('calls corresponding API end points', function () {
+              expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
+              expect(LeaveRequestAPI.update).toHaveBeenCalled();
+            });
+
+            it('sends update event', function () {
+              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', controller.request);
+            });
           });
 
-          it('calls update method on instance', function () {
-            expect(controller.request.update).toHaveBeenCalled();
-          });
+          describe('if balance change has been changed', function () {
+            var confirmFunction;
 
-          it('calls corresponding API end points', function () {
-            expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
-            expect(LeaveRequestAPI.update).toHaveBeenCalled();
-          });
+            beforeEach(function () {
+              // Make original balance differ from the calculated balance
+              controller.balance.change.amount--;
 
-          it('sends update event', function () {
-            expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', controller.request);
+              spyOn(dialog, 'open').and.callFake(function (params) {
+                confirmFunction = params.onConfirm;
+              });
+              $rootScope.$apply();
+            });
+
+            it('does not call update method on instance', function () {
+              expect(controller.request.update).not.toHaveBeenCalled();
+            });
+
+            it('opens a dialog', function () {
+              expect(dialog.open).toHaveBeenCalled();
+            });
+
+            describe('on confirm the balance change recalculation', function () {
+              beforeEach(function () {
+                confirmFunction();
+                $rootScope.$apply();
+              });
+
+              it('initiates the balance change recalculation', function () {
+                expect($rootScope.$emit).toHaveBeenCalledWith(
+                  'LeaveRequestPopup::updateBalance');
+              });
+            });
           });
         });
 
