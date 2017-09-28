@@ -148,7 +148,7 @@ define([
 
       vm.loading.showBalanceChange = true;
 
-      return LeaveRequest.calculateBalanceChange(getParamsForBalanceChange())
+      return vm.request.calculateBalanceChange()
         .then(setBalanceChange)
         .catch(handleError);
     }
@@ -239,17 +239,6 @@ define([
      */
     function getLeaveType () {
       return vm.request ? vm.request.request_type : (vm.leaveType || null);
-    }
-
-    /**
-     * Helper function to obtain params for leave request calculateBalanceChange api call
-     *
-     * @return {Object} containing required keys for leave request
-     */
-    function getParamsForBalanceChange () {
-      return _.pick(vm.request, ['contact_id', 'from_date',
-        'from_date_type', 'to_date', 'to_date_type'
-      ]);
     }
 
     /**

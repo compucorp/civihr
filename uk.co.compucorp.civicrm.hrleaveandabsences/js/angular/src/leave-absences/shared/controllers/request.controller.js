@@ -90,6 +90,7 @@ define([
      */
     (function init () {
       vm.loading.absenceTypes = true;
+
       initAvailableStatusesMatrix();
       initListeners();
 
@@ -177,6 +178,24 @@ define([
     }
 
     /**
+     * Checks if the balance change has changed since this leave request was saved
+     *
+     * @return {Promise}
+     */
+    function checkIfBalanceChangeHasChanged () {
+      if (!vm.isMode('edit') || vm.isRole('staff')) { return; }
+
+      return vm.request.calculateBalanceChange()
+        .then(function (balanceChange) {
+          if (+vm.balance.change.amount !== +balanceChange.amount) {
+            promptBalanceChangeRecalculation(balanceChange);
+
+            return $q.reject();
+          }
+        });
+    }
+
+    /**
      * Closes the error alerts if any
      */
     function closeAlert () {
@@ -194,6 +213,16 @@ define([
         .then(function () {
           postSubmit('LeaveRequest::new');
         });
+    }
+
+    /**
+     * Sets the "change_balance" attribute to the leave request
+     * if a force balance change recalculation is needed
+     */
+    function decideIfBalanceChangeNeedsAForceRecalculation () {
+      if (!vm.isRole('staff')) {
+        vm.request.change_balance = true;
+      }
     }
 
     /**
@@ -440,15 +469,16 @@ define([
      * Initialises open mode of the dialog
      */
     function initOpenMode () {
-      if (vm.request.id) {
-        vm.mode = 'edit';
+      var viewModeStatuses;
 
-        var viewModeStatuses = [
+      if (vm.request.id) {
+        viewModeStatuses = [
           vm.requestStatuses[sharedSettings.statusNames.approved].value,
           vm.requestStatuses[sharedSettings.statusNames.adminApproved].value,
           vm.requestStatuses[sharedSettings.statusNames.rejected].value,
           vm.requestStatuses[sharedSettings.statusNames.cancelled].value
         ];
+        vm.mode = 'edit';
 
         if (vm.isRole('staff') && viewModeStatuses.indexOf(vm.request.status_id) > -1) {
           vm.mode = 'view';
@@ -462,9 +492,11 @@ define([
      * Initializes the leave request object
      */
     function initRequest () {
+      var leaveType, attributes;
+
       vm.request = vm.leaveRequest || null;
-      var leaveType = getLeaveType();
-      var attributes = vm.initRequestAttributes();
+      leaveType = getLeaveType();
+      attributes = vm.initRequestAttributes();
 
       if (leaveType === 'leave') {
         vm.request = LeaveRequestInstance.init(attributes);
@@ -503,10 +535,8 @@ define([
     function initRoles () {
       role = 'staff';
 
-      /**
-       * If the user is creating or editing their own leave, they will be
-       * treated as a staff regardless of their actual role.
-       */
+      // If the user is creating or editing their own leave, they will be
+      // treated as a staff regardless of their actual role.
       if ($rootScope.section === 'my-leave') {
         return;
       }
@@ -652,8 +682,10 @@ define([
      * @return {Array} of filtered absence types for given entitlements
      */
     function mapAbsenceTypesWithBalance (absenceTypes, entitlements) {
+      var absenceType;
+
       return entitlements.map(function (entitlementItem) {
-        var absenceType = _.find(absenceTypes, function (absenceTypeItem) {
+        absenceType = _.find(absenceTypes, function (absenceTypeItem) {
           return absenceTypeItem.id === entitlementItem.type_id;
         });
 
@@ -676,8 +708,26 @@ define([
       $rootScope.$emit(eventName, vm.request);
 
       vm.errors = [];
-      // close the modal
+
       vm.dismissModal();
+    }
+
+    /**
+     * Prompts to confirm the recalculation of the balance change via a dialog
+     */
+    function promptBalanceChangeRecalculation (balanceChange) {
+      dialog.open({
+        title: 'Recalculate Balance Change?',
+        copyCancel: 'Cancel',
+        copyConfirm: 'Yes',
+        classConfirm: 'btn-warning',
+        msg: 'The leave balance change has updated since ' +
+          'this leave request was created. ' +
+          'Do you want to recalculate the balance change?',
+        onConfirm: function () {
+          $rootScope.$emit('LeaveRequestPopup::updateBalance');
+        }
+      });
     }
 
     /**
@@ -696,6 +746,7 @@ define([
         .then(function (entitlements) {
           // create a list of absence types with a `balance` property
           vm.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
+
           if (!vm.absenceTypes.length) {
             return $q.reject(NO_ENTITLEMENT_ERROR);
           }
@@ -736,9 +787,12 @@ define([
       }
 
       vm.submitting = true;
+
       changeStatusBeforeSave();
 
       return vm.request.isValid()
+        .then(checkIfBalanceChangeHasChanged)
+        .then(decideIfBalanceChangeNeedsAForceRecalculation)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
         })
@@ -783,10 +837,11 @@ define([
     }
 
     /**
-     * Gets called when the component is destroyed
+     * Unsubscribes from events
+     * @NOTE: Gets called when the component is destroyed
      */
     function unsubscribeFromEvents () {
-      // destroy all the event
+      // Destroy all events
       _.forEach(listeners, function (listener) {
         listener();
       });
@@ -799,7 +854,6 @@ define([
      */
     function updateRequest () {
       return vm.request.update()
-        .then(triggerChildComponentsSubmitAndWaitForResponse)
         .then(triggerChildComponentsSubmitAndWaitForResponse)
         .then(function () {
           if (vm.isRole('manager')) {
@@ -826,13 +880,11 @@ define([
     function _loadAbsenceTypes () {
       return AbsenceType.all(getAbsenceTypeParams())
         .then(function (absenceTypes) {
-          var absenceTypesIds = absenceTypes.map(function (absenceType) {
-            return absenceType.id;
-          });
-
           absenceTypesAndIds = {
             types: absenceTypes,
-            ids: absenceTypesIds
+            ids: absenceTypes.map(function (absenceType) {
+              return absenceType.id;
+            })
           };
 
           return setAbsenceTypesFromEntitlements(absenceTypesAndIds);

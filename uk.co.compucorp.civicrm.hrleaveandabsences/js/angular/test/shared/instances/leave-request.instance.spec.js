@@ -60,6 +60,7 @@ define([
         spyOn(LeaveRequestAPI, 'getAttachments').and.callThrough();
         spyOn(LeaveRequestAPI, 'deleteAttachment').and.callThrough();
         spyOn(LeaveRequestAPI, 'getBalanceChangeBreakdown').and.callThrough();
+        spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
       }
     ]));
 
@@ -241,6 +242,32 @@ define([
               });
             });
           });
+        });
+      });
+    });
+
+    describe('calculateBalanceChange()', function () {
+      var promise;
+
+      beforeEach(function () {
+        instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+        promise = instance.calculateBalanceChange();
+      });
+
+      afterEach(function () {
+        $rootScope.$apply();
+      });
+
+      it('calls equivalent API method', function () {
+        promise.then(function () {
+          expect(LeaveRequestAPI.calculateBalanceChange)
+            .toHaveBeenCalledWith(jasmine.objectContaining({
+              contact_id: jasmine.any(String),
+              from_date: jasmine.any(String),
+              to_date: jasmine.any(String),
+              from_date_type: jasmine.any(String),
+              to_date_type: jasmine.any(String)
+            }));
         });
       });
     });
