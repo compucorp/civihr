@@ -1,3 +1,5 @@
+/* globals CRM */
+
 /*
 Prevent Popups to overflow tables.
 */
@@ -7,9 +9,10 @@ Prevent Popups to overflow tables.
   $('body').on('click', '.btn-slide', function (e) {
     var $button = $(this);
     var $body = $('body');
-    var $popup, buttonOffset, $closestEntity;
+    var $closestEntity = $button.closest('.crm-entity')[0];
+    var $popup = $button.children('ul.panel');
 
-    e.preventDefault();
+    // e.preventDefault();
 
     (function init () {
       openPopupPanel();
@@ -17,16 +20,35 @@ Prevent Popups to overflow tables.
     })();
 
     /**
-     * Closes the popup panel and removes the .civihr-popup-open class from the
-     * body.
+     * Closes the any popup panel that is currently open and removes the
+     * `.civihr-popup-open` class from the body.
      */
-    function closePopupPanel () {
-      $body
-        .children('.civihr-popup')
-        .appendTo($button)
-        .removeClass('civihr-popup');
+    function closePopupPanels () {
+      $('.civihr-popup').remove();
 
       $body.removeClass('civihr-popup-open');
+    }
+
+    /**
+     * Creates a clone of the popup element and appends it to the document body.
+     * This prevents the popup to be hidden by any `overflow: hidden;` rule.
+     */
+    function createPopupClone () {
+      var buttonOffset = $button.offset();
+
+      var $clone = $popup.clone(true)
+        .appendTo($body)
+        .addClass('civihr-popup')
+        .attr('id', $closestEntity.id)
+        .addClass($($closestEntity).attr('class'));
+
+      $clone
+        .css('top', +buttonOffset.top + $button.outerHeight())
+        .css('left', +buttonOffset.left - $clone.width() - $button.outerWidth());
+
+      $clone.show();
+
+      mapCloneClickEventsToOrigin($clone);
     }
 
     /**
@@ -50,7 +72,19 @@ Prevent Popups to overflow tables.
           return;
         }
 
-        closePopupPanel();
+        closePopupPanels();
+      });
+    }
+
+    /**
+     * Maps click events on the popup options back to their original source.
+     * This is done because popup actions are executed as delegated events and
+     * the listener is not the *body* element.
+     */
+    function mapCloneClickEventsToOrigin ($clone) {
+      $clone.find('a').click(function () {
+        var actionIndex = $(this).parent().index();
+        $popup.find('li:nth(' + actionIndex + ') a').click();
       });
     }
 
@@ -59,21 +93,8 @@ Prevent Popups to overflow tables.
      * body.
      */
     function openPopupPanel () {
-      $popup = $button.children('ul.panel');
-      $closestEntity = $button.closest('.crm-entity')[0];
-
-      $popup.attr('id', $closestEntity.id);
-      $popup.addClass($($closestEntity).attr('class'));
-
-      $popup
-        .appendTo($body)
-        .addClass('civihr-popup');
-
-      buttonOffset = $button.offset();
-
-      $popup
-        .css('top', +buttonOffset.top + $button.outerHeight())
-        .css('left', +buttonOffset.left - $popup.width() - $button.outerWidth());
+      closePopupPanels();
+      createPopupClone();
 
       $body.addClass('civihr-popup-open');
     }
