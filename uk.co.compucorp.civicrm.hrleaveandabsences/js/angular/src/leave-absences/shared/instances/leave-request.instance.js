@@ -125,6 +125,18 @@ define([
         },
 
         /**
+         * Gets the current balance change according to a current work pattern
+         *
+         * @return {Promise} resolves to an object containing
+         *   a balance change amount and a detailed breakdown
+         */
+        calculateBalanceChange: function () {
+          return LeaveRequestAPI.calculateBalanceChange(
+            _.pick(this, ['contact_id', 'from_date',
+              'from_date_type', 'to_date', 'to_date_type']));
+        },
+
+        /**
          * Cancel a leave request
          */
         cancel: function () {

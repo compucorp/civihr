@@ -100,25 +100,6 @@ define([
       });
     });
 
-    describe('calculateBalanceChange()', function () {
-      var promise;
-
-      beforeEach(function () {
-        promise = LeaveRequest.calculateBalanceChange(jasmine.any(Object));
-      });
-
-      afterEach(function () {
-        // to excute the promise force an digest
-        $rootScope.$apply();
-      });
-
-      it('calls equivalent API method', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
-        });
-      });
-    });
-
     describe('find()', function () {
       var leaveRequestPromise;
 

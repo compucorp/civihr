@@ -25,7 +25,7 @@
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
-        Contact, ContactAPIMock, EntitlementAPI, LeaveRequest, LeaveRequestAPI, WorkPatternAPI;
+        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI;
       var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
@@ -76,7 +76,6 @@
 
         Contact = _Contact_;
         EntitlementAPI = _EntitlementAPI_;
-        LeaveRequest = _LeaveRequest_;
         LeaveRequestAPI = _LeaveRequestAPI_;
         WorkPatternAPI = _WorkPatternAPI_;
         AbsenceTypeAPI = _AbsenceTypeAPI_;
@@ -445,8 +444,8 @@
 
             spyOn($rootScope, '$emit');
             spyOn(controller.request, 'update').and.callThrough();
-            // Pretending original balance change has not been changed
-            spyOn(LeaveRequest, 'calculateBalanceChange').and.returnValue(
+            // Pretending original balance change has not been updated
+            spyOn(LeaveRequestInstance, 'calculateBalanceChange').and.returnValue(
               $q.resolve({ amount: controller.balance.change.amount }));
 
             // entitlements are randomly generated so resetting them to positive here
@@ -462,7 +461,7 @@
             controller.submit();
           });
 
-          describe('if balance change has not been changed', function () {
+          describe('if balance change has not been updated', function () {
             beforeEach(function () {
               $scope.$apply();
             });
@@ -489,7 +488,7 @@
             });
           });
 
-          describe('if balance change has been changed', function () {
+          describe('if balance change has been updated', function () {
             var confirmFunction;
 
             beforeEach(function () {

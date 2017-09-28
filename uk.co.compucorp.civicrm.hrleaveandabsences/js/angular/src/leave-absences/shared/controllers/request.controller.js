@@ -185,8 +185,7 @@ define([
     function checkIfBalanceChangeHasChanged () {
       if (!vm.isMode('edit') || vm.isRole('staff')) { return; }
 
-      return LeaveRequest.calculateBalanceChange(_.pick(vm.request,
-        ['contact_id', 'from_date', 'from_date_type', 'to_date', 'to_date_type']))
+      return vm.request.calculateBalanceChange()
         .then(function (balanceChange) {
           if (+vm.balance.change.amount !== +balanceChange.amount) {
             promptBalanceChangeRecalculation(balanceChange);
@@ -722,7 +721,7 @@ define([
         copyCancel: 'Cancel',
         copyConfirm: 'Yes',
         classConfirm: 'btn-warning',
-        msg: 'The leave balance change has changed since ' +
+        msg: 'The leave balance change has updated since ' +
           'this leave request was created. ' +
           'Do you want to recalculate the balance change?',
         onConfirm: function () {
