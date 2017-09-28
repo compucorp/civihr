@@ -5,14 +5,12 @@ Prevent Popups to overflow tables.
 */
 (function ($) {
   'use strict';
+  var $body = $('body');
 
-  $('body').on('click', '.btn-slide', function (e) {
+  $body.on('click', '.btn-slide', function () {
     var $button = $(this);
-    var $body = $('body');
     var $closestEntity = $button.closest('.crm-entity')[0];
     var $popup = $button.children('ul.panel');
-
-    // e.preventDefault();
 
     (function init () {
       openPopupPanel();
@@ -25,7 +23,6 @@ Prevent Popups to overflow tables.
      */
     function closePopupPanels () {
       $('.civihr-popup').remove();
-
       $body.removeClass('civihr-popup-open');
     }
 
@@ -35,19 +32,17 @@ Prevent Popups to overflow tables.
      */
     function createPopupClone () {
       var buttonOffset = $button.offset();
-
       var $clone = $popup.clone(true)
         .appendTo($body)
         .addClass('civihr-popup')
         .attr('id', $closestEntity.id)
         .addClass($($closestEntity).attr('class'));
 
-      $clone
-        .css('top', +buttonOffset.top + $button.outerHeight())
-        .css('left', +buttonOffset.left - $clone.width() - $button.outerWidth());
-
+      $clone.css({
+        left: +buttonOffset.left - ($clone.width() - $button.outerWidth()),
+        top: +buttonOffset.top + $button.outerHeight()
+      });
       $clone.show();
-
       mapCloneClickEventsToOrigin($clone);
     }
 
@@ -59,15 +54,14 @@ Prevent Popups to overflow tables.
      * multiple listeners to the same element.
      */
     function listenToMouseOutEvent () {
-      // AttrChange event is already listened, skip:
+      // If AttrChange event is already listened, then skip:
       if ($button.data('attrchange-is-on')) {
         return;
       }
 
       $button.data('attrchange-is-on', true);
-
       $button.attrchange(function () {
-        // Button is already open, skip:
+        // If button is already open, then skip:
         if ($button.hasClass('btn-slide-active')) {
           return;
         }
@@ -80,22 +74,25 @@ Prevent Popups to overflow tables.
      * Maps click events on the popup options back to their original source.
      * This is done because popup actions are executed as delegated events and
      * the listener is not the *body* element.
+     *
+     * @param {Object} $clone - The jQuery clone element to map
+     * click events from.
      */
     function mapCloneClickEventsToOrigin ($clone) {
       $clone.find('a').click(function () {
         var actionIndex = $(this).parent().index();
+
         $popup.find('li:nth(' + actionIndex + ') a').click();
       });
     }
 
     /**
-     * Opens the pop panel and adds the .civihr-popup-open class to the
-     * body.
+     * Opens the popup panel
+     * and adds the .civihr-popup-open class to the body
      */
     function openPopupPanel () {
       closePopupPanels();
       createPopupClone();
-
       $body.addClass('civihr-popup-open');
     }
   });
