@@ -5,7 +5,7 @@
  */
 class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
 
-  const EXTENSION_INSTALLATION_TIMEOUT = 600;
+  const EXTENSION_INSTALLATION_TIMEOUT = 300;
 
   /**
    * @var string
