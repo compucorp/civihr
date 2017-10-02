@@ -10,7 +10,7 @@ class CRM_HRSampleData_Cleaner_HRHoursLocation extends CRM_HRSampleData_CSVClean
    * {@inheritdoc}
    */
   public function visit(array $row) {
-    $this->deleteRecord('HRHoursLocation', ['location' => $row['location']]);
+    $this->deleteRecord('HRHoursLocation', ['location' => $row['location']], $row['delete_on_uninstall']);
   }
 
 }
