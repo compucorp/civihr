@@ -162,48 +162,6 @@ function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) 
 }
 
 /**
- * Implementation of hook_civicrm_post, executed after task creation/update
- *
- * @param string $op
- *   The type of operation being performed
- * @param string $objectName
- *   Type of object being processed
- * @param string $objectId string 
- *   Id of object
- * @param CRM_Activity_DAO_Activity $objectRef
- *   Object being used to process operation
- */
-function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
-  if ($objectName == 'Activity' && isset($objectRef->case_id) && !_hrcase_activityCreatedByTaskandAssignments($objectId)) {
-    $component_id = CRM_Core_Component::getComponentID('CiviCase');
-    $contact_id =  CRM_Case_BAO_Case::retrieveContactIdsByCaseId($objectRef->case_id);
-    $hrjob = civicrm_api3('HRJobContract', 'get', array(
-      'sequential' => 1,
-      'contact_id' => $contact_id[1],
-      'is_primary' => 1,
-      'return' => "notice_amount,notice_unit",
-    ));
-    foreach($hrjob['values'] as $key=>$val) {
-      $notice_amt = $val['notice_amount'];
-      $notice_unit = $val['notice_unit'];
-    }
-    if (isset($notice_amt)) {
-      $revoke = civicrm_api3('OptionValue', 'getsingle', array('return' => "value", 'name' => "Revoke access to databases"));
-      $block = civicrm_api3('OptionValue', 'getsingle', array('return' => "value", 'name' => "Block work email ID", 'component_id' => $component_id));
-      $date = strtotime($objectRef->activity_date_time);
-      if ($objectRef->activity_type_id == $revoke['value']) {
-        $date = date('Y-m-d h:i:s',strtotime("+{$notice_amt} {$notice_unit}", $date));
-        civicrm_api3('Activity', 'create', array('id' => $objectRef->id ,'activity_date_time' => $date));
-      }
-      if ($objectRef->activity_type_id == $block['value']) {
-        $date = date('Y-m-d h:i:s',strtotime("+{$notice_amt} {$notice_unit} +1 day", $date));
-        civicrm_api3('Activity', 'create', array('id' => $objectRef->id ,'activity_date_time' => $date));
-      }
-    }
-  }
-}
-
-/**
  * Checks if the activity is created by task and assignments extension
  *
  * @param int $activity_id
