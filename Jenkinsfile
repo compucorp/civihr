@@ -11,8 +11,10 @@ pipeline {
 
 	environment {
 		WEBROOT = "/opt/buildkit/build/${params.CVHR_BUILDNAME}"
-		CVCRM_EXT_ROOT = "$WEBROOT/sites/all/modules/civicrm/tools/extensions"
-		DR_MODU_ROOT = "$WEBROOT/sites/all/modules"
+    DRUPAL_SITES_ALL = "$WEBROOT/sites/all"
+    DR_MODU_ROOT = "$DRUPAL_SITES_ALL/modules"
+    DR_THEME_ROOT = "$DRUPAL_SITES_ALL/themes"
+		CVCRM_EXT_ROOT = "$DR_MODU_ROOT/civicrm/tools/extensions"
 		WEBURL = "http://jenkins.compucorp.co.uk:8900"
 		ADMIN_PASS = credentials('CVHR_ADMIN_PASS')
 	}
@@ -34,12 +36,12 @@ pipeline {
 	    stage('Build site') {
 			steps {
 				script {
-					// Setup Building branch with 
+					// Setup Building branch with
 					// CVHR_BRANCH parameter from manually build with parameter
-					// or PR target branch (CHANGE_TARGET) from building pull request 
+					// or PR target branch (CHANGE_TARGET) from building pull request
 					// or branch (BRANCH_NAME) from building individual branch
 					def buildBranch = params.CVHR_BRANCH != '' ? params.CVHR_BRANCH : env.CHANGE_TARGET != null ? env.CHANGE_TARGET : env.BRANCH_NAME != null ? env.BRANCH_NAME : 'staging'
-					
+
 					echo "Build branch: ${buildBranch}"
 
 					// Build site with CV Buildkit
@@ -55,7 +57,7 @@ pipeline {
 					if (prBranch != null && prBranch.startsWith("hotfix-")) {
 						envBranch = 'master'
 					}
-					
+
 					// DEBUG
 					// echo "envBranch: ${envBranch} prBranch: ${prBranch}"
 
@@ -75,7 +77,7 @@ pipeline {
 							sh """
 								cd ${cvhrRepos[i]}
 								git merge origin/${envBranch} --no-edit
-							"""	
+							"""
 						} catch (err) {
 							echo "Something failed at Check out PR Branch in CiviHR extension: ${cvhrRepos[i]}"
 							echo "Failed: ${err}"
@@ -103,7 +105,7 @@ pipeline {
 				script {
 					// Get civihr extensions list
 					def extensions = listCivihrExtensions()
-					
+
 					// Execute PHP test
 					for (int i = 0; i<extensions.size(); i++) {
 						testPHPUnit(extensions[i])
@@ -132,7 +134,7 @@ pipeline {
             	}
             }
 	    }
-		
+
 		/* Testing JS */
 		// TODO: Execute test and Generate report without stop on fail
 	    stage('Testing JS: Install NPM in parallel') {
@@ -166,7 +168,7 @@ pipeline {
 					for (int j = 0; j<extensions.size(); j++) {
 						def index = j
 						echo 'Testing with Gulp: ' + extensions[index]
-						testJS(extensions[index])  
+						testJS(extensions[index])
 					}
 				}
 			}
@@ -220,14 +222,14 @@ def changeCivihrGitRemote() {
 		git fetch --all
 	"""
 }
-/* 
+/*
  * Execute PHPUnit testing
  * params: extensionName
  */
 def testPHPUnit(String extensionName){
 	def extensionShortName = extensionName.tokenize('.')[-1]
 
-	echo "PHPUnit testing: ${extensionShortName}" 
+	echo "PHPUnit testing: ${extensionShortName}"
 
 	sh """
 		cd $CVCRM_EXT_ROOT/civihr/${extensionName}
@@ -237,7 +239,7 @@ def testPHPUnit(String extensionName){
 			|| true
 	"""
 }
-/* 
+/*
  * Installk JS Testing
  * params: extensionName
  */
@@ -247,7 +249,7 @@ def installNPM(String extensionName){
 		npm install || true
 	"""
 }
-/* 
+/*
  * Execute JS Testing
  * params: extensionName
  */
@@ -259,24 +261,21 @@ def testJS(String extensionName){
 		gulp test || true
 	"""
 }
-/* 
+/*
  * Get a list of CiviHR repository
  * https://compucorp.atlassian.net/wiki/spaces/PCHR/pages/68714502/GitHub+repositories
  */
-def listCivihrGitRepoPath(){
-	// Get list of CiviHR Git repository paths using git-scan
-	return sh(returnStdout: true, script: "cd $WEBROOT; git-scan foreach -c 'pwd' | grep civihr").split("\n")
-
-	// Manually set the list
-	// return [
-	// 	"$CVCRM_EXT_ROOT/civihr",
-	// 	"$CVCRM_EXT_ROOT/civihr_tasks",
-	// 	"$CVCRM_EXT_ROOT/org.civicrm.shoreditch",
-	// 	"$CVCRM_EXT_ROOT/org.civicrm.styleguide",
-	// 	"$DR_MODU_ROOT/civihr-custom/civihr_employee_portal",
-	// ]
+def listCivihrGitRepoPath() {
+	return [
+		"$CVCRM_EXT_ROOT/civihr",
+		"$CVCRM_EXT_ROOT/civihr_tasks",
+		"$CVCRM_EXT_ROOT/org.civicrm.shoreditch",
+		"$CVCRM_EXT_ROOT/org.civicrm.styleguide",
+		"$DR_MODU_ROOT/civihr-custom",
+    "$DR_THEME_ROOT/civihr_employee_portal_theme"
+	]
 }
-/* 
+/*
  * Get a list of enabled CiviHR extensions
  */
 def listCivihrExtensions(){
