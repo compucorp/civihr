@@ -1,5 +1,5 @@
 contact_id,is_primary,street_address,supplemental_address_1,supplemental_address_2,city,postal_code,country_id,location_type_id
-1,1,"39 Elizabeth St,",Belgravia,,London,SW1W 9RP,GB,Main
+1,1,"39 Elizabeth St,",Belgravia,,London,SW1W 9RP,GB,Home
 235,1,87 The Drive,Wallington,,London,SM6 9ND,GB,Home
 239,1,35 Baron Grove,Mitcham,Greater London,London,CR4 4EH,GB,Home
 240,1,8 Sandy lane south,Wallington,,London,SM6 9QU,GB,Home

@@ -1,2 +1,5 @@
-name,display_name,vcard_name,description,is_reserved,is_active,is_default
-Correspondence,Correspondence,Correspondence,Postal address,0,0,0
+name,display_name,vcard_name,description,is_reserved,is_active,is_default,delete_on_uninstall
+Correspondence,Correspondence,Correspondence,Postal address,0,0,0,1
+Home,Home,HOME,Place of residence,1,1,1,0
+Work,Work,WORK,Work location,0,1,0,0
+Main,Main,MAIN,Main location,0,1,0,0

@@ -22,6 +22,8 @@ export WITH_HR_SAMPLE=1
 civibuild create hr16 --civi-ver 4.7.9 --url http://localhost:8090
 ```
 
-You can also enable it from the extension manager page, but please consider changing your php timeout
-settings in php.ini file to 0 before the installation and then you can revert it back to default
-once you are done.
+You can also install it from the extension manager page or via CiviCRM drush API :
+
+```bash
+drush cvapi Extension.install keys=uk.co.compucorp.civicrm.hrsampledata debug=1
+```

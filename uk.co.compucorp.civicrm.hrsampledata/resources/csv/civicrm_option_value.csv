@@ -1,49 +1,95 @@
-option_group_id_type,option_group_id,label,value,name,grouping,filter,is_default,is_optgroup,is_reserved,component_id
-name,activity_type,Interview Prospect,120,Interview Prospect,,0,0,0,0,CiviCase
-name,activity_type,ID badge,124,ID badge,,0,0,0,0,CiviCase
-name,individual_prefix,Miss,5,Miss.,,0,0,0,0,
-name,hrjc_contract_type,Fixed Term,1,Fixed Term,,0,0,0,0,
-name,hrjc_pension_type,Aviva Pensions,1,Friends Life,,0,0,0,0,
-name,hrjc_department,Resources,1,Resources,,0,0,0,0,
-name,hrjc_department,Finance,2,Programme Funding,,0,0,0,0,
-name,hrjc_department,Marketing & Fundraising,3,Programmes,,0,0,0,0,
-name,hrjc_department,Operations,4,Project,,0,0,0,0,
-name,hrjc_level_type,E1,1,1,,0,0,0,0,
-name,hrjc_level_type,E2,2,2,,0,0,0,0,
-name,hrjc_level_type,E3,3,3,,0,0,0,0,
-name,hrjc_level_type,E4,4,4,,0,0,0,0,
-name,hrjc_level_type,E5,5,5,,0,0,0,0,
-name,activity_type,Compassionate_Leave,128,Compassionate_Leave,Timesheet,1,0,0,0,
-name,activity_type,Parental_Leave,129,Parental_Leave,Timesheet,1,0,0,0,
-name,hrjc_benefit_name,Cycle allowance,1,Life Assurance,,0,0,0,0,
-name,activity_type,Joining Document 2,132,Joining Document 2,,0,0,0,0,CiviDocument
-name,activity_type,Joining Document 3,133,Joining Document 3,,0,0,0,0,CiviDocument
-name,activity_type,Exiting document 2,135,Exiting document 2,,0,0,0,0,CiviDocument
-name,activity_type,Exiting document 3,136,Exiting document 3,,0,0,0,0,CiviDocument
-name,gender,Prefer not to say,4,Prefer not to say,,0,0,0,0,
-name,hrjc_region,North London,1,North London,,0,0,0,0,
-name,hrjc_region,South London,2,South London,,0,0,0,0,
-name,hrjc_region,East London,3,East London,,0,0,0,0,
-name,hrjc_region,West London,4,West London,,0,0,0,0,
-name,hrjc_region,Central London,5,Central London,,0,0,0,0,
-name,hrjc_location,Victoria,1,Victoria,,0,0,0,0,
-name,hrjc_location,Clapham,2,Clapham,,0,0,0,0,
-name,hrjc_location,Hammersmith,3,Hammersmith,,0,0,0,0,
-name,hrjc_location,Islington,4,Islington,,0,0,0,0,
-name,hrjc_location,Stratford,5,Stratford,,0,0,0,0,
-name,hrjc_deduction_name,Child Maintenance,1,Child Maintenance,,0,0,0,0,
-name,hrjc_contract_end_reason,Retirement,4,Retirement,,0,0,0,0,
-name,cost_centres,Corpus,1,Corpus,,0,0,0,0,
-name,cost_centres,OP - C,2,OP - C,,0,0,0,0,
-name,cost_centres,OP - H,3,OP - H,,0,0,0,0,
-name,cost_centres,OP - I,4,OP - I,,0,0,0,0,
-name,cost_centres,OP - S,5,OP - S,,0,0,0,0,
-name,account_relationship,Deferred Revenue Account is,12,Deferred Revenue Account is,,0,0,0,1,CiviDocument
-name,activity_type,Custom,150,Custom,,0,0,0,0,
-title,Relationship with Employee,Spouse,Spouse,Spouse,,0,0,0,0,
-title,Relationship with Employee,Parent,Parent,Parent,,0,0,0,0,
-title,Relationship with Employee,Partner,Partner,Partner,,0,0,0,0,
-title,Relationship with Employee,Other,Other,Other,,0,0,0,0,
-title,Relationship with Employee,Grandchild,1,Grandchild,,0,0,0,0,
-title,Relationship with Employee,Sibling,2,Sibling,,0,0,0,0,
-title,Relationship with Employee,Grandparent,3,Grandparent,,0,0,0,0,
+option_group_id_type,option_group_id,label,name,grouping,filter,is_default,is_optgroup,is_reserved,component_id,delete_on_uninstall
+name,activity_type,Interview Prospect,Interview Prospect,,0,0,0,0,CiviCase,1
+name,activity_type,ID badge,ID badge,,0,0,0,0,CiviCase,1
+name,individual_prefix,Miss,Miss.,,0,0,0,0,,1
+name,hrjc_contract_type,Fixed Term,Fixed Term,,0,0,0,0,,1
+name,hrjc_department,Resources,Resources,,0,0,0,0,,1
+name,hrjc_department,Finance,Programme Funding,,0,0,0,0,,1
+name,hrjc_department,Marketing & Fundraising,Programmes,,0,0,0,0,,1
+name,hrjc_department,Operations,Project,,0,0,0,0,,1
+name,hrjc_level_type,E1,1,,0,0,0,0,,1
+name,hrjc_level_type,E2,2,,0,0,0,0,,1
+name,hrjc_level_type,E3,3,,0,0,0,0,,1
+name,hrjc_level_type,E4,4,,0,0,0,0,,1
+name,hrjc_level_type,E5,5,,0,0,0,0,,1
+name,hrjc_benefit_name,Cycle allowance,Life Assurance,,0,0,0,0,,1
+name,activity_type,Joining Document 2,Joining Document 2,,0,0,0,0,CiviDocument,1
+name,activity_type,Joining Document 3,Joining Document 3,,0,0,0,0,CiviDocument,1
+name,activity_type,Exiting document 2,Exiting document 2,,0,0,0,0,CiviDocument,1
+name,activity_type,Exiting document 3,Exiting document 3,,0,0,0,0,CiviDocument,1
+name,gender,Prefer not to say,Prefer not to say,,0,0,0,0,,1
+name,hrjc_region,North London,North London,,0,0,0,0,,1
+name,hrjc_region,South London,South London,,0,0,0,0,,1
+name,hrjc_region,East London,East London,,0,0,0,0,,1
+name,hrjc_region,West London,West London,,0,0,0,0,,1
+name,hrjc_region,Central London,Central London,,0,0,0,0,,1
+name,hrjc_location,Victoria,Victoria,,0,0,0,0,,1
+name,hrjc_location,Clapham,Clapham,,0,0,0,0,,1
+name,hrjc_location,Hammersmith,Hammersmith,,0,0,0,0,,1
+name,hrjc_location,Islington,Islington,,0,0,0,0,,1
+name,hrjc_location,Stratford,Stratford,,0,0,0,0,,1
+name,hrjc_deduction_name,Child Maintenance,Child Maintenance,,0,0,0,0,,1
+name,hrjc_contract_end_reason,Retirement,Retirement,,0,0,0,0,,1
+name,cost_centres,Corpus,Corpus,,0,0,0,0,,1
+name,cost_centres,OP - C,OP - C,,0,0,0,0,,1
+name,cost_centres,OP - H,OP - H,,0,0,0,0,,1
+name,cost_centres,OP - I,OP - I,,0,0,0,0,,1
+name,cost_centres,OP - S,OP - S,,0,0,0,0,,1
+name,account_relationship,Deferred Revenue Account is,Deferred Revenue Account is,,0,0,0,1,CiviDocument,1
+name,activity_type,Custom,Custom,,0,0,0,0,,1
+title,Relationship with Employee,Spouse,Spouse,,0,0,0,0,,1
+title,Relationship with Employee,Parent,Parent,,0,0,0,0,,1
+title,Relationship with Employee,Partner,Partner,,0,0,0,0,,1
+title,Relationship with Employee,Other,Other,,0,0,0,0,,1
+title,Relationship with Employee,Grandchild,Grandchild,,0,0,0,0,,1
+title,Relationship with Employee,Sibling,Sibling,,0,0,0,0,,1
+title,Relationship with Employee,Grandparent,Grandparent,,0,0,0,0,,1
+name,activity_type,Schedule Exit Interview,Schedule Exit Interview,,0,0,0,0,,0
+name,activity_type,"Get ""No Dues"" certification","Get ""No Dues"" certification",,0,0,0,0,,0
+name,activity_type,Conduct Exit Interview,Conduct Exit Interview,,0,0,0,0,,0
+name,activity_type,Government Photo ID,Government Photo ID,,0,0,0,0,,0
+name,activity_type,Driving licence,Driving licence,,0,0,0,0,,0
+name,activity_type,VISA,VISA,,0,0,0,0,,0
+name,activity_type,Probation appraisal (start probation workflow),Probation appraisal (start probation workflow),,0,0,0,0,,0
+name,activity_type,Program and work induction by program supervisor,Program and work induction by program supervisor,,0,0,0,0,,0
+name,activity_type,Block work email ID,Block work email ID,,0,0,0,0,,0
+name,activity_status,Scheduled,Scheduled,,0,1,0,1,,0
+name,activity_status,Completed,Completed,resolved,0,0,0,1,,0
+name,priority,Normal,Normal,,0,0,0,0,,0
+name,individual_prefix,Mr.,Mr.,,0,0,0,0,,0
+name,individual_prefix,Mrs.,Mrs.,,0,0,0,0,,0
+name,individual_prefix,Ms.,Ms.,,0,0,0,0,,0
+name,individual_prefix,Miss.,Miss.,,0,0,0,0,,0
+name,hrjc_contract_type,Employee - Permanent,Employee_Permanent,,0,0,0,0,,0
+name,hrjc_contract_end_reason,Retirement,Retirement,,0,0,0,0,,0
+name,hrjc_contract_end_reason,Planned,Planned,,0,0,0,0,,0
+name,hrjc_contract_end_reason,Voluntary,Voluntary,,0,0,0,0,,0
+name,hrjc_contract_end_reason,Involuntary,Involuntary,,0,0,0,0,,0
+name,hrjc_insurance_plantype,Individual,Individual,,0,0,0,0,,0
+name,hrjc_insurance_plantype,Family,Family,,0,0,0,0,,0
+name,hrjc_hours_type,Full-time,Full_Time,,0,0,0,0,,0
+name,hrjc_hours_type,Part-time,Part_time,,0,0,0,0,,0
+name,vacancy_status,Open,Open,,0,0,0,0,,0
+name,case_status,Ongoing,Open,Opened,0,1,0,1,,0
+name,case_status,Manager Interview,Manager_Interview,Vacancy,1,0,0,0,,0
+name,case_status,Phone Interview,Phone_Interview,Vacancy,1,0,0,0,,0
+name,case_status,Hired,Hired,Vacancy,1,0,0,0,,0
+name,case_status,Offer,Offer,Vacancy,1,0,0,0,,0
+name,case_status,Psych Exam,Psych_Exam,Vacancy,1,0,0,0,,0
+name,case_status,Group Interview,Group_Interview,Vacancy,1,0,0,0,,0
+name,case_status,Board Interview,Board_Interview,Vacancy,1,0,0,0,,0
+name,case_status,Apply,Apply,Vacancy,1,0,0,0,,0
+name,hrjc_pay_cycle,Monthly,Monthly,,0,0,0,0,,0
+name,phone_type,Phone,Phone,,0,0,0,0,,0
+name,phone_type,Mobile,Mobile,,0,0,0,0,,0
+name,marital_status_20130913084916,Single,Single,,0,0,0,0,,0
+name,marital_status_20130913084916,Married,Married,,0,0,0,0,,0
+name,marital_status_20130913084916,Divorced,Divorced,,0,0,0,0,,0
+name,sexual_orientation_20130725124348,Not Applicable,Not Applicable,,0,0,0,0,,0
+name,religion_20130725124132,Not Applicable,Not Applicable,,0,0,0,0,,0
+name,ethnicity_20130725123943,Not Applicable,Not Applicable,,0,0,0,0,,0
+name,hrjc_benefit_type,Fixed,Fixed,,0,0,0,0,,0
+name,hrjc_benefit_name,Bike,Bike,,0,0,0,0,,0
+name,postal_greeting,Dear {contact.first_name},Dear {contact.first_name},,1,1,0,0,,0
+name,addressee,{contact.individual_prefix}{ } {contact.first_name}{ }{contact.middle_name}{ }{contact.last_name}{ }{contact.individual_suffix},}{contact.individual_prefix}{ } {contact.first_name}{ }{contact.middle_name}{ }{contact.last_name}{ }{contact.individual_suffix},,1,1,0,0,,0
+name,addressee,{contact.organization_name},{contact.organization_name},,3,1,0,0,,0

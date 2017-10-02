@@ -14,25 +14,44 @@ class CRM_HRSampleData_Cleaner_LocationTypeTest extends CRM_HRSampleData_BaseCSV
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testProcess() {
-    $locationType = LocationTypeFabricator::fabricate();
-    $testLocationType = $this->apiGet('LocationType', ['name' => $locationType['name']]);
-    $this->assertEquals($locationType['name'], $testLocationType['name']);
+  public function testProcessWithDeleteOnUninstallOn() {
+    $testLocationType = LocationTypeFabricator::fabricate();
 
     $this->rows[] = [
-      $locationType['name'],
-      $locationType['name'],
+      $testLocationType['name'],
+      $testLocationType['name'],
       '',
       '',
       0,
       1,
-      0
+      0,
+      1,
     ];
 
     $this->runProcessor('CRM_HRSampleData_Cleaner_LocationType', $this->rows);
 
-    $locationType = $this->apiGet('LocationType', ['name' => $locationType['name']]);
+    $locationType = $this->apiGet('LocationType', ['name' => $testLocationType['name']]);
     $this->assertEmpty($locationType);
+  }
+
+  public function testProcessWithDeleteOnUninstallOff() {
+    $testLocationType = LocationTypeFabricator::fabricate();
+
+    $this->rows[] = [
+      $testLocationType['name'],
+      $testLocationType['name'],
+      '',
+      '',
+      0,
+      1,
+      0,
+      0,
+    ];
+
+    $this->runProcessor('CRM_HRSampleData_Cleaner_LocationType', $this->rows);
+
+    $locationType = $this->apiGet('LocationType', ['name' => $testLocationType['name']]);
+    $this->assertEquals($testLocationType['name'], $locationType['name']);
   }
 
   private function importHeadersFixture() {
@@ -43,8 +62,8 @@ class CRM_HRSampleData_Cleaner_LocationTypeTest extends CRM_HRSampleData_BaseCSV
       'description',
       'is_reserved',
       'is_active',
-      'is_default'
+      'is_default',
+      'delete_on_uninstall',
     ];
   }
-
 }

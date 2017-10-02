@@ -14,21 +14,36 @@ class CRM_HRSampleData_Cleaner_HRHoursLocationTest extends CRM_HRSampleData_Base
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterator() {
-    $hourLocation = HoursLocationFabricator::fabricate();
-    $testHourLocation = $this->apiGet('HRHoursLocation', ['location' => $hourLocation['location']]);
-    $this->assertEquals($hourLocation['location'], $testHourLocation['location']);
+  public function testProcessWithDeleteOnUninstallOn() {
+    $testHourLocation = HoursLocationFabricator::fabricate();
 
     $this->rows[] = [
-      $hourLocation['location'],
+      $testHourLocation['location'],
       40,
       "Week",
+      1,
     ];
 
     $this->runProcessor('CRM_HRSampleData_Cleaner_HRHoursLocation', $this->rows);
 
-    $hourLocation = $this->apiGet('HRHoursLocation', ['location' => $hourLocation['location']]);
+    $hourLocation = $this->apiGet('HRHoursLocation', ['location' => $testHourLocation['location']]);
     $this->assertEmpty($hourLocation);
+  }
+
+  public function testProcessWithDeleteOnUninstallOff() {
+    $testHourLocation = HoursLocationFabricator::fabricate();
+
+    $this->rows[] = [
+      $testHourLocation['location'],
+      40,
+      "Week",
+      0,
+    ];
+
+    $this->runProcessor('CRM_HRSampleData_Cleaner_HRHoursLocation', $this->rows);
+
+    $hourLocation = $this->apiGet('HRHoursLocation', ['location' => $testHourLocation['location']]);
+    $this->assertEquals($testHourLocation['location'], $hourLocation['location']);
   }
 
   private function importHeadersFixture() {
@@ -36,7 +51,7 @@ class CRM_HRSampleData_Cleaner_HRHoursLocationTest extends CRM_HRSampleData_Base
       'location',
       'standard_hours',
       'periodicity',
+      'delete_on_uninstall',
     ];
   }
-
 }
