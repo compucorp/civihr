@@ -8,7 +8,7 @@ var transformSelectors = require('gulp-transform-selectors');
 var civicrmScssRoot = require('civicrm-scssroot')();
 
 var bootstrapNamespace = '#bootstrap-theme';
-var outsideNamespaceRegExp = /^\.__outside-namespace/;
+var outsideNamespaceRegExp = /^\.___outside-namespace/;
 
 gulp.task('sass', ['sass:sync'], function () {
   return gulp.src('scss/*.scss')

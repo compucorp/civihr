@@ -8,8 +8,7 @@
   font-style: normal;
 }
 
-.__outside-namespace { // prevents the namespace to be applied
-
+#{$outsideNamespaceMarker} {
   .chr_logo {
     display: inline-block;
     font-family: 'icomoon' !important;
@@ -62,7 +61,6 @@
   }
 
   .chr_logo--full {
-
     &:after {
       left: 0;
       position: absolute;
