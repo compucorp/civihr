@@ -1,3 +1,9 @@
-name,title,is_active,allow_credits,allow_debits
-Compassionate_Leave,Compassionate Leave,1,0,1
-Parental_Leave,Parental Leave,0,0,1
+name,title,is_active,allow_credits,allow_debits,delete_on_uninstall
+Compassionate_Leave,Compassionate Leave,1,0,1,1
+Parental_Leave,Parental Leave,0,0,1,1
+Sick,Sick,1,0,1,0
+Annual_Leave,Annual Leave,1,0,1,0
+Maternity,Maternity,1,0,1,0
+Paternity,Paternity,1,0,1,0
+TOIL,TOIL,1,1,1,0
+Other,Other,1,0,1,0

@@ -2,6 +2,7 @@
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_Activity as ActivityFabricator;
+use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 
 /**
  * Class CRM_HRSampleData_Importer_ActivityTest
@@ -12,18 +13,23 @@ class CRM_HRSampleData_CSVProcessor_ActivityTest extends CRM_HRSampleData_BaseCS
 
   private $testContact;
 
+  private $testActivityType;
+
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
     $this->testContact = ContactFabricator::fabricate();
+    $this->testActivityType = OptionValueFabricator::fabricate([
+      'option_group_id' => 'activity_type'
+    ]);
   }
 
   public function testProcessWithoutSourceRecord() {
     $this->rows[] = [
       1,
       '',
-      'Open Case',
+      $this->testActivityType['name'],
       "New Year's Day",
       '2016-01-01 00:00:00',
       '',
@@ -54,7 +60,7 @@ class CRM_HRSampleData_CSVProcessor_ActivityTest extends CRM_HRSampleData_BaseCS
     $this->rows[] = [
       1,
       $sourceRecordID,
-      'Open Case',
+      $this->testActivityType['name'],
       "New Year's Day",
       '2016-01-01 00:00:00',
       '',
