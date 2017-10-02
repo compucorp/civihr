@@ -43,7 +43,7 @@
     <a target="_blank" href="https://civihr.org">Project website</a>&nbsp;.
     <div class="text-center">
       <div class="footer-logo">
-        <i class="icon-logo-full"></i>
+        <span class="chr_logo chr_logo--full chr_logo--default-size"><i></i></span>
       </div>
     </div>
   </div>
