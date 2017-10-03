@@ -159,6 +159,8 @@
 
       $('#crm-notification-container .crm-help').append('<p>Source is a useful field where data has been migrated to CiviHR from one or a number of other legacy systems. The Source field will indicate which legacy system the contact has come from.</p>');
     });
+
+    addCustomClassToQuickSearchField();
   });
 
   // Remove the arrow for menu items with sub-items, and replaces it
@@ -171,4 +173,25 @@
       $arrow.remove();
     });
   });
+
+  /**
+   * Adds a custom class to the quicksearch field
+   * so that custom behaviour can be applied to it
+   *
+   * The class is removed only when the element
+   * loses the hover AND it is empty (= there is no ongoing search)
+   */
+  function addCustomClassToQuickSearchField () {
+    $('#crm-qsearch').hover(
+      function () {
+        $(this).addClass('search-ongoing');
+      },
+      function () {
+        if (!$('#sort_name_navigation').val().length &&
+          !$('.crm-quickSearchField:visible', '#root-menu-div').length) {
+          $(this).removeClass('search-ongoing');
+        }
+      }
+    );
+  }
 }(CRM.$, CRM._));
