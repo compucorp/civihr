@@ -1,11 +1,12 @@
+/* global Ps */
+
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 (function ($, _) {
-
   /**
    * Adds the Government ID field on the Personal Details page and on the Edit
    * Contact form.
    */
-  function addGovernmentIdField() {
+  function addGovernmentIdField () {
     // Updates Personal Details Page
     if (CRM.cid && CRM.hideGId) {
       var inlineDataBlock = $('.Inline_Custom_Data');
@@ -21,7 +22,7 @@
 
     // Updates Edit Contact Form
     if ($('#customFields').length < 1) {
-      $('#Inline_Custom_Data label').each(function() {
+      $('#Inline_Custom_Data label').each(function () {
         $('#nick_name').parent().after('<td id="customFields"></td>');
         var nodeID = $(this).attr('for');
         var customField = $('#' + nodeID).detach();
@@ -36,8 +37,8 @@
   /**
    * Misc changes to the page (hiding elements, inserting new ones, etc)
    */
-  function miscPageChanges(target) {
-    //Hide current employer and job title
+  function miscPageChanges (target) {
+    // Hide current employer and job title
     // Contact summary screen:
     $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
     // Inline edit form
@@ -53,7 +54,7 @@
     $('#Email-Primary', 'form#Contact').prev('td').prev('td').hide();
     $('td#Email-Bulkmail-html, #Email-Primary', 'form#Contact').prev('td').hide();
 
-    //shift demographic above extended demographic
+    // shift demographic above extended demographic
     $('.crm-demographics-accordion', 'form#Contact').insertAfter($('.crm-contactDetails-accordion'));
 
     if ($('tr#Phone_Block_2', 'form#Contact').length < 1) {
@@ -66,7 +67,7 @@
    *
    * @param  {jQuery object} $line [datepicker's line parent]
    */
-  function linkLabelToDatepickerInput($line) {
+  function linkLabelToDatepickerInput ($line) {
     $line.find('label').attr('for', $line.find('.crm-form-date').attr('id'));
   }
 
@@ -74,7 +75,7 @@
    * Add an event listener on input[type="file"]
    * @param {jQuery Object} selector [selector from input file]
    */
-  function addUploadFileListener(selector) {
+  function addUploadFileListener (selector) {
     if ($(selector).length === 1) {
       $(selector).on('change', insertFile);
     }
@@ -84,7 +85,7 @@
    * Insert a DOM node after input[type="file"]
    * with the filename
    */
-  function insertFile() {
+  function insertFile () {
     var fileName = $(this)[0].files[0];
 
     $('#js-uploaded-file').remove();
@@ -99,7 +100,7 @@
    * Remove the #js-uploaded-file DIV and
    * clean input[type="file"] value
    */
-  function removeFile() {
+  function removeFile () {
     var $input = $('#js-uploaded-file').parent().find('input[type="file"]');
 
     $('#js-uploaded-file').remove();
@@ -109,14 +110,14 @@
   $('.CRM_HRRecruitment_Form_Application').addClass('crm-form-block');
   $('.CRM_HRRecruitment_Form_Application .crm-profile-name-application_profile').addClass('form-layout-compressed');
 
-  $(document).on('crmLoad', function(e) {
+  $(document).on('crmLoad', function (e) {
     $('#activityCustomData').attr('colspan', 3);
 
     addUploadFileListener("input[type='file']");
 
-    $('.crm-accordion-header.crm-master-accordion-header').on('click', function() {
-      window.setTimeout(function() {
-        Array.prototype.forEach.call(document.querySelectorAll('.listing-box'), function(element) {
+    $('.crm-accordion-header.crm-master-accordion-header').on('click', function () {
+      window.setTimeout(function () {
+        Array.prototype.forEach.call(document.querySelectorAll('.listing-box'), function (element) {
           Ps.initialize(element);
         });
       }, 0);
@@ -132,10 +133,10 @@
       }
     }
 
-    //change text from Client to Contact
+    // change text from Client to Contact
     $('#crm-activity-view-table .crm-case-activity-view-Client .label').html('Contact');
 
-    if (CRM.formName == 'contactForm' || CRM.pageName == 'viewSummary') {
+    if (CRM.formName === 'contactForm' || CRM.pageName === 'viewSummary') {
       // Rename "Summary" tab to "Personal Details"
       // Hack to check contact type - This field only appears for individuals
       if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
@@ -148,12 +149,12 @@
 
     $('span.crm-frozen-field', '.crm-profile-name-hrident_tab').closest('div').parent('div').hide();
 
-    //changes of sorce help text
+    // changes of sorce help text
     $('INPUT#contact_source').parent('td').children('a').click(function () {
       $('#crm-notification-container .crm-help .notify-content').remove();
 
       if ($('#crm-notification-container .crm-help p').length) {
-      	$('#crm-notification-container .crm-help p').remove();
+        $('#crm-notification-container .crm-help p').remove();
       }
 
       $('#crm-notification-container .crm-help').append('<p>Source is a useful field where data has been migrated to CiviHR from one or a number of other legacy systems. The Source field will indicate which legacy system the contact has come from.</p>');
