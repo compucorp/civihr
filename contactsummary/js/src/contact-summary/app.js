@@ -8,6 +8,7 @@ define([
   'contact-summary/controllers/contactSummary',
   'contact-summary/controllers/keyDates',
   'contact-summary/controllers/keyDetails',
+  'contact-summary/components/leave-widget/leave-widget.component',
   'contact-summary/directives/donutChart'
 ], function (angular) {
   var app = angular.module('contactsummary', [
@@ -16,6 +17,7 @@ define([
     'ui.bootstrap',
     'common.services',
     'contactsummary.controllers',
+    'contactsummary.components',
     'contactsummary.directives',
     'contactsummary.filters',
     'contactsummary.services',
