@@ -29,6 +29,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `carry_forward_expiration_duration` int unsigned    COMMENT 'An amount of carry_forward_expiration_unit',
      `carry_forward_expiration_unit` int unsigned    COMMENT 'The unit (months or days) of carry_forward_expiration_duration of this type default expiry',
      `is_sick` tinyint   DEFAULT 0 COMMENT 'A flag which is used to determine if this Absence Type can be used for a Sickness Request',
+     `calculation_unit` varchar(512) NOT NULL   COMMENT 'One of the values of the Absence type calculation units option group',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 
@@ -56,7 +57,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   carry_forward_expiration_unit,
   is_reserved,
   is_default,
-  weight
+  weight,
+  calculation_unit
 ) VALUES (
   1,
   'Holiday / Vacation',
@@ -70,6 +72,7 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   5,
   12,
   2, -- Months
+  1,
   1,
   1,
   1
@@ -87,7 +90,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   accrual_expiration_duration,
   accrual_expiration_unit,
   is_reserved,
-  weight
+  weight,
+  calculation_unit
 ) VALUES (
   2,
   'TOIL',
@@ -100,7 +104,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   3,
   2, -- months
   1,
-  2
+  2,
+  1
 );
 
 INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
@@ -113,7 +118,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   allow_overuse,
   is_reserved,
   weight,
-  is_sick
+  is_sick,
+  calculation_unit
 ) VALUES (
   3,
   'Sick',
@@ -124,6 +130,7 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   1,
   1,
   3,
+  1,
   1
 );
 
