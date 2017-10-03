@@ -46,7 +46,7 @@ pipeline {
 
 					// Build site with CV Buildkit
 					echo 'Build site with CV Buildkit'
-					sh "civibuild create ${params.CVHR_BUILDNAME} --type hr16 --civi-ver 4.7.18 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
+					sh "civibuild create ${params.CVHR_BUILDNAME} --type hr16 --civi-ver 4.7.22 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
 
 					// Change git remote of civihr ext to support dev version of Jenkins pipeline
 					changeCivihrGitRemote()
