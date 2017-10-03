@@ -58,31 +58,10 @@ pipeline {
 						envBranch = 'master'
 					}
 
-					// DEBUG
-					// echo "envBranch: ${envBranch} prBranch: ${prBranch}"
-
-					// Checkout PR Branch in CiviHR repos
-					echo 'Checking out CiviHR repos..'
-					sh """
-						cd $CVCRM_EXT_ROOT
-						git-scan foreach -c \"git checkout -b testing-${prBranch} --track remotes/origin/${prBranch}\" || true
-					"""
-
-					// Merge PR Branch in CiviHR repos
-					def cvhrRepos = listCivihrGitRepoPath()
-					for (int i=0; i<cvhrRepos.size(); i++) {
-						tokens = cvhrRepos[i].tokenize('/');
-						echo 'Merging ' + tokens[tokens.size()-1]
-						try {
-							sh """
-								cd ${cvhrRepos[i]}
-								git merge origin/${envBranch} --no-edit
-							"""
-						} catch (err) {
-							echo "Something failed at Check out PR Branch in CiviHR extension: ${cvhrRepos[i]}"
-							echo "Failed: ${err}"
-						}
-					}
+          if (prBranch) {
+            checkoutPrBranchInCiviHRRepos(prBranch)
+            mergeEnvBranchInAllRepos(envBranch)
+          }
 
 					// Upgrade Drupal & CiviCRM extensions
 					echo 'Upgrade Drupal & CV extensions'
@@ -222,6 +201,33 @@ def changeCivihrGitRemote() {
 		git fetch --all
 	"""
 }
+
+def checkoutPrBranchInCiviHRRepos(String branch) {
+  echo 'Checking out CiviHR repos..'
+
+  for (repo in listCivihrGitRepoPath()) {
+    try {
+				sh """
+          cd ${repo}
+          git checkout ${branch}
+        """
+    } catch (err) {}
+  }
+}
+
+def mergeEnvBranchInAllRepos(String envBranch) {
+  echo 'Merging env branch'
+
+  for (repo in listCivihrGitRepoPath()) {
+    try {
+				sh """
+          cd ${repo}
+          git merge origin/${envBranch} --no-edit
+        """
+    } catch (err) {}
+  }
+}
+
 /*
  * Execute PHPUnit testing
  * params: extensionName
