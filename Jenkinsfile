@@ -241,7 +241,6 @@ def testPHPUnit(String extensionName){
 		cd $CVCRM_EXT_ROOT/civihr/${extensionName}
 		phpunit4 \
 			--log-junit $WORKSPACE/reports/phpunit/result-phpunit_${extensionShortName}.xml \
-			--coverage-html $WORKSPACE/reports/phpunit/resultPHPUnitHtml_${extensionShortName} \
 			|| true
 	"""
 }
