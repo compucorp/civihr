@@ -27,6 +27,6 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1005 {
 
     CRM_Core_BAO_Navigation::resetNavigation();
 
-    return true;
+    return TRUE;
   }
 }

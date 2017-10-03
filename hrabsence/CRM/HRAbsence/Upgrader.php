@@ -648,6 +648,6 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
     CRM_Core_BAO_Navigation::resetNavigation();
 
-    return true;
+    return TRUE;
   }
 }
