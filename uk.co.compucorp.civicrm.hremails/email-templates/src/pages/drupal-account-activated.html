@@ -1,18 +1,46 @@
 ---
 layout: civihr-default
-title: Please sign in to CiviHR
+title: "Welcome to CiviHR!"
 ---
 
 <div class="request">
   <row class="collapse">
     <columns>
-      {{> callout-header title="Invitation to CiviHR"}}
+      {{> callout-header title=" Welcome to CiviHR!"}}
+
       <callout class="invitataion-content">
-        Your CiviHR account has been activated.
+        Hello, and welcome to CiviHR, the open-source HR solution for non-profit
+        organisations.
+        <br/>
+        You are receiving this email because a site administrator has setup a
+        user account in your name. You will need to change the designated
+        password to something private and secure before you begin using the
+        system.
+        <br/>
+        Please login by clicking the button below. This will take you to your
+        user page where you can enter a new password. Once saved, this will be
+        your password to login to the site.  If you forget your password, you
+        can reset it at any time using the password reset link, available on
+        the CiviHR login page.
+        <br/>
+        After setting your password, you will be able to login to CiviHR  by
+        using the following credentials:
+        <br/>
+        Username: {$username}
+        Password: (the password you have just created)
+        <br/>
+        You system can be accessed through this address: {$siteAddress}. Please
+        bookmark this page.
+        <br/>
+        We hope you enjoy using CiviHR. For instructions on how to use the
+        system, please read the online user guide.
+        <br/>
+        Best wishes,
+        <br/>
+        The CiviHR Team
       </callout>
       <spacer></spacer>
       <button href="{$invitationLink}" class="expanded alert">Log In</button>
-
     </columns>
   </row>
   {{> default-footer}}
