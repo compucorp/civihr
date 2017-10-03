@@ -21,11 +21,23 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1006 {
         ADD calculation_unit varchar(512) NOT NULL   
         COMMENT 'One of the values of the Absence type calculation units option group'");
 
+      $daysUnitValue = $this->getDaysUnitValue();
       CRM_Core_DAO::executeQuery("
         UPDATE {$absenceTypeTable}
-        SET calculation_unit = 1 WHERE calculation_unit = ''");
+        SET calculation_unit = {$daysUnitValue} WHERE calculation_unit = ''");
     }
 
     return true;
+  }
+
+  /**
+   * Get the days option value of the calculation unit option group.
+   *
+   * @return mixed
+   */
+  private function getDaysUnitValue() {
+    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
+
+    return $calculationUnitOptions['days'];
   }
 }
