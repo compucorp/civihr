@@ -44,9 +44,9 @@
   {if !empty($emailConflictContact) }
     <p>
       {ts}
-      Email conflicts can be caused by trying to create two new users with the
-      same email, or by trying to create a new user with an email that is already
-      in use.
+        Email conflicts can be caused by trying to create two new users with the
+        same email, or by trying to create a new user with an email that is already
+        in use.
       {/ts}
     </p>
     <p>
@@ -63,20 +63,20 @@
   <div class="panel">
 
     {if !empty($form.roles)}
-    <div class="panel-body">
-      <label>User Roles</label>
-      <p class = "description">
-        {ts}
-          Select any of the following user roles to add to the user accounts:
-        {/ts}
-      </p>
-      <div>
-        {foreach from=$form.roles item=role}
-          {$role.html}
-          {$role.label}
-        {/foreach}
+      <div class="panel-body">
+        <label>User Roles</label>
+        <p class = "description">
+          {ts}
+            Select any of the following user roles to add to the user accounts:
+          {/ts}
+        </p>
+        <div>
+          {foreach from=$form.roles item=role}
+            {$role.html}
+            {$role.label}
+          {/foreach}
+        </div>
       </div>
-    </div>
     {/if}
 
     <div class="panel-body">
