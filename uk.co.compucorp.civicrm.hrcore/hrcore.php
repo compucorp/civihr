@@ -167,6 +167,19 @@ function hrcore_civicrm_pageRun($page) {
 }
 
 /**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu/
+ */
+function hrcore_civicrm_navigationMenu(&$params) {
+  $menuItemID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+  $params[$menuItemID]['attributes']['label'] = 'Staff'; 
+
+  $menuItemID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
+  $params[$menuItemID]['attributes']['label'] = 'Configure'; 
+}
+
+/**
  * This function adds the session variable to CRM.vars object.
  */
 function _hrcore_add_js_session_vars() {
