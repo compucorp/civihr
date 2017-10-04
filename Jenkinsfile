@@ -78,7 +78,9 @@ pipeline {
       steps {
         script {
           for (extension in listCivihrExtensions()) {
-            testPHPUnit(extension)
+            if (extension.hasPHPTests) {
+              testPHPUnit(extension)
+            }
           }
         }
       }
@@ -122,7 +124,11 @@ pipeline {
 
           // Install NPM jobs
           for (extension in listCivihrExtensions()) {
-            extensionTestings[extension] = {
+            if(!extension.hasJSTests) {
+              continue;
+            }
+
+            extensionTestings[extension.shortName] = {
               installNPM(extension)
             }
           }
@@ -137,7 +143,9 @@ pipeline {
         script {
           // Testing JS in sequent
           for (extension in listCivihrExtensions) {
-            testJS(extension)
+            if(extension.hasJSTests) {
+              testJS(extension)
+            }
           }
         }
       }
@@ -229,41 +237,37 @@ def mergeEnvBranchInAllRepos(String envBranch) {
 
 /*
  * Execute PHPUnit testing
- * params: extensionName
+ * params: extension
  */
-def testPHPUnit(String extensionName) {
-  def extensionShortName = extensionName.tokenize('.')[-1]
-
-  echo "PHPUnit testing: ${extensionShortName}"
+def testPHPUnit(java.util.LinkedHashMap extension) {
+  echo "PHPUnit testing: ${extension.name}"
 
   sh """
-    cd $CIVICRM_EXT_ROOT/civihr/${extensionName}
-    phpunit4 \
-      --log-junit $WORKSPACE/reports/phpunit/result-phpunit_${extensionShortName}.xml \
-      || true
+    cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
+    phpunit4 --log-junit $WORKSPACE/reports/phpunit/result-phpunit_${extension.shortName}.xml || true
   """
 }
 
 /*
  * Installk JS Testing
- * params: extensionName
+ * params: extension
  */
-def installNPM(String extensionName) {
+def installNPM(java.util.LinkedHashMap extension) {
   sh """
-    cd $CIVICRM_EXT_ROOT/civihr/${extensionName}
+    cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
     npm install || true
   """
 }
 
 /*
  * Execute JS Testing
- * params: extensionName
+ * params: extension
  */
-def testJS(String extensionName) {
-  echo "JS Testing ${extensionName.tokenize('.')[-1]}"
+def testJS(java.util.LinkedHashMap extension) {
+  echo "JS Testing ${extension.name}"
 
   sh """
-    cd $CIVICRM_EXT_ROOT/civihr/${extensionName}
+    cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
     gulp test || true
   """
 }
@@ -288,7 +292,75 @@ def listCivihrGitRepoPath() {
  */
 def listCivihrExtensions() {
   return [
-    'uk.co.compucorp.civicrm.hrcore',
-    'com.civicrm.hrjobroles',
+    [
+      name: 'Job Roles',
+      shortName: 'hrjobroles',
+      folder: 'com.civicrm.hrjobroles',
+      hasJSTests: false,
+      hasPHPTests: true
+    ],
+    [
+      name: 'Contacts Access Rights',
+      shortName: 'contactaccessrights',
+      folder: 'contactaccessrights',
+      hasJSTests: false,
+      hasPHPTests: true
+    ],
+    [
+      name: 'Job Contracts',
+      shortName: 'hrjobcontract',
+      folder: 'hrjobcontract',
+      hasJSTests: false,
+      hasPHPTests: true
+    ],
+    [
+      name: 'Recruitment',
+      shortName: 'hrrecruitment',
+      folder: 'hrrecruitment',
+      hasJSTests: false,
+      hasPHPTests: true
+    ],
+    [
+      name: 'Reports',
+      shortName: 'hrreport',
+      folder: 'hrreport',
+      hasJSTests: false,
+      hasPHPTests: true
+    ],
+    [
+      name: 'HR UI',
+      shortName: 'hrui',
+      folder: 'hrui',
+      hasJSTests: false,
+      hasPHPTests: true
+    ],
+    [
+      name: 'HR Visa',
+      shortName: 'hrvisa',
+      folder: 'hrvisa',
+      hasJSTests: false,
+      hasPHPTests: true
+    ],
+    [
+      name: 'HRCore',
+      shortName: 'hrcore',
+      folder: 'uk.co.compucorp.civicrm.hrcore',
+      hasJSTests: false,
+      hasPHPTests: true
+    ],
+    [
+      name: 'Leave and Absences',
+      shortName: 'hrleaveandabsences',
+      folder: 'uk.co.compucorp.civicrm.hrleaveandabsences',
+      hasJSTests: false,
+      hasPHPTests: true
+    ],
+    [
+      name: 'Sample Data',
+      shortName: 'hrsampledata',
+      folder: 'uk.co.compucorp.civicrm.hrsampledata',
+      hasJSTests: false,
+      hasPHPTests: true
+    ]
   ]
 }
