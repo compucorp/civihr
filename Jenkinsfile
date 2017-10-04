@@ -4,17 +4,17 @@ pipeline {
   agent any
 
   parameters {
-    string(name: 'CVHR_BRANCH', defaultValue: '', description: 'Default build branch of CiviHR to build site using CiviCRM-Buildkit')
-    string(name: 'CVHR_BUILDNAME', defaultValue: "hr17-dev_$BRANCH_NAME", description: 'CiviHR site name')
-    booleanParam(name: 'DESTORY_SITE', defaultValue: true, description: 'Destroy built site after build finish')
+    string(name: 'CIVIHR_BRANCH', defaultValue: '', description: 'Default build branch of CiviHR to build site using CiviCRM-Buildkit')
+    string(name: 'CIVIHR_BUILDNAME', defaultValue: "hr17-dev_$BRANCH_NAME", description: 'CiviHR site name')
+    booleanParam(name: 'DESTROY_SITE', defaultValue: true, description: 'Destroy built site after build finish')
   }
 
   environment {
-    WEBROOT = "/opt/buildkit/build/${params.CVHR_BUILDNAME}"
+    WEBROOT = "/opt/buildkit/build/${params.CIVIHR_BUILDNAME}"
     DRUPAL_SITES_ALL = "$WEBROOT/sites/all"
-    DR_MODU_ROOT = "$DRUPAL_SITES_ALL/modules"
-    DR_THEME_ROOT = "$DRUPAL_SITES_ALL/themes"
-    CVCRM_EXT_ROOT = "$DR_MODU_ROOT/civicrm/tools/extensions"
+    DRUPAL_MODULES_ROOT = "$DRUPAL_SITES_ALL/modules"
+    DRUPAL_THEMES_ROOT = "$DRUPAL_SITES_ALL/themes"
+    CIVICRM_EXT_ROOT = "$DRUPAL_MODULES_ROOT/civicrm/tools/extensions"
     WEBURL = "http://jenkins.compucorp.co.uk:8900"
     ADMIN_PASS = credentials('CVHR_ADMIN_PASS')
   }
@@ -26,7 +26,7 @@ pipeline {
         sh 'printenv | sort'
 
         // Destroy existing site
-        sh "civibuild destroy ${params.CVHR_BUILDNAME} || true"
+        sh "civibuild destroy ${params.CIVIHR_BUILDNAME} || true"
 
         // Test build tools
         sh 'amp test'
@@ -37,13 +37,13 @@ pipeline {
       steps {
         script {
           // Setup Building branch with
-          // CVHR_BRANCH parameter from manually build with parameter
+          // CIVIHR_BRANCH parameter from manually build with parameter
           // or PR target branch (CHANGE_TARGET) from building pull request
           // or branch (BRANCH_NAME) from building individual branch
-          def buildBranch = params.CVHR_BRANCH != '' ? params.CVHR_BRANCH : env.CHANGE_TARGET != null ? env.CHANGE_TARGET : env.BRANCH_NAME != null ? env.BRANCH_NAME : 'staging'
+          def buildBranch = params.CIVIHR_BRANCH != '' ? params.CIVIHR_BRANCH : env.CHANGE_TARGET != null ? env.CHANGE_TARGET : env.BRANCH_NAME != null ? env.BRANCH_NAME : 'staging'
 
           // Build site with CV Buildkit
-          sh "civibuild create ${params.CVHR_BUILDNAME} --type hr16 --civi-ver 4.7.22 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr16 --civi-ver 4.7.22 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
 
           // Change git remote of civihr ext to support dev version of Jenkins pipeline
           changeCivihrGitRemote()
@@ -177,9 +177,9 @@ pipeline {
     always {
       // Destroy built site
       script {
-        if (params.DESTORY_SITE == true) {
+        if (params.DESTROY_SITE == true) {
           echo 'Destroying built site...'
-          sh "civibuild destroy ${params.CVHR_BUILDNAME} || true"
+          sh "civibuild destroy ${params.CIVIHR_BUILDNAME} || true"
         }
       }
     }
@@ -195,7 +195,7 @@ def changeCivihrGitRemote() {
   echo 'Changing Civihr git URL..'
 
   sh """
-    cd $CVCRM_EXT_ROOT/civihr
+    cd $CIVICRM_EXT_ROOT/civihr
     git remote set-url origin ${pulledCvhrRepo}
     git fetch --all
   """
@@ -237,7 +237,7 @@ def testPHPUnit(String extensionName) {
   echo "PHPUnit testing: ${extensionShortName}"
 
   sh """
-    cd $CVCRM_EXT_ROOT/civihr/${extensionName}
+    cd $CIVICRM_EXT_ROOT/civihr/${extensionName}
     phpunit4 \
       --log-junit $WORKSPACE/reports/phpunit/result-phpunit_${extensionShortName}.xml \
       || true
@@ -250,7 +250,7 @@ def testPHPUnit(String extensionName) {
  */
 def installNPM(String extensionName) {
   sh """
-    cd $CVCRM_EXT_ROOT/civihr/${extensionName}
+    cd $CIVICRM_EXT_ROOT/civihr/${extensionName}
     npm install || true
   """
 }
@@ -263,7 +263,7 @@ def testJS(String extensionName) {
   echo "JS Testing ${extensionName.tokenize('.')[-1]}"
 
   sh """
-    cd $CVCRM_EXT_ROOT/civihr/${extensionName}
+    cd $CIVICRM_EXT_ROOT/civihr/${extensionName}
     gulp test || true
   """
 }
@@ -274,12 +274,12 @@ def testJS(String extensionName) {
  */
 def listCivihrGitRepoPath() {
   return [
-    "$CVCRM_EXT_ROOT/civihr",
-    "$CVCRM_EXT_ROOT/civihr_tasks",
-    "$CVCRM_EXT_ROOT/org.civicrm.shoreditch",
-    "$CVCRM_EXT_ROOT/org.civicrm.styleguide",
-    "$DR_MODU_ROOT/civihr-custom",
-    "$DR_THEME_ROOT/civihr_employee_portal_theme"
+    "$CIVICRM_EXT_ROOT/civihr",
+    "$CIVICRM_EXT_ROOT/civihr_tasks",
+    "$CIVICRM_EXT_ROOT/org.civicrm.shoreditch",
+    "$CIVICRM_EXT_ROOT/org.civicrm.styleguide",
+    "$DRUPAL_MODULES_ROOT/civihr-custom",
+    "$DRUPAL_THEMES_ROOT/civihr_employee_portal_theme"
   ]
 }
 
