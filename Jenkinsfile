@@ -65,7 +65,7 @@ pipeline {
               drush features-revert civihr_employee_portal_features -y
               drush features-revert civihr_default_permissions -y
               drush updatedb -y
-              drush cvapi extenion.upgrade -y
+              drush cvapi extension.upgrade -y
               drush cc all
               drush cc civicrm
             """
