@@ -24,14 +24,14 @@
 
     tbody tr td {
       color: $brand-primary;
-      font-size: $font-size-medium;
+      font-size: $font-size-h3;
       font-weight: $crm-font-weight-h1;
       padding-bottom: 9px;
       width: 35%;
     }
 
     tbody tr td:first-child {
-      color: $panel-default-text;
+      color: $gray-darker;
       width: 65%;
     }
   }
@@ -42,17 +42,24 @@
     margin-top: 25px;
   }
 
+  &__sickness {
+    h4 {
+      margin-top: 18px;
+    }
+  }
+
   &__next-leave {
 
     h3 {
-      font-size: $font-size-medium;
-      margin-bottom: $font-size-medium;
+      font-size: $font-size-h3;
+      margin-bottom: $font-size-h3;
       margin-top: 0;
     }
 
     &__deduction {
-      font-size: $font-size-medium;
+      font-size: $font-size-h3;
       font-weight: $crm-font-weight-h1;
+      color: $gray-darker;
     }
 
     .leave-status-approved {

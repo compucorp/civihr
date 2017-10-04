@@ -11,7 +11,9 @@ define([
     }]
   });
 
-  function leaveWidgetController () {
-    // console.log('## INIT ##');
+  leaveWidgetController.$inject = ['$log'];
+
+  function leaveWidgetController ($log) {
+    $log.debug('Controller: leaveWidgetController');
   }
 });
