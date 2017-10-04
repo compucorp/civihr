@@ -70,20 +70,22 @@
   });
 
   /**
-   * Adds a custom class to the quicksearch field
+   * Toggles a custom class to the quicksearch field
    * so that custom behaviour can be applied to it
    *
    * The class is removed only when the element
    * loses the hover AND it is empty (= there is no ongoing search)
    */
-  function addCustomClassToQuickSearchField () {
+  function toggleCustomClassToQuickSearchField () {
     $('#crm-qsearch').hover(
       function () {
         $(this).addClass('search-ongoing');
       },
       function () {
-        if (!$('#sort_name_navigation').val().length &&
-          !$('.crm-quickSearchField:visible', '#root-menu-div').length) {
+        var isSearchOngoing = $('#sort_name_navigation').val().length;
+        var isSearchCriteriaPanelOpen = $('.crm-quickSearchField:visible', '#root-menu-div').length;
+
+        if (!isSearchOngoing && !isSearchCriteriaPanelOpen) {
           $(this).removeClass('search-ongoing');
         }
       }
@@ -101,7 +103,7 @@
    * Customizes the quick search field
    */
   function customizeQuickSearchField () {
-    addCustomClassToQuickSearchField();
+    toggleCustomClassToQuickSearchField();
     changeQuickSearchFieldPlaceholder();
   }
 
