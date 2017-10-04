@@ -11,11 +11,11 @@
   &__to::before {
     content: '\f178';
     float: left;
-    font-size: $font-size-medium;
+    font-size: $font-size-h3;
     font-family: 'FontAwesome';
     line-height: 21px;
     margin: 10px;
-    margin-left: $font-size-medium;
+    margin-left: $font-size-h3;
   }
 
   &__day {
@@ -45,6 +45,7 @@
 
   &__time {
     display: block;
-    color: $gray-dark;
+    color: $crm-copy;
+    opacity: 0.6;
   }
 }
