@@ -27,7 +27,7 @@
               <div class="col-sm-6">{$form.is_reserved.label}</div>
               <div class="col-sm-6">{$form.is_reserved.html}</div>
             </div>
-            <div class="form-group row">
+            <div class="form-group row absence-calculation-unit">
               <div class="col-sm-6">{$form.calculation_unit.label}</div>
               <div class="col-sm-6">{$form.calculation_unit.html}</div>
             </div>
@@ -35,7 +35,7 @@
           <div class="col-sm-8">
             <div class="form-group row">
               <div class="col-sm-6">{$form.default_entitlement.label}</div>
-              <div class="col-sm-6">{$form.default_entitlement.html}</div>
+              <div class="col-sm-6">{$form.default_entitlement.html} <span class="entitlement-label"></span></div>
             </div>
             <div class="form-group row">
               <div class="col-sm-6">{$form.add_public_holiday_to_entitlement.label}</div>
@@ -56,7 +56,7 @@
             <h3>{ts}Requesting Leave/Absence{/ts}</h3>
             <div class="form-group row">
               <div class="col-sm-6">{$form.max_consecutive_leave_days.label}</div>
-              <div class="col-sm-6">{$form.max_consecutive_leave_days.html}</div>
+              <div class="col-sm-6">{$form.max_consecutive_leave_days.html} <span class="entitlement-label"></span></div>
             </div>
             <div class="form-group row">
               <div class="col-sm-6">{$form.allow_request_cancelation.label}</div>
@@ -75,7 +75,7 @@
             </div>
             <div class="form-group row toil-option">
               <div class="col-sm-6">{$form.max_leave_accrual.label}</div>
-              <div class="col-sm-6">{$form.max_leave_accrual.html}</div>
+              <div class="col-sm-6">{$form.max_leave_accrual.html} <span class="entitlement-label"></span></div>
             </div>
             <div class="form-group row toil-option">
               <div class="col-sm-6">{$form.allow_accrue_in_the_past.label}</div>
@@ -111,7 +111,7 @@
             </div>
             <div class="form-group row carry-forward-option">
               <div class="col-sm-6">{$form.max_number_of_days_to_carry_forward.label}</div>
-              <div class="col-sm-6">{$form.max_number_of_days_to_carry_forward.html}</div>
+              <div class="col-sm-6">{$form.max_number_of_days_to_carry_forward.html} <span class="entitlement-label"></span></div>
             </div>
             <div class="form-group row carry-forward-option">
               <div class="col-sm-6">{ts}Carry forward leave expiry{/ts}</div>
@@ -274,11 +274,23 @@
                       {literal}
                   }
 
+                function initEntitlementLabelSwitch() {
+                  setEntitlementLabelText();
+                  $('.absence-calculation-unit select').on('change', function(e) {
+                    setEntitlementLabelText();
+                  });
+                }
+
+                function setEntitlementLabelText() {
+                  $('.entitlement-label').text($('.absence-calculation-unit select option:selected').text());
+                }
+
                   $(document).ready(function() {
                       initToilControls();
                       initCarryForwardControls();
                       initColorPicker();
                       initDeleteButton();
+                      initEntitlementLabelSwitch()
                   });
 
               });
