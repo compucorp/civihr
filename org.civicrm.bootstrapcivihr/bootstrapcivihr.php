@@ -109,11 +109,12 @@ _bootstrapcivihr_civix_civicrm_angularModules($angularModules);
 function bootstrapcivihr_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _bootstrapcivihr_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
+
 /**
- * Implementation of hook_civicrm_pageRun
+ * Implements hook_civicrm_coreResourceList().
  */
-function bootstrapcivihr_civicrm_pageRun($page) {
-  if (!(isset($_GET['snippet']) && $_GET['snippet'] == 'json')) {
-    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivihr', 'css/civihr.css');
+function bootstrapcivihr_civicrm_coreResourceList(&$items, $region) {
+  if ($region == 'html-header') {
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivihr', 'css/civihr.css', 100, 'html-header');
   }
 }
