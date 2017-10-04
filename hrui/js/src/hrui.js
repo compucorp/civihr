@@ -2,110 +2,19 @@
 
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 (function ($, _) {
-  $('.CRM_HRRecruitment_Form_Application').addClass('crm-form-block');
-  $('.CRM_HRRecruitment_Form_Application .crm-profile-name-application_profile').addClass('form-layout-compressed');
-
-  $(document).on('crmLoad', function (e) {
-    $('#activityCustomData').attr('colspan', 3);
-
-    addUploadFileListener("input[type='file']");
-
-    $('.crm-accordion-header.crm-master-accordion-header').on('click', function () {
-      window.setTimeout(function () {
-        Array.prototype.forEach.call(document.querySelectorAll('.listing-box'), function (element) {
-          Ps.initialize(element);
-        });
-      }, 0);
+  $(document)
+    .on('crmLoad', function (e) {
+      addUploadFileListener("input[type='file']");
+      amendVacancyForm();
+      amendContactPageAndForm(e);
+      applyMiscChanges();
+      changeContactSourceFieldHelpText();
+    })
+    .ready(function () {
+      amendApplicationForm();
+      customizeQuickSearchField();
+      useFontAwesomeArrowsInSubMenuItems();
     });
-
-    if ($('.CRM_HRRecruitment_Form_HRVacancy').length === 1) {
-      linkLabelToDatepickerInput($('label[for="start_date"]').parents('tr'));
-      linkLabelToDatepickerInput($('label[for="end_date"]').parents('tr'));
-
-      // Add a class to identify the form 'New Vacancy Template'
-      if ($('[name="entryURL"]').val().indexOf(';template=1') > -1) {
-        $($('.CRM_HRRecruitment_Form_HRVacancy tbody').get(0)).addClass('CRM_HRRecruitment_Form_HRVacancy_Template');
-      }
-    }
-
-    // change text from Client to Contact
-    $('#crm-activity-view-table .crm-case-activity-view-Client .label').html('Contact');
-
-    if (CRM.formName === 'contactForm' || CRM.pageName === 'viewSummary') {
-      // Rename "Summary" tab to "Personal Details"
-      // Hack to check contact type - This field only appears for individuals
-      if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
-        $('.crm-contact-tabs-list #tab_summary a', e.target).text('Personal Details');
-      }
-
-      addGovernmentIdField(e.target);
-      miscPageChanges(e.target);
-    }
-
-    $('span.crm-frozen-field', '.crm-profile-name-hrident_tab').closest('div').parent('div').hide();
-
-    // changes of sorce help text
-    $('INPUT#contact_source').parent('td').children('a').click(function () {
-      $('#crm-notification-container .crm-help .notify-content').remove();
-
-      if ($('#crm-notification-container .crm-help p').length) {
-        $('#crm-notification-container .crm-help p').remove();
-      }
-
-      $('#crm-notification-container .crm-help').append('<p>Source is a useful field where data has been migrated to CiviHR from one or a number of other legacy systems. The Source field will indicate which legacy system the contact has come from.</p>');
-    });
-  });
-
-  // Remove the arrow for menu items with sub-items, and replaces it
-  // with a font awesome caret
-  $(document).ready(function () {
-    $('#root-menu-div .menu-item-arrow').each(function ($element) {
-      var $arrow = $(this);
-
-      $arrow.before('<i class="fa fa-caret-right menu-item-arrow"></i>');
-      $arrow.remove();
-    });
-
-    customizeQuickSearchField();
-  });
-
-  /**
-   * Toggles a custom class to the quicksearch field
-   * so that custom behaviour can be applied to it
-   *
-   * The class is removed only when the element
-   * loses the hover AND it is empty (= there is no ongoing search)
-   */
-  function toggleCustomClassToQuickSearchField () {
-    $('#crm-qsearch').hover(
-      function () {
-        $(this).addClass('search-ongoing');
-      },
-      function () {
-        var isSearchOngoing = $('#sort_name_navigation').val().length;
-        var isSearchCriteriaPanelOpen = $('.crm-quickSearchField:visible', '#root-menu-div').length;
-
-        if (!isSearchOngoing && !isSearchCriteriaPanelOpen) {
-          $(this).removeClass('search-ongoing');
-        }
-      }
-    );
-  }
-
-  /**
-   * Changes the placeholder text of the quicksearch field
-   */
-  function changeQuickSearchFieldPlaceholder () {
-    $('#crm-qsearch .ui-autocomplete-input').attr('placeholder', 'Quick Search');
-  }
-
-  /**
-   * Customizes the quick search field
-   */
-  function customizeQuickSearchField () {
-    toggleCustomClassToQuickSearchField();
-    changeQuickSearchFieldPlaceholder();
-  }
 
   /**
    * Adds the Government ID field on the Personal Details page and on the Edit
@@ -150,6 +59,92 @@
   }
 
   /**
+   * Amends the application form
+   */
+  function amendApplicationForm () {
+    $('.CRM_HRRecruitment_Form_Application').addClass('crm-form-block');
+    $('.CRM_HRRecruitment_Form_Application .crm-profile-name-application_profile').addClass('form-layout-compressed');
+  }
+
+  /**
+   * Amends the contact page and the contact form
+   */
+  function amendContactPageAndForm (e) {
+    if (CRM.formName === 'contactForm' || CRM.pageName === 'viewSummary') {
+      // Rename "Summary" tab to "Personal Details"
+      // Hack to check contact type - This field only appears for individuals
+      if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
+        $('.crm-contact-tabs-list #tab_summary a', e.target).text('Personal Details');
+      }
+
+      addGovernmentIdField(e.target);
+      miscContactPageChanges(e.target);
+    }
+  }
+
+  /**
+   * Amends the vacancy form
+   */
+  function amendVacancyForm () {
+    if ($('.CRM_HRRecruitment_Form_HRVacancy').length === 1) {
+      linkLabelToDatepickerInput($('label[for="start_date"]').parents('tr'));
+      linkLabelToDatepickerInput($('label[for="end_date"]').parents('tr'));
+
+      // Add a class to identify the form 'New Vacancy Template'
+      if ($('[name="entryURL"]').val().indexOf(';template=1') > -1) {
+        $($('.CRM_HRRecruitment_Form_HRVacancy tbody').get(0)).addClass('CRM_HRRecruitment_Form_HRVacancy_Template');
+      }
+    }
+  }
+
+  /**
+   * Applies miscellaneous UI changes
+   */
+  function applyMiscChanges () {
+    $('#activityCustomData').attr('colspan', 3);
+    $('#crm-activity-view-table .crm-case-activity-view-Client .label').html('Contact');
+    $('span.crm-frozen-field', '.crm-profile-name-hrident_tab').closest('div').parent('div').hide();
+
+    $('.crm-accordion-header.crm-master-accordion-header').on('click', function () {
+      window.setTimeout(function () {
+        Array.prototype.forEach.call(document.querySelectorAll('.listing-box'), function (element) {
+          Ps.initialize(element);
+        });
+      }, 0);
+    });
+  }
+
+  /**
+   * Changes the placeholder text of the quicksearch field
+   */
+  function changeQuickSearchFieldPlaceholder () {
+    $('#crm-qsearch .ui-autocomplete-input').attr('placeholder', 'Quick Search');
+  }
+
+  /**
+   * Changes of sorce help text
+   */
+  function changeContactSourceFieldHelpText () {
+    $('INPUT#contact_source').parent('td').children('a').click(function () {
+      $('#crm-notification-container .crm-help .notify-content').remove();
+
+      if ($('#crm-notification-container .crm-help p').length) {
+        $('#crm-notification-container .crm-help p').remove();
+      }
+
+      $('#crm-notification-container .crm-help').append('<p>Source is a useful field where data has been migrated to CiviHR from one or a number of other legacy systems. The Source field will indicate which legacy system the contact has come from.</p>');
+    });
+  }
+
+  /**
+   * Customizes the quick search field
+   */
+  function customizeQuickSearchField () {
+    toggleCustomClassToQuickSearchField();
+    changeQuickSearchFieldPlaceholder();
+  }
+
+  /**
    * Insert a DOM node after input[type="file"]
    * with the filename
    */
@@ -176,7 +171,7 @@
   /**
    * Misc changes to the page (hiding elements, inserting new ones, etc)
    */
-  function miscPageChanges (target) {
+  function miscContactPageChanges (target) {
     // Hide current employer and job title
     // Contact summary screen:
     $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
@@ -210,5 +205,41 @@
 
     $('#js-uploaded-file').remove();
     $input.val('');
+  }
+
+  /**
+   * Toggles a custom class to the quicksearch field
+   * so that custom behaviour can be applied to it
+   *
+   * The class is removed only when the element
+   * loses the hover AND it is empty (= there is no ongoing search)
+   */
+  function toggleCustomClassToQuickSearchField () {
+    $('#crm-qsearch').hover(
+      function () {
+        $(this).addClass('search-ongoing');
+      },
+      function () {
+        var isSearchOngoing = $('#sort_name_navigation').val().length;
+        var isSearchCriteriaPanelOpen = $('.crm-quickSearchField:visible', '#root-menu-div').length;
+
+        if (!isSearchOngoing && !isSearchCriteriaPanelOpen) {
+          $(this).removeClass('search-ongoing');
+        }
+      }
+    );
+  }
+
+  /**
+   * Remove the arrow for menu items with sub-items, and replaces it
+   * with a font awesome caret
+   */
+  function useFontAwesomeArrowsInSubMenuItems () {
+    $('#root-menu-div .menu-item-arrow').each(function ($element) {
+      var $arrow = $(this);
+
+      $arrow.before('<i class="fa fa-caret-right menu-item-arrow"></i>');
+      $arrow.remove();
+    });
   }
 }(CRM.$, CRM._));
