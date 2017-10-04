@@ -62,10 +62,6 @@
       color: $gray-darker;
     }
 
-    .crm-hover-button {
-      @extend %group-buttons;
-    }
-
     .nestedActivitySelector td:nth-child(8) {
       text-align: left !important;
     }

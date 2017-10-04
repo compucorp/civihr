@@ -1,122 +1,110 @@
 .page-civihr-reports {
-
-    .form-inline {
-
-        &.text-right {
-
-            @media(max-width: $screen-sm-max) {
-                text-align: left;
-            }
-        }
-
-        .control-label {
-            font-size: em(14);
-            margin-right: 5px;
-        }
+  .form-inline {
+    &.text-right {
+      @media(max-width: $screen-sm-max) {
+          text-align: left;
+      }
     }
 
-    .panel-heading {
+    .control-label {
+      font-size: em(14);
+      margin-right: 5px;
+    }
+  }
 
-        .fa-chevron-left,
-        .fa-chevron-right {
-            color: #ffffff;
-            font-size: em(12);
-        }
+  .panel-heading .fa-chevron-left,
+  .panel-heading .fa-chevron-right {
+    color: #ffffff;
+    font-size: em(12);
+  }
+
+  [data-graph-section="data"] .panel {
+    position: relative;
+
+    .dropdown {
+      color: #ffffff;
+      position: absolute;
+      right: 10px;
+      top: 2px;
     }
 
-    [data-graph-section="data"] {
+    .dropdown-menu {
+      border-color: $gray-lighter;
+      padding: 0;
 
-        .panel {
-            position: relative;
+      > li > a {
+        font-size: $font-size-medium;
+        padding-bottom: 12px;
+        padding-top: 12px;
 
-            .dropdown {
-                color: #ffffff;
-                position: absolute;
-                right: 10px;
-                top: 2px;
-            }
-
-            .dropdown-menu {
-                border-color: $gray-lighter;
-                padding: 0;
-
-                > li {
-
-                    > a {
-                        font-size: $font-size-medium;
-                        padding-bottom: 12px;
-                        padding-top: 12px;
-
-                        &:hover {
-                            background: $crm-brand-primary-light;
-                        }
-                    }
-                }
-            }
-
-            .dropdown-toggle {
-                color: inherit;
-                font-size: 14px;
-                text-decoration: none !important;
-            }
+        &:hover {
+          background: $crm-brand-primary-light;
         }
+      }
     }
 
-    [data-graph-section="slider"] {
-        margin: 40px 0;
+    .dropdown-toggle {
+      color: inherit;
+      font-size: 14px;
+      text-decoration: none !important;
+    }
+  }
 
-        input {
-            background: transparent;
-            border: 0;
-            width: 100%;
-        }
+  [data-graph-section="slider"] {
+    margin: 40px 0;
 
-        .ui-slider {
-            background: #dee7e8;
-            border: 0;
-            border-radius: 0;
-            height: 5px;
-
-            .tooltip {
-                z-index: 1000;
-            }
-
-            .tooltip-arrow {
-                border-bottom-color: #dee7e8;
-            }
-
-            .tooltip-inner {
-                background: #dee7e8;
-                color: $gray-darker;
-                font-size: 11px;
-                padding: 5px 15px;
-            }
-        }
-
-        .ui-slider-handle {
-            background: #f4f7f8;
-            border-color: $brand-primary;
-            border-radius: 0;
-            cursor: pointer;
-            height: 15px;
-            top: -5px;
-            width: 12px;
-        }
-
-        .ui-slider-range {
-            background: $brand-primary;
-        }
-
-        .ui-slider-range-values {
-            line-height: 5px;
-        }
+    input {
+      background: transparent;
+      border: 0;
+      width: 100%;
     }
 
-    [data-graph-section="legend"] {
-        margin-top: 50px;
+    .ui-slider {
+      background: #dee7e8;
+      border: 0;
+      border-radius: 0;
+      height: 5px;
+
+      .tooltip {
+        z-index: 1000;
+      }
+
+      .tooltip-arrow {
+        border-bottom-color: #dee7e8;
+      }
+
+      .tooltip-inner {
+        background: #dee7e8;
+        color: $gray-darker;
+        font-size: 11px;
+        padding: 5px 15px;
+      }
     }
 
-    [data-graph-calendar] {
-        max-width: 140px;
+    .ui-slider-handle {
+      background: #f4f7f8;
+      border-color: $brand-primary;
+      border-radius: 0;
+      cursor: pointer;
+      height: 15px;
+      top: -5px;
+      width: 12px;
     }
+
+    .ui-slider-range {
+      background: $brand-primary;
+    }
+
+    .ui-slider-range-values {
+      line-height: 5px;
+    }
+  }
+
+  [data-graph-section="legend"] {
+    margin-top: 50px;
+  }
+
+  [data-graph-calendar] {
+    max-width: 140px;
+  }
 }

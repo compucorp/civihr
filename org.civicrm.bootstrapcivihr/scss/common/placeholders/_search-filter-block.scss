@@ -13,13 +13,3 @@
     width: 180px !important;
   }
 }
-
-%group-buttons {
-  border-left: 1px solid transparent !important;
-
-  &:hover {
-    background: none;
-    border-left: 1px solid $button-dark-color !important;
-    color: $crm-copy;
-  }
-}
