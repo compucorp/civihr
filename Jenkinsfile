@@ -89,8 +89,8 @@ pipeline {
             thresholds: [
               [
                 $class: 'FailedThreshold',
-                failureNewThreshold: '5',
-                failureThreshold: '5',
+                failureNewThreshold: '1',
+                failureThreshold: '1',
                 unstableNewThreshold: '1',
                 unstableThreshold: '1'
               ],
@@ -148,8 +148,8 @@ pipeline {
             thresholds: [
               [
                 $class: 'FailedThreshold',
-                failureNewThreshold: '5',
-                failureThreshold: '5',
+                failureNewThreshold: '1',
+                failureThreshold: '1',
                 unstableNewThreshold: '1',
                 unstableThreshold: '1'
               ],
