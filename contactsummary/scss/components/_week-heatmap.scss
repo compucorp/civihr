@@ -1,0 +1,33 @@
+ul.week-heatmap {
+  font-size: 0;
+  list-style: none;
+  padding: 0;
+
+  li {
+    background-color: $brand-success;
+    border-radius: $border-radius-small;
+    color: $crm-white;
+    display: inline-block;
+    font-size: $font-size-medium;
+    font-weight: $crm-font-weight-h1;
+    height: 40px;
+    line-height: 40px;
+    width: 40px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    text-align: center;
+  }
+
+  li.week-heatmap__medium {
+    background-color: $brand-warning;
+  }
+
+  li.week-heatmap__high {
+    background-color: $brand-danger;
+  }
+
+  li.week-heatmap__disabled {
+    background-color: $crm-background;
+    color: $btn-default-color;
+  }
+}

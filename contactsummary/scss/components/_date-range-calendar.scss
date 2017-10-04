@@ -1,0 +1,50 @@
+.date-range-calendar {
+  font-size: $font-size-base;
+  font-weight: normal;
+
+  &__from,
+  &__to {
+    float: left;
+    margin-bottom: 10px;
+  }
+
+  &__to::before {
+    content: '\f178';
+    float: left;
+    font-size: $font-size-medium;
+    font-family: 'FontAwesome';
+    line-height: 21px;
+    margin: 10px;
+    margin-left: $font-size-medium;
+  }
+
+  &__day {
+    background: $gray-light;
+    border: 1px solid #DEE4ED;
+    border-radius: $border-radius-small;
+    border-top: none;
+    display: inline-block;
+    float: left;
+    font-size: $font-size-h2;
+    height: 40px;
+    line-height: 32px;
+    margin-right: 10px;
+    text-align: center;
+    width: 40px;
+
+    &::before {
+      border-top: 8px solid $brand-primary;
+      border-top-left-radius: $border-radius-small;
+      border-top-right-radius: $border-radius-small;
+      content: '';
+      display: block;
+      margin: -1px;
+      width: calc(100% + 2px);
+    }
+  }
+
+  &__time {
+    display: block;
+    color: $gray-dark;
+  }
+}

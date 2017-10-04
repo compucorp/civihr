@@ -1,0 +1,62 @@
+.leave-widget {
+  @mixin heading-style () {
+    color: $crm-copy;
+    font-size: $font-size-base;
+    font-weight: normal;
+    margin-bottom: 0;
+    padding-bottom: $font-size-base;
+  }
+
+  h4 {
+    @include heading-style();
+  }
+
+  &__types > table,
+  &__sickness > table,
+  &__next-leave > table {
+    border: none;
+
+    thead tr th {
+      @include heading-style();
+
+      background: none;
+    }
+
+    tbody tr td {
+      color: $brand-primary;
+      font-size: $font-size-medium;
+      font-weight: $crm-font-weight-h1;
+      padding-bottom: 9px;
+      width: 35%;
+    }
+
+    tbody tr td:first-child {
+      color: $panel-default-text;
+      width: 65%;
+    }
+  }
+
+  hr {
+    border-color: #DEE4ED;
+    margin-bottom: 25px;
+    margin-top: 25px;
+  }
+
+  &__next-leave {
+
+    h3 {
+      font-size: $font-size-medium;
+      margin-bottom: $font-size-medium;
+      margin-top: 0;
+    }
+
+    &__deduction {
+      font-size: $font-size-medium;
+      font-weight: $crm-font-weight-h1;
+    }
+
+    .leave-status-approved {
+      color: $brand-success;
+    }
+  }
+}
