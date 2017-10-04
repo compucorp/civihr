@@ -5,6 +5,12 @@
  */
 class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
 
+  const EXTENSION_INSTALLATION_TIMEOUT = 300;
+
+  /**
+   * @var string
+   *   The directory of CSV files to import
+   */
   private $csvDir;
 
   public function __construct($extensionName, $extensionDir) {
@@ -14,6 +20,8 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
   }
 
   public function install() {
+    set_time_limit(self::EXTENSION_INSTALLATION_TIMEOUT);
+
     $this->cleanTablesData();
     $this->importSampleData();
     $this->copyContactPhotos();
@@ -21,6 +29,8 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
   }
 
   public function uninstall() {
+    set_time_limit(self::EXTENSION_INSTALLATION_TIMEOUT);
+    
     $this->cleanTablesData();
   }
 
@@ -28,9 +38,45 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
    * Removes data from Specific tables
    */
   private function cleanTablesData() {
+    $this->cleanContactTables();
     $this->executeSqlFile('sql/uninstall.sql');
     $this->cleanCustomFieldsValues();
     $this->cleanSampleDataValues();
+  }
+
+  /**
+   * Cleaning contacts table and other
+   * related ones
+   */
+  private function cleanContactTables() {
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0');
+    $contactsWithAttachedUsers = $this->getContactsWithAttachedUsers();
+    $contactsWithAttachedUsers = implode(',', $contactsWithAttachedUsers);
+    $contactsDeleteQuery = "DELETE FROM civicrm_contact WHERE id != 1 AND id NOT IN ({$contactsWithAttachedUsers})";
+    CRM_Core_DAO::executeQuery($contactsDeleteQuery);
+    $emailDeleteQuery = "DELETE FROM civicrm_email WHERE contact_id != 1 AND contact_id NOT IN ({$contactsWithAttachedUsers})";
+    CRM_Core_DAO::executeQuery($emailDeleteQuery);
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 1');
+  }
+
+  /**
+   * Gets contacts IDs
+   * associated (connected) with a CMS user
+   *
+   * @return array
+   *   The list of contacts with associated users IDs
+   */
+  private function getContactsWithAttachedUsers() {
+    $ufMatchRecords = civicrm_api3('UFMatch', 'get', [
+      'sequential' => 1,
+      'return' => ['contact_id'],
+    ]);
+    $contactIDs = [];
+    if ($ufMatchRecords['count'] > 0) {
+      $contactIDs = array_column($ufMatchRecords['values'], 'contact_id');
+    }
+
+    return $contactIDs;
   }
 
   /**
@@ -129,8 +175,8 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
   }
 
   /**
-   * Changes Default Users ( civihr_admin , civihr_manager .. etc) attached
-   * contacts to different ones but with more data.
+   * Changes Default CiviHR Users ( civihr_admin , civihr_manager and civihr_staff) attached
+   * contacts to the new sample ones.
    */
   private function changeDefaultUsersAttachedContacts() {
     $usersToNewContacts = [
@@ -140,10 +186,10 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
     ];
 
     foreach($usersToNewContacts as $originalEmail => $newContactEmail) {
-
       $userToChangeID = $this->getCMSUserIDByEmail($originalEmail);
       if ($userToChangeID) {
         $this->updateCMSUserEmail($userToChangeID, $newContactEmail);
+        $this->updateMappedContactID($userToChangeID, $newContactEmail);
       }
     }
   }
@@ -178,5 +224,28 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
 
     // save new user email
     user_save($existingUser, ['mail' => $newEmail]);
+  }
+
+  /**
+   * Updates the mapped contact ID in uf_match table
+   * given the CMS user ID and the new contact email
+   *
+   * @param int $cmsID
+   * @param string $newEmail
+   */
+  private function updateMappedContactID($cmsID, $newEmail) {
+    $newEmailData = civicrm_api3('Email', 'get', [
+      'sequential' => 1,
+      'return' => ['contact_id'],
+      'email' => $newEmail,
+      'options' => ['limit' => 1, 'sort' => 'id DESC'],
+    ]);
+    if ($newEmailData['count']) {
+      $newContactID = $newEmailData['values'][0]['contact_id'];
+      civicrm_api3('UFMatch', 'get', [
+        'uf_id' => $cmsID,
+        'api.UFMatch.create' => ['id' => '$value.id', 'contact_id' => $newContactID],
+      ]);
+    }
   }
 }

@@ -209,7 +209,7 @@ class CRM_Export_BAO_Export {
     if ($queryMode & CRM_Contact_BAO_Query::MODE_CONTACTS &&
       !empty($returnProperties['hrjobcontract_leave_leave_amount']))
     {
-      $groupBy = ' GROUP BY contact_a.id';
+      $groupBy = ' GROUP BY contact_a.id, hrjobcontract.id';
     }
 
     $groupBy = !empty($groupBy) ? $groupBy : '';
@@ -354,6 +354,10 @@ class CRM_Export_BAO_Export {
         $relationshipTypes = $fieldName = CRM_Utils_Array::value(1, $value);
         if (!$fieldName) {
           continue;
+        }
+
+        if($fieldName == 'hrjobcontract_leave_leave_amount') {
+          $returnProperties['contact_id'] = 1;
         }
         // get phoneType id and IM service provider id separately
         if ($fieldName == 'phone') {

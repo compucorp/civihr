@@ -106,9 +106,9 @@ define([
           return {
             list: currentList.values,
             total: allList.count,
-            allIds: allList.values.map(function (record) {
+            allIds: _.compact(allList.values.map(function (record) {
               return record.id;
-            }).join(',')
+            })).join(',')
           };
         });
       },

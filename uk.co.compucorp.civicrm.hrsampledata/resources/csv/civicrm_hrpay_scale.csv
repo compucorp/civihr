@@ -1,6 +1,6 @@
-pay_scale,pay_grade,currency,amount,pay_frequency
-E1,CXO,GBP,80000,Year
-E2,Head of Department,GBP,70000,Year
-E3,Manager,GBP,60000,Year
-E4,Executive,GBP,50000,Year
-E5,Community Staff,GBP,30000,Year
+pay_scale,pay_grade,currency,amount,pay_frequency,delete_on_uninstall
+E1,CXO,GBP,80000,Year,1
+E2,Head of Department,GBP,70000,Year,1
+E3,Manager,GBP,60000,Year,1
+E4,Executive,GBP,50000,Year,1
+E5,Community Staff,GBP,30000,Year,1
