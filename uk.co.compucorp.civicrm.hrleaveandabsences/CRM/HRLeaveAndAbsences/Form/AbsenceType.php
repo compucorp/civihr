@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 require_once 'CRM/Core/Form.php';
 
@@ -28,7 +29,8 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
         $this->defaultValues = [
           'allow_request_cancelation' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE,
           'add_public_holiday_to_entitlement' => 0,
-          'must_take_public_holiday_as_leave' => 0
+          'must_take_public_holiday_as_leave' => 0,
+          'calculation_unit' => $this->getDefaultCalculationUnitValue()
         ];
       }
     }
@@ -140,6 +142,19 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
         ['disabled' => 'disabled']
       );
     }
+    $calculationUnitFieldOptions =  [
+      'options' => $this->getCalculationUnitOptions(),
+      'option_url' => NULL,
+      'label' => 'Calculate Leave in'
+    ];
+    if($this->absenceTypeHasEverBeenUsed()) {
+      $calculationUnitFieldOptions['disabled'] = 'disabled';
+    }
+    $this->addSelect(
+      'calculation_unit',
+      $calculationUnitFieldOptions,
+      TRUE
+    );
     $this->addYesNo(
       'must_take_public_holiday_as_leave',
       ts('Must staff take public holiday as leave?')
@@ -402,5 +417,47 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
   private function canDelete() {
     $absenceTypeService = new AbsenceTypeService();
     return !$absenceTypeService->absenceTypeHasEverBeenUsed($this->_id);
+  }
+
+  /**
+   * Get the option values for the calculation_unit
+   * select field.
+   *
+   * @return array
+   */
+  private function getCalculationUnitOptions() {
+    $options = AbsenceType::buildOptions('calculation_unit');
+    $selectOptions = [];
+    foreach($options as $value => $label) {
+      $selectOptions[$value] = ts($label);
+    }
+
+    return $selectOptions;
+  }
+
+  /**
+   * Gets the default calculation_unit value for the calculation_unit
+   * field for new Absence types.
+   *
+   * @return mixed
+   */
+  private function getDefaultCalculationUnitValue() {
+    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
+
+    return $calculationUnitOptions['days'];
+  }
+
+  /** Checks if the Absence Type record has ever been used.
+   *
+   * @return bool
+   */
+  private function absenceTypeHasEverBeenUsed() {
+    $absenceTypeService = new AbsenceTypeService();
+
+    if(!$this->_id) {
+      return false;
+    }
+
+    return $absenceTypeService->absenceTypeHasEverBeenUsed($this->_id);
   }
 }

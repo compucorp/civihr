@@ -27,6 +27,10 @@
               <div class="col-sm-6">{$form.is_reserved.label}</div>
               <div class="col-sm-6">{$form.is_reserved.html}</div>
             </div>
+            <div class="form-group row">
+              <div class="col-sm-6">{$form.calculation_unit.label}</div>
+              <div class="col-sm-6">{$form.calculation_unit.html}</div>
+            </div>
           </div>
           <div class="col-sm-8">
             <div class="form-group row">
