@@ -26,11 +26,14 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       '#151D2C', '#B32E2E', '#BF561D', '#377A31', '#803D5E', '#47275C', '#056780'
   ];
 
+  private $calculationUnitOptions;
+
   public function setUp() {
     // We delete everything two avoid problems with the default absence types
     // created during the extension installation
     $tableName = AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    $this->calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
   }
 
   public function testTypeTitlesShouldBeUnique() {
@@ -583,6 +586,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'default_entitlement' => 21,
       'allow_request_cancelation' => 1,
       'is_active' => 1,
+      'calculation_unit' => $this->calculationUnitOptions['days']
     ]);
     $this->assertEquals(0, $absenceType->is_sick);
   }
@@ -594,7 +598,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'default_entitlement' => 21,
       'allow_request_cancelation' => 1,
       'is_active' => 1,
-      'is_sick' => 1
+      'is_sick' => 1,
+      'calculation_unit' => $this->calculationUnitOptions['days']
     ]);
     $this->assertEquals(1, $absenceType->is_sick);
   }
@@ -792,5 +797,16 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     );
 
     AbsenceTypeFabricator::fabricate($params);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   * @expectedExceptionMessage You cannot add public holiday to entitlement when Absence Type calculation unit is in Hours
+   */
+  public function testPublicHolidayEntitlementCannotBeAddedWhenLeaveIsCalculatedInHours() {
+    AbsenceTypeFabricator::fabricate([
+      'add_public_holiday_to_entitlement' => true,
+      'calculation_unit' => $this->calculationUnitOptions['hours']
+    ]);
   }
 }
