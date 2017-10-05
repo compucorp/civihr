@@ -1,5 +1,7 @@
 <?php
 
+require_once 'api/Wrapper.php';
+
 class CRM_HRCore_APIWrapper_DefaultLimitRemover implements API_Wrapper {
 
   /**

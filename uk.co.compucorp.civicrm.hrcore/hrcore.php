@@ -2,6 +2,13 @@
 
 require_once 'hrcore.civix.php';
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference as Reference;
+use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
+use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
+use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
+
 /**
  * Implements hook_civicrm_config().
  *
@@ -11,6 +18,53 @@ function hrcore_civicrm_config(&$config) {
   _hrcore_civix_civicrm_config($config);
   $smarty = CRM_Core_Smarty::singleton();
   array_push($smarty->plugins_dir, __DIR__ . '/CRM/Smarty/plugins');
+}
+
+/**
+ * Implements hook_civicrm_searchTasks().
+ *
+ * @param string $objectName
+ * @param array $tasks
+ */
+function hrcore_civicrm_searchTasks($objectName, &$tasks) {
+  $taskAdders = [
+    ContactFormSearchTaskAdder::class
+  ];
+
+  foreach ($taskAdders as $adder) {
+    if ($adder::shouldAdd($objectName)) {
+      $adder::add($tasks);
+    }
+  }
+}
+
+function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
+  $otherActions = CRM_Utils_Array::value('otherActions', $actions, []);
+  $userAdd = CRM_Utils_Array::value('user-add', $otherActions, []);
+
+  if (empty($userAdd)) {
+    return;
+  }
+
+  // replace default action with link to custom form
+  $userAdd['title'] = ts('Create User Account');
+  $userAdd['description'] = ts('Create User Account');
+  $link = '/civicrm/user/create-account?cid=%d';
+  $userAdd['href'] = sprintf($link, $contactID);
+  $actions['otherActions']['user-add'] = $userAdd;
+}
+
+/**
+ * Implements hook_civicrm_container().
+ *
+ * @param ContainerBuilder $container
+ */
+function hrcore_civicrm_container($container) {
+  $container->register('drupal_role_service', DrupalRoleService::class);
+  $container->setDefinition(
+    'drupal_user_service',
+    new Definition(DrupalUserService::class, [new Reference('drupal_role_service')])
+  );
 }
 
 /**
