@@ -648,11 +648,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   private function createAbsenceType() {
+    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
+
     return AbsenceType::create([
       'title' => 'Type ' . microtime(),
       'color' => '#000000',
       'default_entitlement' => 20,
       'allow_request_cancelation' => 1,
+      'calculation_unit' => $calculationUnitOptions['days']
     ]);
   }
 

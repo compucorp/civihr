@@ -41,11 +41,13 @@ class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest extends BaseHeadlessTe
 
   private function instantiateAbsenceType()
   {
+    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
     $this->absenceType = AbsenceType::create([
         'title' => 'Type ' . microtime(),
         'color' => '#000000',
         'default_entitlement' => 20,
         'allow_request_cancelation' => 1,
+        'calculation_unit' => $calculationUnitOptions['days']
     ]);
   }
 

@@ -51,11 +51,13 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest extends BaseHeadl
   }
 
   private function createBasicType($params = array()) {
+    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
     $basicRequiredFields = [
       'title' => 'Type ' . microtime(),
       'color' => '#000000',
       'default_entitlement' => 20,
       'allow_request_cancelation' => 1,
+      'calculation_unit' => $calculationUnitOptions['days']
     ];
 
     $params = array_merge($basicRequiredFields, $params);
