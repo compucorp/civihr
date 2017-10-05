@@ -56,34 +56,51 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
-   * @expectedExceptionMessage Time From, Time To and Break are required for Working Days
+   * @expectedExceptionMessage Time From, Time To, Break and Number of Hours are required for Working Days
    *
-   * @dataProvider timesAndBreakRequiredDataProvider
+   * @dataProvider timesBreakAndNumberOfHoursRequiredDataProvider
    */
-  public function testTimeFromTimeToAndBreakShouldBeRequiredIfItsAWorkingDay($timeTo, $timeFrom, $break) {
+  public function testTimeFromTimeToBreakAndNumberOfHoursShouldBeRequiredIfItsAWorkingDay($timeTo, $timeFrom, $break, $numberOfHours) {
     $params = [
       'type' => WorkDay::getWorkingDayTypeValue(),
       'time_to' => $timeTo,
       'time_from' => $timeFrom,
-      'break' => $break
+      'break' => $break,
+      'number_of_hours' => $numberOfHours
     ];
     $this->createBasicWorkDay($params);
   }
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
-   * @expectedExceptionMessage Time From, Time To and Break should be empty for Non Working Days and Weekends
+   * @expectedExceptionMessage Time From, Time To, Break and Number of Hours should be empty for Non Working Days and Weekends
    *
-   * @dataProvider timesAndBreakEmptyDataProvider
+   * @dataProvider timesBreakAndNumberOfHoursEmptyDataProvider
    */
-  public function testTimeFromTimeToAndBreakShouldBeEmptyIfItsNotAWorkingDay($timeTo, $timeFrom, $break) {
+  public function testTimeFromTimeToBreakAndNumberOfHoursShouldBeEmptyIfItsNotAWorkingDay($timeTo, $timeFrom, $break, $numberOfHours) {
     $params = [
       'type' => WorkDay::getNonWorkingDayTypeValue(),
       'time_to' => $timeTo,
       'time_from' => $timeFrom,
-      'break' => $break
+      'break' => $break,
+      'number_of_hours' => $numberOfHours
     ];
     $this->createBasicWorkDay($params);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
+   * @expectedExceptionMessage Break should be a valid number
+   *
+   * @dataProvider invalidFormatBreakDataProvider
+   */
+  public function testBreakMustBeANumber ($break) {
+    $entity = $this->createBasicWorkDay(['break' => $break]);
+  }
+
+  public function testBreakCanBeZero () {
+    $entity = $this->createBasicWorkDay(['break' => 0]);
+    $this->assertEquals(0, $entity->break);
   }
 
   /**
@@ -97,6 +114,14 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
       'time_from' => $timeFrom,
       'time_to' => $timeTo
     ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
+   * @expectedExceptionMessage Break cannot be less than 0
+   */
+  public function testBreakCannotBeLessThan0() {
+    $this->createBasicWorkDay(['break' => -1]);
   }
 
   /**
@@ -123,13 +148,14 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
       $this->setExpectedException(InvalidWorkDayException::class, 'Invalid Work Day Type');
     }
 
-    // If type is not Working Day, we must set times and break to null,
+    // If type is not Working Day, we must set times, break and number of hours to null,
     // otherwise we will get another validation error
     $params = ['type' => $type];
     if($type != WorkDay::getWorkingDayTypeValue()) {
       $params['time_from'] = null;
       $params['time_to'] = null;
       $params['break'] = null;
+      $params['number_of_hours'] = null;
     }
     $this->createBasicWorkDay($params);
   }
@@ -156,16 +182,41 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
   }
 
   /**
-   * @dataProvider numberOfHoursDataProvider
+   * @dataProvider validNumberOfHoursDataProvider
    */
-  public function testNumberOfHoursShouldBeCalculatedFromTimesAndBreak($timeFrom, $timeTo, $break, $expectedNumberOfHours) {
-    $entity = $this->createBasicWorkDay([
-      'time_from' => $timeFrom,
-      'time_to' => $timeTo,
-      'break' => $break
-    ]);
+  public function testWorkDaysCanBeCreatedWithValidHours($numberOfHours) {
+    $entity = $this->createBasicWorkDay(['number_of_hours' => $numberOfHours]);
+    $this->assertEquals($numberOfHours, $entity->number_of_hours);
+  }
 
-    $this->assertEquals($expectedNumberOfHours, $entity->number_of_hours);
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
+   * @expectedExceptionMessage Number of Hours should be a valid number
+   *
+   * @dataProvider invalidFormatNumberOfHoursDataProvider
+   */
+  public function testNumberOfHoursMustBeANumber ($numberOfHours) {
+    $entity = $this->createBasicWorkDay(['number_of_hours' => $numberOfHours]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
+   * @expectedExceptionMessage Number of Hours should be between 0 and 24
+   *
+   * @dataProvider outOfBoundsNumberOfHoursDataProvider
+   */
+  public function testNumberOfHoursMustBeBetween0And24 ($numberOfHours) {
+    $entity = $this->createBasicWorkDay(['number_of_hours' => $numberOfHours]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
+   * @expectedExceptionMessage Number of Hours are only allowed in 15 minutes blocks
+   *
+   * @dataProvider nonDivisableBy15MinutesNumberOfHoursDataProvider
+   */
+  public function testNumberOfHoursMustBeDivisableBy15Minutes ($numberOfHours) {
+    $entity = $this->createBasicWorkDay(['number_of_hours' => $numberOfHours]);
   }
 
   public function testGetNonWorkingDayTypeValueReturnsTheOptionValueValueAsString() {
@@ -213,7 +264,8 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
       'time_from' => '09:00',
       'time_to' => '18:00',
       'break' => 1,
-      'leave_days' => 1
+      'leave_days' => 1,
+      'number_of_hours' => 8
     ];
 
     $params = array_merge($basicDefaultParams, $params);
@@ -270,27 +322,27 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
     ];
   }
 
-  public function timesAndBreakRequiredDataProvider() {
+  public function timesBreakAndNumberOfHoursRequiredDataProvider() {
     return [
-      [null, null, null],
-      [null, null, 1],
-      [null, '19:00', null],
-      ['17:00', null, null],
-      ['09:00', '17:30', null],
-      [null, '17:30', 2],
-      ['11:30', null, 2],
+      [null, null, null, null],
+      [null, null, null, 1],
+      [null, null, 1, 1],
+      [null, '19:00', null, null],
+      ['17:00', null, null, 2],
+      ['09:00', '17:30', null, null],
+      [null, '17:30', 2, null],
+      ['11:30', null, 2, 1],
     ];
   }
 
-  public function timesAndBreakEmptyDataProvider() {
+  public function timesBreakAndNumberOfHoursEmptyDataProvider() {
     return [
-      [null, null, 1],
-      [null, '19:00', null],
-      ['17:00', null, null],
-      ['09:00', '17:30', null],
-      [null, '17:30', 2],
-      ['11:30', null, 2],
-      ['09:00', '18:00', 1],
+      [null, null, 1, null],
+      [null, '19:00', null, 1],
+      ['17:00', null, null, 1],
+      ['09:00', '17:30', null, null],
+      [null, '17:30', 2, 1],
+      ['11:30', null, 2, null],
     ];
   }
 
@@ -323,13 +375,23 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
     ];
   }
 
-  public function numberOfHoursDataProvider() {
-    return [
-      ['09:00', '18:00', 1, 8],
-      ['07:00', '15:30', 1, 7.5],
-      ['12:00', '18:00', 1, 5],
-      ['12:00', '16:00', 0.25, 3.75],
-      ['10:00', '18:00', 0.75, 7.25],
-    ];
+  public function invalidFormatBreakDataProvider () {
+    return [['some_string'], [true]];
+  }
+
+  public function validNumberOfHoursDataProvider () {
+    return [[0.25], [3.75], [5], [7.25], [7.5], [8], [24]];
+  }
+
+  public function invalidFormatNumberOfHoursDataProvider () {
+    return [['some_string'], [true]];
+  }
+
+  public function outOfBoundsNumberOfHoursDataProvider () {
+    return [[-0.25], [0], [24.25]];
+  }
+
+  public function nonDivisableBy15MinutesNumberOfHoursDataProvider () {
+    return [[0.1], [0.15], [0.25001], [4.9], [7.2]];
   }
 }
