@@ -185,7 +185,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
           $this->add('text', "weeks[$i][days][$j][time_from]", '', ['maxlength' => 5, 'class' => 'work-day-time']);
           $this->add('text', "weeks[$i][days][$j][time_to]", '', ['maxlength' => 5, 'class' => 'work-day-time']);
           $this->add('text', "weeks[$i][days][$j][break]", '', ['maxlength' => 4, 'class' => 'work-day-break']);
-          $this->add('text', "weeks[$i][days][$j][number_of_hours]", '', ['readonly' => 'readonly', 'class' => 'work-day-hours']);
+          $this->add('text', "weeks[$i][days][$j][number_of_hours]", '', ['maxlength' => 5, 'class' => 'work-day-hours']);
           $this->add(
             'select',
             "weeks[$i][days][$j][leave_days]",
@@ -299,9 +299,11 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       $hasTimeFrom = strlen(trim($day['time_from'])) > 0;
       $hasTimeTo = strlen(trim($day['time_to'])) > 0;
       $hasBreak = strlen(trim($day['break'])) > 0;
+      $hasNumberOfHours = strlen(trim($day['number_of_hours'])) > 0;
       $timeFromField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'time_from');
       $timeToField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'time_to');
       $breakField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'break');
+      $numberOfHoursField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'number_of_hours');
 
       if (!$hasTimeFrom) {
         $errors[$timeFromField] = ts('Please fill in the Time From');
@@ -324,7 +326,15 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       } else {
         if (!is_numeric($day['break'])) {
           $errors[$breakField] = ts('Break should be a valid number');
+        } else if ($day['break'] < 0) {
+          $errors[$breakField] = ts('Break cannot be less than 0');
         }
+      }
+
+      if (!$hasNumberOfHours) {
+        $errors[$numberOfHoursField] = ts('Please fill in the Number of Hours');
+      } else if ($day['number_of_hours'] <= 0 || $day['number_of_hours'] >= 24) {
+        $errors[$numberOfHoursField] = 'Number of Hours should be between 0 and 24';
       }
 
       $timeFrom = strtotime($day['time_from']);

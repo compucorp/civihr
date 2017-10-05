@@ -382,6 +382,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function ($) {
    */
   Day.prototype._addEventListeners = function () {
     $(this._typeField).on('change', this._onDayTypeChange.bind(this));
+    $(this._numberOfHoursField).on('blur', this._roundNumberOfHours.bind(this));
   };
 
   /**
@@ -426,9 +427,15 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function ($) {
       'oncomplete': this._calculateNumberOfHours.bind(this)}
     );
 
+    var numberOfHoursMask = Inputmask({
+      'alias': 'decimal',
+      'rightAlign': false
+    });
+
     hourMask.mask(this._timeFromField);
     hourMask.mask(this._timeToField);
     breakMask.mask(this._breakField);
+    numberOfHoursMask.mask(this._numberOfHoursField);
   };
 
   /**
@@ -460,6 +467,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function ($) {
       numberOfHours = (secondsInPeriod - secondsInBreak) / 3600;
       numberOfHours = numberOfHours < 0 ? 0 : numberOfHours.toFixed(2);
       this._numberOfHoursField.value = numberOfHours;
+      this._roundNumberOfHours();
       this._emitter.trigger('numberofhourschange');
     }
   };
@@ -518,6 +526,20 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function ($) {
   };
 
   /**
+   * Rounds the Number Of Hours so it becomes dividable by 0.25 (15 minutes)
+   */
+  Day.prototype._roundNumberOfHours = function() {
+    var numberOfHours = parseFloat(this._numberOfHoursField.value);
+    var divider = 0.25; // 15 minutes
+
+    if (!isNaN(numberOfHours)) {
+      numberOfHours = Math.round(numberOfHours / divider) * divider;
+    }
+
+    this._numberOfHoursField.value = numberOfHours;
+  };
+
+  /**
    * Enable/Disable all the fields of this day
    *
    * The type field is not touched as it's the field the
@@ -529,6 +551,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function ($) {
     this._timeFromField.disabled = disabled;
     this._timeToField.disabled = disabled;
     this._breakField.disabled = disabled;
+    this._numberOfHoursField.disabled = disabled;
     this._leaveDaysField.disabled = disabled;
   };
 

@@ -104,6 +104,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeek extends CRM_HRLeaveAndAbsences_DAO_Wor
         $workDayParams['time_to'] = $day['time_to'];
         $workDayParams['break'] = $day['break'];
         $workDayParams['leave_days'] = $day['leave_days'];
+        $workDayParams['number_of_hours'] = $day['number_of_hours'];
       }
 
       WorkDay::create($workDayParams);

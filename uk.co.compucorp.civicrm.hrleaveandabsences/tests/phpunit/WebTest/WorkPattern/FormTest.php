@@ -35,6 +35,7 @@ class WebTest_WorkPattern_FormTest extends CiviSeleniumTestCase {
         $this->assertTrue($this->isTextPresent('Please fill in the Time From'));
         $this->assertTrue($this->isTextPresent('Please fill in the Time To'));
         $this->assertTrue($this->isTextPresent('Please fill in the Break'));
+        $this->assertTrue($this->isTextPresent('Please fill in the Number of Hours'));
     }
 
     public function testCanAddTypeWithMinimumRequiredFields()
@@ -182,6 +183,15 @@ class WebTest_WorkPattern_FormTest extends CiviSeleniumTestCase {
       $this->submitAndWait('WorkPattern');
       $breakError = "xpath=//input[@id='{$prefix}break']/following-sibling::span";
       $this->assertElementContainsText($breakError, 'Break should be a valid number');
+
+      $this->fillDay(0, 0, [
+        'time_from' => '09:00',
+        'time_to' => '15:00',
+        'break' => '-1'
+      ]);
+      $this->submitAndWait('WorkPattern');
+      $breakError = "xpath=//input[@id='{$prefix}break']/following-sibling::span";
+      $this->assertElementContainsText($breakError, 'Break cannot be less than 0');
     }
 
     public function testCannotSavePatternWithTimeFromGreaterThanTimeTo()
@@ -209,6 +219,33 @@ class WebTest_WorkPattern_FormTest extends CiviSeleniumTestCase {
       $prefix = $this->getDayPrefix(0, 0);
       $breakError = "xpath=//input[@id='{$prefix}break']/following-sibling::span";
       $this->assertElementContainsText($breakError, 'Break should be less than the number of hours between Time From and Time To');
+    }
+
+    public function testCannotSavePatternWithInvalidNumberOfHours()
+    {
+      $this->setUpBasicCalendarTest();
+
+      $this->fillDay(0, 0, [
+        'time_from' => '10:00',
+        'time_to' => '11:00',
+        'break' => '2',
+        'hours' => '24.5'
+      ]);
+      $this->submitAndWait('WorkPattern');
+      $prefix = $this->getDayPrefix(0, 0);
+      $breakError = "xpath=//input[@id='{$prefix}break']/following-sibling::span";
+      $this->assertElementContainsText($breakError, 'Number of Hours should be between 0 and 24');
+
+      $this->fillDay(0, 0, [
+        'time_from' => '10:00',
+        'time_to' => '11:00',
+        'break' => '2',
+        'hours' => '0'
+      ]);
+      $this->submitAndWait('WorkPattern');
+      $prefix = $this->getDayPrefix(0, 0);
+      $breakError = "xpath=//input[@id='{$prefix}break']/following-sibling::span";
+      $this->assertElementContainsText($breakError, 'Number of Hours should be between 0 and 24');
     }
 
     public function testWhenEditingAPatternWithMoreThanOneWeekAllOfItsWeeksAreVisible()
