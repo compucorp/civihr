@@ -54,6 +54,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
     $this->assign('canDeleteType', $this->canDelete());
     $this->assign('deleteUrl', $this->getDeleteUrl());
     $this->assign('availableColors', json_encode(CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors()));
+    $this->assign('hoursUnitValue', $this->getHoursCalculationUnitValue());
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/spectrum.css');
@@ -445,6 +446,17 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
     $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
 
     return $calculationUnitOptions['days'];
+  }
+
+  /**
+   * Gets the value for the hours calculation_unit
+   *
+   * @return mixed
+   */
+  private function getHoursCalculationUnitValue() {
+    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
+
+    return $calculationUnitOptions['hours'];
   }
 
   /** Checks if the Absence Type record has ever been used.
