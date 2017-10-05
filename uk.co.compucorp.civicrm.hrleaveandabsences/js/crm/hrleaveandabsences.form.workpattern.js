@@ -4,6 +4,8 @@
 CRM.HRLeaveAndAbsencesApp = CRM.HRLeaveAndAbsencesApp || {};
 CRM.HRLeaveAndAbsencesApp.Form = CRM.HRLeaveAndAbsencesApp.Form || {};
 
+openTabWithErrorsIfPresented();
+
 /**
  * This class represents the whole WorkPattern form.
  *
@@ -532,3 +534,17 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function ($) {
 
   return Day;
 })(CRM.$);
+
+/**
+ * Opens tab with form errors if they are presented
+ */
+function openTabWithErrorsIfPresented () {
+  var indexOfTabWithErrors;
+
+  CRM.$(document).on('ready', function () {
+    indexOfTabWithErrors =
+      CRM.$('.tab-pane').index(CRM.$('.crm-error:first').closest('.tab-pane'));
+
+    (indexOfTabWithErrors !== -1) && CRM.$('.nav-tabs a').eq(indexOfTabWithErrors).click();
+  });
+}
