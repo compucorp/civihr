@@ -528,7 +528,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function ($) {
   /**
    * Rounds the Number Of Hours so it becomes dividable by 0.25 (15 minutes)
    */
-  Day.prototype._roundNumberOfHours = function() {
+  Day.prototype._roundNumberOfHours = function () {
     var numberOfHours = parseFloat(this._numberOfHoursField.value);
     var divider = 0.25; // 15 minutes
 
