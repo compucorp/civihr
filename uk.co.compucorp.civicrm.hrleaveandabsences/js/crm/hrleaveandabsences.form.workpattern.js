@@ -4,15 +4,13 @@
 CRM.HRLeaveAndAbsencesApp = CRM.HRLeaveAndAbsencesApp || {};
 CRM.HRLeaveAndAbsencesApp.Form = CRM.HRLeaveAndAbsencesApp.Form || {};
 
-
 /**
  * This class represents the whole WorkPattern form.
  *
  * It instantiates the Weeks objects and handles form
  * specific operations, like the delete action.
  */
-CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
-
+CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function ($) {
   /**
    * The maximum number of weeks in a Work Pattern
    * @type {number}
@@ -25,7 +23,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
    * @param {string} deleteUrl - The URL to be used by the delete action
    * @constructor
    */
-  function WorkPattern(deleteUrl) {
+  function WorkPattern (deleteUrl) {
     this._deleteUrl = deleteUrl;
     this._instantiateWeeks();
     this._addEventListeners();
@@ -39,10 +37,10 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
    *
    * @private
    */
-  WorkPattern.prototype._instantiateWeeks = function() {
+  WorkPattern.prototype._instantiateWeeks = function () {
     var that = this;
     this._weeks = [];
-    $('.work-pattern-week').each(function(i, weekElement) {
+    $('.work-pattern-week').each(function (i, weekElement) {
       var week = that._instantiateWeek(i, weekElement);
       that._weeks.push(week);
     });
@@ -59,8 +57,8 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
    * @returns {Object} - A new Week instance
    * @private
    */
-  WorkPattern.prototype._instantiateWeek = function(weekIndex, weekElement) {
-    var fieldName = 'weeks['+weekIndex+'][is_visible]';
+  WorkPattern.prototype._instantiateWeek = function (weekIndex, weekElement) {
+    var fieldName = 'weeks[' + weekIndex + '][is_visible]';
     var visibilityField = document.getElementsByName(fieldName)[0];
     return new CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week(weekIndex, weekElement, visibilityField);
   };
@@ -70,7 +68,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
    *
    * @private
    */
-  WorkPattern.prototype._addEventListeners = function() {
+  WorkPattern.prototype._addEventListeners = function () {
     $('#number_of_weeks').on('change', this._onNumberOfWeeksChange.bind(this));
     $('.crm-button-type-delete').on('click', this._onDeleteButtonClick.bind(this));
   };
@@ -81,9 +79,9 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
    * @param event
    * @private
    */
-  WorkPattern.prototype._onNumberOfWeeksChange = function(event) {
-    for(var i = 0; i < MAX_NUMBER_OF_WEEKS; i++) {
-      if(i < parseInt(event.target.value)) {
+  WorkPattern.prototype._onNumberOfWeeksChange = function (event) {
+    for (var i = 0; i < MAX_NUMBER_OF_WEEKS; i++) {
+      if (i < parseInt(event.target.value)) {
         this._weeks[i].show();
       } else {
         this._weeks[i].hide();
@@ -100,7 +98,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
    * @param event
    * @private
    */
-  WorkPattern.prototype._onDeleteButtonClick = function(event) {
+  WorkPattern.prototype._onDeleteButtonClick = function (event) {
     event.preventDefault();
     CRM.confirm({
       title: ts('Delete Work Pattern'),
@@ -125,7 +123,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
    *
    * @private
    */
-  WorkPattern.prototype._deleteWorkPattern = function() {
+  WorkPattern.prototype._deleteWorkPattern = function () {
     this._disableFormChangesNotification();
     window.location = this._deleteUrl;
   };
@@ -135,7 +133,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
    *
    * @private
    */
-  WorkPattern.prototype._disableFormChangesNotification = function() {
+  WorkPattern.prototype._disableFormChangesNotification = function () {
     var form = $('form.CRM_HRLeaveAndAbsences_Form_WorkPattern');
     form.attr('data-warn-changes', 'false');
   };
@@ -143,15 +141,13 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
   return WorkPattern;
 })(CRM.$);
 
-
 /**
  * This class represents a single Week on the Work Pattern form.
  *
  * It basically wraps a '.work-pattern-week' element and handles
  * the inner days.
  */
-CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
-
+CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function ($) {
   /**
    * The number of days a Week should have
    *
@@ -167,7 +163,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    * @param {Object} weekVisibilityField - The hidden field used to keep track of this week visibility
    * @constructor
    */
-  function Week(weekIndex, weekElement, weekVisibilityField) {
+  function Week (weekIndex, weekElement, weekVisibilityField) {
     this._weekIndex = weekIndex;
     this._weekElement = $(weekElement);
     this._weekVisibilityField = weekVisibilityField;
@@ -181,9 +177,9 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    *
    * @private
    */
-  Week.prototype._instantiateDays = function() {
+  Week.prototype._instantiateDays = function () {
     this._days = [];
-    for(var i = 0; i < NUMBER_OF_DAYS; i++) {
+    for (var i = 0; i < NUMBER_OF_DAYS; i++) {
       this._days[i] = this._instantiateDay(i);
     }
   };
@@ -217,8 +213,8 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    *
    * @private
    */
-  Week.prototype._addEventListeners = function() {
-    this._days.forEach(function(day) {
+  Week.prototype._addEventListeners = function () {
+    this._days.forEach(function (day) {
       day.on('numberofhourschange', this._calculateNumberOfHours.bind(this));
     }, this);
   };
@@ -232,9 +228,9 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    *
    * @private
    */
-  Week.prototype._calculateNumberOfHours = function() {
+  Week.prototype._calculateNumberOfHours = function () {
     var totalNumberOfHours = 0.0;
-    this._days.forEach(function(day) {
+    this._days.forEach(function (day) {
       totalNumberOfHours += day.getNumberOfHours();
     });
 
@@ -250,7 +246,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    *
    * @returns {boolean}
    */
-  Week.prototype.isVisible = function() {
+  Week.prototype.isVisible = function () {
     return this._weekVisibilityField.value === '1';
   };
 
@@ -260,8 +256,8 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    * - Monday to Friday as Working Days
    * - Saturday and Sunday as Weekend
    */
-  Week.prototype.show = function() {
-    if(!this.isVisible()) {
+  Week.prototype.show = function () {
+    if (!this.isVisible()) {
       this._weekElement.removeClass('hidden-week');
       this._setInitialWeekDaysValues();
       this._setWeekVisibleFlag(true);
@@ -274,8 +270,8 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    * When hidding we need to erase and disabled all the days
    * of this week, to make sure they won't be submitted.
    */
-  Week.prototype.hide = function() {
-    if(this.isVisible()) {
+  Week.prototype.hide = function () {
+    if (this.isVisible()) {
       this._weekElement.addClass('hidden-week');
       this._resetWeekDays();
       this._setWeekVisibleFlag(false);
@@ -289,8 +285,8 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    * @param {boolean} flagValue - If true, the field value will be 1, otherwise it will 0
    * @private
    */
-  Week.prototype._setWeekVisibleFlag = function(flagValue) {
-    if(flagValue) {
+  Week.prototype._setWeekVisibleFlag = function (flagValue) {
+    if (flagValue) {
       this._weekVisibilityField.value = 1;
     } else {
       this._weekVisibilityField.value = 0;
@@ -306,13 +302,13 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    *
    * @private
    */
-  Week.prototype._setInitialWeekDaysValues = function() {
+  Week.prototype._setInitialWeekDaysValues = function () {
     var workingDays = this._days.slice(0, 5);
     var weekendDays = this._days.slice(5);
-    workingDays.forEach(function(day) {
+    workingDays.forEach(function (day) {
       day.setInitialValuesForWorkingDay();
     });
-    weekendDays.forEach(function(day) {
+    weekendDays.forEach(function (day) {
       day.setAsWeekendDay();
     });
   };
@@ -323,8 +319,8 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    *
    * @private
    */
-  Week.prototype._resetWeekDays = function() {
-    this._days.forEach(function(day) {
+  Week.prototype._resetWeekDays = function () {
+    this._days.forEach(function (day) {
       day.setAsNonWorkingDay();
     });
   };
@@ -341,8 +337,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
  * type.
  *
  */
-CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
-
+CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function ($) {
   var NON_WORKING_DAY = 1;
   var WORKING_DAY = 2;
   var WEEKEND_DAY = 3;
@@ -362,7 +357,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    * @param {Object} leaveDaysField - The leave days select field of this day
    * @constructor
    */
-  function Day(typeField, timeFromField, timeToField, breakField, numberOfHoursField, leaveDaysField) {
+  function Day (typeField, timeFromField, timeToField, breakField, numberOfHoursField, leaveDaysField) {
     this._typeField = typeField;
     this._timeFromField = timeFromField;
     this._timeToField = timeToField;
@@ -373,7 +368,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
     this.on = $.proxy(this._emitter, 'on');
     this._addEventListeners();
     this._setFieldsMasks();
-    if(+this._typeField.value === +NON_WORKING_DAY || +this._typeField.value === +WEEKEND_DAY) {
+    if (+this._typeField.value === +NON_WORKING_DAY || +this._typeField.value === +WEEKEND_DAY) {
       this._setFieldsDisabledAttribute(true);
     }
   }
@@ -383,7 +378,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    *
    * @private
    */
-  Day.prototype._addEventListeners = function() {
+  Day.prototype._addEventListeners = function () {
     $(this._typeField).on('change', this._onDayTypeChange.bind(this));
   };
 
@@ -396,8 +391,8 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    * @param event
    * @private
    */
-  Day.prototype._onDayTypeChange = function(event) {
-    if(+event.target.value === +NON_WORKING_DAY || +event.target.value === +WEEKEND_DAY) {
+  Day.prototype._onDayTypeChange = function (event) {
+    if (+event.target.value === +NON_WORKING_DAY || +event.target.value === +WEEKEND_DAY) {
       this._eraseFields();
       this._setFieldsDisabledAttribute(true);
     } else {
@@ -417,7 +412,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    *
    * @private
    */
-  Day.prototype._setFieldsMasks = function() {
+  Day.prototype._setFieldsMasks = function () {
     var hourMask = Inputmask({
       'mask': '99:99',
       'oncomplete': this._calculateNumberOfHours.bind(this)
@@ -442,12 +437,12 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    *
    * @private
    */
-  Day.prototype._calculateNumberOfHours = function() {
+  Day.prototype._calculateNumberOfHours = function () {
     var secondsInPeriod = 0;
     var secondsInBreak = 0;
     var numberOfHours = 0;
 
-    if(!this._timeFromField.value || !this._timeToField.value || !this._breakField.value) {
+    if (!this._timeFromField.value || !this._timeToField.value || !this._breakField.value) {
       this._numberOfHoursField.value = '';
       this._emitter.trigger('numberofhourschange');
       return;
@@ -471,7 +466,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    * Set this as a Working Day, making its initial values
    * empty and the fields enabled.
    */
-  Day.prototype.setInitialValuesForWorkingDay = function() {
+  Day.prototype.setInitialValuesForWorkingDay = function () {
     this._typeField.value = WORKING_DAY;
     this._eraseFields();
     this._setFieldsDisabledAttribute(false);
@@ -481,7 +476,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    * Set this as a Non Working day, making it's initial
    * values empty and the fields disabled.
    */
-  Day.prototype.setAsNonWorkingDay = function() {
+  Day.prototype.setAsNonWorkingDay = function () {
     this._typeField.value = NON_WORKING_DAY;
     this._eraseFields();
     this._setFieldsDisabledAttribute(true);
@@ -491,7 +486,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    * Set this as a Weekend day, making it's initial
    * values empty and the fields disabled.
    */
-  Day.prototype.setAsWeekendDay = function() {
+  Day.prototype.setAsWeekendDay = function () {
     this._typeField.value = WEEKEND_DAY;
     this._eraseFields();
     this._setFieldsDisabledAttribute(true);
@@ -502,7 +497,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    *
    * @returns {float} - The number of hours for this day
    */
-  Day.prototype.getNumberOfHours = function() {
+  Day.prototype.getNumberOfHours = function () {
     var numberOfHours = parseFloat(this._numberOfHoursField.value);
     return isNaN(numberOfHours) ? 0 : numberOfHours;
   };
@@ -512,7 +507,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    *
    * @private
    */
-  Day.prototype._eraseFields = function() {
+  Day.prototype._eraseFields = function () {
     this._timeFromField.value = '';
     this._timeToField.value = '';
     this._breakField.value = '';
@@ -528,7 +523,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    *
    * @private
    */
-  Day.prototype._setFieldsDisabledAttribute = function(disabled) {
+  Day.prototype._setFieldsDisabledAttribute = function (disabled) {
     this._timeFromField.disabled = disabled;
     this._timeToField.disabled = disabled;
     this._breakField.disabled = disabled;
