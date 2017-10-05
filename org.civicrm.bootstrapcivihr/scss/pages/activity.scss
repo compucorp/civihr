@@ -1,0 +1,88 @@
+.page-civicrm-activity {
+  .crm-search-tasks {
+    @extend %search-filter-block;
+  }
+
+  #searchForm {
+    box-sizing: border-box;
+
+    tr {
+      &:not(#activityCustom) td {
+        padding: 10px 20px;
+      }
+
+      &:nth-child(n+8):nth-child(-n+9) {
+        display: none;
+      }
+
+      td {
+        border: 0 !important;
+        padding: 0;
+
+        &.font-size12pt {
+          font-size: $font-size-base;
+        }
+
+        .crm-button_qf_Search_refresh {
+          float: right !important;
+          margin: 0;
+
+          > .crm-form-submit {
+            margin-right: 0 !important;
+          }
+        }
+
+        .select2-choices,
+        .select2-choice,
+        #activity_subject {
+          min-width: 329px;
+        }
+      }
+    }
+
+    .crm-i {
+      display: none;
+    }
+  }
+
+  .ui-dialog {
+    .crm-submit-buttons {
+      display: none;
+    }
+
+    table tr {
+      border-bottom: 0;
+    }
+
+    #Activity_Custom_Fields__1 {
+      border-bottom: none;
+      padding: 0;
+
+      td.label {
+        display: table-cell;
+      }
+
+      .crm-accordion-wrapper {
+        margin-left: 5px;
+        margin-right: 0;
+      }
+    }
+
+    .CRM_Activity_Form_Activity .crm-block {
+      box-shadow: none;
+    }
+
+    .CRM_Activity_Form_Activity .crm-activity-form-block-custom_data,
+    .CRM_Activity_Form_Activity .crm-activity-form-block-attachment,
+    .CRM_Activity_Form_Activity .crm-activity-form-block-recurring_activity,
+    .CRM_Activity_Form_Activity .crm-activity-form-block-schedule_followup {
+      padding: 0;
+      margin-bottom: 0;
+
+      > td,
+      #Activity_Custom_Fields__ {
+        padding: 0 20px;
+      }
+    }
+  }
+}
