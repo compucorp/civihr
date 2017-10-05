@@ -333,7 +333,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
 
       if (!$hasNumberOfHours) {
         $errors[$numberOfHoursField] = ts('Please fill in the Number of Hours');
-      } else if ($day['number_of_hours'] <= 0 || $day['number_of_hours'] >= 24) {
+      } else if ($day['number_of_hours'] <= 0 || $day['number_of_hours'] > 24) {
         $errors[$numberOfHoursField] = 'Number of Hours should be between 0 and 24';
       }
 

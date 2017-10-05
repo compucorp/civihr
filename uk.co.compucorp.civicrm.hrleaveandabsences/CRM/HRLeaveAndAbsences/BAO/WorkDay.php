@@ -133,9 +133,10 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     $typeOfDay = empty($params['type']) ? null : $params['type'];
     $timeFrom = empty($params['time_from']) ? null : $params['time_from'];
     $timeTo = empty($params['time_to']) ? null : $params['time_to'];
-    $break = isset($params['break']) && $params['break'] == '0' ? 0 :
-      (empty($params['break']) ? null : $params['break']);
-    $numberOfHours = empty($params['number_of_hours']) ? null : $params['number_of_hours'];
+    $breakIsNotEmpty = !empty($params['break']) || (isset($params['break']) && $params['break'] == 0);
+    $break = !$breakIsNotEmpty ? null : $params['break'];
+    $numberOfHoursIsNotEmpty = !empty($params['number_of_hours']) || (isset($params['number_of_hours']) && $params['number_of_hours'] == 0);
+    $numberOfHours = !$numberOfHoursIsNotEmpty ? null : $params['number_of_hours'];
     $hasAnyOfRequiredFields = !is_null($timeFrom) || !is_null($timeTo) || !is_null($break) || !is_null($numberOfHours);
     $isWorkingDay = $typeOfDay == self::getWorkingDayTypeValue();
 
@@ -171,16 +172,17 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
       );
     }
 
-    if (!is_null($break)) {
-      if (!is_numeric($break)) {
-        throw new InvalidWorkDayException(
-          'Break should be a valid number'
-        );
-      } else if ($break < 0) {
-        throw new InvalidWorkDayException(
-          'Break cannot be less than 0'
-        );
-      }
+    $hasBreak = !is_null($break);
+    if ($hasBreak && !is_numeric($break)) {
+      throw new InvalidWorkDayException(
+        'Break should be a valid number'
+      );
+    }
+
+    if ($hasBreak && $break < 0) {
+      throw new InvalidWorkDayException(
+        'Break cannot be less than 0'
+      );
     }
 
     $secondsInWorkingHours = strtotime($timeTo) - strtotime($timeFrom);
@@ -191,20 +193,23 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
       );
     }
 
-    if (!is_null($numberOfHours)) {
-      if (!is_numeric($numberOfHours)) {
-        throw new InvalidWorkDayException(
-          'Number of Hours should be a valid number'
-        );
-      } else if ($numberOfHours <= 0 || $numberOfHours >= 24) {
-        throw new InvalidWorkDayException(
-          'Number of Hours should be between 0 and 24'
-        );
-      } else if (strpos($numberOfHours / 0.25, '.' )) {
-        throw new InvalidWorkDayException(
-          'Number of Hours should be divisible by 0.25'
-        );
-      }
+    $hasNumberOfHours = !is_null($numberOfHours);
+    if ($hasNumberOfHours && !is_numeric($numberOfHours)) {
+      throw new InvalidWorkDayException(
+        'Number of Hours should be a valid number'
+      );
+    }
+
+    if ($hasNumberOfHours && ($numberOfHours <= 0 || $numberOfHours > 24)) {
+      throw new InvalidWorkDayException(
+        'Number of Hours should be between 0 and 24'
+      );
+    }
+
+    if ($hasNumberOfHours && fmod($numberOfHours, 0.25) !== 0.0) {
+      throw new InvalidWorkDayException(
+        'Number of Hours are only allowed in 15 minutes blocks'
+      );
     }
   }
 
