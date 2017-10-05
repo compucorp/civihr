@@ -1,3 +1,5 @@
+/* globals ts, Inputmask */
+
 // Create the namespaces if they don't exist
 CRM.HRLeaveAndAbsencesApp = CRM.HRLeaveAndAbsencesApp || {};
 CRM.HRLeaveAndAbsencesApp.Form = CRM.HRLeaveAndAbsencesApp.Form || {};
@@ -15,7 +17,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
    * The maximum number of weeks in a Work Pattern
    * @type {number}
    */
-  const MAX_NUMBER_OF_WEEKS = 5;
+  var MAX_NUMBER_OF_WEEKS = 5;
 
   /**
    * Creates a new WorkPattern form
@@ -80,7 +82,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function($) {
    * @private
    */
   WorkPattern.prototype._onNumberOfWeeksChange = function(event) {
-    for(i = 0; i < MAX_NUMBER_OF_WEEKS; i++) {
+    for(var i = 0; i < MAX_NUMBER_OF_WEEKS; i++) {
       if(i < parseInt(event.target.value)) {
         this._weeks[i].show();
       } else {
@@ -155,7 +157,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    *
    * @type {number}
    */
-  const NUMBER_OF_DAYS = 7;
+  var NUMBER_OF_DAYS = 7;
 
   /**
    * Constructs a new Week object
@@ -181,7 +183,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
    */
   Week.prototype._instantiateDays = function() {
     this._days = [];
-    for(i = 0; i < NUMBER_OF_DAYS; i++) {
+    for(var i = 0; i < NUMBER_OF_DAYS; i++) {
       this._days[i] = this._instantiateDay(i);
     }
   };
@@ -341,9 +343,9 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function($) {
  */
 CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
 
-  const NON_WORKING_DAY = 1;
-  const WORKING_DAY = 2;
-  const WEEKEND_DAY = 3;
+  var NON_WORKING_DAY = 1;
+  var WORKING_DAY = 2;
+  var WEEKEND_DAY = 3;
 
   /**
    * Constructs a new Day object and makes sure to setUp every (like
@@ -371,7 +373,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
     this.on = $.proxy(this._emitter, 'on');
     this._addEventListeners();
     this._setFieldsMasks();
-    if(this._typeField.value == NON_WORKING_DAY || this._typeField.value == WEEKEND_DAY) {
+    if(+this._typeField.value === +NON_WORKING_DAY || +this._typeField.value === +WEEKEND_DAY) {
       this._setFieldsDisabledAttribute(true);
     }
   }
@@ -395,7 +397,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function($) {
    * @private
    */
   Day.prototype._onDayTypeChange = function(event) {
-    if(event.target.value == NON_WORKING_DAY || event.target.value == WEEKEND_DAY) {
+    if(+event.target.value === +NON_WORKING_DAY || +event.target.value === +WEEKEND_DAY) {
       this._eraseFields();
       this._setFieldsDisabledAttribute(true);
     } else {
