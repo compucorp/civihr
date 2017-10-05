@@ -172,11 +172,20 @@ function hrcore_civicrm_pageRun($page) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu/
  */
 function hrcore_civicrm_navigationMenu(&$params) {
-  $menuItemID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
-  $params[$menuItemID]['attributes']['label'] = 'Staff'; 
+  _hrcore_renameMenuLabel($params, 'Contacts', 'Staff');
+  _hrcore_renameMenuLabel($params, 'Administer', 'Configure');
+}
 
-  $menuItemID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
-  $params[$menuItemID]['attributes']['label'] = 'Configure'; 
+/**
+ * Renames a menu with the given new label
+ *
+ * @param array $params
+ * @param string $menuName
+ * @param string $newLabel
+ */
+function _hrcore_renameMenuLabel(&$params, $menuName, $newLabel) {
+  $menuItemID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $menuName, 'id', 'name');
+  $params[$menuItemID]['attributes']['label'] = $newLabel; 
 }
 
 /**
