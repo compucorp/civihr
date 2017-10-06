@@ -148,7 +148,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
       [
         'options' => $this->getCalculationUnitOptions(),
         'option_url' => NULL,
-        'label' => 'Calculate Leave in'
+        'label' => ts('Calculate Leave in')
       ],
       TRUE
     );

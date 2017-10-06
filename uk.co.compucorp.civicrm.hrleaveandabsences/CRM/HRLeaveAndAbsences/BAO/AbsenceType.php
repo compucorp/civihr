@@ -304,7 +304,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
       if($absenceTypeHasBeenUsed) {
         throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'The Calculation unit cannot be change because the Absence Type is In Use!'
+          'The Calculation unit cannot be changed because the Absence Type is In Use!'
         );
       }
     }

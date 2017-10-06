@@ -810,10 +810,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     ]);
   }
 
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
-   * @expectedExceptionMessage The Calculation unit cannot be change because the Absence Type is In Use!
-   */
   public function testCalculationUnitCannotBeChangedWhenAbsenceTypeIsInUse() {
     $absenceType = AbsenceTypeFabricator::fabricate([
       'calculation_unit' => $this->calculationUnitOptions['hours']
@@ -825,6 +821,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'from_date' => CRM_Utils_Date::processDate('2016-01-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-02'),
     ]);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException',
+      'The Calculation unit cannot be changed because the Absence Type is In Use!'
+    );
 
     AbsenceTypeFabricator::fabricate([
       'id' => $absenceType->id,
