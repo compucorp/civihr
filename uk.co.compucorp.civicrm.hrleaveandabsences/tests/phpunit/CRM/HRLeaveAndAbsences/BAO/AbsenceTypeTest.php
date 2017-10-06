@@ -809,4 +809,39 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'calculation_unit' => $this->calculationUnitOptions['hours']
     ]);
   }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   * @expectedExceptionMessage The Calculation unit cannot be change because the Absence Type is In Use!
+   */
+  public function testCalculationUnitCannotBeChangedWhenAbsenceTypeIsInUse() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'calculation_unit' => $this->calculationUnitOptions['hours']
+    ]);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-02'),
+    ]);
+
+    AbsenceTypeFabricator::fabricate([
+      'id' => $absenceType->id,
+      'calculation_unit' => $this->calculationUnitOptions['days']
+    ]);
+  }
+
+  public function testCalculationUnitCanBeChangedWhenAbsenceTypeIsInNotInUse() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'calculation_unit' => $this->calculationUnitOptions['hours']
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'id' => $absenceType->id,
+      'calculation_unit' => $this->calculationUnitOptions['days']
+    ]);
+
+    $this->assertEquals($absenceType->calculation_unit, $this->calculationUnitOptions['days']);
+  }
 }
