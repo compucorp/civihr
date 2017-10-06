@@ -11,6 +11,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriod
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest
@@ -648,15 +649,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   private function createAbsenceType() {
-    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
-
-    return AbsenceType::create([
-      'title' => 'Type ' . microtime(),
-      'color' => '#000000',
-      'default_entitlement' => 20,
-      'allow_request_cancelation' => 1,
-      'calculation_unit' => $calculationUnitOptions['days']
-    ]);
+    return AbsenceTypeFabricator::fabricate();
   }
 
   /**

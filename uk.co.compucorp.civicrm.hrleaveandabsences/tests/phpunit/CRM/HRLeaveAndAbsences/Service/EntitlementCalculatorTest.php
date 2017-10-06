@@ -3,7 +3,7 @@
 use CRM_HRLeaveAndAbsences_Service_EntitlementCalculator as EntitlementCalculator;
 use CRM_HRLeaveAndAbsences_Service_EntitlementCalculation as EntitlementCalculation;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
-use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest
@@ -51,16 +51,6 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest extends BaseHeadl
   }
 
   private function createBasicType($params = array()) {
-    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
-    $basicRequiredFields = [
-      'title' => 'Type ' . microtime(),
-      'color' => '#000000',
-      'default_entitlement' => 20,
-      'allow_request_cancelation' => 1,
-      'calculation_unit' => $calculationUnitOptions['days']
-    ];
-
-    $params = array_merge($basicRequiredFields, $params);
-    return AbsenceType::create($params);
+    return AbsenceTypeFabricator::fabricate();
   }
 }
