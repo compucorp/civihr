@@ -10,8 +10,8 @@
     <author>Mateusz Cieplinski</author>
     <email>mateusz@coldrun.pl</email>
   </maintainer>
-  <releaseDate>2017-08-11</releaseDate>
-  <version>1.6.11</version>
+  <releaseDate>2017-10-06</releaseDate>
+  <version>1.6.12</version>
   <develStage>alpha</develStage>
   <compatibility>
     <ver>4.7</ver>
